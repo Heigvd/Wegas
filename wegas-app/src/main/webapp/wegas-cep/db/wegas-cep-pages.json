@@ -286,7 +286,7 @@
                 "label": "Salaire : "
             }, {
                 "type": "valueBox",
-                "name": "moral",
+                "name": "motivation",
                 "label": "Moral : ",
                 "maxValue": 100
             }, {

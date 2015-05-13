@@ -190,7 +190,7 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
                         id: taskDescriptor.get('id'),
                         task: taskDescriptor.get('name'),
                         skill: this.getRequirements(taskInstance),
-                        duration: taskInstance.get('duration'),
+                        duration: taskInstance.get('properties').duration,
                         term: termData,
                         salary: taskDescriptor.get('properties').salary,
                         comment: comment.join(" "),

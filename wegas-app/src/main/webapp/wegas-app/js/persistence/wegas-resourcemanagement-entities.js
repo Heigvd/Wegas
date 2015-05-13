@@ -11,7 +11,6 @@
  */
 YUI.add('wegas-resourcemanagement-entities', function(Y) {
     "use strict";
-
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array", NAME = "name",
         SELF = "self", BOOLEAN = "boolean", NUMBER = "number", OBJECT = "object",
         HTML = "html", VALUE = "value", HASHLIST = "hashlist", COMBINE = "combine",
@@ -20,44 +19,91 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
         PROPERTIESELEMENTTYPE = {
             type: COMBINE,
             fields: [{
-                    name: NAME,
-                    typeInvite: NAME,
-                    size: 16
-                }, {
-                    name: VALUE,
-                    typeInvite: VALUE,
-                    size: 16
-                }]
+                name: NAME,
+                typeInvite: NAME,
+                size: 16
+            }, {
+                name: VALUE,
+                typeInvite: VALUE,
+                size: 16
+            }]
         },
-    IDATTRDEF = {
-        type: STRING,
-        optional: true, // The id is optional for entites that have not been persisted
-        _inputex: {
-            _type: HIDDEN
-        }
-    };
-
-    Y.namespace("Wegas.persistence.Resources");                                 // Create namespace
+        IDATTRDEF = {
+            type: STRING,
+            optional: true, // The id is optional for entites that have not been persisted
+            _inputex: {
+                _type: HIDDEN
+            }
+        },
+        lvl;
+    Y.namespace("Wegas.persistence.Resources"); // Create namespace
 
     /**
-     * 
+     *
      */
     persistence.Resources.LEVELS = [
-        {value: 1, label: "Apprentice*"},
-        {value: 2, label: "Apprentice**"},
-        {value: 3, label: "Apprentice***"},
-        {value: 4, label: "Junior*"},
-        {value: 5, label: "Junior**"},
-        {value: 6, label: "Junior***"},
-        {value: 7, label: "Senior*"},
-        {value: 8, label: "Senior**"},
-        {value: 9, label: "Senior***"},
-        {value: 10, label: "Expert*"},
-        {value: 11, label: "Expert**"},
-        {value: 12, label: "Expert***"}
+        {
+            value: 1,
+            label: "Apprentice*"
+        },
+        {
+            value: 2,
+            label: "Apprentice**"
+        },
+        {
+            value: 3,
+            label: "Apprentice***"
+        },
+        {
+            value: 4,
+            label: "Junior*"
+        },
+        {
+            value: 5,
+            label: "Junior**"
+        },
+        {
+            value: 6,
+            label: "Junior***"
+        },
+        {
+            value: 7,
+            label: "Senior*"
+        },
+        {
+            value: 8,
+            label: "Senior**"
+        },
+        {
+            value: 9,
+            label: "Senior***"
+        },
+        {
+            value: 10,
+            label: "Expert*"
+        },
+        {
+            value: 11,
+            label: "Expert**"
+        },
+        {
+            value: 12,
+            label: "Expert***"
+        }
     ];
-    persistence.Resources.SKILLS = ["Commercial", "Informaticien", "Web designer", "Monteur"];
+    /**
+     * Since level became a Resource Property, the select field ask for a string
+     * value,
+     */
+    persistence.Resources.STR_LEVELS = [];
+    for (lvl in  persistence.Resources.LEVELS) {
+        persistence.Resources.STR_LEVELS.push({
+            value: "" + persistence.Resources.LEVELS[lvl].value,
+            label: "" + persistence.Resources.LEVELS[lvl].label
+        });
+    }
 
+    persistence.Resources.SKILLS = ["Commercial", "Informaticien", "Web designer", "Monteur"];
     /**
      * ResourceDescriptor mapper
      */
@@ -112,42 +158,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                             value: true
                         }
                     },
-                    skillsets: {
-                        _inputex: {
-                            label: "Skills",
-                            _type: HASHLIST,
-                            wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature editor-resources-skillset',
-                            elementType: {
-                                type: COMBINE,
-                                required: true,
-                                fields: [{
-                                        name: "work",
-                                        type: "select",
-                                        choices: persistence.Resources.SKILLS
-                                    }, {
-                                        name: "level",
-                                        type: "select",
-                                        choices: persistence.Resources.LEVELS
-                                    }]
-                            }
-                        }
-                    },
-                    moral: {
-                        type: NUMBER,
-                        optional: false,
-                        _inputex: {
-                            label: "Motivation",
-                            value: 100
-                        }
-                    },
-                    moralHistory: {
-                        type: ARRAY,
-                        optional: true,
-                        _inputex: {
-                            value: [],
-                            _type: HIDDEN
-                        }
-                    },
                     confidence: {
                         name: NUMBER,
                         optional: false,
@@ -162,24 +172,26 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         type: ARRAY,
                         _inputex: {
                             wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature editor-resources-occupations',
-                            label: "Vacancies",
+                            label: "Unavailabilities",
+                            description: "[periods]",
                             _type: LIST,
                             elementType: {
                                 type: GROUP,
                                 fields: [{
-                                        name: "@class",
-                                        type: HIDDEN,
-                                        value: "Occupation"
-                                    }, {
-                                        name: "editable",
-                                        value: false,
-                                        type: HIDDEN
-                                    }, {
-                                        name: "time",
-                                        typeInvite: "Period number",
-                                        type: NUMBER,
-                                        required: true
-                                    }]
+                                    name: "@class",
+                                    type: HIDDEN,
+                                    value: "Occupation"
+                                }, {
+                                    name: "editable",
+                                    value: false,
+                                    type: HIDDEN
+                                }, {
+                                    name: "time",
+                                    typeInvite: "Period number",
+                                    type: NUMBER,
+                                    required: true,
+                                    className: "short-input"
+                                }]
                             }
                         }
                     },
@@ -206,291 +218,220 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 label: "Is active",
                 returns: BOOLEAN,
                 arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    type: HIDDEN,
+                    value: SELF
+                }]
             },
             activate: {
                 label: "Activate",
                 arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    type: HIDDEN,
+                    value: SELF
+                }]
             },
             desactivate: {
                 label: "Desactivate",
                 arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    type: HIDDEN,
+                    value: SELF
+                }]
             },
             getConfidence: {
                 label: "Get confidence",
                 returns: NUMBER,
                 arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    type: HIDDEN,
+                    value: SELF
+                }]
             },
             addAtConfidence: {
                 label: "Add to confidence",
                 arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: STRING,
-                        value: 1
-                    }]
+                    type: HIDDEN,
+                    value: SELF
+                }, {
+                    type: STRING,
+                    value: 1
+                }]
             },
             setConfidence: {
                 label: "Set confidence",
                 arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: STRING,
-                        value: 1
-                    }]
-            },
-            getMoral: {
-                label: "Get moral",
-                returns: NUMBER,
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
-            },
-            addAtMoral: {
-                label: "Add to moral",
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: NUMBER,
-                        value: 1
-                    }]
-            },
-            setMoral: {
-                label: "Set moral",
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: NUMBER,
-                        value: 1
-                    }]
+                    type: HIDDEN,
+                    value: SELF
+                }, {
+                    type: STRING,
+                    value: 1
+                }]
             },
             addOccupation: {
                 label: "Add occupation",
                 arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: NUMBER,
-                        typeInvite: "Period",
-                        scriptType: NUMBER
-                    }, {
-                        type: HIDDEN,
-                        label: "Editable",
-                        value: false,
-                        scriptType: BOOLEAN
-                    }, {
-                        type: HIDDEN,
-                        label: "Description",
-                        scriptType: STRING
-                    }
+                    type: HIDDEN,
+                    value: SELF
+                }, {
+                    type: NUMBER,
+                    typeInvite: "Period",
+                    scriptType: NUMBER
+                }, {
+                    type: HIDDEN,
+                    label: "Editable",
+                    value: false,
+                    scriptType: BOOLEAN
+                }, {
+                    type: HIDDEN,
+                    label: "Description",
+                    scriptType: STRING
+                }
                 ]
             },
             removeOccupationsAtTime: {
                 label: "Remove occupation",
                 arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: NUMBER,
-                        typeInvite: "Time"
-                    }]
+                    type: HIDDEN,
+                    value: SELF
+                }, {
+                    type: NUMBER,
+                    typeInvite: "Time"
+                }]
             },
             getNumberInstanceProperty: {
-                label: "Get number instance property",
+                label: "Get number property",
                 returns: NUMBER,
                 arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: STRING,
-                        typeInvite: KEY,
-                        scriptType: STRING
-                    }]
+                    type: HIDDEN,
+                    value: SELF
+                }, {
+                    type: STRING,
+                    typeInvite: KEY,
+                    scriptType: STRING
+                }]
             },
             getStringInstanceProperty: {
-                label: "Get text instance property",
+                label: "Get text property",
                 returns: STRING,
                 arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: STRING,
-                        typeInvite: KEY,
-                        scriptType: STRING
-                    }]
+                    type: HIDDEN,
+                    value: SELF
+                }, {
+                    type: STRING,
+                    typeInvite: KEY,
+                    scriptType: STRING
+                }]
             },
             addNumberAtInstanceProperty: {
-                label: "Add to instance property",
+                label: "Add to property",
                 arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: STRING,
-                        typeInvite: KEY,
-                        scriptType: STRING
-                    }, {
-                        type: STRING,
-                        typeInvite: VALUE,
-                        scriptType: STRING
-                    }]
+                    type: HIDDEN,
+                    value: SELF
+                }, {
+                    type: STRING,
+                    typeInvite: KEY,
+                    scriptType: STRING
+                }, {
+                    type: STRING,
+                    typeInvite: VALUE,
+                    scriptType: STRING
+                }]
             },
             setInstanceProperty: {
-                label: "Set instance property",
+                label: "Set property",
                 arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: STRING,
-                        typeInvite: KEY,
-                        scriptType: STRING
-                    }, {
-                        type: STRING,
-                        typeInvite: VALUE,
-                        scriptType: STRING
-                    }]
+                    type: HIDDEN,
+                    value: SELF
+                }, {
+                    type: STRING,
+                    typeInvite: KEY,
+                    scriptType: STRING
+                }, {
+                    type: STRING,
+                    typeInvite: VALUE,
+                    scriptType: STRING
+                }]
             },
-            getSkillset: {
-                label: "Skill level",
-                returns: NUMBER,
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        scriptType: STRING,
-                        type: SELECT,
-                        choices: persistence.Resources.SKILLS
-                    }]
-            },
-            addAtSkillset: {
-                label: "Add to skill level",
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        scriptType: STRING,
-                        type: SELECT,
-                        choices: persistence.Resources.SKILLS
-                    }, {
-                        type: STRING,
-                        typeInvite: "level",
-                        scriptType: STRING
-                    }]
-            },
-            setSkillset: {
-                label: "Set skill level",
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        scriptType: STRING,
-                        type: SELECT,
-                        choices: persistence.Resources.SKILLS
-                    }, {
-                        type: SELECT,
-                        choices: persistence.Resources.LEVELS,
-                        scriptType: STRING
-                    }]
-            },
-            //methods below are temporary ; only for CEP-Game
             getSalary: {
                 label: "Get salary",
                 returns: NUMBER,
                 arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    type: HIDDEN,
+                    value: SELF
+                }]
             },
             addAtSalary: {
                 label: "Add to salary",
                 arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: STRING,
-                        value: 1
-                    }]
+                    type: HIDDEN,
+                    value: SELF
+                }, {
+                    type: STRING,
+                    value: 1
+                }]
             },
             setSalary: {
                 label: "Set salary",
                 arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: STRING,
-                        value: 1
-                    }]
+                    type: HIDDEN,
+                    value: SELF
+                }, {
+                    type: STRING,
+                    value: 1
+                }]
             },
             getExperience: {
                 label: "Get experience",
                 returns: NUMBER,
                 arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    type: HIDDEN,
+                    value: SELF
+                }]
             },
             addAtExperience: {
                 label: "Add to experience",
                 arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: STRING,
-                        value: 1
-                    }]
+                    type: HIDDEN,
+                    value: SELF
+                }, {
+                    type: STRING,
+                    value: 1
+                }]
             },
             setExperience: {
                 label: "Set experience",
                 arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: STRING,
-                        value: 1
-                    }]
+                    type: HIDDEN,
+                    value: SELF
+                }, {
+                    type: STRING,
+                    value: 1
+                }]
             },
             getLeadershipLevel: {
                 label: "Get leadership level",
                 returns: NUMBER,
                 arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    type: HIDDEN,
+                    value: SELF
+                }]
             },
             addAtLeadershipLevel: {
                 label: "Add to leadership level",
                 arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: STRING,
-                        value: 1
-                    }]
+                    type: HIDDEN,
+                    value: SELF
+                }, {
+                    type: STRING,
+                    value: 1
+                }]
             },
             setLeadershipLevel: {
                 label: "Set leadership level",
                 arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: STRING,
-                        value: 1
-                    }]
+                    type: HIDDEN,
+                    value: SELF
+                }, {
+                    type: STRING,
+                    value: 1
+                }]
             }
         }
     });
@@ -505,25 +446,9 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             active: {
                 type: BOOLEAN
             },
-            moral: {
-                type: NUMBER,
-                optional: true
-            },
-            confidence: {
-                type: NUMBER,
-                optional: true
-            },
             properties: {
                 _inputex: {
                     label: "Properties",
-                    _type: HASHLIST,
-                    elementType: PROPERTIESELEMENTTYPE
-                }
-            },
-            skillsets: {
-                name: "skillsets",
-                _inputex: {
-                    label: "Skills",
                     _type: HASHLIST,
                     elementType: PROPERTIESELEMENTTYPE
                 }
@@ -542,13 +467,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             activities: {
                 type: ARRAY,
                 value: []
-            },
-            moralHistory: {
-                type: ARRAY,
-                _inputex: {
-                    label: "Moral history",
-                    _type: LIST
-                }
             },
             confidenceHistory: {
                 type: ARRAY,
@@ -650,50 +568,47 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                             elementType: {
                                 type: GROUP,
                                 fields: [{
-                                        name: "@class",
-                                        value: "WRequirement",
-                                        type: HIDDEN
-                                    }, {
-                                        name: "id",
-                                        type: HIDDEN
-                                    }, {
-                                        name: "name",
-                                        type: HIDDEN,
-                                        typeInvite: "name"
-                                    }, {
-                                        name: "work",
-                                        type: SELECT,
-                                        choices: persistence.Resources.SKILLS
-                                    }, {
-                                        name: "level",
-                                        type: "select",
-                                        choices: persistence.Resources.LEVELS
-                                    }, {
-                                        typeInvite: "quantity",
-                                        name: "quantity",
-                                        type: NUMBER,
-                                        required: true,
-                                        size: 4
-                                    }, {
-                                        typeInvite: "limit",
-                                        name: "limit",
-                                        size: 4,
-                                        required: true,
-                                        type: NUMBER
-                                    }, {
-                                        name: "completeness",
-                                        type: HIDDEN,
-                                        value: 0
-                                    }, {
-                                        name: "quality",
-                                        type: HIDDEN,
-                                        value: 100
-                                    }]
+                                    name: "@class",
+                                    value: "WRequirement",
+                                    type: HIDDEN
+                                }, {
+                                    name: "id",
+                                    type: HIDDEN
+                                }, {
+                                    name: "name",
+                                    type: HIDDEN,
+                                    typeInvite: "name"
+                                }, {
+                                    name: "work",
+                                    type: SELECT,
+                                    choices: persistence.Resources.SKILLS
+                                }, {
+                                    name: "level",
+                                    type: "select",
+                                    choices: persistence.Resources.LEVELS
+                                }, {
+                                    typeInvite: "quantity",
+                                    name: "quantity",
+                                    type: NUMBER,
+                                    required: true,
+                                    size: 4
+                                }, {
+                                    typeInvite: "limit",
+                                    name: "limit",
+                                    size: 4,
+                                    required: true,
+                                    type: NUMBER
+                                }, {
+                                    name: "completeness",
+                                    type: HIDDEN,
+                                    value: 0
+                                }, {
+                                    name: "quality",
+                                    type: HIDDEN,
+                                    value: 100
+                                }]
                             }
                         }
-                    },
-                    duration: {
-                        type: NUMBER
                     },
                     active: {
                         type: BOOLEAN,
@@ -730,110 +645,83 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     elementType: PROPERTIESELEMENTTYPE
                 }
             }
-        }, METHODS: {
+        },
+        METHODS: {
             activate: {
                 label: "Activate",
                 arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    type: HIDDEN,
+                    value: SELF
+                }]
             },
             desactivate: {
                 label: "Desactivate",
                 arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    type: HIDDEN,
+                    value: SELF
+                }]
             },
             getActive: {
                 label: "Is active",
                 returns: BOOLEAN,
                 arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    type: HIDDEN,
+                    value: SELF
+                }]
             },
             getNumberInstanceProperty: {
                 label: "Get number instance property",
                 returns: NUMBER,
                 arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: STRING,
-                        typeInvite: KEY,
-                        scriptType: STRING
-                    }]
+                    type: HIDDEN,
+                    value: SELF
+                }, {
+                    type: STRING,
+                    typeInvite: KEY,
+                    scriptType: STRING
+                }]
             },
             getStringInstanceProperty: {
                 label: "Get text instance property",
                 returns: STRING,
                 arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: STRING,
-                        typeInvite: KEY,
-                        scriptType: STRING
-                    }]
+                    type: HIDDEN,
+                    value: SELF
+                }, {
+                    type: STRING,
+                    typeInvite: KEY,
+                    scriptType: STRING
+                }]
             },
             addNumberAtInstanceProperty: {
                 label: "Add to instance property",
                 arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: STRING,
-                        typeInvite: KEY,
-                        scriptType: STRING
-                    }, {
-                        type: STRING,
-                        typeInvite: VALUE,
-                        scriptType: STRING
-                    }]
+                    type: HIDDEN,
+                    value: SELF
+                }, {
+                    type: STRING,
+                    typeInvite: KEY,
+                    scriptType: STRING
+                }, {
+                    type: STRING,
+                    typeInvite: VALUE,
+                    scriptType: STRING
+                }]
             },
             setInstanceProperty: {
                 label: "Set instance property",
                 arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: STRING,
-                        typeInvite: KEY,
-                        scriptType: STRING
-                    }, {
-                        type: STRING,
-                        typeInvite: VALUE,
-                        scriptType: STRING
-                    }]
-            },
-            getDuration: {
-                label: "Get Duration",
-                returns: NUMBER,
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
-            },
-            addAtDuration: {
-                label: "Add to duration",
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: STRING,
-                        value: 1
-                    }]
-            },
-            setDuration: {
-                label: "Set duration",
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: STRING,
-                        value: 1
-                    }]
+                    type: HIDDEN,
+                    value: SELF
+                }, {
+                    type: STRING,
+                    typeInvite: KEY,
+                    scriptType: STRING
+                }, {
+                    type: STRING,
+                    typeInvite: VALUE,
+                    scriptType: STRING
+                }]
             }
         }
     });
@@ -847,9 +735,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             active: {
                 type: BOOLEAN
-            },
-            duration: {
-                type: NUMBER
             },
             requirements: {
                 type: ARRAY,

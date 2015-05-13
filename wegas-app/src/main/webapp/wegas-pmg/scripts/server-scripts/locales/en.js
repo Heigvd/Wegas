@@ -20,12 +20,12 @@ i18nTable.en = {
     messages: {
         startOnTask: {
             from: "%employeeName%",
-            subject: "Task \"%task%\"",
+            subject: "Task \"%task%\" began",
             content: "Hello, <br /><br />I've started to work on the task \"%task%\" on %step%.<br/> <br />Regards <br/>%employeeName%<br/> %job%"
         },
         startOnTask_grouped: {
             from: "%employeeName%",
-            subject: "Task \"%task%\"",
+            subject: "Task \"%task%\" began",
             content: "Hello, <br /><br />%others% and I have started to work on the task \"%task%\" on %step%.<br/> <br />Regards <br/>%employeeName%<br/> %job%"
         },
         endOfTaskOtherActivities: {
@@ -123,12 +123,6 @@ i18nTable.en = {
             wholeMonth: "the whole month",
             wholeWeek: "the whole week"
         }
-    },
-    phase: {
-        phase1: "Initiation",
-        phase2: "Planning",
-        phase3: "Execution",
-        phase4: "Closing"
     },
     question: {
         question: "Question",

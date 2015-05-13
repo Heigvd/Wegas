@@ -9,7 +9,10 @@
 .layout {
     font-family: "Lucida Grande", sans-serif;
     background: #282828;
-    min-width:1025px;
+    min-width: 975px;
+}
+.layout .pmg-header {
+    background: #282828;
 }
 .layout * {
     font-family: "Lucida Grande", sans-serif;
@@ -39,7 +42,7 @@
 }
 .pmg-breadcrumb span{
     display:block;
-    width:90px;
+    width: 86px;
     height:18px;
     padding:2px 0 1px 0;
     margin-right: 2px;
@@ -58,13 +61,13 @@
 }
 .pmg-period{
     font-size: 9pt;
-    width: 380px;
+    width: 352px;
 }
 .wegas-template-valuebox label{
     display:none;
 }
 .pmg-period .wegas-template-valuebox-unit{
-    width: 20px;
+    width: 19px;
     height: 15px;
     float:left;
     margin: 0 2px 3px 0;
@@ -90,7 +93,7 @@
     font-size: 9pt;
 }
 .pmg-timevariable{
-    width:100px;
+    width:78px;
     color: white;
     font-size: 9pt;
 }
@@ -111,13 +114,13 @@
 }
 
 /*-----------------------------horizontal-menu--------------------------------*/
-.layout .horizontal-menu{
+.layout .horizontal-nav-menu{
     background-color:#ADADAE;
     height:30px;
     min-width:970px;
 }
 
-.layout .horizontal-menu button {
+.layout .horizontal-nav-menu button {
     background-repeat: repeat-x;
     background-color:#ADADAE;
     height:30px;
@@ -134,11 +137,11 @@
     text-align:left;
     font-size: 1.1em;
 }
-.layout .horizontal-menu button.hidden-button {
+.layout .horizontal-nav-menu button.hidden-button {
     display: none;
 }
 
-.horizontal-menu button:hover {
+.horizontal-nav-menu button:hover {
     background-color:#DDDDDD;
 }
 .yui3-skin-sam .layout .yui3-button-selected {
@@ -146,16 +149,16 @@
     color:black;
     box-shadow: none;
 }
-.layout .horizontal-menu .wegas-login{
+.layout .horizontal-nav-menu .wegas-login{
     float: right;
     padding: 0px 21px 0 10px;
     border-left: 1px solid lightgray;
 }
-.layout .horizontal-menu .yui3-button-disabled {
+.layout .horizontal-nav-menu .yui3-button-disabled {
     background-repeat: repeat-x;
     background-color: #ADAD96;
 }
-.layout .horizontal-menu .yui3-button-disabled:hover {
+.layout .horizontal-nav-menu .yui3-button-disabled:hover {
     border-width:0 1px 1px 0;
     padding-bottom:0px;
 }
@@ -184,7 +187,7 @@ h2{
     color: #0981A9;
 }
 /*------------------------------vertical-menu---------------------------------*/
-.vertical-menu{
+.vertical-nav-menu{
     float: right;
     top:120px;
     position: absolute;
@@ -193,7 +196,7 @@ h2{
     width: 60px;
     background:#ADADAE;
 }
-.vertical-menu div button{
+.vertical-nav-menu div button{
     width:60px;
     height:60px;
     padding:0;
@@ -207,25 +210,25 @@ h2{
     background-position: center;
     border-bottom: 1px solid lightgray
 }
-.vertical-menu div button:first-child {
+.vertical-nav-menu div button:first-child {
     border-top: 1px solid lightgray
 }
-.vertical-menu div button:hover {
+.vertical-nav-menu div button:hover {
     background-color:#DDDDDD;
 }
-.vertical-menu .actions{
+.vertical-nav-menu .actions{
     background-image: url(../../wegas-pmg/images/businessmen.png);
 }
-.vertical-menu .questions {
+.vertical-nav-menu .questions {
     background-image: url(../../wegas-pmg/images/checklist-icon-2.png);
 }
-.vertical-menu .inbox {
+.vertical-nav-menu .inbox {
     background-image: url(../../wegas-pmg/images/messages.png);
 }
-.vertical-menu .history {
+.vertical-nav-menu .history {
     background-image: url(../../wegas-pmg/images/clock.png);
 }
-.vertical-menu .help, .vertical-menu .help:hover{
+.vertical-nav-menu .help, .vertical-nav-menu .help:hover{
     display:none;
     border-width:0;
     background:none;
@@ -485,12 +488,23 @@ td.yui3-datatable-col-Realised:after {
 }
 
 /*---------------------------- project-page ---------------------------------*/
-.project-page .wegas-pmg-slidepanel{
+.project-page .pmg-project-overview {
     position:relative;
     float: left;
-    width: 50%;
-    height: 250px;
+    width: 35%;
 }
+
+.project-page .charts-column {
+    width: 60%;
+    padding-left: 5%;
+    height: 100%;
+}
+
+.project-page .charts-column .chart {
+    height: 50%;
+    /* width: 60%; */
+}
+
 .project-page h2 {
     padding-top: 21px;
     padding-left: 16px;
@@ -501,7 +515,8 @@ td.yui3-datatable-col-Realised:after {
 }
 .project-page .pmg-project-overview .wegas-pmg-slidepanel-content, .project-page .finances .wegas-pmg-slidepanel-content {
     margin-top: 15px;
-    margin-left: 30px;
+    padding-left: 30px;
+    box-sizing: border-box;
 }
 .project-page .current-time, .project-page .projectCompleteness, .project-page .projectFixedCost, .project-page .taskTotal {
     font-weight: bold;
@@ -519,17 +534,17 @@ td.yui3-datatable-col-Realised:after {
     font-size: 10pt;
     margin-top: 10px;
 }
-.project-page .wages .variableValue, 
-.project-page .fixedCosts .variableValue, 
+.project-page .wages .variableValue,
+.project-page .fixedCosts .variableValue,
 .project-page .unworkedHours .variableValue,
-.project-page .total .variableValue, 
-.project-page .projectFixedCost .variableValue, 
+.project-page .total .variableValue,
+.project-page .projectFixedCost .variableValue,
 .project-page .taskTotal .variableValue,
 .project-page .projectCompleteness .variableValue,
 .project-page .current-period .variableValue,
 .project-page .current-stage .variableValue {
     float: right;
-    margin-right: 280px;
+    /* margin-right: 280px; */
 }
 
 /*---------------------------- Resources page ---------------------*/
@@ -555,22 +570,22 @@ td.yui3-datatable-col-Realised:after {
     cursor: default;
 }
 /*---------------------------- Cursor pointer ---------------------*/
-.gantt-plannification-page .present, .gantt-plannification-page .futur, 
+.gantt-planning-page .present, .gantt-planning-page .futur,
 .assignment span, table tbody .popup{
     cursor: pointer;
 }
 
 /*----------------------------Task-Plannification-Page------------------*/
-.task-plannification-page input {
+.task-planning-page input {
     width: 85px;
 }
 
 /*---------------------------- Gantt-Execution-Page---------------------*/
-.gantt-execution-page .plannification {
+.gantt-execution-page .planning {
     background-color: #878787;
     opacity: 0.3;
 }
-.gantt-execution-page .plannification:only-child{
+.gantt-execution-page .baseline:only-child{
     margin-top: -14px;
 }
 .gantt-execution-page .activity:only-child,

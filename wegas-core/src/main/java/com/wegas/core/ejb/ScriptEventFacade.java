@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import jdk.nashorn.internal.runtime.ScriptFunction;
 import org.apache.commons.collections.map.MultiValueMap;
 
@@ -132,18 +133,30 @@ public class ScriptEventFacade {
         if (this.registeredEvents.containsKey(eventName)) {
             Collection callbacks = this.registeredEvents.getCollection(eventName);
             for (Object cb : callbacks) {
-                ScriptFunction fcn = (ScriptFunction) ((Object[]) cb)[0];
+                //ScriptObjectMirror sob = (ScriptObjectMirror) ((Object[]) cb)[0];
+                Object obj = ((Object[]) cb)[0];
+
                 Object scope = (((Object[]) cb).length == 2 ? ((Object[]) cb)[1] : new EmptyObject());
+                String fcnSource;
+                
+                if (obj instanceof ScriptObjectMirror) {
+                    // @hack openjdk 1.8.0_45
+                    fcnSource = obj.toString();
+                } else {
+                    // @hack openjdk 1.8.0_31, oracle jdk
+                    fcnSource = ((ScriptFunction) ((Object[]) cb)[0]).toSource();
+                }
+
                 /*
                  *       JAVA BUG
                  *       http://bugs.java.com/view_bug.do?bug_id=8050977
                  *       
-                 *       workaround: re-eval function through nashorn INTERNAL (O_o) ScriptFunction.toSource()
+                 *       workaround: re-eval function through nashorn INTERNAL (O_o) ScriptObjectMirror.toString()
                  */
                 try {
-                    ((Invocable) engine).invokeMethod(engine.eval(fcn.toSource()), "call", scope, params);
+                    ((Invocable) engine).invokeMethod(engine.eval(fcnSource), "call", scope, params);
                 } catch (ScriptException | NoSuchMethodException ex) {
-                    throw new WegasScriptException("Event exception" , ex);
+                    throw new WegasScriptException("Event exception", ex);
                 }
                 /*
                  *  ONCE RESOLVED, REPLACE WITH
@@ -157,7 +170,7 @@ public class ScriptEventFacade {
      *
      * @param eventName
      * @return Object[] array of corresponding parameters fired. Length
-     * correspond to number of times eventName has been fired.
+     *         correspond to number of times eventName has been fired.
      */
     public Object[] getFiredParameters(String eventName) {
         if (this.eventsFired.containsKey(eventName)) {

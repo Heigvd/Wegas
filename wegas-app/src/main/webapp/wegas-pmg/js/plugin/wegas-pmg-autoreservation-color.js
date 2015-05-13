@@ -108,7 +108,7 @@ YUI.add('wegas-pmg-autoreservation-color', function(Y) {
             //   1) several assigned tasks are "planned" at the same time
             //   2) An uneditable occupation has been added previously
             if (cell && !cell.hasChildNodes()) {
-                cell.append("<span class='editable'></span>");
+                cell.append("<span class='booked'></span>");
             }
         }
     }, {

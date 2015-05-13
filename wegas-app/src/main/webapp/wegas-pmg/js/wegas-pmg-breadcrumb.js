@@ -20,13 +20,17 @@ YUI.add("wegas-pmg-breadcrumb", function(Y) {
         },
         renderUI: function() {
             var i, node = Y.Node.create("<div class='pmg-breadcrumb'></div>"),
-                cb = this.get(CONTENTBOX), locations = this.get("locations");
+                cb = this.get(CONTENTBOX), locations = this.get("locations"),
+                name,
+                defaultNames = ["Initiation", "Planning", "Execution", "Closing"];
             if (locations.length === 0) {
                 return;
             }
 
             for (i = 0; i < locations.length; i += 1) {
-                node.append("<span class='element_" + i + "'>" + locations[i] + "</span>");
+                name = Y.Wegas.Facade.Variable.cache.find("name", locations[i]);
+                name = (name ? name.getValue() : defaultNames[i]);
+                node.append("<span class='element_" + i + "'>" + name + "</span>");
             }
             cb.append(node);
         },

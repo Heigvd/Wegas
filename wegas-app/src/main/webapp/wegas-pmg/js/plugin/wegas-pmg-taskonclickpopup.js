@@ -106,7 +106,7 @@ YUI.add('wegas-pmg-taskonclickpopup', function(Y) {
                 /*+ (description ?
                  description: "")*/
                 + '</p></div><div style="padding:5px 10px" class="duration"><p><span class="subtitle">Duration: </span><span>'
-                + descriptor.getInstance().get('duration') + ' </span></p></div>'
+                + descriptor.getInstance().get('properties').duration + ' </span></p></div>'
                 + '<div style="padding:5px 10px" class="requirements"><p class="subtitle">Requirements</p>';
 
             for (i = 0; i < requirements.length; i += 1) {

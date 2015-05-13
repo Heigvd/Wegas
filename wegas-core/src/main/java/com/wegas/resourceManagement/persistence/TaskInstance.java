@@ -7,6 +7,9 @@
  */
 package com.wegas.resourceManagement.persistence;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
@@ -21,6 +24,7 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 /**
  *
@@ -37,7 +41,8 @@ public class TaskInstance extends VariableInstance {
     /**
      *
      */
-    private double duration;
+    @Transient
+    private Double duration;
     /**
      *
      */
@@ -72,16 +77,20 @@ public class TaskInstance extends VariableInstance {
     /**
      * @return the duration
      */
-    public double getDuration() {
+    @JsonIgnore
+    public Double getDuration() {
         return duration;
     }
-
+    
     /**
+     * @deprecated moved as instance property, setter kept for old JSON backward
+     * compatibility
      * @param duration the duration to set
      */
+    @JsonProperty
     public void setDuration(double duration) {
         if (duration < 0.0) {
-            throw new WegasOutOfBoundException(0L, null, duration, null);
+            throw new WegasOutOfBoundException(0L, null, duration, "duration");
         } else {
             this.duration = duration;
         }
@@ -191,7 +200,7 @@ public class TaskInstance extends VariableInstance {
     public void merge(AbstractEntity a) {
         TaskInstance other = (TaskInstance) a;
         this.setActive(other.getActive());
-        this.setDuration(other.getDuration());
+        //this.setDuration(other.getDuration());
         this.properties.clear();
         this.properties.putAll(other.getProperties());
         ListUtils.ListKeyToMap<String, WRequirement> converter;

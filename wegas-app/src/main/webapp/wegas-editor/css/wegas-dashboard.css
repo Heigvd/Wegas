@@ -1,0 +1,81 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2015 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-col-name .dashboard-collapsed ul {
+    display: none;
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-col-name ul {
+    padding-left: 30px;
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-col-name ul:empty:before {
+    content: "empty";
+    font-style: italic;
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-col-name .dashboard-treeview {
+    cursor: pointer;
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-col-name .dashboard-collapsed .dashboard-toggle {
+    background-position: 0px -74px;
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-col-name .dashboard-toggle {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    background: url(../../wegas-app/images/wegas-icon-toggle.png) no-repeat -0px -112px;
+    cursor: pointer;
+    margin-left: -3px;
+}
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-table .yui3-datatable-data .yui3-datatable-sorted,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-table .yui3-datatable-columns .yui3-datatable-sorted{
+    background: none;
+}
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-col-name button {
+    float: right;
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-col-menu textarea {
+    width: 30em;
+    resize: none;
+    height: 2.5em;
+    transition: height 50ms 0.2s;
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-col-menu textarea.disabled {
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-col-menu textarea.enabled {
+    height: 100px;
+    transition: none;
+}
+
+.yui3-skin-sam .dashboard-impact-panel .wegas-panel-content .yui3-widget-bd {
+    text-align: left;
+}
+
+.yui3-skin-sam .dashboard-impact-panel .inputEx-ListField > fieldset > div {
+    padding-left: 20px;
+}
+.yui3-skin-sam .dashboard-impact-panel  div.inputEx-label label{
+    color:white;
+}
+
+.yui3-skin-sam .dashboard-impact-panel .inputEx-WysiwygScript .inputEx-ListField .wegas-removebutton {
+    left: 0px;
+}
+
+.yui3-skin-sam .dashboard-impact-panel .inputEx-WysiwygScript .inputEx-ListField .wegas-moveupbutton,
+.yui3-skin-sam .dashboard-impact-panel .inputEx-WysiwygScript .inputEx-ListField .wegas-movedownbutton {
+    display: none;
+}

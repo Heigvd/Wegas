@@ -110,8 +110,8 @@ function checkTasksEnd() {
                 }
             }
         }
-        taskInstance.setDuration(taskInstance.getDuration() - taskWorkers.length);
-        if (taskInstance.getDuration() <= 0) {
+        taskInstance.setProperty("duration", (taskInstance.getPropertyD("duration") - taskWorkers.length));
+        if (taskInstance.getPropertyD("duration") <= 0) {
             this.doTaskEnd(taskWorkers, listWorkedTasks[i]);
         }
     }
@@ -135,7 +135,7 @@ function doTaskEnd(workersDescriptor, taskDescriptor) {
             budgetInstance = Variable.findByName(gm, 'budget').getInstance(self), from = new Array(), content = new Array(),
             clientsSatisfaction = Variable.findByName(gm, 'clientsSatisfaction').getInstance(self), taskRequirementKey, wish, hate,
             taskRequirementValue, listTaskRequirement = taskInstance.getRequirements(),
-            taskDuration = parseInt(taskInstance.getDescriptor().getInstance(self).getDuration()), //don't work
+            taskDuration = parseInt(taskInstance.getPropertyD("duration"), 10), //don't work
             workerInstance,
             workQuality = 0, workPartsQuality = new Array(), workPartSkillsQuality = new Array(), sumWorkPartSkills = 0, averageWorkPartSkills = 0,
             sumWorkParts = 0, workerSkillsetValue, totalExperience = 0, skillExperience, moral, confidence, learningCoefficient, randomNumber, existingSkills = new Array(),
@@ -153,7 +153,7 @@ function doTaskEnd(workersDescriptor, taskDescriptor) {
         workPartSkillsQuality.length = 0;
         sumWorkPartSkills = 0;
         workerInstance = workersDescriptor[i].getInstance(self);
-        moral = parseInt(workerInstance.getMoral());
+        moral = parseInt(workerInstance.getPropertyD("motivation"));
         confidence = parseInt(workerInstance.getConfidence());
         learningCoefficient = parseInt(workersDescriptor[i].getProperty('learningCoefficient'));
         totalExperience = 0;
@@ -233,11 +233,11 @@ function doTaskEnd(workersDescriptor, taskDescriptor) {
         workerInstance.setProperty('lastWorkQuality', averageWorkPartSkills);
         //set moral and confidence depending of averageWorkPartSkills.
         if (averageWorkPartSkills < 50) {
-            workerInstance.setMoral(parseInt(workerInstance.getMoral()) - 25);
+            workerInstance.setProperty("motivation", "" + workerInstance.getPropertyD("motivation") - 25);
             workerInstance.setConfidence(parseInt(workerInstance.getConfidence()) - 15);
         }
         else {
-            workerInstance.setMoral(parseInt(workerInstance.getMoral()) + 15);
+            workerInstance.setProperty("motivation", "" + workerInstance.getPropertyD("motivation") + 25);
             workerInstance.setConfidence(parseInt(workerInstance.getConfidence()) + 10);
         }
         //check 'workWithLeader'
@@ -314,15 +314,15 @@ function checkAbsencesEnd() {
             for (k = 0; k < listAbsences.items.size(); k++) {
                 absenceInstance = listAbsences.items.get(k).getInstance(self);
                 if (assignment.getTaskDescriptorId() == absenceInstance.getDescriptorId() && absenceInstance.getActive() == true) {
-                    duration = absenceInstance.getDuration();
+                    duration = absenceInstance.getPropertyD("duration");
                     if (duration <= 0) {
                         absenceInstance.setActive(false);
                     } else {
                         assignmentToRemove.push(assignment);
-                        resourceInstance.setMoral(40);
+                        resourceInstance.setPropertyD("motivation", 40);
                         if (duration > 1) {
                             for (l = 0; l < listAbsences.items.size(); l++) {
-                                if (listAbsences.items.get(l).getInstance(self).getDuration() == duration - 1) {
+                                if (listAbsences.items.get(l).getInstance(self).getPropertyD("duration") == duration - 1) {
                                     assignmentToAdd.push(listAbsences.items.get(l));
                                 }
                             }
@@ -370,7 +370,7 @@ function checkTasksState() {
                         newWeek.getValue() < taskDescriptor.getProperty('disappearAtWeek') &&
                         newclientsSatisfaction.getValue() >= taskDescriptor.getProperty('clientSatisfactionMinToAppear') &&
                         newclientsSatisfaction.getValue() <= taskDescriptor.getProperty('clientSatisfactionMaxToAppear') &&
-                        taskInstance.getDuration() > 0
+                        taskInstance.getPropertyD("duration") > 0
                         )
                 ) {
             taskInstance.setActive(true);
@@ -463,7 +463,7 @@ function checkMoral() {
             }
         }
         if (!absent) {
-            moral = parseInt(resourceInstance.getMoral());
+            moral = parseInt(resourceInstance.getPropertyD("motivation"));
             randomNumber = Math.random();
             switch (true) {
                 case moral < 10 :
@@ -505,7 +505,7 @@ function calculateTeamMotivation() {
             teamMotivation = Variable.findByName(gm, 'teamMotivation').getInstance(self);
     for (i = 0; i < listResources.items.size(); i++) {
         if (listResources.items.get(i).getInstance(self).getActive() == true) {
-            moral = parseInt(listResources.items.get(i).getInstance(self).getMoral());
+            moral = parseInt(listResources.items.get(i).getInstance(self).getPropertyD("motivation"));
             sumMotivation += moral;
             activeResources++;
             if (moral < worstMoralValue)
@@ -601,7 +601,7 @@ function sickenResource(resourceDescriptor, duration) {
             listAbsences = Variable.findByName(gm, 'absences');
     resInstance = resourceDescriptor.getInstance(self);
     for (i = 0; i < listAbsences.items.size(); i++) {
-        if (listAbsences.items.get(i).getInstance(self).getDuration() == duration) {
+        if (listAbsences.items.get(i).getInstance(self).getPropertyD("duration") == duration) {
             taskDescriptor = listAbsences.items.get(i);
             break;
         }
@@ -772,11 +772,11 @@ function limitValues() {
         valueDescr = listResources.items.get(i);
         valueInst = valueDescr.getInstance(self);
         //moral
-        value = parseInt(valueInst.getMoral());
+        value = parseInt(valueInst.getProperty("motivation"));
         if (value > 100)
-            valueInst.setMoral(100);
+            valueInst.setProperty("motivation", "100");
         if (value < 0)
-            valueInst.setMoral(0);
+            valueInst.setProperty("motivation", "0");
         //moral
         value = parseInt(valueInst.getConfidence());
         if (value > 100)

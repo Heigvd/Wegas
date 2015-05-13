@@ -219,7 +219,8 @@
                             }
                         ]
                     }
-                ]
+                ],
+                "plugins": [{"fn": "ExtraTabs", "cfg": {"dock": true}}]
             }
         ]
     },

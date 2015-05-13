@@ -393,9 +393,9 @@ YUI.add('wegas-tabview', function(Y) {
          */
         initializer: function() {
             var tab = this.get('host'),
-                //cb = tab.get("parent").get(CONTENTBOX),
+            //cb = tab.get("parent").get(CONTENTBOX),
                 bb = tab.get(BOUNDINGBOX);
-            if(!tab instanceof Tab){
+            if (!tab instanceof Tab) {
                 return Y.log("error", "Plugin Removable expects a Tab host", "Y.Plugin.Removable");
             }
             bb.addClass('yui3-tabview-removeable');
@@ -468,8 +468,8 @@ YUI.add('wegas-tabview', function(Y) {
     }, {
         NS: "docker",
         NAME: "TabDocker",
-        ATTRS:{
-            dockTarget:{
+        ATTRS: {
+            dockTarget: {
                 value: ".wegas-layout-hd"
             }
         }
@@ -643,7 +643,9 @@ YUI.add('wegas-tabview', function(Y) {
                 }
             }, this);
             this.onHostEvent("addChild", function() {
-                Wegas.app.widget.showPosition("right");
+                if (Wegas.app.widget) {
+                    Wegas.app.widget.showPosition("right");
+                }
             });
         },
         onClick: function(e) {
@@ -695,4 +697,40 @@ YUI.add('wegas-tabview', function(Y) {
         NAME: "ResizeTabViewLinks"
     });
     Plugin.ResizeTabViewLinks = ResizeTabViewLinks;
+
+    var ExtraTabs = Y.Base.create("wegas-extratabs", Plugin.Base, [], {
+        initializer: function() {
+            if (this.get("host") instanceof TabView) {
+                this.afterHostEvent(['render'], this.addExtraTabs);
+            } else {
+                this.destroy();
+            }
+        },
+        addExtraTabs: function() {
+            var tabs = this.get("extraTabs"), dock = this.get("dock"), addTab = function(cfg) {
+                var t = this.get("host").add(cfg).item(0);
+                if (dock) {
+                    t.plug(TabDocker);
+                }
+            };
+            for (var i = 0; i < tabs.length; i += 1) {
+                Y.Wegas.Widget.use(tabs[i], Y.bind(addTab, this, tabs[i]));
+            }
+        }
+    }, {
+        NS: "extratabs",
+        ATTRS: {
+            extraTabs: {
+                value: Y.namespace("Wegas.Config.ExtraTabs"),
+                getter: function(v) {
+                    return Y.Lang.isArray(v) ? v : [];
+                }
+            },
+            dock: {
+                value: false,
+                validator: Y.Lang.isBoolean
+            }
+        }
+    });
+    Plugin.ExtraTabs = ExtraTabs;
 });

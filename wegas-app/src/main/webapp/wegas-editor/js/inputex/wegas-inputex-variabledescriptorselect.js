@@ -892,6 +892,11 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
 
             that.options.choices = genChoices(Wegas.Facade.Variable.data, 0);
         },
+        validate : function(){
+            return this.toDisable.filter(function(e){
+                return e.value === this.getValue();
+                }, this).length === 0;
+        },
         renderComponent: function() {
             FlatVariableSelect.superclass.renderComponent.call(this);
             Y.Array.each(this.toDisable, function(i) {

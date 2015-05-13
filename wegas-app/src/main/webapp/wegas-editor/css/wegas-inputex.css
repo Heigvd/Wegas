@@ -101,13 +101,20 @@ div.inputEx-fieldWrapper {
 .wegas-form select {
     width: 100%;
     padding: 1px 0;
+    box-sizing: content-box;
+    max-width: 30em;
 }
 
 .wegas-form textarea,
 .wegas-form input[type=text],
 .wegas-form input[type=password] {
-    width: 99%;
+    width: 100%;
+    box-sizing: border-box;
     padding: 2px 0.5%;
+}
+
+.wegas-form .short-input {
+    width: 8em;
 }
 
 .wegas-form input[type=checkbox] {
@@ -124,10 +131,10 @@ div.inputEx-fieldWrapper {
     display: inline-block;
     vertical-align: top;
     width: 100%;
+    max-width: 30em;
 }
 
 .wegas-editmode .wegas-form div.inputEx-StringField-wrapper {
-    width: 80%;
     float: left;
 }
 

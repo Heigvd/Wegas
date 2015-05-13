@@ -193,8 +193,8 @@ var PMGTest = (function() {
         standardPlannification();
         informaticien1.setProperty('coef_moral', '1.3');
         informaticien2.setProperty('coef_moral', '1.3');
-        informaticien1.instance.setMoral(10);
-        informaticien2.instance.setMoral(10);
+        informaticien1.instance.setProperty("motivation", "10");
+        informaticien2.instance.setProperty("motivation", "10");
 
         assign(informaticien1, task1);
         assign(informaticien2, task1);
@@ -361,7 +361,7 @@ var PMGTest = (function() {
         debug("CoordinationRatioInfDiffWorks4");
         reset();
 
-        task6.instance.duration = 3;
+        task6.instance.setProperty("duration", "3");
         task6.setProperty('coordinationRatioInf', '1.5');
         task6.setProperty('coordinationRatioSup', '1.2');
 
@@ -394,9 +394,9 @@ var PMGTest = (function() {
 
         task2.setProperty('coordinationRatioSup', '1.3');
 
-        informaticien1.instance.setSkillset("Informaticien", 11);
-        informaticien2.instance.setSkillset("Informaticien", 11);
-        commercial1.instance.setSkillset("Commercial", 5);
+        informaticien1.instance.setProperty("level", "11");
+        informaticien2.instance.setProperty("level", "11");
+        commercial1.instance.setProperty("level", 5);
 
         assign(informaticien1, task2);
         assign(informaticien2, task2);
@@ -416,7 +416,7 @@ var PMGTest = (function() {
         reset();
 
         task1.setProperty('coordinationRatioSup', '2');
-        task1.instance.setDuration(10);
+        task1.instance.setProperty("duration", "10");
         task1.instance.requirements.get(0).quantity = 1;
 
         assign(informaticien1, task1);
@@ -439,8 +439,8 @@ var PMGTest = (function() {
 
         task2.setProperty('competenceRatioInf', '1.3');
 
-        informaticien1.instance.setSkillset("Informaticien", 5);
-        commercial1.instance.setSkillset("Commercial", 5);
+        informaticien1.instance.setProperty("level", 5);
+        commercial1.instance.setProperty("level", 5);
 
         assign(informaticien1, task2);
         assign(commercial1, task2);
@@ -459,8 +459,8 @@ var PMGTest = (function() {
 
         task2.setProperty('competenceRatioSup', '1.3');
 
-        informaticien1.instance.setSkillset("Informaticien", 11);
-        commercial1.instance.setSkillset("Commercial", 11);
+        informaticien1.instance.setProperty("level", 11);
+        commercial1.instance.setProperty("level", 11);
 
         assign(informaticien1, task2);
         assign(commercial1, task2);

@@ -66,7 +66,7 @@ public class UIHelper {
     public static final String TEXT_DATE = "Date";
     public static final String TEXT_DEFAULT_RESULT = "Default result";
     public static final String TEXT_DEFAULT_STATE = "Default State";
-    public static final String TEXT_DESCRIPTION = "Description";
+    public static final String TEXT_DESCRIPTION = "";
     public static final String TEXT_DURATION = "Duration";
     public static final String TEXT_ID = "ID";
     public static final String TEXT_IMPACT_SOURCECODE = "Impact";
@@ -81,7 +81,7 @@ public class UIHelper {
     public static final String TEXT_PREDECESSORS = "Predecessors";
     public static final String TEXT_REQUIERMENT_REQUIERMENTS = "Requierments";
     public static final String TEXT_TEXT = "Text";
-    public static final String TEXT_MORAL = "Moral";
+    public static final String TEXT_MORAL = "Motivation";
     public static final String TEXT_CONFIDENCE = "Confidence";
     public static final String TEXT_FROM = "From";
     public static final String TEXT_DESTINATION = "To";

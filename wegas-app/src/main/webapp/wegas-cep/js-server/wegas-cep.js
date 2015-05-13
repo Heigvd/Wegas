@@ -40,7 +40,7 @@ function setTeamMotivation() {
         listEmployees = Variable.findByName(gameModel, 'employees'),
         employeeInstance,
         teamMotivation = Variable.findByName(gameModel, 'teamMotivation'),
-        morals = [],
+        motivations = [],
         mSum = 0,
         mAverage,
         mGap = [],
@@ -52,31 +52,31 @@ function setTeamMotivation() {
         return;
     }
 
-    // calcul arithmetic average of morals (on actives employees only)
+    // calcul arithmetic average of motivations (on actives employees only)
     for (i = 0; i < listEmployees.items.size(); i += 1) {
         employeeInstance = listEmployees.items.get(i).getInstance(self);
         if (employeeInstance.getActive() === true) {
-            tmpVal = parseInt(employeeInstance.getMoral(), 10);
-            //Bound moral between teamMotivation Min val and max val
+            tmpVal = parseInt(employeeInstance.getProperty("motivation"), 10);
+            //Bound motivation between teamMotivation Min val and max val
             if (boundConstrain(tmpVal, teamMotivation.getMinValue(), teamMotivation.getMaxValue()) !== tmpVal) {
                 tmpVal = boundConstrain(tmpVal, teamMotivation.getMinValue(), teamMotivation.getMaxValue());
-                employeeInstance.setMoral(tmpVal);
+                employeeInstance.setProperty("motivation", "" + tmpVal);
             }
-            morals.push(tmpVal);
+            motivations.push(tmpVal);
             mSum += tmpVal;
         }
     }
-    mAverage = mSum / morals.length;
+    mAverage = mSum / motivations.length;
 
-    //For each moral calcul gap between moral and average (= moral - average);
+    //For each motivation calcul gap between motivation and average (= motivation - average);
     //take the sum of each square of gaps (= Sum(n_gaps * n_gaps)).
-    for (i = 0; i < morals.length; i += 1) {
-        mGap.push(morals[i] - mAverage);
+    for (i = 0; i < motivations.length; i += 1) {
+        mGap.push(motivations[i] - mAverage);
         SumOfSquareOfMGap += Math.pow(mGap[i], 2);
     }
 
     // calcul the standard deviation
-    standardDeviation = Math.sqrt(SumOfSquareOfMGap / morals.length);
+    standardDeviation = Math.sqrt(SumOfSquareOfMGap / motivations.length);
 
     //calcul the new Team Motivation
     newTeamMotivation = (mAverage + (mAverage - standardDeviation)) / 2;
@@ -89,11 +89,11 @@ function setTeamMotivation() {
 }
 
 /**
- * Set picture depending of resource's current moral.
+ * Set picture depending of resource's current motivation.
  */
 function changePicture() {
     "use strict";
-    var i, j, valueInst, valueDescr, oldImg, newImg, moral,
+    var i, j, valueInst, valueDescr, oldImg, newImg, motivation,
         listEmployees = Variable.findByName(gameModel, 'employees'),
         imgSuffixe = ['Triste', 'Neutre', 'Joie'];
     if (!listEmployees) {
@@ -102,17 +102,17 @@ function changePicture() {
     for (i = 0; i < listEmployees.items.size(); i += 1) {
         valueDescr = listEmployees.items.get(i);
         valueInst = valueDescr.getInstance(self);
-        moral = parseInt(valueInst.getMoral(), 10);
+        motivation = parseInt(valueInst.getProperty("motivation"), 10);
         oldImg = valueInst.getProperty('picture');
         newImg = null;
-        if (moral < 40) {
+        if (motivation < 40) {
             for (j = 0; j < imgSuffixe.length; j += 1) {
                 if (oldImg.indexOf(imgSuffixe[j]) > -1) {
                     newImg = oldImg.replace(imgSuffixe[j], imgSuffixe[0]);
                     break;
                 }
             }
-        } else if (moral < 75) {
+        } else if (motivation < 75) {
             for (j = 0; j < imgSuffixe.length; j += 1) {
                 if (oldImg.indexOf(imgSuffixe[j]) > -1) {
                     newImg = oldImg.replace(imgSuffixe[j], imgSuffixe[1]);
@@ -168,3 +168,4 @@ Event.on("replyValidate", function(e) {
 
     sendHistory(root.label, e.question.getDescriptor().getTitle(), msg, []);
 });
+

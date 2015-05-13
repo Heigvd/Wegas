@@ -190,14 +190,14 @@ YUI.add('wegas-leaderway-folder', function(Y) {
                     occupation.push(taskDescriptor.get('properties').salary);
                     occupation.push('</span></div>');
                     occupation.push('<div class="task-duration"><span class="task-duration-label">Durée de travail restant : </span><span class="task-duration-value">');
-                    occupation.push(taskInstance.get('duration'));
+                    occupation.push(taskInstance.get('properties').duration);
                     occupation.push('</span></div>');
                     occupation.push("</div>");
                     break;
                 default :
                     occupation.push('Arrêt maladie (revient dans ');
-                    occupation.push(taskInstance.get('duration'));
-                    (taskInstance.get('duration') > 1) ? occupation.push(' semaines).') : occupation.push(' semaine).');
+                    occupation.push(taskInstance.get('properties').duration);
+                    (taskInstance.get('properties').duration > 1) ? occupation.push(' semaines).') : occupation.push(' semaine).');
             }
             return occupation.join("");
         },

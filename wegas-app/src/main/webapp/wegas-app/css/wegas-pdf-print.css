@@ -62,7 +62,35 @@
     -fs-pdf-font-encoding: Identity-H;
 }  
 
-body {
+.wegas-pdf-content > div > .wegas-pdf-variable-container  {
+    padding-top: 20px;
+}
+
+.header {
+    font-size : 0.8em;
+    font-style: initial;
+    color: rgb(75, 75, 75);
+    padding-bottom: 15px;
+    font-family: "DejaVu Sans";
+}
+
+.header .scenario {
+    float: left;
+}
+
+.header .team {
+    float: right;
+}
+
+.header .title {
+
+}
+
+.header .value {
+
+}
+
+.wegas-pdf-variable-container.wegas-pdf-QuestionDescriptor {
     font-family: "DejaVu Sans" ;
     font-size: 8pt;
 }
@@ -160,29 +188,39 @@ span.wegas-pdf-title {
     margin: 10px 0 0;
     padding: 5px 0;
     text-align: center;
+    clear: both;
 }
 
 div.wegas-pdf-text-container {
-    background-color: #e9eaee;
+    /* background-color: #e9eaee; */
     display : table;
-    border : 1px solid #353B41;
-    border-radius: 4px;
+    /* border : 1px solid #353B41; */
+    /* border-radius: 4px; */
     padding: 4px;
     max-width: 100%;
-    margin: 4px 0px;
+    margin: 0px 0px 4px 0px;
 }
 
 div.wegas-pdf-text-container div{
     display : block;
-    padding : 0px 10px;
-    background: #fafafc;
+    padding: 0px 10px;
+    /* background: #fafafc; */
     /* border : 1px solid #353B41; */    
+}
+
+.wegas-pdf-QuestionDescriptor  .wegas-pdf-variable-container .wegas-pdf-variable-title {
+    font-size: 1.1em;
+    padding-left: 9px;
+}
+
+.wegas-pdf-QuestionDescriptor  .wegas-pdf-variable-container  .wegas-pdf-property {
+    /* padding-left: 12px; */
 }
 
 span.wegas-pdf-variable-title {
     font-size: 1.5em;
     display : block;
-    padding-bottom: 5px;
+    padding-bottom: 0px;
     font-weight: bolder;
     color: rgb(75, 75, 75);
 }
@@ -218,7 +256,7 @@ div.wegas-pdf-property {
 }
 
 
-.mode_player  .wegas-pdf-QuestionDescriptor span.wegas-pdf-property-key {
+.mode_player Â .wegas-pdf-QuestionDescriptor span.wegas-pdf-property-key {
     display : none;
 }
 
@@ -270,7 +308,7 @@ div.wegas-pdf-folder {
 }
 
 div.wegas-pdf-variable-container, div.wegas-pdf-message-container {
-    padding: 5px;
+    padding-top: 5px;
     margin: 0px 5px 0px 5px;
 }
 
@@ -281,7 +319,7 @@ div.wegas-pdf-message-container div {
 
 div.wegas-pdf-variable-container {
     /* border-left: 1px dashed rgb(129, 129, 129); */
-    border-bottom: 1px dashed rgb(129, 129, 129);
+    /* border-bottom: 1px dashed rgb(129, 129, 129); */
 }
 div.wegas-pdf-variable-container:last-of-type {
     border-bottom: none;

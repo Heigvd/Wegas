@@ -49,8 +49,23 @@ YUI.add('wegas-app', function(Y) {
              */
             this.dataSources = {};
 
+            this._pendingRequests = 0;
+            window.onbeforeunload = function() {
+                if (Y.Wegas.app._pendingRequests > 0) {
+                    return "Some requests are still pending ! Please stay on the page to avoid losing part of your work";
+                } else {
+                    return null;
+                }
+            };
+
             Wegas.app = this;                                                   // Setup global references to the app
             Wegas.Facade = this.dataSources;                                    // and the data sources
+        },
+        preSendRequest: function() {
+            this._pendingRequests += 1;
+        },
+        postSendRequest: function() {
+            this._pendingRequests -= 1;
         },
         /**
          * Render function

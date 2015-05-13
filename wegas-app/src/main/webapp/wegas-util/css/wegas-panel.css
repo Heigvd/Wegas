@@ -12,7 +12,6 @@
     max-height: 100%;
 }
 .yui3-skin-sam .wegas-panel-content {
-    text-align: center;
     margin: 10px;
     background: rgba(110, 110, 110, 0.9);
     box-shadow: 3px 4px 1px #353434;
@@ -32,7 +31,8 @@
 .yui3-skin-sam .wegas-panel .wegas-panel-content .yui3-widget-ft{
     background: none;
 }
-.yui3-skin-sam .wegas-panel-content .yui3-widget-ft button{
+.yui3-skin-sam .wegas-panel-content .yui3-widget-ft button,
+.yui3-skin-sam .wegas-panel-content .yui3-widget-hd button{
     background-color: rgba(160, 160, 160, 0.8);
     color: white;
     margin-left: 0.3em;

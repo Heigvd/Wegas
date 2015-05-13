@@ -324,7 +324,7 @@ public class UIVariableDescriptor extends UIComponentBase {
                 UIHelper.printProperty(context, writer, UIHelper.TEXT_ACTIVE, instance.getActive());
             }
 
-            UIHelper.printProperty(context, writer, UIHelper.TEXT_DURATION, ((Double) (instance.getDuration())).toString());
+            UIHelper.printProperty(context, writer, UIHelper.TEXT_DURATION, instance.getProperty("duration"));
 
             // Should hide some properties to players...
             UIHelper.printKeyValueMap(context, writer, instance.getProperties());
@@ -388,11 +388,11 @@ public class UIVariableDescriptor extends UIComponentBase {
 
             UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, resource.getDescription(), false, editorMode);
 
-            if (!instance.getSkillsets().isEmpty()) {
+            /*if (!instance.getSkillsets().isEmpty()) {
                 UIHelper.printProperty(context, writer, UIHelper.TEXT_MAIN_SKILL, instance.getMainSkill() + " (lvl: " + resource.getDefaultInstance().getMainSkillLevel() + ")");
-            }
+            }*/
 
-            UIHelper.printProperty(context, writer, UIHelper.TEXT_MORAL, instance.getMoral());
+            //UIHelper.printProperty(context, writer, UIHelper.TEXT_MORAL, instance.getPropertyD("motivation"));
             UIHelper.printProperty(context, writer, UIHelper.TEXT_CONFIDENCE, instance.getConfidence());
 
             if (editorMode) {
@@ -508,7 +508,7 @@ public class UIVariableDescriptor extends UIComponentBase {
             List<Reply> replies = instance.getReplies();
 
             if (!replies.isEmpty()) {
-                UIHelper.printText(context, writer, "Results:", UIHelper.CSS_CLASS_VARIABLE_SUBTITLE);
+                //UIHelper.printText(context, writer, "Results:", UIHelper.CSS_CLASS_VARIABLE_SUBTITLE);
                 for (Reply r : replies) {
                     //UIHelper.printText(context, writer, r.getResult().getChoiceDescriptor().getLabel(), UIHelper.CSS_CLASS_VARIABLE_SUBSUBTITLE);
                     UIResult uiResult = new UIResult(r.getResult(), player, editorMode, defaultValues);
