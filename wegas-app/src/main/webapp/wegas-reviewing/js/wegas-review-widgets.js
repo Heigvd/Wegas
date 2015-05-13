@@ -685,7 +685,8 @@ YUI.add("wegas-review-widgets", function(Y) {
                 var klass = ev.get("@class"),
                     widget, readonly = mode === "read", cfg = {
                         evaluation: ev,
-                        readonly: readonly
+                        readonly: readonly,
+                        showStatus: false
                     };
                 switch (klass) {
                     case "GradeInstance":
@@ -1139,5 +1140,4 @@ YUI.add("wegas-review-widgets", function(Y) {
         }
     });
     Wegas.CategorizationInput = CategorizationInput;
-
 });

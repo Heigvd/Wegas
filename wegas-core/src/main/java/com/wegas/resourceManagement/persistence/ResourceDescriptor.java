@@ -141,18 +141,31 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
     /**
      *
      * @param p
+     * @return
+     * @deprecated
      */
-    public void getMoral(Player p) {
-        this.getInstance(p).getMoral();
+    public Integer getMoral(Player p) {
+        return Integer.parseInt(this.getInstance(p).getProperty("motivation"), 10);
     }
 
     /**
      *
      * @param p
      * @param value
+     * @deprecated
      */
     public void setMoral(Player p, Integer value) {
-        this.getInstance(p).setMoral(value);
+        this.getInstance(p).setProperty("motivation", value.toString());
+    }
+
+    /**
+     *
+     * @param p
+     * @param value
+     * @deprecated
+     */
+    public void addAtMoral(Player p, Integer value) {
+        this.addNumberAtInstanceProperty(p, "motivation", value.toString());
     }
 
     /**
@@ -209,36 +222,6 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
     /**
      *
      * @param p
-     * @param key
-     * @return
-     */
-    public long getSkillset(Player p, String key) {
-        return this.getInstance(p).getSkillset(key);
-    }
-
-    /**
-     *
-     * @param p
-     * @param key
-     * @param value
-     */
-    public void addAtSkillset(Player p, String key, long value) {
-        this.getInstance(p).setSkillset(key, this.getSkillset(p, key) + value);
-    }
-
-    /**
-     *
-     * @param p
-     * @param key
-     * @param value
-     */
-    public void setSkillset(Player p, String key, long value) {
-        this.getInstance(p).setSkillset(key, value);
-    }
-
-    /**
-     *
-     * @param p
      * @param time
      * @param editable
      * @param description
@@ -265,16 +248,6 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
                 it.remove();
             }
         }
-    }
-
-    /**
-     *
-     * @param p
-     * @param value
-     */
-    public void addAtMoral(Player p, Integer value) {
-        ResourceInstance instance = this.getInstance(p);
-        instance.setMoral(instance.getMoral() + value);
     }
 
     //Methods below are temporary ; only for CEP-Game

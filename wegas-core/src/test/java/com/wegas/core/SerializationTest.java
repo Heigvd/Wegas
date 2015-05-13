@@ -335,7 +335,7 @@ public class SerializationTest {
         resourceD.setDescription("DESC");
         ResourceInstance resourceI = new ResourceInstance();
         resourceD.setDefaultInstance(resourceI);
-        resourceI.getSkillsets().put("Carpenter", 8L);
+        resourceI.setProperty("Level", "8");
 
         assertPropertyEquals(mapper.writeValueAsString(resourceD), "@class", "ResourceDescriptor");
         assertPropertyEquals(mapper.writeValueAsString(resourceI), "@class", "ResourceInstance");

@@ -1,0 +1,5 @@
+<div class="form__row">
+    <strong>Gestion des groupes</strong>
+    <button ng-click="addGroup()" class="button button--add button--label-off button--round"><span class="button__label">Add</span></button>
+</div>
+<admin-users-edit-group ng-repeat="group in user.account.roles" current-group="group" user="user" />

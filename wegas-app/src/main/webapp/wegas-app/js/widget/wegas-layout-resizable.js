@@ -205,6 +205,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
                     cfg = this.get(position);
 
                 if (cfg) {                                                          // If there is a provided configuration
+                    target.setStyle("width", cfg.width);
                     if (position === "left") {
                         this.resizeLeft = new Y.Resize({
                             node: target,
@@ -342,11 +343,11 @@ YUI.add('wegas-layout-resizable', function(Y) {
             this.hidePosition("center");
             this.oldRight = this.getPosition("right").getComputedStyle("width");
             this.getPosition("right").setStyles({
-                "left": this.getPosition("left").getStyle("width"),
+                "left": parseInt(this.getPosition("left").getStyle("width"), 10) -8,
                 "width": "auto"
             });
             this.__h = this.resizeRight.after(["resize", "end"], function(e) {
-                this.getPosition("left").setStyle("width", e.info.left);
+                this.getPosition("left").setStyle("width", e.info.left + 8);
             }, this);
             this.__wh = Y.on("windowresize", Y.bind(function() {
                 this.getPosition("right").setStyle("left", this.getPosition("left").getStyle("width"));

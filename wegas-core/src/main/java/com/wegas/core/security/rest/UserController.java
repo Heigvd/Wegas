@@ -28,12 +28,15 @@ import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -246,7 +249,7 @@ public class UserController {
     public void login(AuthenticationInformation authInfo, 
             @Context HttpServletRequest request, 
             @Context HttpServletResponse response) throws ServletException, IOException {
-
+        
         Subject subject = SecurityUtils.getSubject();
 
         //if (!currentUser.isAuthenticated()) {
@@ -269,6 +272,13 @@ public class UserController {
         }
     }
 
+    @GET
+    @Path("Logout")
+    public Response logout(){
+        SecurityUtils.getSubject().logout();
+        return Response.status(Response.Status.OK).build();
+    }
+
     /**
      *
      * @param authInfo
@@ -285,6 +295,7 @@ public class UserController {
      */
     @POST
     @Path("TeacherGuestLogin")
+    @Deprecated
     public void teacherGuestLogin(AuthenticationInformation authInfo) {
         User user = userFacade.guestLogin();
         try {
@@ -322,19 +333,7 @@ public class UserController {
         SimplePrincipalCollection subject = new SimplePrincipalCollection(accountId, "jpaRealm");
         oSubject.runAs(subject);
     }
-
-    /**
-     * Create a user based with a JpAAccount
-     *
-     * @param account
-     */
-    @POST
-    @Path("Signup")
-    public void signup(JpaAccount account) {
-        User user = new User(account);                                          // Add the user to db
-        userFacade.create(user);
-    }
-
+    
     /**
      *
      * @param username
@@ -345,6 +344,7 @@ public class UserController {
      */
     @POST
     @Path("Signup")
+    @Deprecated
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public void signup(@FormParam("username") String username,
             @FormParam("password") String password,
@@ -359,6 +359,30 @@ public class UserController {
         account.setEmail(email);
         this.signup(account);                                                   // and forward
     }
+    
+    /**
+     * Create a user based with a JpAAccount
+     *
+     * @param account
+     * @return Response : Status Not acceptable if email is wrong or username already exist. Created otherwise.
+     */
+    @POST
+    @Path("Signup")
+    public Response signup(JpaAccount account) {
+        Response r;
+        if(this.checkEmailString(account.getEmail())){
+            if(account.getUsername().equals("") || !this.checkExistingUsername(account.getUsername())){
+                User user = new User(account);
+                userFacade.create(user);
+                r = Response.status(Response.Status.CREATED).build();
+            }else{
+                r = Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error("The username is already taken.")).build();
+            }
+        }else{
+            r = Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error("The email isn't correct.")).build();
+        }
+        return r;
+    }
 
     /**
      *
@@ -367,9 +391,9 @@ public class UserController {
      */
     @POST
     @Path("SendNewPassword")
-    public void sendNewPassword(@QueryParam("email") String email,
+    public void sendNewPassword(AuthenticationInformation authInfo,
             @Context HttpServletRequest request) {
-        userFacade.sendNewPassword(email);
+        userFacade.sendNewPassword(authInfo.getLogin());
     }
 
     /**
@@ -579,4 +603,22 @@ public class UserController {
         return false;
     }
 
+    private boolean checkEmailString(String email){
+        boolean validEmail = true;
+        try {
+            InternetAddress emailAddr = new InternetAddress(email);
+            emailAddr.validate();
+        } catch (AddressException ex) {
+            validEmail = false;
+        }
+        return validEmail;
+    }
+    private boolean checkExistingUsername(String username){
+        boolean existingUsername = false;
+        User user = userFacade.getUserByUsername(username);
+        if(user != null){
+            existingUsername = true;
+        }
+        return existingUsername;
+    }
 }

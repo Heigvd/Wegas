@@ -78,6 +78,7 @@ public class UIGameModel extends UIComponentBase {
         Player player = (Player) getAttributes().get("player");
         String root = (String) getAttributes().get("root");
         String modeParam = (String) getAttributes().get("mode");
+        String title = (String) getAttributes().get("title");
         String defVal = (String) getAttributes().get("defaultValues");
         String[] roots = null;
 
@@ -92,14 +93,28 @@ public class UIGameModel extends UIComponentBase {
         // Banner with GameModel name
         String subtitle;
         if (defaultValues) {
-            subtitle = "Default Values";
+            subtitle = "Default";
         } else if (player.getUser() != null) {
             subtitle = player.getName();
         } else {
-            subtitle = "Test Team";
+            subtitle = "Example";
         }
 
-        String title = gm.getName() + " / " + subtitle;
+        // Header 
+        writer.write("<div class='header'>");
+        writer.write("<div class='scenario'>");
+        writer.write("<span class='title'>Scenario: </span>");
+        writer.write("<span class='value'>" + gm.getName() + "</span>");
+        writer.write("</div>");
+        writer.write("<div class='team'>");
+        writer.write("<span class='title'>Team: </span>");
+        writer.write("<span class='value'>" + subtitle + "</span>");
+        writer.write("</div>");
+        writer.write("</div>");
+
+        if (title == null || title.isEmpty()) {
+            title = gm.getName();
+        }
 
         UIHelper.printText(context, writer, title, UIHelper.CSS_CLASS_MAIN_TITLE);
 
