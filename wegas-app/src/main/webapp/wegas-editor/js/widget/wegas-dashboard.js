@@ -21,7 +21,7 @@ YUI.add('wegas-dashboard', function(Y) {
      * @class class for join a team
      * @constructor
      */
-    var CONTENTBOX = "contentBox", NAME = "name", Wegas = Y.Wegas, Dashboard,
+    var CONTENTBOX = "contentBox", NAME = "name", Wegas = Y.Wegas, Dashboard, inSync = false,
         teamTemplate = (new Y.Template()).compile(
             "<div class='dashboard-treeview dashboard-collapsed'><span class='wegas-icon dashboard-toggle'></span><span class='wegas-icon wegas-icon-team'></span><%= this.get('name') %>" +
             "<ul><% Y.Array.each(this.get('players'), function(p){ %>" +
@@ -35,17 +35,26 @@ YUI.add('wegas-dashboard', function(Y) {
          * @function
          * @private
          * @description All button and fields are created.
-         * For creating the field inputEx libary is used
+         * For creating the field inputEx library is used
          */
         renderUI: function() {
             var cfg = this.get("tableCfg");
-
+            if (this.get("remoteScript") && this.toolbar) {
+                this.toolbar.add(new Y.Wegas.Button({
+                    label: '<span class="wegas-icon wegas-icon-refresh"></span>Refresh',
+                    on: {
+                        click: Y.bind(function() {
+                            this.syncUI();
+                        }, this)
+                    }
+                }));
+            }
             this.get(CONTENTBOX).addClass("yui3-skin-wegas");
             if (!Y.Array.find(cfg.columns, function(i) {
                     return i.key === NAME;
                 })) {
                 cfg.columns.splice(0, 0, {
-                    key: "name",
+                    key: NAME,
                     label: " "
                 });
             }
@@ -56,6 +65,9 @@ YUI.add('wegas-dashboard', function(Y) {
                     key: c.label,
                     emptyCellValue: "-"
                 });
+            });
+            cfg = Y.mix(cfg, {
+                sortBy: {name: "asc"}
             });
             //cfg = Y.mix(cfg, {//                                                // Add cfg default values
             //    width: "100%"
@@ -77,11 +89,11 @@ YUI.add('wegas-dashboard', function(Y) {
          * @private
          */
         bindUI: function() {
-            this.updateHandler =
-                Wegas.Facade.Variable.after("update", this.syncUI, this);       // Listen updates on the target
-                                                                                // datasource
+            //            this.updateHandler =
+            //                Wegas.Facade.Variable.after("update", this.syncUI, this);       // Listen updates on the
+            // target datasource
             this.get("boundingBox").delegate("click", function(e) {
-                var team = Wegas.Facade.Game.cache.getTeamById(this.table.getRecord(e.currentTarget).get("id")), header;
+                var team = Wegas.Facade.Game.cache.getTeamById(this.table.getRecord(e.currentTarget).get("id")), header, statusNode = Y.Node.create("<span></span>");
                 if (team && team.get("players").length) {
                     header = "<span>" + team.get("name") + " - " + team.get("players")[0].get("name") +
                              "</span><br>";
@@ -89,20 +101,16 @@ YUI.add('wegas-dashboard', function(Y) {
                         modal: true,
                         children: [{
                             type: "CustomConsole",
-                            player: team.get("players")[0]
+                            player: team.get("players")[0],
+                            statusNode: statusNode
                         }],
                         headerContent: header,
+                        footerContent: statusNode,
                         width: 600,
                         height: 600,
                         zIndex: 5000,
                         buttons: {
                             header: [{
-                                name: "add",
-                                label: "Add impact",
-                                action: function() {
-                                    this.item(0).add();
-                                }
-                            }, {
                                 name: "src",
                                 label: "View src",
                                 classNames: "wegas-advanced-feature",
@@ -120,6 +128,12 @@ YUI.add('wegas-dashboard', function(Y) {
                                 name: 'proceed',
                                 label: 'Close',
                                 action: "exit"
+                            }, {
+                                name: "add",
+                                label: "Add impact",
+                                action: function() {
+                                    this.item(0).add();
+                                }
                             }]
                         },
                     }).render().get("boundingBox").addClass("dashboard-impact-panel");
@@ -172,9 +186,13 @@ YUI.add('wegas-dashboard', function(Y) {
          * @private
          */
         genData: function(data) {
+            if (inSync) {
+                return;
+            }
             var gameModel = Wegas.Facade.GameModel.cache.getCurrentGameModel(),
                 game = Wegas.Facade.Game.cache.getCurrentGame(),
                 columnsCfg = this.get("tableCfg.columns"), ret = [], table = this.table;
+            inSync = true;
 
             if (gameModel.get("properties.freeForAll")) {                       // Retrieve the list of rows (depending on freeforall mode)
                 Y.Array.each(game.get("teams"), function(t) {
@@ -224,12 +242,15 @@ YUI.add('wegas-dashboard', function(Y) {
                                     table.getRecord(result.id).setAttrs(result);
                                 }
                             }
+                            inSync = false;
                         }, this),
                         failure: Y.bind(function(e) {
-
+                            inSync = false;
                         }, this)
                     }
                 });
+            } else {
+                inSync = false;
             }
             return ret;
         }
@@ -237,10 +258,7 @@ YUI.add('wegas-dashboard', function(Y) {
         ATTRS: {
             tableCfg: {
                 value: {
-                    columns: [{
-                        key: NAME,
-                        label: "Name"
-                    }]
+                    columns: []
                 },
                 getter: function(v) {
                     var clone = Y.clone(v), dashboard = Y.namespace("Wegas.Config.Dashboard"),
