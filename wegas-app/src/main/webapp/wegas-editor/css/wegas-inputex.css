@@ -113,6 +113,10 @@ div.inputEx-fieldWrapper {
     padding: 2px 0.5%;
 }
 
+.wegas-form .short-input {
+    width: 8em;
+}
+
 .wegas-form input[type=checkbox] {
     margin-top: .2em;
     float: left;
