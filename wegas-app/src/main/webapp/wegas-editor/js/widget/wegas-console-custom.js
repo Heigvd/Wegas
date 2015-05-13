@@ -40,8 +40,7 @@ YUI.add('wegas-console-custom', function(Y) {
             }
         },
         validateItem = function(item) {
-            //0 a valid falsy value
-            return item === 0 ? true : !!item;
+            return Y.Array.indexOf(["", undefined, null], item) === -1;
         },
         Console = Y.Base.create("wegas-console-custom",
             Y.Widget,
@@ -75,7 +74,7 @@ YUI.add('wegas-console-custom', function(Y) {
                     this.srcField.addButton.fire("click");
                 },
                 setStatus: function(status) {
-                    this.get(CONTENTBOX).one(".status").set("text", status);
+                    this.get("statusNode").set("text", status);
                 },
                 run: function() {
                     if (running) {
@@ -88,7 +87,7 @@ YUI.add('wegas-console-custom', function(Y) {
                     var script = this.srcField.getValue();
                     script.content = this.extractForm() + ";\n" + script.content;
                     running = true;
-                    this.setStatus("Running");
+                    this.setStatus("Running...");
                     Y.Wegas.Facade.Variable.script.run(script, {
                         on: {
                             success: Y.bind(function(e) {
@@ -124,9 +123,7 @@ YUI.add('wegas-console-custom', function(Y) {
                         if (Y.Array.some(inputs[i].getArray(), validateItem)) {
                             valid = valid && inputs[i].validate();
                         } else {
-                            Y.Array.each(inputs[i].inputs, function(item) {
-                                item.setClassFromState("valid");
-                            });
+                            inputs[i].setClassFromState("valid");
                         }
                     }
                     return valid;
@@ -141,6 +138,15 @@ YUI.add('wegas-console-custom', function(Y) {
             {
                 ATTRS: {
                     player: {},
+                    statusNode: {
+                        setter: function(v) {
+                            if (v) {
+                                return v;
+                            } else {
+                                return this.get("contentBox").one("status");
+                            }
+                        }
+                    },
                     /**
                      * Array of impacts. An impact is an Array [Legend, script template] or a script template.
                      * A script template is a string where `${"type":TYPE, "label":LABEL}` will be replaced by given

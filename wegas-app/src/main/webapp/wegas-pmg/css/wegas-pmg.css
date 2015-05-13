@@ -534,11 +534,11 @@ td.yui3-datatable-col-Realised:after {
     font-size: 10pt;
     margin-top: 10px;
 }
-.project-page .wages .variableValue, 
-.project-page .fixedCosts .variableValue, 
+.project-page .wages .variableValue,
+.project-page .fixedCosts .variableValue,
 .project-page .unworkedHours .variableValue,
-.project-page .total .variableValue, 
-.project-page .projectFixedCost .variableValue, 
+.project-page .total .variableValue,
+.project-page .projectFixedCost .variableValue,
 .project-page .taskTotal .variableValue,
 .project-page .projectCompleteness .variableValue,
 .project-page .current-period .variableValue,
@@ -570,7 +570,7 @@ td.yui3-datatable-col-Realised:after {
     cursor: default;
 }
 /*---------------------------- Cursor pointer ---------------------*/
-.gantt-planning-page .present, .gantt-planning-page .futur, 
+.gantt-planning-page .present, .gantt-planning-page .futur,
 .assignment span, table tbody .popup{
     cursor: pointer;
 }
