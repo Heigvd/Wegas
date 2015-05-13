@@ -229,6 +229,21 @@ public class GameModelController {
         return games;
     }
     
+    @GET
+    @Path("status/{status: [A-Z]*}/count")
+    public int countByStatus(@PathParam("status") final GameModel.Status status) {
+        Collection<GameModel> games = new ArrayList<>();
+        Subject s = SecurityUtils.getSubject();
+        for (GameModel gm : gameModelFacade.findTemplateGameModelsByStatus(status)) {
+            if (s.isPermitted("GameModel:View:gm" + gm.getId())
+                    || s.isPermitted("GameModel:Instantiate:gm" + gm.getId())
+                    || s.isPermitted("GameModel:Duplicate:gm" + gm.getId())) {
+                games.add(gm);
+            }
+        }
+        return games.size();
+    }
+    
     
     /**
      *
