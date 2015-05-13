@@ -22,7 +22,27 @@
 		@include material-shadow(2);
 		transition: .5s;
 	}
-	
+	&.link--simple-primary{
+		color:$primary-color;
+		background:none;
+		cursor:pointer;
+		text-decoration:underline;
+		box-shadow: none;
+		padding:0px;
+		margin:0px;
+		&:hover, &.focus, &.link.active{
+			color:darken($primary-color, 6%);
+			background:none;
+			text-decoration:underline;
+			box-shadow: none;
+		}
+
+		&.link--active{
+			background:none;
+			color:$primary-color;
+		}
+	}
+
 	&.link--simple{
 		color:$white;
 		background:none;

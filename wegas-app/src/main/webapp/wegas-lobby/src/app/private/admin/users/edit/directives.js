@@ -18,6 +18,15 @@ angular.module('private.admin.users.edit.directives', [])
             }
         });
 
+        ctrl.removePermission = function(permission) {
+           ctrl.user.account.permissions = _.without(ctrl.user.account.permissions, permission);
+        }
+
+        ctrl.addPermission = function() {
+            var newPermission = {'id':null, "@class":"Permission","value":"", "inducedPermission":""}
+            ctrl.user.account.permissions.push(newPermission);
+        }
+        
         ctrl.save = function () {
             UsersModel.updateUser(ctrl.user.account).then(function (response) {
                 if (!response.isErroneous()) {
