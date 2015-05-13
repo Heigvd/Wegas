@@ -50,7 +50,6 @@ angular.module('private.directives', [
 
                 $(document).on('click', 'h2.view__headding-workspace', function(e) {
                     $('#menu-toggler').trigger('click');
-                    e.preventDefault();
                     return false;
                 });
                 $(document).on('click', function(e) {

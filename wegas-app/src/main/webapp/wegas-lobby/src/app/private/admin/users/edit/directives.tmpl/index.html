@@ -39,6 +39,24 @@
             <hr/>
         </div>
 
+        <div>
+            <strong>Edit permissions</strong>
+            <a class="button button--small button--round button--label-off button--reverse-default button--add" ng-click="adminUsersEditIndexCtrl.addPermission()">
+            <span class="button__label">Add permission</span></a>
+        </div>
+        <div class="form__row" ng-repeat="permission in adminUsersEditIndexCtrl.user.account.permissions">
+            <div class="col-xs-1">
+                <button ng-click="adminUsersEditIndexCtrl.removePermission(permission)" class="col-xs-1 button button--remove button--label-off button--round"><span class="button__label">Remove</span></button>
+            </div>
+            <div class="col-xs-11">
+                <input class="input" type="text" ng-model="permission.value" placeholder="Permission chain" autocomplete="off">
+            </div>
+        </div>
+
+        <div class="form__row">
+            <hr/>
+        </div>
+
         <div class="form__row form__row--right">
             <a class="button button--small button--success button--valid col-xs-push-9" ng-click="adminUsersEditIndexCtrl.save()">
                 <span class="button__label">Save changes</span>

@@ -277,14 +277,14 @@
         display:block;
         position:relative;
         text-align:left;
-        margin-top:64px;
+        margin:32px 16px;
+        height:64px;
+        padding:8px 0px;
+        padding-left:80px;
+        background-image:URL('../images/logo_wegas.png');
+        background-repeat:no-repeat;
+        background-size:64px;
         color:$white;
-        @include make-sm-column(8);
-        @include make-sm-column-offset(2);
-        @include make-md-column(6);
-        @include make-md-column-offset(3);
-        @include make-lg-column(4);
-        @include make-lg-column-offset(4);
     }
 
     .view__first-subtitle{
@@ -298,7 +298,7 @@
         @include make-lg-column-offset(4);
         padding:8px 20px;
         font-size:16px;
-        color:$white;
+        color:$albasim-color;
 
         &.subtitle--center{
             text-align:center;
@@ -325,6 +325,8 @@
         @include make-md-column-offset(3);
         @include make-lg-column(4);
         @include make-lg-column-offset(4);
+        border-radius:6px;
+        padding:24px 32px;
     }
     .view__password-form.form{
         padding:16px;
@@ -392,17 +394,28 @@
             left:auto;
         }
     }
-    .view__logo-albasim{
-        display:block;
-        position:absolute;
-        top:-110px;
-        left:0px;
-        width:120px;
-        height:120px;
-        background-size:100%;
-        -webkit-filter: drop-shadow(0 1px 3px rgba(0,0,0,0.12));
-        filter:         drop-shadow(0 1px 3px rgba(0,0,0,0.12));
-        background-image:url("../images/albasim_logo.png");
-    }
 
+    .view--albasim{
+        display:block;
+        position:relative;
+        width:360px;
+        margin:auto;
+        .view__logo-albasim{
+            display:block;
+            position:relative;
+            width:120px;
+            height:120px;
+            margin:0px;
+            padding:0px;
+            background-size:100%;
+            background-image:url("../images/albasim_logo.png");
+            float:left;
+        }
+        .view__first-subtitle{
+            margin:0px;
+            padding:64px 0 0 0;
+            width:240px;
+            float:right;
+        }
+    }
 }

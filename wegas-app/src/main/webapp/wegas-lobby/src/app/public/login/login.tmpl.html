@@ -1,14 +1,17 @@
-<form class="view__login-form form" ng-submit="login()">
+<form class="view__login-form view--reverse-middle form" ng-submit="login()">
+	<div class="row">
+		<h1 class="view__first-header">Wegas</h1>
+	</div>	
 	<div class="form__row">
-    	<input class="form__row__entry input input--medium input--primary" type="text" class="form-control" id="login" placeholder="email or username" autocomplete="off" ng-model="username">
+    	<input class="form__row__entry input input--small input--primary" type="text" class="form-control" id="login" placeholder="email or username" autocomplete="off" ng-model="username">
 	</div>
 	<div class="form__row">
-    	<input class="form__row__entry input input--medium input--primary" type="password" class="form-control" id="password" placeholder="password" autocomplete="off" ng-model="password">
+    	<input class="form__row__entry input input--small input--primary" type="password" class="form-control" id="password" placeholder="password" autocomplete="off" ng-model="password">
 	</div>
 	<div class="form__row form__row--left">
         <a class="link link--medium link--simple" ui-sref="wegas.public.password">Password forgotten</a>
     </div>
 	<div class="form__row form__row--right">
-        <input class="form__row__btn button button--medium button--default" type="submit" class="link" value="Login" />
+        <input class="form__row__btn button button--small button--default" type="submit" class="link" value="Login" />
 	</div>
 </form>

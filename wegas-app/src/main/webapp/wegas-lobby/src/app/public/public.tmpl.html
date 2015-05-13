@@ -1,13 +1,11 @@
-<div class="view view--public-index view--reverse-middle">
+<div class="view view--public-index view--middle">
 	<div class="container">
-		<div class="row">
-			<h1 class="view__first-header">Wegas</h1>
-		</div>
-		<div class="row">
-			<h2 class="view__first-subtitle">The "learning by doing" solution from <a class="link link--simple"href="http://www.albasim.ch">AlbaSIM<span class="view__logo-albasim"></span></a></h2>
+		<div class="row view--albasim">
+			<div class="view__logo-albasim"></div>
+			<h2 class="view__first-subtitle">The "learning by doing" solution from AlbaSIM</h2>
 		</div>
 		<div ui-view="form"></div>
-		<p class="view__first-subtitle subtitle--medium">Haven't yet a Wegas account ? <a class="link link--simple" ui-sref="wegas.public.signup">Create account</a></p>
+		<p class="view__first-subtitle subtitle--medium">Haven't yet a Wegas account ? <a class="link link--simple-primary" ui-sref="wegas.public.signup">Create account</a></p>
 	</div>
 </div>
 <div class="view view--modal" ui-view="modal"></div>
