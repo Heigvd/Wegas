@@ -216,4 +216,32 @@ public class Team extends AbstractEntity {
     public void setCreatedTime(Date createdTime) {
         this.createdTime = createdTime;
     }
+    
+    /**
+     * @return String, the name of the game
+     */
+    @JsonView(value = Views.Extended.class)
+    public String getGameName() {
+        return this.getGame().getName();
+    }
+
+    /**
+     * Do nothing
+     */
+    public void setGameName() {
+    }
+    
+    /**
+     * @return boolean, free if the game is played individualy, false if the game is played in team
+     */
+    @JsonView(value = Views.Extended.class)
+    public boolean getGameFreeForAll() {
+        return this.getGame().getProperties().getFreeForAll();
+    }
+
+    /**
+     * Do nothing
+     */
+    public void setGameFreeForAll() {
+    }
 }
