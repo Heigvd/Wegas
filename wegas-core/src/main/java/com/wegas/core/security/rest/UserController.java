@@ -10,7 +10,10 @@ package com.wegas.core.security.rest;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameAccountKey;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
@@ -420,6 +423,32 @@ public class UserController {
     public User getCurrentUser() {
         return userFacade.getCurrentUser();
     }
+    
+    /**
+     * Find all teams for the current user.
+     *
+     * @return teamsToReturn, the collection of teams where the current user is a player.
+     */
+    @GET
+    @Path("Current/Team")
+    public Collection<Team> findTeamsByCurrentUser() {
+        Collection<Team> teamsToReturn = new ArrayList();
+        User currentUser = userFacade.getCurrentUser();
+        final Collection<Game> playedGames = gameFacade.findRegisteredGames(currentUser.getId());
+        for (Game g : playedGames) {
+            Collection<Team> teams = g.getTeams();
+            for (Team t : teams) {
+                for (Player p : t.getPlayers()) {
+                    if (p.getUserId() == currentUser.getId()) {
+                        teamsToReturn.add(t);
+                    }
+                }
+            }
+        }
+        return teamsToReturn;
+    }
+    
+    
 
     /**
      * Delete permission by role and permission
