@@ -79,6 +79,18 @@ public class Player extends AbstractEntity {
     public Player(String name) {
         this.name = name;
     }
+    /**
+     * 
+     * @param user
+     * @param team 
+     */
+    public Player(User user, Team team) {
+        this.name = user.getName();
+        this.user = user;
+        this.userId =  user.getId();
+        this.team = team;
+        this.teamId = team.getId();
+    }
 
     /**
      *
@@ -151,7 +163,7 @@ public class Player extends AbstractEntity {
     }
 
     /**
-     * @return the teamId
+     * @return the userId
      */
     public Long getUserId() {
         return userId;

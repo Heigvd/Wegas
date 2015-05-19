@@ -250,6 +250,7 @@ public class GameController {
      */
     @GET
     @Path("/JoinGame/{token : .*}/")
+    @Deprecated
     public Response tokenJoinGame(@PathParam("token") String token) throws WegasNoResultException {
         Response r = Response.status(Response.Status.UNAUTHORIZED).build();
         User currentUser = userFacade.getCurrentUser();
@@ -274,6 +275,42 @@ public class GameController {
         }
         return r;
     }
+    
+    /**
+     * Check if a user is logged,
+     * Find a game by id and check if this game has an open access,
+     * Check if current user is already a player for this game,
+     * Check if the game is played individually,
+     * Create a new team with a new player linked on the current user for the game found.
+     *
+     * @param gameId
+     * @return Response
+     */
+    @POST
+    @Path("{id}/Player")
+    public Response joinIndividually(@PathParam("id") Long gameId) throws WegasNoResultException {
+        Response r = Response.status(Response.Status.UNAUTHORIZED).build();
+        User currentUser = userFacade.getCurrentUser();
+        if (currentUser != null) {
+            r = Response.status(Response.Status.BAD_REQUEST).build();
+            Game game = gameFacade.find(gameId);
+            if (game != null) {
+                r = Response.status(Response.Status.CONFLICT).build();
+                if (game.getAccess() == Game.GameAccess.OPEN) {
+                    Player player = playerFacade.checkExistingPlayer(game.getId(), currentUser.getId());
+                    if (player == null) {
+                        if (game.getGameModel().getProperties().getFreeForAll()) {
+                            Team team = new Team("Individually-" + Helper.genToken(20));
+                            teamFacade.create(game.getId(), team);
+                            playerFacade.create(team, currentUser);
+                            r = Response.status(Response.Status.CREATED).entity(team).build();
+                        }
+                    }
+                }
+            }
+        }
+        return r;
+    }
 
     /**
      * @param teamId
@@ -281,6 +318,7 @@ public class GameController {
      */
     @GET
     @Path("/JoinTeam/{teamId : .*}/")
+    @Deprecated
     public Game joinTeam(@PathParam("teamId") Long teamId) {
 
         // IN USE

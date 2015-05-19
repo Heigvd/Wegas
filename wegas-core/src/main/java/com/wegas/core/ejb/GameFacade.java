@@ -430,7 +430,6 @@ public class GameFacade extends BaseFacade<Game> {
     public void joinTeam(Team team, Player player) {
         team.addPlayer(player);
         getEntityManager().persist(player);
-
         team.getGame().getGameModel().propagateDefaultInstance(player);
         playerActionEvent.fire(new PlayerAction(player));
     }
@@ -453,8 +452,7 @@ public class GameFacade extends BaseFacade<Game> {
      */
     public Player joinTeam(Team team, User user) {
         // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
-        Player p = new Player();
-        p.setUser(user);
+        Player p = new Player(user, team);        
         this.joinTeam(team, p);
         this.addRights(user, p.getGame());
         return p;

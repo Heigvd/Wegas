@@ -10,9 +10,11 @@ package com.wegas.core.rest;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
+import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.SecurityHelper;
 import java.util.Collection;
 import javax.ejb.EJB;
@@ -78,19 +80,31 @@ public class PlayerController {
         SecurityHelper.checkPermission(gameFacade.find(gameId), "View");
         return playerFacade.findAll();
     }
-
+    
     /**
      *
-     * @param entity
      * @param teamId
      * @return
      */
     @POST
-    @Deprecated
-    public Player create(@PathParam("teamId") Long teamId, Player entity) {
-        SecurityHelper.checkPermission(teamFacade.find(teamId).getGame(), "Edit");
-        playerFacade.create(teamId, entity);
-        return entity;
+    public Response create(@PathParam("teamId") Long teamId) {
+        Response r = Response.status(Response.Status.UNAUTHORIZED).build();
+        User currentUser = userFacade.getCurrentUser();
+        if(currentUser != null){
+            r = Response.status(Response.Status.BAD_REQUEST).build();
+            Team teamToJoin = teamFacade.find(teamId);
+            if(teamToJoin != null){
+                if(teamToJoin.getGame().getAccess() == Game.GameAccess.OPEN 
+                        && !teamToJoin.getGame().getProperties().getFreeForAll()){
+                    Player existingPlayer = playerFacade.checkExistingPlayer(teamToJoin.getGameId(), currentUser.getId());
+                    if(existingPlayer == null){
+                        playerFacade.create(teamToJoin, currentUser);
+                        r = Response.status(Response.Status.CREATED).entity(teamToJoin).build();
+                    }
+                }
+            }
+        }
+        return r;        
     }
 
     /**
