@@ -159,7 +159,7 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                                 }, {
                                     label: "Grade",
                                     formatter: "skillLevel",
-                                    key: "instance.skillsets",
+                                    key: "instance.properties.level",
                                     sortable: true,
                                     allowHTML: true
                                 }, {

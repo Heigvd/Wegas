@@ -19,7 +19,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
             template: micro.compile('<%= Y.Object.getValue(this, this._field.split(".")) %>'),
             object: micro.compile('<% for(var i in Y.Object.getValue(this, this._field.split("."))){%> <%= Y.Object.getValue(this, this._field.split("."))[i]%> <%} %>'),
             requiredRessource: micro.compile('<% var reqs = this.get("requirements"), i; for(i=0; i< reqs.length;i+=1){%><% if (+reqs[i].get("quantity") > 0){%><p><span class="quantity"><%= reqs[i].get("quantity") %>x</span> <span class="work"><%= Y.Wegas.persistence.Resources.GET_SKILL_LABEL(reqs[i].get("work")) %></span> <span class="level"><%= Y.Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[reqs[i].get("level")] %></span>  <% if (this.isRequirementCompleted(reqs[i])){%><span>&#10003;</span><%}%>  </p> <%}%><%}%>'),
-            assignedResource: micro.compile('<% var bold=false; for(var i = 0; i < this.length; i+=1){ bold = this[i].ressourceDescriptor.isPlannedForCurrentPeriod(this[i].taskDescriptor); for (var j in this[i].ressourceInstance.get("skillsets")){ if (bold) {%> <p style="font-weight: bold;"><%} else { %> <p><% } %><%= this[i].ressourceDescriptor.get("label") %> (<%= Y.Wegas.persistence.Resources.GET_SKILL_LABEL(j) %> <%= Y.Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[this[i].ressourceInstance.get("skillsets")[j]]%>)</p><% }} %>')
+            assignedResource: micro.compile('<% var bold=false, skillName; for(var i = 0; i < this.length; i+=1){ bold = this[i].ressourceDescriptor.isPlannedForCurrentPeriod(this[i].taskDescriptor); skillName = Y.Wegas.Facade.Variable.cache.findParentDescriptor(this[i].ressourceDescriptor).get("name"); if (bold) {%> <p style="font-weight: bold;"><%} else { %> <p><% } %><%= this[i].ressourceDescriptor.get("label") %> (<%= Y.Wegas.persistence.Resources.GET_SKILL_LABEL(skillName) %> <%= Y.Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[this[i].ressourceInstance.get("properties").level] %>)</p><% } %>')
         };
 
     Datatable = Y.Base.create("wegas-pmg-datatable", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
@@ -214,11 +214,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
         },
         skillLevel: function() {
             return function(o) {
-                var i, ret = [];
-                for (i in o.value) {
-                    ret.push(Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[o.value[i]]);
-                }
-                return ret.join("");
+                return Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[o.value];
             };
         },
         "object-old": function() {
