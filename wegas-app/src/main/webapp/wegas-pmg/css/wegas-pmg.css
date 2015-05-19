@@ -513,15 +513,21 @@ td.yui3-datatable-col-Realised:after {
     margin-left: 24px;
     margin-top: 15px;
 }
-.project-page .pmg-project-overview .wegas-pmg-slidepanel-content, .project-page .finances .wegas-pmg-slidepanel-content {
-    margin-top: 15px;
+.pmg-project-overview-title, 
+.pmg-project-overview-content {
+    position:relative !important;
+}
+
+.project-page .pmg-project-overview .pmg-project-overview-content,
+.project-page .finances .wegas-pmg-slidepanel-content {
+    /* margin-top: 15px; */
     padding-left: 30px;
     box-sizing: border-box;
 }
-.project-page .current-time, .project-page .projectCompleteness, .project-page .projectFixedCost, .project-page .taskTotal {
+.project-page .bacs, .project-page .initial-budget, .project-page .current-time, .project-page .projectCompleteness, .project-page .projectFixedCost, .project-page .taskTotal {
     font-weight: bold;
     font-size: 10pt;
-    margin-top: 8px;
+    margin-top: 2px;
     color: rgb(28, 28, 28);
 }
 .project-page .wages, .project-page .fixedCosts, .project-page .unworkedHours,
@@ -534,7 +540,8 @@ td.yui3-datatable-col-Realised:after {
     font-size: 10pt;
     margin-top: 10px;
 }
-.project-page .wages .variableValue,
+/*.project-page .wages .variableValue,
+.project-page .bacs .variableValue,
 .project-page .fixedCosts .variableValue,
 .project-page .unworkedHours .variableValue,
 .project-page .total .variableValue,
@@ -542,11 +549,15 @@ td.yui3-datatable-col-Realised:after {
 .project-page .taskTotal .variableValue,
 .project-page .projectCompleteness .variableValue,
 .project-page .current-period .variableValue,
-.project-page .current-stage .variableValue {
+.project-page .current-stage .variableValue */
+.project-page .variableValue 
+{
     float: right;
     /* margin-right: 280px; */
 }
-
+.project-page .variableValue input{
+    width: 6em;
+}
 /*---------------------------- Resources page ---------------------*/
 .wegas-pmg-resourcespanels-content .pmg-legend {
     /* margin: 10px 0 0 0; */

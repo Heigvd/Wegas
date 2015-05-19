@@ -22,7 +22,7 @@ YUI.add("wegas-pmg-breadcrumb", function(Y) {
             var i, node = Y.Node.create("<div class='pmg-breadcrumb'></div>"),
                 cb = this.get(CONTENTBOX), locations = this.get("locations"),
                 name,
-                defaultNames = ["Initiation", "Planning", "Execution", "Closing"];
+                defaultNames = Y.Wegas.PMGHelper.defaultPhaseNames;
             if (locations.length === 0) {
                 return;
             }

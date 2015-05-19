@@ -38,7 +38,7 @@ YUI.add('wegas-pmg-advancementlimit', function(Y) {
             var cb = this.get(CONTENTBOX),
                 nbPeriods = [],
                 i, name,
-                defaultNames = ["Initiation", "Planning", "Execution", "Closing"];
+                defaultNames = Y.Wegas.PMGHelper.defaultPhaseNames;
 
             nbPeriods.push(Y.Wegas.Facade.Variable.cache.find("name", "periodPhase1").getMaxValue());
             nbPeriods.push(Y.Wegas.Facade.Variable.cache.find("name", "periodPhase2").getMaxValue());
