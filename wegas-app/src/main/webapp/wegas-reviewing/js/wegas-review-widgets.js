@@ -943,7 +943,7 @@ YUI.add("wegas-review-widgets", function(Y) {
 
             if (!this.get("readonly")) {
                 this.get(CONTENTBOX).one(".wegas-review-grade-instance-input").set("value", ev.get("value"));
-                if (desc.get("minValue") !== undefined && desc.get("maxValue") !== undefined) {
+                if (Y.Lang.isNumber(desc.get("minValue")) && Y.Lang.isNumber(desc.get("maxValue"))) {
                     this.xSlider = new Y.Slider({
                         min: desc.get("minValue"),
                         max: desc.get("maxValue"),
