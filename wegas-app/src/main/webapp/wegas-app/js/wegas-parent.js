@@ -185,7 +185,17 @@ YUI.add("wegas-parent", function(Y) {
                                                                     childType: "TextInput"
                                                                 }
                                                             }]
-                                                    }]
+                                                    }, {
+                                                        type: BUTTON,
+                                                        label: "Number",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    childType: "NumberInput"
+                                                                }
+                                                            }]
+                                                    }
+                                                ]
                                             }}]}, {
                                     type: BUTTON,
                                     label: "Variable",

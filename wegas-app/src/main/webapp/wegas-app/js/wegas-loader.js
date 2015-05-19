@@ -188,6 +188,11 @@ YUI().use(function(Y) {
                 ws_provides: "TextInput",
                 requires: ["wegas-widget", "tinymce", "wegas-panel-fileselect", "wegas-button"]
             },
+            "wegas-number-input": {
+                path: "js/widget/wegas-number-input-min.js",
+                ws_provides: "NumberInput",
+                requires: ["wegas-widget", "wegas-button", "slider"]
+            },
             "wegas-text": {
                 path: "js/widget/wegas-text-min.js",
                 ws_provides: "Text",
