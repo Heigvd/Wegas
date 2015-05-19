@@ -11,8 +11,10 @@ import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.persistence.User;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -36,7 +38,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     @EJB
     private GameFacade gameFacade;
-
+    
     /**
      *
      */
@@ -52,6 +54,14 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     public void create(final Long teamId, final Player player) {
         gameFacade.joinTeam(teamId, player);
+    }
+    
+    /**
+     * @param team
+     * @param user
+     */
+    public void create(final Team team,final User user) {
+        gameFacade.joinTeam(team, user);
     }
 
     /**

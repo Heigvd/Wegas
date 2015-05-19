@@ -389,7 +389,7 @@ public class UserController {
 
     /**
      *
-     * @param email
+     * @param authInfo
      * @param request
      */
     @POST
@@ -431,7 +431,8 @@ public class UserController {
      */
     @GET
     @Path("Current/Team")
-    public Collection<Team> findTeamsByCurrentUser() {
+    public Response findTeamsByCurrentUser() {
+        Response r = Response.noContent().build();
         Collection<Team> teamsToReturn = new ArrayList();
         User currentUser = userFacade.getCurrentUser();
         final Collection<Game> playedGames = gameFacade.findRegisteredGames(currentUser.getId());
@@ -439,17 +440,46 @@ public class UserController {
             Collection<Team> teams = g.getTeams();
             for (Team t : teams) {
                 for (Player p : t.getPlayers()) {
-                    if (p.getUserId() == currentUser.getId()) {
-                        teamsToReturn.add(t);
+                    if(p.getUserId() != null){
+                        if (p.getUserId().equals(currentUser.getId())) {
+                            teamsToReturn.add(t);
+                        }
                     }
                 }
             }
         }
-        return teamsToReturn;
+        if(!teamsToReturn.isEmpty()){
+            r = Response.ok().entity(teamsToReturn).build();
+        }
+        return r;
     }
     
+    /**
+     * Find a team for the current user.
+     * @param teamId the id of the team joined by the current user.
+     * @return Response, No Content if no team found, the team otherwise
+     */
+    @GET
+    @Path("Current/Team/{teamId}")
+    public Response getTeamByCurrentUser(@PathParam("teamId") Long teamId) {
+        Response r = Response.noContent().build();
+        User currentUser = userFacade.getCurrentUser();
+        final Collection<Game> playedGames = gameFacade.findRegisteredGames(currentUser.getId());
+        for (Game g : playedGames) {
+            Collection<Team> teams = g.getTeams();
+            for (Team t : teams) {
+                if(teamId.equals(t.getId())){
+                    for (Player p : t.getPlayers()) {
+                        if (p.getUserId().equals(currentUser.getId())) {
+                            r = Response.ok().entity(t).build();
+                        }
+                    }
+                }
+            }
+        }
+        return r;
+    }
     
-
     /**
      * Delete permission by role and permission
      *
