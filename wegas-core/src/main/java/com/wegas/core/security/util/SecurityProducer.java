@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
  * Instantantiate a security manager and a subject, once per request.
  *
  * Not in use.
+ * @deprecated 
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */

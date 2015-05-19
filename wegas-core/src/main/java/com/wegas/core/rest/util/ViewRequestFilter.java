@@ -19,7 +19,6 @@ import com.wegas.core.security.persistence.User;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Date;
 import java.util.Locale;
 import javax.ejb.EJB;
 import javax.ws.rs.container.ContainerRequestContext;
