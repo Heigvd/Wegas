@@ -14,6 +14,7 @@ import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameEnrolmentKey;
 import com.wegas.core.persistence.game.Player;
@@ -184,6 +185,13 @@ public class GameController {
         final Collection<Game> games = gameFacade.findAll(status);
         for (Game g : games) {
             if (SecurityHelper.isPermitted(g, "Edit")) {
+                List<Team> withoutDebugTeam = new ArrayList<>();
+                for(Team teamToCheck : g.getTeams()){
+                    if(!(teamToCheck instanceof DebugTeam)){
+                        withoutDebugTeam.add(teamToCheck);
+                    }
+                }
+                g.setTeams(withoutDebugTeam);
                 retGames.add(g);
             }
         }
@@ -435,8 +443,20 @@ public class GameController {
      */
     @GET
     @Path("/FindByToken/{token : .*}/")
-    public Game findByToken(@PathParam("token") String token) {
-        return gameFacade.findByToken(token);
+    public Response findByToken(@PathParam("token") String token) {
+        Response r = Response.noContent().build();
+        Game gameToReturn =  gameFacade.findByToken(token);
+        if(gameToReturn != null){
+            List<Team> withoutDebugTeam = new ArrayList<>();
+            for(Team teamToCheck : gameToReturn.getTeams()){
+                if(!(teamToCheck instanceof DebugTeam)){
+                    withoutDebugTeam.add(teamToCheck);
+                }
+            }
+            gameToReturn.setTeams(withoutDebugTeam);
+            r = Response.ok().entity(gameToReturn).build();
+        }
+        return r;
     }
 
     /**
