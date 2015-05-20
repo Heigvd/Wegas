@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Script;
@@ -161,15 +162,19 @@ public class UpdateController {
     private String addVariable(GameModel gm, String json, String varName, String parentName) {
         ObjectMapper mapper = JacksonMapperProvider.getMapper();
         try {
+            // Does the variable already exists ? 
             descriptorFacade.find(gm, varName);
             return "already exists";
         } catch (WegasNoResultException ex) {
-            logger.error("Variable " + varName + " already exists", ex);
+            // NoResult -> OK, proceed 
         }
         try {
             VariableDescriptor vd = mapper.readValue(json, VariableDescriptor.class);
             descriptorController.createChild(gm.getId(), parentName, vd);
             return "OK";
+        } catch (WegasNotFoundException ex) {
+            logger.error("Error white adding the variable : parent " + parentName + " not found", ex);
+            return "Parent not found";
         } catch (IOException ex) {
             logger.error("Error While Reading JSON: " + json, ex);
             return "JSON Error";
