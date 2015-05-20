@@ -5,33 +5,43 @@
    		<span class="button__label">Close</span>
 	</a>
 </div>
-<div class="modal__nav modal__nav--2tab">
-   	<a 	class="modal__nav__tab modal__nav__tab--left" 
+<!-- Modal tabs -->
+<div class="modal__nav modal__nav--3tab">
+   	<a 	class="modal__nav__tab modal__nav__tab--left"
    		ng-class="{'modal__nav__tab--active': settingsIndexCtrl.tabs.infos}"
-   		ng-click="settingsIndexCtrl.activeTab('infos')">Infos</a> 
-   	<a 	class="modal__nav__tab modal__nav__tab--right"  
+   		ng-click="settingsIndexCtrl.activeTab('infos')">Infos</a>
+   	<a 	class="modal__nav__tab modal__nav__tab--middle"
    		ng-class="{'modal__nav__tab--active': settingsIndexCtrl.tabs.display}"
-   		ng-click="settingsIndexCtrl.activeTab('display')">Icons & colors</a> 
+   		ng-click="settingsIndexCtrl.activeTab('display')">Icons & colors</a>
+    <a  class="modal__nav__tab modal__nav__tab--right"
+        ng-class="{'modal__nav__tab--active': settingsIndexCtrl.tabs.advanced}"
+        ng-click="settingsIndexCtrl.activeTab('advanced')">Advanced</a>
 </div>
-<div 	ng-if="settingsIndexCtrl.tabs.infos" 
+<div 	ng-if="settingsIndexCtrl.tabs.infos"
 		class="modal__content"
 		active-infos="settingsIndexCtrl.infos"
 		check-change="settingsIndexCtrl.checkChanges"
 		trainer-sessions-customize-infos>
 </div>
 <div 	ng-if="settingsIndexCtrl.tabs.display" class="modal__content">
-	<div 
+	<div
 		class="modal__content__colors"
-		active-color="settingsIndexCtrl.infos.color" 
-		change="settingsIndexCtrl.changeColor" 
-		trainer-sessions-customize-colors>	
+		active-color="settingsIndexCtrl.infos.color"
+		change="settingsIndexCtrl.changeColor"
+		trainer-sessions-customize-colors>
 	</div>
-	<div 
+	<div
 		class="modal__content__icons"
-		active-icon="settingsIndexCtrl.infos.icon" 
+		active-icon="settingsIndexCtrl.infos.icon"
 		change="settingsIndexCtrl.changeIcon"
-		trainer-sessions-customize-icons >	
+		trainer-sessions-customize-icons >
 	</div>
+</div>
+<!-- Advanced -->
+<div    ng-if="settingsIndexCtrl.tabs.advanced"
+        class="modal__content"
+        active-infos="settingsIndexCtrl.infos"
+        trainer-sessions-customize-advanced>
 </div>
 <div class="modal__tools">
 	<p ng-if="settingsIndexCtrl.hasChanges.all" class="modal__tools__message"><i class="fa fa-warning"></i> Some changes aren't saved</p>

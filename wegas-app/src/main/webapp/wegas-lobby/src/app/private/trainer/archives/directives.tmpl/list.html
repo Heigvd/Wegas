@@ -1,23 +1,40 @@
 <div class="card card--big card--archive" ng-repeat="session in sessions | filter : { name: search }">
     <div class="card__illustration illustration illustration--big illustration--icon" illustration="{{session.properties.iconUri}}"></div>
-    <div 
-        class="card__description" 
+    <div
+        class="card__description"
         ng-class="  {true:'card__description--two-lines', false:'card__description--three-lines'}[session.gameModel.comments == null || session.gameModel.comments == '']" >
         <div class="line">{{session.createdTime | date:"dd.MM.yyyy"}}</div>
         <div class="line line--primary">{{session.name | limitTo: MAX_DISPLAYED_CHARS}}<span ng-if="session.gameModel.comments.length > MAX_DISPLAYED_CHARS">...</span></div>
         <div ng-if="!((session.gameModel.comments == null) || (session.gameModel.comments == ''))" class="line line--optionnal">{{session.gameModel.comments | limitTo: 36}}<span ng-if="session.gameModel.comments.length > 36">...</span></div>
     </div>
     <div class="card__actions">
+        <a
+            class="button button--medium button--round button--default-reverse button--label-off button--settings"
+            title="Show settings"
+            ng-click="details(session)">
+            <span class="button__label">Show settings</span>
+        </a>
+
+        <a
+            class="button button--medium button--round button--default-reverse button--label-off button--user"
+            title="Show settings"
+            ng-click="users(session)">
+            <span class="button__label">Manage Users</span>
+        </a>
+
+
+
         <a class="button button--medium button--round button--default-reverse button--label-off button--undo" title="Move to current sessions" ng-click="unarchive(session)">
             <span class="button__label">Move to current sessions</span>
         </a>
-        <a 
-            class="button button--medium button--round button--danger-reverse button--label-off button--trash" 
-            title="Delete session" 
-            confirmed-click="delete(session)" 
+        <a
+            class="button button--medium button--round button--danger-reverse button--label-off button--trash"
+            title="Delete session"
+            confirmed-click="delete(session)"
             ng-confirm-click="Are you sure you want to delete this archived session ? This action is irreversible.">
             <span class="button__label">Delete session</span>
-        </a> 
+        </a>
+
     </div>
 </div>
 <div ng-if="(sessions | filter:{name: search}).length == 0">
