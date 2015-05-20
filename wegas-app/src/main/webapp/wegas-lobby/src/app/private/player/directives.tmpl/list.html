@@ -1,11 +1,11 @@
 <h3>My sessions</h3>
-<div class="view__list" ng-if="sessions.length > 0">
+<div class="view__list" ng-if="teams.length > 0">
   <div 
     class="card card--big card--player-session" 
-    ng-repeat="session in sessions | orderBy: 'createdTime':true" 
-    session="session" 
+    ng-repeat="team in teams | orderBy: 'createdTime':true" 
+    team="team" 
     leave="leave" 
-    player-sessions-card >
+    player-team-card >
   </div>
 </div>
-<p class="view__list view__list--no-content" ng-if="sessions.length < 1">No sessions</p>
+<p class="view__list view__list--no-content" ng-if="teams.length < 1">No sessions</p>

@@ -67,8 +67,8 @@
 .yui3-skin-sam .dashboard-impact-panel .inputEx-ListField > fieldset > div {
     padding-left: 20px;
 }
-.yui3-skin-sam .dashboard-impact-panel  div.inputEx-label label{
-    color:white;
+.yui3-skin-sam .dashboard-panel  div.inputEx-label label{
+    /* color: white; */
 }
 
 .yui3-skin-sam .dashboard-impact-panel .inputEx-WysiwygScript .inputEx-ListField .wegas-removebutton {

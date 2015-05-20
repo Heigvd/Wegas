@@ -11,6 +11,19 @@
     max-width: 90%;
     max-height: 100%;
 }
+.yui3-skin-sam .dashboard-panel .wegas-panel-content {
+    background: rgba(239, 239, 239, 1);
+    color: black;
+}
+.yui3-skin-sam .dashboard-panel .wegas-panel-content .yui3-widget-hd {
+    font-size: 1.3em;
+    margin: 5px;
+    margin-bottom: 20px;
+}
+.yui3-skin-sam .dashboard-panel .wegas-panel-content .wegas-form legend.inputEx-Group-legend {
+    color: #505050;
+}
+
 .yui3-skin-sam .wegas-panel-content {
     margin: 10px;
     background: rgba(110, 110, 110, 0.9);
@@ -31,11 +44,16 @@
 .yui3-skin-sam .wegas-panel .wegas-panel-content .yui3-widget-ft{
     background: none;
 }
+.yui3-skin-sam .wegas-panel-content .yui3-widget-ft button:hover,
+.yui3-skin-sam .wegas-panel-content .yui3-widget-hd button:hover{
+    background-color: rgba(107, 107, 107, 1);
+}
 .yui3-skin-sam .wegas-panel-content .yui3-widget-ft button,
 .yui3-skin-sam .wegas-panel-content .yui3-widget-hd button{
-    background-color: rgba(160, 160, 160, 0.8);
+    background-color: rgba(181, 181, 181, 1);
     color: white;
     margin-left: 0.3em;
+    background-image: none;
 }
 .wegas-panel-content .yui3-widget-bd .icon{
     background-repeat: no-repeat;
