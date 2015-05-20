@@ -5,13 +5,14 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.nlp.neo4j;
+package com.wegas.log.neo4j;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.internal.NoPlayerException;
@@ -38,6 +39,7 @@ import java.util.Date;
  * objects in the neo4j database.
  *
  * @author Gérald Eberle
+ * @author Cyril Junod <cyril.junod at gmail.com>
  */
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 @Singleton
@@ -62,7 +64,7 @@ public class Neo4jPlayerReply {
     @EJB
     private VariableInstanceFacade variableInstanceFacade;
 
-    public void onReplyValidate(@Observes QuestionDescriptorFacade.ReplyValidate event) {
+    public void onReplyValidate(@Observes QuestionDescriptorFacade.ReplyValidate event) throws JsonProcessingException {
         sessionContext.getBusinessObject(Neo4jPlayerReply.class).addPlayerReply(event.player, event.reply, (ChoiceDescriptor) event.choice.getDescriptor(), (QuestionDescriptor) event.question.getDescriptor());
     }
 
@@ -71,42 +73,20 @@ public class Neo4jPlayerReply {
     }
 
     @Asynchronous
-    public synchronized void addNumberUpdate(Player player, NumberInstance numberInstance) throws NoPlayerException, JsonProcessingException {
+    public void addNumberUpdate(Player player, NumberInstance numberInstance) throws NoPlayerException, JsonProcessingException {
         if (player == null) {
             player = variableInstanceFacade.findAPlayer(numberInstance);
         }
         if (player.getGame() instanceof DebugGame || player.getTeam() instanceof DebugTeam ||
-                !com.wegas.nlp.neo4j.Neo4jUtils.checkDataBaseIsRunning()) {
+            Helper.isNullOrEmpty(player.getGameModel().getProperties().getLogID()) ||
+            !Neo4jUtils.checkDataBaseIsRunning()) {
             return;
         }
         final String key = nodeKey(player, TYPE.NUMBER);
-        String query = "Match (n " + key + ") WITH max(n.starttime) AS max MATCH (m" + key + ") WHERE m.starttime = max return id(m)";
-
-//        String initVal = "MATCH (n {variable:\"" + numberInstance.getDescriptor().getName() + "\",";
-//        if (numberInstance.getScope() instanceof TeamScope) {
-//            initVal += "teamId:" + player.getTeamId();
-//        } else if (numberInstance.getScope() instanceof PlayerScope) {
-//            initVal += "playerId:" + player.getId();
-//        } else if (numberInstance.getScope() instanceof GameScope) {
-//            initVal += "gameId:" + player.getGameId();
-//        }
-//        initVal += "}) RETURN n";
-//        String existence = extractSingleResult(Neo4jUtils.queryDBString(initVal));
-
-        String result1 = Neo4jUtils.queryDBString(query);
-        checkError(result1);
-        URI from = extractNodeUri(result1);
-        ObjectNode newNode = createJsonNode(player, numberInstance.getDescriptor().getName(), numberInstance.getValue());
-        createLinkedToYoungest(key, "gamelink", newNode, player.getGameModel().getName());
-//        if (from == null) {
-//            createNode(player.getGameModel().getName(), newNode);
-//        } else {
-//            createLinkedToYoungest(key, "gamelink", newNode, player.getGameModel().getName());
-//        }
-//        URI to = createNode(player, player.getGameModel().getName(), numberInstance.getDescriptor().getName(), numberInstance.getValue());
-//        if (from != null) {
-//            Neo4jUtils.createRelation(from, to, "gamelink");
-//        }
+        synchronized (player) {
+            ObjectNode newNode = createJsonNode(player, numberInstance.getDescriptor().getName(), numberInstance.getValue());
+            createLinkedToYoungest(key, "gamelink", newNode, player.getGameModel().getName());
+        }
     }
 
     /**
@@ -117,26 +97,17 @@ public class Neo4jPlayerReply {
      * @param reply  the player's answer data
      */
     @Asynchronous
-    public synchronized void addPlayerReply(Player player, Reply reply, ChoiceDescriptor choiceDescriptor, QuestionDescriptor questionDescriptor) {
-        if (player.getGame() instanceof DebugGame || !com.wegas.nlp.neo4j.Neo4jUtils.checkDataBaseIsRunning()) {
+    public synchronized void addPlayerReply(Player player, Reply reply, ChoiceDescriptor choiceDescriptor, QuestionDescriptor questionDescriptor) throws JsonProcessingException {
+        if (player.getGame() instanceof DebugGame ||
+            Helper.isNullOrEmpty(player.getGameModel().getProperties().getLogID()) ||
+            !Neo4jUtils.checkDataBaseIsRunning()) {
             return;
         }
         String key = nodeKey(player, TYPE.QUESTION);
         String game = player.getGameModel().getName();
-        String query = "MATCH (n " + key + ") RETURN max(n.starttime)";
-        String result1 = Neo4jUtils.queryDBString(query);
-        checkError(result1);
-        String maxTime = extractSingleResult(result1);
-        if (maxTime == null) {
-            createNode(player, game, reply, choiceDescriptor, questionDescriptor);
-        } else {
-            query = "MATCH (n " + key + ") WHERE n.starttime = " +
-                    maxTime + " RETURN id(n)";
-            String result2 = Neo4jUtils.queryDBString(query);
-            checkError(result2);
-            URI from = extractNodeUri(result2);
-            URI to = createNode(player, game, reply, choiceDescriptor, questionDescriptor);
-            Neo4jUtils.createRelation(from, to, "gamelink");
+        synchronized (player) {
+            ObjectNode newNode = createJsonNode(player, game, reply, choiceDescriptor, questionDescriptor);
+            createLinkedToYoungest(key, "gamelink", newNode, player.getGameModel().getName());
         }
     }
 
@@ -167,14 +138,16 @@ public class Neo4jPlayerReply {
     }
 
     /**
-     * Calls the methods used to create a new node, its label and properties.
+     * Calls the methods used to create a new Choice node, its label and properties.
      *
-     * @param key        the key property value
-     * @param playerName the name property value
-     * @param reply      the values for the reply properties
-     * @return the URI of the newly created node
+     * @param player
+     * @param gameModelName
+     * @param reply
+     * @param choiceDescriptor
+     * @param questionDescriptor
+     * @return
      */
-    private static URI createNode(Player player, String gameModelName, Reply reply, ChoiceDescriptor choiceDescriptor, QuestionDescriptor questionDescriptor) {
+    private static ObjectNode createJsonNode(Player player, String gameModelName, Reply reply, ChoiceDescriptor choiceDescriptor, QuestionDescriptor questionDescriptor) {
         ObjectNode jsonObject = objectMapper.createObjectNode();
 
         jsonObject.put("playerId", player.getId());
@@ -187,18 +160,19 @@ public class Neo4jPlayerReply {
         jsonObject.put("question", questionDescriptor.getName());
         jsonObject.put("result", reply.getResult().getName());
         jsonObject.put("impact", StringEscapeUtils.escapeEcmaScript(reply.getResult().getImpact().getContent()));
-
-        URI node = Neo4jUtils.createNode(jsonObject.toString());
-        Neo4jUtils.addNodeLabel(node, gameModelName);
-        return node;
+        jsonObject.put("logID", player.getGameModel().getProperties().getLogID());
+        return jsonObject;
     }
 
-    private static URI createNode(String gameModelName, ObjectNode jsonObject) throws JsonProcessingException {
-        URI node = Neo4jUtils.createNode(jsonObject.toString());
-        Neo4jUtils.addNodeLabel(node, gameModelName);
-        return node;
-    }
-
+    /**
+     * Calls the methods used to create a new Number node, its label and properties.
+     *
+     * @param player
+     * @param name
+     * @param value
+     * @return
+     * @throws JsonProcessingException
+     */
     private static ObjectNode createJsonNode(Player player, String name, double value) throws JsonProcessingException {
         ObjectNode jsonObject = objectMapper.createObjectNode();
 
@@ -210,19 +184,24 @@ public class Neo4jPlayerReply {
         jsonObject.put("starttime", (new Date()).getTime());
         jsonObject.put("variable", name);
         jsonObject.put("number", value);
+        jsonObject.put("logID", player.getGameModel().getProperties().getLogID());
         return jsonObject;
     }
 
     /**
-     * @param origin
-     * @param relationLabel
-     * @param target
+     * Link a new node to an already existing newest filtered by key
+     *
+     * @param key           key to filter "youngest" nodes
+     * @param relationLabel label to put onto the relation
+     * @param target        new node to create
+     * @param label         label to put onto the node
+     * @throws JsonProcessingException
      */
     private static void createLinkedToYoungest(String key, String relationLabel, ObjectNode target, String label) throws JsonProcessingException {
         String query = "CREATE (p:`" + label + "` " + objectMapper.writeValueAsString(target) + ") WITH p AS p Match (n " + key
-                + ") WHERE n <> p WITH max(n.starttime) AS max, p AS p MATCH (n " +
-                key + ") WHERE n.starttime = max AND n <> p WITH n AS n, p AS p CREATE (n)-[:`" +
-                relationLabel + "`]->(p) return p";
+            + ") WHERE n <> p WITH max(n.starttime) AS max, p AS p MATCH (n " +
+            key + ") WHERE n.starttime = max AND n <> p WITH n AS n, p AS p CREATE (n)-[:`" +
+            relationLabel + "`]->(p) return p";
         Neo4jUtils.queryDBString(query);
     }
 
@@ -266,7 +245,7 @@ public class Neo4jPlayerReply {
     }
 
     /**
-     * Checks if an error occured during the execution of a query. The potential
+     * Checks if an error occurred during the execution of a query. The potential
      * error message is recorded in the JSON result of the query. If an error
      * was found this method raises an exception.
      *
