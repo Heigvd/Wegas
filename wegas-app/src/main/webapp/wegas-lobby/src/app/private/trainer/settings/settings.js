@@ -1,4 +1,5 @@
 angular.module('private.trainer.settings', [
+    'wegas.behaviours.text',
     'private.trainer.settings.directives'
 ])
     .config(function($stateProvider) {

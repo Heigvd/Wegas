@@ -674,12 +674,16 @@ YUI().use(function(Y) {
             },
             "wegas-dashboard": {
                 path: "js/widget/wegas-dashboard-min.js",
-                requires: ["datatable", "template", "wegas-dashboardcss", "event-focus", "wegas-console-custom"],
+                requires: ["datatable", "template", "wegas-dashboardcss", "event-focus", "wegas-console-custom", "wegas-sendmail", "font-awesome"],
                 ws_provides: "Dashboard"
             },
             "wegas-resetter": {
                 path: "js/widget/wegas-resetter-min.js",
                 ws_provides: "Resetter"
+            },
+            "wegas-sendmail": {
+                path : "js/widget/wegas-sendmail-min.js",
+                ws_provides: "SendMail"
             },
             "wegas-presencecss": {
                 type: CSS

@@ -11,7 +11,9 @@
     <a ng-if="team.players.length > 0" class="button button--small button--default-reverse button--eye" ng-class="{true: 'button--eye-slash', false:'button--eye'}[showPlayers]" ng-click="tooglePlayersVisibility()">
       <span class="button__label">{{titleShowPlayers}}</span>
     </a> 
-    <a class="button button--small button--info button--user-plus" ng-click="joinTeam(team.id)">
+    <a  class="button button--small button--info button--user-plus" 
+        confirmed-click="joinTeam(team.id)" 
+        ng-confirm-click="Join session {{team.name}} ?">
       <span class="button__label">Join Team</span>
     </a>   
 </div>

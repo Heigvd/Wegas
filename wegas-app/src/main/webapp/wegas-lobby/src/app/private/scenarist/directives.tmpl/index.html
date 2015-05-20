@@ -18,7 +18,7 @@
 	</div>
 	<div 
 		ng-if="scenaristIndexCtrl.scenarios.length"
-		ng-class="{true:'view__list--with-archive', false:''}[scenaristIndexCtrl.archives.length > 0]"
+		ng-class="{true:'view__list--with-archive', false:''}[scenaristIndexCtrl.nbArchives > 0]"
 		class="view__list" 
 		scenarios="scenaristIndexCtrl.scenarios"
 		archive="scenaristIndexCtrl.archiveScenario"
@@ -28,9 +28,9 @@
 		repeat-auto-load
 		>
 	</div>
-	<div ng-if="scenaristIndexCtrl.archives.length" class="view__archives">
+	<div ng-if="scenaristIndexCtrl.nbArchives > 0" class="view__archives">
 		<a class="button button--small button--default button--archive" ui-sref=".archives">
-			<span class="button__label">{{scenaristIndexCtrl.archives.length}} &nbsp; archives</span>
+			<span class="button__label">{{scenaristIndexCtrl.nbArchives}} &nbsp; archives</span>
 		</a>
 	</div>
 
