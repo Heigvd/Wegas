@@ -19,6 +19,8 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.rest.util.Email;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.guest.GuestToken;
 import com.wegas.core.security.persistence.Permission;
@@ -29,11 +31,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.LocalBean;
 import javax.ejb.Schedule;
 import javax.ejb.Stateless;
+import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
@@ -111,7 +117,7 @@ public class UserFacade extends BaseFacade<User> {
             throw new WegasNotFoundException("Unable to find user");
         }
     }
-    
+
     /**
      *
      *
@@ -120,9 +126,10 @@ public class UserFacade extends BaseFacade<User> {
      */
     public User getUserByUsername(String username) {
         User u = null;
-        try{
+        try {
             u = accountFacade.findByUsername(username).getUser();
-        }catch(WegasNoResultException e){}
+        } catch (WegasNoResultException e) {
+        }
         return u;
     }
 
@@ -457,12 +464,27 @@ public class UserFacade extends BaseFacade<User> {
             String body = "A new password for your wegas account has been successfully created: " + newPassword;
             String from = "noreply@" + Helper.getWegasProperty("mail.default_domain");
             if (acc != null) {
-                emailFacade.send(acc.getEmail(), from, subject, body);
+                emailFacade.send(acc.getEmail(), from, subject, body, Message.RecipientType.TO, "text/plain");
                 acc.setPassword(newPassword);
                 acc.setPasswordHex(null);                                           //force JPA update
             }
-        } catch (WegasNoResultException ex) {
+        } catch (WegasNoResultException | MessagingException ex) {
         }
+    }
+
+    public void sendEmail(Email email) throws MessagingException {
+        StringBuilder to = new StringBuilder();
+        for (Player p : email.getTo()) {
+            Player rP = playerFacade.find(p.getId());
+            AbstractAccount mainAccount = rP.getUser().getMainAccount();
+            if (mainAccount instanceof JpaAccount) {
+                JpaAccount jpaAccount = (JpaAccount) mainAccount;
+                to.append(jpaAccount.getEmail());
+                to.append(",");
+            }
+        }
+        EMailFacade emailFacade = new EMailFacade();
+        emailFacade.send(to.toString(), email.getFrom(), email.getSubject(), email.getBody(), Message.RecipientType.BCC, "text/html");
     }
 
     /**

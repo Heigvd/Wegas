@@ -1,7 +1,3 @@
-package com.wegas.core.security.util;
-
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
  /*
  * Wegas
  * http://wegas.albasim.ch
@@ -10,6 +6,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  * Licensed under the MIT License
  */
 
+package com.wegas.core.security.util;
+
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 /**
  * 
  * @author Maxence Laurent (maxence.laurent at gmail.com)
