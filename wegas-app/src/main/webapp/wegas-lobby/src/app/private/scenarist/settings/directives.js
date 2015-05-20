@@ -29,7 +29,8 @@ angular.module('private.scenarist.settings.directives', [
             scriptUri: false,
             clientScriptUri: false,
             cssUri: false,
-            pagesUri: false
+            pagesUri: false,
+            logID: false
         };
         ctrl.infos = {
             name : "",
@@ -43,7 +44,8 @@ angular.module('private.scenarist.settings.directives', [
             scriptUri: "",
             clientScriptUri: "",
             cssUri: "",
-            pagesUri: ""
+            pagesUri: "",
+            logID: ""
         };
         ctrl.tabs = initTabs();
 
@@ -68,7 +70,7 @@ angular.module('private.scenarist.settings.directives', [
                     ctrl.infos.clientScriptUri = ctrl.scenario.properties.clientScriptUri;
                     ctrl.infos.cssUri = ctrl.scenario.properties.cssUri;
                     ctrl.infos.pagesUri = ctrl.scenario.properties.pagesUri;
-
+                    ctrl.infos.logID = ctrl.scenario.properties.logID;
                }
             });
         };
@@ -112,13 +114,16 @@ angular.module('private.scenarist.settings.directives', [
                     case "pages":
                         ctrl.hasChanges.pagesUri = (ctrl.scenario.properties.pagesUri !==  changes);
                         break;
+                    case "logID":
+                        ctrl.hasChanges.logID = (ctrl.scenario.properties.logID !==  changes);
+                        break;
 
                 }
                 ctrl.hasChanges.all = ctrl.hasChanges.color || ctrl.hasChanges.icon ||
                                     ctrl.hasChanges.name || ctrl.hasChanges.comments ||
                                     ctrl.hasChanges.individual || ctrl.hasChanges.scriptUri ||
                                     ctrl.hasChanges.clientScriptUri || ctrl.hasChanges.cssUri ||
-                                    ctrl.hasChanges.pagesUri;
+                                    ctrl.hasChanges.pagesUri || ctrl.hasChanges.logID;
             }
         };
 
@@ -191,6 +196,11 @@ angular.module('private.scenarist.settings.directives', [
             return ctrl.infos.pagesUri;
         }, function(newPagesUri){
             ctrl.checkChanges("pagesUri", newPagesUri);
+        });
+        $scope.$watch(function(){
+            return ctrl.infos.logID;
+        }, function(newLogID){
+            ctrl.checkChanges("logID", newLogID);
         });
         ctrl.updateScenario();
         ctrl.activeTab("infos");

@@ -1,8 +1,10 @@
 angular.module('private', [
+    'wegas.models.permissions',
+    'wegas.models.groups',
+    'wegas.models.users',
     'wegas.models.sessions',
     'wegas.models.scenarios',
-    'wegas.models.users',
-    'wegas.models.groups',
+    'wegas.models.teams',
     'private.player',
     'private.profile',
     'private.trainer',

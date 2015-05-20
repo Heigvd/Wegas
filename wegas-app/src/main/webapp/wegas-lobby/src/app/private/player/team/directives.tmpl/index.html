@@ -1,8 +1,8 @@
 <div class="modal__header">
-	<div class="modal__illustration illustration illustration--medium illustration--icon" illustration="{{playerSessionTeamCtrl.session.properties.iconUri}}"></div>
+	<div class="modal__illustration illustration illustration--medium illustration--icon" illustration="{{playerTeamCtrl.gameIcon}}"></div>
 	<h5 class="modal__title">
-		{{playerSessionTeamCtrl.team.name | limitTo : 36}}
-      	<span ng-if="playerSessionTeamCtrl.team.name.length > 36">...</span>
+		{{playerTeamCtrl.team.name | limitTo : 36}}
+      	<span ng-if="playerTeamCtrl.team.name.length > 36">...</span>
 	</h5>
 	<a class="modal__close button button--medium button--label-off button--default-reverse button--close" ng-click="close()">
    		<span class="button__label">Close</span>
@@ -10,12 +10,12 @@
 </div>
 <div 
 	class="modal__content modal__content--nav-off" 
-	players="playerSessionTeamCtrl.team.players"
-	player-session-team-players-list >
+	players="playerTeamCtrl.team.players"
+	player-team-players-list >
 </div>
 <div class="modal__tools">
 	<div class="col-xs-3 col-xs-push-9">
-		<a class="button button--label-off button--refresh" title="Reload" ng-click="playerSessionTeamCtrl.refreshSession()">
+		<a class="button button--label-off button--refresh" title="Reload" ng-click="playerTeamCtrl.refreshTeam()">
 	    	<span class="button__label">Reload</span>
 	    </a>
 	</div>

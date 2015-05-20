@@ -7,7 +7,7 @@ angular.module('private.player.join.directives', [])
         },
         controller: 'PlayerSessionJoinController as playerSessionJoinCtrl'
     };
-}).controller('PlayerSessionJoinController', function PlayerSessionJoinController($rootScope, $scope, $stateParams, $interval, SessionsModel, Flash){
+}).controller('PlayerSessionJoinController', function PlayerSessionJoinController($rootScope, $scope, $stateParams, $interval, SessionsModel, TeamsModel, Flash){
     /* Assure access to ctrl. */
     var ctrl = this,
         refresher = null,
@@ -60,7 +60,7 @@ angular.module('private.player.join.directives', [])
             if(ctrl.newTeam.name != ""){
                 if(ctrl.sessionToJoin.access != "CLOSE"){
                     $interval.cancel(refresher);
-                    SessionsModel.createTeam(ctrl.sessionToJoin, ctrl.newTeam.name).then(function(responseCreate){
+                    TeamsModel.createTeam(ctrl.sessionToJoin, ctrl.newTeam.name).then(function(responseCreate){
                         if(!responseCreate.isErroneous()){
                             ctrl.newTeam = false;
                             refresher = $interval(function() {
@@ -79,19 +79,15 @@ angular.module('private.player.join.directives', [])
 
     /* Method used to join existing team in the session. */
     ctrl.joinTeam = function(teamId){
-        if(ctrl.sessionToJoin.access != "CLOSE"){
-            SessionsModel.joinTeam(ctrl.sessionToJoin.id, teamId).then(function(response){
-                if(!response.isErroneous()){
-                    $interval.cancel(refresher);
-                    $rootScope.$emit('newSession', true);
-                    $scope.close();
-                }else{
-                    response.flash();
-                }
-            });
-        }else{
-            Flash.danger("Session closed");
-        }
+        TeamsModel.joinTeam(ctrl.sessionToJoin, teamId).then(function(response){
+            if(!response.isErroneous()){
+                $interval.cancel(refresher);
+                $rootScope.$emit('newTeam', true);
+                $scope.close();
+            }else{
+                response.flash();
+            }
+        });
     };
 
     /* Initialize datas */
@@ -99,7 +95,6 @@ angular.module('private.player.join.directives', [])
     refresher = $interval(function() {
         findSessionToJoin();
     }, 1000);
-    
 })
 .directive('playerSessionTeamsList', function() {
   return {

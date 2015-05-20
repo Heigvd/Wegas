@@ -2,7 +2,7 @@
 <p ng-if="newTeam && teams.length >= 1">Join an existing team or create a new team</p>
 <div 
 	class="card card--medium card--users" 
-	ng-repeat="team in teams track by team.id" 
+	ng-repeat="team in teams | orderBy:'name' track by team.id"
 	join-team="joinTeam"
 	team="team"
 	player-session-team>

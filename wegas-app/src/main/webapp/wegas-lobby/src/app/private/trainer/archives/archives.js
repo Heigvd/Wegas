@@ -1,5 +1,6 @@
 angular.module('private.trainer.archives', [
-    'private.trainer.archives.directives'
+    'private.trainer.archives.directives',
+    'private.trainer.settings'
 ])
     .config(function($stateProvider) {
         $stateProvider
@@ -8,6 +9,22 @@ angular.module('private.trainer.archives', [
                 views: {
                     'modal@wegas.private': {
                         controller: 'TrainerArchivesController'
+                    }
+                }
+            })
+            .state('wegas.private.trainer.archives.settings', {
+                url: '/:id/settings',
+                views: {
+                    'modal@wegas.private': {
+                        controller: 'TrainerSettingsController'
+                    }
+                }
+            })
+            .state('wegas.private.trainer.archives.users', {
+                url: '/:id/users',
+                views: {
+                    'modal@wegas.private': {
+                        controller: 'TrainerUsersController'
                     }
                 }
             });
