@@ -5,7 +5,7 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.nlp.neo4j;
+package com.wegas.log.neo4j;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -16,11 +16,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.Stateless;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.client.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayOutputStream;
@@ -35,14 +31,16 @@ import java.util.Iterator;
  * and relations between the nodes.
  *
  * @author Gérald Eberle
+ * @author Cyril Junod <cyril.junod at gmail.com>
  */
 
-@Stateless
 public class Neo4jUtils {
 
     protected static final String NEO4J_SERVER_URL = Helper.getWegasProperty("neo4j.server.url");
 
     private static final Logger logger = LoggerFactory.getLogger(Neo4jUtils.class);
+
+    private static final Client client = ClientBuilder.newClient();
 
     /**
      * Checks if the neo4j database is running. If not, it is not necessary to
@@ -166,8 +164,8 @@ public class Neo4jUtils {
     protected static String queryDBString(String query) {
         final String qURL = NEO4J_SERVER_URL + "transaction/commit";
         String entity = "{ \"statements\" : [ { \"statement\" : \"" + StringEscapeUtils.escapeJson(query) + "\" } ] }";
-        Response response = getBuilder(qURL).post(Entity.json(entity));
         String result = null;
+        Response response = getBuilder(qURL).post(Entity.json(entity));
         if (checkValidHttpResponse(response.getStatus())) {
             result = response.readEntity(String.class);
         }
@@ -176,7 +174,7 @@ public class Neo4jUtils {
     }
 
     private static Invocation.Builder getBuilder(String URL) {
-        WebTarget target = ClientBuilder.newClient().target(URL);
+        WebTarget target = client.target(URL);
         return target.request().accept(MediaType.APPLICATION_JSON);
     }
 

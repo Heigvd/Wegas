@@ -43,6 +43,12 @@ public class GameModelProperties implements Serializable {
      */
     @JsonView({Views.ExtendedI.class})
     private String websocket = "";
+
+    /**
+     *
+     */
+    @JsonView({Views.ExtendedI.class})
+    private String logID = "";
     /**
      *
      */
@@ -79,6 +85,7 @@ public class GameModelProperties implements Serializable {
         this.setIconUri(other.getIconUri());
         this.setImageUri(other.getImageUri());
         this.setWebsocket(other.getWebsocket());
+        this.setLogID(other.getLogID());
         this.setCssUri(other.getCssUri());
         this.setScriptUri(other.getScriptUri());
         this.setClientScriptUri(other.getClientScriptUri());
@@ -138,6 +145,22 @@ public class GameModelProperties implements Serializable {
      */
     public void setWebsocket(String websocket) {
         this.websocket = websocket;
+    }
+
+    /**
+     *
+     * @return logID
+     */
+    public String getLogID() {
+        return logID;
+    }
+
+    /**
+     *
+     * @param logID logID to set
+     */
+    public void setLogID(String logID) {
+        this.logID = logID;
     }
 
     /**
