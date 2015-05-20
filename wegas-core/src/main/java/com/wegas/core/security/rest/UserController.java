@@ -14,6 +14,7 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameAccountKey;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.rest.util.Email;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
@@ -29,8 +30,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.servlet.ServletException;
@@ -81,6 +84,7 @@ public class UserController {
      */
     @EJB
     private GameFacade gameFacade;
+
     /**
      *
      * @return
@@ -249,10 +253,10 @@ public class UserController {
      */
     @POST
     @Path("Authenticate")
-    public void login(AuthenticationInformation authInfo, 
-            @Context HttpServletRequest request, 
+    public void login(AuthenticationInformation authInfo,
+            @Context HttpServletRequest request,
             @Context HttpServletResponse response) throws ServletException, IOException {
-        
+
         Subject subject = SecurityUtils.getSubject();
 
         //if (!currentUser.isAuthenticated()) {
@@ -277,7 +281,7 @@ public class UserController {
 
     @GET
     @Path("Logout")
-    public Response logout(){
+    public Response logout() {
         SecurityUtils.getSubject().logout();
         return Response.status(Response.Status.OK).build();
     }
@@ -336,7 +340,7 @@ public class UserController {
         SimplePrincipalCollection subject = new SimplePrincipalCollection(accountId, "jpaRealm");
         oSubject.runAs(subject);
     }
-    
+
     /**
      *
      * @param username
@@ -362,26 +366,27 @@ public class UserController {
         account.setEmail(email);
         this.signup(account);                                                   // and forward
     }
-    
+
     /**
      * Create a user based with a JpAAccount
      *
      * @param account
-     * @return Response : Status Not acceptable if email is wrong or username already exist. Created otherwise.
+     * @return Response : Status Not acceptable if email is wrong or username
+     *         already exist. Created otherwise.
      */
     @POST
     @Path("Signup")
     public Response signup(JpaAccount account) {
         Response r;
-        if(this.checkEmailString(account.getEmail())){
-            if(account.getUsername().equals("") || !this.checkExistingUsername(account.getUsername())){
+        if (this.checkEmailString(account.getEmail())) {
+            if (account.getUsername().equals("") || !this.checkExistingUsername(account.getUsername())) {
                 User user = new User(account);
                 userFacade.create(user);
                 r = Response.status(Response.Status.CREATED).build();
-            }else{
+            } else {
                 r = Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error("The username is already taken.")).build();
             }
-        }else{
+        } else {
             r = Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error("The email isn't correct.")).build();
         }
         return r;
@@ -399,6 +404,17 @@ public class UserController {
         userFacade.sendNewPassword(authInfo.getLogin());
     }
 
+    @POST
+    @Path("SendMail")
+    public void sendMail(Email email) {
+        email.setFrom("LittleManFromAnotherPlace");
+        try {
+            userFacade.sendEmail(email);
+        } catch (MessagingException ex) {
+            throw WegasErrorMessage.error("Error while sending email");
+        }
+    }
+
     /**
      * Get all GameModel permissions by GameModel id
      *
@@ -413,9 +429,10 @@ public class UserController {
 
         return this.userFacade.findRolePermissionByInstance(instance);
     }
-    
+
     /**
-     * Get the current user, error 400 if there is no user logged. 
+     * Get the current user, error 400 if there is no user logged.
+     *
      * @return user, the current user;
      */
     @GET
@@ -423,11 +440,12 @@ public class UserController {
     public User getCurrentUser() {
         return userFacade.getCurrentUser();
     }
-    
+
     /**
      * Find all teams for the current user.
      *
-     * @return teamsToReturn, the collection of teams where the current user is a player.
+     * @return teamsToReturn, the collection of teams where the current user is
+     *         a player.
      */
     @GET
     @Path("Current/Team")
@@ -662,7 +680,7 @@ public class UserController {
         return false;
     }
 
-    private boolean checkEmailString(String email){
+    private boolean checkEmailString(String email) {
         boolean validEmail = true;
         try {
             InternetAddress emailAddr = new InternetAddress(email);
@@ -672,10 +690,11 @@ public class UserController {
         }
         return validEmail;
     }
-    private boolean checkExistingUsername(String username){
+
+    private boolean checkExistingUsername(String username) {
         boolean existingUsername = false;
         User user = userFacade.getUserByUsername(username);
-        if(user != null){
+        if (user != null) {
             existingUsername = true;
         }
         return existingUsername;
