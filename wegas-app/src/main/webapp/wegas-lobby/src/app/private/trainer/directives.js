@@ -27,49 +27,27 @@ angular.module('private.trainer.directives', [
                     }
                 }
             };
-        ctrl.loading = {
-            sessions: true,
-            archives: true,
-            all: true
-        };
+        ctrl.loading = true;
         ctrl.search = "";
-        $rootScope.$on("changeSearch", function(e, newSearch) {
-            ctrl.search = newSearch;
-        });
-        $scope.$watch(function() {
-            return ctrl.search;
-        }, function(newSearch) {
-            $rootScope.search = newSearch;
-        });
-
         ctrl.sessions = [];
-        ctrl.archives = [];
+        ctrl.nbArchives = 0;
         ctrl.maxSessionsDisplayed = null;
 
         ctrl.updateSessions = function(updateDisplay) {
             ctrl.sessions = [];
-            ctrl.loading = {
-                sessions: true,
-                archives: true,
-                all: true
-            };
-            SessionsModel.getSessions("managed").then(function(response) {
-                ctrl.loading.sessions = false;
-                if (ctrl.loading.archives) {
-                    ctrl.loading.all = false;
-                }
+            ctrl.loading = true;
+            SessionsModel.getSessions("LIVE").then(function(response) {
+                ctrl.loading = false;
                 ctrl.sessions = response.data || [];
                 if (updateDisplay) {
                     updateDisplaySessions();
                 }
             });
-            SessionsModel.getSessions("archived").then(function(response) {
-                ctrl.loading.archives = false;
-                if (ctrl.loading.sessions) {
-                    ctrl.loading.all = false;
-                }
-                ctrl.archives = response.data || [];
-            });
+            if(!updateDisplay){
+                SessionsModel.countArchivedSessions().then(function(response) {
+                    ctrl.nbArchives = response.data;
+                });
+            }
         };
 
         ctrl.editAccess = function(sessionToSet) {
@@ -99,18 +77,20 @@ angular.module('private.trainer.directives', [
 
         $rootScope.$on('changeArchives', function(e, hasNewData) {
             if (hasNewData) {
-                SessionsModel.getSessions("archived").then(function(response) {
-                    ctrl.archives = response.data || [];
+                SessionsModel.countArchivedSessions().then(function(response) {
+                    ctrl.nbArchives = response.data;
                 });
             }
         });
+
         $rootScope.$on('changeSessions', function(e, hasNewData) {
             if (hasNewData) {
-                SessionsModel.getSessions("managed").then(function(response) {
+                SessionsModel.getSessions("LIVE").then(function(response) {
                     ctrl.sessions = response.data || [];
                 });
             }
         });
+
         $rootScope.$on('changeLimit', function(e, hasNewData) {
             if (hasNewData) {
                 ctrl.updateSessions(true);
@@ -119,7 +99,9 @@ angular.module('private.trainer.directives', [
 
         /* Request data. */
         ctrl.updateSessions(true);
-
+        SessionsModel.countArchivedSessions().then(function(response) {
+            ctrl.nbArchives = response.data;
+        });
     })
     .directive('trainerSessionsAdd', function(ScenariosModel, SessionsModel, Flash) {
         return {

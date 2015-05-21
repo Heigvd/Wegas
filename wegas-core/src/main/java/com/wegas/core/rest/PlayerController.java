@@ -10,6 +10,7 @@ package com.wegas.core.rest;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
+import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
@@ -94,8 +95,12 @@ public class PlayerController {
             r = Response.status(Response.Status.BAD_REQUEST).build();
             Team teamToJoin = teamFacade.find(teamId);
             if(teamToJoin != null){
-                if(teamToJoin.getGame().getAccess() == Game.GameAccess.OPEN 
-                        && !teamToJoin.getGame().getProperties().getFreeForAll()){
+                r = Response.status(Response.Status.FORBIDDEN).build();
+                if(
+                    !(teamToJoin instanceof DebugTeam) 
+                    && teamToJoin.getGame().getAccess() == Game.GameAccess.OPEN 
+                    && !teamToJoin.getGame().getProperties().getFreeForAll()
+                ){
                     Player existingPlayer = playerFacade.checkExistingPlayer(teamToJoin.getGameId(), currentUser.getId());
                     if(existingPlayer == null){
                         playerFacade.create(teamToJoin, currentUser);
@@ -133,10 +138,12 @@ public class PlayerController {
             SecurityHelper.checkPermission(p.getGame(), "Edit");
         }
         Team team = teamFacade.find(p.getTeamId());
-        if(team.getPlayers().size() == 1){
-            teamFacade.remove(team);
-        }else{
-            playerFacade.remove(playerId);
+        if(!(team instanceof DebugTeam)){
+            if(team.getPlayers().size() == 1){
+                teamFacade.remove(team);
+            }else{
+                playerFacade.remove(playerId);
+            }
         }
         return p;
     }

@@ -2,7 +2,7 @@ angular
     .module('private.scenarist.coscenarists.directives', [
         "wegas.directives.search.users"
     ])
-    .directive('scenaristCoscenaristsIndex', function(ScenariosModel) {
+    .directive('scenaristCoscenaristsIndex', function(ScenariosModel, PermissionsModel) {
         return {
             templateUrl: 'app/private/scenarist/coscenarists/directives.tmpl/index.html',
             scope: {
@@ -22,7 +22,7 @@ angular
                             ctrl.scenario = response.data;
 
                             // Loading permissions
-                            ScenariosModel.getPermissions($stateParams.scenarioId).then(function(response) {
+                            PermissionsModel.getScenarioPermissions($stateParams.scenarioId).then(function(response) {
                                 if (response.isErroneous()) {
                                     response.flash();
                                 } else {
@@ -38,7 +38,7 @@ angular
             }
         };
     })
-    .directive('scenaristCoscenaristsAdd', function(ScenariosModel, UsersModel) {
+    .directive('scenaristCoscenaristsAdd', function(PermissionsModel) {
         return {
             templateUrl: 'app/private/scenarist/coscenarists/directives.tmpl/add.html',
             scope: {
@@ -56,7 +56,7 @@ angular
 
                 scope.addNewCoscenarist = function() {
                     if (scope.selected_user.id) {
-                        ScenariosModel.updatePermissions(scope.scenario.id,
+                        PermissionsModel.updateScenarioPermissions(scope.scenario.id,
                             scope.selected_user.id, true, false, false).then(function(response) {
                             if (response.isErroneous()) {
                                 response.flash();
@@ -69,7 +69,7 @@ angular
             }
         };
     })
-    .directive('scenaristCoscenaristsList', function(ScenariosModel) {
+    .directive('scenaristCoscenaristsList', function(PermissionsModel) {
         return {
             templateUrl: 'app/private/scenarist/coscenarists/directives.tmpl/list.html',
             scope: {
@@ -78,7 +78,7 @@ angular
             },
             link: function(scope, element, attrs) {
                 scope.removeUser = function(scenarioId, userId) {
-                    ScenariosModel.deletePermissions(scenarioId, userId).then(function(response) {
+                    PermissionsModel.deleteScenarioPermissions(scenarioId, userId).then(function(response) {
                         if (response.isErroneous()) {
                             response.flash();
                         } else {
@@ -96,7 +96,7 @@ angular
         };
     })
 
-.directive('scenaristCoscenaristsUserPermissions', function(ScenariosModel) {
+.directive('scenaristCoscenaristsUserPermissions', function(PermissionsModel) {
     return {
         templateUrl: 'app/private/scenarist/coscenarists/directives.tmpl/user-permissions.html',
         scope: {
@@ -126,7 +126,7 @@ angular
                     scope.canCreate = true;
                 }
 
-                ScenariosModel.updatePermissions(this.scenario.id, this.userPermissions.user.id, this.canCreate, this.canDuplicate, this.canEdit).then(function(response) {
+                PermissionsModel.updateScenarioPermissions(this.scenario.id, this.userPermissions.user.id, this.canCreate, this.canDuplicate, this.canEdit).then(function(response) {
                     if (response.isErroneous()) {
                         response.flash();
                         calculatePermissions();

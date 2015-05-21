@@ -1,96 +1,5 @@
 angular.module('wegas.models.scenarios', [])
-    .service('PermissionModel', function($http, $q, $interval, Auth, Responses) {
-        var model = this;
-
-        model.getPermissionsFor = function(scenarioId) {
-            // Todo
-        }
-
-        model.updatePermissions = function(scenarioId, userId, canCreate, canDuplicate, canEdit) {
-
-            var deferred = $q.defer();
-            // Removing all permission
-            this.deletePermissions(scenarioId, userId).then(function(response) {
-                // Remove works ?
-                if (response.isErroneous()) {
-                    deferred.resolve(response);
-                } else {
-                    // Calculating new permission as wegas see them
-                    var permissions = "";
-                    if (canEdit) {
-                        permissions = "View,Edit,Delete,Duplicate,Instantiate";
-                    } else {
-                        if (canCreate && canDuplicate) {
-                            permissions = "Instantiate,Duplicate";
-                        } else if (canCreate) {
-                            permissions = "Instantiate";
-                        } else if (canDuplicate) {
-                            permissions = "Duplicate";
-                        } else {
-                            // No permissions means ok.
-                            deferred.resolve(Responses.success("Permissions updated.", true));
-                        }
-                    }
-
-                    var url = "rest/Extended/User/addAccountPermission/" +
-                        "GameModel:" + permissions + ":gm" + scenarioId + "/" + userId;
-                    // Updating permissions
-                    $http
-                        .post(ServiceURL + url, null, {
-                            "headers": {
-                                "managed-mode": "true"
-                            }
-                        })
-                        .success(function(data) {
-                            if (data.events !== undefined && data.events.length == 0) {
-                                deferred.resolve(Responses.success("Permissions updated.", true));
-                            } else if (data.events !== undefined) {
-                                deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
-                            } else {
-                                deferred.resolve(Responses.danger("Whoops...", false));
-                            }
-                        }).error(function(data) {
-                            if (data.events !== undefined && data.events.length > 0) {
-                                deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
-                            } else {
-                                deferred.resolve(Responses.danger("Whoops...", false));
-                            }
-                        });
-                }
-            });
-            return deferred.promise;
-        }
-
-        model.deletePermissions = function(scenarioId, userId) {
-            var deferred = $q.defer();
-
-            var url = "rest/Extended/User/DeleteAccountPermissionByInstanceAndAccount/gm" + scenarioId + "/" + userId;
-
-            $http
-                .delete(ServiceURL + url, {
-                    "headers": {
-                        "managed-mode": "true"
-                    }
-                })
-                .success(function(data) {
-                    if (data.events !== undefined && data.events.length == 0) {
-                        deferred.resolve(Responses.success("Permissions deleted.", true));
-                    } else if (data.events !== undefined) {
-                        deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
-                    } else {
-                        deferred.resolve(Responses.danger("Whoops...", false));
-                    }
-                }).error(function(data) {
-                    if (data.events !== undefined && data.events.length > 0) {
-                        deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
-                    } else {
-                        deferred.resolve(Responses.danger("Whoops...", false));
-                    }
-                });
-            return deferred.promise;
-        }
-    })
-    .service('ScenariosModel', function($http, $q, $interval, Auth, PermissionModel, Responses) {
+    .service('ScenariosModel', function($http, $q, $interval, Auth, Responses) {
         var model = this,
             getPath = function(status) {
                 return ServiceURL + "rest/GameModel/status/" + status + "?view=EditorExtended";
@@ -181,7 +90,6 @@ angular.module('wegas.models.scenarios', [])
             /* Update status of scenario (LIVE, BIN, DELETE, SUPPRESSED) */
             setScenarioStatus = function(scenarioId, status) {
                 var deferred = $q.defer();
-
                 $http.put(ServiceURL + "rest/GameModel/" + scenarioId + "/status/" + status + "?view=EditorExtended").success(function(data) {
                     for (var cacheName in scenarios.cache) {
                         scenario = scenarios.findScenario(cacheName, scenarioId);
@@ -231,6 +139,10 @@ angular.module('wegas.models.scenarios', [])
             }
             if (scenarioBeforeChange.properties.pagesUri !== infos.pagesUri) {
                 scenarioBeforeChange.properties.pagesUri = infos.pagesUri;
+                scenarioSetted = true;
+            }
+            if (scenarioBeforeChange.properties.logID !== infos.logID) {
+                scenarioBeforeChange.properties.logID = infos.logID;
                 scenarioSetted = true;
             }
 
@@ -453,92 +365,6 @@ angular.module('wegas.models.scenarios', [])
             return deferred.promise;
         };
 
-        model.archiveScenario = function(scenarioToArchive) {
-            var deferred = $q.defer();
-            if (scenarioToArchive["@class"] === "GameModel") {
-                setScenarioStatus(scenarioToArchive.id, "BIN").then(function(scenarioArchived) {
-                    if (scenarioArchived) {
-                        deferred.resolve(Responses.success("Scenario archived", scenarioArchived));
-                    } else {
-                        deferred.resolve(Responses.danger("Error during scenario archivage", false));
-                    }
-                });
-            } else {
-                deferred.resolve(Responses.danger("This is not a scenario", false));
-            }
-            return deferred.promise;
-        };
-
-        model.deletePermissions = function(scenarioId, userId) {
-            return PermissionModel.deletePermissions(scenarioId, userId);
-        }
-        model.updatePermissions = function(scenarioId, userId, canCreate, canDuplicate, canEdit) {
-            return PermissionModel.updatePermissions(scenarioId, userId, canCreate, canDuplicate, canEdit);
-        };
-
-        model.getPermissions = function(scenarioId) {
-
-            function mapPermissions(data) {
-                /* Transform permissions in a comprehensible way :) */
-                var permissions = [];
-
-                var gameRegex = new RegExp(":gm" + scenarioId + "$");
-                var itemsRegex = new RegExp(":(.*):");
-
-                /* For each user */
-                _.each(data, function(user) {
-
-                    /* Search for permissions linked with current scenario */
-                    var userPermissions = [];
-                    _.each(user.permissions, function(element, index, list) {
-                        if (gameRegex.test(element.value)) {
-                            var items = itemsRegex.exec(element.value);
-                            userPermissions = userPermissions.concat(items[1].split(","));
-                        }
-                    });
-
-                    userPermissions = _.uniq(userPermissions); /* Remove duplicates */
-
-                    permissions.push({
-                        user: user,
-                        permissions: userPermissions
-                    });
-
-                });
-                return permissions;
-            };
-
-            var deferred = $q.defer();
-            var scenario = scenarios.findScenario("LIVE", scenarioId);
-            if (scenario === null) {
-                deferred.resolve(Responses.danger("Whoops...", false));
-            } else {
-                var url = "rest/Extended/User/FindAccountPermissionByInstance/gm" + scenarioId
-                $http.get(ServiceURL + url, {
-                    "headers": {
-                        "managed-mode": "true"
-                    }
-                }).success(function(data) {
-                    if (data.events !== undefined && data.events.length == 0) {
-                        var permissions = mapPermissions(data.entities);
-                        deferred.resolve(Responses.success("Permissions loaded", permissions));
-                    } else if (data.events !== undefined) {
-                        deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
-                    } else {
-                        deferred.resolve(Responses.danger("Whoops...", false));
-                    }
-                }).error(function(data) {
-                    if (data.events !== undefined && data.events.length > 0) {
-                        deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
-                    } else {
-                        deferred.resolve(Responses.danger("Whoops...", false));
-                    }
-                });
-            }
-            return deferred.promise;
-        };
-
-
         model.getVersionsHistory = function(scenarioId) {
             var deferred = $q.defer();
             var url = "rest/Public/GameModel/" + scenarioId + "/File/list/History";
@@ -659,6 +485,29 @@ angular.module('wegas.models.scenarios', [])
         /*  ---------------------------------
 ARCHIVED SCENARIOS SERVICES
 --------------------------------- */
+        model.countArchivedScenarios = function() {
+            var deferred = $q.defer();
+            $http.get(ServiceURL + "rest/GameModel/status/BIN/count").success(function(data) {
+                deferred.resolve(Responses.success("Number of archived scenarios", data));
+            });
+            return deferred.promise;
+        }
+
+        model.archiveScenario = function(scenarioToArchive) {
+            var deferred = $q.defer();
+            if (scenarioToArchive["@class"] === "GameModel") {
+                setScenarioStatus(scenarioToArchive.id, "BIN").then(function(scenarioArchived) {
+                    if (scenarioArchived) {
+                        deferred.resolve(Responses.success("Scenario archived", scenarioArchived));
+                    } else {
+                        deferred.resolve(Responses.danger("Error during scenario archivage", false));
+                    }
+                });
+            } else {
+                deferred.resolve(Responses.danger("This is not a scenario", false));
+            }
+            return deferred.promise;
+        };
 
         /* Unarchive scenario */
         model.unarchiveScenario = function(scenarioToUnarchive) {

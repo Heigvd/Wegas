@@ -9,10 +9,12 @@
 	class="modal__content modal__content--nav-off"
 	sessions="trainerArchivesIndexController.archives"
 	delete="trainerArchivesIndexController.deleteArchivedSession"
+	details="trainerArchivesIndexController.showSettings"
+	users="trainerArchivesIndexController.showUsers"
 	unarchive="trainerArchivesIndexController.unarchiveSession"
-	search="trainerArchivesIndexController.sfilter.search"
+	search="trainerArchivesIndexController.search"
 	trainer-sessions-archives-list
 ></div>
 <div class="modal__tools">
-	<input ng-model="trainerArchivesIndexController.sfilter.search" type="text" class="input input--small" placeholder="Search session" />
+	<input ng-model="trainerArchivesIndexController.search" type="text" class="input input--small" placeholder="Search session" />
 </div>
