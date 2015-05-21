@@ -9,7 +9,7 @@ var $ = require('gulp-load-plugins')();
 gulp.task('styles', function () {
 
   var sassOptions = {
-    style: 'expanded'
+    outputStyle: 'expanded'
   };
 
   var injectFiles = gulp.src([
@@ -33,13 +33,13 @@ gulp.task('styles', function () {
 
   return gulp.src([
     paths.src + '/app/index.scss',
-    paths.src + '/assets/sass/index.scss',    
+    paths.src + '/assets/sass/index.scss',
     paths.src + '/app/vendor.scss'
   ])
     .pipe(indexFilter)
     .pipe($.inject(injectFiles, injectOptions))
     .pipe(indexFilter.restore())
-    .pipe($.sass(sassOptions))
+    .pipe($.cache($.sass(sassOptions)))
 
   .pipe($.autoprefixer())
     .on('error', function handleError(err) {

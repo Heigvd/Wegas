@@ -16,6 +16,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
 import javax.mail.*;
+import javax.mail.Message.RecipientType;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import org.slf4j.LoggerFactory;
@@ -38,9 +39,12 @@ public class EMailFacade {
      * @param from
      * @param subject
      * @param body
+     * @param toType
+     * @param mimetype
+     * @throws javax.mail.MessagingException when something went wrong
      */
     public void send(String to, String from,
-            String subject, String body) {
+            String subject, String body, RecipientType toType, String mimetype) throws MessagingException {
 
         Properties props = new Properties();
         final String username = Helper.getWegasProperty("mail.smtp.username");
@@ -50,15 +54,14 @@ public class EMailFacade {
 
         props.setProperty("mail.smtp.auth", Helper.getWegasProperty("mail.smtp.auth"));
         props.put("mail.smtp.port", Helper.getWegasProperty("mail.smtp.port"));
-        if (Helper.getWegasProperty("mail.smtp.starttls.enable").equals("true")) {        // TLS
+        if (Helper.getWegasProperty("mail.smtp.starttls.enable").equals("true")) {
             props.put("mail.smtp.starttls.enable", "true");
             props.put("mail.smtp.ssl.trust", Helper.getWegasProperty("mail.smtp.host"));
-        } else {                                                                // SSL
+        } else {
             props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
             props.put("mail.smtp.socketFactory.port", Helper.getWegasProperty("mail.smtp.port"));
             props.put("mail.smtp.ssl.trust", Helper.getWegasProperty("mail.smtp.host"));
         }
-
 
         Session session = Session.getInstance(props, new Authenticator() {
             @Override
@@ -67,44 +70,34 @@ public class EMailFacade {
             }
         });
 
-        javax.mail.Message msg = new MimeMessage(session);                                 // Create a new message
+        javax.mail.Message msg = new MimeMessage(session);
 
-        try {
-            msg.setFrom(new InternetAddress(from));                             // Set the FROM and TO fields
-            msg.setRecipients(javax.mail.Message.RecipientType.TO,
-                    InternetAddress.parse(to, false));
-            // -- We could include CC recipients too --
-            // if (cc != null)
-            // msg.setRecipients(Message.RecipientType.CC
-            // ,InternetAddress.parse(cc, false));
-
-            msg.setSubject(subject);                                            // Set the subject and body text
-            msg.setText(body);
-            msg.setSentDate(new Date());
-            Transport.send(msg);                                                // Send the message
-            logger.info("Email sent");
-        } catch (MessagingException ex) {
-            logger.error("Error sending mail", ex);
-        }
+        msg.setFrom(new InternetAddress(from));
+        msg.setRecipients(toType, InternetAddress.parse(to, false));
+        msg.setSubject(subject);
+        msg.setContent(body, mimetype);
+        msg.setSentDate(new Date());
+        Transport.send(msg);
     }
 
     /**
+     * @deprecated 
      *
      * @param p
      * @param from
      * @param subject
      * @param body
      */
-    public void send(Player p, String from, String subject, String body) {
-        this.send(p.getUser().getName(), from, subject, body);
+    public void send(Player p, String from, String subject, String body) throws MessagingException {
+        this.send(p.getUser().getName(), from, subject, body, RecipientType.TO, "text/plain");
     }
 
     /**
-     *
+     * @deprecated 
      * @param p
      * @param msg
      */
-    public void send(Player p, Message msg) {
+    public void send(Player p, Message msg) throws MessagingException {
         this.send(p, "admin@wegas.com", msg.getSubject(), msg.getBody());
     }
 

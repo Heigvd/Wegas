@@ -1,36 +1,29 @@
 angular.module('private.player.team.directives', [])
-    .directive('playerSessionTeamIndex', function() {
+    .directive('playerTeamIndex', function() {
         return {
             templateUrl: 'app/private/player/team/directives.tmpl/index.html',
             scope: {
                 close: "&"
             },
-            controller: 'PlayerSessionTeamController as playerSessionTeamCtrl'
+            controller: 'PlayerTeamController as playerTeamCtrl'
         };
-    }).controller('PlayerSessionTeamController', function PlayerSessionTeamController($scope, $state, $stateParams, Auth, SessionsModel) {
+    }).controller('PlayerTeamController', function PlayerTeamController($scope, $state, $stateParams, Auth, TeamsModel) {
         /* Assure access to ctrl. */
         var ctrl = this;
         /* Container for datas */
         ctrl.team = {};
         ctrl.user = {};
-        ctrl.session = "";
         /* Initialize datas */
         Auth.getAuthenticatedUser().then(function(user) {
             ctrl.user = user;
             if (user !== null) {
-                SessionsModel.getSession("played", $stateParams.id).then(function(response) {
+                TeamsModel.getTeam($stateParams.id).then(function(response) {
+                    console.log(response);
                     if (response.isErroneous()) {
                         $scope.close();
                     } else {
-                        if (!response.data.properties.freeForAll) {
-                            ctrl.session = response.data;
-                            response.data.teams.forEach(function(team) {
-                                team.players.forEach(function(player) {
-                                    if (ctrl.user.id == player.userId) {
-                                        ctrl.team = team;
-                                    }
-                                });
-                            });
+                        if (!response.data.gameFreeForAll) {
+                            ctrl.team = response.data;
                         } else {
                             $scope.close();
                         }
@@ -40,23 +33,17 @@ angular.module('private.player.team.directives', [])
                 $scope.close();
             }
         });
-        ctrl.refreshSession = function () {
-            SessionsModel.refreshSession("played", ctrl.session).then(function(response) {
+        ctrl.refreshTeam = function () {
+            TeamsModel.refreshTeam(ctrl.team).then(function(response) {
+                console.log(response);
                 if (!response.isErroneous()) {
-                    ctrl.session = response.data;
-                    response.data.teams.forEach(function(team) {
-                        team.players.forEach(function(player) {
-                            if (ctrl.user.id == player.userId) {
-                                ctrl.team = team;
-                            }
-                        });
-                    });
+                    ctrl.team = response.data;
                 } else {
                     response.flash();
                 }
             });
         };
-    }).directive('playerSessionTeamPlayersList', function() {
+    }).directive('playerTeamPlayersList', function() {
         return {
             templateUrl: 'app/private/player/team/directives.tmpl/players-list.html',
             scope: {

@@ -21,7 +21,7 @@ angular.module('private.player.team', [
             shadow = $(".shadow");      
         $animate.addClass(box, "modal--open");
         $animate.addClass(shadow, "shadow--show");
-
+        
         modal.close.then(function(result) {
             $state.go("^");
         });

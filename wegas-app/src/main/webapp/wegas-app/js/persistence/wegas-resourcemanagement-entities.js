@@ -195,14 +195,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                             }
                         }
                     },
-                    confidenceHistory: {
-                        type: ARRAY,
-                        optional: true,
-                        _inputex: {
-                            value: [],
-                            _type: HIDDEN
-                        }
-                    },
                     properties: {
                         _inputex: {
                             label: "Default properties",
@@ -467,13 +459,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             activities: {
                 type: ARRAY,
                 value: []
-            },
-            confidenceHistory: {
-                type: ARRAY,
-                _inputex: {
-                    label: "Confidence history",
-                    _type: LIST
-                }
             }
         }
     });

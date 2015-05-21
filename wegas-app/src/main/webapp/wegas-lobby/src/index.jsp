@@ -1,4 +1,4 @@
-<!doctype html> 
+<!doctype html>
 <html class="no-js" ng-app="Wegas">
     <head>
         <meta charset="utf-8">
@@ -7,7 +7,7 @@
         <meta name="viewport" content="width=device-width">
         <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
-        <!-- build:css({.tmp/serve,src}) assets/css/app.css -->
+        <!-- build:css({.tmp/serve,src}) assets/css/app-min.css -->
         <!-- inject:css -->
         <!-- css files will be automaticaly insert here -->
         <!-- endinject -->
@@ -31,13 +31,13 @@
             r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
             ga('create','UA-16543988-2');ga('send','pageview');
         </script>
-        <!-- build:js(src) assets/js/vendor.js -->
+        <!-- build:js(src) assets/js/vendor-min.js -->
         <!-- bower:js -->
         <!-- run `gulp wiredep` to automaticaly populate bower script dependencies -->
         <!-- endbower -->
         <!-- endbuild -->
 
-        <!-- build:js({.tmp/serve,.tmp/partials,src}) assets/js/app.js -->
+        <!-- build:js({.tmp/serve,.tmp/partials,src}) assets/js/app-min.js -->
         <!-- inject:js -->
         <!-- js files will be automaticaly insert here -->
         <!-- endinject -->
