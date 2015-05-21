@@ -9,7 +9,6 @@ package com.wegas.resourceManagement.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  *
@@ -27,14 +25,10 @@ import com.fasterxml.jackson.annotation.JsonView;
  */
 @Entity
 @Access(AccessType.FIELD)
-@JsonIgnoreProperties("moralHistory")
+@JsonIgnoreProperties({"moralHistory", "confidenceHistory"})
 public class ResourceInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
-    /**
-     *
-     */
-    public static final int HISTORYSIZE = 20;
     /**
      *
      */
@@ -77,13 +71,6 @@ public class ResourceInstance extends VariableInstance {
      *
      */
     private int confidence;
-    /**
-     *
-     */
-    @ElementCollection
-    @Basic(fetch = FetchType.LAZY)
-    @JsonView(Views.ExtendedI.class)
-    private List<Integer> confidenceHistory = new ArrayList<>();
 
     /**
      *
@@ -112,35 +99,6 @@ public class ResourceInstance extends VariableInstance {
         this.properties.putAll(other.getProperties());
         //this.setMoral(other.getMoral());
         this.setConfidence(other.getConfidence());
-        //this.setMoralHistory(other.getMoralHistory());
-        this.setConfidenceHistory(other.getConfidenceHistory());
-    }
-
-    /**
-     *
-     */
-    @PreUpdate
-    public void preUpdate() {
-        this.stepHistory();
-    }
-
-    /**
-     *
-     */
-    public void stepHistory() {
-        capAdd(confidence, confidenceHistory);
-    }
-
-    /**
-     *
-     * @param el
-     * @param target
-     */
-    public static void capAdd(Object el, List target) {
-        target.add(el);
-        if (target.size() > HISTORYSIZE) {
-            target.remove(0);
-        }
     }
 
     /**
@@ -290,8 +248,7 @@ public class ResourceInstance extends VariableInstance {
     }
 
     /**
-     * @deprecated 
-     * @return the skillset
+     * @deprecated @return the skillset
      */
     @JsonIgnore
     public Map<String, Long> getDeserializedSkillsets() {
@@ -299,8 +256,7 @@ public class ResourceInstance extends VariableInstance {
     }
 
     /**
-     * @deprecated 
-     * @param skillsets
+     * @deprecated @param skillsets
      */
     public void setSkillsets(Map<String, Long> skillsets) {
         this.skillsets = skillsets;
@@ -349,7 +305,7 @@ public class ResourceInstance extends VariableInstance {
 
     /**
      * @return the moral
-     * @deprecated 
+     * @deprecated
      */
     @JsonIgnore
     public Integer getMoral() {
@@ -358,7 +314,7 @@ public class ResourceInstance extends VariableInstance {
 
     /**
      * @param moral the moral to set
-     * @deprecated 
+     * @deprecated
      */
     @JsonProperty
     public void setMoral(int moral) {
@@ -373,44 +329,12 @@ public class ResourceInstance extends VariableInstance {
     }
 
     /**
-     * Set the confidence's value and add confidence value in
-     * confidenceHistorique.
+     * Set the confidence's value
      *
      * @param confidence the confidence to set
      */
     public void setConfidence(int confidence) {
         this.confidence = confidence;
-    }
-
-    /**
-     * @return the confidenceHistoric
-     */
-    public List<Integer> getConfidenceHistory() {
-        return this.confidenceHistory;
-    }
-
-    /**
-     * @param confidenceHistory the confidenceHistory to set
-     */
-    public void setConfidenceHistory(List<Integer> confidenceHistory) {
-        this.confidenceHistory = confidenceHistory;
-    }
-
-    /**
-     * @param ref a index value corresponding to a value
-     * @return the value corresponding at the 'ref' param in the
-     * confidenceHistory
-     */
-    public Integer getConfidenceHistory(Integer ref) {
-        return this.confidenceHistory.get(ref);
-    }
-
-    /**
-     * @param ref a index value corresponding to a value
-     * @param value the new value
-     */
-    public void setConfidenceHistory(Integer ref, Integer value) {
-        this.confidenceHistory.set(ref, value);
     }
 
     /**
