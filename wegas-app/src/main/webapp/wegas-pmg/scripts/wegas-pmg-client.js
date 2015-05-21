@@ -398,12 +398,6 @@ app.once("render",
                     _type: HIDDEN
                 }
             };
-            persistence.ResourceInstance.ATTRS.confidenceHistory = {
-                type: ARRAY,
-                _inputex: {
-                    _type: HIDDEN
-                }
-            };
             persistence.ResourceDescriptor.METHODS = Y.Object.filter(persistence.ResourceDescriptor.METHODS,
                 function(m, k) {
                     return !(k.match(/confidence/i)
