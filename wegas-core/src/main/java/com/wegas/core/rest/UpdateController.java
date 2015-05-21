@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -161,20 +163,33 @@ public class UpdateController {
 
     private String addVariable(GameModel gm, String json, String varName, String parentName) {
         ObjectMapper mapper = JacksonMapperProvider.getMapper();
+        logger.error("Going to add " + parentName + "/" + varName + " variable");
+
         try {
             // Does the variable already exists ? 
             descriptorFacade.find(gm, varName);
+            logger.error("  -> variable " + varName + " exists : SKIP");
             return "already exists";
         } catch (WegasNoResultException ex) {
-            // NoResult -> OK, proceed 
+            logger.error("  -> variable " + varName + " not found : PROCEED");
+        }
+
+        try {
+            // assert the parent already exists ? 
+            descriptorFacade.find(gm, parentName);
+            logger.error("  -> variable " + parentName + " exists : PROCEED");
+        } catch (WegasNoResultException ex) {
+            logger.error("  -> variable " + parentName + " not found : FAILED");
+            return "parent not found";
         }
         try {
             VariableDescriptor vd = mapper.readValue(json, VariableDescriptor.class);
             descriptorController.createChild(gm.getId(), parentName, vd);
+            em.flush();
             return "OK";
         } catch (WegasNotFoundException ex) {
             logger.error("Error white adding the variable : parent " + parentName + " not found", ex);
-            return "Parent not found";
+            return "Parent (2) not found";
         } catch (IOException ex) {
             logger.error("Error While Reading JSON: " + json, ex);
             return "JSON Error";
