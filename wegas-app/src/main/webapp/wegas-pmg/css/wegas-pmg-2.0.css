@@ -1,0 +1,857 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
+
+.layout * {
+    font-family: Helvetica, Arial, "Lucida Grande", sans-serif;
+    font-weight:300;
+}
+
+.wegas-loading-overlay {
+    background: rgba(255, 255, 255, 0.0);
+}
+
+.pmg--app{
+    display:block;
+    position:relative;
+    width:100%;
+    height:100%;
+    margin:0px;
+    padding:0px;
+}
+
+/*--------------------------------header--------------------------------------*/
+.pmg-header {
+    display:block;
+    position:absolute;
+    width:100%;
+    height:160px;
+    top:0px;
+    left:0px;
+    margin:0px;
+    padding:0px;
+    z-index:2;
+}
+
+.pmg-header .pmg--header__identity{
+    display:block;
+    position:absolute;
+    top:0px;
+    left:0px;
+    width:180px;
+    height:160px;
+    margin:0px;
+    padding:0px;
+    background: #4e525e;
+    z-index:4;
+}
+
+.pmg-header .pmg--header__identity .wegas-image{
+    display:block;
+    position:relative;
+    width:104px;
+    height:104px;
+    padding:12px 38px 4px 38px;
+}
+
+.pmg-header .pmg--header__identity .wegas-text{
+    display:block;
+    position:relative;
+    width:180px;
+    height:20px;
+    padding:8px 0px 12px 0px;
+    margin:0px;
+    color:white;
+    text-align:center;
+}
+
+.pmg-header .pmg--header__taskbar{
+    display:block;
+    position:absolute;
+    top:0px;
+    left:0px;
+    width:100%;
+    height:160px;
+    margin:0px;
+    padding:0px;
+    box-sizing: border-box;
+    padding-left:180px;
+    background: #343843;
+    z-index:3;
+}
+
+.pmg--header__taskbar .pmg--taskbar__infos{
+    display:block;
+    position:relative;
+    width:100%;
+    height:120px;
+    margin:0px;
+    padding:0px;
+}
+
+.pmg--header__taskbar .pmg--taskbar__infos .wegas-list-content{
+    display:block;
+    position:relative;
+    width:100%;
+    height:100%;
+    margin:0px;
+    padding:0px;
+}
+
+
+.pmg--taskbar__infos .pmg--infos__phases{
+    display:block;
+    position:relative;
+    height:100%;
+    float:left;
+}
+
+.pmg--infos__phases .pmg--phases__state{
+    display:block;
+    position:relative;
+    float:left;
+    width:416px;
+    height:120px;
+}
+
+.pmg--phases__state  .wegas-pmg-breadcrumb {
+    display:block;
+    position:relative !important;
+    width:376px;
+    margin:32px 8px 0px 32px;
+}
+
+.wegas-pmg-breadcrumb span{
+    display:block;
+    position:relative;
+    width:80px;
+    height:30px;
+    padding:0px;
+    margin:0px 7px;
+    color:black;
+    line-height:30px;
+    float:left;
+    text-align: center;
+    font-size: 9pt;
+    color:white;
+    background-color:#525564;
+}
+
+.wegas-pmg-breadcrumb .previous{
+    background-color:#7b818f;
+}
+
+.wegas-pmg-breadcrumb .current{
+    background-color: #ed6a3c;
+}
+
+.wegas-pmg-breadcrumb span:before, .wegas-pmg-breadcrumb span:after{
+    content:"";
+    display:block;
+    position:absolute;
+    top:0px;
+    width:10px;
+    height:30px;
+    background-size:100%;
+    background-position:0 0;
+    background-repeat:no-repeat;
+}
+.wegas-pmg-breadcrumb span:before{
+    left:-10px;
+    background-image: url(../../wegas-pmg/images/pmg2_start_period_next.png);
+}
+.wegas-pmg-breadcrumb span:after{
+    right:-10px;
+    background-image: url(../../wegas-pmg/images/pmg2_end_period_next.png);
+}
+.wegas-pmg-breadcrumb .previous:before{
+    background-image: url(../../wegas-pmg/images/pmg2_start_period_past.png);
+}
+.wegas-pmg-breadcrumb .previous:after{
+    background-image: url(../../wegas-pmg/images/pmg2_end_period_past.png);
+}
+.wegas-pmg-breadcrumb .current:before{
+    background-image: url(../../wegas-pmg/images/pmg2_start_period_current.png);
+}
+.wegas-pmg-breadcrumb .current:after{
+    background-image: url(../../wegas-pmg/images/pmg2_end_period_current.png);
+}
+
+.pmg--phases__state .pmg-period{
+    display:block;
+    position:relative !important;
+    width:372px;
+    top:2px !important;
+    background-color:#25252f;
+    height:18px;
+    margin:0px 29px;
+    padding:1px;
+    clear:both;
+    float:none;
+}
+
+
+
+.wegas-template-valuebox-unit {
+  background: #525564; 
+  border: none;
+  margin: 1px 1px;
+  width: 18px;
+  height: 16px;
+  line-height: 18px;
+  float: left;
+  color:white;
+  text-align: center;
+}
+.wegas-template-valuebox-previous{
+  background: #7b818f;
+  color:white;
+}
+.wegas-template-valuebox-selected{
+  background: #446d71;
+  color:white;
+}
+
+.pmg-nextweek {
+    display:block;
+    position:relative !important;
+    color: white;
+    width:80px;
+    height:30px;
+    float:right;
+    line-height:28px;
+    font-size:12px;
+    font-weight: bolder;
+    background: none;
+    margin:32px 8px;
+    border-radius:8px;
+    background-color:#446d71;
+}
+
+.pmg-nextweek:after {
+    content: "Next period";
+}
+.passPhase:after {
+    content: "Next phase";
+}
+
+.pmg--taskbar__infos .pmg--infos__indicators{
+    display:block;
+    position:relative;
+    width:630px;
+    height:100%;
+    float:right;
+    border-left:solid 1px #4f515d;
+}
+
+.pmg--indicator{
+    display:block;
+    position:relative;
+    width:100px;
+    height:90px;
+    margin:8px 0px;
+}
+.pmg--indicator.wegas-gauge .label, .pmg--indicator .pmg--indicator__label .wegas-template-content{
+    display:block;
+    position:absolute;
+    top:54px;
+    width:100px;
+    text-align:center;
+    color:#9d9ea3;
+    font-size:12px;
+    font-weight:400;
+}
+.pmg--indicator.wegas-gauge .label{
+    top:58px;
+}
+
+.pmg--indicator .percent{
+    margin:20px 34px 0px 34px;
+    display:block;
+    position:relative;
+    height:20px;
+    width:36px;
+    color:white;
+    background-color:#454753;
+    border-radius:4px;
+    line-height:20px;   
+}
+
+.pmg--indicator.wegas-gauge .percent{
+    margin:24px 34px 0px 34px;
+}
+
+.pmg--taskbar__infos .pmg--infos__indicators .pmg--time-cards{
+    display:block;
+    position:relative;
+    width:129px;
+    height:100%;
+    border-left:solid 1px #4f515d;
+}
+
+.pmg--time-cards .wegas-text{
+    display:block;
+    position:relative !important;
+    width:129px;
+    height:20px;
+    padding:28px 0px 0px 0px;
+    text-align:center;
+    color:#9d9ea3;
+    font-size:12px;
+    font-weight:400;
+}
+.pmg--time-cards .wegas-template{
+    display:block;
+    position:relative !important;
+    width:80px;
+    margin:6px 24px;
+    background-color: #454753;
+    font-size:18px;
+    padding:8px 16px;
+    text-align:right;
+    box-sizing:border-box;
+    border-radius:16px;
+    color:white;
+    font-weight:600;
+    background-image: url(../../wegas-pmg/images/pmg2_icon_time.png);
+    background-size:28px;
+    background-position:12px 6px;
+    background-repeat:no-repeat;
+}
+
+.pmg--header__taskbar .pmg--taskbar__menus{
+    display:block;
+    position:relative;
+    width:100%;
+    height:40px;
+    margin:0px;
+    padding:0px;
+    background: #272731;
+}
+
+.pmg--taskbar__menus .pmg--menus__main-menu{
+    display:block;
+    position:relative;
+    width:auto;
+    height:40px;
+    float:left;
+}
+.pmg--taskbar__menus .pmg--menus__main-menu .wegas-button{
+    display:block;
+    position:relative;
+    width:auto;
+    padding:0px 16px;
+    height:40px;
+    float:left;
+    background:none;
+    color:#9a9b9d;
+    text-transform: uppercase;
+}
+
+.pmg--taskbar__menus .pmg--menus__main-menu  .hidden-button{
+    display:none;
+}
+
+.pmg--taskbar__menus .yui3-button-selected{
+    border-top:solid 2px #ed6a3c;
+    color:white !important;
+    background:none;
+}
+.pmg--taskbar__menus .yui3-button-selected:before{
+    display:block;
+    position:absolute;
+    content:"";
+    bottom:0px;
+    left:50%;
+    width:16px;
+    height:8px;
+    margin-left:-8px;
+    background:none;
+    background-image:URL("../../wegas-pmg/images/btn_main_over.png");
+    background-position:bottom center;
+    background-size:100%;
+    background-repeat:no-repeat;
+}
+
+.pmg--taskbar__menus .pmg--menus__secondary-menu{
+    display:block;
+    position:relative;
+    width:323px;
+    height:40px;
+    float:right;
+}
+
+.pmg--taskbar__menus .pmg--menu__divider{
+    display:block;
+    position:relative;
+    width:1px;
+    height:40px;
+    float:left;
+    background-color:#4f515d;
+}
+
+.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button{
+    display:block;
+    position:relative;
+    float:left;
+    padding:0px;
+    margin:0px;
+    width:64px;
+    height:40px;
+    background:none;
+    background-size:65%;
+    background-position:center;
+    background-repeat:no-repeat;
+    cursor:pointer;
+}
+.wegas-button .wegas-unreadcount {
+    position:relative;
+    display:block;
+    width:100%;
+    height:100%;
+    background:none;
+}
+.wegas-button .wegas-unreadcount .value{
+    position:absolute;
+    width:16px;
+    height:16px;
+    padding: 0px;
+    margin:-14px 0 0 4px;
+    top:50%;
+    left:50%;
+    font-size: 11px;
+    line-height:16px;
+    font-weight:bold;
+    color:#272731;
+    box-shadow:none;
+    border-radius: 50%;
+    background:none;
+    background-color: #18d8d9;
+}
+
+.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.pmg--icon-action{
+    background-image: url(../../wegas-pmg/images/pmg2_icon_actions.png);
+}
+.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.pmg--icon-question{
+    background-image: url(../../wegas-pmg/images/pmg2_icon_choices.png);
+}
+.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.pmg--icon-mail{
+    background-image: url(../../wegas-pmg/images/pmg2_icon_mail.png);
+}
+.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.pmg--icon-history{
+    background-image: url(../../wegas-pmg/images/pmg2_icon_folder.png); 
+}
+.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.wegas-login{
+    background-image: url(../../wegas-pmg/images/pmg2_icon_settings.png); 
+    overflow: hidden;
+    text-indent: -1000px;
+}
+.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.wegas-login:after{
+    display:none;
+}
+
+/* PMG Body */
+
+.pmg--main-area{
+    display:block;
+    position:absolute;
+    width:100%;
+    height:100%;
+    margin:0px;
+    padding:0px;
+    top:0px;
+    left:0px;
+    box-sizing: border-box;
+    padding-top:160px;
+    z-index:1;
+    background:#ffffff;
+}
+
+.pmg--main-area > .wegas-list-content{
+    display:block;
+    position:relative;
+    width:100%;
+    height:100%;
+}
+
+.pmg--body{
+    display:block;
+    position:relative;
+    width:100%;
+    height:100%;
+    overflow-x:hidden;
+    overflow-y:auto;
+}
+
+/*-----------------------------------body-------------------------------------*/
+
+.title{
+    height:26px;
+    width:50%;
+    float:left;
+}
+h2{
+    padding: 3px 0 5px 5px;
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #0981A9;
+}
+
+/*---------------------------questions and actions----------------------------*/
+.questions-page .wegas-text,
+.actions-page .wegas-text{
+    height:27px;
+}
+
+/* TabView Styles */
+.yui3-skin-sam .wegas-mcqtabview-content .yui3-tabview .yui3-tabview-content .yui3-tabview-list {
+    display: inline-block;
+    float:left;
+    border: none;
+    width: 50%;
+}
+.yui3-skin-sam .wegas-mcqtabview-content .yui3-tabview .yui3-tabview-content .yui3-tabview-panel {
+    display:inline-block;
+    width:50%;
+    float:left;
+    padding:0;
+    border:none;
+    background:white;
+}
+/*-----------------------------inbox and history------------------------------*/
+.inbox-page .wegas-text,
+.history-page .wegas-text{
+    height:27px;
+}
+.yui3-skin-sam .wegas-inbox,
+.yui3-skin-sam .wegas-mcqtabview{
+    position: absolute;
+    top: 25px;
+    bottom: 1px;
+}
+.yui3-skin-sam  .wegas-inbox .wegas-inbox-content .yui3-tabview .yui3-tabview-content .yui3-tabview-list {
+    display: inline-block;
+    float:left;
+    border: none;
+    width: 50%;
+}
+.yui3-skin-sam  .wegas-inbox .wegas-inbox-content .yui3-tabview .yui3-tabview-content .yui3-tabview-panel {
+    display:inline-block;
+    width:50%;
+    padding:0;
+    border: none;
+}
+.wegas-inbox .read{
+    padding:0 5px 0;
+}
+.wegas-inbox .body{
+    position: relative;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    text-align: justify;
+}
+.wegas-inbox .replies > div {
+    color : #bbb;
+    border-bottom: 1px solid lightgray;
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+}
+.wegas-inbox .replies > div:first-child {
+    color : black;
+}
+.wegas-inbox .replies > div:last-child {
+    border-bottom: none;
+}
+/*----------------------------------Datatable---------------------------------*/
+.body .yui3-datatable table{
+    width:100%;
+    border: none;
+    font-size: 0.9em;
+}
+.body .yui3-datatable-columns th{
+    background: none;
+    color: #0981A9;
+    border-bottom: 2px solid #0981A9;
+    /*background-repeat: repeat-x;*/
+}
+.body .yui3-datatable-columns th.right div {
+    text-align: right;
+}
+.body .yui3-datatable-cell,
+.body .yui3-datatable-header{
+    border-left:none;
+}
+
+td.yui3-datatable-col-Realised:after {
+    content: " %";
+}
+
+.body .yui3-datatable-odd .yui3-datatable-cell,
+.body .yui3-datatable-even .yui3-datatable-cell{
+    background: none;
+    height: 40px;
+    padding: 0 25px 0 10px;
+}
+.yui3-skin-sam .yui3-datatable-data .yui3-datatable-even .yui3-datatable-sorted,
+.yui3-skin-sam .yui3-datatable-data .yui3-datatable-odd .yui3-datatable-sorted  {
+    background-color: #f1f1f1;
+}
+.body .yui3-datatable-cell{
+    border-color: lightgray;
+    border-bottom:1px solid lightgray;
+}
+
+/*---------------------------- schedulecolumn -------------------------------- */
+.yui3-datatable-table th.schedulecolumn {
+    text-align: center;
+    width: 3.4em;
+    padding-left: 0;
+    padding-right: 0;
+}
+.yui3-datatable-table .yui3-datatable-data .schedulecolumn {
+    padding: 0 0 0 0;
+}
+
+/*.body .yui3-datatable-data tr:hover td{
+    background-image:url(wegas-pmg/images/previous-week.png);
+    background-repeat: repeat;
+}*/
+/*
+
+.body .description{
+    max-width: 250px;
+    position:fixed;
+    z-index: 100;
+    padding:5px;
+    background-color:white;
+    border:solid 1px #888;
+    border-radius: 5px;
+    box-shadow: 4px 4px 6px #aaa, inset 1px 1px 5px #aaa;
+}
+
+.body .description .task_name{
+    text-transform: capitalize;
+    text-decoration: underline;
+    padding-bottom: 10px;
+}*/
+
+/*-------------------------------task-page------------------------------------*/
+/*.task-page .yui3-datatable-col-treeblenub{
+    width:20px;
+}*/
+
+/*----------------------task-page & gantt-page--------------------------------*/
+/*.task-page .yui3-datatable-col-No,
+.gantt-page .yui3-datatable-col-No{
+    width:20px;
+}
+
+.task-page .yui3-datatable-data  .notstarted .yui3-datatable-cell ,
+.gantt-page .yui3-datatable-data .notstarted .yui3-datatable-cell{
+    background-color: transparent;
+}
+
+.task-page .yui3-datatable-data  .started .yui3-datatable-cell ,
+.gantt-page .yui3-datatable-data .started .yui3-datatable-cell{
+    background-color: #FEFFCB;
+}
+
+.task-page .yui3-datatable-data  .completed .yui3-datatable-cell ,
+.gantt-page .yui3-datatable-data .completed .yui3-datatable-cell{
+    background-color: #CCFFCC;
+}*/
+
+/*------------------------gantt-page & resources-pages------------------------*/
+/*.gantt-page .yui3-datatable-table .yui3-datatable-data .cell-gantt,
+.resources-page .yui3-datatable-table .yui3-datatable-data .cell-gantt{
+    background-color: transparent;
+    border-left:1px #DBDBDB solid;
+    width:40px;
+    text-align: center;
+    padding:0;
+    overflow:hidden;
+}*/
+
+/*.gantt-page .yui3-datatable-table .yui3-datatable-data .scheduled,
+.resources-page .yui3-datatable-table .yui3-datatable-data .scheduled{
+    display:block;
+    background-color: #3399FF;
+    width:100%;
+    height:40%;
+    padding-top: 1px;
+}*/
+
+/*.gantt-page .yui3-datatable-col-Name,
+.resources-page .yui3-datatable-col-Name{
+    width:300px;
+}
+
+.gantt-page .yui3-datatable-columns .previous-week,
+.resources-page .yui3-datatable-columns .previous-week{
+    background-color:#BBBBBB;
+    background-image: none;
+}
+
+.gantt-page .yui3-datatable-columns .current-week,
+.resources-page .yui3-datatable-columns .current-week{
+    background-image: url(wegas-pmg/images/next.png), url(wegas-pmg/images/h2.png);
+    background-repeat: no-repeat, repeat-x;
+    background-position: left, center;
+}
+
+.gantt-page .yui3-datatable-table .yui3-datatable-data .previous-week,
+.resources-page .yui3-datatable-table .yui3-datatable-data .previous-week{
+    background-color:#DDDDDD;
+}*/
+
+/*----------------------------------SlidePanel----------------------------*/
+.resources-page .slidepanel-title,
+.project-page .slidepanel-title {
+    height:27px;
+    width:100%;
+}
+
+/*---------------------------- project-page ---------------------------------*/
+.project-page .pmg-project-overview {
+    position:relative;
+    float: left;
+    width: 35%;
+}
+
+.project-page .charts-column {
+    width: 60%;
+    padding-left: 5%;
+    height: 100%;
+}
+
+.project-page .charts-column .chart {
+    height: 50%;
+    /* width: 60%; */
+}
+
+.project-page h2 {
+    padding-top: 21px;
+    padding-left: 16px;
+}
+.project-page .wegas-chart {
+    margin-left: 24px;
+    margin-top: 15px;
+}
+.pmg-project-overview-title, 
+.pmg-project-overview-content {
+    position:relative !important;
+}
+
+.project-page .pmg-project-overview .pmg-project-overview-content,
+.project-page .finances .wegas-pmg-slidepanel-content {
+    /* margin-top: 15px; */
+    padding-left: 30px;
+    box-sizing: border-box;
+}
+.project-page .bacs, .project-page .initial-budget, .project-page .current-time, .project-page .projectCompleteness, .project-page .projectFixedCost, .project-page .taskTotal {
+    font-weight: bold;
+    font-size: 10pt;
+    margin-top: 2px;
+    color: rgb(28, 28, 28);
+}
+.project-page .wages, .project-page .fixedCosts, .project-page .unworkedHours,
+.project-page .current-period, .project-page .current-stage {
+    margin-left: 20px;
+    margin-top: 5px;
+}
+.project-page .total {
+    font-weight: bold;
+    font-size: 10pt;
+    margin-top: 10px;
+}
+/*.project-page .wages .variableValue,
+.project-page .bacs .variableValue,
+.project-page .fixedCosts .variableValue,
+.project-page .unworkedHours .variableValue,
+.project-page .total .variableValue,
+.project-page .projectFixedCost .variableValue,
+.project-page .taskTotal .variableValue,
+.project-page .projectCompleteness .variableValue,
+.project-page .current-period .variableValue,
+.project-page .current-stage .variableValue */
+.project-page .variableValue 
+{
+    float: right;
+    /* margin-right: 280px; */
+}
+.project-page .variableValue input{
+    width: 6em;
+}
+/*---------------------------- Resources page ---------------------*/
+.wegas-pmg-resourcespanels-content .pmg-legend {
+    /* margin: 10px 0 0 0; */
+    /* padding: 10px 0px 10px 0px; */
+}
+.resources-page .wegas-pmg-slidepanel {
+    border-bottom: 1px solid lightgray;
+}
+.resources-page .slidepanel-title{
+    background: url(../../wegas-app/images/wegas-icon-toggle.png) no-repeat 7px -110px;
+    padding-left: 16px;
+    cursor:pointer;
+}
+.resources-page .wegas-slidepanel-toggled .slidepanel-title{
+    background: url(../../wegas-app/images/wegas-icon-toggle.png) no-repeat 7px -71px;
+}
+.wegas-pmg-reservation .present, .wegas-pmg-reservation .futur {
+    cursor: pointer;
+}
+.wegas-pmg-reservation .noteditable-period {
+    cursor: default;
+}
+/*---------------------------- Cursor pointer ---------------------*/
+.gantt-planning-page .present, .gantt-planning-page .futur,
+.assignment span, table tbody .popup{
+    cursor: pointer;
+}
+
+/*----------------------------Task-Plannification-Page------------------*/
+.task-planning-page input {
+    width: 85px;
+}
+
+/*---------------------------- Gantt-Execution-Page---------------------*/
+.gantt-execution-page .planning {
+    background-color: #878787;
+    opacity: 0.3;
+}
+.gantt-execution-page .baseline:only-child{
+    margin-top: -14px;
+}
+.gantt-execution-page .activity:only-child,
+.gantt-execution-page .progress:nth-of-type(1) {
+    margin-top: 14px;
+}
+
+/*---------------------------- EVM-page---------------------------------*/
+.evm-page .slidepanel-content{
+    overflow:hidden;
+    width:100%;
+}
+.evm-page .slidepanel-title{
+    height:26px;
+    width:100%;
+    padding-bottom: 1px;
+}
+.evm-page .wegas-chart {
+    margin-left: 48px;
+    margin-top: 15px;
+}
+
+/*----------------------------- Table popup ----------------------------------*/
+.popupTitel {
+    margin-bottom: 3px;
+    font-weight: bold;
+    font-size: 9pt;
+}
