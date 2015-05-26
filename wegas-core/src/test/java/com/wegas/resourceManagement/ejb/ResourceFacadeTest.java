@@ -36,36 +36,6 @@ public class ResourceFacadeTest extends AbstractEJBTest {
     static final private Logger logger = LoggerFactory.getLogger(ResourceFacade.class);
 
     /**
-     * Test of history methods, of class ResourceInstance
-     *
-     * @throws NamingException
-     */
-    @Test
-    public void testResourceHistory() throws NamingException {
-        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
-        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
-
-        // Create a resource
-        final ResourceDescriptor res = new ResourceDescriptor();
-        res.setLabel("Paul");
-        res.setDefaultInstance(new ResourceInstance());
-        vdf.create(gameModel.getId(), res);
-
-        // Test history
-        ResourceInstance resI = res.getInstance(player);
-        for (int i = 0; i < ResourceInstance.HISTORYSIZE + 10; i++) {
-            resI.setConfidence(i);
-            vif.update(resI.getId(), resI);
-        }
-        resI = (ResourceInstance) vif.find(resI.getId());
-        assertEquals(Integer.valueOf(ResourceInstance.HISTORYSIZE + 9).intValue(), resI.getConfidence());
-        assertEquals(ResourceInstance.HISTORYSIZE, resI.getConfidenceHistory().size());
-
-        // Clean
-        vdf.remove(res.getId());
-    }
-
-    /**
      * Test of assign method, of class ResourceFacade.
      */
     @Test

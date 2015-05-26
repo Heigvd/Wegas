@@ -25,7 +25,11 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 @Entity
-@Table(name = "FSMinstance")
+@Table(name = "FSMinstance"/*, 
+        indexes = {
+            @Index(columnList = "transitionHistory.statemachineinstance_variableinstance_id")
+        }*/
+)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Access(AccessType.FIELD)
 //@XmlRootElement

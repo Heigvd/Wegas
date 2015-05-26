@@ -28,6 +28,11 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Entity
 //@XmlType(name = "Message")
 @JsonTypeName(value = "Message")
+
+@Table(indexes = {
+    @Index(columnList = "inboxinstance_variableinstance_id")
+})
+
 public class Message extends NamedEntity {
 
     private static final long serialVersionUID = 1L;

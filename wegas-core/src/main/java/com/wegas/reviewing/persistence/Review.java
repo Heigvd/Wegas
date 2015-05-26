@@ -17,8 +17,10 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 /**
  * A review is linked to two PeerReviewInstnace : the one who reviews and the
@@ -42,10 +44,14 @@ import javax.persistence.OneToMany;
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
 @Entity
+@Table(indexes = {
+    @Index(columnList = "author_variableinstance_id"),
+    @Index(columnList = "reviewer_variableinstance_id")
+})
 public class Review extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
-    
+
     public enum ReviewState {
 
         DISPATCHED,

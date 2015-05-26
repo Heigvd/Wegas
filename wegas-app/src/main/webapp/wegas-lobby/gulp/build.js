@@ -1,7 +1,6 @@
 'use strict';
 
 var gulp = require('gulp');
-var argv = require('yargs').argv;
 var paths = gulp.paths;
 var merge = require('merge-stream');
 
@@ -44,18 +43,18 @@ gulp.task('html', ['inject', 'partials'], function () {
     // .pipe($.rev())
     .pipe(jsFilter)
     .pipe($.ngAnnotate());
-    gulped = gulped.pipe($.uglify({preserveComments: $.uglifySaveLicense}))
+    gulped = gulped.pipe($.cache($.uglify({preserveComments: $.uglifySaveLicense})));
     gulped = gulped.pipe(jsFilter.restore())
     .pipe(cssFilter);
 
-    gulped = gulped.pipe($.csso())
-    
+    gulped = gulped.pipe($.cache($.csso()));
+
     gulped = gulped.pipe(cssFilter.restore())
     .pipe(assets.restore())
     .pipe($.useref())
-    .pipe($.revReplace())
+//    .pipe($.revReplace())
     .pipe(htmlFilter);
-    
+
     gulped = gulped.pipe($.minifyHtml({
       empty: true,
       spare: true,
@@ -93,4 +92,6 @@ gulp.task('clean', function (done) {
   $.del([paths.dist + '/', paths.tmp + '/'], done);
 });
 
-gulp.task('build', ['html', 'images', 'fonts', 'misc']);
+gulp.task('build', ['html', 'images', 'fonts', 'misc'], function(cb){
+    $.del([paths.tmp], cb);
+});

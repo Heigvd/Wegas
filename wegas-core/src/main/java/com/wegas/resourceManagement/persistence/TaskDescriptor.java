@@ -268,7 +268,10 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      */
     public void addNumberAtInstanceProperty(Player p, String key, String value) {
         try {
-            this.getInstance(p).setProperty(key, "" + (Float.parseFloat(this.getInstance(p).getProperty(key)) + Float.parseFloat(value)));
+            TaskInstance instance = this.getInstance(p);
+            double oldValue = instance.getPropertyD(key);
+            double newValue = oldValue + Double.parseDouble(value);
+            instance.setProperty(key, "" + newValue);
         } catch (NumberFormatException e) {
             // do nothing...
         }
