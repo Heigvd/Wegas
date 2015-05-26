@@ -408,11 +408,16 @@ public class UserController {
     @Path("SendMail")
     public void sendMail(Email email) {
         if ("currentUser".matches(email.getFrom())) {
-
+            AbstractAccount mainAccount = userFacade.getCurrentUser().getMainAccount();
+            if (mainAccount instanceof JpaAccount) {
+                email.setFrom(((JpaAccount) mainAccount).getEmail());
+            } else {
+                email.setFrom(mainAccount.getUsername());
+            }
         } else {
             email.setFrom("nobody");
         }
-        
+
         try {
             userFacade.sendEmail(email);
         } catch (MessagingException ex) {

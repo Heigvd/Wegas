@@ -30,16 +30,15 @@ YUI.add('wegas-sendmail', function(Y) {
                             name: "from",
                             label: "From",
                             type: "radio",
-                            value: "anonymous",
+                            value: "currentUser",
                             choices: [{
-                                    label: "Anonymous",
-                                    value: "anonymous"
-                                }, {
                                     label: "Me",
                                     value: "currentUser"
+                                }, {
+                                    label: "Anonymous",
+                                    value: "anonymous"
                                 }
                             ]
-
                         },
                         {
                             name: "to",
