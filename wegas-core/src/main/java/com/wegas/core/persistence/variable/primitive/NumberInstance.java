@@ -17,6 +17,8 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.OrderColumn;
 import com.fasterxml.jackson.annotation.JsonView;
+import javax.persistence.Index;
+import javax.persistence.Table;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +27,10 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
+
+/*@Table(indexes = {
+    @Index(columnList = "history.numberinstance_variableinstance_id")
+})*/
 public class NumberInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;

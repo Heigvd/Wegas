@@ -22,8 +22,10 @@ import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 
 /**
@@ -31,6 +33,12 @@ import javax.persistence.Transient;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
+
+/*@Table(indexes = {
+
+    @Index(columnList = "plannification.taskinstance_variableinstance_id"),
+    @Index(columnList = "properties.taskinstance_variableinstance_id")
+})*/
 public class TaskInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
@@ -81,7 +89,7 @@ public class TaskInstance extends VariableInstance {
     public Double getDuration() {
         return duration;
     }
-    
+
     /**
      * @deprecated moved as instance property, setter kept for old JSON backward
      * compatibility
