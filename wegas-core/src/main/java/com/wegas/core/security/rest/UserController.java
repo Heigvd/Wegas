@@ -407,7 +407,12 @@ public class UserController {
     @POST
     @Path("SendMail")
     public void sendMail(Email email) {
-        email.setFrom("LittleManFromAnotherPlace");
+        if ("currentUser".matches(email.getFrom())) {
+
+        } else {
+            email.setFrom("nobody");
+        }
+        
         try {
             userFacade.sendEmail(email);
         } catch (MessagingException ex) {
@@ -458,7 +463,7 @@ public class UserController {
             Collection<Team> teams = g.getTeams();
             for (Team t : teams) {
                 for (Player p : t.getPlayers()) {
-                    if(p.getUserId() != null){
+                    if (p.getUserId() != null) {
                         if (p.getUserId().equals(currentUser.getId())) {
                             teamsToReturn.add(t);
                         }
@@ -466,14 +471,15 @@ public class UserController {
                 }
             }
         }
-        if(!teamsToReturn.isEmpty()){
+        if (!teamsToReturn.isEmpty()) {
             r = Response.ok().entity(teamsToReturn).build();
         }
         return r;
     }
-    
+
     /**
      * Find a team for the current user.
+     *
      * @param teamId the id of the team joined by the current user.
      * @return Response, No Content if no team found, the team otherwise
      */
@@ -486,7 +492,7 @@ public class UserController {
         for (Game g : playedGames) {
             Collection<Team> teams = g.getTeams();
             for (Team t : teams) {
-                if(teamId.equals(t.getId())){
+                if (teamId.equals(t.getId())) {
                     for (Player p : t.getPlayers()) {
                         if (p.getUserId().equals(currentUser.getId())) {
                             r = Response.ok().entity(t).build();
@@ -497,7 +503,7 @@ public class UserController {
         }
         return r;
     }
-    
+
     /**
      * Delete permission by role and permission
      *

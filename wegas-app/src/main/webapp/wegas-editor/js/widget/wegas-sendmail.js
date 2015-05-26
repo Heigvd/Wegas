@@ -27,6 +27,21 @@ YUI.add('wegas-sendmail', function(Y) {
                             value: "Email"
                         },
                         {
+                            name: "from",
+                            label: "From",
+                            type: "radio",
+                            value: "anonymous",
+                            choices: [{
+                                    label: "Anonymous",
+                                    value: "anonymous"
+                                }, {
+                                    label: "Me",
+                                    value: "currentUser"
+                                }
+                            ]
+
+                        },
+                        {
                             name: "to",
                             type: "hidden",
                             value: Y.Array.map(this.get("players"), function(e) {
