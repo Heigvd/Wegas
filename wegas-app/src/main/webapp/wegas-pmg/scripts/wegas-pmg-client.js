@@ -31,14 +31,16 @@ app.once("render",
 
         Y.Wegas.PMGHelper = {
             defaultPhaseNames: ["Initiation", "Planning", "Execution", "Closing"],
-            getCurrentPhaseName: function() {
-                var currentPhase = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "currentPhase").get("value"),
-                    names = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "phaseNames");
+            getPhaseName: function(phaseNumber) {
+                var names = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "phaseNames");
                 if (names) {
-                    return names.item(currentPhase - 1).get("value");
+                    return names.item(phaseNumber - 1).getInstance().get("value");
                 } else {
-                    return defaultPhaseNames[currentPhase - 1];
+                    return Y.Wegas.PMGHelper.defaultPhaseNames[phaseNumber - 1];
                 }
+            },
+            getCurrentPhaseName: function() {
+                return Y.Wegas.PMGHelper.getPhaseName(Y.Wegas.Facade.VariableDescriptor.cache.find("name", "currentPhase").get("value"));
             },
             getBACTotal: function() {
                 var i, bacs = 0, tasks = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "tasks"), task;
@@ -129,6 +131,12 @@ app.once("render",
                         value: 0,
                         description: "[$]"
                     }, {
+                        name: "duration",
+                        label: "Duration",
+                        type: NUMBER,
+                        value: 1,
+                        description: "[period]"
+                    }, {
                         name: "randomDurationInf",
                         label: "Random duration delta inf.",
                         type: NUMBER,
@@ -181,7 +189,7 @@ app.once("render",
             };
             Y.mix(persistence.TaskDescriptor.METHODS, {
                 getNumberInstanceProperty: {
-                    label: "Get instance property",
+                    label: "Get property",
                     returns: NUMBER,
                     arguments: [{
                             type: HIDDEN,
@@ -202,7 +210,7 @@ app.once("render",
                         }]
                 },
                 addNumberAtInstanceProperty: {
-                    label: "Add to instance property",
+                    label: "Add to property",
                     arguments: [{
                             type: HIDDEN,
                             value: SELF
@@ -231,7 +239,7 @@ app.once("render",
                         }]
                 },
                 setInstanceProperty: {
-                    label: "Set instance property",
+                    label: "Set property",
                     arguments: [{
                             type: HIDDEN,
                             value: SELF
@@ -280,6 +288,7 @@ app.once("render",
                             choices: [{
                                     value: "quantity"
                                 }, {
+                                    label: "grade",
                                     value: "level"
                                 }]
                         }, {
@@ -309,7 +318,8 @@ app.once("render",
                             choices: [{
                                     value: "quantity"
                                 }, {
-                                    value: "level"
+                                    value: "level",
+                                    label: "grade"
                                 }]
                         }, {
                             type: STRING,
@@ -363,7 +373,7 @@ app.once("render",
 
                     }, {
                         name: "level",
-                        label: "Level",
+                        label: "Grade",
                         type: "select",
                         choices: persistence.Resources.STR_LEVELS,
                         className: "short-input"
@@ -407,7 +417,7 @@ app.once("render",
                 });
             Y.mix(persistence.ResourceDescriptor.METHODS, {
                 getNumberInstanceProperty: {
-                    label: "Get instance property",
+                    label: "Get property",
                     returns: NUMBER,
                     arguments: [{
                             type: HIDDEN,
@@ -418,7 +428,8 @@ app.once("render",
                             choices: [{
                                     value: "activityRate"
                                 }, {
-                                    value: "level"
+                                    value: "level",
+                                    label: "grade"
                                 }, {
                                     value: "motivation"
                                 }, {
@@ -427,7 +438,7 @@ app.once("render",
                         }]
                 },
                 addNumberAtInstanceProperty: {
-                    label: "Add to instance property",
+                    label: "Add to property",
                     arguments: [{
                             type: HIDDEN,
                             value: SELF
@@ -437,7 +448,8 @@ app.once("render",
                             choices: [{
                                     value: "activityRate"
                                 }, {
-                                    value: "level"
+                                    value: "level",
+                                    label: "grade"
                                 }, {
                                     value: "motivation"
                                 }, {
@@ -450,7 +462,7 @@ app.once("render",
                         }]
                 },
                 setInstanceProperty: {
-                    label: "Set instance property",
+                    label: "Set property",
                     arguments: [{
                             type: HIDDEN,
                             value: SELF
@@ -460,7 +472,8 @@ app.once("render",
                             choices: [{
                                     value: "activityRate"
                                 }, {
-                                    value: "level"
+                                    value: "level",
+                                    label: "grade"
                                 }, {
                                     value: "motivation"
                                 }, {
@@ -531,6 +544,10 @@ app.once("render",
 
         Y.use("wegas-inputex-variabledescriptorselect", function() {
             Y.mix(Y.inputEx.getFieldClass("statement").prototype.GLOBALMETHODS, {
+                separatorPMG: {
+                    disabled: true,
+                    label: "\u2501\u2501\u2501\u2501"
+                },
                 "PMGHelper.sendMessage": {
                     label: "[PMG] Send Message",
                     className: "wegas-method-sendmessage",
@@ -664,9 +681,16 @@ app.once("render",
                             fields: [{
                                     type: "select",
                                     choices: [{
+                                            value: "activityRate",
+                                            label: "activity rate"
+                                        }, {
+                                            value: "level",
+                                            label: "grade"
+                                        }, {
                                             value: "motivation",
                                             label: "motivation"
-                                        }]
+                                        }
+                                    ]
                                 },
                                 {
                                     type: "number",
