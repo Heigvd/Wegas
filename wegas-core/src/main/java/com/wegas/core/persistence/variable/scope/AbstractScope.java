@@ -34,6 +34,9 @@ import com.wegas.core.persistence.game.Team;
     @JsonSubTypes.Type(name = "TeamScope", value = TeamScope.class),
     @JsonSubTypes.Type(name = "PlayerScope", value = PlayerScope.class)
 })
+@Table(indexes = {
+    @Index(columnList = "variableinstance_variableinstance_id")
+})
 abstract public class AbstractScope extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
