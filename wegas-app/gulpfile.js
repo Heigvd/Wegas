@@ -25,8 +25,11 @@ gulp.task("setup-dev", function(cb) {
 });
 gulp.task("submodule", function() {
     "use strict";
-    return gulp.src('target/Wegas/*/gulpfile.js', {readFile: false})
-        .pipe(chug());
+    return gulp.src([
+        'target/Wegas/wegas-admin/gulpfile.js',
+        'target/Wegas/wegas-lobby/gulpfile.js'
+    ], { read: false })
+    .pipe(chug());
 });
 gulp.task("compress-css", ["submodule"], function() {
     "use strict";
