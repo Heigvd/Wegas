@@ -1,4 +1,4 @@
-/* 
+/*
  * Wegas
  * http://wegas.albasim.ch
  *
@@ -186,17 +186,17 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
              * @param {type} scope the input
              * @returns {undefined}
              */
-                crawlMsg = function(scope) {
-                    var i;
-                    if (scope.inputs && scope.inputs.length) {
-                        for (i in scope.inputs) {
-                            if (scope.inputs[i].options.messages.error) {
-                                msg.push(scope.inputs[i].options.messages.error);
-                            }
-                            crawlMsg(scope.inputs[i]);
+            crawlMsg = function(scope) {
+                var i;
+                if (scope.inputs && scope.inputs.length) {
+                    for (i in scope.inputs) {
+                        if (scope.inputs[i].options.messages.error) {
+                            msg.push(scope.inputs[i].options.messages.error);
                         }
+                        crawlMsg(scope.inputs[i]);
                     }
-                };
+                }
+            };
             crawlMsg(this);
             value = value || "";
             this.empty();
@@ -293,10 +293,10 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             return {
                 type: 'select',
                 choices: [{
-                        label: DISABLED_CHOICE_LABEL.variable,
-                        value: null,
-                        disabled: true
-                    }].concat(this.genChoices(entity, items)),
+                    label: DISABLED_CHOICE_LABEL.variable,
+                    value: null,
+                    disabled: true
+                }].concat(this.genChoices(entity, items)),
                 value: value,
                 parentEntity: entity
             };
@@ -320,28 +320,31 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
     });
     Y.mix(VariableDescriptorSelect, {
         BINARYOPERATORS: [{
-                value: "===",
-                label: "equals"
-            }, {
-                value: ">",
-                label: "is greater than"
-            }, {
-                value: "<",
-                label: "is smaller than"
-            }, {
-                value: ">=",
-                label: "is greater or equal to"
-            }, {
-                value: "<=",
-                label: "is smaller or equal to"
-            }],
+            value: "===",
+            label: "equals"
+        }, {
+            value: "!==",
+            label: "is different than"
+        }, {
+            value: ">",
+            label: "is greater than"
+        }, {
+            value: "<",
+            label: "is smaller than"
+        }, {
+            value: ">=",
+            label: "is greater or equal to"
+        }, {
+            value: "<=",
+            label: "is smaller or equal to"
+        }],
         LOGICALOPERATORS: [{
-                value: "&&",
-                label: "AND"
-            }, {
-                value: "||",
-                label: "OR"
-            }]
+            value: "&&",
+            label: "AND"
+        }, {
+            value: "||",
+            label: "OR"
+        }]
     });
     inputEx.Wegas.VariableDescriptorSelect = VariableDescriptorSelect;
     inputEx.registerType("variabledescriptorselect", VariableDescriptorSelect, {});
@@ -480,17 +483,17 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                 return k + "(" + this.encodeArgs(this.inputs[1].getValue(), cMethod["arguments"]) + ")";
 
             } else if (this.inputs[this.inputs.length - this.argsOffset] &&
-                (this.inputs.length - this.argsOffset - 1) > -1) { // Not true only if there are no entites
+                       (this.inputs.length - this.argsOffset - 1) > -1) { // Not true only if there are no entites
                 var length = this.inputs.length, args = this.inputs[length -
-                    this.argsOffset].getValue(), method = this.inputs[length -
-                    this.argsOffset -
-                    1].getValue(), variableSelect = VariableDescriptorMethod.superclass.getValue.call(this);
+                                                                    this.argsOffset].getValue(), method = this.inputs[length -
+                                                                                                                      this.argsOffset -
+                                                                                                                      1].getValue(), variableSelect = VariableDescriptorMethod.superclass.getValue.call(this);
 
                 if (!method) {
                     return null;
                 }
                 return variableSelect + "." + method + "(" + this.encodeArgs(args, this.currentMethod["arguments"]) +
-                    ")";
+                       ")";
             }
             return VariableDescriptorMethod.superclass.getValue.call(this);
         },
@@ -627,27 +630,27 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                 className: "wegas-method-returnline",
                 label: "Send popup",
                 "arguments": [{
-                        type: "hidden",
-                        value: "popupEvent",
+                    type: "hidden",
+                    value: "popupEvent",
+                    scriptType: "string"
+                }, {
+                    type: "group",
+                    fields: [{
+                        name: "content",
+                        type: "html",
                         scriptType: "string"
-                    }, {
-                        type: "group",
-                        fields: [{
-                                name: "content",
-                                type: "html",
-                                scriptType: "string"
-                            }],
-                        scriptType: "string"
-                    }]
+                    }],
+                    scriptType: "string"
+                }]
             },
             "Event.fire": {
                 label: "Fire event",
                 "arguments": [{
-                        type: "string",
-                        typeInvite: "event name",
-                        scriptType: "string",
-                        required: true
-                    }]
+                    type: "string",
+                    typeInvite: "event name",
+                    scriptType: "string",
+                    required: true
+                }]
             }
         }
     });
@@ -672,10 +675,10 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                 returns: "boolean",
                 label: "Event has been fired",
                 "arguments": [{
-                        type: "string",
-                        typeInvite: "event name",
-                        scriptType: "string"
-                    }]
+                    type: "string",
+                    typeInvite: "event name",
+                    scriptType: "string"
+                }]
             }
         },
         setOptions: function(options) {
@@ -709,35 +712,35 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                 this.addField({
                     type: "combine",
                     fields: [{
-                            type: "select",
-                            value: this.options.operator,
-                            choices: VariableDescriptorSelect.BINARYOPERATORS
-                        }, {
-                            type: "number",
-                            required: true,
-                            size: 5,
-                            value: this.options.rightValue
-                        }]
+                        type: "select",
+                        value: this.options.operator,
+                        choices: VariableDescriptorSelect.BINARYOPERATORS
+                    }, {
+                        type: "number",
+                        required: true,
+                        size: 5,
+                        value: this.options.rightValue
+                    }]
                 });
             } else if (cMethod && cMethod.returns === "string") {
                 this.argsOffset = 2;
                 this.addField({
                     type: "combine",
                     fields: [{
-                            type: "select",
-                            value: this.options.operator,
-                            choices: [{
-                                    value: "===",
-                                    label: "equals"
-                                }, {
-                                    value: "!==",
-                                    label: "is different than"
-                                }]
+                        type: "select",
+                        value: this.options.operator,
+                        choices: [{
+                            value: "===",
+                            label: "equals"
                         }, {
-                            type: "string",
-                            required: true,
-                            value: this.options.rightValue
+                            value: "!==",
+                            label: "is different than"
                         }]
+                    }, {
+                        type: "string",
+                        required: true,
+                        value: this.options.rightValue
+                    }]
                 });
             } else {
                 this.argsOffset = 1;
@@ -801,15 +804,15 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                     Y.Plugin.EditEntityAction.currentEntity.getInstance().get(options.field);
             }
             options.choices = [{
-                    label: DISABLED_CHOICE_LABEL.variable,
-                    value: null,
-                    disabled: true
-                }].concat(Y.Array.map(results, function(r) {
-                return {
-                    value: r.get(options.returnAttr || "name"),
-                    label: r.getEditorLabel() || this.optionNameToString(r, options)
-                };
-            }, this));
+                label: DISABLED_CHOICE_LABEL.variable,
+                value: null,
+                disabled: true
+            }].concat(Y.Array.map(results, function(r) {
+                    return {
+                        value: r.get(options.returnAttr || "name"),
+                        label: r.getEditorLabel() || this.optionNameToString(r, options)
+                    };
+                }, this));
 
             EntityArrayFieldSelect.superclass.setOptions.call(this, options);
             this.options.entity = options.entity;
@@ -910,8 +913,8 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
         },
         validate: function() {
             return this.toDisable.filter(function(e) {
-                return e.value === this.getValue();
-            }, this).length === 0;
+                    return e.value === this.getValue();
+                }, this).length === 0;
         },
         renderComponent: function() {
             FlatVariableSelect.superclass.renderComponent.call(this);
