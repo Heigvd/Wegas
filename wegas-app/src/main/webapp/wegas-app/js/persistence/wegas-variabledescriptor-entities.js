@@ -538,7 +538,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                         type: NUMBER,
                         required: true
                     }]
-            },
+            },/*
             sub: {
                 label: "subtract",
                 "arguments": [{
@@ -548,7 +548,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                         type: NUMBER,
                         required: true
                     }]
-            },
+            },*/
             setValue: {
                 label: "set",
                 "arguments": [{
