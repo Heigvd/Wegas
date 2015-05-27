@@ -300,15 +300,6 @@ YUI.add('wegas-mcq-entities', function(Y) {
                         _type: HIDDEN,
                         index: 3
                     }
-                },
-                items: {
-                    "transient": true,
-                    getter: function() {
-                        return this.get("results");
-                    },
-                    setter: function(v) {
-                        this.set("results", v);
-                    }
                 }
 
             },
