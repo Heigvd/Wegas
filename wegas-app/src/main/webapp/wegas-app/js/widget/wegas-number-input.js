@@ -56,7 +56,7 @@ YUI.add("wegas-number-input", function(Y) {
                 this.handlers.push(this.xSlider.after("valueChange", this.updateInput, this));
             }
             if (input) {
-                this.handlers.push(input.on("keyup", this.updateSlider, this));
+                this.handlers.push(input.on("blur", this.updateSlider, this));
             }
         },
         destructor: function() {
@@ -75,13 +75,13 @@ YUI.add("wegas-number-input", function(Y) {
                 return false;
             }
             inst.set("value", value);
-            if (this.wait) {
+            /*if (this.wait) {
                 this.wait.cancel();
-            }
-            this.wait = Y.later(750, this, function() {
-                this.wait = null;
+            }*/
+            /*this.wait = Y.later(750, this, function() {
+                this.wait = null;*/
                 Y.Wegas.Facade.Variable.cache.put(inst.toObject());
-            });
+            //});
             return true;
         },
         updateInput: function(e) {

@@ -958,7 +958,7 @@
                         "data": {
                             "label": "Budget at completion"
                         },
-                        "custom": "<% \nvar bacs = Y.Wegas.PMGHelper.getBACTotal(),\nib = Y.Wegas.PMGHelper.getInitialBudget(),\novercost = (ib <= 0 ? \"\" : \"(\" + parseInt((bacs * 100 / ib), 10)  + \"%)\")\n\n%>\n\n<div class='bacs'>\n    <span class='label'><%= this.label %></span>\n    <span class='variableValue'><%=  bacs %> <%= overcost %></span>\n</div>"
+                        "custom": "<% \nvar bacs = Y.Wegas.PMGHelper.getBACTotal(),\nib = Y.Wegas.PMGHelper.getInitialBudget(),\novercost = (ib <= 0 || bacs <= 0 ? \"\" : \"(\" + parseInt((bacs * 100 / ib), 10)  + \"%)\")\n\n%>\n\n<div class='bacs'>\n    <span class='label'><%= this.label %></span>\n    <span class='variableValue'><%=  bacs %> <%= overcost %></span>\n</div>"
                     }, {
                         "type": "Template",
                         "cssClass": "pmg-project-overview-title",
