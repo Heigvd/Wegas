@@ -26,8 +26,7 @@ gulp.task("setup-dev", function(cb) {
 gulp.task("submodule", function() {
     "use strict";
     return gulp.src([
-        'target/Wegas/wegas-admin/gulpfile.js',
-        'target/Wegas/wegas-lobby/gulpfile.js'
+        'target/Wegas/*/gulpfile.js'
     ], { read: false })
     .pipe(chug());
 });
