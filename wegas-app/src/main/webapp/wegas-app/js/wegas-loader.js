@@ -53,7 +53,7 @@ YUI().use(function(Y) {
              */
             "wegas-app": {
                 requires: ["base", "plugin", "array-extras", "timers",
-                    "wegas-helper", "wegas-entity", "wegas-datasource"]
+                    "wegas-helper", "wegas-entity", "wegas-datasource", "font-awesome"]
             },
             "wegas-editable": {
                 requires: "inputex-jsonschema"

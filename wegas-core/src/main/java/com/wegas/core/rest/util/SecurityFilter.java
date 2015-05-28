@@ -59,7 +59,6 @@ public class SecurityFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext crc) throws IOException {
 
-        logger.info("Security Interceptor");
         // Targeted Class & method
         final Class<? extends Object> runtimeClass = resourceInfo.getResourceClass();
         Method method = resourceInfo.getResourceMethod();
@@ -73,9 +72,8 @@ public class SecurityFilter implements ContainerRequestFilter {
 
         if (authRequired != null) {
             // Annotation found, assert subject is authenticated
-            logger.warn("[security] assert user is authenticated");
             if (!subject.isAuthenticated() && !subject.isRemembered()) {
-                logger.error("Access denied");
+                logger.error("Access denied for non-authenticted users");
                 crc.abortWith(Response.status(Response.Status.UNAUTHORIZED).entity("Subject is not logged in").build());
             }
         }
@@ -86,7 +84,6 @@ public class SecurityFilter implements ContainerRequestFilter {
 
         if (requiredRoles != null) {
             List<String> listOfRoles = Arrays.asList(requiredRoles.value());
-            logger.warn("[security] checking for roles.");
 
             boolean[] boolRoles = subject.hasRoles(listOfRoles);
             boolean roleVerified = false;
@@ -100,7 +97,7 @@ public class SecurityFilter implements ContainerRequestFilter {
             if (!roleVerified) {
                 String msg = "Access denied. User doesn't have enough privilege Roles:"
                         + listOfRoles + " to access this page.";
-                logger.error("Access denied");
+                logger.error("Access denied missing roles");
                 crc.abortWith(Response.status(Response.Status.FORBIDDEN).entity(msg).build());
             }
         }
@@ -111,7 +108,6 @@ public class SecurityFilter implements ContainerRequestFilter {
 
         if (requiredPermissions != null) {
             List<String> listOfPermissionsString = Arrays.asList(requiredPermissions.value());
-            logger.warn("[security] checking for permissions.");
 
             List<Permission> listOfPermissions = new ArrayList<>();
             for (String p : listOfPermissionsString) {
@@ -128,7 +124,7 @@ public class SecurityFilter implements ContainerRequestFilter {
             if (!permitted) {
                 String msg = "Access denied. User doesn't have enough privilege Permissions:"
                         + listOfPermissions + " to access this page.";
-                logger.error("Access denied");
+                logger.error("Access denied: missing permissions");
                 crc.abortWith(Response.status(Response.Status.FORBIDDEN).entity(msg).build());
             }
         }
