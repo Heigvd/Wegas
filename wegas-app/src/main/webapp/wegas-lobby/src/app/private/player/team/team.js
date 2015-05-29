@@ -12,16 +12,11 @@ angular.module('private.player.team', [
             }
         })
     ;
-}).controller("TeamModalCtrl", function TeamModalCtrl($animate, $state, ModalService){
-	ModalService.showModal({
+}).controller("TeamModalCtrl", function TeamModalCtrl($animate, $state, WegasModalService){
+	WegasModalService.displayAModal({
         templateUrl: 'app/private/player/team/team.tmpl.html',
         controller: "ModalsController as modalsCtrl"
     }).then(function(modal) {
-        var box = $(".modal"),
-            shadow = $(".shadow");      
-        $animate.addClass(box, "modal--open");
-        $animate.addClass(shadow, "shadow--show");
-        
         modal.close.then(function(result) {
             $state.go("^");
         });

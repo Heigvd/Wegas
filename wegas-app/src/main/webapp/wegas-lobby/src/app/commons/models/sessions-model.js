@@ -104,7 +104,8 @@ angular.module('wegas.models.sessions', [])
             updateGameModelSession = function(sessionInfos, sessionBeforeChange) {
                 var deferred = $q.defer(),
                     gameModelSetted = false,
-                    scenarioBeforeChange = sessionBeforeChange.gameModel;
+                    scenarioBeforeChange = sessionBeforeChange.gameModel,
+                    properties = ["scriptUri","clientScriptUri","cssUri","pagesUri","logID"];
 
                 if (scenarioBeforeChange.properties.iconUri !== ("ICON_" + sessionInfos.color + "_" + sessionInfos.icon.key + "_" + sessionInfos.icon.library)) {
                     sessionBeforeChange.properties.iconUri = "ICON_" + sessionInfos.color + "_" + sessionInfos.icon.key + "_" + sessionInfos.icon.library;
@@ -120,26 +121,14 @@ angular.module('wegas.models.sessions', [])
                     scenarioBeforeChange.comments = sessionInfos.comments;
                     gameModelSetted = true;
                 }
-                if (scenarioBeforeChange.properties.scriptUri !== sessionInfos.scriptUri) {
-                    scenarioBeforeChange.properties.scriptUri = sessionInfos.scriptUri;
-                    gameModelSetted = true;
-                }
-                if (scenarioBeforeChange.properties.clientScriptUri !== sessionInfos.clientScriptUri) {
-                    scenarioBeforeChange.properties.clientScriptUri = sessionInfos.clientScriptUri;
-                    gameModelSetted = true;
-                }
-                if (scenarioBeforeChange.properties.cssUri !== sessionInfos.cssUri) {
-                    scenarioBeforeChange.properties.cssUri = sessionInfos.cssUri;
-                    gameModelSetted = true;
-                }
-                if (scenarioBeforeChange.properties.pagesUri !== sessionInfos.pagesUri) {
-                    scenarioBeforeChange.properties.pagesUri = sessionInfos.pagesUri;
-                    gameModelSetted = true;
-                }
-                if (scenarioBeforeChange.properties.logID !== sessionInfos.logID) {
-                    scenarioBeforeChange.properties.logID = sessionInfos.logID;
-                    gameModelSetted = true;
-                }
+                
+                _.each(properties, function(el, index) {
+                    if (scenarioBeforeChange.properties[el] !== sessionInfos[el]) {
+                        scenarioBeforeChange.properties[el] = sessionInfos[el];
+                        gameModelSetted = true
+                    }
+                });
+
                 if (gameModelSetted) {
                     $http.put(ServiceURL + "rest/Public/GameModel/" + scenarioBeforeChange.id, scenarioBeforeChange).success(function(data) {
                         deferred.resolve(Responses.success("GameModel updated", data));
@@ -332,6 +321,7 @@ angular.module('wegas.models.sessions', [])
             });
             return deferred.promise;
         };
+        
         /* Edit the session infos (Name, comments, icon, token, individual/team type) */
         model.updateSession = function(session, infosToSet) {
             var deferred = $q.defer();
