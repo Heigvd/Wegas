@@ -11,14 +11,12 @@ import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.GameAccountKey;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.Email;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.jparealm.GameAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
@@ -30,7 +28,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.mail.MessagingException;
@@ -265,17 +262,7 @@ public class UserController {
         try {
             subject.login(token);                                               // try to log in.
         } catch (AuthenticationException aex) {
-            if (checkGameAccountKeylogin(authInfo.getLogin(), authInfo.getPassword())) {
-                try {
-                    //Login failed, maybe create a GameAccount or fail
-                    gameFacade.findGameAccountKey(authInfo.getLogin());
-                    subject.login(token);
-                } catch (WegasNoResultException ex) {
-                    throw WegasErrorMessage.error("Email/password combination not found");
-                }
-            } else {
-                throw WegasErrorMessage.error("Email/password combination not found");
-            }
+            throw WegasErrorMessage.error("Email/password combination not found");
         }
     }
 
@@ -664,31 +651,6 @@ public class UserController {
         } else {
             SecurityUtils.getSubject().checkPermission(gPermission + entityId);
         }
-    }
-
-    private Boolean checkGameAccountKeylogin(String key, String password) {
-        if (key.equals(password)) {                                             //Be kind, email password have to be the same...
-            /*
-             if there is a GameAccountKey, use it to create a new GameAccount 
-             */
-            try {
-                GameAccountKey gameAccountKey = gameFacade.findGameAccountKey(key);
-                if (gameAccountKey.getUsed()) {
-                    return false;
-                }
-                GameAccount gameAccount = new GameAccount(gameAccountKey.getGame());
-                gameAccount.setEmail(key);
-                gameAccount.setPassword(password);
-                gameAccount.setFirstname("Team");
-                gameAccount.setLastname("Account");
-                gameAccountKey.setUsed(Boolean.TRUE);
-                this.signup(gameAccount);
-            } catch (WegasNoResultException ex) {
-                return false;
-            }
-            return true;
-        }
-        return false;
     }
 
     private boolean checkEmailString(String email) {

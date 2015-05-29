@@ -18,7 +18,6 @@ import java.util.Date;
 import java.util.List;
 ////import javax.xml.bind.annotation.XmlTransient;
 
-
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
@@ -27,9 +26,10 @@ import java.util.List;
         = @UniqueConstraint(columnNames = {"name", "parentgame_id"}))
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonSubTypes(value = {
-        @JsonSubTypes.Type(name = "DebugTeam", value = DebugTeam.class)
+    @JsonSubTypes.Type(name = "DebugTeam", value = DebugTeam.class)
 })
-@NamedQueries({@NamedQuery(name = "Team.findByGameIdAndName", query = "SELECT a FROM Team a WHERE a.name = :name AND a.gameId = :gameId")})
+@NamedQueries({
+    @NamedQuery(name = "Team.findByGameIdAndName", query = "SELECT a FROM Team a WHERE a.name = :name AND a.gameId = :gameId")})
 public class Team extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
@@ -216,7 +216,7 @@ public class Team extends AbstractEntity {
     public void setCreatedTime(Date createdTime) {
         this.createdTime = createdTime;
     }
-    
+
     /**
      * @return String, the name of the game
      */
@@ -224,15 +224,16 @@ public class Team extends AbstractEntity {
     public String getGameName() {
         return this.getGame().getName();
     }
-    
+
     /**
-     * @return boolean, free if the game is played individualy, false if the game is played in team
+     * @return boolean, free if the game is played individualy, false if the
+     *         game is played in team
      */
     @JsonView(value = Views.Extended.class)
     public boolean getGameFreeForAll() {
         return this.getGame().getProperties().getFreeForAll();
     }
-    
+
     /**
      * @return String, the representation for the icon of the game
      */
