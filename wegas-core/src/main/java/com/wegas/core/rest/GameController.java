@@ -31,6 +31,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -40,6 +42,9 @@ import java.util.List;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class GameController {
+
+    @PersistenceContext(unitName = "wegasPU")
+    private EntityManager em;
 
     /**
      *
@@ -282,10 +287,11 @@ public class GameController {
      */
     @GET
     @Path("/FindByToken/{token : .*}/")
-    public Response findByToken(@PathParam("token") String token) {
-        Response r = Response.noContent().build();
+    public Game findByToken(@PathParam("token") String token) {
         Game gameToReturn = gameFacade.findByToken(token);
+
         if (gameToReturn != null) {
+            em.detach(gameToReturn);
             List<Team> withoutDebugTeam = new ArrayList<>();
             for (Team teamToCheck : gameToReturn.getTeams()) {
                 if (!(teamToCheck instanceof DebugTeam)) {
@@ -293,9 +299,9 @@ public class GameController {
                 }
             }
             gameToReturn.setTeams(withoutDebugTeam);
-            r = Response.ok().entity(gameToReturn).build();
+            //r = Response.ok().entity(gameToReturn).build();
         }
-        return r;
+        return gameToReturn;
     }
 
     /**
