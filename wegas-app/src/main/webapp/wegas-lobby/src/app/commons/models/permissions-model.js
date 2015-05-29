@@ -54,21 +54,14 @@ angular.module('wegas.models.permissions', [])
         };
 
         /* Remove a trainer from a session in cached sessions et persistant datas */
-        model.removeSessionPermission = function(session, trainers, trainerId) {
+        model.removeSessionPermission = function(session, trainers, trainer) {
             var deferred = $q.defer();
             if (session) {
-                trainer = _.find(trainers, function(t) {
-                    return t.id == trainerId;
+                $http.delete(ServiceURL + "rest/Extended/User/DeleteAccountPermissionByInstanceAndAccount/g" + session.id + "/" + trainer.id).success(function(data) {
+                    deferred.resolve(Responses.success("Trainer removed", trainer));
+                }).error(function(data) {
+                    deferred.resolve(Responses.danger("You can not remove this trainer", data));
                 });
-                if (trainer) {
-                    $http.delete(ServiceURL + "rest/Extended/User/DeleteAccountPermissionByInstanceAndAccount/g" + session.id + "/" + trainer.id).success(function(data) {
-                        deferred.resolve(Responses.success("Trainer removed", trainer));
-                    }).error(function(data) {
-                        deferred.resolve(Responses.danger("You can not remove this trainer", data));
-                    });
-                }else{
-                	deferred.resolve(Response.danger("Trainer permission not found", false));
-                }
             } else {
                 deferred.resolve(Response.danger("No access to this session", false));
             }

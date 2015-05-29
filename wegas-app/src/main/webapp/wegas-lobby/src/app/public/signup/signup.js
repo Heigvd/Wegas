@@ -14,16 +14,11 @@ angular.module('public.signup', [
         })
     ;
 })
-.controller('PublicSignupModalCtrl', function PublicSignupModalCtrl($animate, $state, ModalService) {
-     ModalService.showModal({
+.controller('PublicSignupModalCtrl', function PublicSignupModalCtrl($animate, $state, WegasModalService) {
+     WegasModalService.displayAModal({
         templateUrl: 'app/public/signup/signup.tmpl.html',
         controller: "ModalsController as modalsCtrl"
     }).then(function(modal) {
-        var box = $(".modal"),
-            shadow = $(".shadow");
-        $animate.addClass(box, "modal--open");
-        $animate.addClass(shadow, "shadow--show");
-
         modal.close.then(function(result) {
             $state.go("^");
         });

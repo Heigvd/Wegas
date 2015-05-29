@@ -11,19 +11,14 @@ angular.module('private.scenarist.settings', [
                     }
                 }
             });
-    }).controller("ScenaristSettingsController", function ScenaristSettingsController($animate, $state, ModalService, Auth) {
+    }).controller("ScenaristSettingsController", function ScenaristSettingsController($state, WegasModalService, Auth) {
         Auth.getAuthenticatedUser().then(function(user) {
             if (user != null) {
                 if (user.isAdmin || user.isScenarist) {
-                    ModalService.showModal({
+                    WegasModalService.displayAModal({
                         templateUrl: 'app/private/scenarist/settings/settings.tmpl.html',
                         controller: "ModalsController as modalsCtrl"
                     }).then(function(modal) {
-                        var box = $(".modal"),
-                            shadow = $(".shadow");
-                        $animate.addClass(box, "modal--open");
-                        $animate.addClass(shadow, "shadow--show");
-
                         modal.close.then(function(result) {
                             $state.go("^");
                         });
