@@ -146,7 +146,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 //this.setClassFromState();
             }, this);                                                           // Whenever the value is updated, we synchronize the UI
             if (!this.options.viewSrc) {
-                this.updateExpressionList();                                    // Synchronize the wysiwig list    
+                this.updateExpressionList();                                    // Synchronize the wysiwig list
             }
             this.toggleViewSrc(this.options.viewSrc);                           // Set the default mode (wysiwyg or source)
         },
@@ -216,7 +216,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
             var container = Y.one(this.fieldContainer), fields;
             container.one(".msg").setContent("");                               // Reset layout
 
-            try { // Generate the syntactic tree using esprima 
+            try { // Generate the syntactic tree using esprima
                 fields = Parser.parse(WysiwygScript.superclass.getValue.call(this).content, this.options);
 
                 this.viewSrc.set("disabled", false);
@@ -327,7 +327,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                             case Syntax.BinaryExpression:
                                 //return parse(i.left) + " <em>" + findLabel(Y.inputEx.Wegas.BINARYOPERATORS, i.operator) + "</em> " + i.right.value;
                                 return parse(i.left) + " <em>" + i.operator.replace("===",
-                                                "=") + "</em> " + i.right.value;
+                                                "=").replace("!==", "<>") + "</em> " + i.right.value;
                             default:
                                 return source(i.range);
                         }

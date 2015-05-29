@@ -134,7 +134,7 @@ public class GameFacade extends BaseFacade<Game> {
         final User currentUser = userFacade.getCurrentUser();
 
         if (game.getToken() == null) {
-            game.setToken(this.createUniqueEnrolmentkey(game));
+            game.setToken(this.createUniqueToken(game));
         } else if (this.findByToken(game.getToken()) != null) {
             throw WegasErrorMessage.error("This token is already in use.");
         }
@@ -160,7 +160,7 @@ public class GameFacade extends BaseFacade<Game> {
      * @param game
      * @return
      */
-    public String createUniqueEnrolmentkey(Game game) {
+    public String createUniqueToken(Game game) {
         String prefixKey = game.getShortName().toLowerCase().replace(" ", "-");
         boolean foundUniqueKey = false;
         int counter = 0;
@@ -175,20 +175,9 @@ public class GameFacade extends BaseFacade<Game> {
             }
             String genLetter = this.genRandomLetter(length);
             key = prefixKey + "-" + genLetter;
-            boolean foundedGameAccountKey = true;
-            boolean foundedGameEnrolentKey = true;
-            try {
-                this.findGameAccountKey(key);
-            } catch (Exception e) {
-                foundedGameAccountKey = false;
-            }
-            try {
-                this.findGameEnrolmentKey(key);
-            } catch (Exception e) {
-                foundedGameEnrolentKey = false;
-            }
+
             Game foundGameByToken = this.findByToken(key);
-            if (!foundedGameEnrolentKey && !foundedGameAccountKey && foundGameByToken == null) {
+            if (foundGameByToken == null) {
                 foundUniqueKey = true;
             }
             counter += 1;
@@ -213,22 +202,13 @@ public class GameFacade extends BaseFacade<Game> {
     public Game update(final Long entityId, final Game entity) {
         String token = entity.getToken().toLowerCase().replace(" ", "-");
         if (token.length() == 0) {
-            throw WegasErrorMessage.error("Key cannot be empty");
-        }
-        String[] splitedToken = entity.getToken().split("-");
-        if (!token.endsWith("-")) {
-            try {
-                Long.parseLong(splitedToken[splitedToken.length - 1]);
-                throw WegasErrorMessage.error("You can't have a dash followed by a number (example: xx-12)");
-            } catch (NumberFormatException e) {
-                //Gotcha
-            }
+            throw WegasErrorMessage.error("Access key cannot be empty");
         }
 
-        if ((this.findByToken(entity.getToken()) != null
-                && !this.findByToken(entity.getToken()).getId().equals(entity.getId()))) {
-            //|| teamFacade.findByToken(entity.getToken()) != null) {
-            throw WegasErrorMessage.error("This token is already in use.");
+        Game theGame = this.findByToken(entity.getToken());
+
+        if (theGame != null && !theGame.getId().equals(entity.getId())) {
+            throw WegasErrorMessage.error("This access key is already in use");
         }
         return super.update(entityId, entity);
     }
@@ -262,42 +242,6 @@ public class GameFacade extends BaseFacade<Game> {
             return tq.getSingleResult();
         } catch (NoResultException ex) {
             return null;
-        }
-    }
-
-    /**
-     * @param key
-     * @return
-     * @throws com.wegas.core.exception.internal.WegasNoResultException
-     */
-    public GameEnrolmentKey findGameEnrolmentKey(final String key) throws WegasNoResultException {
-        final CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        final CriteriaQuery cq = cb.createQuery();
-        final Root<GameEnrolmentKey> game = cq.from(GameEnrolmentKey.class);
-        cq.where(cb.equal(game.get("key"), key));
-        Query q = getEntityManager().createQuery(cq);
-        try {
-            return (GameEnrolmentKey) q.getSingleResult();
-        } catch (NoResultException ex) {
-            throw new WegasNoResultException(ex);
-        }
-    }
-
-    /**
-     * @param key
-     * @return
-     * @throws com.wegas.core.exception.internal.WegasNoResultException
-     */
-    public GameAccountKey findGameAccountKey(String key) throws WegasNoResultException {
-        final CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        final CriteriaQuery cq = cb.createQuery();
-        final Root<GameAccountKey> gameAccount = cq.from(GameAccountKey.class);
-        cq.where(cb.equal(gameAccount.get("key"), key));
-        Query q = getEntityManager().createQuery(cq);
-        try {
-            return (GameAccountKey) q.getSingleResult();
-        } catch (NoResultException ex) {
-            throw new WegasNoResultException(ex);
         }
     }
 
@@ -408,22 +352,6 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     * @param g
-     * @param accountNumber
-     * @return
-     */
-    public Game createGameAccount(Game g, Long accountNumber) {
-        for (int i = 0; i < accountNumber; i++) {
-            int newNumber = g.getAccountkeys().size() + 1;
-            GameAccountKey gameAccountKey = new GameAccountKey();
-            gameAccountKey.setKey(g.getToken() + "-" + newNumber);
-            gameAccountKey.setGame(g);
-            g.getAccountkeys().add(gameAccountKey);
-        }
-        return g;
-    }
-
-    /**
      * @param team
      * @param player
      */
@@ -452,7 +380,7 @@ public class GameFacade extends BaseFacade<Game> {
      */
     public Player joinTeam(Team team, User user) {
         // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
-        Player p = new Player(user, team);        
+        Player p = new Player(user, team);
         this.joinTeam(team, p);
         this.addRights(user, p.getGame());
         return p;
@@ -486,7 +414,7 @@ public class GameFacade extends BaseFacade<Game> {
     public void bin(Game entity) {
         entity.setStatus(Game.Status.BIN);
     }
-    
+
     /**
      * Set game status, changing to {@link Game.Status#LIVE}
      *
@@ -495,7 +423,7 @@ public class GameFacade extends BaseFacade<Game> {
     public void live(Game entity) {
         entity.setStatus(Game.Status.LIVE);
     }
-    
+
     /**
      * Set game status, changing to {@link Game.Status#DELETE}
      *
@@ -507,6 +435,7 @@ public class GameFacade extends BaseFacade<Game> {
 
     /**
      * Reset a game
+     *
      * @param game the game to reset
      */
     public void reset(final Game game) {
@@ -520,7 +449,8 @@ public class GameFacade extends BaseFacade<Game> {
 
     /**
      * Reset a game
-     * @param gameId  id of the game to reset
+     *
+     * @param gameId id of the game to reset
      */
     public void reset(Long gameId) {
         this.reset(this.find(gameId));

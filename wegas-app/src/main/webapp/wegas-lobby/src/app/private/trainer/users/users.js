@@ -12,19 +12,14 @@ angular.module('private.trainer.users', [
             }
         })
     ;
-}).controller("TrainerUsersController", function TrainerUsersController($animate, $state, ModalService, Auth){
+}).controller("TrainerUsersController", function TrainerUsersController($state, WegasModalService, Auth){
     Auth.getAuthenticatedUser().then(function(user) {
         if (user != null) {
             if (user.isAdmin || user.isScenarist || user.isTrainer) {
-                ModalService.showModal({
+                WegasModalService.displayAModal({
                     templateUrl: 'app/private/trainer/users/users.tmpl.html',
                     controller: "ModalsController as modalsCtrl"
                 }).then(function(modal) {
-                    var box = $(".modal"),
-                        shadow = $(".shadow");
-                    $animate.addClass(box, "modal--open");
-                    $animate.addClass(shadow, "shadow--show");
-
                     modal.close.then(function(result) {
                         $state.go("^");
                     });

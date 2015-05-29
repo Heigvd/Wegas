@@ -44,22 +44,22 @@ i18nTable.fr = {
         },
         blockedByPredecessors: {
             from: "%employeeName%",
-            subject: "Impossible de progresser sur la tâche \"%task%\"",
+            subject: "Pas encore possible de progresser sur \"%task%\"",
             content: "Bonjour, <br /><br />Je suis venu %step% pour travailler sur la tâche \"%task%\" mais les tâches précédentes ne sont pas assez avancées. <br /><br /> J'ai perdu un peu de temps, mais je devrais rapidement trouver quelque chose à faire sur le projet. <br /><br /> Salutations <br/>%employeeName%<br/> %job%"
         },
         blockedByPredecessors_grouped: {
             from: "%employeeName%",
-            subject: "Impossible de progresser sur la tâche \"%task%\"",
+            subject: "Pas encore possible de progresser sur \"%task%\"",
             content: "Bonjour, <br /><br />%others% et moi sommes venus %step% pour travailler sur la tâche \"%task%\" mais les tâches précédentes ne sont pas assez avancées. <br /><br /> Nous avons perdu un peu de temps, mais nous devrions rapidement trouver quelque chose à faire sur le projet. <br /><br /> Salutations <br/>%employeeName%<br/> %job%"
         },
         notMyWork: {
             from: "%employeeName%",
-            subject: "Impossible de progresser sur la tâche \"%task%\"",
+            subject: "Pas qualifié pour \"%task%\"",
             content: "Bonjour, <br /><br />Je suis venu %step% pour travailler sur la tâche \"%task%\" mais je ne suis pas qualifié pour ce travail. <br /><br />J'ai perdu un peu de temps et j'ai retiré cette tâche de ma liste.<br /><br /> Salutations <br/>%employeeName%<br /> %job%"
         },
         notMyWork_grouped: {
             from: "%employeeName%",
-            subject: "Impossible de progresser sur la tâche \"%task%\"",
+            subject: "Pas qualifiés pour \"%task%\"",
             content: "Bonjour, <br /><br />%others% et moi sommes venus %step% pour travailler sur la tâche \"%task%\" mais nous ne sommes pas qualifiés pour ce travail. <br /><br />Nous avons perdu un peu de temps et avons retiré cette tâche de nos listes.<br /><br /> Salutations <br/>%employeeName%<br /> %job%"
         },
         skillCompleted: {

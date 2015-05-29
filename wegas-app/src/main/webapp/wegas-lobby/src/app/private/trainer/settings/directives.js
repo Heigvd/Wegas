@@ -167,57 +167,15 @@ angular.module('private.trainer.settings.directives', [
         ctrl.cancel = function(){
             $scope.close();
         };
-        $scope.$watch(function(){
-            return ctrl.infos.name;
-        }, function(newName){
-            ctrl.checkChanges("name", newName);
-        });
 
-        $scope.$watch(function(){
-            return ctrl.infos.token;
-        }, function(newToken){
-            ctrl.checkChanges("token", newToken);
-        });
+        var properties = ["name","comments","individual","scriptUri","clientScriptUri","cssUri","pagesUri","logID"];
 
-        $scope.$watch(function(){
-            return ctrl.infos.comments;
-        }, function(newComments){
-            ctrl.checkChanges("comments", newComments);
-        });
-        $scope.$watch(function(){
-            return ctrl.infos.individual;
-        }, function(newIndividual){
-            ctrl.checkChanges("individual", newIndividual);
-        });
-
-        $scope.$watch(function(){
-            return ctrl.infos.scriptUri;
-        }, function(newScriptUri){
-            ctrl.checkChanges("scriptUri", newScriptUri);
-        });
-
-        $scope.$watch(function(){
-            return ctrl.infos.clientScriptUri;
-        }, function(newClientScriptUri){
-            ctrl.checkChanges("clientScriptUri", newClientScriptUri);
-        });
-
-        $scope.$watch(function(){
-            return ctrl.infos.cssUri;
-        }, function(newCssUri){
-            ctrl.checkChanges("cssUri", newCssUri);
-        });
-        
-        $scope.$watch(function(){
-            return ctrl.infos.pagesUri;
-        }, function(newPagesUri){
-            ctrl.checkChanges("pagesUri", newPagesUri);
-        });
-
-        $scope.$watch(function(){
-            return ctrl.infos.logID;
-        }, function(newLogID){
-            ctrl.checkChanges("logID", newLogID);
+        _.each(properties, function(el, index) {
+            $scope.$watch(function() {
+                return ctrl.infos[el];
+            }, function(newValue) {
+                ctrl.checkChanges(el, newValue)
+            })
         });
 
         ctrl.updateSession();
@@ -228,8 +186,14 @@ angular.module('private.trainer.settings.directives', [
             scope:{
                 activeInfos: "="
             },
-            templateUrl: 'app/private/trainer/settings/directives.tmpl/infos-form.html'
-        }
+            templateUrl: 'app/private/trainer/settings/directives.tmpl/infos-form.html',
+            link: function(scope, elem, attrs){
+                $(".link--selector").on("click", function(e){
+                    e.stopPropagation();
+                    $(".tool--selectable").trigger("click");
+                });
+            }
+        };
     })
     .directive('trainerSessionsCustomizeAdvanced', function() {
         return {
