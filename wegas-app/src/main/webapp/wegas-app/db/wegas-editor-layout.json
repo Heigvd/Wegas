@@ -84,7 +84,6 @@
                                 }, {
                                     "type": "Button",
                                     "label": "Scenario properties",
-                                    "cssClass": "wegas-advanced-feature",
                                     "plugins": [
                                         {
                                             "fn": "EditEntityAction",
