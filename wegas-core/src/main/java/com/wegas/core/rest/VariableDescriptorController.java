@@ -15,7 +15,6 @@ import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.DescriptorListI;
-import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.util.SecurityHelper;
@@ -33,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Level;
 
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -57,8 +55,10 @@ public class VariableDescriptorController {
      */
     @EJB
     private GameModelFacade gameModelFacade;
-@EJB
-private PlayerFacade playerFacade;
+
+    @EJB
+    private PlayerFacade playerFacade;
+
     /**
      * @param gameModelId
      * @return
@@ -85,12 +85,14 @@ private PlayerFacade playerFacade;
 
         return vd;
     }
+
     @GET
     @Path("/PlayerInstances/{playerId:[1-9][0-9]*}")
     public Collection<VariableInstance> get(@PathParam("gameModelId") Long gameModelId, @PathParam("playerId") Long playerId) {
         SecurityHelper.checkPermission(playerFacade.find(playerId).getGame(), "View");
         return playerFacade.getInstances(playerId);
     }
+
     /**
      * @param gameModelId
      * @param entity
@@ -98,7 +100,7 @@ private PlayerFacade playerFacade;
      */
     @POST
     public VariableDescriptor create(@PathParam("gameModelId") Long gameModelId,
-            VariableDescriptor entity) {
+                                     VariableDescriptor entity) {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
@@ -116,7 +118,7 @@ private PlayerFacade playerFacade;
     public DescriptorListI createChild(@PathParam("variableDescriptorId") Long entityId, VariableDescriptor entity) {
 
         SecurityUtils.getSubject().
-                checkPermission("GameModel:Edit:gm" + variableDescriptorFacade.find(entityId).getGameModelId());
+            checkPermission("GameModel:Edit:gm" + variableDescriptorFacade.find(entityId).getGameModelId());
 
         return variableDescriptorFacade.createChild(entityId, entity);
     }
@@ -130,11 +132,11 @@ private PlayerFacade playerFacade;
     @POST
     @Path("{variableDescriptorName : [_a-zA-Z][_a-zA-Z0-9]*}")
     public DescriptorListI createChild(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("variableDescriptorName") String entityName, VariableDescriptor entity) {
+                                       @PathParam("variableDescriptorName") String entityName, VariableDescriptor entity) {
 
         try {
             SecurityUtils.getSubject().
-                    checkPermission("GameModel:Edit:gm" + gameModelId);
+                checkPermission("GameModel:Edit:gm" + gameModelId);
 
             GameModel gm = gameModelFacade.find(gameModelId);
             VariableDescriptor parent = variableDescriptorFacade.find(gm, entityName);
@@ -184,8 +186,8 @@ private PlayerFacade playerFacade;
     @PUT
     @Path("{descriptorId: [1-9][0-9]*}/Move/{parentDescriptorId: [1-9][0-9]*}/{index: [0-9]*}")
     public void move(@PathParam("descriptorId") Long descriptorId,
-            @PathParam("parentDescriptorId") Long parentDescriptorId,
-            @PathParam("index") int index) {
+                     @PathParam("parentDescriptorId") Long parentDescriptorId,
+                     @PathParam("index") int index) {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + variableDescriptorFacade.find(descriptorId).getGameModelId());
 
@@ -204,7 +206,7 @@ private PlayerFacade playerFacade;
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + variableDescriptorFacade.find(entityId).getGameModelId());
         VariableDescriptor duplicate = variableDescriptorFacade.duplicate(entityId);
 
-        DescriptorListI parent = variableDescriptorFacade.findParentList(duplicate);
+        DescriptorListI parent = variableDescriptorFacade.findParentList(variableDescriptorFacade.find(entityId));
         if (parent instanceof VariableDescriptor) {                             // If the duplicated var is in a list descriptor,
             return (VariableDescriptor) parent;                                 // return the whole list so the editor will be updated
         } else {                                                                // Otherwise,
