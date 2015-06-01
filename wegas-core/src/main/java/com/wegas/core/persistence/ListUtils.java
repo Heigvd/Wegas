@@ -131,8 +131,10 @@ public class ListUtils {
             E element = it.next();
             if (elementMap.containsKey(element.getId())) {                      //old element still exists
                 elementMap.get(element.getId()).merge(element);                 //Then merge them
+                oldList.add(elementMap.get(element.getId()));
+            } else {
+                oldList.add(element);
             }
-            oldList.add(elementMap.get(element.getId()));
         }
         return oldList;
     }
