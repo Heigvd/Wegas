@@ -270,9 +270,8 @@ YUI.add('wegas-fileexplorer', function(Y) {
                 var n = this.pathToNode(this.rootNode, Y.JSON.parse(e.data).path);
                 if (n.expand) {
                     n.expand();
-                } else { //ROOT
-                    this.listNodeData(n);
                 }
+                this.listNodeData(n);
                 this.showMessage("success", "Folder successfully created");
             }, this);
             this.uploader.after("fileselect", function(e) {
