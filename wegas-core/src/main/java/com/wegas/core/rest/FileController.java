@@ -7,18 +7,29 @@
  */
 package com.wegas.core.rest;
 
-import org.glassfish.jersey.media.multipart.FormDataBodyPart;
-import org.glassfish.jersey.media.multipart.FormDataParam;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.jcr.content.*;
+import com.wegas.core.jcr.content.FileDescriptor;
 import com.wegas.core.rest.util.annotations.CacheMaxAge;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import org.apache.shiro.SecurityUtils;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.jcr.ItemExistsException;
+import javax.jcr.LoginException;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.RepositoryException;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -29,26 +40,8 @@ import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipOutputStream;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.jcr.ItemExistsException;
-import javax.jcr.LoginException;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.RepositoryException;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import org.apache.shiro.SecurityUtils;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 /**
- *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 @Stateless
@@ -59,18 +52,19 @@ public class FileController {
      *
      */
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(FileController.class);
+
     /**
      *
      */
     @EJB
     private GameModelFacade gmFacade;
-    /**
-     *
-     */
-    private static final String FILENAME_REGEXP = "(\\w|\\.| |-|_)+";
 
     /**
      *
+     */
+    private static final String FILENAME_REGEXP = "^(?:[\\p{L}[0-9]-_ ]|\\.)+$";
+
+    /**
      * @param gameModelId
      * @param name
      * @param note
@@ -86,13 +80,13 @@ public class FileController {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("upload{directory : .*?}")
     public Response upload(@PathParam("gameModelId") Long gameModelId,
-            @FormDataParam("name") String name,
-            @FormDataParam("note") String note,
-            @FormDataParam("description") String description,
-            @PathParam("directory") String path,
-            @FormDataParam("file") InputStream file,
-            @FormDataParam("file") FormDataBodyPart details) throws RepositoryException {
-            
+                           @FormDataParam("name") String name,
+                           @FormDataParam("note") String note,
+                           @FormDataParam("description") String description,
+                           @PathParam("directory") String path,
+                           @FormDataParam("file") InputStream file,
+                           @FormDataParam("file") FormDataBodyPart details) throws RepositoryException {
+
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
         logger.debug("File name: {}", details.getContentDisposition().getFileName());
@@ -103,11 +97,11 @@ public class FileController {
         AbstractContentDescriptor detachedFile;
         try {
             if (details.getContentDisposition().getFileName() == null
-                    || details.getContentDisposition().getFileName().equals("")) {//Assuming an empty filename means a directory
+                || details.getContentDisposition().getFileName().equals("")) {//Assuming an empty filename means a directory
                 detachedFile = this.createDirectory(gameModelId, name, path, note, description);
             } else {
                 detachedFile = this.createFile(gameModelId, name, path, details.getMediaType().toString(),
-                        note, description, file);
+                    note, description, file);
             }
         } catch (final WegasRuntimeException ex) {
             Response.StatusType status = new Response.StatusType() {
@@ -132,7 +126,6 @@ public class FileController {
     }
 
     /**
-     *
      * @param gameModelId
      * @param name
      * @param request
@@ -141,7 +134,9 @@ public class FileController {
     @GET
     @Path("read{absolutePath : .*?}")
     @CacheMaxAge(time = 1, unit = TimeUnit.SECONDS)
-    public Response read(@PathParam("gameModelId") Long gameModelId, @PathParam("absolutePath") String name, @Context Request request) {
+    public Response read(@PathParam("gameModelId") Long gameModelId,
+                         @PathParam("absolutePath") String name,
+                         @Context Request request) {
 
         logger.debug("Asking file (/{})", name);
         AbstractContentDescriptor fileDescriptor;
@@ -198,7 +193,6 @@ public class FileController {
     }
 
     /**
-     *
      * @param gameModelId
      * @param directory
      * @return
@@ -229,7 +223,6 @@ public class FileController {
     }
 
     /**
-     *
      * @param gameModelId
      * @return
      * @throws RepositoryException
@@ -246,23 +239,22 @@ public class FileController {
         StreamingOutput out = new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
-            try {
                 try {
-                    connector.exportXML(output);
-                } catch (SAXException ex) {
+                    try {
+                        connector.exportXML(output);
+                    } catch (SAXException ex) {
+                        logger.error(null, ex);
+                    }
+                } catch (RepositoryException ex) {
                     logger.error(null, ex);
                 }
-            } catch (RepositoryException ex) {
-                logger.error(null, ex);
-            }
             }
         };
         return Response.ok(out, MediaType.APPLICATION_OCTET_STREAM).header("content-disposition",
-                "attachment; filename=WEGAS_" + gmFacade.find(gameModelId).getName() + "_files.xml").build();
+            "attachment; filename=WEGAS_" + gmFacade.find(gameModelId).getName() + "_files.xml").build();
     }
 
     /**
-     *
      * @param gameModelId
      * @return
      * @throws RepositoryException
@@ -278,28 +270,27 @@ public class FileController {
         StreamingOutput out = new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
-            try {
                 try {
-                    try (ByteArrayOutputStream xmlStream = new ByteArrayOutputStream()) {
-                        connector.exportXML(xmlStream);
-                        try (GZIPOutputStream o = new GZIPOutputStream(output)) {
-                            o.write(xmlStream.toByteArray());
+                    try {
+                        try (ByteArrayOutputStream xmlStream = new ByteArrayOutputStream()) {
+                            connector.exportXML(xmlStream);
+                            try (GZIPOutputStream o = new GZIPOutputStream(output)) {
+                                o.write(xmlStream.toByteArray());
+                            }
                         }
+                    } catch (SAXException ex) {
+                        logger.error(null, ex);
                     }
-                } catch (SAXException ex) {
+                } catch (RepositoryException ex) {
                     logger.error(null, ex);
                 }
-            } catch (RepositoryException ex) {
-                logger.error(null, ex);
-            }
             }
         };
         return Response.ok(out, MediaType.APPLICATION_OCTET_STREAM).header("content-disposition",
-                "attachment; filename=WEGAS_" + gmFacade.find(gameModelId).getName() + "_files.xml.gz").build();
+            "attachment; filename=WEGAS_" + gmFacade.find(gameModelId).getName() + "_files.xml.gz").build();
     }
 
     /**
-     *
      * @param gameModelId
      * @return
      * @throws RepositoryException
@@ -314,19 +305,18 @@ public class FileController {
         StreamingOutput out = new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
-            try (ZipOutputStream zipOutputStream = new ZipOutputStream(output)) {
-                connector.zipDirectory(zipOutputStream, "/");
-            } catch (RepositoryException ex) {
-                logger.error(null, ex);
-            }
+                try (ZipOutputStream zipOutputStream = new ZipOutputStream(output)) {
+                    connector.zipDirectory(zipOutputStream, "/");
+                } catch (RepositoryException ex) {
+                    logger.error(null, ex);
+                }
             }
         };
         return Response.ok(out, "application/zip").
-                header("content-disposition", "attachment; filename=WEGAS_" + gmFacade.find(gameModelId).getName() + "_files.zip").build();
+            header("content-disposition", "attachment; filename=WEGAS_" + gmFacade.find(gameModelId).getName() + "_files.zip").build();
     }
 
     /**
-     *
      * @param gameModelId
      * @param file
      * @param details
@@ -342,10 +332,10 @@ public class FileController {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public List<AbstractContentDescriptor> importXML(@PathParam("gameModelId") Long gameModelId,
-            @FormDataParam("file") InputStream file,
-            @FormDataParam("file") FormDataBodyPart details)
-            throws RepositoryException, IOException, SAXException,
-            ParserConfigurationException, TransformerException {
+                                                     @FormDataParam("file") InputStream file,
+                                                     @FormDataParam("file") FormDataBodyPart details)
+        throws RepositoryException, IOException, SAXException,
+        ParserConfigurationException, TransformerException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
@@ -361,7 +351,7 @@ public class FileController {
                     break;
                 default:
                     throw WegasErrorMessage.error("Uploaded file mimetype does not match requirements [XML or Gunzip], found:"
-                            + details.getMediaType().toString());
+                        + details.getMediaType().toString());
             }
             connector.save();
         } finally {
@@ -371,7 +361,6 @@ public class FileController {
     }
 
     /**
-     *
      * @param gameModelId
      * @param absolutePath
      * @param force
@@ -381,8 +370,8 @@ public class FileController {
     @Path("{force: (force/)?}delete{absolutePath : .*?}")
     @Produces(MediaType.APPLICATION_JSON)
     public Object delete(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("absolutePath") String absolutePath,
-            @PathParam("force") String force) {
+                         @PathParam("absolutePath") String absolutePath,
+                         @PathParam("force") String force) {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
@@ -411,7 +400,6 @@ public class FileController {
     }
 
     /**
-     *
      * @param tmpDescriptor
      * @param gameModelId
      * @param absolutePath
@@ -422,8 +410,8 @@ public class FileController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public AbstractContentDescriptor update(AbstractContentDescriptor tmpDescriptor,
-            @PathParam("gameModelId") Long gameModelId,
-            @PathParam("absolutePath") String absolutePath) {
+                                            @PathParam("gameModelId") Long gameModelId,
+                                            @PathParam("absolutePath") String absolutePath) {
 
         AbstractContentDescriptor descriptor;
 
@@ -465,7 +453,6 @@ public class FileController {
     }
 
     /**
-     *
      * @param gameModelId
      * @param name
      * @param path
@@ -477,7 +464,7 @@ public class FileController {
      * @throws RepositoryException
      */
     public FileDescriptor createFile(Long gameModelId, String name, String path, String mediaType,
-            String note, String description, InputStream file) throws RepositoryException {
+                                     String note, String description, InputStream file) throws RepositoryException {
 
         logger.debug("File name: {}", name);
 
@@ -514,7 +501,6 @@ public class FileController {
     }
 
     /**
-     *
      * @param gameModelId
      * @param name
      * @param path
@@ -551,7 +537,6 @@ public class FileController {
     }
 
     /**
-     *
      * @param gameModelId
      * @param path
      * @return
@@ -564,7 +549,6 @@ public class FileController {
     }
 
     /**
-     *
      * @param gameModelId
      * @param path
      * @return
