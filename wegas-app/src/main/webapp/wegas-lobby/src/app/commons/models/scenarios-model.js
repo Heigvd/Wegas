@@ -273,7 +273,7 @@ angular.module('wegas.models.scenarios', [])
 
         model.copyScenario = function(scenarioId) {
             var deferred = $q.defer(),
-                url = "rest/Public/GameModel/" + scenarioId + "/Duplicate";
+                url = "rest/EditorExtended/GameModel/" + scenarioId + "/Duplicate";
             if (scenarioId) {
                 $http.post(ServiceURL + url, null, {
                     "headers": {
