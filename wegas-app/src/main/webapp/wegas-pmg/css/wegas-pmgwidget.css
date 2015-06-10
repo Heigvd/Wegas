@@ -31,19 +31,23 @@
 .yui3-datatable-table .booked {
     background-color: #2C96FF;
 }
+
 .yui3-datatable-table .past .unavailable {
     background-color: #FF6060;
 }
+
 .pmg-legend .worked,
-.yui3-datatable-table .past .booked, 
+.yui3-datatable-table .past .booked,
 .yui3-datatable-table .past .activity {
     background-color: #63B1FF;
 }
+
 .yui3-datatable-table .past .booked {
     color: rgb(80, 80, 80);
     font-size: 6pt;
     text-align: center;
 }
+
 .pmg-legend .unavailable,
 .yui3-datatable-table .unavailable {
     background-color: #FF0000;
@@ -61,26 +65,34 @@
     background-color: #3399FF;
     opacity: 0.3;
 }
+
 .yui3-datatable-table .fill100 {
 }
+
 .yui3-datatable-table .fill0to25 {
     margin-right: 75%;
 }
+
 .yui3-datatable-table .fill0to50 {
     margin-right: 50%;
 }
+
 .yui3-datatable-table .fill0to75 {
     margin-right: 25%;
 }
+
 .yui3-datatable-table .fill25to100 {
     margin-left: 25%;
 }
+
 .yui3-datatable-table .fill50to100 {
     margin-left: 50%;
 }
+
 .yui3-datatable-table .fill75to100 {
     margin-left: 75%;
 }
+
 /*tbody .past span {
     opacity:  0.3;
 }*/
@@ -88,6 +100,7 @@
 tbody .past .activity {
     opacity: 1;
 }
+
 .body .yui3-datatable-cell.schedulecolumn {
     border-left: 1px solid lightgray;
     -moz-user-select: none;
@@ -96,9 +109,11 @@ tbody .past .activity {
     -ms-user-select: none;
     user-select: none;
 }
+
 .yui3-skin-sam tbody .schedulecolumn.past {
     background: #f7f7f7;
 }
+
 .yui3-datatable-columns .schedulecolumn.present {
     /*background-image: url(../../wegas-pmg/images/next.png), url(../../wegas-pmg/images/h2.png);*/
     /*background-repeat: no-repeat, repeat-x;*/
@@ -106,28 +121,34 @@ tbody .past .activity {
     background: #0981A9;
     color: white;
 }
+
 .body .yui3-datatable-columns .past {
     background-color: #c0c0c0;
     background-image: none;
 }
+
 .yui3-datatable-data .right {
     text-align: right;
 }
+
 .yui3-datatable-data .center {
     text-align: center;
 }
+
 /* Assignment plugin CSS */
 
 .yui3-datatable-col-assignments {
     white-space: nowrap;
     vertical-align: middle;
 }
+
 .yui3-datatable-col-assignments .assignment {
     display: block;
     float: left;
     width: 17px;
     text-align: center;
 }
+
 .yui3-datatable-col-assignments .assignment span {
     display: block;
     float: left;
@@ -135,22 +156,27 @@ tbody .past .activity {
     height: 16px;
     width: 16px;
 }
+
 .yui3-datatable-col-assignments .assignment .assign {
     background-image: url(../../wegas-pmg/images/add.png);
 }
+
 .yui3-datatable-col-assignments .tasks {
     display: inline-block;
     white-space: normal;
 }
+
 .yui3-datatable-col-assignments .task {
     display: inline-block;
     position: relative;
     margin: 0 1px;
 }
+
 .yui3-datatable-col-assignments .task:hover .label {
     background: #0981A9;
     color: white;
 }
+
 .yui3-datatable-col-assignments .task .label {
     cursor: move;
     padding: 0 3px;
@@ -165,6 +191,7 @@ tbody .past .activity {
     padding-right: 5px;
     border-radius: 2px;
 }
+
 .tasks .task .menu {
     display: none;
     position: absolute;
@@ -175,6 +202,7 @@ tbody .past .activity {
     left: -10px;
     width: 41px;
 }
+
 .tasks .task .remove,
 .tasks .task .dirleft,
 .tasks .task .dirright {
@@ -185,23 +213,28 @@ tbody .past .activity {
     top: 37px;
     display: inline-block;
 }
+
 .tasks .task:hover .menu,
 .tasks .task:hover .menu:hover {
     display: block;
 }
+
 .tasks .task .dirleft {
     background: url(../../wegas-pmg/images/move-left.png) -3px;
     width: 10px;
 }
+
 .tasks .task .dirright {
     background: url(../../wegas-pmg/images/move-right.png) -3px;
     width: 10px;
 }
+
 /* bac plugin */
 
 .yui3-datatable-table input.invalid {
     border-color: #E43737;
 }
+
 /* Line completeness plugin*/
 
 .task-execution-page .yui3-datatable-table .pmg-line-completeness-complete,
@@ -210,6 +243,7 @@ tbody .past .activity {
 .gantt-execution-page .yui3-datatable-table .pmg-line-completeness-complete .yui3-datatable-col-Realized {
     background-color: #E5FFE5;
 }
+
 .task-execution-page .yui3-datatable-table .pmg-line-completeness-started,
 .gantt-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-index,
 .gantt-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-label,
@@ -217,23 +251,27 @@ tbody .past .activity {
 .yui3-menu-content > button.pmg-line-completeness-started {
     background-color: #FFFDC2;
 }
+
 .yui3-button.pmg-menu-invalid {
     opacity: 0.8;
     cursor: default;
     font-style: italic;
 }
+
 /* --------------- SlidePanel css ------------------------------------*/
 
 .wegas-pmg-slidepanel .wegas-pmg-slidepanel-content {
     overflow: hidden;
     width: 100%;
 }
+
 /* Legends */
 
 .pmg-legend {
     margin: 5px 10px 10px;
     padding: 1px 0;
 }
+
 .pmg-legend > div {
     font-style: italic;
     color: #ADADAE;
@@ -243,6 +281,7 @@ tbody .past .activity {
     *display: inline;
     *zoom: 1;
 }
+
 .pmg-legend > div > div {
     width: 2em;
     height: 1em;
@@ -251,10 +290,12 @@ tbody .past .activity {
     *zoom: 1;
     margin-right: 3px;
 }
+
 .onclickpopup {
     text-decoration: underline;
     cursor: pointer;
 }
+
 .pmg-popup-overlay {
     background: white;
     border: 1px solid lightgray;
@@ -265,22 +306,27 @@ tbody .past .activity {
     min-width: 12em;
     /* padding: 5px; */
 }
+
 .pmg-popup-overlay .yui3-widget-bd .subtitle {
     color: rgb(28, 28, 28);
     margin-bottom: 3px;
     font-weight: bold;
     font-size: 8.5pt;
 }
+
 .pmg-popup-overlay .yui3-widget-hd {
     font-size: 9pt;
     font-weight: bold;
     padding: 5px 10px 0;
     color: rgb(28, 28, 28);
 }
-.wegas-pmg-resourcespanels-content .resourcepanel-warn .yui3-datatable-col-label {
+
+.wegas-pmg-resourcespanels-content tr.resourcepanel-warn .yui3-datatable-col-label,
+.wegas-pmg-resourcespanels-content > div.resourcepanel-warn > .slidepanel-title {
     border-left: 3px solid rgb(201, 0, 0) !important;
-    border-radius:  7px 0px 0px 7px;
+    border-radius: 7px 0px 0px 7px;
 }
+
 .indicators-management .yui3-numericaxis + .yui3-numericaxis {
     display: none;
 }

@@ -35,6 +35,7 @@ YUI.add('wegas-pmg-linefilter', function(Y) {
             dt.data.each(function(row, id) {
                 fn.call(this, row, dt.getRow(id));
             }, this);
+            this.get("host").fire("filtered");
         },
         destructor: function() {
             Y.Array.each(this.handlers, function(item) {
@@ -53,26 +54,31 @@ YUI.add('wegas-pmg-linefilter', function(Y) {
         }
     });
 
-    Y.Plugin.PMGLineCompleteness = Y.Base.create("wegas-pmg-linecompleteness", Y.Plugin.PMGLineFilter, [Wegas.Plugin, Wegas.Editable], {}, {
-        NS: "pmglinecompleteness",
-        ATTRS: {
-            completeClass: {
-                value: "pmg-line-completeness-complete"
-            },
-            startedClass: {
-                value: "pmg-line-completeness-started"
-            },
-            filterFn: {
-                value: function(data, node) {
-                    var completeness = data.get("instance.properties.completeness");
-                    node.removeClass(this.get("completeClass")).removeClass(this.get("startedClass"));
-                    if (completeness > 99) {
-                        node.addClass(this.get("completeClass"));
-                    } else if (completeness > 0) {
-                        node.addClass(this.get("startedClass"));
+    Y.Plugin.PMGLineCompleteness = Y.Base.create("wegas-pmg-linecompleteness",
+        Y.Plugin.PMGLineFilter,
+        [Wegas.Plugin,
+            Wegas.Editable],
+        {},
+        {
+            NS: "pmglinecompleteness",
+            ATTRS: {
+                completeClass: {
+                    value: "pmg-line-completeness-complete"
+                },
+                startedClass: {
+                    value: "pmg-line-completeness-started"
+                },
+                filterFn: {
+                    value: function(data, node) {
+                        var completeness = data.get("instance.properties.completeness");
+                        node.removeClass(this.get("completeClass")).removeClass(this.get("startedClass"));
+                        if (completeness > 99) {
+                            node.addClass(this.get("completeClass"));
+                        } else if (completeness > 0) {
+                            node.addClass(this.get("startedClass"));
+                        }
                     }
                 }
             }
-        }
-    });
+        });
 });

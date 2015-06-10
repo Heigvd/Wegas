@@ -52,7 +52,8 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      *
      */
     @OneToMany(mappedBy = "choiceDescriptor", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("id")
+//    @OrderBy("id")
+    @OrderColumn
     @JsonManagedReference
     @JsonView(Views.EditorI.class)
     private List<Result> results = new ArrayList<>();
@@ -94,15 +95,15 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
         super.merge(a);
         this.setDuration(other.getDuration());
         this.setCost(other.getCost());
-        ListUtils.mergeLists(this.getResults(), other.getResults());
+        ListUtils.mergeReplace(this.getResults(), other.getResults());
 
-        // Has currentResult been removed ? 
+        // Has currentResult been removed ?
         ChoiceInstance defaultInstance = (ChoiceInstance) this.getDefaultInstance();
         if (!this.getResults().contains(defaultInstance.getCurrentResult())) {
             defaultInstance.setCurrentResult(null);
         }
 
-        // Detect new results 
+        // Detect new results
         List<String> labels = new ArrayList<>();
         List<String> names = new ArrayList<>();
         List<Result> newResults = new ArrayList<>();

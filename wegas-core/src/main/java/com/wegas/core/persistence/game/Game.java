@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.jparealm.GameAccount;
@@ -27,13 +26,13 @@ import java.util.*;
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 @Entity
-//@Table(uniqueConstraints = {
+@Table(uniqueConstraints = {
 //    @UniqueConstraint(columnNames = {"name"}), 
-//    @UniqueConstraint(columnNames = {"token"})
-//})
+    @UniqueConstraint(columnNames = {"token"})
+})
 @NamedQueries({
-        @NamedQuery(name = "game.findByStatus", query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status = :status ORDER BY g.createdTime ASC"),
-        @NamedQuery(name = "game.findByToken", query = "SELECT DISTINCT g FROM Game g WHERE  g.status = :status AND g.token = :token")
+    @NamedQuery(name = "game.findByStatus", query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status = :status ORDER BY g.createdTime ASC"),
+    @NamedQuery(name = "game.findByToken", query = "SELECT DISTINCT g FROM Game g WHERE  g.status = :status AND g.token = :token")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Game extends NamedEntity {
@@ -116,7 +115,7 @@ public class Game extends NamedEntity {
      *
      */
     @Enumerated
-    private GameAccess access = GameAccess.SINGLEUSAGEENROLMENTKEY;
+    private GameAccess access = GameAccess.CLOSE;
 
     /**
      *
@@ -124,22 +123,6 @@ public class Game extends NamedEntity {
     @Enumerated(value = EnumType.STRING)
     @Column(length = 24)
     private Status status = Status.LIVE;
-
-    /**
-     *
-     */
-    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("key")
-    @JsonView(Views.EditorExtendedI.class)
-    private List<GameEnrolmentKey> keys = new ArrayList<>();
-
-    /**
-     *
-     */
-    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("key")
-    @JsonView(Views.EditorExtendedI.class)
-    private List<GameAccountKey> accountkeys = new ArrayList<>();
 
     /**
      *
@@ -189,21 +172,6 @@ public class Game extends NamedEntity {
         super.merge(a);
         this.setAccess(other.getAccess());
         this.setToken(other.getToken());
-        //this.setKey(other.getKey());
-        ListUtils.mergeLists(this.getKeys(), other.getKeys());
-        for (int i = 0; i < other.getAccountkeys().size(); i++) {               // @hack Not possible to use mergeLists.
-            boolean founded = false;                                            // Check must be on accountKey and not accountId.
-            for (int ii = 0; ii < this.getAccountkeys().size(); ii++) {
-                if (this.accountkeys.get(ii).getKey().equals(other.getAccountkeys().get(i).getKey())) {
-                    founded = true;
-                    break;
-                }
-            }
-            if (!founded) {
-                this.accountkeys.add(other.accountkeys.get(i));
-            }
-        }
-        //ListUtils.mergeLists(this.getAccountkeys(), other.getAccountkeys());
     }
 
     /**
@@ -402,57 +370,6 @@ public class Game extends NamedEntity {
     }
 
     /**
-     * @return the keys
-     */
-    public List<GameEnrolmentKey> getKeys() {
-        Collections.sort(keys, new Comparator<GameEnrolmentKey>() {
-            @Override
-            public int compare(GameEnrolmentKey arg0, GameEnrolmentKey arg1) {
-                int a = Integer.parseInt(arg0.getKey().substring(arg0.getKey().lastIndexOf("-") + 1));
-                int b = Integer.parseInt(arg1.getKey().substring(arg1.getKey().lastIndexOf("-") + 1));
-                return (a < b ? -1 : (a > b ? 1 : 0));
-            }
-        });
-
-        return keys;
-    }
-
-    /**
-     * @param keys the keys to set
-     */
-    public void setKeys(List<GameEnrolmentKey> keys) {
-        this.keys = keys;
-        for (GameEnrolmentKey k : this.keys) {
-            k.setGame(this);
-        }
-    }
-
-    /**
-     * @return
-     */
-    public List<GameAccountKey> getAccountkeys() {
-        Collections.sort(accountkeys, new Comparator<GameAccountKey>() {
-            @Override
-            public int compare(GameAccountKey arg0, GameAccountKey arg1) {
-                int a = Integer.parseInt(arg0.getKey().substring(arg0.getKey().lastIndexOf("-") + 1));
-                int b = Integer.parseInt(arg1.getKey().substring(arg1.getKey().lastIndexOf("-") + 1));
-                return (a < b ? -1 : (a > b ? 1 : 0));
-            }
-        });
-        return accountkeys;
-    }
-
-    /**
-     * @param accountkeys
-     */
-    public void setAccountkeys(List<GameAccountKey> accountkeys) {
-        this.accountkeys = accountkeys;
-        for (GameAccountKey k : this.accountkeys) {
-            k.setGame(this);
-        }
-    }
-
-    /**
      * @return
      */
     public String getGameModelName() {
@@ -483,22 +400,11 @@ public class Game extends NamedEntity {
      *
      */
     public enum GameAccess {
+
         /**
          *
          */
         OPEN,
-        /**
-         *
-         */
-        URL,
-        /**
-         *
-         */
-        ENROLMENTKEY,
-        /**
-         *
-         */
-        SINGLEUSAGEENROLMENTKEY,
         /**
          *
          */
@@ -509,6 +415,7 @@ public class Game extends NamedEntity {
      *
      */
     public enum Status {
+
         /**
          * Initial value, game is playable
          */

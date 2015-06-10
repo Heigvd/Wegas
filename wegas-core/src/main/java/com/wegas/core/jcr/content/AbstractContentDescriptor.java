@@ -410,8 +410,7 @@ abstract public class AbstractContentDescriptor {
     }
 
     /**
-     * Convert name and path to a fileSystemAbsolutePath, including namespace
-     * (wfs)
+     * Convert name and path to a fileSystemAbsolutePath, including namespace ({@value WFSConfig#WeGAS_FILE_SYSTEM_PREFIX})
      */
     //@XmlTransient
     @JsonIgnore
@@ -419,7 +418,7 @@ abstract public class AbstractContentDescriptor {
         if (this.path.equals("/")) {
             this.fileSystemAbsolutePath = "/" + (this.name.equals("") ? "" : WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + this.name);
         } else {
-            this.fileSystemAbsolutePath = this.path.replaceAll("/(\\w)", "/" + WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + "$1") + (this.name.equals("") ? "" : "/" + WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + this.name);
+            this.fileSystemAbsolutePath = this.path.replaceAll("/(\\p{L})", "/" + WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + "$1") + (this.name.equals("") ? "" : "/" + WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + this.name);
         }
     }
 

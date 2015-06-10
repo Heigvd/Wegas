@@ -26,6 +26,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Entity
 @Access(AccessType.FIELD)
 @JsonIgnoreProperties({"moralHistory", "confidenceHistory"})
+/*@Table(indexes = {
+    @Index(columnList = "properties.resourceinstance_variableinstance_id")
+})*/
 public class ResourceInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;

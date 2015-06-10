@@ -12,7 +12,6 @@ import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
-import com.wegas.core.security.util.Secured;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -53,7 +52,6 @@ public class AccountController {
      * @return
      */
     @POST
-    @Secured
     @RequiresPermissions("User:Edit")
     public User create(AbstractAccount entity) {
         // logger.log(Level.INFO, "POST GameModel");
@@ -89,6 +87,10 @@ public class AccountController {
         AbstractAccount a = accountFacade.find(accountId);
         if (!userFacade.getCurrentUser().equals(a.getUser())) {
             SecurityUtils.getSubject().checkPermission("User:Edit");
+        }
+        if (!SecurityUtils.getSubject().isPermitted("User:Edit")) {
+            // restore original permission in case current user lack UserEdit permission
+            entity.setPermissions(a.getPermissions());
         }
         return accountFacade.update(accountId, entity);
     }

@@ -173,10 +173,11 @@ YUI.add("wegas-editor-entityaction", function(Y) {
             });
 
             tab.detach("destroy");
-            tab.on("destroy", function() {                                      // and destroy callback             
+            tab.on("destroy", function() {                                      // and destroy callback
                 if (cancelCallback) {
                     cancelCallback(EditEntityAction.currentEntity);
                 }
+                Y.fire("edit-entity:cancel", {entity: EditEntityAction.currentEntity});
                 EditEntityAction.currentEntity = null;
                 EditEntityAction.form = null;
                 EditEntityAction.tab = null;
@@ -185,7 +186,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
             tab.form.on("updated", function(e) {
                 EditEntityAction.showFormMessage("success", "Changes not saved");
             });
-
+            Y.fire("edit-entity:edit", {entity: entity});
             //tab.form.detach("cancel");
             //tab.form.on("cancel", function() {
             //    this.remove();
@@ -307,7 +308,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
         NS: "NewEntityAction",
         ATTRS: {
             targetClass: {},
-            cfg:{},
+            cfg: {},
             showEditionAfterRequest: {
                 value: true
             },
@@ -334,7 +335,8 @@ YUI.add("wegas-editor-entityaction", function(Y) {
      */
     EditEntityArrayFieldAction = Y.Base.create("EditEntityArrayFieldAction", EntityAction, [], {
         execute: function() {
-            var entity = (this.get("method").toLowerCase() === "post") ? this.get(ENTITY) : this.get("parentEntity"), descriptor;
+            var entity = (this.get("method").toLowerCase() === "post") ? this.get(ENTITY) :
+                this.get("parentEntity"), descriptor;
 
             if (entity instanceof Wegas.persistence.VariableDescriptor) {
                 this.get(DATASOURCE).cache.getWithView(entity, "EditorExtended", {// just need to check if it causes bugs
@@ -348,12 +350,12 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                 descriptor = Y.Array.find(Y.Wegas.Facade.Variable.cache.findAll("@class", "PeerReviewDescriptor"),
                     function(item) {
                         return item.get("feedback").get("id") === entity.get("id") ||
-                            item.get("fbComments").get("id") === entity.get("id");
+                               item.get("fbComments").get("id") === entity.get("id");
                     });
 
                 this.doExecute(entity, descriptor);
             } else {
-                this.doExecute(entity); // ???? 
+                this.doExecute(entity); // ????
             }
         },
         doExecute: function(container, descriptor) {
@@ -508,12 +510,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                                 return Y.Array.indexOf(idBack, e.get(ID)) === -1;
                             });
                         }
-
-                        button = Wegas.Widget.create(entity.getMenuCfg({dataSource: dataSource})[0]);
-                        button.render().fire("click");
-                        button.destroy();
-                        //EditEntityAction.showUpdateForm(newDescriptor, dataSource);
-                        //EditEntityAction.showFormMessage("success", "Item has been added");
+                        EditEntityAction.showUpdateForm(entity, this.get(DATASOURCE));
                     }, this),
                     failure: Y.bind(this.hideOverlay, this)
                 });
@@ -530,7 +527,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
         NS: "AddEntityChildAction",
         ATTRS: {
             targetClass: {},
-            cfg:{}
+            cfg: {}
         }
     });
     Plugin.AddEntityChildAction = AddEntityChildAction;
@@ -546,7 +543,16 @@ YUI.add("wegas-editor-entityaction", function(Y) {
             this.showOverlay();
             this.get(DATASOURCE).cache.duplicateObject(this.get(ENTITY), {
                 on: {
-                    success: Y.bind(this.hideOverlay, this),
+                    success: Y.bind(function(e) {
+                        var entity = e.response.entity;
+                        if (Wegas.persistence.VariableDescriptor &&              // If entity is loaded
+                            entity instanceof Wegas.persistence.VariableDescriptor &&
+                            entity.get("items")) {                           // If the parent list of the edited item was returned,
+                            entity = entity.get("items")[entity.get("items").length - 1]; //select last item.
+                        }
+                        EditEntityAction.showUpdateForm(entity, this.get(DATASOURCE));
+                        this.hideOverlay();
+                    }, this),
                     failure: Y.bind(this.hideOverlay, this)
                 }
             });

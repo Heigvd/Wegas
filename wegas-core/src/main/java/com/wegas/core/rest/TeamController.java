@@ -129,32 +129,4 @@ public class TeamController {
         teamFacade.reset(team);
         return Response.ok().build();
     }
-    
-    /**
-     *
-     * @param teamId
-     * @param userId
-     * @return
-     */
-    /*
-     * @PUT @Path("{teamId: [1-9][0-9]*}/addUser/{userId: [1-9][0-9]*}")
-     * @Consumes(MediaType.APPLICATION_JSON)
-     * @Produces(MediaType.APPLICATION_JSON) public PlayerEntity
-     * addUser(@PathParam("teamId") Long teamId, @PathParam("userId") Long
-     * userId) { // return TeamFacadeBean.joinTeam(teamId, userId); return null;
-     * }
-     */
-    /**
-     *
-     * @param teamId
-     * @param u
-     * @return
-     */
-    /*
-     * @POST @Path("{teamId: [1-9][0-9]*}/ ")
-     * @Consumes(MediaType.APPLICATION_JSON)
-     * @Produces(MediaType.APPLICATION_JSON) public Team
-     * addUser(@PathParam("teamId") Long teamId, UserEntity u) {
-     * ume.createUser(u); return this.addUser(teamId, u.getId()); }
-     */
 }

@@ -40,22 +40,22 @@ i18nTable.en = {
         },
         blockedByPredecessors: {
             from: "%employeeName%",
-            subject: "Unable to work on task \"%task%\"",
+            subject: "Unable to work yet on task \"%task%\"",
             content: "I came to work on task \"%task%\" on %step% but it wasn't possible at this time. <br /><br />I will recontact you as soon as I will have found some work . <br /> <br />Regards<br />%employeeName% <br /> %job%"
         },
         blockedByPredecessors_grouped: {
             from: "%employeeName%",
-            subject: "Unable to work on task \"%task%\"",
+            subject: "Unable to work yet on task \"%task%\"",
             content: "%others% and I came to work on task \"%task%\" on %step% but it wasn't possible at this time. <br /><br />We will recontact you as soon as we will have found some work . <br /> <br />Regards<br />%employeeName% <br /> %job%"
         },
         notMyWork: {
             from: "%employeeName%",
-            subject: "Unable to work on task \"%task%\"",
+            subject: "Not qualified for \"%task%\"",
             content: "I came to work on task \"%task%\" on %step% but I'm not qualified for this job. <br /><br />I will recontact you as soon as I will have found some work . <br /> <br />Regards<br />%employeeName% <br /> %job%"
         },
         notMyWork_grouped: {
             from: "%employeeName%",
-            subject: "Unable to work on task \"%task%\"",
+            subject: "Not qualified for \"%task%\"",
             content: "%others% and I came to work on task \"%task%\" on %step% but we're not qualified for this job. <br /><br />We will recontact you as soon as we will have found some work . <br /> <br />Regards<br />%employeeName% <br /> %job%"
         },
         skillCompleted: {

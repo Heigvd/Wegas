@@ -15,6 +15,8 @@ import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.Index;
+import javax.persistence.Table;
 
 /**
  *
@@ -22,6 +24,10 @@ import javax.persistence.Entity;
  */
 @Entity
 @Access(AccessType.FIELD)
+
+/*@Table(indexes = {
+    @Index(columnList = "properties.objectinstance_variableinstance_id")
+})*/
 public class ObjectInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
