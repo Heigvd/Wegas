@@ -19,6 +19,10 @@ import com.fasterxml.jackson.annotation.JsonView;
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
 @Entity
+
+@Table(indexes = {
+    @Index(columnList = "variableinstance_id")
+})
 public class Occupation extends AbstractAssignement {
 
     private static final long serialVersionUID = 1L;
@@ -47,13 +51,12 @@ public class Occupation extends AbstractAssignement {
     private String description = "";
     /**
      *
-     
-    @ManyToOne(optional = true)
-    @JoinColumn(name = "taskdescriptor_id", nullable = true)
-    @JsonIgnore
-    private TaskDescriptor taskDescriptor;
-    */
-    
+     *
+     * @ManyToOne(optional = true)
+     * @JoinColumn(name = "taskdescriptor_id", nullable = true)
+     * @JsonIgnore private TaskDescriptor taskDescriptor;
+     */
+
     /**
      *
      */
@@ -136,32 +139,25 @@ public class Occupation extends AbstractAssignement {
     /**
      *
      * @return
-     
-    @JsonIgnore
-    public Long getTaskDescriptorId() {
-        if (this.taskDescriptor != null) {
-            return this.taskDescriptor.getId();
-        } else {
-            return null;
-        }
-    }
-    */
-
+     *
+     * @JsonIgnore public Long getTaskDescriptorId() { if (this.taskDescriptor
+     * != null) { return this.taskDescriptor.getId(); } else { return null; } }
+     */
     /**
      * @return the taskInstance
-     
-    @JsonIgnore
-    public TaskDescriptor getTaskDescriptor() {
-        return taskDescriptor;
-    }*/
-
+     *
+     * @JsonIgnore public TaskDescriptor getTaskDescriptor() { return
+     * taskDescriptor;
+    }
+     */
     /**
      * @param taskDescriptor
-     
-    public void setTaskDescriptor(TaskDescriptor taskDescriptor) {
-        this.taskDescriptor = taskDescriptor;
-    }*/
-
+     *
+     *                       public void setTaskDescriptor(TaskDescriptor
+     *                       taskDescriptor) { this.taskDescriptor =
+     *                       taskDescriptor;
+    }
+     */
     /**
      * @return the editable
      */

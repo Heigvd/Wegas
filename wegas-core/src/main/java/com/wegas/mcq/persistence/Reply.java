@@ -22,7 +22,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @Entity
 //@XmlType(name = "Reply")
 @JsonTypeName(value = "Reply")
-@Table(name = "MCQReply")
+@Table(name = "MCQReply", indexes = {
+    @Index(columnList = "variableinstance_id")
+})
 public class Reply extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;

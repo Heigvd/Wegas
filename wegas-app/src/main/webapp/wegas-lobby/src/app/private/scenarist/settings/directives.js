@@ -159,49 +159,16 @@ angular.module('private.scenarist.settings.directives', [
             $scope.close();
         };
 
-        $scope.$watch(function(){
-            return ctrl.infos.name;
-        }, function(newName){
-            ctrl.checkChanges("name", newName);
-        });
+        var properties = ["name","comments","individual","scriptUri","clientScriptUri","cssUri","pagesUri","logID"];
 
-        $scope.$watch(function(){
-            return ctrl.infos.comments;
-        }, function(newComments){
-            ctrl.checkChanges("comments", newComments);
+        _.each(properties, function(el, index) {
+            $scope.$watch(function() {
+                return ctrl.infos[el];
+            }, function(newValue) {
+                ctrl.checkChanges(el, newValue)
+            })
         });
-
-        $scope.$watch(function(){
-            return ctrl.infos.individual;
-        }, function(newIndividual){
-            ctrl.checkChanges("individual", newIndividual);
-        });
-
-        $scope.$watch(function(){
-            return ctrl.infos.scriptUri;
-        }, function(newScriptUri){
-            ctrl.checkChanges("scriptUri", newScriptUri);
-        });
-        $scope.$watch(function(){
-            return ctrl.infos.clientScriptUri;
-        }, function(newClientScriptUri){
-            ctrl.checkChanges("clientScriptUri", newClientScriptUri);
-        });
-        $scope.$watch(function(){
-            return ctrl.infos.cssUri;
-        }, function(newCssUri){
-            ctrl.checkChanges("cssUri", newCssUri);
-        });
-        $scope.$watch(function(){
-            return ctrl.infos.pagesUri;
-        }, function(newPagesUri){
-            ctrl.checkChanges("pagesUri", newPagesUri);
-        });
-        $scope.$watch(function(){
-            return ctrl.infos.logID;
-        }, function(newLogID){
-            ctrl.checkChanges("logID", newLogID);
-        });
+        
         ctrl.updateScenario();
         ctrl.activeTab("infos");
     })

@@ -134,6 +134,31 @@ YUI.add('wegas-panel', function(Y) {
                 } else {
                     cb();
                 }
+            },
+            prompt: function(msg, okCb, cancelCb) {
+                var panel = new Wegas.Panel({
+                    headerContent: "<span class='fa fa-question fa-2x'></span><span style='margin-left:10px'>" +
+                                   Y.Escape.html(msg) + "</span>",
+                    content: "<input class='prompt-value' type='text' style='width:97%'> </input>",
+                    modal: true,
+                    width: 400,
+                    buttons: {
+                        footer: [{
+                            label: 'OK',
+                            action: function() {
+                                var v = this.get("bodyContent").filter(".prompt-value").item(0).get("value");
+                                panel.exit();
+                                okCb && okCb(v);
+                            }
+                        }, {
+                            label: 'Cancel',
+                            action: function() {
+                                panel.exit();
+                                cancelCb && cancelCb();
+                            }
+                        }]
+                    }
+                }).render();
             }
         });
 });

@@ -10,7 +10,7 @@
  */
 YUI.add('wegas-reviewing-entities', function(Y) {
     "use strict";
-    var STRING = "string", HIDDEN = "hidden", ARRAY = "array",
+    var STRING = "string", HIDDEN = "hidden", ARRAY = "array", ENUM = "enum",
         SELF = "self", BOOLEAN = "boolean", BUTTON = "Button", OBJECT = "object",
         HTML = "html", SCRIPT = "script", NUMBER = "number",
         Wegas = Y.Wegas, persistence = Wegas.persistence,
@@ -119,6 +119,28 @@ YUI.add('wegas-reviewing-entities', function(Y) {
          * WYSIWYG editor
          */
         METHODS: {
+            getState: {
+                label: "state",
+                returns: STRING,
+                choices: [{
+                        value: "NOT_STARTED",
+                        label: "editing"
+                    }, {
+                        value: "SUBMITTED",
+                        label: "ready to review"
+                    }, {
+                        value: "DISPATCHED",
+                        label: "reviewing"
+                    }, {
+                        value: "DISCARDED",
+                        label: "discarded"
+                    }
+                ],
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }]
+            }
         }
     });
     /**

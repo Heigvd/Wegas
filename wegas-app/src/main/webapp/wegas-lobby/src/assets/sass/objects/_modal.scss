@@ -15,10 +15,29 @@
 	overflow-y:auto;
 	transition:.5s;
 
+	@media screen and (max-width: 800px) {
+		width: 100%;
+		margin-left: 0;
+		margin-right: 0;
+		left: 0;
+	}
+	@media screen and (max-height: 580px) {
+		height: 100%;
+		top: 0;
+		margin-top: 0;
+		margin-bottom: 0;
+	}
+
 	&.modal--public-password{
 		width:360px;
 		height:210px;
 		margin: -140px 0px 0px -180px;
+		@media screen and (max-width: 800px) {
+			width: 100%;
+			margin-left: 0;
+			margin-right: 0;
+			left: 0;
+		}
 
 	}
 	&.modal--public-signup{
@@ -30,6 +49,12 @@
 		}
 		.form__row{
 			margin:8px 4px;
+		}
+		@media screen and (max-width: 800px) {
+			width: 100%;
+			margin-left: 0;
+			margin-right: 0;
+			left: 0;
 		}
 
 	}

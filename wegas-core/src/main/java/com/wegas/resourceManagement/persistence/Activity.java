@@ -21,6 +21,10 @@ import com.fasterxml.jackson.annotation.JsonView;
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
 @Entity
+
+@Table(indexes = {
+    @Index(columnList = "variableinstance_id")
+})
 public class Activity extends AbstractAssignement {
 
     private static final long serialVersionUID = 1L;

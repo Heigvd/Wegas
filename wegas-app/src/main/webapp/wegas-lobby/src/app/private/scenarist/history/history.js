@@ -13,23 +13,15 @@ angular
         }
     });
 })
-.controller("ScenaristHistoryController", function ScenaristHistoryController($animate, $state, ModalService, Auth){
+.controller("ScenaristHistoryController", function ScenaristHistoryController($state, WegasModalService, Auth){
     Auth.getAuthenticatedUser().then(function(user) {
         if (user != null) {
             if (user.isAdmin || user.isScenarist) {
-                ModalService.showModal({
+                WegasModalService.displayAModal({
                     templateUrl: 'app/private/scenarist/history/history.tmpl.html',
                     controller: "ModalsController as modalsCtrl"
                 }).then(function(modal) {
-                    var box = $(".modal"),
-                        shadow = $(".shadow");
-
-                    $('body').addClass('modal-displayed');
-                    $animate.addClass(box, "modal--open");
-                    $animate.addClass(shadow, "shadow--show");
-
                     modal.close.then(function(result) {
-                        $('body').removeClass('modal-displayed');
                         $state.go("^");
                     });
                 });

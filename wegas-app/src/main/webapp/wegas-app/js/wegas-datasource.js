@@ -254,15 +254,14 @@ YUI.add('wegas-datasource', function(Y) {
                                 break;
                         }
 
-
                         if (Y.Widget) {
                             node = Y.Widget.getByNode(".wegas-login-page") ||
-                                (Y.Widget.getByNode("#centerTabView") &&
+                                   (Y.Widget.getByNode("#centerTabView") &&
                                     Y.Widget.getByNode("#centerTabView").get("selection")) ||
-                                Y.Widget.getByNode(".wegas-playerview");
+                                   Y.Widget.getByNode(".wegas-playerview");
 
                         }
-                        
+
                         if (node) {
                             node.showMessage(level, msg);
                         } else {

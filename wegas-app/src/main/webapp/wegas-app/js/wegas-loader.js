@@ -53,7 +53,7 @@ YUI().use(function(Y) {
              */
             "wegas-app": {
                 requires: ["base", "plugin", "array-extras", "timers",
-                    "wegas-helper", "wegas-entity", "wegas-datasource"]
+                    "wegas-helper", "wegas-entity", "wegas-datasource", "font-awesome"]
             },
             "wegas-editable": {
                 requires: "inputex-jsonschema"
@@ -254,18 +254,6 @@ YUI().use(function(Y) {
                 path: "js/widget/wegas-googletranslate-min.js",
                 requires: "googletranslate",
                 ws_provides: "GoogleTranslate"
-            },
-            "wegas-team": {
-                path: "js/widget/wegas-team-min.js",
-                requires: ["wegas-inputex", "wegas-button",
-                    "wegas-editor-action", "wegas-inputex-multipleoptions",
-                    "inputex-select", "inputex-string", "inputex-list", "inputex-hidden",
-                    "inputex-group", "inputex-autocomplete", "inputex-password", "inputex-email",
-                    "wegas-gameinformation", "wegas-teamcss", "autocomplete-highlighters"],
-                ws_provides: ["Team", "JoinTeam", "EditTeam"]
-            },
-            "wegas-teamcss": {
-                type: CSS
             },
             "wegas-translator": {
                 pkg: "js/",
@@ -498,7 +486,7 @@ YUI().use(function(Y) {
                 requires: ["wegas-inputex", "wegas-inputex-list", "wegas-inputex-script",
                     "wegas-inputex-variabledescriptorselect",
                     "wegas-button", "inputex-list", "wegas-inputex-url",
-                    "wegas-inputex-rte", // for mail attachements in script
+                    "wegas-inputex-rte", // for mail attachments in script
                     "esprima"],
                 ix_provides: ["script", "variableselect", "flatvariableselect"]
             },
@@ -674,7 +662,7 @@ YUI().use(function(Y) {
             },
             "wegas-dashboard": {
                 path: "js/widget/wegas-dashboard-min.js",
-                requires: ["datatable", "template", "wegas-dashboardcss", "event-focus", "wegas-console-custom", "wegas-sendmail", "font-awesome"],
+                requires: ["datatable", "template", "wegas-dashboardcss", "event-focus", "wegas-console-custom", "wegas-sendmail", "font-awesome", "promise"],
                 ws_provides: "Dashboard"
             },
             "wegas-resetter": {
@@ -875,7 +863,7 @@ YUI().use(function(Y) {
             },
             "font-awesome": {
                 type: CSS,
-                fullpath: "//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"
+                fullpath: "//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"
             }
         }
     };

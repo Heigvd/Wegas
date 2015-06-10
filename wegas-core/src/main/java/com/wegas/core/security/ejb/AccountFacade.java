@@ -34,6 +34,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,14 +89,10 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
                 // GOTCHA no username could be found, do not use
             }
         }
-        if (false){
-            // RESTORE PERMISSION
-        }
-        AbstractAccount oAccount = super.update(entityId, account);
-        // TODO CHECK ADMIN
 
-        // TODO CHECK ADMIN
-        if (true) {
+        AbstractAccount oAccount = super.update(entityId, account);
+
+        if (SecurityUtils.getSubject().isPermitted("User:Edit:" + entityId)) {
             Set<Role> revivedRoles = new HashSet<>();
             for (Role r : account.getRoles()) {
                 try {

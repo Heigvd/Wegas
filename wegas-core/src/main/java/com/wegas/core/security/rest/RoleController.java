@@ -10,7 +10,6 @@ package com.wegas.core.security.rest;
 import com.wegas.core.rest.AbstractRestController;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.persistence.Role;
-import com.wegas.core.security.util.Secured;
 import java.io.IOException;
 import java.util.Collection;
 import javax.ejb.EJB;
@@ -58,7 +57,6 @@ public class RoleController extends AbstractRestController<RoleFacade, Role> {
     @Override
     @GET
     @Path("{entityId : [1-9][0-9]*}")                                           // @Path annotations are not inherited
-    @Secured
     @RequiresPermissions("User:Edit")
     public Role get(@PathParam("entityId") Long entityId) {
         return super.get(entityId);
@@ -70,7 +68,6 @@ public class RoleController extends AbstractRestController<RoleFacade, Role> {
      * @return
      */
     @Override
-    @Secured
     @RequiresPermissions("User:Edit")
     public Role create(Role entity) {
         return super.create(entity);
@@ -85,7 +82,6 @@ public class RoleController extends AbstractRestController<RoleFacade, Role> {
     @Override
     @PUT
     @Path("{entityId : [1-9][0-9]*}")                                           // @Path annotations are not inherited
-    @Secured
     @RequiresPermissions("User:Edit")
     public Role update(@PathParam("entityId") Long entityId, Role entity) {
         return super.update(entityId, entity);
@@ -100,7 +96,6 @@ public class RoleController extends AbstractRestController<RoleFacade, Role> {
     @Override
     @POST
     @Path("{entityId : [1-9][0-9]*}/Duplicate")                                 // @Path annotations are not inherited
-    @Secured
     @RequiresPermissions("User:Edit")
     public Role duplicate(@PathParam("entityId") Long entityId) throws IOException {
         throw new NoSuchMethodError("Role duplication not implemented");
@@ -114,7 +109,6 @@ public class RoleController extends AbstractRestController<RoleFacade, Role> {
     @Override
     @DELETE
     @Path("{entityId : [1-9][0-9]*}")                                           // @Path annotations are not inherited
-    @Secured
     @RequiresPermissions("User:Edit")
     public Role delete(@PathParam("entityId") Long entityId) {
         return super.delete(entityId);

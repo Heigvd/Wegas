@@ -27,13 +27,20 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 //import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonView;
+import javax.persistence.Index;
 
 /**
  *
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"requirements_variableinstance_id", "wrequirement_name"}))
+
+@Table(uniqueConstraints = @UniqueConstraint(
+        columnNames = {"requirements_variableinstance_id", "wrequirement_name"}),
+        indexes = {
+            @Index(columnList = "requirements_variableinstance_id")
+        }
+)
 public class WRequirement extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;

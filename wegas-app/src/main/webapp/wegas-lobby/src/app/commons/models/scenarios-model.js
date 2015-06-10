@@ -2,7 +2,7 @@ angular.module('wegas.models.scenarios', [])
     .service('ScenariosModel', function($http, $q, $interval, Auth, Responses) {
         var model = this,
             getPath = function(status) {
-                return ServiceURL + "rest/GameModel/status/" + status + "?view=EditorExtended";
+                return ServiceURL + "rest/EditorExtended/GameModel/status/" + status;
             },
             scenarios = {
                 cache: [],
@@ -90,7 +90,7 @@ angular.module('wegas.models.scenarios', [])
             /* Update status of scenario (LIVE, BIN, DELETE, SUPPRESSED) */
             setScenarioStatus = function(scenarioId, status) {
                 var deferred = $q.defer();
-                $http.put(ServiceURL + "rest/GameModel/" + scenarioId + "/status/" + status + "?view=EditorExtended").success(function(data) {
+                $http.put(ServiceURL + "rest/EditorExtended/GameModel/" + scenarioId + "/status/" + status).success(function(data) {
                     for (var cacheName in scenarios.cache) {
                         scenario = scenarios.findScenario(cacheName, scenarioId);
                         if (scenario) {
@@ -108,7 +108,9 @@ angular.module('wegas.models.scenarios', [])
             };
         setScenarioInfos = function(infos, scenarioBeforeChange) {
             var deferred = $q.defer(),
-                scenarioSetted = false;
+                scenarioSetted = false,
+                properties = ["scriptUri","clientScriptUri","cssUri","pagesUri","logID"];
+                
             if (scenarioBeforeChange.name !== infos.name) {
                 scenarioBeforeChange.name = infos.name;
                 scenarioSetted = true;
@@ -125,27 +127,13 @@ angular.module('wegas.models.scenarios', [])
                 scenarioBeforeChange.comments = infos.comments;
                 scenarioSetted = true;
             }
-            if (scenarioBeforeChange.properties.scriptUri !== infos.scriptUri) {
-                scenarioBeforeChange.properties.scriptUri = infos.scriptUri;
-                scenarioSetted = true;
-            }
-            if (scenarioBeforeChange.properties.clientScriptUri !== infos.clientScriptUri) {
-                scenarioBeforeChange.properties.clientScriptUri = infos.clientScriptUri;
-                scenarioSetted = true;
-            }
-            if (scenarioBeforeChange.properties.cssUri !== infos.cssUri) {
-                scenarioBeforeChange.properties.cssUri = infos.cssUri;
-                scenarioSetted = true;
-            }
-            if (scenarioBeforeChange.properties.pagesUri !== infos.pagesUri) {
-                scenarioBeforeChange.properties.pagesUri = infos.pagesUri;
-                scenarioSetted = true;
-            }
-            if (scenarioBeforeChange.properties.logID !== infos.logID) {
-                scenarioBeforeChange.properties.logID = infos.logID;
-                scenarioSetted = true;
-            }
 
+            _.each(properties, function(el, index) {
+                if (scenarioBeforeChange.properties[el] !== infos[el]) {
+                    scenarioBeforeChange.properties[el] = infos[el];
+                    gameModelSetted = true
+                }
+            });
 
             if (scenarioSetted) {
                 var url = "rest/Public/GameModel/" + scenarioBeforeChange.id + "?view=EditorExtended";
@@ -317,7 +305,7 @@ angular.module('wegas.models.scenarios', [])
 
         model.createFromJSON = function(file) {
             var deferred = $q.defer(),
-                url = "rest/GameModel",
+                url = "rest/EditorExtended/GameModel",
                 fd = new FormData();
 
 

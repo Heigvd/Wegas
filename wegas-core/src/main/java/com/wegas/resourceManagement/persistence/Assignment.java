@@ -20,6 +20,9 @@ import com.fasterxml.jackson.annotation.JsonView;
  *
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
+@Table(indexes = {
+    @Index(columnList = "variableinstance_id")
+})
 @Entity
 public class Assignment extends AbstractAssignement {
 

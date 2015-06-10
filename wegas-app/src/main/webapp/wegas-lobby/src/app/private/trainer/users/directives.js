@@ -38,8 +38,8 @@ angular.module('private.trainer.users.directives', [
                     ctrl.session = response.data;
                     if(ctrl.session.properties.freeForAll){
                         formatPlayer();
-                        updatePermission();
                     }
+                    updatePermission();
                 } else {
                     response.flash();
                 }
@@ -52,8 +52,8 @@ angular.module('private.trainer.users.directives', [
                     ctrl.session = response.data || {};
                     if(ctrl.session.properties.freeForAll){
                         formatPlayer();
-                        updatePermission();
                     }
+                    updatePermission();
                 }else{
                     response.flash();
                 }
@@ -78,8 +78,8 @@ angular.module('private.trainer.users.directives', [
             });
         };
 
-        ctrl.removeTrainer = function(trainerId) {
-            PermissionsModel.removeSessionPermission(ctrl.session, ctrl.trainers, trainerId).then(function(response) {
+        ctrl.removeTrainer = function(trainer) {
+            PermissionsModel.removeSessionPermission(ctrl.session, ctrl.trainers, trainer).then(function(response) {
                 if (!response.isErroneous()) {
                     ctrl.updateSession();
                 }else{
