@@ -7,49 +7,47 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NumberListener;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
-import java.util.ArrayList;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.OrderColumn;
-import com.fasterxml.jackson.annotation.JsonView;
-import javax.persistence.Index;
-import javax.persistence.Table;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-<<<<<<< HEAD
 @EntityListeners(NumberListener.class)
-=======
 
 /*@Table(indexes = {
     @Index(columnList = "history.numberinstance_variableinstance_id")
 })*/
->>>>>>> master
 public class NumberInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
+
     private static final Logger logger = LoggerFactory.getLogger(NumberInstance.class);
 
     /**
      *
      */
     public static final int HISTORYSIZE = 20;
+
     /**
      *
      */
     private double val;
+
     /**
      *
      */
@@ -65,7 +63,6 @@ public class NumberInstance extends VariableInstance {
     }
 
     /**
-     *
      * @param value
      */
     public NumberInstance(double value) {
@@ -88,7 +85,7 @@ public class NumberInstance extends VariableInstance {
                 NumberDescriptor desc = (NumberDescriptor) this.getDescriptor();
 
                 if ((desc.getMaxValue() != null && value > desc.getMaxValueD())
-                        || (desc.getMinValue() != null && value < desc.getMinValueD())) {
+                    || (desc.getMinValue() != null && value < desc.getMinValueD())) {
                     throw new WegasOutOfBoundException(desc.getMinValue(), desc.getMaxValue(), value, desc.getLabel());
                 }
             }
@@ -110,7 +107,6 @@ public class NumberInstance extends VariableInstance {
     }
 
     /**
-     *
      * @return
      */
     public List<Double> getHistory() {
@@ -118,7 +114,6 @@ public class NumberInstance extends VariableInstance {
     }
 
     /**
-     *
      * @param history
      */
     public void setHistory(List<Double> history) {
@@ -126,7 +121,6 @@ public class NumberInstance extends VariableInstance {
     }
 
     /**
-     *
      * @param a
      */
     @Override
