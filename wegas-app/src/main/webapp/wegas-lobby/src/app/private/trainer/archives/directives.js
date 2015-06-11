@@ -28,7 +28,7 @@ angular.module('private.trainer.archives.directives', [])
             if (sessionToUnarchive) {
                 SessionsModel.unarchiveSession(sessionToUnarchive).then(function(response) {
                     if (!response.isErroneous()) {
-                        $rootScope.$emit('changeArchives', true);
+                        $rootScope.$emit('changeLimit', true);
                         ctrl.updateSessions();
                     }else{
                         response.flash();

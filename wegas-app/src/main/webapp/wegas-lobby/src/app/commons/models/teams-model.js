@@ -59,6 +59,10 @@ angular.module('wegas.models.teams', [])
                 }
             };
 
+        model.clearCache = function() {
+            teams.cache = null;
+        };
+
         /* Ask for all teams for current user. */
         model.getTeams = function() {
             var deferred = $q.defer();

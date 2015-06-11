@@ -57,7 +57,6 @@ YUI.add("wegas-editor-treeview", function(Y) {
                 this.handlers.push(ds.after("failure", this.defaultFailureHandler, this)); // GLOBAL error message
 
                 this.handlers.push(ds.after("added", function(e) {             // When an entity is created
-                    this.currentSelection = e.entity.get("id");
                     Y.later(20, this, function() {
                         var target = this.treeView.find(function(item) {        // scroll to it in the treeview
                             return item.get("data.entity") && item.get("data.entity").get("id") === e.entity.get("id");
@@ -305,7 +304,6 @@ YUI.add("wegas-editor-treeview", function(Y) {
                 host.toolbar.add(menuItems);                                    // Populate the menu with the elements associated to the
             } else {
                 Y.log("Menu item has no target entity", "info", "Y.Plugin.EditorTVToolbarMenu");
-                host.currentSelection = null;
             }
         },
         getMenuItems: function(data) {
@@ -315,9 +313,6 @@ YUI.add("wegas-editor-treeview", function(Y) {
 
             if (data) {
                 entity = data.entity || data.widget;
-                if (entity) {
-                    host.currentSelection = entity.get(ID);
-                }
                 data.dataSource = host.get(DATASOURCE);
 
                 if (menuItems) {
