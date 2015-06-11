@@ -64,7 +64,7 @@ angular.module('private.scenarist.directives', [
         ctrl.createScenario = function(name, templateId) {
             ScenariosModel.createScenario(name, templateId).then(function(response) {
                 if (!response.isErroneous()) {
-                    $rootScope.$emit('changeScenarios', true);
+                    ctrl.updateScenarios(true);
                 } else {
                     response.flash();
                 }
