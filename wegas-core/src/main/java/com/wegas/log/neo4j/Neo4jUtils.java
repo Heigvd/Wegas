@@ -2,15 +2,18 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
+
 package com.wegas.log.neo4j;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.wegas.core.Helper;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
@@ -19,11 +22,9 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.client.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * This class contains the methods used to access the neo4j database. It uses
@@ -42,6 +43,14 @@ public class Neo4jUtils {
 
     private static final Client client = ClientBuilder.newClient();
 
+    private static final ObjectMapper objectMapper;
+
+    static {
+        objectMapper = new ObjectMapper();
+        objectMapper.configure(JsonGenerator.Feature.QUOTE_FIELD_NAMES, false);
+        objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+    }
+
     /**
      * Checks if the neo4j database is running. If not, it is not necessary to
      * continue.
@@ -56,102 +65,6 @@ public class Neo4jUtils {
         int status = response.getStatus();
         response.close();
         return status == 200;
-    }
-
-    /**
-     * Creates a node without any label or property.
-     *
-     * @return the URI of the newly created node
-     */
-    protected static URI createNode() {
-        Response response = getBuilder(NEO4J_SERVER_URL + "node").post(Entity.json("{}"));
-        final URI nodeURI = response.getLocation();
-        response.close();
-        return nodeURI;
-    }
-
-    protected static URI createNode(String node) {
-        Response response = getBuilder(NEO4J_SERVER_URL + "node").post(Entity.json(node));
-        final URI nodeURI = response.getLocation();
-        response.close();
-        return nodeURI;
-    }
-
-    /**
-     * Adds a label to the given node.
-     *
-     * @param nodeURI the node URI
-     * @param lValue  the label of the node
-     */
-    protected static void addNodeLabel(URI nodeURI, String lValue) {
-        final String labURL = nodeURI.toString() + "/labels";
-        String entity = "\"" + lValue + "\"";
-        Response response = getBuilder(labURL).post(Entity.json(entity));
-        response.close();
-    }
-
-    /**
-     * Adds a string property to the given node.
-     *
-     * @param nodeURI the node URI
-     * @param pName   the property name to be added
-     * @param pValue  the property value to be added
-     */
-    protected static void addNodeProperty(URI nodeURI, String pName, String pValue) {
-        final String propURL = nodeURI.toString() + "/properties/" + pName;
-        String entity = "\"" + pValue + "\"";
-        Response response = getBuilder(propURL).put(Entity.json(entity));
-        response.close();
-    }
-
-    /**
-     * Adds a integer (long) property to the given node.
-     *
-     * @param nodeURI the node URI
-     * @param pName   the property name to be added
-     * @param pValue  The property value to be added
-     */
-    protected static void addNodeProperty(URI nodeURI, String pName, Long pValue) {
-        final String propURL = nodeURI.toString() + "/properties/" + pName;
-        String entity = Long.toString(pValue);
-        Response response = getBuilder(propURL).put(Entity.json(entity));
-        response.close();
-    }
-
-    /**
-     * Creates a relationship with a direction beween two nodes.
-     *
-     * @param sNode   the start node URI for the relationship
-     * @param eNode   the end node URI for the relationship
-     * @param rType   the relation type
-     * @param attribs the set of the attributes of the relationship
-     * @return the URI of the new relationship
-     */
-    protected static URI createRelation(URI sNode, URI eNode, String rType,
-                                        String... attribs) {
-        final String relURL = sNode.toString() + "/relationships";
-        String entity = createJsonRelation(eNode, rType, attribs);
-        if (entity != null) {
-            Response response = getBuilder(relURL).post(Entity.json(entity));
-            final URI relURI = response.getLocation();
-            response.close();
-            return relURI;
-        }
-        return null;
-    }
-
-    /**
-     * Adds properties as metadata to a given relationship.
-     *
-     * @param rUri   the relationship URI
-     * @param pName  the name of the property
-     * @param pValue the value of the property
-     */
-    protected static void addRelationMetadata(URI rUri, String pName, String pValue) {
-        final String relURL = rUri.toString() + "/properties";
-        String entity = String.format("{ \"%s\" : \"%s\" }", pName, pValue);
-        Response response = getBuilder(relURL).put(Entity.json(entity));
-        response.close();
     }
 
     /**
@@ -171,11 +84,6 @@ public class Neo4jUtils {
         }
         response.close();
         return result;
-    }
-
-    private static Invocation.Builder getBuilder(String URL) {
-        WebTarget target = client.target(URL);
-        return target.request().accept(MediaType.APPLICATION_JSON);
     }
 
     /**
@@ -210,10 +118,10 @@ public class Neo4jUtils {
      * returned.
      *
      * @param result the result of a query
-     * @return the data list
+     * @return the data list as a Json object
      */
-    protected static ArrayList<String> extractListData(String result) {
-        ArrayList<String> al = new ArrayList<>();
+    protected static ArrayNode extractListData(String result) {
+        ArrayNode on = objectMapper.createArrayNode();
         ObjectMapper om = new ObjectMapper();
         try {
             JsonNode jn = om.readTree(result);
@@ -221,8 +129,6 @@ public class Neo4jUtils {
             Iterator<JsonNode> ite1 = jnRes.elements();
             while (ite1.hasNext()) {
                 JsonNode jn1 = ite1.next();
-                int nbCol = jn1.path("columns").size();
-                if (nbCol > 1) throw new IOException("To extract more than 1 column use an other method !");
                 JsonNode jnDat = jn1.path("data");
                 Iterator<JsonNode> ite2 = jnDat.elements();
                 while (ite2.hasNext()) {
@@ -231,57 +137,19 @@ public class Neo4jUtils {
                     Iterator<JsonNode> ite3 = jnRow.elements();
                     while (ite3.hasNext()) {
                         JsonNode jn3 = ite3.next();
-                        if (jn3.isLong()) {
-                            al.add(Long.toString(jn3.asLong()));
-                        } else {
-                            al.add(jn3.asText());
-                        }
+                        on.add(jn3);
                     }
                 }
             }
         } catch (IOException ioe) {
             logger.debug("Error in extractListData: " + ioe.getMessage());
         }
-        return al;
+        return on;
     }
 
-    /**
-     * Creates a JSON formatted string for the data to be sent to the REST
-     * interface. This data will be used to create a new relationship between
-     * two nodes.
-     *
-     * @param node    the end node URI for the relationship
-     * @param type    the relation type
-     * @param attribs the set of the attributes of the relationship
-     * @return the formatted data string
-     */
-    private static String createJsonRelation(URI node, String type,
-                                             String... attribs) {
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            try (JsonGenerator jg = (new JsonFactory()).createJsonGenerator(baos)) {
-                jg.useDefaultPrettyPrinter();
-                jg.writeStartObject();
-                jg.writeStringField("to", node.toString());
-                jg.writeStringField("type", type);
-                if (attribs != null) {
-                    int len = attribs.length;
-                    if ((len > 0) && ((len & 1) == 0)) {
-                        jg.writeObjectFieldStart("data");
-                        for (int i1 = 0; i1 < len; i1 = i1 + 2) {
-                            jg.writeStringField(attribs[i1], attribs[i1 + 1]);
-                        }
-                        jg.writeEndObject();
-                    }
-                }
-                jg.writeEndObject();
-                jg.flush();
-            }
-            return baos.toString("UTF-8");
-        } catch (IOException ioe) {
-            logger.debug("Error in createJsonRelation: " + ioe.getMessage());
-        }
-        return null;
+    private static Invocation.Builder getBuilder(String URL) {
+        WebTarget target = client.target(URL);
+        return target.request().accept(MediaType.APPLICATION_JSON);
     }
 
     /**

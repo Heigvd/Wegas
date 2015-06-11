@@ -662,7 +662,14 @@ YUI().use(function(Y) {
             },
             "wegas-dashboard": {
                 path: "js/widget/wegas-dashboard-min.js",
-                requires: ["datatable", "template", "wegas-dashboardcss", "event-focus", "wegas-console-custom", "wegas-sendmail", "font-awesome", "promise"],
+                requires: ["datatable",
+                    "template",
+                    "wegas-dashboardcss",
+                    "event-focus",
+                    "wegas-console-custom",
+                    "wegas-sendmail",
+                    "font-awesome",
+                    "promise"],
                 ws_provides: "Dashboard"
             },
             "wegas-resetter": {
@@ -670,7 +677,7 @@ YUI().use(function(Y) {
                 ws_provides: "Resetter"
             },
             "wegas-sendmail": {
-                path : "js/widget/wegas-sendmail-min.js",
+                path: "js/widget/wegas-sendmail-min.js",
                 ws_provides: "SendMail"
             },
             "wegas-presencecss": {
@@ -680,6 +687,11 @@ YUI().use(function(Y) {
                 path: "js/widget/wegas-presence-min.js",
                 requires: ["wegas-presencecss", "font-awesome"],
                 ws_provides: "EditorChat"
+            },
+            "wegas-statistics": {
+                path: "js/widget/wegas-statistics-min.js",
+                requires: ["promise", "charts"],
+                ws_provides: "Statistics"
             }
         }
     });
