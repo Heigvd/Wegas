@@ -24,10 +24,25 @@ angular.module('private.admin', [
         if(user != null){
             if(!user.isAdmin){
                 $state.go("wegas.private.scenarist");
+            }else{
+                
             }
             ViewInfos.editName("Admin workspace");
         }
     });
 
 })
+.directive('scenarioCreateUpload', function(ScenariosModel) {
+        return {
+            restrict: 'A',
+            link: function(scope, element, attrs) {
+                element.bind('change', function() {
+                    ScenariosModel.createFromJSON(element[0].files[0]).then(function(response) {
+                        response.flash();
+                        element[0].value = '';
+                    });
+                });
+            }
+        };
+    })
 ;

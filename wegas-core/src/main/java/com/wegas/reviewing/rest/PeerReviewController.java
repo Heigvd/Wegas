@@ -9,6 +9,7 @@ package com.wegas.reviewing.rest;
 
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -41,6 +42,12 @@ import org.apache.shiro.authz.UnauthorizedException;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class PeerReviewController {
+
+    /**
+     * Commit request to eval FSM
+     */
+    @EJB
+    private RequestFacade requestFacade;
 
     /**
      * PeerReview EJB facade
@@ -132,6 +139,7 @@ public class PeerReviewController {
         checkPermissions(playerFacade.find(playerId).getGame(), playerId);
 
         reviewFacade.submit(prdId, playerId);
+        requestFacade.commit();
 
         return Response.ok().build();
     }
@@ -153,6 +161,7 @@ public class PeerReviewController {
     ) {
         assertTeacherRight(prdId, gameId);
         reviewFacade.dispatch(prdId);
+        requestFacade.commit();
         return Response.ok().build();
     }
 
@@ -203,6 +212,7 @@ public class PeerReviewController {
     public PeerReviewInstance submitReview(Review review) {
         assertReviewWriteRight(reviewFacade.findReview(review.getId()));
         Review submitedReview = reviewFacade.submitReview(review);
+        requestFacade.commit();
         return reviewFacade.getPeerReviewInstanceFromReview(submitedReview);
     }
 
@@ -223,6 +233,7 @@ public class PeerReviewController {
     ) {
         assertTeacherRight(prdId, gameId);
         reviewFacade.notify(prdId);
+        requestFacade.commit();
         return Response.ok().build();
     }
 
@@ -243,6 +254,7 @@ public class PeerReviewController {
     ) {
         assertTeacherRight(prdId, gameId);
         reviewFacade.close(prdId);
+        requestFacade.commit();
         return Response.ok().build();
     }
 

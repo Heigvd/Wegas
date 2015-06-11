@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Wegas
  * http://wegas.albasim.ch
  *
@@ -166,7 +166,7 @@ YUI.add("wegas-entity", function(Y) {
                             value: false,
                             label: "in team"
                         }]
-                    }, {
+                    }, { /*
                         name: "imageUri",
                         label: "Thumbnail",
                         type: "wegasurl"
@@ -174,22 +174,22 @@ YUI.add("wegas-entity", function(Y) {
                         name: "iconUri",
                         label: "Icon",
                         type: "wegasurl"
-                    }, {
+                    }, {*/
                         name: "scriptUri",
                         label: "Server scripts",
-                        wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
+                        wrapperClassName: "inputEx-fieldWrapper"
                     }, {
                         name: "clientScriptUri",
                         label: "Client scripts",
-                        wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
+                        wrapperClassName: "inputEx-fieldWrapper"
                     }, {
                         name: "cssUri",
                         label: "Stylesheets",
-                        wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
+                        wrapperClassName: "inputEx-fieldWrapper"
                     }, {
                         name: "pagesUri",
                         label: "Pages",
-                        wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
+                        wrapperClassName: "inputEx-fieldWrapper"
                     }, {
                         name: "websocket",
                         label: "Websocket",

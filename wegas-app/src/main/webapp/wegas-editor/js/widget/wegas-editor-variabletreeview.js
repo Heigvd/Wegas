@@ -196,7 +196,23 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 this.handlers.push(ds.after("updatedInstance", this.updateInstance, this));
                 this.handlers.push(ds.after("added", this.addEntity, this));
                 this.handlers.push(ds.after("delete", this.deleteEntity, this));
+                this.handlers.push(Y.after("edit-entity:edit", function(e) {
+                    var cur = this.treeView.find(function(item) {
+                        return item.get("data.entity") ?
+                        item.get("data.entity").get("id") === e.entity.get("id") :
+                            false;
 
+                    });
+                    this.treeView.deselectAll();
+                    if (cur) {
+                        this.currentSelection = e.entity.get("id");
+                        cur.set("selected", 2);
+                    }
+                }, this));
+                this.handlers.push(Y.after("edit-entity:cancel", function(e) {
+                    this.currentSelection = -1;
+                    this.treeView.set("selected", 0);
+                }, this));
                 if (request) {
                     ds.sendRequest(request);
                 }

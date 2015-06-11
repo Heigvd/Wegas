@@ -95,6 +95,10 @@ angular.module('wegas.models.users', [])
                 }
                 return list;
             };
+            
+        model.clearCache = function() {
+            users.cache = null;
+        };
 
         model.getUsers = function() {
             var deferred = $q.defer();

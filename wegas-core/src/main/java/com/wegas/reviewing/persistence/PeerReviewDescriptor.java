@@ -262,7 +262,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      * @param p the player 
      * @return player's instance state
      */
-    public ReviewingState getState(Player p){
-        return this.getInstance(p).getReviewState();
+    public String getState(Player p){
+        return this.getInstance(p).getReviewState().toString();
     }
 }

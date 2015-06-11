@@ -12,7 +12,6 @@
  */
 YUI.add('wegas-dashboard', function(Y) {
     "use strict";
-
     /**
      * @name Y.Wegas.Dashboard
      * @extends Y.Widget
@@ -22,12 +21,63 @@ YUI.add('wegas-dashboard', function(Y) {
      * @constructor
      */
     var CONTENTBOX = "contentBox", NAME = "name", Wegas = Y.Wegas, Dashboard, inSync = false,
+        Promise = Y.Promise,
         teamTemplate = (new Y.Template()).compile(
-        "<div class='dashboard-treeview dashboard-collapsed'><span class='wegas-icon dashboard-toggle'></span><span class='wegas-icon wegas-icon-team'></span><%= this.get('name') %>" +
-        "<ul><% Y.Array.each(this.get('players'), function(p){ %>" +
-        "<li><span class='wegas-icon wegas-icon-player'></span><%= p.get('name') %></li>" +
-        "<%});%></ul></div>"
-        );
+            "<div class='dashboard-treeview dashboard-collapsed'><span class='wegas-icon dashboard-toggle'></span><span class='wegas-icon wegas-icon-team'></span><%= this.get('name') %>" +
+            "<ul><% Y.Array.each(this.get('players'), function(p){ %>" +
+            "<li><span class='wegas-icon wegas-icon-player'></span><%= p.get('name') %></li>" +
+            "<%});%></ul></div>"
+        ),
+        setTableData = function(table, data) {
+            var result;
+            while (data.length) {
+                result = data.shift();
+                if (table.getRecord(result.id)) {
+                    table.getRecord(result.id).setAttrs(result);
+                }
+            }
+        },
+        getTeams = function() {
+            return new Promise(function(resolve, reject) {
+                Y.Wegas.Facade.Game.cache.sendRequest({
+                    request: "/" + Wegas.Facade.Game.cache.getCurrentGame().get("id") + "/Team",
+                    on: {
+                        success: function(e) {
+                            resolve(e.response.entities);
+                        },
+                        failure: function(e) {
+                            reject(e);
+                        }
+                    }
+                });
+            });
+        },
+        getData = function(script) {
+            // var script = this.get("remoteScript");
+            if (script) {
+                return new Promise(function(resolve, reject) {
+                    Y.Wegas.Facade.Variable.sendRequest({
+                        request: "/Script/Run/" + Y.Wegas.Facade.Game.cache.getCurrentPlayer().get("id"),
+                        cfg: {
+                            method: "POST",
+                            headers: {"Managed-Mode": false},
+                            data: {
+                                "@class": "Script",
+                                content: script
+                            }
+                        },
+                        on: {
+                            success: function(e) {
+                                resolve(e.response.results);
+                            },
+                            failure: reject
+                        }
+                    });
+                });
+            } else {
+                return Promise.resolve([]);
+            }
+        };
 
     Dashboard = Y.Base.create("wegas-dashboard", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         // *** Private fields *** //
@@ -44,15 +94,35 @@ YUI.add('wegas-dashboard', function(Y) {
                     label: '<span class="wegas-icon wegas-icon-refresh"></span>Refresh',
                     on: {
                         click: Y.bind(function() {
-                            this.syncUI();
+                            if (inSync) {
+                                return;
+                            }
+                            inSync = true;
+                            var bgenData = Y.bind(this.genData, this, this.table);
+                            Promise.all([
+                                getTeams()
+                                    .then(function(teams) {
+                                        return bgenData(teams);
+                                    }),
+                                getData(this.get("remoteScript"))
+                            ])
+                                .then(function(res) {
+                                    setTableData(res[0], res[1]);
+                                    inSync = false;
+                                    return true;
+                                })
+                                .catch(function(error) {
+                                    Y.log(error, "error", "Y.Wegas.Dashboard");
+                                    inSync = false;
+                                });
                         }, this)
                     }
                 }));
             }
             this.get(CONTENTBOX).addClass("yui3-skin-wegas");
             if (!Y.Array.find(cfg.columns, function(i) {
-                return i.key === NAME;
-            })) {
+                    return i.key === NAME;
+                })) {
                 cfg.columns.splice(0, 0, {
                     key: NAME,
                     label: " "
@@ -72,17 +142,17 @@ YUI.add('wegas-dashboard', function(Y) {
             //cfg = Y.mix(cfg, {//                                                // Add cfg default values
             //    width: "100%"
             //});
-            this.table = new Y.DataTable(cfg)                                   // Render datatable
+            this.table = new Y.DataTable(cfg)                                   // Render data table
                 .render(this.get(CONTENTBOX))
                 .set('strings.emptyMessage', "<em><center><br /><br />No players</center></em>");
             this.table.addColumn({
                 key: "menu",
                 label: " ",
                 cellTemplate: "<td class='{className}'>" +
-                    "<button class='yui3-button dashboard-open-team' title='View'><span class='fa fa-eye fa-lg'></span></button>" +
-                    "<button class='yui3-button dashboard-impact-team' title='Impact'><span class='fa fa-play-circle-o fa-lg'></span></button>" +
-                    "<button class='yui3-button dashboard-mail-team' title='Impact'><span class='fa fa-envelope-o fa-lg'></span></button>" +
-                    "<textarea class='dashboard-notes-team disabled' placeholder='Notes' readonly='true'>{content}</textarea></td>"
+                              "<button class='yui3-button dashboard-open-team' title='View'><span class='fa fa-eye fa-lg'></span></button>" +
+                              "<button class='yui3-button dashboard-impact-team' title='Impact'><span class='fa fa-play-circle-o fa-lg'></span></button>" +
+                              "<button class='yui3-button dashboard-mail-team' title='Impact'><span class='fa fa-envelope-o fa-lg'></span></button>" +
+                              "<textarea class='dashboard-notes-team disabled' placeholder='Notes' readonly='true'>{content}</textarea></td>"
             });
         },
         /**
@@ -96,15 +166,14 @@ YUI.add('wegas-dashboard', function(Y) {
             this.get("boundingBox").delegate("click", function(e) {
                 var team = Wegas.Facade.Game.cache.getTeamById(this.table.getRecord(e.currentTarget).get("id")), header, statusNode = Y.Node.create("<span></span>");
                 if (team && team.get("players").length) {
-                    header = "<span>" + team.get("name") + " - " + team.get("players")[0].get("name") +
-                        "</span><br>";
+                    header = "<span>" + team.get("name") + " - " + team.get("players")[0].get("name") + "</span><br>";
                     new Y.Wegas.Panel({
                         modal: true,
                         children: [{
-                                type: "CustomConsole",
-                                player: team.get("players")[0],
-                                statusNode: statusNode
-                            }],
+                            type: "CustomConsole",
+                            player: team.get("players")[0],
+                            statusNode: statusNode
+                        }],
                         headerContent: header,
                         footerContent: statusNode,
                         width: 600,
@@ -112,30 +181,30 @@ YUI.add('wegas-dashboard', function(Y) {
                         zIndex: 5000,
                         buttons: {
                             header: [{
-                                    name: "src",
-                                    label: "View src",
-                                    classNames: "wegas-advanced-feature",
-                                    action: function() {
-                                        this.item(0).viewSrc();
-                                    }
-                                }],
+                                name: "src",
+                                label: "View src",
+                                classNames: "wegas-advanced-feature",
+                                action: function() {
+                                    this.item(0).viewSrc();
+                                }
+                            }],
                             footer: [{
-                                    name: "run",
-                                    label: "Impact !",
-                                    action: function() {
-                                        this.item(0).run();
-                                    }
-                                }, {
-                                    name: 'proceed',
-                                    label: 'Close',
-                                    action: "exit"
-                                }, {
-                                    name: "add",
-                                    label: "Add impact",
-                                    action: function() {
-                                        this.item(0).add();
-                                    }
-                                }]
+                                name: "run",
+                                label: "Impact !",
+                                action: function() {
+                                    this.item(0).run();
+                                }
+                            }, {
+                                name: 'proceed',
+                                label: 'Close',
+                                action: "exit"
+                            }, {
+                                name: "add",
+                                label: "Add impact",
+                                action: function() {
+                                    this.item(0).add();
+                                }
+                            }]
                         },
                     }).render().get("boundingBox").addClass("dashboard-impact-panel").addClass("dashboard-panel");
                 } else {
@@ -163,10 +232,10 @@ YUI.add('wegas-dashboard', function(Y) {
                         cssClass: "wegas-form-panel",
                         modal: true,
                         children: [{
-                                type: "SendMail",
-                                players: team.get("players"),
-                                statusNode: statusNode
-                            }],
+                            type: "SendMail",
+                            players: team.get("players"),
+                            statusNode: statusNode
+                        }],
                         headerContent: header,
                         footerContent: statusNode,
                         width: 600,
@@ -174,18 +243,16 @@ YUI.add('wegas-dashboard', function(Y) {
                         buttons: {
                             header: [],
                             footer: [{
-                                    name: 'cancel',
-                                    label: 'Cancel',
-                                    action: "exit"
-                                },
-                                {
-                                    name: "send",
-                                    label: "Send",
-                                    action: function() {
-                                        this.item(0).send();
-                                    }
+                                name: 'cancel',
+                                label: 'Cancel',
+                                action: "exit"
+                            }, {
+                                name: "send",
+                                label: "Send",
+                                action: function() {
+                                    this.item(0).send();
                                 }
-                            ]
+                            }]
                         },
                         on: {
                             "email:sent": function() {
@@ -230,8 +297,15 @@ YUI.add('wegas-dashboard', function(Y) {
          * @private
          */
         syncUI: function() {
+            var table = this.table;
             Y.log("sync()", "info", "Wegas.LobbyDataTable");
-            this.genData(this.table.get("data"));
+            inSync = true;
+            this.genData(table, Wegas.Facade.Game.cache.getCurrentGame().get("teams"));
+            getData(this.get("remoteScript"))
+                .then(function(res) {
+                    inSync = false;
+                    return setTableData(table, res);
+                });
         },
         destructor: function() {
             this.table.destroy();
@@ -242,17 +316,12 @@ YUI.add('wegas-dashboard', function(Y) {
          * @function
          * @private
          */
-        genData: function(data) {
-            if (inSync) {
-                return;
-            }
+        genData: function(table, teams) {
             var gameModel = Wegas.Facade.GameModel.cache.getCurrentGameModel(),
-                game = Wegas.Facade.Game.cache.getCurrentGame(),
-                columnsCfg = this.get("tableCfg.columns"), ret = [], table = this.table;
-            inSync = true;
+                columnsCfg = this.get("tableCfg.columns"), ret = [], result;
 
             if (gameModel.get("properties.freeForAll")) {                       // Retrieve the list of rows (depending on freeforall mode)
-                Y.Array.each(game.get("teams"), function(t) {
+                Y.Array.each(teams, function(t) {
                     Y.Array.each(t.get("players"), function(p) {
                         ret.push({
                             name: "<span class='wegas-icon wegas-icon-player'></span>" + p.get("name"),
@@ -264,7 +333,7 @@ YUI.add('wegas-dashboard', function(Y) {
                     });
                 });
             } else {
-                ret = Y.Array.map(game.get("teams"), function(t) {
+                ret = Y.Array.map(teams, function(t) {
                     return {
                         //icon: "<span class='wegas-icon wegas-icon-team'></span>",
                         name: teamTemplate(t),
@@ -279,37 +348,8 @@ YUI.add('wegas-dashboard', function(Y) {
                 return !(i.team instanceof Wegas.persistence.DebugTeam);
             });
             table.set("data", ret);
-            if (this.get("remoteScript")) {
-                Y.Wegas.Facade.Variable.sendRequest({
-                    request: "/Script/Run/" + Y.Wegas.Facade.Game.cache.getCurrentPlayer().get("id"),
-                    cfg: {
-                        method: "POST",
-                        headers: {"Managed-Mode": false},
-                        data: {
-                            "@class": "Script",
-                            content: this.get("remoteScript")
-                        }
-                    },
-                    on: {
-                        success: Y.bind(function(e) {
-                            var result;
-                            while (e.response.results.length) {
-                                result = e.response.results.shift();
-                                if (table.getRecord(result.id)) {
-                                    table.getRecord(result.id).setAttrs(result);
-                                }
-                            }
-                            inSync = false;
-                        }, this),
-                        failure: Y.bind(function(e) {
-                            inSync = false;
-                        }, this)
-                    }
-                });
-            } else {
-                inSync = false;
-            }
-            return ret;
+
+            return table;
         }
     }, {
         ATTRS: {

@@ -1,0 +1,901 @@
+{
+    "1": {
+        "type": "AbsoluteLayout",
+        "cssClass": "law-layout",
+        "children": [{
+                "type": "List",
+                "cssClass": "mainColumn",
+                "plugins": [{
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "0px",
+                                "left": "0px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    }, {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "100%",
+                                "height": "100%"
+                            }
+                        }
+                    }],
+                "direction": "vertical",
+                "name": "mainLayout",
+                "children": [{
+                        "type": "List",
+                        "cssClass": "mainheader bgcolour1",
+                        "plugins": [{
+                                "fn": "CSSSize",
+                                "cfg": {
+                                    "styles": {
+                                        "width": "100%",
+                                        "height": "90px"
+                                    }
+                                }
+                            }],
+                        "direction": "horizontal",
+                        "name": "header",
+                        "children": [{
+                                "type": "Box",
+                                "cssClass": "fa fa-bank fa-5x law-icon",
+                                "plugins": [{
+                                        "fn": "CSSSize",
+                                        "cfg": {
+                                            "styles": {
+                                                "width": "98px",
+                                                "height": "98px"
+                                            }
+                                        }
+                                    }],
+                                "name": "Bank"
+                            }, {
+                                "type": "Box",
+                                "cssClass": "gonext-button fa fa-arrow-circle-o-right fa-4x",
+                                "plugins": [{
+                                        "fn": "ExecuteScriptAction",
+                                        "cfg": {
+                                            "targetEvent": "click",
+                                            "onClick": {
+                                                "@class": "Script",
+                                                "content": "Event.fire(\"goNext\");\n"
+                                            }
+                                        }
+                                    }, {
+                                        "fn": "CSSSize",
+                                        "cfg": {
+                                            "styles": {
+                                                "width": "auto",
+                                                "height": "auto"
+                                            }
+                                        }
+                                    }],
+                                "name": "button"
+                            }, {
+                                "type": "GaugeDisplay",
+                                "cssClass": "indicator",
+                                "plugins": [{
+                                        "fn": "CSSSize",
+                                        "cfg": {
+                                            "styles": {
+                                                "width": "70px",
+                                                "height": "auto"
+                                            }
+                                        }
+                                    }],
+                                "variable": {
+                                    "@class": "Script",
+                                    "content": "Variable.find(gameModel, \"satisfactionClient\");\n"
+                                },
+                                "label": "Client",
+                                "minValue": "",
+                                "maxValue": "",
+                                "cfg": {
+                                    "backgroundPercentColors": [["0", "#e03a2c"], ["0.33", "#e0bf2e"], ["0.66", "#328f15"]]
+                                }
+                            }, {
+                                "type": "GaugeDisplay",
+                                "cssClass": "indicator",
+                                "plugins": [{
+                                        "fn": "CSSSize",
+                                        "cfg": {
+                                            "styles": {
+                                                "width": "150px",
+                                                "height": "100%"
+                                            }
+                                        }
+                                    }],
+                                "variable": {
+                                    "@class": "Script",
+                                    "content": "Variable.find(gameModel, \"maitreDeStage\");\n"
+                                },
+                                "label": "Maître de stage",
+                                "minValue": "",
+                                "maxValue": "",
+                                "cfg": {
+                                    "backgroundPercentColors": [["0", "#e03a2c"], ["0.33", "#e0bf2e"], ["0.66", "#328f15"]]
+                                }
+                            }, {
+                                "type": "BoxTemplate",
+                                "cssClass": "budget indicator",
+                                "variable": {
+                                    "@class": "Script",
+                                    "content": "Variable.find(gameModel, \"budget\");\n"
+                                },
+                                "data": {
+                                    "label": "Budget"
+                                }
+                            }]
+                    }, {
+                        "type": "List",
+                        "cssClass": "main-menu bgcolour2",
+                        "plugins": [{
+                                "fn": "CSSSize",
+                                "cfg": {
+                                    "styles": {
+                                        "width": "100%",
+                                        "height": "26px"
+                                    }
+                                }
+                            }],
+                        "direction": "horizontal",
+                        "name": "menu",
+                        "children": [{
+                                "label": "Entretien client",
+                                "type": "Button",
+                                "plugins": [{
+                                        "fn": "ExecuteScriptAction",
+                                        "cfg": {
+                                            "targetEvent": "click",
+                                            "onClick": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"currentPageId\").setValue(self, 3);\n"
+                                            }
+                                        }
+                                    }, {
+                                        "fn": "ConditionalDisable",
+                                        "cfg": {
+                                            "condition": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"currentPageId\").getValue(self)===3;\n"
+                                            },
+                                            "attribute": "cssClass",
+                                            "value": "current"
+                                        }
+                                    }],
+                                "data": {}
+                            }, {
+                                "label": "Actions personnelles",
+                                "type": "Button",
+                                "plugins": [{
+                                        "fn": "ExecuteScriptAction",
+                                        "cfg": {
+                                            "targetEvent": "click",
+                                            "onClick": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"currentPageId\").setValue(self, 4);\n"
+                                            }
+                                        }
+                                    }, {
+                                        "fn": "ConditionalDisable",
+                                        "cfg": {
+                                            "condition": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"currentPageId\").getValue(self)===4;\n"
+                                            },
+                                            "attribute": "cssClass",
+                                            "value": "current"
+                                        }
+                                    }],
+                                "data": {}
+                            }, {
+                                "label": "Bilan",
+                                "type": "Button",
+                                "plugins": [{
+                                        "fn": "ExecuteScriptAction",
+                                        "cfg": {
+                                            "targetEvent": "click",
+                                            "onClick": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"currentPageId\").setValue(self, 5);\n"
+                                            }
+                                        }
+                                    }, {
+                                        "fn": "ConditionalDisable",
+                                        "cfg": {
+                                            "condition": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"bilanTabHidden\").getValue(self);\n"
+                                            },
+                                            "attribute": "cssClass",
+                                            "value": "hidden-button"
+                                        }
+                                    }, {
+                                        "fn": "ConditionalDisable2",
+                                        "cfg": {
+                                            "condition": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"currentPageId\").getValue(self)===5;\n"
+                                            },
+                                            "attribute": "cssClass",
+                                            "value": "current"
+                                        }
+                                    }],
+                                "data": {}
+                            }, {
+                                "label": "Avis",
+                                "type": "Button",
+                                "plugins": [{
+                                        "fn": "ExecuteScriptAction",
+                                        "cfg": {
+                                            "targetEvent": "click",
+                                            "onClick": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"currentPageId\").setValue(self, 11);\n"
+                                            }
+                                        }
+                                    }, {
+                                        "fn": "ConditionalDisable",
+                                        "cfg": {
+                                            "condition": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"avisTabHidden\").getValue(self);\n"
+                                            },
+                                            "attribute": "cssClass",
+                                            "value": "hidden-button"
+                                        }
+                                    }, {
+                                        "fn": "ConditionalDisable2",
+                                        "cfg": {
+                                            "condition": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"currentPageId\").getValue(self)===11;\n"
+                                            },
+                                            "attribute": "cssClass",
+                                            "value": "current"
+                                        }
+                                    }],
+                                "data": {}
+                            }, {
+                                "label": "Evaluations croisées",
+                                "type": "Button",
+                                "plugins": [{
+                                        "fn": "ExecuteScriptAction",
+                                        "cfg": {
+                                            "targetEvent": "click",
+                                            "onClick": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"currentPageId\").setValue(self, 13);\n"
+                                            }
+                                        }
+                                    }, {
+                                        "fn": "ConditionalDisable",
+                                        "cfg": {
+                                            "condition": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"reviewTabHidden\").getValue(self);\n"
+                                            },
+                                            "attribute": "cssClass",
+                                            "value": "hidden-button"
+                                        }
+                                    }, {
+                                        "fn": "ConditionalDisable2",
+                                        "cfg": {
+                                            "condition": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"currentPageId\").getValue(self)===13;\n"
+                                            },
+                                            "attribute": "cssClass",
+                                            "value": "current"
+                                        }
+                                    }],
+                                "data": {}
+                            }, {
+                                "type": "LoginButton",
+                                "forcedLabel": "",
+                                "targetPageLoader": "maindisplayarea"
+                            }]
+                    }, {
+                        "type": "List",
+                        "plugins": [{
+                                "fn": "CSSSize",
+                                "cfg": {
+                                    "styles": {
+                                        "width": "100%",
+                                        "height": ""
+                                    }
+                                }
+                            }, {
+                                "fn": "CSSPosition",
+                                "cfg": {
+                                    "styles": {
+                                        "position": "absolute",
+                                        "zIndex": "",
+                                        "top": "116px",
+                                        "left": "",
+                                        "bottom": "0px",
+                                        "right": ""
+                                    }
+                                }
+                            }],
+                        "direction": "horizontal",
+                        "name": "content",
+                        "children": [{
+                                "type": "List",
+                                "cssClass": "main-container",
+                                "plugins": [{
+                                        "fn": "CSSPosition",
+                                        "cfg": {
+                                            "styles": {
+                                                "position": "absolute",
+                                                "zIndex": "",
+                                                "top": "0px",
+                                                "left": "0px",
+                                                "bottom": "0px",
+                                                "right": "50px"
+                                            }
+                                        }
+                                    }, {
+                                        "fn": "CSSStyles",
+                                        "cfg": {
+                                            "styles": {
+                                                "overflow-y": "auto"
+                                            }
+                                        }
+                                    }],
+                                "direction": "vertical",
+                                "name": "main",
+                                "children": [{
+                                        "type": "PageLoader",
+                                        "cssClass": "content main-content",
+                                        "plugins": [{
+                                                "fn": "CSSSize",
+                                                "cfg": {
+                                                    "styles": {
+                                                        "width": "auto",
+                                                        "height": "auto"
+                                                    }
+                                                }
+                                            }],
+                                        "pageLoaderId": "maindisplayarea",
+                                        "defaultPageId": "2",
+                                        "variable": "",
+                                        "page": {
+                                            "@class": "Script",
+                                            "content": "Variable.find(gameModel, \"currentPageId\");\n"
+                                        }
+                                    }]
+                            }, {
+                                "type": "List",
+                                "cssClass": "right-menu bgcolour2",
+                                "plugins": [{
+                                        "fn": "CSSSize",
+                                        "cfg": {
+                                            "styles": {
+                                                "width": "50px",
+                                                "height": ""
+                                            }
+                                        }
+                                    }, {
+                                        "fn": "CSSPosition",
+                                        "cfg": {
+                                            "styles": {
+                                                "position": "absolute",
+                                                "zIndex": "",
+                                                "top": "0px",
+                                                "left": "",
+                                                "bottom": "0px",
+                                                "right": "0px"
+                                            }
+                                        }
+                                    }],
+                                "direction": "vertical",
+                                "name": "right menu",
+                                "children": [{
+                                        "type": "Box",
+                                        "cssClass": "fa fa-2x fa-home",
+                                        "plugins": [{
+                                                "fn": "ExecuteScriptAction",
+                                                "cfg": {
+                                                    "targetEvent": "click",
+                                                    "onClick": {
+                                                        "@class": "Script",
+                                                        "content": "Variable.find(gameModel, \"currentPageId\").setValue(self, 8);\n"
+                                                    }
+                                                }
+                                            }, {
+                                                "fn": "CSSSize",
+                                                "cfg": {
+                                                    "styles": {
+                                                        "width": "",
+                                                        "height": ""
+                                                    }
+                                                }
+                                            }, {
+                                                "fn": "ConditionalDisable",
+                                                "cfg": {
+                                                    "condition": {
+                                                        "@class": "Script",
+                                                        "content": "Variable.find(gameModel, \"currentPageId\").getValue(self)===8;\n"
+                                                    },
+                                                    "attribute": "cssClass",
+                                                    "value": "current"
+                                                }
+                                            }],
+                                        "name": "home"
+                                    }, {
+                                        "type": "Box",
+                                        "cssClass": "fa fa-2x fa-envelope",
+                                        "plugins": [{
+                                                "fn": "ExecuteScriptAction",
+                                                "cfg": {
+                                                    "targetEvent": "click",
+                                                    "onClick": {
+                                                        "@class": "Script",
+                                                        "content": "Variable.find(gameModel, \"currentPageId\").setValue(self, 6);\n"
+                                                    }
+                                                }
+                                            }, {
+                                                "fn": "UnreadCount",
+                                                "cfg": {
+                                                    "variable": {
+                                                        "@class": "Script",
+                                                        "content": "Variable.find(gameModel, \"mailbox\");\n"
+                                                    }
+                                                }
+                                            }, {
+                                                "fn": "CSSSize",
+                                                "cfg": {
+                                                    "styles": {
+                                                        "width": "",
+                                                        "height": ""
+                                                    }
+                                                }
+                                            }, {
+                                                "fn": "ConditionalDisable",
+                                                "cfg": {
+                                                    "condition": {
+                                                        "@class": "Script",
+                                                        "content": "Variable.find(gameModel, \"currentPageId\").getValue(self)===6;\n"
+                                                    },
+                                                    "attribute": "cssClass",
+                                                    "value": "current"
+                                                }
+                                            }],
+                                        "name": "mail"
+                                    }, {
+                                        "type": "Box",
+                                        "cssClass": "fa fa-2x fa-clock-o",
+                                        "plugins": [{
+                                                "fn": "ExecuteScriptAction",
+                                                "cfg": {
+                                                    "targetEvent": "click",
+                                                    "onClick": {
+                                                        "@class": "Script",
+                                                        "content": "Variable.find(gameModel, \"currentPageId\").setValue(self, 7);\n"
+                                                    }
+                                                }
+                                            }, {
+                                                "fn": "UnreadCount",
+                                                "cfg": {
+                                                    "variable": {
+                                                        "@class": "Script",
+                                                        "content": "Variable.find(gameModel, \"history\");\n"
+                                                    }
+                                                }
+                                            }, {
+                                                "fn": "ConditionalDisable",
+                                                "cfg": {
+                                                    "condition": {
+                                                        "@class": "Script",
+                                                        "content": "Variable.find(gameModel, \"currentPageId\").getValue(self)===7;\n"
+                                                    },
+                                                    "attribute": "cssClass",
+                                                    "value": "current"
+                                                }
+                                            }],
+                                        "name": "history"
+                                    }]
+                            }]
+                    }]
+            }],
+        "@name": "layout"
+    },
+    "2": {
+        "type": "AbsoluteLayout",
+        "children": [{
+                "type": "Text",
+                "plugins": [{
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "relative",
+                                "zIndex": "10",
+                                "top": "0px",
+                                "left": "0px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    }, {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "500px",
+                                "height": ""
+                            }
+                        }
+                    }],
+                "content": "<p><strong>Texte propos&eacute; par le r&eacute;viseur</strong></p>\n<p>&nbsp;</p>\n<p><em>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</em></p>"
+            }, {
+                "type": "TextInput",
+                "cssClass": "law-avis-input",
+                "plugins": [{
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "relative",
+                                "zIndex": "10",
+                                "top": "",
+                                "left": "",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    }, {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "500px",
+                                "height": ""
+                            }
+                        }
+                    }],
+                "variable": {
+                    "@class": "Script",
+                    "content": "Variable.find(gameModel, \"avis_1\");\n"
+                },
+                "readonly": false,
+                "showSaveButton": false,
+                "showStatus": true
+            }],
+        "@name": "edit avis"
+    },
+    "3": {
+        "type": "AbsoluteLayout",
+        "children": [{
+                "type": "MCQTabView",
+                "plugins": [{
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "0px",
+                                "left": "0px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    }, {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "",
+                                "height": ""
+                            }
+                        }
+                    }],
+                "variable": {
+                    "@class": "Script",
+                    "content": "Variable.find(gameModel, 'interviews').item(Variable.find(gameModel, 'currentClientInterview').getValue(self));"
+                },
+                "highlightUnanswered": true
+            }],
+        "@name": "Interviews"
+    },
+    "4": {
+        "type": "AbsoluteLayout",
+        "children": [{
+                "type": "MCQTabView",
+                "plugins": [{
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "0px",
+                                "left": "0px",
+                                "zIndex": "10"
+                            }
+                        }
+                    }, {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {}
+                        }
+                    }],
+                "variable": {
+                    "@class": "Script",
+                    "content": "Variable.find(gameModel, 'actions').item(Variable.find(gameModel, 'currentActions').getValue(self));"
+                },
+                "highlightUnanswered": true
+            }],
+        "@name": "Actions"
+    },
+    "5": {
+        "type": "AbsoluteLayout",
+        "cssClass": "centered-content",
+        "children": [{
+                "type": "BalanceSheet",
+                "plugins": [{
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "0px",
+                                "left": "0px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    }, {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "",
+                                "height": ""
+                            }
+                        }
+                    }],
+                "variable": {
+                    "@class": "Script",
+                    "content": "Variable.find(gameModel, \"bilan1\");\n"
+                },
+                "cDepth": 2,
+                "userEditable": {
+                    "@class": "Script",
+                    "content": "Variable.find(gameModel, \"bilan1Editable\");\n"
+                }
+            }],
+        "@name": "bilan"
+    },
+    "6": {
+        "type": "AbsoluteLayout",
+        "children": [{
+                "type": "InboxDisplay",
+                "plugins": [{
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "0px",
+                                "left": "0px",
+                                "zIndex": "10"
+                            }
+                        }
+                    }, {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {}
+                        }
+                    }],
+                "variable": {
+                    "@class": "Script",
+                    "content": "Variable.find(gameModel, \"mailbox\");\n"
+                },
+                "template": "inbox",
+                "setToReadAfter": 0.05,
+                "autoOpenFirstMail": false
+            }],
+        "@name": "Mailbox"
+    },
+    "7": {
+        "type": "AbsoluteLayout",
+        "children": [{
+                "type": "InboxDisplay",
+                "plugins": [{
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "0px",
+                                "left": "0px",
+                                "zIndex": "10"
+                            }
+                        }
+                    }, {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {}
+                        }
+                    }],
+                "variable": {
+                    "@class": "Script",
+                    "content": "Variable.find(gameModel, \"history\");\n"
+                },
+                "template": "clean",
+                "setToReadAfter": 0.05,
+                "autoOpenFirstMail": false
+            }],
+        "@name": "History"
+    },
+    "8": {
+        "type": "AbsoluteLayout",
+        "cssClass": "centered-content",
+        "children": [{
+                "type": "Text",
+                "plugins": [{
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "0px",
+                                "left": "0px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    }, {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "",
+                                "height": ""
+                            }
+                        }
+                    }],
+                "content": "<p>C'est votre premier jour de stage dans l'&eacute;tude Bonnechance et Associ&eacute;es.</p>\n<p>&nbsp;</p>\n<p>Ma&icirc;tre Bonnechance, votre ma&icirc;tre de stage vous demande de recevoir un client qui a l'air d'&ecirc;tre assez compliqu&eacute;, un d&eacute;nomm&eacute; Bhuvan Russell.&nbsp;</p>\n<p>&nbsp;</p>\n<p>Elle vous explique en deux mots : \"C'est le descendant direct de la c&eacute;l&egrave;bre Lady Elisabeth Russell, premi&egrave;re femme &agrave; obtenir,&nbsp;en 1909, le titre de <em><a class=\"mw-redirect\" title=\"Wisden Cricketers of the Year\" href=\"http://fr.wikipedia.org/wiki/Wisden_Cricketers_of_the_Year\">Wisden Cricketer of the Year</a></em>. Traditionnellement, ce titre est d&eacute;cern&eacute; &agrave; cinq joueurs par ann&eacute;e, et un joueur ne le re&ccedil;oit qu'une seule fois dans sa carri&egrave;re. Lady Elisabeth Russell est pourtant &agrave; nouveau d&eacute;sign&eacute;e <em>Wisden Cricketer of the Year en 1926</em>, pour c&eacute;l&eacute;brer le fait qu'elle ait battu le record mondial, tous sexes confondus, de <em><a title=\"Century (cricket)\" href=\"http://fr.wikipedia.org/wiki/Century_%28cricket%29\">centuries. </a></em></p>\n<p>&nbsp;</p>\n<p>En cons&eacute;quence, elle obtint le titre de Lady Elisabeth Russell en 1930, de la main du roi Georges VI d'Angleterre.&nbsp;</p>\n<p>&nbsp;</p>\n<p><em><img src=\"http://oneknightstands.files.wordpress.com/2011/06/lagaan-elizabeth-russell.jpg\" alt=\"Elisa Elisa\" width=\"477\" height=\"203\" /></em></p>\n<p>&nbsp;</p>\n<p>&nbsp;</p>\n<p>Apr&egrave;s sa retraite sportive, Lady Elisabeth Russell s'est donn&eacute;e pour mission de d&eacute;velopper la balle de cricket la plus a&eacute;rodynamique possible. Apr&egrave;s de tr&egrave;s nombreuses et studieuses recherches, elle s'est rendue compte que la peau des cuisses gauches du <a href=\"http://fr.wikipedia.org/wiki/Dahu\">Dahu</a> pr&eacute;sentait des qualit&eacute;s exceptionnelles.</p>\n<p>&nbsp;</p>\n<p><img src=\"http://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Dahu_by_Philippe_Semeria.jpg/640px-Dahu_by_Philippe_Semeria.jpg\" alt=\"Dahu\" width=\"174\" height=\"256\" /></p>\n<p>&nbsp;</p>\n<p>Afin de r&eacute;soudre tout &eacute;ventuel probl&egrave;me d'approvisionnement, Lady Elisabeth Russell a d&eacute;m&eacute;nag&eacute; &agrave; Gsteig, petite bourgade de l'Oberland bernois pour y d&eacute;velopper un &eacute;levage de Dahus, qu'elle a int&eacute;gr&eacute; dans son entreprise de fabrication de balles de cricket.</p>\n<p>&nbsp;</p>\n<p><img src=\"http://www.bernerhof-gstaad.ch/uploads/pics/Gsteig_Blattipass_Seeberg_LacRetaud_ColDuPillon.jpg\" alt=\"\" width=\"280\" height=\"209\" /></p>\n<p>Dans ses derni&egrave;res volont&eacute;s, Lady Elisabeth a l&eacute;gu&eacute; son entreprise &agrave; son petit fils, &agrave; condition que celui-ci porte le nom de Bhuvan.</p>\n<p>&nbsp;</p>\n<p>C'est ce m&ecirc;me Bhuvan qui a de grandes vis&eacute;es pour l'entreprise, mais qui est radin comme pas deux (attention aux honoraires!!!!) qui s'est annonc&eacute; aujourd'hui.</p>\n<p>&nbsp;</p>\n<p>Tiens d&eacute;brouille-toi avec &ccedil;a, et fait vite s'il te plait\".</p>\n<p>&nbsp;</p>\n<p>&nbsp;</p>\n<p>&nbsp;</p>"
+            }],
+        "@name": "Accueil"
+    },
+    "9": {
+        "type": "AbsoluteLayout",
+        "@name": "Properties"
+    },
+    "10": {
+        "type": "AbsoluteLayout",
+        "children": [{
+                "type": "ReviewOrchestrator",
+                "plugins": [{
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "0px",
+                                "left": "0px",
+                                "zIndex": "10"
+                            }
+                        }
+                    }, {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {}
+                        }
+                    }],
+                "variable": {
+                    "@class": "Script",
+                    "content": "Variable.find(gameModel, \"evaluationAvis1\");\n"
+                }
+            }],
+        "@name": "Orchestrator"
+    },
+    "11": {
+        "type": "AbsoluteLayout",
+        "cssClass": "centered-content",
+        "children": [{
+                "type": "ReviewVariableEditor",
+                "plugins": [{
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "0px",
+                                "left": "0.5px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    }, {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "557px",
+                                "height": "646px"
+                            }
+                        }
+                    }],
+                "editPage": "2",
+                "showPage": "12",
+                "variable": {
+                    "@class": "Script",
+                    "content": "Variable.find(gameModel, \"evaluationAvis1\");\n"
+                },
+                "showSubmitButton": true
+            }],
+        "@name": "EditionAvis"
+    },
+    "12": {
+        "type": "ParametrizedLayout",
+        "parameters": {
+            "variable": {
+                "@class": "Script",
+                "content": "Variable.find(gameModel, \"avis_1\");\n"
+            }
+        },
+        "children": [{
+                "type": "TextTemplate",
+                "plugins": [{
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "0px",
+                                "left": "0px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    }, {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "500px",
+                                "height": ""
+                            }
+                        }
+                    }],
+                "variable": {
+                    "@class": "ParentArgument",
+                    "content": "parameters.variable"
+                },
+                "data": {
+                    "label": ""
+                }
+            }],
+        "@name": "show avis"
+    },
+    "13": {
+        "type": "AbsoluteLayout",
+        "children": [{
+                "type": "ReviewTabView",
+                "plugins": [{
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "0px",
+                                "left": "0px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    }, {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "",
+                                "height": ""
+                            }
+                        }
+                    }],
+                "variable": {
+                    "@class": "Script",
+                    "content": "Variable.find(gameModel, \"evaluationAvis1\");\n"
+                },
+                "showPage": "12",
+                "showSubmitButton": true
+            }],
+        "@name": "Reviewing"
+    }
+}
