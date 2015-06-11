@@ -128,7 +128,7 @@ angular.module('private.trainer.directives', [
                                     name: "",
                                     scenarioId: 0
                                 };
-                                parentCtrl.updateSessions();
+                                parentCtrl.updateSessions(true);
                             } else {
                                 response.flash();
                             }
