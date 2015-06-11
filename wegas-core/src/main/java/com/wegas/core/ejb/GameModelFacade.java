@@ -347,7 +347,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
         fileController.createFile(gameModelId, name + ".json", "/" + HISTORYPATH,
                 "application/octet-stream", null, null,
-                new ByteArrayInputStream(serializedGameModel.getBytes("UTF-8")));// Create a file containing the version
+                new ByteArrayInputStream(serializedGameModel.getBytes("UTF-8")), false);// Create a file containing the version
     }
 
     /**
