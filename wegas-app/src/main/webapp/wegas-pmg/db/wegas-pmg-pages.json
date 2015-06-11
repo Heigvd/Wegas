@@ -3,10 +3,12 @@
         "type": "AbsoluteLayout",
         "@name": "Main",
         "cssClass": "layout",
-        "children": [{
+        "children": [
+            {
                 "type": "List",
                 "cssClass": "vertical-menu",
-                "plugins": [{
+                "plugins": [
+                    {
                         "fn": "CSSPosition",
                         "cfg": {
                             "styles": {
@@ -30,10 +32,12 @@
                 ],
                 "direction": "vertical",
                 "name": "layout",
-                "children": [{
+                "children": [
+                    {
                         "type": "List",
                         "cssClass": "horizontal-menu pmg-header",
-                        "plugins": [{
+                        "plugins": [
+                            {
                                 "fn": "CSSSize",
                                 "cfg": {
                                     "styles": {
@@ -45,9 +49,11 @@
                         ],
                         "direction": "horizontal",
                         "name": "header",
-                        "children": [{
+                        "children": [
+                            {
                                 "type": "AbsoluteLayout",
-                                "plugins": [{
+                                "plugins": [
+                                    {
                                         "fn": "CSSSize",
                                         "cfg": {
                                             "styles": {
@@ -57,9 +63,11 @@
                                         }
                                     }
                                 ],
-                                "children": [{
+                                "children": [
+                                    {
                                         "type": "Text",
-                                        "plugins": [{
+                                        "plugins": [
+                                            {
                                                 "fn": "CSSPosition",
                                                 "cfg": {
                                                     "styles": {
@@ -96,7 +104,8 @@
                                         "content": "<p>Project Management Game</p>"
                                     }, {
                                         "type": "Image",
-                                        "plugins": [{
+                                        "plugins": [
+                                            {
                                                 "fn": "CSSPosition",
                                                 "cfg": {
                                                     "styles": {
@@ -118,7 +127,8 @@
                                         "url": " http://wegas.albasim.ch/wegas-pmg/images/pmg-logo-1.png"
                                     }, {
                                         "type": "PmgBreadcrumb",
-                                        "plugins": [{
+                                        "plugins": [
+                                            {
                                                 "fn": "CSSPosition",
                                                 "cfg": {
                                                     "styles": {
@@ -145,7 +155,8 @@
                                     }, {
                                         "type": "Template",
                                         "cssClass": "pmg-period",
-                                        "plugins": [{
+                                        "plugins": [
+                                            {
                                                 "fn": "CSSPosition",
                                                 "cfg": {
                                                     "styles": {
@@ -179,7 +190,8 @@
                                 ]
                             }, {
                                 "type": "AbsoluteLayout",
-                                "plugins": [{
+                                "plugins": [
+                                    {
                                         "fn": "CSSSize",
                                         "cfg": {
                                             "styles": {
@@ -189,11 +201,13 @@
                                         }
                                     }
                                 ],
-                                "children": [{
+                                "children": [
+                                    {
                                         "label": "",
                                         "type": "Button",
                                         "cssClass": "pmg-nextweek",
-                                        "plugins": [{
+                                        "plugins": [
+                                            {
                                                 "fn": "ConditionalDisable",
                                                 "cfg": {
                                                     "condition": {
@@ -257,7 +271,8 @@
                                 ]
                             }, {
                                 "type": "AbsoluteLayout",
-                                "plugins": [{
+                                "plugins": [
+                                    {
                                         "fn": "CSSSize",
                                         "cfg": {
                                             "styles": {
@@ -267,10 +282,12 @@
                                         }
                                     }
                                 ],
-                                "children": [{
+                                "children": [
+                                    {
                                         "type": "Template",
                                         "cssClass": "wegas-gauge",
-                                        "plugins": [{
+                                        "plugins": [
+                                            {
                                                 "fn": "CSSPosition",
                                                 "cfg": {
                                                     "styles": {
@@ -302,7 +319,8 @@
                                         "custom": "<center><%= this.variable.get(\"label\") %></center>"
                                     }, {
                                         "type": "GaugeDisplay",
-                                        "plugins": [{
+                                        "plugins": [
+                                            {
                                                 "fn": "CSSPosition",
                                                 "cfg": {
                                                     "styles": {
@@ -337,7 +355,8 @@
                                 ]
                             }, {
                                 "type": "AbsoluteLayout",
-                                "plugins": [{
+                                "plugins": [
+                                    {
                                         "fn": "CSSSize",
                                         "cfg": {
                                             "styles": {
@@ -347,10 +366,12 @@
                                         }
                                     }
                                 ],
-                                "children": [{
+                                "children": [
+                                    {
                                         "type": "Template",
                                         "cssClass": "wegas-gauge",
-                                        "plugins": [{
+                                        "plugins": [
+                                            {
                                                 "fn": "CSSPosition",
                                                 "cfg": {
                                                     "styles": {
@@ -382,7 +403,8 @@
                                         "custom": "<center><%= this.variable.get(\"label\") %></center>"
                                     }, {
                                         "type": "GaugeDisplay",
-                                        "plugins": [{
+                                        "plugins": [
+                                            {
                                                 "fn": "CSSSize",
                                                 "cfg": {
                                                     "styles": {
@@ -415,7 +437,8 @@
                                 ]
                             }, {
                                 "type": "GaugeDisplay",
-                                "plugins": [{
+                                "plugins": [
+                                    {
                                         "fn": "ConditionalDisable",
                                         "cfg": {
                                             "condition": {
@@ -446,7 +469,8 @@
                                 }
                             }, {
                                 "type": "GaugeDisplay",
-                                "plugins": [{
+                                "plugins": [
+                                    {
                                         "fn": "ConditionalDisable",
                                         "cfg": {
                                             "condition": {
@@ -477,7 +501,8 @@
                                 }
                             }, {
                                 "type": "GaugeDisplay",
-                                "plugins": [{
+                                "plugins": [
+                                    {
                                         "fn": "ConditionalDisable",
                                         "cfg": {
                                             "condition": {
@@ -509,7 +534,8 @@
                             }, {
                                 "type": "BoxTemplate",
                                 "cssClass": "pmg-timevariable",
-                                "plugins": [{
+                                "plugins": [
+                                    {
                                         "fn": "CSSPosition",
                                         "cfg": {
                                             "styles": {
@@ -531,7 +557,8 @@
                     }, {
                         "type": "List",
                         "cssClass": "horizontal-nav-menu",
-                        "plugins": [{
+                        "plugins": [
+                            {
                                 "fn": "CSSPosition",
                                 "cfg": {
                                     "styles": {
@@ -547,10 +574,12 @@
                         ],
                         "direction": "horizontal",
                         "name": "menu-nav-hori",
-                        "children": [{
+                        "children": [
+                            {
                                 "label": "Home",
                                 "type": "Button",
-                                "plugins": [{
+                                "plugins": [
+                                    {
                                         "fn": "OpenPageAction",
                                         "cfg": {
                                             "targetEvent": "click",
@@ -562,7 +591,8 @@
                             }, {
                                 "label": "Project",
                                 "type": "Button",
-                                "plugins": [{
+                                "plugins": [
+                                    {
                                         "fn": "OpenPageAction",
                                         "cfg": {
                                             "targetEvent": "click",
@@ -574,7 +604,8 @@
                             }, {
                                 "label": "Tasks",
                                 "type": "Button",
-                                "plugins": [{
+                                "plugins": [
+                                    {
                                         "fn": "OpenPageAction",
                                         "cfg": {
                                             "targetEvent": "click",
@@ -597,7 +628,8 @@
                             }, {
                                 "label": "Gantt",
                                 "type": "Button",
-                                "plugins": [{
+                                "plugins": [
+                                    {
                                         "fn": "OpenPageAction",
                                         "cfg": {
                                             "targetEvent": "click",
@@ -620,7 +652,8 @@
                             }, {
                                 "label": "Resources",
                                 "type": "Button",
-                                "plugins": [{
+                                "plugins": [
+                                    {
                                         "fn": "OpenPageAction",
                                         "cfg": {
                                             "targetEvent": "click",
@@ -643,7 +676,8 @@
                             }, {
                                 "label": "EVM",
                                 "type": "Button",
-                                "plugins": [{
+                                "plugins": [
+                                    {
                                         "fn": "OpenPageAction",
                                         "cfg": {
                                             "targetEvent": "click",
@@ -674,10 +708,12 @@
                         "cssClass": "horizontal-menu",
                         "direction": "horizontal",
                         "name": "folder",
-                        "children": [{
+                        "children": [
+                            {
                                 "type": "PageLoader",
                                 "cssClass": "body",
-                                "plugins": [{
+                                "plugins": [
+                                    {
                                         "fn": "CSSPosition",
                                         "cfg": {
                                             "styles": {
@@ -703,7 +739,8 @@
                             }, {
                                 "type": "List",
                                 "cssClass": "vertical-menu vertical-nav-menu",
-                                "plugins": [{
+                                "plugins": [
+                                    {
                                         "fn": "CSSPosition",
                                         "cfg": {
                                             "styles": {
@@ -719,11 +756,13 @@
                                 ],
                                 "direction": "vertical",
                                 "name": "vertival-nav",
-                                "children": [{
+                                "children": [
+                                    {
                                         "label": "",
                                         "type": "Button",
                                         "cssClass": "actions",
-                                        "plugins": [{
+                                        "plugins": [
+                                            {
                                                 "fn": "Tooltip",
                                                 "cfg": {
                                                     "content": "Actions"
@@ -741,7 +780,8 @@
                                         "label": "",
                                         "type": "Button",
                                         "cssClass": "questions",
-                                        "plugins": [{
+                                        "plugins": [
+                                            {
                                                 "fn": "Tooltip",
                                                 "cfg": {
                                                     "content": "Questions"
@@ -766,7 +806,8 @@
                                         "label": "",
                                         "type": "Button",
                                         "cssClass": "inbox",
-                                        "plugins": [{
+                                        "plugins": [
+                                            {
                                                 "fn": "Tooltip",
                                                 "cfg": {
                                                     "content": "Mailbox"
@@ -791,7 +832,8 @@
                                         "label": "",
                                         "type": "Button",
                                         "cssClass": "history",
-                                        "plugins": [{
+                                        "plugins": [
+                                            {
                                                 "fn": "Tooltip",
                                                 "cfg": {
                                                     "content": "History"
@@ -809,7 +851,8 @@
                                         "label": "",
                                         "type": "Button",
                                         "cssClass": "help",
-                                        "plugins": [{
+                                        "plugins": [
+                                            {
                                                 "fn": "OpenPageAction",
                                                 "cfg": {
                                                     "targetEvent": "click",
@@ -832,15 +875,18 @@
         "cssClass": "project-page",
         "direction": "horizontal",
         "name": "folder",
-        "children": [{
+        "children": [
+            {
                 "type": "List",
                 "cssClass": "pmg-project-overview",
                 "direction": "vertical",
                 "name": "Overview",
-                "children": [{
+                "children": [
+                    {
                         "type": "Template",
                         "cssClass": "pmg-project-overview-title",
-                        "plugins": [{
+                        "plugins": [
+                            {
                                 "fn": "CSSSize",
                                 "cfg": {
                                     "styles": {
@@ -875,7 +921,8 @@
                         "cssClass": "pmg-project-overview-content initial-budget",
                         "direction": "horizontal",
                         "name": "initial budget",
-                        "children": [{
+                        "children": [
+                            {
                                 "type": "Text",
                                 "content": "<p><strong>Initial Budget</strong></p>"
                             }, {
@@ -896,7 +943,8 @@
                     }, {
                         "type": "Template",
                         "cssClass": "pmg-project-overview-title",
-                        "plugins": [{
+                        "plugins": [
+                            {
                                 "fn": "CSSSize",
                                 "cfg": {
                                     "styles": {
@@ -929,7 +977,8 @@
                     }, {
                         "type": "Template",
                         "cssClass": "pmg-project-overview-content",
-                        "plugins": [{
+                        "plugins": [
+                            {
                                 "fn": "CSSPosition",
                                 "cfg": {
                                     "styles": {
@@ -962,7 +1011,8 @@
                     }, {
                         "type": "Template",
                         "cssClass": "pmg-project-overview-title",
-                        "plugins": [{
+                        "plugins": [
+                            {
                                 "fn": "CSSSize",
                                 "cfg": {
                                     "styles": {
@@ -1021,16 +1071,19 @@
                 "cssClass": "charts-column",
                 "direction": "vertical",
                 "name": "indicators",
-                "children": [{
+                "children": [
+                    {
                         "type": "PmgSlidePanel",
                         "cssClass": "indicators-management chart",
                         "title": "Indicators History: Management and Users",
                         "animation": false,
-                        "children": [{
-                                "width" : "55%",
+                        "children": [
+                            {
+                                "width": "55%",
                                 "type": "Chart",
                                 "chartType": "combo",
-                                "variables": [{
+                                "variables": [
+                                    {
                                         "name": "managementApproval",
                                         "label": "Management"
                                     }, {
@@ -1056,11 +1109,13 @@
                         "cssClass": "indicators-quality chart",
                         "title": "Indicators History: Quality, Costs, and Shedule",
                         "animation": false,
-                        "children": [{
+                        "children": [
+                            {
                                 "type": "Chart",
-                                "width" : "55%",
+                                "width": "55%",
                                 "chartType": "combo",
-                                "variables": [{
+                                "variables": [
+                                    {
                                         "name": "costs",
                                         "label": "Costs"
                                     }, {
@@ -1095,9 +1150,11 @@
         "cssClass": "task-planning-page",
         "direction": "vertical",
         "name": "folder",
-        "children": [{
+        "children": [
+            {
                 "type": "PmgDatatable",
-                "plugins": [{
+                "plugins": [
+                    {
                         "fn": "Bac",
                         "cfg": {
                             "columnPosition": 4
@@ -1113,7 +1170,8 @@
                 "variable": {
                     "name": "tasks"
                 },
-                "columnsCfg": [{
+                "columnsCfg": [
+                    {
                         "key": "index",
                         "label": "No",
                         "sortable": true,
@@ -1172,9 +1230,11 @@
         "type": "List",
         "cssClass": "gantt-planning-page",
         "direction": "vertical",
-        "children": [{
+        "children": [
+            {
                 "type": "PmgDatatable",
-                "plugins": [{
+                "plugins": [
+                    {
                         "fn": "ScheduleDT",
                         "cfg": {
                             "variable": {
@@ -1192,7 +1252,8 @@
                 "variable": {
                     "name": "tasks"
                 },
-                "columnsCfg": [{
+                "columnsCfg": [
+                    {
                         "key": "index",
                         "label": "No",
                         "sortable": true,
@@ -1212,7 +1273,8 @@
     "5": {
         "type": "List",
         "direction": "vertical",
-        "children": [{
+        "children": [
+            {
                 "type": "PmgResourcesPanels",
                 "cssClass": "resources-page"
             }
@@ -1223,7 +1285,8 @@
         "cssClass": "actions-page",
         "type": "List",
         "direction": "vertical",
-        "children": [{
+        "children": [
+            {
                 "type": "Text",
                 "content": "<div class='title'><h2>Available actions during this phase</h2></div><div class='title'><h2>Description</h2></div>"
             }, {
@@ -1236,7 +1299,8 @@
                 "label": "",
                 "type": "Button",
                 "cssClass": "wegas-icon-pdf",
-                "plugins": [{
+                "plugins": [
+                    {
                         "fn": "PrintActionPlugin",
                         "cfg": {
                             "targetEvent": "click",
@@ -1271,7 +1335,8 @@
         "cssClass": "questions-page",
         "type": "List",
         "direction": "vertical",
-        "children": [{
+        "children": [
+            {
                 "type": "Template",
                 "variable": {
                     "@class": "Script",
@@ -1290,7 +1355,8 @@
                 "label": "",
                 "type": "Button",
                 "cssClass": "wegas-icon-pdf",
-                "plugins": [{
+                "plugins": [
+                    {
                         "fn": "PrintActionPlugin",
                         "cfg": {
                             "targetEvent": "click",
@@ -1325,7 +1391,8 @@
         "cssClass": "inbox-page",
         "type": "List",
         "direction": "vertical",
-        "children": [{
+        "children": [
+            {
                 "type": "Text",
                 "content": "<div class='title'><h2>Mailbox</h2></div><div class='title'><h2>Message</h2></div>"
             }, {
@@ -1341,7 +1408,8 @@
         "cssClass": "history-page",
         "type": "List",
         "direction": "vertical",
-        "children": [{
+        "children": [
+            {
                 "type": "Text",
                 "content": "<div class='title'><h2>History</h2></div><div class='title'><h2>Details</h2></div>"
             }, {
@@ -1358,12 +1426,14 @@
         "cssClass": "evm-page",
         "direction": "vertical",
         "type": "List",
-        "children": [{
+        "children": [
+            {
                 "type": "PmgSlidePanel",
                 "title": "EVM",
                 "cssClass": "evm",
                 "animation": false,
-                "children": [{
+                "children": [
+                    {
                         "type": "Chart",
                         "width": "90%",
                         "height": "400px",
@@ -1375,7 +1445,8 @@
                             "name": "executionPeriods"
                         },
                         "minValue": 0,
-                        "variables": [{
+                        "variables": [
+                            {
                                 "name": "planedValue",
                                 "label": "PV (Planed Value)"
                             }, {
@@ -1396,9 +1467,11 @@
         "type": "List",
         "cssClass": "gantt-execution-page",
         "direction": "vertical",
-        "children": [{
+        "children": [
+            {
                 "type": "PmgDatatable",
-                "plugins": [{
+                "plugins": [
+                    {
                         "fn": "ScheduleDT",
                         "cfg": {
                             "variable": {
@@ -1420,7 +1493,8 @@
                 "variable": {
                     "name": "tasks"
                 },
-                "columnsCfg": [{
+                "columnsCfg": [
+                    {
                         "key": "index",
                         "label": "No",
                         "sortable": true,
@@ -1452,13 +1526,15 @@
         "cssClass": "task-execution-page",
         "type": "List",
         "direction": "vertical",
-        "children": [{
+        "children": [
+            {
                 "type": "PmgDatatable",
                 "variable": {
                     "name": "tasks"
                 },
                 "defaultSort": null,
-                "columnsCfg": [{
+                "columnsCfg": [
+                    {
                         "key": "index",
                         "label": "No"
                     }, {
@@ -1510,7 +1586,8 @@
                         "sortable": false
                     }
                 ],
-                "plugins": [{
+                "plugins": [
+                    {
                         "fn": "Taskonclickpopup"
                     }, {
                         "fn": "PMGLineCompleteness"
@@ -1538,7 +1615,8 @@
     },
     "15": {
         "type": "AbsoluteLayout",
-        "children": [{
+        "children": [
+            {
                 "type": "Template",
                 "custom": "<%== this.value || 'Unable to find welcome text' %>",
                 "data": {
@@ -1546,7 +1624,8 @@
                 "variable": {
                     "name": "homeText"
                 },
-                "plugins": [{
+                "plugins": [
+                    {
                         "fn": "CSSStyles",
                         "cfg": {
                             "styles": {
@@ -1575,7 +1654,8 @@
             }, {
                 "type": "Text",
                 "content": "<div class='title'><h2>News</h2></div></div>",
-                "plugins": [{
+                "plugins": [
+                    {
                         "fn": "CSSPosition",
                         "cfg": {
                             "styles": {
@@ -1591,7 +1671,8 @@
                 "variable": {
                     "name": "news"
                 },
-                "plugins": [{
+                "plugins": [
+                    {
                         "fn": "CSSPosition",
                         "cfg": {
                             "styles": {
@@ -1617,9 +1698,11 @@
     "16": {
         "type": "AbsoluteLayout",
         "cssClass": "pmg-properties",
-        "children": [{
+        "children": [
+            {
                 "type": "Text",
-                "plugins": [{
+                "plugins": [
+                    {
                         "fn": "CSSPosition",
                         "cfg": {
                             "styles": {
@@ -1656,7 +1739,8 @@
                 "label": "<span class='checkbox'>Advancement limit</span>",
                 "type": "Button",
                 "cssClass": "pmg-properties-button",
-                "plugins": [{
+                "plugins": [
+                    {
                         "fn": "ExecuteScriptAction",
                         "cfg": {
                             "targetEvent": "click",
@@ -1707,7 +1791,8 @@
                 ]
             }, {
                 "type": "AdvancementLimit",
-                "plugins": [{
+                "plugins": [
+                    {
                         "fn": "CSSPosition",
                         "cfg": {
                             "styles": {
@@ -1731,7 +1816,8 @@
                 ]
             }, {
                 "type": "Text",
-                "plugins": [{
+                "plugins": [
+                    {
                         "fn": "CSSPosition",
                         "cfg": {
                             "styles": {
@@ -1758,7 +1844,8 @@
                 "label": "<span class='checkbox'>Autoreservation</span>",
                 "type": "Button",
                 "cssClass": "pmg-properties-button",
-                "plugins": [{
+                "plugins": [
+                    {
                         "fn": "ExecuteScriptAction",
                         "cfg": {
                             "targetEvent": "click",
@@ -1805,7 +1892,8 @@
                 "label": "<span class='checkbox'>Force question replies</span>",
                 "type": "Button",
                 "cssClass": "pmg-properties-button",
-                "plugins": [{
+                "plugins": [
+                    {
                         "fn": "ExecuteScriptAction",
                         "cfg": {
                             "targetEvent": "click",
@@ -1852,7 +1940,8 @@
                 "label": "<span class='checkbox'>EVM</span>",
                 "type": "Button",
                 "cssClass": "pmg-properties-button",
-                "plugins": [{
+                "plugins": [
+                    {
                         "fn": "ExecuteScriptAction",
                         "cfg": {
                             "targetEvent": "click",
@@ -1901,10 +1990,12 @@
     },
     "17": {
         "type": "AbsoluteLayout",
-        "children": [{
+        "children": [
+            {
                 "type": "Dashboard",
                 "tableCfg": {
-                    "columns": [{
+                    "columns": [
+                        {
                             "key": "name",
                             "label": " "
                         }, {
@@ -1944,12 +2035,62 @@
         ],
         "@name": "Dashboard"
     },
+    "18": {
+        "@name": "Statistics",
+        "type": "List",
+        "children": [
+            {
+                "type": "Statistics"
+            }
+        ]
+    },
+    "19": {
+        "@class": "Q1 Analysis",
+        "cssClass": "evm-page",
+        "direction": "vertical",
+        "type": "List",
+        "children": [
+            {
+                "type": "PmgSlidePanel",
+                "title": "Questions Analysis",
+                "cssClass": "evm",
+                "animation": false,
+                "children": [
+                    {
+                        "height": "200px",
+                        "chartType": "combo",
+                        "width": "90%",
+                        "horizontalGridlines": true,
+                        "legendPosition": "bottom",
+                        "type": "Chart",
+                        "verticalGridlines": true,
+                        "hMinEnd": {
+                            "name": "executionPeriods"
+                        },
+                        "minValue": 0,
+                        "maxValue": 200,
+                        "vStepValue": 25,
+                        "variables": [
+                            {
+                                "name": "managementApproval",
+                                "label": "Management"
+                            }, {
+                                "name": "userApproval",
+                                "label": "Users"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
     "Team": {
         "type": "EditTeam"
     },
     "UserPreferences": {
         "type": "Form",
-        "plugins": [{
+        "plugins": [
+            {
                 "fn": "UserPreferences"
             }
         ]

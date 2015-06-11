@@ -2,9 +2,10 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
+
 package com.wegas.log.neo4j;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -29,9 +30,6 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import javax.annotation.Resource;
 import javax.ejb.*;
 import javax.enterprise.event.Observes;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -73,7 +71,7 @@ public class Neo4jPlayerReply {
     }
 
     @Asynchronous
-    public void addNumberUpdate(Player player, NumberInstance numberInstance) throws NoPlayerException, JsonProcessingException {
+    private void addNumberUpdate(Player player, NumberInstance numberInstance) throws NoPlayerException, JsonProcessingException {
         if (player == null) {
             player = variableInstanceFacade.findAPlayer(numberInstance);
         }
@@ -95,36 +93,22 @@ public class Neo4jPlayerReply {
      *
      * @param player the player data
      * @param reply  the player's answer data
+     * @param choiceDescriptor the selected choice description
+     * @param questionDescriptor the selected question description
+     * @throws JsonProcessingException
      */
     @Asynchronous
-    public synchronized void addPlayerReply(Player player, Reply reply, ChoiceDescriptor choiceDescriptor, QuestionDescriptor questionDescriptor) throws JsonProcessingException {
+    private synchronized void addPlayerReply(Player player, Reply reply, ChoiceDescriptor choiceDescriptor, QuestionDescriptor questionDescriptor) throws JsonProcessingException {
         if (player.getGame() instanceof DebugGame ||
             Helper.isNullOrEmpty(player.getGameModel().getProperties().getLogID()) ||
             !Neo4jUtils.checkDataBaseIsRunning()) {
             return;
         }
         String key = nodeKey(player, TYPE.QUESTION);
-        String game = player.getGameModel().getName();
         synchronized (player) {
-            ObjectNode newNode = createJsonNode(player, game, reply, choiceDescriptor, questionDescriptor);
+            ObjectNode newNode = createJsonNode(player, reply, choiceDescriptor, questionDescriptor);
             createLinkedToYoungest(key, "gamelink", newNode, player.getGameModel().getName());
         }
-    }
-
-    /**
-     * Extracts the choices identifiers list for a given player. The choices are
-     * given in the timely order they were recorded.
-     *
-     * @param player the player data
-     * @return the found list of choices
-     */
-    public static ArrayList<String> extractChoiceList(Player player) {
-        if (!Neo4jUtils.checkDataBaseIsRunning()) return null;
-        String key = nodeKey(player, TYPE.QUESTION);
-        String query = "match (n " + key + ") return n.choice";
-        String result = Neo4jUtils.queryDBString(query);
-        checkError(result);
-        return Neo4jUtils.extractListData(result);
     }
 
     /**
@@ -138,16 +122,15 @@ public class Neo4jPlayerReply {
     }
 
     /**
-     * Calls the methods used to create a new Choice node, its label and properties.
+     * Creates a new Question node, with all the necessary properties.
      *
-     * @param player
-     * @param gameModelName
-     * @param reply
-     * @param choiceDescriptor
-     * @param questionDescriptor
-     * @return
+     * @param player the player data
+     * @param reply the player's answer data
+     * @param choiceDescriptor the selected choice description
+     * @param questionDescriptor the selected question description
+     * @return a node object
      */
-    private static ObjectNode createJsonNode(Player player, String gameModelName, Reply reply, ChoiceDescriptor choiceDescriptor, QuestionDescriptor questionDescriptor) {
+    private static ObjectNode createJsonNode(Player player, Reply reply, ChoiceDescriptor choiceDescriptor, QuestionDescriptor questionDescriptor) {
         ObjectNode jsonObject = objectMapper.createObjectNode();
 
         jsonObject.put("playerId", player.getId());
@@ -165,12 +148,12 @@ public class Neo4jPlayerReply {
     }
 
     /**
-     * Calls the methods used to create a new Number node, its label and properties.
+     * Creates a new Number node, with all the necessary properties.
      *
-     * @param player
-     * @param name
-     * @param value
-     * @return
+     * @param player the player data
+     * @param name the variable name
+     * @param value the actual variable value
+     * @return a node object
      * @throws JsonProcessingException
      */
     private static ObjectNode createJsonNode(Player player, String name, double value) throws JsonProcessingException {
@@ -202,46 +185,8 @@ public class Neo4jPlayerReply {
             + ") WHERE n <> p WITH max(n.starttime) AS max, p AS p MATCH (n " +
             key + ") WHERE n.starttime = max AND n <> p WITH n AS n, p AS p CREATE (n)-[:`" +
             relationLabel + "`]->(p) return p";
-        Neo4jUtils.queryDBString(query);
-    }
-
-    /**
-     * Extracts from the query result the first returned value.
-     * The query result has a JSON format.
-     *
-     * @param result the query result
-     * @return the maximum timestamp as a string
-     */
-    private static String extractSingleResult(String result) {
-        ArrayList<String> al = Neo4jUtils.extractListData(result);
-        if (al.isEmpty()) {
-            return null;
-        }
-        if ("null".equals(al.get(0))) {
-            return null;
-        }
-        return al.get(0);
-    }
-
-    /**
-     * Extracts from the query result the node URI corresponding to the
-     * maximum timestamp of a nodes list. The query result has a JSON format.
-     *
-     * @param result the query result
-     * @return the URI of the node with a maximun timestamp
-     */
-    private static URI extractNodeUri(String result) {
-        try {
-            ArrayList<String> al = Neo4jUtils.extractListData(result);
-            if (al.isEmpty()) {
-                return null;
-            }
-            String location = al.get(0);
-            return new URI(Neo4jUtils.NEO4J_SERVER_URL + "node/" + location);
-        } catch (URISyntaxException ex) {
-            // Nothing to do here
-        }
-        return null;
+        String result = Neo4jUtils.queryDBString(query);
+        checkError(result);
     }
 
     /**
