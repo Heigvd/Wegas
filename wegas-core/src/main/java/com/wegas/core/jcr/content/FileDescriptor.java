@@ -96,6 +96,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
      */
     public void setBase64Data(InputStream data, String mimeType) throws IOException {
         try {
+            this.mimeType = mimeType;
             this.sync();
             connector.setData(this.fileSystemAbsolutePath, mimeType, data);
             this.bytes = connector.getBytesSize(fileSystemAbsolutePath);
