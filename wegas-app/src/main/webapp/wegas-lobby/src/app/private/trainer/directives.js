@@ -74,7 +74,7 @@ angular.module('private.trainer.directives', [
                 Flash.danger("No scenario choosed");
             }
         };
-
+        
         $rootScope.$on('changeArchives', function(e, hasNewData) {
             if (hasNewData) {
                 SessionsModel.countArchivedSessions().then(function(response) {

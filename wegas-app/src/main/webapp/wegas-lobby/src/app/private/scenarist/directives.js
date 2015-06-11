@@ -26,15 +26,6 @@ angular.module('private.scenarist.directives', [
                 }
             }
         };
-        ctrl.uploadJSON = function(element) {
-            ScenariosModel.createFromJSON(element.files[0]).then(function(response) {
-                if (!response.isErroneous()) {
-                    $rootScope.$emit('changeScenarios', true);
-                }
-                response.flash();
-                element.value = '';
-            });
-        };
         ctrl.updateScenarios = function(updateDisplay) {
             if(!updateDisplay){
                 ScenariosModel.countArchivedScenarios().then(function(response) {
@@ -120,17 +111,6 @@ angular.module('private.scenarist.directives', [
                     }
                 };
                 resetNewScenario();
-            }
-        };
-    })
-    .directive('scenaristScenarioCreateUpload', function() {
-        return {
-            restrict: 'A',
-            require: '^scenaristScenariosIndex',
-            link: function(scope, element, attrs, parentCtrl) {
-                element.bind('change', function() {
-                    parentCtrl.uploadJSON(element[0]);
-                });
             }
         };
     })
