@@ -15,7 +15,7 @@
         <div class="card__illustration illustration illustration--medium illustration--icon" illustration="ICON_grey_user"></div>
         <div class="card__description card__description--two-lines">
             <div class="line line--primary">
-                User N°{{user.id}} - {{ user.account.email }}
+                User {{user.id}} - {{ user.account.email }}
             </div>
             <div class="line line--secondary">
                 {{ user.account.firstname + ' ' + user.account.lastname }} <span ng-if="user.account.username !== ''">({{user.account.username}})</span>
