@@ -6,7 +6,7 @@
  * Licensed under the MIT License
  */
 /**
- * @fileOverview 
+ * @fileOverview
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 YUI.add("wegas-inputex-pageloaderselect", function(Y) {
@@ -18,7 +18,7 @@ YUI.add("wegas-inputex-pageloaderselect", function(Y) {
     };
     Y.extend(Y.inputEx.Wegas.PageloaderSelect, Y.inputEx.Wegas.Combobox, {
         setOptions: function(options) {
-            var list, root = Y.Wegas.PageLoader.pageLoaderInstances[PREVIEW_PAGELOADER_ID];
+            var list, root = Y.Wegas.PageLoader.find(PREVIEW_PAGELOADER_ID);
             Y.inputEx.Wegas.PageloaderSelect.superclass.setOptions.call(this, options);
             if (Y.Lang.isArray(options.choices)) {
                 this.options.autoComp.source = this.options.autoComp.source.concat(options.choices);

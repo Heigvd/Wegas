@@ -72,10 +72,12 @@ YUI.add("wegas-image", function(Y) {
                 this.getEvent("load").fired = true;
             }, this);
             this.image.on("error", function(e) {
-                this.image.setAttribute("alt", "Image error");
-                this.image.setAttribute("src", "");
-                this.fire("error");
-                this.getEvent("error").fired = true;
+                if (this.image.getAttribute("src")) {
+                    this.image.setAttribute("src", "");
+                    this.image.setAttribute("alt", "Image error");
+                    this.fire("error");
+                    this.getEvent("error").fired = true;
+                }
             }, this);
         }
 
