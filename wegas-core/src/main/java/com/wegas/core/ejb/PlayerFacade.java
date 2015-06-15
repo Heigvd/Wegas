@@ -75,7 +75,6 @@ public class PlayerFacade extends BaseFacade<Player> {
             final TypedQuery<Player> findByGameIdAndUserId = getEntityManager().createNamedQuery("findPlayerByGameIdAndUserId", Player.class);
             findByGameIdAndUserId.setParameter("gameId", gameId);
             findByGameIdAndUserId.setParameter("userId", userId);
-            findByGameIdAndUserId.setParameter("status", Game.Status.LIVE);
             return findByGameIdAndUserId.getSingleResult();
         } catch (NoResultException ex) {
             throw new WegasNoResultException(ex);
@@ -93,7 +92,6 @@ public class PlayerFacade extends BaseFacade<Player> {
             final TypedQuery<Player> findByGameIdAndUserId = getEntityManager().createNamedQuery("findPlayerByGameIdAndUserId", Player.class);
             findByGameIdAndUserId.setParameter("gameId", gameId);
             findByGameIdAndUserId.setParameter("userId", userId);
-            findByGameIdAndUserId.setParameter("status", Game.Status.LIVE);
             return findByGameIdAndUserId.getSingleResult();
         } catch(NoResultException e) {
             return null;
