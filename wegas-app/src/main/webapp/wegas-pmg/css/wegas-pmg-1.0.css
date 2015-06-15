@@ -5,491 +5,177 @@
  * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
+/*--------------------------------header--------------------------------------*/
+.layout {
+    font-family: "Lucida Grande", sans-serif;
+    background: #282828;
+    min-width: 975px;
+}
+.layout .pmg-header {
+    background: #282828;
+}
 .layout * {
-    font-family: Helvetica, Arial, "Lucida Grande", sans-serif;
-    font-weight:300;
+    font-family: "Lucida Grande", sans-serif;
 }
 
 .wegas-loading-overlay {
     background: rgba(255, 255, 255, 0.0);
 }
 
-.pmg--app{
-    display:block;
-    position:relative;
-    width:100%;
-    height:100%;
-    margin:0px;
-    padding:0px;
-}
-
-/*--------------------------------header--------------------------------------*/
-.pmg-header {
-    display:block;
-    position:absolute;
-    width:100%;
-    height:160px;
-    top:0px;
-    left:0px;
-    margin:0px;
-    padding:0px;
-    z-index:2;
-}
-
-.pmg-header .pmg--header__identity{
-    display:block;
-    position:absolute;
-    top:0px;
-    left:0px;
-    width:180px;
-    height:160px;
-    margin:0px;
-    padding:0px;
-    background: #4e525e;
-    z-index:4;
-}
-
-.pmg-header .pmg--header__identity .wegas-image{
-    display:block;
-    position:relative;
-    width:104px;
-    height:104px;
-    padding:12px 38px 4px 38px;
-}
-
-.pmg-header .pmg--header__identity .wegas-text{
-    display:block;
-    position:relative;
-    width:180px;
-    height:20px;
-    padding:8px 0px 12px 0px;
-    margin:0px;
-    color:white;
-    text-align:center;
-}
-
-.pmg-header .pmg--header__taskbar{
-    display:block;
-    position:absolute;
-    top:0px;
-    left:0px;
-    width:100%;
-    height:160px;
-    margin:0px;
-    padding:0px;
-    box-sizing: border-box;
-    padding-left:180px;
-    background: #343843;
-    z-index:3;
-}
-
-.pmg--header__taskbar .pmg--taskbar__infos{
-    display:block;
-    position:relative;
-    width:100%;
-    height:120px;
-    margin:0px;
-    padding:0px;
-}
-
-.pmg--header__taskbar .pmg--taskbar__infos .wegas-list-content{
-    display:block;
-    position:relative;
-    width:100%;
-    height:100%;
-    margin:0px;
-    padding:0px;
-}
-
-
-.pmg--taskbar__infos .pmg--infos__phases{
-    display:block;
-    position:relative;
-    height:100%;
-    float:left;
-}
-
-.pmg--infos__phases .pmg--phases__state{
-    display:block;
-    position:relative;
-    float:left;
-    width:416px;
-    height:120px;
-}
-
-.pmg--phases__state  .wegas-pmg-breadcrumb {
-    display:block;
-    position:relative !important;
-    width:376px;
-    margin:32px 8px 0px 32px;
-}
-
-.wegas-pmg-breadcrumb span{
-    display:block;
-    position:relative;
-    width:80px;
-    height:30px;
-    padding:0px;
-    margin:0px 7px;
-    color:black;
-    line-height:30px;
-    float:left;
-    text-align: center;
-    font-size: 9pt;
-    color:white;
-    background-color:#525564;
-}
-
-.wegas-pmg-breadcrumb .previous{
-    background-color:#7b818f;
-}
-
-.wegas-pmg-breadcrumb .current{
-    background-color: #ed6a3c;
-}
-
-.wegas-pmg-breadcrumb span:before, .wegas-pmg-breadcrumb span:after{
-    content:"";
-    display:block;
-    position:absolute;
-    top:0px;
-    width:10px;
-    height:30px;
-    background-size:100%;
-    background-position:0 0;
-    background-repeat:no-repeat;
-}
-.wegas-pmg-breadcrumb span:before{
-    left:-10px;
-    background-image: url(../../wegas-pmg/images/pmg2_start_period_next.png);
-}
-.wegas-pmg-breadcrumb span:after{
-    right:-10px;
-    background-image: url(../../wegas-pmg/images/pmg2_end_period_next.png);
-}
-.wegas-pmg-breadcrumb .previous:before{
-    background-image: url(../../wegas-pmg/images/pmg2_start_period_past.png);
-}
-.wegas-pmg-breadcrumb .previous:after{
-    background-image: url(../../wegas-pmg/images/pmg2_end_period_past.png);
-}
-.wegas-pmg-breadcrumb .current:before{
-    background-image: url(../../wegas-pmg/images/pmg2_start_period_current.png);
-}
-.wegas-pmg-breadcrumb .current:after{
-    background-image: url(../../wegas-pmg/images/pmg2_end_period_current.png);
-}
-
-.pmg--phases__state .pmg-period{
-    display:block;
-    position:relative !important;
-    width:372px;
-    top:2px !important;
-    background-color:#25252f;
-    height:18px;
-    margin:0px 29px;
-    padding:1px;
-    clear:both;
-    float:none;
-}
-
-
-
-.wegas-template-valuebox-unit {
-  background: #525564; 
-  border: none;
-  margin: 1px 1px;
-  width: 18px;
-  height: 16px;
-  line-height: 18px;
-  float: left;
-  color:white;
-  text-align: center;
-}
-.wegas-template-valuebox-previous{
-  background: #7b818f;
-  color:white;
-}
-.wegas-template-valuebox-selected{
-  background: #446d71;
-  color:white;
-}
-
 .pmg-nextweek {
-    display:block;
-    position:relative !important;
     color: white;
-    width:80px;
-    height:30px;
-    float:right;
-    line-height:28px;
-    font-size:12px;
     font-weight: bolder;
-    background: none;
-    margin:32px 8px;
-    border-radius:8px;
-    background-color:#446d71;
+    background-image: none;
 }
-
+.pmg-nextweek:hover {
+    color: white;
+    font-weight: bolder;  background-image: -moz-linear-gradient(top,rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
+    background-image: -ms-linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
+    background-image: -o-linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
+    background-image: linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
+}
 .pmg-nextweek:after {
     content: "Next period";
 }
 .passPhase:after {
     content: "Next phase";
 }
-
-.pmg--taskbar__infos .pmg--infos__indicators{
+.pmg-breadcrumb span{
     display:block;
-    position:relative;
-    width:630px;
-    height:100%;
-    float:right;
-    border-left:solid 1px #4f515d;
-}
-
-.pmg--indicator{
-    display:block;
-    position:relative;
-    width:100px;
-    height:90px;
-    margin:8px 0px;
-}
-.pmg--indicator.wegas-gauge .label, .pmg--indicator .pmg--indicator__label .wegas-template-content{
-    display:block;
-    position:absolute;
-    top:54px;
-    width:100px;
-    text-align:center;
-    color:#9d9ea3;
-    font-size:12px;
-    font-weight:400;
-}
-.pmg--indicator.wegas-gauge .label{
-    top:58px;
-}
-
-.pmg--indicator .percent{
-    margin:20px 34px 0px 34px;
-    display:block;
-    position:relative;
-    height:20px;
-    width:36px;
-    color:white;
-    background-color:#454753;
-    border-radius:4px;
-    line-height:20px;   
-}
-
-.pmg--indicator.wegas-gauge .percent{
-    margin:24px 34px 0px 34px;
-}
-
-.pmg--taskbar__infos .pmg--infos__indicators .pmg--time-cards{
-    display:block;
-    position:relative;
-    width:129px;
-    height:100%;
-    border-left:solid 1px #4f515d;
-}
-
-.pmg--time-cards .wegas-text{
-    display:block;
-    position:relative !important;
-    width:129px;
-    height:20px;
-    padding:28px 0px 0px 0px;
-    text-align:center;
-    color:#9d9ea3;
-    font-size:12px;
-    font-weight:400;
-}
-.pmg--time-cards .wegas-template{
-    display:block;
-    position:relative !important;
-    width:80px;
-    margin:6px 24px;
-    background-color: #454753;
-    font-size:18px;
-    padding:8px 16px;
-    text-align:right;
-    box-sizing:border-box;
-    border-radius:16px;
-    color:white;
-    font-weight:600;
-    background-image: url(../../wegas-pmg/images/pmg2_icon_time.png);
-    background-size:28px;
-    background-position:12px 6px;
-    background-repeat:no-repeat;
-}
-
-.pmg--header__taskbar .pmg--taskbar__menus{
-    display:block;
-    position:relative;
-    width:100%;
-    height:40px;
-    margin:0px;
-    padding:0px;
-    background: #272731;
-}
-
-.pmg--taskbar__menus .pmg--menus__main-menu{
-    display:block;
-    position:relative;
-    width:auto;
-    height:40px;
+    width: 86px;
+    height:18px;
+    padding:2px 0 1px 0;
+    margin-right: 2px;
+    background-color: white;
+    color:black;
     float:left;
+    text-align: center;
+    font-size: 9pt;
 }
-.pmg--taskbar__menus .pmg--menus__main-menu .wegas-button{
-    display:block;
-    position:relative;
-    width:auto;
-    padding:0px 16px;
-    height:40px;
-    float:left;
-    background:none;
-    color:#9a9b9d;
-    text-transform: uppercase;
+.pmg-breadcrumb .previous{
+    background-color:#BBBBBB;
 }
-
-.pmg--taskbar__menus .pmg--menus__main-menu  .hidden-button{
+.pmg-breadcrumb .current{
+    background-color: #0981A9;
+    color: white
+}
+.pmg-period{
+    font-size: 9pt;
+    width: 352px;
+}
+.wegas-template-valuebox label{
     display:none;
 }
-
-.pmg--taskbar__menus .yui3-button-selected{
-    border-top:solid 2px #ed6a3c;
-    color:white !important;
-    background:none;
-}
-.pmg--taskbar__menus .yui3-button-selected:before{
-    display:block;
-    position:absolute;
-    content:"";
-    bottom:0px;
-    left:50%;
-    width:16px;
-    height:8px;
-    margin-left:-8px;
-    background:none;
-    background-image:URL("../../wegas-pmg/images/btn_main_over.png");
-    background-position:bottom center;
-    background-size:100%;
-    background-repeat:no-repeat;
-}
-
-.pmg--taskbar__menus .pmg--menus__secondary-menu{
-    display:block;
-    position:relative;
-    width:323px;
-    height:40px;
-    float:right;
-}
-
-.pmg--taskbar__menus .pmg--menu__divider{
-    display:block;
-    position:relative;
-    width:1px;
-    height:40px;
+.pmg-period .wegas-template-valuebox-unit{
+    width: 19px;
+    height: 15px;
     float:left;
-    background-color:#4f515d;
+    margin: 0 2px 3px 0;
+    color:black;
+    border:none;
+    background-color: white;
+    text-align: center;
+    padding-top: 2px;
+    padding-left: 1px;
+}
+.pmg-period .wegas-template-valuebox-previous{
+    background-color:#BBBBBB;
+}
+.pmg-period .wegas-template-valuebox-selected{
+    /*background-image: url(wegas-pmg/images/next.png);*/
+    /*background-repeat: no-repeat;*/
+    /*background-position: center;*/
+    background: #0981A9;
+    color: white;
+}
+.wegas-gauge {
+    color: white;
+    font-size: 9pt;
+}
+.pmg-timevariable{
+    width:78px;
+    color: white;
+    font-size: 9pt;
 }
 
-.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button{
-    display:block;
-    position:relative;
+.pmg-timevariable .wegas-template-box-unit{
+    width:7px;
+    height:12px;
+    margin: 2px 2px 0 0;
+    /*background-color: #FFFF00;*/
+    background: #0981A9;
+    border: none;
     float:left;
-    padding:0px;
-    margin:0px;
-    width:64px;
-    height:40px;
+    /*    background-image: -moz-linear-gradient(top,rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
+        background-image: -ms-linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
+        background-image: -o-linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
+        background-image: linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);*/
+
+}
+
+/*-----------------------------horizontal-menu--------------------------------*/
+.layout .horizontal-nav-menu{
+    background-color:#ADADAE;
+    height:30px;
+    min-width:970px;
+}
+
+.layout .horizontal-nav-menu button {
+    background-repeat: repeat-x;
+    background-color:#ADADAE;
+    height:30px;
+    min-width:120px;
     background:none;
-    background-size:65%;
-    background-position:center;
-    background-repeat:no-repeat;
-    cursor:pointer;
+    border-radius:0px;
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    border-style:solid;
+    border-color:lightgray;
+    border-width:0 1px 0 0;
+    padding: 0 10px;
+    text-align:left;
+    font-size: 1.1em;
 }
-.wegas-button .wegas-unreadcount {
-    position:relative;
-    display:block;
-    width:100%;
-    height:100%;
-    background:none;
-}
-.wegas-button .wegas-unreadcount .value{
-    position:absolute;
-    width:16px;
-    height:16px;
-    padding: 0px;
-    margin:-14px 0 0 4px;
-    top:50%;
-    left:50%;
-    font-size: 11px;
-    line-height:16px;
-    font-weight:bold;
-    color:#272731;
-    box-shadow:none;
-    border-radius: 50%;
-    background:none;
-    background-color: #18d8d9;
+.layout .horizontal-nav-menu button.hidden-button {
+    display: none;
 }
 
-.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.pmg--icon-action{
-    background-image: url(../../wegas-pmg/images/pmg2_icon_actions.png);
+.horizontal-nav-menu button:hover {
+    background-color:#DDDDDD;
 }
-.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.pmg--icon-question{
-    background-image: url(../../wegas-pmg/images/pmg2_icon_choices.png);
+.yui3-skin-sam .layout .yui3-button-selected {
+    background-color:white;
+    color:black;
+    box-shadow: none;
 }
-.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.pmg--icon-mail{
-    background-image: url(../../wegas-pmg/images/pmg2_icon_mail.png);
+.layout .horizontal-nav-menu .wegas-login{
+    float: right;
+    padding: 0px 21px 0 10px;
+    border-left: 1px solid lightgray;
 }
-.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.pmg--icon-history{
-    background-image: url(../../wegas-pmg/images/pmg2_icon_folder.png); 
+.layout .horizontal-nav-menu .yui3-button-disabled {
+    background-repeat: repeat-x;
+    background-color: #ADAD96;
 }
-.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.wegas-login{
-    background-image: url(../../wegas-pmg/images/pmg2_icon_settings.png); 
-    overflow: hidden;
-    text-indent: -1000px;
-}
-.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.wegas-login:after{
-    display:none;
-}
-
-/* PMG Body */
-
-.pmg--main-area{
-    display:block;
-    position:absolute;
-    width:100%;
-    height:100%;
-    margin:0px;
-    padding:0px;
-    top:0px;
-    left:0px;
-    box-sizing: border-box;
-    padding-top:160px;
-    z-index:1;
-    background:#ffffff;
-}
-
-.pmg--main-area > .wegas-list-content{
-    display:block;
-    position:relative;
-    width:100%;
-    height:100%;
-}
-
-.pmg--body{
-    display:block;
-    position:relative;
-    width:100%;
-    height:100%;
-    overflow-x:hidden;
-    overflow-y:auto;
+.layout .horizontal-nav-menu .yui3-button-disabled:hover {
+    border-width:0 1px 1px 0;
+    padding-bottom:0px;
 }
 
 /*-----------------------------------body-------------------------------------*/
-
+.body{
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: 60px;
+    top: 120px;
+    /*min-width: 970px;*/
+}
 .title{
+    /*background-image: url(wegas-pmg/images/h2.png);*/
+    /*background-repeat: repeat-x;*/
+    /*background-color: white;*/
     height:26px;
     width:50%;
     float:left;
@@ -499,6 +185,90 @@ h2{
     font-weight: bold;
     font-size: 1.2em;
     color: #0981A9;
+}
+/*------------------------------vertical-menu---------------------------------*/
+.vertical-nav-menu{
+    float: right;
+    top:120px;
+    position: absolute;
+    right: 0;
+    bottom:0;
+    width: 60px;
+    background:#ADADAE;
+}
+.vertical-nav-menu div button{
+    width:60px;
+    height:60px;
+    padding:0;
+    background:#ADADAE;
+    /*margin-top:-3px;*/
+    float:none;
+    clear:both;
+    border-radius:0px;
+    box-shadow: none;
+    background-repeat: no-repeat;
+    background-position: center;
+    border-bottom: 1px solid lightgray
+}
+.vertical-nav-menu div button:first-child {
+    border-top: 1px solid lightgray
+}
+.vertical-nav-menu div button:hover {
+    background-color:#DDDDDD;
+}
+.vertical-nav-menu .actions{
+    background-image: url(../../wegas-pmg/images/businessmen.png);
+}
+.vertical-nav-menu .questions {
+    background-image: url(../../wegas-pmg/images/checklist-icon-2.png);
+}
+.vertical-nav-menu .inbox {
+    background-image: url(../../wegas-pmg/images/messages.png);
+}
+.vertical-nav-menu .history {
+    background-image: url(../../wegas-pmg/images/clock.png);
+}
+.vertical-nav-menu .help, .vertical-nav-menu .help:hover{
+    display:none;
+    border-width:0;
+    background:none;
+    background-image: url(../../wegas-pmg/images/help.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    position:absolute;
+    bottom:0;
+    left:0;
+    right:0;
+    display:none;
+}
+.wegas-unreadcount {
+    /*line-height:1em;*/
+    position:relative;
+}
+.wegas-unreadcount .value{
+    position:absolute;
+    top:-29px;
+    left:-3px;
+    background-color: #0981A9;
+    box-shadow: 1px 0px 1px white;
+    font-size: 9pt;
+    padding: 4px 9px 6px 6px;
+    color:white;
+    border-radius: 0;
+    border-bottom-right-radius: 16px;
+    background-image: none;
+}
+
+
+/* ------ Page loader Overflow */
+.body {
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* ------------------ TEAM EDITION -----------------*/
+.teamselection .title {
+    float: none;
 }
 
 /*---------------------------questions and actions----------------------------*/
