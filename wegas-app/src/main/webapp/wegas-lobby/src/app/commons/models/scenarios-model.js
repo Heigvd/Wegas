@@ -131,7 +131,7 @@ angular.module('wegas.models.scenarios', [])
             _.each(properties, function(el, index) {
                 if (scenarioBeforeChange.properties[el] !== infos[el]) {
                     scenarioBeforeChange.properties[el] = infos[el];
-                    gameModelSetted = true
+                    scenarioSetted = true;
                 }
             });
 
