@@ -627,14 +627,16 @@ h2{
 .questions-page  .wegas-mcqtabview .mcq-choice {
   display: block;
   position: relative;
-  border: none;
-  margin:16px 0px;
+  border: solid 1px #cac9ce;
+  border-bottom:solid 4px #cac9ce;
+  margin: 16px 0px;
   padding: 0;
-  background:#7b7b83;
+  background:white;
 }
 .questions-page  .wegas-mcqtabview .mcq-choice.spurned{
     text-decoration:none;
-    background:#cac9ce;
+    background:#eeeeee;
+    color:#999999;
 }
 
 .questions-page .wegas-mcqtabview .mcq-choice-name{
@@ -645,18 +647,22 @@ h2{
     line-height:40px;
     margin:0px;
     padding:0px 16px;
-    color:white;
+    color:#333333;
     font-weight:300;
     box-sizing: border-box;
-    background-color:#41434f;
+    background-color:#d8d9dd;
 }
 .questions-page .wegas-mcqtabview .mcq-choice.spurned .mcq-choice-name{
-    background-color:#afb0b5;
+    background-color:#d0d0d2;
+    color:#bcbcbc;
 }
 
 .questions-page .mcq-choice-description{
-    color:white;
+    color:#333333;
     padding:12px 16px;
+}
+.questions-page .wegas-mcqtabview .mcq-choice.spurned .mcq-choice-description{
+    color:#bcbcbc;
 }
 
 .wegas-mcqtabview .mcq-question .mcq-choice button{
@@ -1476,6 +1482,10 @@ td.yui3-datatable-col-Realised:after {
 .pmg-popup-overlay .yui3-widget-hd, .pmg-popup-overlay .yui3-widget-bd .subtitle{
     color:#333333;
 }
+.pmg-popup-overlay .yui3-widget-bd p{
+    font-size:12px;
+}
+
 .pmg-popup-overlay .yui3-widget-hd{
     background:rgb(255, 255, 255);
     padding:16px 34px;

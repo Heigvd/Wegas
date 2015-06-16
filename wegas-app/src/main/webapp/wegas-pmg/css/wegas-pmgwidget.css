@@ -323,7 +323,7 @@ tbody .past .activity {
 .gantt-execution-page .yui3-datatable-table .pmg-line-completeness-complete .yui3-datatable-col-index,
 .gantt-execution-page .yui3-datatable-table .pmg-line-completeness-complete .yui3-datatable-col-label,
 .gantt-execution-page .yui3-datatable-table .pmg-line-completeness-complete .yui3-datatable-col-Realised {
-    background-color: #acd5b7;
+    background-color: #dee8e1;
 }
 
 .task-execution-page .yui3-datatable-table .pmg-line-completeness-started,
@@ -332,7 +332,7 @@ tbody .past .activity {
 .gantt-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-label,
 .gantt-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-Realised,
 .yui3-menu-content > button.pmg-line-completeness-started {
-    background-color: #ffeec7;
+    background-color: #f6f1e5;
 }
 
 .yui3-button.pmg-menu-invalid {
