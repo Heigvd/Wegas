@@ -11,7 +11,8 @@
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 YUI.add('wegas-chart', function(Y) {
-    var CONTENTBOX = 'contentBox', Chart;
+    var CONTENTBOX = 'contentBox', Chart,
+        styleColor = ["#ed6a3c", "#1deaed", "#343843", "#7b818f"];
 
     Chart = Y.Base.create("wegas-chart", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         initializer: function() {
@@ -22,7 +23,6 @@ YUI.add('wegas-chart', function(Y) {
         },
         renderUI: function() {
             this.get(CONTENTBOX).append("Loading...");
-
             this.chart = new Y.Chart({
                 type: this.get("chartType"),
 //                seriesCollection: seriesCollection,
@@ -36,7 +36,7 @@ YUI.add('wegas-chart', function(Y) {
                     category: {
                         type: "numeric",
                         minimum: +this.get("hStart")
-//                        calculateEdgeOffset: true
+                        // calculateEdgeOffset: true
                     }
                 },
 //                legend: {
@@ -116,19 +116,33 @@ YUI.add('wegas-chart', function(Y) {
                 hStep = this.get("hStep"),
                 vStep = this.get("vStepValue"),
                 max = -Infinity, min = Infinity,
-                range, j, n;
+                range, j, n,
+                styles = {
+                    series:{},
+                    graph:{
+                        background:{
+                            fill:{
+                                alpha:0
+                            },
+                            border:{
+                                alpha:0
+                            }
+                        }
+                    }
+                };
 
             if (this.vdList.length < 1) {
                 return;
             }
 
             /* Create a serie for each given variable */
+            
             for (i = 0; i < this.vdList.length; i++) {
                 // name of serie
                 seriesCollection.push({
                     yDisplayName: this.vdList[i].label
                 });
-
+                
                 /* Serie values are history + currentValue */
                 rawSeries.push(this.vdList[i].get("history"));
                 rawSeries[rawSeries.length - 1].push(this.vdList[i].get("value"));
@@ -139,11 +153,10 @@ YUI.add('wegas-chart', function(Y) {
                     min = Math.min(min, rawSeries[rawSeries.length - 1][j]);
                 }
             }
-
+            
             // Y-Axis scale
             axis = this.chart.getAxisByKey("values");  // i.e. Y-axis
-
-
+            
             if (!vStep) {
                 // Default vStep is 10% of range value -> 11 ticks
                 vStep = Math.floor((max - min) / 10) || 1;
@@ -173,6 +186,9 @@ YUI.add('wegas-chart', function(Y) {
             range = n * vStep; // New range is a whole multiple of vStep
 
             this.chart.getAxisByKey("values").set("styles", {
+                label:{
+                    color:"#a3a7b0"
+                },
                 majorUnit: {
                     count: n
                 }
@@ -186,21 +202,77 @@ YUI.add('wegas-chart', function(Y) {
             }
             hStep = hStep > 0 ? hStep : 1;
             this.chart.getAxisByKey("category").set("styles", {
+                label:{
+                    color:"#a3a7b0"
+                },
                 majorUnit: {
                     count: (axis.get("maximum") - axis.get("minimum")) / hStep + 1
                 }
             });
 
             if (!this.chart.get("rendered")) {
+                this.chart.set("styles", {
+                    graph:{
+                        background:{
+                            fill:{
+                                alpha:0
+                            },
+                            border:{
+                                alpha:0
+                            }
+                        }
+                    }
+                });
+                
                 this.chart.set("legend", {
                     styles: {
-                        gap: 0
+                        gap: 12,
+                        background:{
+                            fill:{
+                                color:"#a3a7b0"
+                            }
+                        }
                     },
                     position: this.get("legendPosition")
                 });
+                
                 this.get(CONTENTBOX).empty();
                 this.chart.render(cb);
                 this.chart.set("seriesCollection", seriesCollection);
+                this.chart.get("seriesCollection").forEach(function(serie, index){
+                    serie.set("styles", {
+                        line:{
+                            color:styleColor[(index%4)]
+                        },
+                        marker:{
+                            fill:{
+                                color:styleColor[(index%4)]
+                            },
+                            border:{
+                                color:styleColor[(index%4)]
+                            },
+                            over:{
+                                fill:{
+                                    color:styleColor[(index%4)]
+                                },
+                                border:{
+                                    color:styleColor[(index%4)]
+                                },
+                                width: 12,
+                                height: 12
+                            }
+                        },
+                    });
+                });
+                this.chart.get("legend").get("items").forEach(function(legend, index){
+                    legend.shape.set("fill", {
+                        color:styleColor[(index%4)]
+                    });
+                    legend.shape.set("stroke", {
+                        color:"#ffffff",
+                        weight:1.5
+                    });
+                });
             } else {
                 this.chart.syncUI();
             }
