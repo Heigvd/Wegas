@@ -151,19 +151,42 @@ tbody .past .activity {
 
 .yui3-datatable-col-assignments .assignment span {
     display: block;
+    position:relative;
     float: left;
     background-repeat: no-repeat;
     height: 16px;
     width: 16px;
 }
 
+.yui3-datatable-col-assignments .assignment .assign:before {
+    content:"\f067";
+    display:block;
+    position:absolute;
+    top:0px;
+    left:0px;
+    width:16px;
+    height:16px;
+    box-sizing: border-box;
+    border:solid 1px #656774;
+    border-radius:50%;
+    font-family:"FontAwesome";
+    text-align:center;
+    color:#656774;
+    font-size:9px;
+    line-height:15px;
+}
 .yui3-datatable-col-assignments .assignment .assign {
-    background-image: url(../../wegas-pmg/images/add.png);
+    // background-image: url(../../wegas-pmg/images/add.png);
 }
 
 .yui3-datatable-col-assignments .tasks {
-    display: inline-block;
-    white-space: normal;
+    display: block;
+    position: relative;
+    float: left;
+    margin: 0px;
+    padding: 0px;
+    margin-left: 4px;
+    margin-top:-1px;
 }
 
 .yui3-datatable-col-assignments .task {
@@ -173,23 +196,20 @@ tbody .past .activity {
 }
 
 .yui3-datatable-col-assignments .task:hover .label {
-    background: #0981A9;
+    background: #585a66;
     color: white;
 }
 
 .yui3-datatable-col-assignments .task .label {
     cursor: move;
-    padding: 0 3px;
+    padding: 2px 4px;
     display: block;
     font-style: normal;
     text-align: center;
-    line-height: 17px;
-    border: 1px solid gray;
-    /* margin: 0; */
-    color: #000000;
-    letter-spacing: -2px;
-    padding-right: 5px;
-    border-radius: 2px;
+    border: none;
+    color: white;
+    background: #656774;
+    border-radius: 3px;
 }
 
 .tasks .task .menu {
@@ -202,31 +222,92 @@ tbody .past .activity {
     left: -10px;
     width: 41px;
 }
+.tasks .task .remove:before{
+    content:"\f068";
+    display:block;
+    position:absolute;
+    top:0px;
+    left:0px;
+    width:16px;
+    height:16px;
+    box-sizing: border-box;
+    border:solid 1px #d45951;
+    border-radius:50%;
+    font-family:"FontAwesome";
+    text-align:center;
+    background-color:white;
+    color:#d45951;
+    font-size:9px;
+    line-height:16px;
+    font-style:normal;
+}
 
 .tasks .task .remove,
 .tasks .task .dirleft,
 .tasks .task .dirright {
     height: 16px;
     width: 16px;
-    background-image: url(../../wegas-pmg/images/remove.png);
     cursor: pointer;
-    top: 37px;
-    display: inline-block;
+    top: 0px;
+    display: block;
+    position:relative;
+    float:left;
 }
 
 .tasks .task:hover .menu,
 .tasks .task:hover .menu:hover {
     display: block;
+    position:absolute;
+    top:18px;
+    left:50%;
+    width:42px;
+    margin:0px;
+    margin-left:-24px;
+    padding:2px;
+    
 }
 
 .tasks .task .dirleft {
-    background: url(../../wegas-pmg/images/move-left.png) -3px;
     width: 10px;
+    margin-right:3px;
+}
+
+.tasks .task .dirleft:before {
+    content:"\f0d9";
+    display:block;
+    position:absolute;
+    top:0px;
+    left:0px;
+    width:10px;
+    height:16px;
+    border-radius:50%;
+    font-family:"FontAwesome";
+    text-align:center;
+    color:#656774;
+    font-size:16px;
+    line-height:16px;
+    font-style:normal;
 }
 
 .tasks .task .dirright {
-    background: url(../../wegas-pmg/images/move-right.png) -3px;
     width: 10px;
+    margin-left:3px;
+
+}
+.tasks .task .dirright:before {
+    content:"\f0da";
+    position:absolute;
+    top:0px;
+    left:0px;
+    width:10px;
+    height:16px;
+    border-radius:50%;
+    font-family:"FontAwesome";
+    text-align:center;
+    color:#656774;
+    font-size:16px;
+    line-height:16px;
+    font-style:normal;
 }
 
 /* bac plugin */
@@ -238,18 +319,20 @@ tbody .past .activity {
 /* Line completeness plugin*/
 
 .task-execution-page .yui3-datatable-table .pmg-line-completeness-complete,
+.task-execution-page .yui3-datatable-table .pmg-line-completeness-complete:hover,
 .gantt-execution-page .yui3-datatable-table .pmg-line-completeness-complete .yui3-datatable-col-index,
 .gantt-execution-page .yui3-datatable-table .pmg-line-completeness-complete .yui3-datatable-col-label,
-.gantt-execution-page .yui3-datatable-table .pmg-line-completeness-complete .yui3-datatable-col-Realized {
-    background-color: #E5FFE5;
+.gantt-execution-page .yui3-datatable-table .pmg-line-completeness-complete .yui3-datatable-col-Realised {
+    background-color: #acd5b7;
 }
 
 .task-execution-page .yui3-datatable-table .pmg-line-completeness-started,
+.task-execution-page .yui3-datatable-table .pmg-line-completeness-started:hover,
 .gantt-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-index,
 .gantt-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-label,
-.gantt-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-Realized,
+.gantt-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-Realised,
 .yui3-menu-content > button.pmg-line-completeness-started {
-    background-color: #FFFDC2;
+    background-color: #ffeec7;
 }
 
 .yui3-button.pmg-menu-invalid {
@@ -322,9 +405,12 @@ tbody .past .activity {
 }
 
 .wegas-pmg-resourcespanels-content tr.resourcepanel-warn .yui3-datatable-col-label,
-.wegas-pmg-resourcespanels-content > div.resourcepanel-warn > .slidepanel-title {
-    border-left: 3px solid rgb(201, 0, 0) !important;
-    border-radius: 7px 0px 0px 7px;
+.wegas-pmg-resourcespanels-content > div.resourcepanel-warn > .slidepanel-title h2 {
+    color: rgb(201, 0, 0);
+}
+.wegas-pmg-resourcespanels-content tr.resourcepanel-warn .yui3-datatable-col-label,
+.wegas-pmg-resourcespanels-content > div.resourcepanel-warn > .slidepanel-title{
+    border-left:solid 4px rgb(201, 0, 0);
 }
 
 .indicators-management .yui3-numericaxis + .yui3-numericaxis {
