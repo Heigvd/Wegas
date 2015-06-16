@@ -57,12 +57,14 @@
     z-index:4;
 }
 
-.pmg-header .pmg--header__identity .wegas-image{
+.pmg-header .pmg--header__identity .pmg--logo{
     display:block;
     position:relative;
     width:104px;
     height:104px;
-    padding:16px 38px 4px 38px;
+    margin:16px 38px 4px 38px;
+    background-image:url("../../wegas-pmg/images/PMG2_logo.png");
+    background-size:100% auto;
 }
 
 .pmg-header .pmg--header__identity .wegas-text{
@@ -1634,16 +1636,16 @@ td.yui3-datatable-col-Realised:after {
         width:180px;
     }
     
-    .pmg-header .pmg--header__identity .wegas-image{
+    .pmg-header .pmg--header__identity .pmg--logo{
         width:64px;
         height:64px;
-        padding:54px 8px;
+        margin:54px 8px;
     }
     
-    .wegas-editmode .pmg-header .pmg--header__identity .wegas-image{
+    .wegas-editmode .pmg-header .pmg--header__identity .pmg--logo{
         width:104px;
         height:104px;
-        padding:16px 38px 4px 38px;
+        margin:16px 38px 4px 38px;
     }
     
     .pmg-header .pmg--header__identity .wegas-text{

@@ -46,8 +46,9 @@
                                 "name": "identity",
                                 "children": [
                                     {
-                                        "type": "Image",
-                                        "url": "/PMG2_logo.png"
+                                        "type": "Box",
+                                        "cssClass": "pmg--logo",
+                                        "name": "logo PMG"
                                     },
                                     {
                                         "type": "Text",
@@ -956,18 +957,6 @@
                                 "content": "<h2>Project overview</h2>"
                             },
                             {
-                                "type": "Template",
-                                "cssClass": "pmg-project-overview-content",
-                                "variable": {
-                                    "@class": "Script",
-                                    "content": "Variable.find(gameModel, \"currentPhase\");\n"
-                                },
-                                "data": {
-                                    "label": "Progress"
-                                },
-                                "custom": "<%  var projectCompleteness = Y.Wegas.Facade.Variable.cache.find('name', 'projectCompleteness').getInstance().get('value'), currentPhase = Y.Wegas.Facade.Variable.cache.find('name', 'currentPhase').getInstance().get('value'),currentPeriod = Y.Wegas.Facade.Variable.cache.find('name', 'currentPeriod').item(currentPhase -1).getInstance().get('value');%>\n\n<div class='projectCompleteness'><span class='label'>Progress</span><span class='variableValue'><%= parseInt(projectCompleteness) %>%</span></div>"
-                            },
-                            {
                                 "type": "List",
                                 "cssClass": "pmg-project-overview-content initial-budget",
                                 "direction": "horizontal",
@@ -1000,9 +989,21 @@
                                     "content": "Variable.find(gameModel, \"tasks\");\n"
                                 },
                                 "data": {
-                                    "label": "Budget at completion"
+                                    "label": "Budgeted at completion (BAC)"
                                 },
                                 "custom": "<% \nvar bacs = Y.Wegas.PMGHelper.getBACTotal(),\nib = Y.Wegas.PMGHelper.getInitialBudget(),\novercost = (ib <= 0 ? \"\" : \"(\" + parseInt((bacs * 10000 / ib), 10)/100  + \"%)\")\n\n%>\n\n<div class='bacs'>\n    <span class='label'><%= this.label %></span>\n    <span class='variableValue'><%=  bacs %> <%= overcost %></span>\n</div>"
+                            },
+                            {
+                                "type": "Template",
+                                "cssClass": "pmg-project-overview-content",
+                                "variable": {
+                                    "@class": "Script",
+                                    "content": "Variable.find(gameModel, \"currentPhase\");\n"
+                                },
+                                "data": {
+                                    "label": "Progress"
+                                },
+                                "custom": "<%  var projectCompleteness = Y.Wegas.Facade.Variable.cache.find('name', 'projectCompleteness').getInstance().get('value'), currentPhase = Y.Wegas.Facade.Variable.cache.find('name', 'currentPhase').getInstance().get('value'),currentPeriod = Y.Wegas.Facade.Variable.cache.find('name', 'currentPeriod').item(currentPhase -1).getInstance().get('value');%>\n\n<div class='projectCompleteness'><span class='label'>Progress</span><span class='variableValue'><%= parseInt(projectCompleteness) %>%</span></div>"
                             }
                         ]
                     },
@@ -1027,7 +1028,7 @@
                                 "data": {
                                     "label": "Costs"
                                 },
-                                "custom": "<%  var fixedCosts=0, \nwages=0,\ntotal=0,\ntaskTotal=0, \nprojectFixedCost = Y.Wegas.Facade.Variable.cache.find('name', 'projectFixedCosts').getInstance().get('value'), \nprojectUnworkedHours = Y.Wegas.Facade.Variable.cache.find('name', 'projectUnworkedHours').getInstance().get('value'),\nbacs = Y.Wegas.PMGHelper.getBACTotal(),\novercost;\n\nfor(var i=0; i<this.variable.get('items').length; i++) { \n    var properties = this.variable.get('items')[i].getInstance().get('properties'); \n          wages = wages + parseFloat(properties.wages);\n           if (properties.completeness > 0) fixedCosts = fixedCosts + parseFloat(properties.fixedCosts);\n}\ntaskTotal = wages + fixedCosts + projectUnworkedHours; \ntotal = taskTotal + projectFixedCost; \novercost = (bacs <= 0 ? \"\" : \"(\" + parseInt((total * 10000 / bacs), 10)/100 + \"%)\");\n%>\n\n<div class='pmg-project-overview-content projectFixedCost'>\n  <span class='label'>Project Fixed Costs</span>\n  <span class='variableValue'><%= projectFixedCost %></span>\n</div>\n\n<div class='pmg-project-overview-tasks tasks'>\n  <div class='label'>Tasks</div>\n  <div class='pmg-tasks-content wages'>\n    <span class=\"task-label\">Wages</span>\n    <span class='variableValue'><%= wages %></span>\n  </div>\n  <div class='pmg-tasks-content fixedCosts'>\n    <span class=\"task-label\">Fixed Costs</span>\n    <span class='variableValue'><%= fixedCosts %></span>\n  </div>\n  <div class='pmg-tasks-content unworkedHours'>\n    <span class=\"task-label\">Unworked Hours</span>\n    <span class='variableValue'><%= projectUnworkedHours %></span>\n  </div>\n</div>\n\n<div class='total'>\n  <span class='label'>TOTAL</span>\n  <span class='variableValue'><%= total %> <%= overcost %>  </span>\n</div>"
+                                "custom": "<%  var fixedCosts=0, \nwages=0,\ntotal=0,\ntaskTotal=0, \nprojectFixedCost = Y.Wegas.Facade.Variable.cache.find('name', 'projectFixedCosts').getInstance().get('value'), \nprojectUnworkedHours = Y.Wegas.Facade.Variable.cache.find('name', 'projectUnworkedHours').getInstance().get('value'),\nbacs = Y.Wegas.PMGHelper.getBACTotal(),\novercost;\n\nfor(var i=0; i<this.variable.get('items').length; i++) { \n    var properties = this.variable.get('items')[i].getInstance().get('properties'); \n          wages = wages + parseFloat(properties.wages);\n           if (properties.completeness > 0) fixedCosts = fixedCosts + parseFloat(properties.fixedCosts);\n}\ntaskTotal = wages + fixedCosts + projectUnworkedHours; \ntotal = taskTotal + projectFixedCost; \novercost = (bacs <= 0 ? \"\" : \"(\" + parseInt((total * 10000 / bacs), 10)/100 + \"%)\");\n%>\n\n<div class='pmg-project-overview-content projectFixedCost'>\n  <span class='label'>Project Fixed Costs</span>\n  <span class='variableValue'><%= projectFixedCost %></span>\n</div>\n\n<div class='pmg-project-overview-tasks tasks'>\n  <div class='label'>Tasks Costs</div>\n  <div class='pmg-tasks-content wages'>\n    <span class=\"task-label\">Wages</span>\n    <span class='variableValue'><%= wages %></span>\n  </div>\n  <div class='pmg-tasks-content fixedCosts'>\n    <span class=\"task-label\">Fixed Costs</span>\n    <span class='variableValue'><%= fixedCosts %></span>\n  </div>\n  <div class='pmg-tasks-content unworkedHours'>\n    <span class=\"task-label\">Unworked Hours</span>\n    <span class='variableValue'><%= projectUnworkedHours %></span>\n  </div>\n</div>\n\n<div class='total'>\n  <span class='label'>TOTAL</span>\n  <span class='variableValue'><%= total %> <%= overcost %>  </span>\n</div>"
                             }
                         ]
                     }
