@@ -699,6 +699,12 @@ YUI().use(function(Y) {
                     "wegas-mcq-entities"],
                 ws_provides: "MCQTabView"
             },
+            "wegas-mcq-view": {
+                requires: ["wegas-gallery",
+                    "wegas-translator", "wegas-mcq-tabviewcss", "wegas-mcq-printcss",
+                    "wegas-mcq-entities"],
+                ws_provides: "MCQView"
+            },
             "wegas-mcq-tabviewcss": {
                 type: CSS
             },

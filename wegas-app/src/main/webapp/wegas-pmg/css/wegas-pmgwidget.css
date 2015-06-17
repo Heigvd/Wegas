@@ -56,7 +56,7 @@
 .pmg-legend .engagementDelay,
 .yui3-datatable-table .engagementDelay,
 .yui3-datatable-table .delay .booked {
-    background-image: url(../../wegas-pmg/images/hatching.png);
+    background-image: url(../../wegas-pmg/images/hatching2.png);
     background-repeat: repeat;
 }
 
@@ -209,19 +209,31 @@ tbody .past .activity {
     border: none;
     color: white;
     background: #656774;
+    box-sizing:border-box;
+    height:18px;
+    width:21px;
+    display:block;
+    position:relative;
+    float:left;
+    z-index:10;
     border-radius: 3px;
 }
 
 .tasks .task .menu {
     display: none;
     position: absolute;
-    padding-top: 3px;
-    margin-top: 17px;
+    margin:0px;
+    padding:0px;
+    padding-top: 0px;
+    margin-left: -12px;
     z-index: 1;
-    top: 0;
-    left: -10px;
-    width: 41px;
+    top: -18px!important;
+    left: 50% !important;
+    width: 24px;
+    height:50px;
+    z-index:9;
 }
+
 .tasks .task .remove:before{
     content:"\f068";
     display:block;
@@ -241,6 +253,10 @@ tbody .past .activity {
     line-height:16px;
     font-style:normal;
 }
+.tasks .task .remove:hover:before{
+    color:#f4817a;
+    border-color:#f4817a;
+}
 
 .tasks .task .remove,
 .tasks .task .dirleft,
@@ -249,22 +265,31 @@ tbody .past .activity {
     width: 16px;
     cursor: pointer;
     top: 0px;
+    left:0px;
     display: block;
-    position:relative;
-    float:left;
+    position:absolute;
+}
+.tasks .task .remove {
+    top: 0px;
+    left:50%;
+    margin-left:-8px;
+}
+.tasks .task .dirleft {
+    top: auto;
+    bottom:0px;
+    left:50%;
+    margin-left:-12px;
+}
+.tasks .task .dirright {
+    top: auto;
+    bottom:0px;
+    left:50%;
+    margin-left:-2px;
 }
 
 .tasks .task:hover .menu,
 .tasks .task:hover .menu:hover {
     display: block;
-    position:absolute;
-    top:18px;
-    left:50%;
-    width:42px;
-    margin:0px;
-    margin-left:-24px;
-    padding:2px;
-    
 }
 
 .tasks .task .dirleft {
@@ -283,7 +308,7 @@ tbody .past .activity {
     border-radius:50%;
     font-family:"FontAwesome";
     text-align:center;
-    color:#656774;
+    color:#446d71;
     font-size:16px;
     line-height:16px;
     font-style:normal;
@@ -304,12 +329,15 @@ tbody .past .activity {
     border-radius:50%;
     font-family:"FontAwesome";
     text-align:center;
-    color:#656774;
+    color:#446d71;
     font-size:16px;
     line-height:16px;
     font-style:normal;
 }
 
+.tasks .task .dirright:hover:before, .tasks .task .dirleft:hover:before{
+    color:#68ccc5;
+}
 /* bac plugin */
 
 .yui3-datatable-table input.invalid {
@@ -318,21 +346,26 @@ tbody .past .activity {
 
 /* Line completeness plugin*/
 
-.task-execution-page .yui3-datatable-table .pmg-line-completeness-complete,
-.task-execution-page .yui3-datatable-table .pmg-line-completeness-complete:hover,
-.gantt-execution-page .yui3-datatable-table .pmg-line-completeness-complete .yui3-datatable-col-index,
-.gantt-execution-page .yui3-datatable-table .pmg-line-completeness-complete .yui3-datatable-col-label,
-.gantt-execution-page .yui3-datatable-table .pmg-line-completeness-complete .yui3-datatable-col-Realised {
-    background-color: #acd5b7;
+.task-execution-page .yui3-datatable-table .pmg-line-completeness-complete .yui3-datatable-col-index,
+.task-execution-page .yui3-datatable-table .pmg-line-completeness-complete:hover .yui3-datatable-col-index,
+.gantt-execution-page .yui3-datatable-table .pmg-line-completeness-complete .yui3-datatable-col-index{
+    border-left: solid 5px #69bd7f;
 }
 
-.task-execution-page .yui3-datatable-table .pmg-line-completeness-started,
-.task-execution-page .yui3-datatable-table .pmg-line-completeness-started:hover,
+.task-execution-page .yui3-datatable-table .pmg-line-completeness-complete .yui3-datatable-col-Realised,
+.gantt-execution-page .yui3-datatable-table .pmg-line-completeness-complete .yui3-datatable-col-Realised {
+    color:#69bd7f;
+}
+
+.task-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-index,
+.task-execution-page .yui3-datatable-table .pmg-line-completeness-started:hover .yui3-datatable-col-index,
 .gantt-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-index,
-.gantt-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-label,
-.gantt-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-Realised,
 .yui3-menu-content > button.pmg-line-completeness-started {
-    background-color: #ffeec7;
+    border-left: solid 5px #efc86b;
+}
+.task-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-Realised,
+.gantt-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-Realised{
+    color:#f2c252;
 }
 
 .yui3-button.pmg-menu-invalid {

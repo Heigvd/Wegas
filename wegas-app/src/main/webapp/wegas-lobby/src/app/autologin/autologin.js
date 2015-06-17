@@ -14,14 +14,14 @@ angular.module('autologin', [
         })
     ;
 })
-.controller('AutologinCtrl', function AutologinCtrl(Auth, Flash, $scope, $state, $stateParams, SessionsModel) {
+.controller('AutologinCtrl', function AutologinCtrl(Auth, Flash, $scope, $state, $stateParams, TeamsModel, SessionsModel) {
     var ctrl = this,
         errorRedirect = function(response){
             response.flash();
             $state.go("wegas");
         },
         joinIndividualSession = function(session){
-            SessionsModel.joinIndividualSession($stateParams.token).then(function(response){
+            TeamsModel.joinIndividually(session).then(function(response){
                 if(!response.isErroneous()){
                     window.location.href = ServiceURL + "game-play.html?gameId=" + session.id;
                 }else{
