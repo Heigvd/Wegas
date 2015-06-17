@@ -1405,16 +1405,6 @@ td.yui3-datatable-col-Realised:after {
   background-color: #ea8d6c;
 }
 
-.pmg-legend .engagementDelay, .yui3-datatable-table .engagementDelay{
-    background:none;
-    background-color:#d0d0d2;
-} 
-
-.yui3-datatable-table .delay .booked{
-    background:none;
-    background-color:#56716f;
-}
-
 .pmg-legend .worked, .yui3-datatable-table .past .booked, 
 .yui3-datatable-table .past .activity, .gantt-planning-page .baseline{
     background-color:#53a29d;
