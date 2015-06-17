@@ -212,7 +212,7 @@
   background: #525564; 
   border: none;
   margin: 1px 1px;
-  width: 18px;
+  width: 21px;
   height: 16px;
   line-height: 18px;
   float: left;
@@ -226,7 +226,7 @@
 }
 
 .pmg--app .wegas-template-valuebox-unit.wegas-template-valuebox-selected{
-  background: #446d71;
+  background: #40868d;
   color:white;
 }
 
@@ -418,7 +418,7 @@
 }
 
 .pmg--taskbar__menus .pmg--menus__main-menu .wegas-button:hover{
-    border-top:solid 2px #e68160;
+    border-top:solid 2px #ffb197;
     background:none;
 }
 
@@ -465,7 +465,7 @@
 }
 
 .pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button:hover{
-    border-top:solid 2px #e68160;
+    border-top:solid 2px #ffb197;
     background-size:40px 30px;
     background-position:center;
     background-repeat:no-repeat;
@@ -511,11 +511,19 @@
     background-image: url(../../wegas-pmg/images/pmg2_icon_folder.png); 
     width:129px;
 }
-.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.wegas-login{
-    background-image: url(../../wegas-pmg/images/pmg2_icon_settings.png); 
-    overflow: hidden;
-    text-indent: -1000px;
+.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.yui3-button-selected.pmg--icon-action{
+    background-image: url(../../wegas-pmg/images/pmg2_icon_actions_hover.png);
 }
+.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.yui3-button-selected.pmg--icon-question{
+    background-image: url(../../wegas-pmg/images/pmg2_icon_choices_hover.png);
+}
+.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.yui3-button-selected.pmg--icon-mail{
+    background-image: url(../../wegas-pmg/images/pmg2_icon_mail_hover.png);
+}
+.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.yui3-button-selected.pmg--icon-history{
+    background-image: url(../../wegas-pmg/images/pmg2_icon_folder_hover.png); 
+}
+
 .pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.wegas-login:after{
     display:none;
 }
@@ -1139,87 +1147,24 @@ td.yui3-datatable-col-Realised:after {
     margin-right:2%;
     float:left;
 }
-.pmg-project-overview .pmg-project-overview-tasks{
+.pmg-project-overview .pmg-project-details-content{
     display:block;
     position:relative;
-    width:66%;
+    width:19%;
     height:122px;
-    margin:0px;
-    margin-bottom:8px;
-    padding:0px;
-    border:none;
-    float:right;
-}
-
-.pmg-project-overview .pmg-tasks-content{
-    display:block;
-    position:relative;
-    width:32%;
-    height:90px;
     background:#d8d9dd;
     margin:0px;
     padding:0px;
     border:none;
-    margin-right:2%;
+    margin-right:1.25%;
     float:left;
 }
 
-.pmg-project-overview .pmg-tasks-content:last-child{
+.pmg-project-overview .pmg-project-details-content:last-child{
     margin:0px;
 }
 
-.pmg-tasks-content .task-label{
-    display:block;
-    position:relative;
-    width:100%;
-    height:24px;
-    font-size:12px;
-    color:#62656a;
-    margin:0px;
-    padding:12px 8px 0px 8px;
-    box-sizing:border-box;
-}
-
-.pmg-tasks-content .variableValue{
-    display:block;
-    position:relative;
-    font-size:24px;
-    padding-top:10px;
-    color:#98999e;
-    text-align:center;
-    width:100%;
-}
-
-.pmg-project-overview .total{
-    display:block;
-    position:relative;
-    width:100%;
-    height:32px;
-    margin:0px;
-    margin-bottom:24px;
-    background:#41434f;
-    clear:both;
-    float:none;
-    line-height:32px;
-}
-
-.pmg-project-overview .total .label{
-    display:block;
-    position:relative;
-    margin:0px 8px;
-    float:left;
-    color:white;
-}
-
-.pmg-project-overview .total .variableValue{
-    display:block;
-    position:relative;
-    margin:0px 8px;
-    float:right;
-    color:white;
-}
-
-.pmg-project-overview-content .label, .pmg-project-overview-tasks .label{
+.pmg-project-overview-content .label, .pmg-project-details-content .label{
     display:block;
     position:relative;
     width:100%;
@@ -1231,17 +1176,32 @@ td.yui3-datatable-col-Realised:after {
     color:white;
 }
 
-.pmg-project-overview-content .variableValue{
+.pmg-project-overview-content .variableValue, .pmg-project-details-content .variableValue{
     display:block;
     position:relative;
     width:100%;
     height:90px;
-    padding:33px 0px;
+    padding:24px 0px;
     font-size:24px;
     text-align:center;
     color:#96979c;
     box-sizing:border-box;
 }
+
+.pmg-project-overview-content .variablePercent{
+    display:block;
+    position:absolute;
+    width:100%;
+    height:32px;
+    bottom:0px;
+    left:0px;
+    padding:0px;
+    font-size:12px;
+    text-align:center;
+    color:#96979c;
+    box-sizing:border-box;
+}
+
 .pmg-project-overview-content .variableValue input{
   width: 84%;
   border: none;
@@ -1545,8 +1505,8 @@ td.yui3-datatable-col-Realised:after {
         margin:0px;
         height:26px;
         padding-bottom:0px;
-        border-top-left-radius: 6px;
-        border-top-right-radius: 6px;
+        border-top-left-radius: 2px;
+        border-top-right-radius: 2px;
         background-color:#25252f;
     }
     .wegas-editmode .wegas-pmg-breadcrumb .current{
@@ -1579,8 +1539,8 @@ td.yui3-datatable-col-Realised:after {
         top:0px !important;
         clear:both;
         float:none;
-        border-bottom-left-radius: 6px;
-        border-bottom-right-radius: 6px;
+        border-bottom-left-radius: 2px;
+        border-bottom-right-radius: 2px;
     }
     .wegas-editmode .pmg--phases__state .pmg-period{
         display:block;
@@ -1609,12 +1569,13 @@ td.yui3-datatable-col-Realised:after {
         margin:auto;
         float:none;
         clear:both;
-        padding:2px 1px;
+        padding:2px 0px;
         border-radius:50%;
         background-color:#ed6a3c;
         font-weight:600;
         color:#25252f;
     }
+    
     .wegas-editmode .pmg--app .wegas-template-valuebox-unit.wegas-template-valuebox-selected{
         border: none;
         border-radius:0px;
