@@ -245,7 +245,7 @@ YUI.add("wegas-pageloader", function(Y) {
                                     "Wegas.PageLoader");
                             } finally {
                                 this.hideOverlay();
-                                this.fire("contentUpdated");
+                                this.fire("contentUpdated", {page: val});
                             }
                         }, this));
                     }, this));
