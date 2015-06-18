@@ -71,6 +71,9 @@ YUI().add("ecc-entitychooser-pageloaderact", function(Y) {
                     i.detach();
                     this.get(CONTENTBOX).all("." + CLASSES.CHOOSEN).removeClass(CLASSES.CHOOSEN);
                 }, this);
+            },
+            destructor: function(){
+                this.detachHandlers();
             }
         }, {
             ATTRS: {
