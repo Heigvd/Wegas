@@ -47,8 +47,9 @@ angular.module('private.directives', [
                 scope.logout = function() {
                     $state.go("wegas.private.logout");
                 };
-
-                $(document).on('click', 'h2.view__headding-workspace', function(e) {
+                $('h2.view__headding-workspace').unbind("click");
+                $('h2.view__headding-workspace').on('click', function(e) {
+                    e.preventDefault();
                     $('#menu-toggler').trigger('click');
                     return false;
                 });
