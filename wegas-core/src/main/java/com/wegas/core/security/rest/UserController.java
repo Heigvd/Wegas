@@ -269,7 +269,7 @@ public class UserController {
     @GET
     @Path("Logout")
     public Response logout() {
-        SecurityUtils.getSubject().logout();
+        userFacade.logout();
         return Response.status(Response.Status.OK).build();
     }
 
