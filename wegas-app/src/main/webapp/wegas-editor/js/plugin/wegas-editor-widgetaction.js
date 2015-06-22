@@ -64,14 +64,15 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
         execute: function() {
             Plugin.EditEntityAction.hideRightTabs();
             var widget = this.get("widget"),
-                form,
+                form, PAGE_META = "@pageMeta",
                 menuItems = Y.Array.filter(widget.getMenuCfg().slice(0), function(i) {
 
                     switch (i.label) { // @hack add icons to some buttons
                         case "Delete":
                         case "Copy":
                         case "Edit":
-                            i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
+                            i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() +
+                                      '"></span>' + i.label;
                             break;
                     }
 
@@ -84,13 +85,11 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
                 var i, plugins = {},
                     pls, plugin, cfg, oldCfg = entity.get("root").toObject();
                 /* Retrieve page's name if it has one */
-                if (val.hasOwnProperty("@pageName")) {
-                    PAGEDATASOURCE.editMeta(entity.get("@pageId"), {
-                        name: val["@pageName"]
-                    }, function() {
+                if (val.hasOwnProperty(PAGE_META)) {
+                    PAGEDATASOURCE.editMeta(entity.get("@pageId"), val[PAGE_META], function() {
                         PAGEDATASOURCE.fire("pageUpdated");
                     });
-                    delete val["@pageName"];
+                    delete val[PAGE_META];
                 }
                 entity.setAttrs(val);
                 for (i = 0; i < val.plugins.length; i += 1) {
@@ -131,16 +130,32 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
             }, this));
             /* Inject page's name */
             if (widget.get("root") === widget) {
-                PAGEDATASOURCE.getIndex(function(index) {
+                PAGEDATASOURCE.getMeta(widget.get("@pageId"), function(meta) {
                     var formCfg = widget.getFormCfg();
-                    formCfg.fields.splice(0, 0, {
-                        label: "Name",
-                        name: "@pageName",
-                        showMsg: true,
-                        type: "string",
-                        value: index[widget.get("@pageId")],
-                        wrapperClassName: "inputEx-fieldWrapper wegas-pagename-edition"
-                    });
+                    if (meta) {
+                        formCfg.fields.splice(0, 0, {
+                            name: PAGE_META,
+                            showMsg: true,
+                            type: "group",
+                            fields: [{
+                                label: "Page id",
+                                value: meta.id,
+                                type: "uneditable",
+                                name: "id"
+                            }, {
+                                label: "Name",
+                                value: meta.name,
+                                type: "string",
+                                name: "name"
+                            }, {
+                                label: "Editor position",
+                                value: meta.index,
+                                type: "uneditable",
+                                name: "index"
+                            }],
+                            wrapperClassName: "inputEx-fieldWrapper wegas-pagename-edition"
+                        });
+                    }
                     form.set("cfg", formCfg);
                 });
             }
@@ -254,10 +269,11 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
             if (root === targetWidget) {
                 Y.Widget.getByNode(".wegas-page-editor").deletePage(root.get("@pageId"));
             } else {
-                Wegas.Panel.confirm("Are you sure you want to delete this widget and all of its content?", Y.bind(function() {
-                    targetWidget.destroy();
-                    this.get("dataSource").cache.patch(root.toObject());
-                }, this));
+                Wegas.Panel.confirm("Are you sure you want to delete this widget and all of its content?",
+                    Y.bind(function() {
+                        targetWidget.destroy();
+                        this.get("dataSource").cache.patch(root.toObject());
+                    }, this));
             }
         }
     }, {

@@ -9,23 +9,24 @@ package com.wegas.core.rest;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
-import java.io.IOException;
-import java.util.Map;
-import java.util.Map.Entry;
+import org.apache.shiro.SecurityUtils;
+import org.codehaus.jettison.json.JSONException;
+import org.slf4j.LoggerFactory;
+
 import javax.ejb.Stateless;
 import javax.jcr.RepositoryException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.apache.shiro.SecurityUtils;
-import org.codehaus.jettison.json.JSONException;
-import org.slf4j.LoggerFactory;
+import java.io.IOException;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
- *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 @Stateless
@@ -35,6 +36,7 @@ import org.slf4j.LoggerFactory;
 public class PageController {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(PageController.class);
+
     static final private String ADMIN_REPO_ID = "0";
 
     /**
@@ -46,12 +48,12 @@ public class PageController {
      */
     @GET
     public Response getPages(@PathParam("gameModelId") String gameModelId)
-            throws RepositoryException {
+        throws RepositoryException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
         try (Pages pages = new Pages(gameModelId)) {
-            return Response.ok(pages.getPages(), MediaType.APPLICATION_JSON).header("Page", "*").build();
+            return Response.ok(pages.getPagesContent(), MediaType.APPLICATION_JSON).header("Page", "*").build();
         }
     }
 
@@ -59,15 +61,15 @@ public class PageController {
      * Retrieve the specified GameModel's page
      *
      * @param gameModelId The GameModel's ID
-     * @param pageId The specific page's ID
+     * @param pageId      The specific page's ID
      * @return A JSONObject, the page Content
      * @throws RepositoryException
      */
     @GET
     @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}")
     public Response getPage(@PathParam("gameModelId") String gameModelId,
-            @PathParam("pageId") String pageId)
-            throws RepositoryException {
+                            @PathParam("pageId") String pageId)
+        throws RepositoryException {
         try (final Pages pages = new Pages(gameModelId)) {
             Page page = pages.getPage(pageId);
 
@@ -80,7 +82,7 @@ public class PageController {
                 }
             }
             return Response.ok(page.getContent(), MediaType.APPLICATION_JSON)
-                    .header("Page", pageId).build();
+                .header("Page", pageId).build();
         }
     }
 
@@ -94,13 +96,13 @@ public class PageController {
     @GET
     @Path("/index")
     public Response getIndex(@PathParam("gameModelId") String gameModelId)
-            throws RepositoryException {
+        throws RepositoryException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + gameModelId);
 
         try (final Pages pages = new Pages(gameModelId)) {
             return Response.ok(pages.getIndex(), MediaType.APPLICATION_JSON)
-                    .header("Page", "index").build();
+                .header("Page", "index").build();
         }
     }
 
@@ -109,8 +111,8 @@ public class PageController {
      * it doesn't exist
      *
      * @param gameModelId The GameModel's ID
-     * @param pageId The specific page to replace
-     * @param content A JSONObject
+     * @param pageId      The specific page to replace
+     * @param content     A JSONObject
      * @return The stored page
      * @throws RepositoryException
      * @throws IOException
@@ -119,8 +121,8 @@ public class PageController {
     @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response setPage(@PathParam("gameModelId") String gameModelId,
-            @PathParam("pageId") String pageId,
-            JsonNode content) throws RepositoryException, IOException {
+                            @PathParam("pageId") String pageId,
+                            JsonNode content) throws RepositoryException, IOException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
@@ -128,12 +130,11 @@ public class PageController {
             Page page = new Page(pageId, content);
             pages.store(page);
             return Response.ok(pages.getPage(pageId).getContent(), MediaType.APPLICATION_JSON)
-                    .header("Page", pageId).build();
+                .header("Page", pageId).build();
         }
     }
 
     /**
-     *
      * @param gameModelId
      * @param pageId
      * @param page
@@ -143,8 +144,8 @@ public class PageController {
     @PUT
     @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}/meta")
     public Response setMeta(@PathParam("gameModelId") String gameModelId,
-            @PathParam("pageId") String pageId,
-            Page page) throws RepositoryException {
+                            @PathParam("pageId") String pageId,
+                            Page page) throws RepositoryException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
@@ -152,7 +153,7 @@ public class PageController {
             page.setId(pageId);
             pages.setMeta(page);
             return Response.ok(pages.getIndex(), MediaType.APPLICATION_JSON)
-                    .header("Page", "index").build();
+                .header("Page", "index").build();
         }
     }
 
@@ -160,49 +161,47 @@ public class PageController {
      * Create a new page. page'id is generated. Page has no name
      *
      * @param gameModelId The GameModel's ID
-     * @param content A JSONObject
+     * @param content     A JSONObject
      * @return The stored page
      * @throws RepositoryException
      * @throws IOException
      */
     @PUT
     public Response createPage(@PathParam("gameModelId") String gameModelId, JsonNode content)
-            throws RepositoryException, IOException {
+        throws RepositoryException, IOException {
         return createPage(gameModelId, content, null);
     }
 
     /**
-     * Creata a page from JsonNode with the specified name
-     * 
+     * Create a page from JsonNode with the specified name
+     *
      * @param gameModelId
      * @param content
      * @param name
-     * @return 
-     * @throws javax.jcr.RepositoryException 
-     * @throws java.io.IOException 
+     * @return
+     * @throws javax.jcr.RepositoryException
+     * @throws java.io.IOException
      */
     private Response createPage(String gameModelId, JsonNode content, String name)
-            throws RepositoryException, IOException {
+        throws RepositoryException, IOException {
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
         try (final Pages pages = new Pages(gameModelId)) {
             if (name == null || name.equals("")) {
-
-                Map<String, String> index = pages.getIndex();
                 Integer pageId = 1;
-                while (index.containsKey(pageId.toString())) {
+                while (pages.pageExist(pageId.toString())) {
                     pageId++;
                 }
                 name = pageId.toString();
             }
+            ((ObjectNode) content).put("@index", pages.size());
             Page page = new Page(name, content);
             pages.store(page);
             return Response.ok(pages.getPage(name).getContent(), MediaType.APPLICATION_JSON)
-                    .header("Page", name).build();
+                .header("Page", name).build();
         }
     }
 
     /**
-     *
      * @param gameModelId
      * @param pageId
      * @return
@@ -212,7 +211,7 @@ public class PageController {
     @GET
     @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}/duplicate")
     public Response duplicate(@PathParam("gameModelId") String gameModelId,
-            @PathParam("pageId") String pageId) throws RepositoryException, IOException {
+                              @PathParam("pageId") String pageId) throws RepositoryException, IOException {
         try (final Pages pages = new Pages(gameModelId)) {
             Page page = pages.getPage(pageId);
             String pageName = null;
@@ -222,7 +221,7 @@ public class PageController {
                     throw WegasErrorMessage.error("Attempt to duplicate an inexistant page");
                 }
                 pageName = page.getId();
-            } else if (page.getName() != null) {
+            } else if (!Helper.isNullOrEmpty(page.getName())) {
                 ((ObjectNode) page.getContent()).put("@name", page.getName() + "-copy");
             }
             return this.createPage(gameModelId, page.getContent(), pageName);
@@ -242,7 +241,7 @@ public class PageController {
      */
     @POST
     public Response addPages(@PathParam("gameModelId") String gameModelId, Map<String, JsonNode> pageMap)
-            throws RepositoryException, JSONException {
+        throws RepositoryException, JSONException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
@@ -276,15 +275,15 @@ public class PageController {
      * Delete the specified page from the specified GameModel
      *
      * @param gameModelId The GameModel's ID
-     * @param pageId The page's ID
+     * @param pageId      The page's ID
      * @return
      * @throws RepositoryException
      */
     @DELETE
     @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}")
     public Response deletePage(@PathParam("gameModelId") String gameModelId,
-            @PathParam("pageId") String pageId)
-            throws RepositoryException {
+                               @PathParam("pageId") String pageId)
+        throws RepositoryException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
@@ -298,8 +297,8 @@ public class PageController {
      * Patches specified Page
      *
      * @param gameModelId The GameModel's ID
-     * @param pageId The page's ID
-     * @param patch The patch based on Myer's diff algorithm
+     * @param pageId      The page's ID
+     * @param patch       The patch based on Myer's diff algorithm
      * @return The new patched page
      * @throws RepositoryException
      * @throws JSONException
@@ -309,8 +308,8 @@ public class PageController {
     @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}")
     @Consumes(MediaType.TEXT_PLAIN)
     public Response patch(@PathParam("gameModelId") String gameModelId,
-            @PathParam("pageId") String pageId,
-            String patch) throws RepositoryException, JSONException, IOException {
+                          @PathParam("pageId") String pageId,
+                          String patch) throws RepositoryException, JSONException, IOException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
@@ -322,7 +321,7 @@ public class PageController {
             page.patch(patch);
             pages.store(page);
             return Response.ok(page.getContent(), MediaType.APPLICATION_JSON)
-                    .header("Page", pageId).build();
+                .header("Page", pageId).build();
         }
     }
 
