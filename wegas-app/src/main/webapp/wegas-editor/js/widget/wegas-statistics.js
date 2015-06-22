@@ -14,9 +14,18 @@ YUI.add("wegas-statistics", function(Y) {
     "use strict";
     var Data,
         Promise = Y.Promise,// remove me to use native promise
+        getPath = function(entity) {
+            var title = entity.getEditorLabel(), parent = entity.parentDescriptor;
+            while (parent) {
+                title = parent.getEditorLabel() + " \u21E8 " + title;
+                parent = parent.parentDescriptor;
+            }
+            return title;
+        },
         Stats = Y.Base.create("wegas-statistics", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
             CONTENT_TEMPLATE: "<div><div class='stats-question' style='display: inline-block'>" +
                               "<select><option value='null' disabled>-Question-</option></select>" +
+                              "<i class='loading fa fa-spinner fa-pulse fa-lg' style='display: none'></i>" +
                               "<div>Answer count: <span class='question-answer-count'></span></div>" +
                               "<div class='chart' style='width:600px;height:400px'></div></div>" +
                               "<div class='stats-number' style='display: none;vertical-align: top'>" +
@@ -24,6 +33,12 @@ YUI.add("wegas-statistics", function(Y) {
                               "<div class='chart' style='width:600px;height:400px'></div></div></div>",
             initializer: function() {
                 this.gmPromise = Data.getCurrentGameModel();
+                this.gmPromise.then(Y.bind(function(gm) {
+                    if (!gm.get("properties.logID")) {
+                        this.get("contentBox").hide();
+                        this.get("boundingBox").append("Statistics are not enable for this game");
+                    }
+                }, this));
             },
             renderUI: function() {
                 var selectQNode = this.get("contentBox").one(".stats-question select"),
@@ -31,7 +46,7 @@ YUI.add("wegas-statistics", function(Y) {
                     questions = Y.Wegas.Facade.Variable.cache.findAll("@class", "QuestionDescriptor"),
                     numbers = Y.Wegas.Facade.Variable.cache.findAll("@class", "NumberDescriptor");
                 Y.Array.each(questions, function(i) {
-                    selectQNode.appendChild("<option value='" + i.get("name") + "'>" + i.get("title") + "</option>");
+                    selectQNode.appendChild("<option value='" + i.get("name") + "'>" + getPath(i) + "</option>");
                 });
                 Y.Array.each(numbers, function(i) {
                     selectNNode.appendChild("<option value='" + i.get("name") + "'>" + i.get("label") + "</option>");
@@ -71,6 +86,7 @@ YUI.add("wegas-statistics", function(Y) {
                 var chartQNode = this.get("contentBox").one(".stats-question .chart"),
                     chartNNode = this.get("contentBox").one(".stats-number .chart"),
                     countNode = this.get("contentBox").one(".question-answer-count"),
+                    loading = this.get("contentBox").one(".loading"),
                     gmPromise = this.gmPromise,
                     chart = this.chart,
                     chartNumber = this.chartNumber,
@@ -84,6 +100,7 @@ YUI.add("wegas-statistics", function(Y) {
                 };
                 this.get("contentBox").one(".stats-question select").on("valueChange", function(e) {
                     gmPromise.then(function(gm) {
+                        loading.show();
                         return Data.getQuestion(getLogID(gm), e.newVal);
                     }).then(function(v) {
                         var question = Y.Wegas.Facade.Variable.cache.find("name", e.newVal),
@@ -107,6 +124,8 @@ YUI.add("wegas-statistics", function(Y) {
                         return 1;
                     }).catch(function(e) {
                         Y.log(e, "error", "Y.Wegas.Statistics");
+                    }).then(function(){
+                        loading.hide();
                     });
                 });
                 this.get("contentBox").one(".stats-number select").on("valueChange", function(e) {
