@@ -19,7 +19,7 @@ YUI.add("wegas-statistics", function(Y) {
                               "<select><option value='null' disabled>-Question-</option></select>" +
                               "<div>Answer count: <span class='question-answer-count'></span></div>" +
                               "<div class='chart' style='width:600px;height:400px'></div></div>" +
-                              "<div class='stats-number' style='display: inline-block;vertical-align: top'>" +
+                              "<div class='stats-number' style='display: none;vertical-align: top'>" +
                               "<select><option value='null' disabled>-Number-</option></select>" +
                               "<div class='chart' style='width:600px;height:400px'></div></div></div>",
             initializer: function() {
