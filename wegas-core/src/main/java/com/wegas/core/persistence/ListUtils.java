@@ -133,7 +133,12 @@ public class ListUtils {
                 elementMap.get(element.getId()).merge(element);                 //Then merge them
                 oldList.add(elementMap.get(element.getId()));
             } else {
-                oldList.add(element);
+                try {
+                    E newElement = (E) element.getClass().newInstance();
+                    newElement.merge(element);
+                    oldList.add(newElement);
+                } catch (InstantiationException | IllegalAccessException ex) {
+                }
             }
         }
         return oldList;

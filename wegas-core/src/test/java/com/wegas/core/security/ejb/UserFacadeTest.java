@@ -13,6 +13,7 @@ import java.util.Map;
 import javax.ejb.embeddable.EJBContainer;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -57,6 +58,11 @@ public class UserFacadeTest {
         roleFacade.remove(roleP.getId());
         roleFacade.remove(roleR.getId());
         container.close();
+    }
+
+    @Before
+    public void doLogout() {
+        userFacade.logout(); //Make sure to start without anyone logged in
     }
 
     /**

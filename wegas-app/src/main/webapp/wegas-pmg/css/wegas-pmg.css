@@ -5,270 +5,599 @@
  * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-/*--------------------------------header--------------------------------------*/
-.layout {
-    font-family: "Lucida Grande", sans-serif;
-    background: #282828;
-    min-width: 975px;
-}
-.layout .pmg-header {
-    background: #282828;
-}
+
+/*--------------------------------PMG - Global container--------------------------------------*/
 .layout * {
-    font-family: "Lucida Grande", sans-serif;
+    font-family: Helvetica, Arial, "Lucida Grande", sans-serif;
+    font-weight:300;
 }
 
 .wegas-loading-overlay {
     background: rgba(255, 255, 255, 0.0);
 }
 
+.pmg--app{
+    display:block;
+    position:relative;
+    width:100%;
+    height:100%;
+    margin:0px;
+    padding:0px;
+    min-width:960px;
+    min-height:560px;
+    overflow:auto;
+}
+.wegas-editmode .pmg--app{
+    min-width:1330px;
+}
+
+/*--------------------------------header--------------------------------------*/
+.pmg-header {
+    display:block;
+    position:absolute;
+    width:100%;
+    height:172px;
+    top:0px;
+    left:0px;
+    margin:0px;
+    padding:0px;
+    z-index:2;
+}
+
+.pmg-header .pmg--header__identity{
+    display:block;
+    position:absolute;
+    top:0px;
+    left:0px;
+    width:180px;
+    height:172px;
+    margin:0px;
+    padding:0px;
+    background: #4e525e;
+    z-index:4;
+}
+
+.pmg-header .pmg--header__identity .pmg--logo{
+    display:block;
+    position:relative;
+    width:104px;
+    height:104px;
+    margin:16px 38px 4px 38px;
+    background-image:url("../../wegas-pmg/images/PMG2_logo.png");
+    background-size:100% auto;
+}
+
+.pmg-header .pmg--header__identity .wegas-text{
+    display:block;
+    position:relative;
+    width:180px;
+    height:20px;
+    padding:16px 0px 12px 0px;
+    margin:0px;
+    color:white;
+    text-align:center;
+}
+
+.pmg-header .pmg--header__taskbar{
+    display:block;
+    position:absolute;
+    top:0px;
+    left:0px;
+    width:100%;
+    height:172px;
+    margin:0px;
+    padding:0px;
+    box-sizing: border-box;
+    padding-left:180px;
+    background: #343843;
+    z-index:3;
+}
+
+.pmg--header__taskbar .pmg--taskbar__infos{
+    display:block;
+    position:relative;
+    width:100%;
+    height:124px;
+    margin:0px;
+    padding:0px;
+}
+
+.pmg--header__taskbar .pmg--taskbar__infos .wegas-list-content{
+    display:block;
+    position:relative;
+    width:100%;
+    height:100%;
+    margin:0px;
+    padding:0px;
+}
+
+.pmg--taskbar__infos .pmg--infos__phases{
+    display:block;
+    position:relative;
+    height:100%;
+    float:left;
+}
+
+.pmg--infos__phases .pmg--phases__state{
+    display:block;
+    position:relative;
+    float:left;
+    width:416px;
+    height:120px;
+}
+
+.pmg--phases__state  .wegas-pmg-breadcrumb {
+    display:block;
+    position:relative !important;
+    width:376px;
+    margin:36px 8px 0px 32px;
+}
+
+.wegas-pmg-breadcrumb span{
+    display:block;
+    position:relative;
+    width:80px;
+    height:30px;
+    padding:0px;
+    margin:0px 7px;
+    color:black;
+    line-height:30px;
+    float:left;
+    text-align: center;
+    font-size: 9pt;
+    color:white;
+    background-color:#525564;
+}
+
+.wegas-pmg-breadcrumb .previous{
+    background-color:#7b818f;
+}
+
+.wegas-pmg-breadcrumb .current{
+    background-color: #ed6a3c;
+}
+
+.wegas-pmg-breadcrumb span:before, .wegas-pmg-breadcrumb span:after{
+    content:"";
+    display:block;
+    position:absolute;
+    top:0px;
+    width:10px;
+    height:30px;
+    background-size:100%;
+    background-position:0 0;
+    background-repeat:no-repeat;
+}
+
+.wegas-pmg-breadcrumb span:before{
+    left:-10px;
+    background-image: url(../../wegas-pmg/images/pmg2_start_period_next.png);
+}
+
+.wegas-pmg-breadcrumb span:after{
+    right:-10px;
+    background-image: url(../../wegas-pmg/images/pmg2_end_period_next.png);
+}
+
+.wegas-pmg-breadcrumb .previous:before{
+    background-image: url(../../wegas-pmg/images/pmg2_start_period_past.png);
+}
+
+.wegas-pmg-breadcrumb .previous:after{
+    background-image: url(../../wegas-pmg/images/pmg2_end_period_past.png);
+}
+
+.wegas-pmg-breadcrumb .current:before{
+    background-image: url(../../wegas-pmg/images/pmg2_start_period_current.png);
+}
+
+.wegas-pmg-breadcrumb .current:after{
+    background-image: url(../../wegas-pmg/images/pmg2_end_period_current.png);
+}
+
+.pmg--phases__state .pmg-period{
+    display:block;
+    position:relative !important;
+    width:372px;
+    top:2px !important;
+    background-color:#25252f;
+    height:18px;
+    margin:0px 29px;
+    padding:1px;
+    clear:both;
+    float:none;
+}
+
+.pmg--app .wegas-template-valuebox-unit {
+  background: #525564; 
+  border: none;
+  margin: 1px 1px;
+  width: 21px;
+  height: 16px;
+  line-height: 18px;
+  float: left;
+  color:white;
+  text-align: center;
+}
+
+.pmg--app .wegas-template-valuebox-unit.wegas-template-valuebox-previous{
+  background: #7b818f;
+  color:white;
+}
+
+.pmg--app .wegas-template-valuebox-unit.wegas-template-valuebox-selected{
+  background: #40868d;
+  color:white;
+}
+
 .pmg-nextweek {
+    display:block;
+    position:relative !important;
     color: white;
+    width:80px;
+    height:30px;
+    float:right;
+    line-height:28px;
+    font-size:12px;
     font-weight: bolder;
-    background-image: none;
+    background: none;
+    margin:36px 8px;
+    border-radius:8px;
+    background:none;
+    background-color:#446d71;
 }
+
 .pmg-nextweek:hover {
-    color: white;
-    font-weight: bolder;  background-image: -moz-linear-gradient(top,rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
-    background-image: -ms-linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
-    background-image: -o-linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
-    background-image: linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
+    background:none;
+    background-color:#40868d;
 }
+
 .pmg-nextweek:after {
     content: "Next period";
 }
+
 .passPhase:after {
     content: "Next phase";
 }
-.pmg-breadcrumb span{
+
+.pmg--taskbar__infos .pmg--infos__indicators{
     display:block;
-    width: 86px;
+    position:relative;
+    width:630px;
+    height:100%;
+    float:right;
+    border-left:solid 1px #4f515d;
+}
+
+.pmg--indicator{
+    display:block;
+    position:relative;
+    width:100px;
+    height:90px;
+    margin:8px 0px;
+}
+
+.pmg--indicator--divided:before{
+    content:"";
+    display:block;
+    position:absolute;
+    top:-8px;
+    left:0px;
+    width:1px;
+    height:124px;
+    background-color:#4f515d;
+}
+
+.pmg--indicator.wegas-gauge .label, .pmg--indicator .pmg--indicator__label .wegas-template-content{
+    display:block;
+    position:absolute;
+    top:54px;
+    width:100px;
+    text-align:center;
+    color:#9d9ea3;
+    font-size:12px;
+    font-weight:400;
+}
+
+.pmg--indicator.wegas-gauge .label{
+    top:58px;
+}
+
+.pmg--indicator .percent{
+    margin:20px 34px 0px 34px;
+    display:block;
+    position:relative;
+    height:20px;
+    width:36px;
+    color:white;
+    background-color:#454753;
+    border-radius:4px;
+    line-height:20px;   
+}
+
+.pmg--indicator.wegas-gauge .percent{
+    margin:24px 34px 0px 34px;
+}
+
+.pmg--taskbar__infos .pmg--infos__indicators .pmg--time-cards{
+    display:block;
+    position:relative;
+    width:129px;
+    height:100%;
+    border-left:solid 1px #4f515d;
+}
+
+.pmg--time-cards .wegas-text{
+    display:block;
+    position:relative !important;
+    width:129px;
     height:18px;
-    padding:2px 0 1px 0;
-    margin-right: 2px;
-    background-color: white;
-    color:black;
+    margin-top:60px;
+    padding:0px;
+    text-align:center;
+    color:#9d9ea3;
+    font-size:12px;
+}
+.pmg--time-cards .wegas-text p{
+    font-weight:500;
+}
+
+.pmg--time-cards .wegas-template{
+    display:block;
+    position:relative !important;
+    width:80px;
+    margin:0px 24px;
+    background-color: #454753;
+    font-size:18px;
+    padding:6px 12px;
+    text-align:right;
+    box-sizing:border-box;
+    border-radius:16px;
+    color:white;
+    font-weight:600;
+    background-image: url(../../wegas-pmg/images/pmg2_icon_time.png);
+    background-size:21px;
+    background-position:14px 8px;
+    background-repeat:no-repeat;
+}
+
+.yui3-skin-sam .wegas-widgetmenu-hassubmenu.yui3-button.menu-loginbutton{
+    display:block;
+    position:absolute;
+    top:0px;
+    right:0px;
+    width:129px;
+    height:39px;
+    background:none;
+    color:#9a9b9d;
+    font-size:12px;
+    z-index:12; 
+    transition:.3s;
+    border-bottom:solid 1px #4f515d;
+}
+.yui3-skin-sam .yui3-button.wegas-widgetmenu-hassubmenu:after {
+  right: 4px;
+  top: 18px;
+  background-position-y: -40px;
+}
+
+.yui3-skin-sam .wegas-widgetmenu-hassubmenu.yui3-button.menu-loginbutton:hover{
+    background:#272731;
+    color:white;
+}
+
+.pmg--header__taskbar .pmg--taskbar__menus{
+    display:block;
+    position:relative;
+    width:100%;
+    height:48px;
+    margin:0px;
+    padding:0px;
+    background: #272731;
+}
+
+.pmg--taskbar__menus .pmg--menus__main-menu{
+    display:block;
+    position:relative;
+    width:auto;
+    height:48px;
     float:left;
-    text-align: center;
-    font-size: 9pt;
 }
-.pmg-breadcrumb .previous{
-    background-color:#BBBBBB;
+
+.pmg--taskbar__menus .pmg--menus__main-menu .wegas-button{
+    display:block;
+    position:relative;
+    width:auto;
+    padding:0px 16px;
+    height:48px;
+    float:left;
+    background:none;
+    color:#9a9b9d;
+    text-transform: uppercase;
+    transition:.2s;
 }
-.pmg-breadcrumb .current{
-    background-color: #0981A9;
-    color: white
+
+.pmg--taskbar__menus .pmg--menus__main-menu .wegas-button:hover{
+    border-top:solid 2px #ffb197;
+    background:none;
 }
-.pmg-period{
-    font-size: 9pt;
-    width: 352px;
-}
-.wegas-template-valuebox label{
+
+.pmg--taskbar__menus .pmg--menus__main-menu  .hidden-button{
     display:none;
 }
-.pmg-period .wegas-template-valuebox-unit{
-    width: 19px;
-    height: 15px;
+
+.pmg--taskbar__menus .pmg--menus__secondary-menu{
+    display:block;
+    position:relative;
+    width:430px;
+    height:48px;
+    float:right;
+}
+
+.pmg--taskbar__menus .pmg--menu__divider{
+    display:block;
+    position:relative;
+    width:1px;
+    height:48px;
     float:left;
-    margin: 0 2px 3px 0;
-    color:black;
-    border:none;
-    background-color: white;
-    text-align: center;
-    padding-top: 2px;
-    padding-left: 1px;
-}
-.pmg-period .wegas-template-valuebox-previous{
-    background-color:#BBBBBB;
-}
-.pmg-period .wegas-template-valuebox-selected{
-    /*background-image: url(wegas-pmg/images/next.png);*/
-    /*background-repeat: no-repeat;*/
-    /*background-position: center;*/
-    background: #0981A9;
-    color: white;
-}
-.wegas-gauge {
-    color: white;
-    font-size: 9pt;
-}
-.pmg-timevariable{
-    width:78px;
-    color: white;
-    font-size: 9pt;
+    background-color:#4f515d;
 }
 
-.pmg-timevariable .wegas-template-box-unit{
-    width:7px;
-    height:12px;
-    margin: 2px 2px 0 0;
-    /*background-color: #FFFF00;*/
-    background: #0981A9;
-    border: none;
+.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button{
+    display:block;
+    position:relative;
     float:left;
-    /*    background-image: -moz-linear-gradient(top,rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
-        background-image: -ms-linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
-        background-image: -o-linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
-        background-image: linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);*/
-
-}
-
-/*-----------------------------horizontal-menu--------------------------------*/
-.layout .horizontal-nav-menu{
-    background-color:#ADADAE;
-    height:30px;
-    min-width:970px;
-}
-
-.layout .horizontal-nav-menu button {
-    background-repeat: repeat-x;
-    background-color:#ADADAE;
-    height:30px;
-    min-width:120px;
+    padding:0px;
+    margin:0px;
+    width:100px;
+    height:48px;
+    text-indent:-1000px;
+    overflow:hidden;
     background:none;
-    border-radius:0px;
-    -moz-box-shadow: none;
-    -webkit-box-shadow: none;
-    box-shadow: none;
-    border-style:solid;
-    border-color:lightgray;
-    border-width:0 1px 0 0;
-    padding: 0 10px;
-    text-align:left;
-    font-size: 1.1em;
-}
-.layout .horizontal-nav-menu button.hidden-button {
-    display: none;
+    background-size:40px 30px;
+    background-position:center;
+    background-repeat:no-repeat;
+    cursor:pointer;
 }
 
-.horizontal-nav-menu button:hover {
-    background-color:#DDDDDD;
+.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.pmg--menu-btn-last{
+    width:99px;
 }
-.yui3-skin-sam .layout .yui3-button-selected {
-    background-color:white;
-    color:black;
-    box-shadow: none;
+
+.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button:hover{
+    border-top:solid 2px #ffb197;
+    background-size:40px 30px;
+    background-position:center;
+    background-repeat:no-repeat;
 }
-.layout .horizontal-nav-menu .wegas-login{
-    float: right;
-    padding: 0px 21px 0 10px;
-    border-left: 1px solid lightgray;
+
+.wegas-button .wegas-unreadcount {
+    position:relative;
+    display:block;
+    width:100%;
+    height:100%;
+    background:none;
 }
-.layout .horizontal-nav-menu .yui3-button-disabled {
-    background-repeat: repeat-x;
-    background-color: #ADAD96;
+
+.wegas-button .wegas-unreadcount .value{
+    position:absolute;
+    width:16px;
+    height:16px;
+    padding: 0px;
+    margin:-8px 0 0 16px;
+    top:50%;
+    left:50%;
+    font-size: 11px;
+    line-height:16px;
+    font-weight:bold;
+    text-indent:0;
+    color:#272731;
+    box-shadow:none;
+    border-radius: 50%;
+    background:none;
+    background-color: #18d8d9;
 }
-.layout .horizontal-nav-menu .yui3-button-disabled:hover {
-    border-width:0 1px 1px 0;
-    padding-bottom:0px;
+
+.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.pmg--icon-action{
+    background-image: url(../../wegas-pmg/images/pmg2_icon_actions.png);
+}
+.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.pmg--icon-question{
+    background-image: url(../../wegas-pmg/images/pmg2_icon_choices.png);
+}
+.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.pmg--icon-mail{
+    background-image: url(../../wegas-pmg/images/pmg2_icon_mail.png);
+}
+.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.pmg--icon-history{
+    background-image: url(../../wegas-pmg/images/pmg2_icon_folder.png); 
+    width:129px;
+}
+.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.yui3-button-selected.pmg--icon-action{
+    background-image: url(../../wegas-pmg/images/pmg2_icon_actions_hover.png);
+}
+.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.yui3-button-selected.pmg--icon-question{
+    background-image: url(../../wegas-pmg/images/pmg2_icon_choices_hover.png);
+}
+.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.yui3-button-selected.pmg--icon-mail{
+    background-image: url(../../wegas-pmg/images/pmg2_icon_mail_hover.png);
+}
+.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.yui3-button-selected.pmg--icon-history{
+    background-image: url(../../wegas-pmg/images/pmg2_icon_folder_hover.png); 
+}
+
+.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.wegas-login:after{
+    display:none;
+}
+
+.pmg--taskbar__menus .yui3-button-selected, .pmg--taskbar__menus .wegas-button.yui3-button-selected:hover{
+    border-top:solid 2px #ed6a3c;
+    color:white !important;
+}
+
+.pmg--taskbar__menus .yui3-button-selected:before{
+    display:block;
+    position:absolute;
+    content:"";
+    bottom:0px;
+    left:50%;
+    width:16px;
+    height:8px;
+    margin-left:-8px;
+    background:none;
+    background-image:URL("../../wegas-pmg/images/btn_main_over.png");
+    background-position:bottom center;
+    background-size:100%;
+    background-repeat:no-repeat;
+}
+
+.pmg--taskbar__menus .wegas-button.yui3-button-disabled:hover{
+    border:none;
+}
+
+/* PMG Body */
+.pmg--main-area{
+    display:block;
+    position:absolute;
+    width:100%;
+    height:100%;
+    margin:0px;
+    padding:0px;
+    top:0px;
+    left:0px;
+    box-sizing: border-box;
+    padding-top:180px;
+    z-index:1;
+    background:#ffffff;
+}
+
+.pmg--main-area > .wegas-list-content{
+    display:block;
+    position:relative;
+    width:100%;
+    height:100%;
+}
+
+.pmg--body{
+    display:block;
+    position:relative;
+    width:100%;
+    height:100%;
+    overflow-x:hidden;
+    overflow-y:auto;
 }
 
 /*-----------------------------------body-------------------------------------*/
-.body{
-    bottom: 0;
-    left: 0;
-    position: absolute;
-    right: 60px;
-    top: 120px;
-    /*min-width: 970px;*/
-}
+
 .title{
-    /*background-image: url(wegas-pmg/images/h2.png);*/
-    /*background-repeat: repeat-x;*/
-    /*background-color: white;*/
     height:26px;
     width:50%;
     float:left;
 }
+
 h2{
     padding: 3px 0 5px 5px;
-    font-weight: bold;
-    font-size: 1.2em;
-    color: #0981A9;
-}
-/*------------------------------vertical-menu---------------------------------*/
-.vertical-nav-menu{
-    float: right;
-    top:120px;
-    position: absolute;
-    right: 0;
-    bottom:0;
-    width: 60px;
-    background:#ADADAE;
-}
-.vertical-nav-menu div button{
-    width:60px;
-    height:60px;
-    padding:0;
-    background:#ADADAE;
-    /*margin-top:-3px;*/
-    float:none;
-    clear:both;
-    border-radius:0px;
-    box-shadow: none;
-    background-repeat: no-repeat;
-    background-position: center;
-    border-bottom: 1px solid lightgray
-}
-.vertical-nav-menu div button:first-child {
-    border-top: 1px solid lightgray
-}
-.vertical-nav-menu div button:hover {
-    background-color:#DDDDDD;
-}
-.vertical-nav-menu .actions{
-    background-image: url(../../wegas-pmg/images/businessmen.png);
-}
-.vertical-nav-menu .questions {
-    background-image: url(../../wegas-pmg/images/checklist-icon-2.png);
-}
-.vertical-nav-menu .inbox {
-    background-image: url(../../wegas-pmg/images/messages.png);
-}
-.vertical-nav-menu .history {
-    background-image: url(../../wegas-pmg/images/clock.png);
-}
-.vertical-nav-menu .help, .vertical-nav-menu .help:hover{
-    display:none;
-    border-width:0;
-    background:none;
-    background-image: url(../../wegas-pmg/images/help.png);
-    background-position: center;
-    background-repeat: no-repeat;
-    position:absolute;
-    bottom:0;
-    left:0;
-    right:0;
-    display:none;
-}
-.wegas-unreadcount {
-    /*line-height:1em;*/
-    position:relative;
-}
-.wegas-unreadcount .value{
-    position:absolute;
-    top:-29px;
-    left:-3px;
-    background-color: #0981A9;
-    box-shadow: 1px 0px 1px white;
-    font-size: 9pt;
-    padding: 4px 9px 6px 6px;
-    color:white;
-    border-radius: 0;
-    border-bottom-right-radius: 16px;
-    background-image: none;
-}
-
-
-/* ------ Page loader Overflow */
-.body {
-    overflow-y: auto;
-    overflow-x: hidden;
-}
-
-/* ------------------ TEAM EDITION -----------------*/
-.teamselection .title {
-    float: none;
+    font-weight: 400;
+    font-size: 14px;
+    color: #3e404c;
 }
 
 /*---------------------------questions and actions----------------------------*/
@@ -292,33 +621,315 @@ h2{
     border:none;
     background:white;
 }
-/*-----------------------------inbox and history------------------------------*/
-.inbox-page .wegas-text,
-.history-page .wegas-text{
-    height:27px;
+
+.wegas-mcqtabview .mcq-question-title{
+    margin-top:8px;
+    font-weight:500;
+    padding:16px 0px;
+    margin-bottom:20px;
 }
-.yui3-skin-sam .wegas-inbox,
-.yui3-skin-sam .wegas-mcqtabview{
-    position: absolute;
-    top: 25px;
-    bottom: 1px;
+.wegas-mcqtabview .mcq-question-description{
+    padding-bottom:12px;
 }
-.yui3-skin-sam  .wegas-inbox .wegas-inbox-content .yui3-tabview .yui3-tabview-content .yui3-tabview-list {
-    display: inline-block;
+
+.questions-page  .wegas-mcqtabview .mcq-choice {
+  display: block;
+  position: relative;
+  border: solid 1px #cac9ce;
+  border-bottom:solid 4px #cac9ce;
+  margin: 16px 0px;
+  padding: 0;
+  background:white;
+}
+.questions-page  .wegas-mcqtabview .mcq-choice.spurned{
+    text-decoration:none;
+    background:#eeeeee;
+    color:#999999;
+}
+
+.questions-page .wegas-mcqtabview .mcq-choice-name{
+    display:block;
+    position:relative;
+    width:100%;
+    height:40px;
+    line-height:40px;
+    margin:0px;
+    padding:0px 16px;
+    color:#333333;
+    font-weight:300;
+    box-sizing: border-box;
+    background-color:#d8d9dd;
+}
+.questions-page .wegas-mcqtabview .mcq-choice.spurned .mcq-choice-name{
+    background-color:#d0d0d2;
+    color:#bcbcbc;
+}
+
+.questions-page .mcq-choice-description{
+    color:#333333;
+    padding:12px 16px;
+}
+.questions-page .wegas-mcqtabview .mcq-choice.spurned .mcq-choice-description{
+    color:#bcbcbc;
+}
+
+.wegas-mcqtabview .mcq-question .mcq-choice button{
+    display:block;
+    position:relative;
+    background:#d0d0d2;
+    text-transform: uppercase;
+    height:24px;
+    margin:12px 16px;
+    font-size:12px;
+    padding:4px 8px 4px 24px;
+    border-radius:6px;
+    color:#7b8390;
+    transition:.3s;
+}
+.wegas-mcqtabview .mcq-question .mcq-choice button:before{
+    content:"\f00c";
+    font-family:"FontAwesome";
+    display:block;
+    position:absolute;
+    width:24px;
+    height:24px;
+    text-align:center;
+    line-height:24px;
+    font-size:12px;
+    top:0px;
+    left:0px;
+}
+
+.wegas-mcqtabview .mcq-question .mcq-choice button:disabled{
+    display:none;
+}
+
+.wegas-mcqtabview .numberOfReplies{
+    line-height:40px;
+}
+
+.wegas-mcqtabview .mcq-question .mcq-choice button:hover{
+    background:#bcbcbd;
+}
+
+.wegas-mcqtabview .mcq-replies-title{
+    width:48px;
+    padding:16px 0px 16px 32px;
+    background-image: url(../../wegas-pmg/images/pmg-result.png);
+    background-size:32px auto;
+    background-repeat:no-repeat;
+    background-position:0px 8px;
+    border:none;
+    border-top:solid 1px lightgray;
     float:left;
+    font-weight:500;
+    color:#ed642d;
+}
+.wegas-mcqtabview .mcq-replies{
+    width:calc(100% - 80px);
+    padding:16px 0px;
+    border-top:solid 1px lightgray;
+    float:right;
+}
+
+/*-----------------------------inbox and history------------------------------*/
+
+.pmg-action-title, .pmg-question-title, .pmg-mail-title{
+    display:block;
+    position:absolute;
+    top:0px;
+    left:0px;
+    width:100%;
+    height:64px;
+    box-sizing:border-box;
+    padding:32px 24px 0px 24px;
+}
+
+.pmg-action-title .title, .pmg-question-title .title, .pmg-mail-title .title{
+    width:50%;
+    height:99%;
+    float:left;
+    margin:0px;
+    padding:0px;
+    top:1px;
+    background:none;
+    box-sizing:border-box;
+}
+
+.pmg-action-title .title.title-list,
+.pmg-question-title .title.title-list, .pmg-mail-title .title.title-list{
+    padding-right:24px;
+}
+
+.pmg-action-title h2, 
+.pmg-question-title h2, .pmg-mail-title h2{
+    width:100%;
+    height:100%;
+    color:#54a49b;
+    margin:0px;
+    padding:6px 0px 8px 0px;
+    font-weight:500;
+    border-bottom:solid 2px #54a49b;
+    box-sizing:border-box;
+}
+
+.pmg-action-title .title.title-message h2,
+.pmg-question-title .title.title-message h2, .pmg-mail-title .title.title-message h2{
+    color:#ea6a3b;
+    border-bottom:solid 2px #ea6a3b;
+}
+
+.wegas-actions, .wegas-mcqtabview, .wegas-questions, .wegas-inbox{
+    display:block;
+    position:absolute;
+    top:0px;
+    left:0px;
+    width:100%;
+    height:100%;
+    box-sizing:border-box;
+    padding:65px 24px 32px 24px;
+}
+
+.wegas-inbox .wegas-inbox-content, .wegas-mcqtabview .yui3-tabview-content{
+    display:block;
+    position:relative;
+    width:100%;
+    height:100%;
+}
+
+.wegas-inbox .wegas-inbox-content .yui3-tabview-list .yui3-tab,
+.wegas-mcqtabview .yui3-tabview-list .yui3-tab{
+    height:56px;
+    width:calc(100% - 24px);
+}
+
+.wegas-inbox .wegas-inbox-content .yui3-tabview-list .yui3-tab:hover,
+.wegas-mcqtabview .yui3-tabview-list .yui3-tab:hover{
+    background:none;
+    background-color:#f1f1f1;
+    height:56px;
+}
+
+.wegas-inbox .wegas-inbox-content .yui3-tabview-list .yui3-tab:hover:after,
+.wegas-mcqtabview .yui3-tabview-list .yui3-tab:hover:after{
+    display:block;
+    position:absolute;
+    content:"";
+    width:18px;
+    height:56px;
+    top:0px;
+    right:-18px;
+    background-image:URL("../../wegas-pmg/images/end_tablist_hover.png");
+    background-size:100%;
+}
+
+.yui3-skin-sam .horizontal-tabview .yui3-tab a.yui3-tab-label  {
+    display:block;
+    position:relative;
+    width:100%;
+    height:14px;
+    padding:21px 0px;
+    margin:0px;
+}
+
+.wegas-inbox .wegas-inbox-content .yui3-tabview-list .yui3-tab a.yui3-tab-label{
+    height:28px;
+    padding:14px 0px;
+}
+
+.yui3-skin-sam .horizontal-tabview .yui3-tab a:hover{
+    background:none;
+    box-shadow:none;
+}
+
+.wegas-inbox .yui3-tab-label:hover, .wegas-mcqtabview .yui3-tab-label:hover{
+    height:56px;
+}
+
+.wegas-inbox .wegas-inbox-content .yui3-tabview-list .yui3-tab.yui3-tab-selected,
+.wegas-mcqtabview .yui3-tabview-list .yui3-tab.yui3-tab-selected{
+    background-color:#d8d9dd;
+    box-shadow:none;
+}
+
+.wegas-inbox .wegas-inbox-content .yui3-tabview-list .yui3-tab.yui3-tab-selected:after,
+.wegas-mcqtabview .yui3-tabview-list .yui3-tab.yui3-tab-selected:after{
+    display:block;
+    position:absolute;
+    content:"";
+    width:18px;
+    height:56px;
+    top:0px;
+    right:-18px;
+    background-image:URL("../../wegas-pmg/images/end_tablist_normal.png");
+    background-size:100%;
+}
+
+.wegas-inbox .wegas-inbox-content .yui3-tabview-panel, .wegas-mcqtabview .yui3-tabview-content .yui3-tabview-panel{
+    box-sizing:border-box;
+    border-left:solid 2px #ea6a3b !important;
+    height:100%;
+}
+.yui3-skin-sam .wegas-inbox .msg-body{
+    padding:16px 0px;
+}
+
+.wegas-inbox .wegas-inbox-content .yui3-tabview-panel .yui3-tab-panel, .wegas-mcqtabview .yui3-tabview-content .yui3-tabview-panel .yui3-tab-panel{
+    border:none;
+    padding:0px 56px;
+}
+
+.wegas-inbox .wegas-inbox-content .yui3-tabview-panel .msg-subject{
+    font-weight:500;
+}
+.wegas-inbox .wegas-inbox-content .yui3-tabview-panel .msg-from{
+      display: block;
+    padding-top: 2px;
+    padding-bottom: 8px;
+}
+
+.wegas-inbox .unread .msg-firstLine .msg-subject, .wegas-mcqtabview .unread .index-status{
+    font-weight:800;
+    color:#3f3f3f;
+}
+.wegas-mcqtabview .index-status{
+    color: #54a49b;
+}
+
+.action-page .wegas-mcqtabview .index-status{
+    color:#3f3f3f;
+}
+
+.yui3-skin-sam .wegas-inbox .msg-header{
+    border-bottom:solid 1px #7a838c;
+    padding:0px;
+    padding-top:24px;
+}
+
+.yui3-skin-sam  .wegas-inbox .wegas-inbox-content .yui3-tabview .yui3-tabview-content .yui3-tabview-list {
+    display: block;
+    position:relative;
+    float:left;
+    overflow-x:hidden;
+    overflow-y:auto;
     border: none;
     width: 50%;
 }
+
 .yui3-skin-sam  .wegas-inbox .wegas-inbox-content .yui3-tabview .yui3-tabview-content .yui3-tabview-panel {
-    display:inline-block;
+    display:block;
+    position:relative;
+    overflow-x:hidden;
+    overflow-y:auto;
     width:50%;
     padding:0;
     border: none;
 }
+
 .wegas-inbox .read{
     padding:0 5px 0;
 }
-.wegas-inbox .body{
+.wegas-inbox .pmg--body{
     position: relative;
     bottom: 0;
     left: 0;
@@ -338,23 +949,88 @@ h2{
 .wegas-inbox .replies > div:last-child {
     border-bottom: none;
 }
+
+.yui3-skin-sam .wegas-inbox .yui3-tab-label > div {
+  padding: 0 10px 0 64px;
+}
+.yui3-skin-sam .wegas-inbox .yui3-tab-label > div:before {
+    content:"";
+    display:block;
+    position:absolute;
+    top:0px;
+    left:0px;
+    width:48px;
+    height:48px;
+    margin:4px 8px;
+    background-size:100%;
+}
+.yui3-skin-sam .wegas-inbox .yui3-tab-label > div.read:before {
+    background-image:URL("../../wegas-pmg/images/letter_open.png");
+}
+.yui3-skin-sam .wegas-inbox .yui3-tab-label > div.unread:before {
+    background-image:URL("../../wegas-pmg/images/letter_close.png");
+}
+
+.history-page b{
+    font-weight:500;
+}
+
+.history-page b:first-child{
+    display:block;
+    position:relative;
+    width:100%;
+    height:32px;
+    padding: 8px 0px;
+    margin: 12px 0px 12px 0px;
+    box-sizing:border-box;
+    border-bottom:solid 1px grey;
+}
+
+.history-page .wegas-inbox .yui3-tab-label > div{
+    padding-left:10px;
+}
+
+.history-page .wegas-inbox .yui3-tab-label > div:before{
+    display:none;
+}
+
 /*----------------------------------Datatable---------------------------------*/
-.body .yui3-datatable table{
+.gantt-execution-page .yui3-datatable, .gantt-planning-page .yui3-datatable{
+    padding:28px 32px 0px 32px;
+}
+
+.task-execution-page .yui3-datatable, .task-planning-page .yui3-datatable{
+    padding:28px 32px;
+}
+.gantt-execution-page .pmg-legend, .gantt-planning-page .pmg-legend{
+    padding:14px 32px 28px 32px;
+}
+
+.yui3-datatable-cell.onclickpopup{
+    text-decoration:none;
+}
+
+.task-execution-page .yui3-datatable-data tr, .task-planning-page .yui3-datatable-data tr{
+    height:64px;
+}
+
+.pmg--body .yui3-datatable table{
     width:100%;
     border: none;
     font-size: 0.9em;
 }
-.body .yui3-datatable-columns th{
+.pmg--body .yui3-datatable-columns th{
     background: none;
-    color: #0981A9;
-    border-bottom: 2px solid #0981A9;
+    color: #52a39d;
+    border-bottom: 2px solid #52a39d;
     /*background-repeat: repeat-x;*/
 }
-.body .yui3-datatable-columns th.right div {
+.pmg--body .yui3-datatable-columns th.right div {
     text-align: right;
 }
-.body .yui3-datatable-cell,
-.body .yui3-datatable-header{
+
+.pmg--body .yui3-datatable-cell,
+.pmg--body .yui3-datatable-header{
     border-left:none;
 }
 
@@ -362,8 +1038,13 @@ td.yui3-datatable-col-Realised:after {
     content: " %";
 }
 
-.body .yui3-datatable-odd .yui3-datatable-cell,
-.body .yui3-datatable-even .yui3-datatable-cell{
+.task-planning-page .yui3-datatable-odd:hover, .task-planning-page .yui3-datatable-even:hover,
+.task-execution-page .yui3-datatable-odd:hover, .task-execution-page .yui3-datatable-even:hover{
+    background:#f1f1f1;
+}
+
+.pmg--body .yui3-datatable-odd .yui3-datatable-cell,
+.pmg--body .yui3-datatable-even .yui3-datatable-cell{
     background: none;
     height: 40px;
     padding: 0 25px 0 10px;
@@ -372,7 +1053,7 @@ td.yui3-datatable-col-Realised:after {
 .yui3-skin-sam .yui3-datatable-data .yui3-datatable-odd .yui3-datatable-sorted  {
     background-color: #f1f1f1;
 }
-.body .yui3-datatable-cell{
+.pmg--body .yui3-datatable-cell{
     border-color: lightgray;
     border-bottom:1px solid lightgray;
 }
@@ -388,198 +1069,295 @@ td.yui3-datatable-col-Realised:after {
     padding: 0 0 0 0;
 }
 
-/*.body .yui3-datatable-data tr:hover td{
-    background-image:url(wegas-pmg/images/previous-week.png);
-    background-repeat: repeat;
-}*/
-/*
-
-.body .description{
-    max-width: 250px;
-    position:fixed;
-    z-index: 100;
-    padding:5px;
-    background-color:white;
-    border:solid 1px #888;
-    border-radius: 5px;
-    box-shadow: 4px 4px 6px #aaa, inset 1px 1px 5px #aaa;
+.resources-page, .inbox-page{
+    padding:32px 24px;
 }
-
-.body .description .task_name{
-    text-transform: capitalize;
-    text-decoration: underline;
-    padding-bottom: 10px;
-}*/
-
-/*-------------------------------task-page------------------------------------*/
-/*.task-page .yui3-datatable-col-treeblenub{
-    width:20px;
-}*/
-
-/*----------------------task-page & gantt-page--------------------------------*/
-/*.task-page .yui3-datatable-col-No,
-.gantt-page .yui3-datatable-col-No{
-    width:20px;
-}
-
-.task-page .yui3-datatable-data  .notstarted .yui3-datatable-cell ,
-.gantt-page .yui3-datatable-data .notstarted .yui3-datatable-cell{
-    background-color: transparent;
-}
-
-.task-page .yui3-datatable-data  .started .yui3-datatable-cell ,
-.gantt-page .yui3-datatable-data .started .yui3-datatable-cell{
-    background-color: #FEFFCB;
-}
-
-.task-page .yui3-datatable-data  .completed .yui3-datatable-cell ,
-.gantt-page .yui3-datatable-data .completed .yui3-datatable-cell{
-    background-color: #CCFFCC;
-}*/
-
-/*------------------------gantt-page & resources-pages------------------------*/
-/*.gantt-page .yui3-datatable-table .yui3-datatable-data .cell-gantt,
-.resources-page .yui3-datatable-table .yui3-datatable-data .cell-gantt{
-    background-color: transparent;
-    border-left:1px #DBDBDB solid;
-    width:40px;
-    text-align: center;
-    padding:0;
-    overflow:hidden;
-}*/
-
-/*.gantt-page .yui3-datatable-table .yui3-datatable-data .scheduled,
-.resources-page .yui3-datatable-table .yui3-datatable-data .scheduled{
-    display:block;
-    background-color: #3399FF;
-    width:100%;
-    height:40%;
-    padding-top: 1px;
-}*/
-
-/*.gantt-page .yui3-datatable-col-Name,
-.resources-page .yui3-datatable-col-Name{
-    width:300px;
-}
-
-.gantt-page .yui3-datatable-columns .previous-week,
-.resources-page .yui3-datatable-columns .previous-week{
-    background-color:#BBBBBB;
-    background-image: none;
-}
-
-.gantt-page .yui3-datatable-columns .current-week,
-.resources-page .yui3-datatable-columns .current-week{
-    background-image: url(wegas-pmg/images/next.png), url(wegas-pmg/images/h2.png);
-    background-repeat: no-repeat, repeat-x;
-    background-position: left, center;
-}
-
-.gantt-page .yui3-datatable-table .yui3-datatable-data .previous-week,
-.resources-page .yui3-datatable-table .yui3-datatable-data .previous-week{
-    background-color:#DDDDDD;
-}*/
 
 /*----------------------------------SlidePanel----------------------------*/
-.resources-page .slidepanel-title,
-.project-page .slidepanel-title {
-    height:27px;
-    width:100%;
+.resources-page .slidepanel-title {
+    height:48px;
+    line-height:48px;
+    width:100%; 
 }
 
-/*---------------------------- project-page ---------------------------------*/
-.project-page .pmg-project-overview {
+/*---------------------------- project-page & evm-page ---------------------------------*/
+.project-page, .evm-page{
+    display: block;
     position:relative;
-    float: left;
-    width: 35%;
+    width: 100%;
+    height: 100%;
+    padding: 0px 24px 24px 24px;
+    box-sizing: border-box;
+    margin: 0px;
+    border: none;
+}
+
+.project-page .pmg-project-overview {
+    position: relative;
+    clear: both;
+    float: none;
+    width: 100%;
 }
 
 .project-page .charts-column {
-    width: 60%;
-    padding-left: 5%;
-    height: 100%;
+    width: 100%;
 }
 
 .project-page .charts-column .chart {
-    height: 50%;
-    /* width: 60%; */
+    width: 50%;
+    float:left;
+    box-sizing:border-box;
+}
+.project-page .indicators-management{
+    padding-right:24px;
+}
+.project-page .indicators-quality{
+    padding-left:24px;
+}
+.evm-page .slidepanel-title,
+.project-page .pmg-overview-title, 
+.project-page .indicators-management .slidepanel-title, 
+.project-page .indicators-quality .slidepanel-title{
+    width:100%;
+    margin:16px 0px;
 }
 
-.project-page h2 {
-    padding-top: 21px;
-    padding-left: 16px;
+.evm-page .slidepanel-title h2,
+.project-page .pmg-overview-title h2, .project-page .indicators-management .slidepanel-title h2, .project-page .indicators-quality .slidepanel-title h2{
+    width:100%;
+    color:#52a39c;
+    border-bottom:solid 2px #52a39c;
+    margin:0px;
+    padding:0px;
+    height: 24px;
 }
-.project-page .wegas-chart {
-    margin-left: 24px;
-    margin-top: 15px;
-}
-.pmg-project-overview-title, 
-.pmg-project-overview-content {
-    position:relative !important;
+.pmg-project-execution-overview{
+    width:100%;
 }
 
-.project-page .pmg-project-overview .pmg-project-overview-content,
-.project-page .finances .wegas-pmg-slidepanel-content {
-    /* margin-top: 15px; */
-    padding-left: 30px;
-    box-sizing: border-box;
+.pmg-project-overview .pmg-project-overview-content{
+    display:block;
+    position:relative;
+    width:32%;
+    height:122px;
+    background:#d8d9dd;
+    margin:0px;
+    padding:0px;
+    border:none;
+    margin-right:2%;
+    float:left;
 }
-.project-page .bacs, .project-page .initial-budget, .project-page .current-time, .project-page .projectCompleteness, .project-page .projectFixedCost, .project-page .taskTotal {
-    font-weight: bold;
-    font-size: 10pt;
-    margin-top: 2px;
-    color: rgb(28, 28, 28);
+.pmg-project-overview .pmg-project-details-content{
+    display:block;
+    position:relative;
+    width:19%;
+    height:122px;
+    background:#d8d9dd;
+    margin:0px;
+    padding:0px;
+    border:none;
+    margin-right:1.25%;
+    float:left;
 }
-.project-page .wages, .project-page .fixedCosts, .project-page .unworkedHours,
-.project-page .current-period, .project-page .current-stage {
-    margin-left: 20px;
-    margin-top: 5px;
+
+.pmg-project-overview .pmg-project-details-content:last-child{
+    margin:0px;
 }
-.project-page .total {
-    font-weight: bold;
-    font-size: 10pt;
-    margin-top: 10px;
+
+.pmg-project-overview-content .label, .pmg-project-details-content .label{
+    display:block;
+    position:relative;
+    width:100%;
+    height:32px;
+    background-color:#7b818f;
+    font-size:12px;
+    padding:8px;
+    box-sizing:border-box;
+    color:white;
 }
-/*.project-page .wages .variableValue,
-.project-page .bacs .variableValue,
-.project-page .fixedCosts .variableValue,
-.project-page .unworkedHours .variableValue,
-.project-page .total .variableValue,
-.project-page .projectFixedCost .variableValue,
-.project-page .taskTotal .variableValue,
-.project-page .projectCompleteness .variableValue,
-.project-page .current-period .variableValue,
-.project-page .current-stage .variableValue */
-.project-page .variableValue 
-{
-    float: right;
-    /* margin-right: 280px; */
+
+.pmg-project-overview-content .variableValue, .pmg-project-details-content .variableValue{
+    display:block;
+    position:relative;
+    width:100%;
+    height:90px;
+    padding:24px 0px;
+    font-size:24px;
+    text-align:center;
+    color:#96979c;
+    box-sizing:border-box;
 }
-.project-page .variableValue input{
-    width: 6em;
+
+.pmg-project-overview-content .variablePercent{
+    display:block;
+    position:absolute;
+    width:100%;
+    height:32px;
+    bottom:0px;
+    left:0px;
+    padding:0px;
+    font-size:12px;
+    text-align:center;
+    color:#96979c;
+    box-sizing:border-box;
 }
+
+.pmg-project-overview-content .variableValue input{
+  width: 84%;
+  border: none;
+}
+.pmg-project-overview-content .variableValue input:focus{
+    border:solid 2px #ed6b3a;
+}
+
+.pmg-project-overview .pmg-project-overview-content:last-child{
+    margin:0;
+}
+.project-page .wegas-chart{
+    width:100% !important;
+}
+
+.project-page .pmg-overview-left, .project-page .pmg-overview-right{
+    display:block;
+    position:relative;
+    width:50%;
+    float:left;
+    margin:0px;
+    padding:0px;
+    box-sizing:border-box;
+}
+
+.project-page .pmg-overview-left{
+   padding-right:24px; 
+}
+
+.project-page .pmg-overview-right{
+    padding-left:24px;
+}
+
+.evm-page .slidepanel-content{
+    overflow:hidden;
+    width:100%;
+}
+
+.evm-page .slidepanel-title{
+    height:26px;
+    width:100%;
+    padding-bottom: 1px;
+}
+
+.evm-page .wegas-chart {
+    width:100%;
+}
+
+.yui3-chartlegend-content span{
+    color:white !important;
+    padding:0px 2px 0px 6px;
+}
+
 /*---------------------------- Resources page ---------------------*/
-.wegas-pmg-resourcespanels-content .pmg-legend {
-    /* margin: 10px 0 0 0; */
-    /* padding: 10px 0px 10px 0px; */
+.resources-page .wegas-pmg-slidepanel{
+    display:block;
+    position:relative;
 }
-.resources-page .wegas-pmg-slidepanel {
-    border-bottom: 1px solid lightgray;
-}
+
 .resources-page .slidepanel-title{
-    background: url(../../wegas-app/images/wegas-icon-toggle.png) no-repeat 7px -110px;
-    padding-left: 16px;
+    padding-left: 32px;
     cursor:pointer;
+    background-color:#d8d9dd;
+    box-sizing:border-box;
+    transition:.3s;
 }
+
 .resources-page .wegas-slidepanel-toggled .slidepanel-title{
-    background: url(../../wegas-app/images/wegas-icon-toggle.png) no-repeat 7px -71px;
+    background-color:white;
+    transition:.3s;
 }
+
+.resources-page .wegas-slidepanel-toggled .slidepanel-title:hover{
+    background-color:#f1f1f1;
+}
+
+.resources-page .slidepanel-title h2{
+    color:#3e404c;
+    transition:.3s;
+    padding:0px;
+    margin:0px;
+    line-height:52px;
+}
+
+.resources-page .wegas-slidepanel-toggled .slidepanel-title h2{
+    color:#3e404c;
+}
+
+.resources-page .wegas-pmg-slidepanel.wegas-slidepanel-toggled{
+    border:solid 1px white;
+    border-bottom:solid 1px #d8d9dd;
+    max-height:48px;
+    overflow:hidden;
+    transition:.3s;
+}
+
+.resources-page .wegas-pmg-slidepanel{
+    margin-bottom:8px;
+    border:solid 1px #d8d9dd;
+    border-bottom:solid 4px #d8d9dd;
+    max-height:1500px;
+    transition:.3s;
+}
+
+.wegas-pmg-slidepanel .wegas-pmg-slidepanel-content{
+    display:block;
+    position:relative;
+    opacity:1;
+    visibility:visible;
+    transition:.3s;
+}
+
+.wegas-pmg-slidepanel.wegas-slidepanel-toggled .wegas-pmg-slidepanel-content{
+    opacity:1;
+    visibility:visible;
+    transition:.3s;
+}
+
+.resources-page .slidepanel-title:before{
+    width:18px;
+    height:18px;
+    margin:16px 7px;
+    border-radius:50%;
+    top:0px;
+    left:0px;
+    font-size:14px;
+    line-height:18px;
+    text-align:center;
+    display:block;
+    position:absolute;
+    content:"\f104";
+    font-family:"FontAwesome";
+    transform:rotate(270deg);
+    border:solid 1px #3e404c;
+    color:#3e404c;
+}
+
+.resources-page .wegas-slidepanel-toggled .slidepanel-title:before{
+    transform:rotate(180deg);
+    border:solid 1px #3e404c;
+    color:#3e404c;
+    transition:.3s;
+}
+
 .wegas-pmg-reservation .present, .wegas-pmg-reservation .futur {
     cursor: pointer;
 }
+
 .wegas-pmg-reservation .noteditable-period {
     cursor: default;
 }
+
+.wegas-pmg-resourcespanels-content .pmg-legend {
+    padding: 8px 0px 0px 0px;
+}
+
 /*---------------------------- Cursor pointer ---------------------*/
 .gantt-planning-page .present, .gantt-planning-page .futur,
 .assignment span, table tbody .popup{
@@ -604,24 +1382,266 @@ td.yui3-datatable-col-Realised:after {
     margin-top: 14px;
 }
 
-/*---------------------------- EVM-page---------------------------------*/
-.evm-page .slidepanel-content{
-    overflow:hidden;
-    width:100%;
-}
-.evm-page .slidepanel-title{
-    height:26px;
-    width:100%;
-    padding-bottom: 1px;
-}
-.evm-page .wegas-chart {
-    margin-left: 48px;
-    margin-top: 15px;
-}
-
 /*----------------------------- Table popup ----------------------------------*/
 .popupTitel {
     margin-bottom: 3px;
     font-weight: bold;
     font-size: 9pt;
 }
+
+.yui3-skin-sam tbody .schedulecolumn{
+    border-left:solid 1px #dadadc;    
+}
+
+.yui3-skin-sam tbody .schedulecolumn.past{
+    background-color:#deeced;
+}
+
+.pmg-legend .unavailable, .yui3-datatable-table .unavailable{
+    background-color:#ed6a3c;
+}
+
+.yui3-datatable-table .past .unavailable {
+  background-color: #ea8d6c;
+}
+
+.pmg-legend .worked, .yui3-datatable-table .past .booked, 
+.yui3-datatable-table .past .activity, .gantt-planning-page .baseline{
+    background-color:#53a29d;
+}
+
+.pmg-legend .fill100, .yui3-datatable-table .progress, .pmg-legend .booked, .yui3-datatable-table .booked{
+    background-color: #68ccc5;
+}
+
+.yui3-datatable-columns .schedulecolumn.present{
+    background-color:#343843;
+    text-shadow:none;
+}
+
+.pmg-popup-overlay{
+    background:rgb(250, 250, 250);
+    border:none;
+    border-radius:2px;
+    padding:0px 0px 0px 0px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    color:#333333;
+    min-width: 460px;
+}
+
+.pmg-popup-overlay .yui3-widget-hd, .pmg-popup-overlay .yui3-widget-bd .subtitle{
+    color:#333333;
+}
+.pmg-popup-overlay .yui3-widget-bd p{
+    font-size:12px;
+}
+
+.pmg-popup-overlay .yui3-widget-hd{
+    background:rgb(255, 255, 255);
+    padding:16px 34px;
+    border-top-left-radius:2px;
+    border-top-right-radius:2px;
+    border-bottom:solid 1px #d4d4d4;
+}
+.pmg-popup-overlay .yui3-widget-bd{
+    padding:16px 24px 12px 24px;
+}
+
+/* Media queries */
+
+@media screen and (max-width: 1329px) {
+    .pmg--infos__phases .pmg--phases__state{
+        display:block;
+        position:relative;
+        float:none;
+        clear:both;
+        width:114px;
+        margin:14px 32px 0px 32px;
+        height:auto;
+    }
+    .wegas-editmode .pmg--infos__phases .pmg--phases__state{
+        display:block;
+        position:relative;
+        float:left;
+        width:416px;
+        height:120px;
+        margin:0px;
+        clear:none;
+    }
+
+    .pmg--phases__state  .wegas-pmg-breadcrumb {
+        display:block;
+        position:relative !important;
+        width:112px;
+        margin:0px;
+    }
+    .wegas-editmode .pmg--phases__state  .wegas-pmg-breadcrumb{
+       display:block;
+        position:relative !important;
+        width:376px;
+        margin:36px 8px 0px 32px;
+    }
+
+    .wegas-pmg-breadcrumb span{
+        display:none;
+    }
+    .wegas-editmode .wegas-pmg-breadcrumb span{
+        display:block;
+    }
+   
+    .wegas-pmg-breadcrumb .current{
+        display:block;
+        width:100%;
+        margin:0px;
+        height:26px;
+        padding-bottom:0px;
+        border-top-left-radius: 2px;
+        border-top-right-radius: 2px;
+        background-color:#25252f;
+    }
+    .wegas-editmode .wegas-pmg-breadcrumb .current{
+        display:block;
+        position:relative;
+        width:80px;
+        height:30px;
+        padding:0px;
+        margin:0px 7px;
+        border-top-left-radius: 0px;
+        border-top-right-radius: 0px;
+        background-color: #ed6a3c;
+    }
+
+    .wegas-pmg-breadcrumb span:before, .wegas-pmg-breadcrumb span:after{
+        display:none;
+    }
+    .wegas-editmode .wegas-pmg-breadcrumb span:before, .wegas-editmode .wegas-pmg-breadcrumb span:after{
+        display:block;
+    }
+    
+    .pmg--phases__state .pmg-period{
+        display:block;
+        position:relative !important;
+        width:112px;
+        background-color:#25252f;
+        height:16px;
+        margin:0px;
+        padding:3px 0px 9px 0px;
+        top:0px !important;
+        clear:both;
+        float:none;
+        border-bottom-left-radius: 2px;
+        border-bottom-right-radius: 2px;
+    }
+    .wegas-editmode .pmg--phases__state .pmg-period{
+        display:block;
+        position:relative !important;
+        width:372px;
+        top:2px !important;
+        background-color:#25252f;
+        height:18px;
+        margin:0px 29px;
+        padding:1px;
+        float:left;
+        clear:none;
+        border-bottom-left-radius: 0px;
+        border-bottom-right-radius: 0px;
+    }
+
+    .pmg--app .wegas-template-valuebox-unit {
+       display:none;
+    }
+    .wegas-editmode .pmg--app .wegas-template-valuebox-unit{
+        display:block;
+    }
+    
+    .pmg--app .wegas-template-valuebox-unit.wegas-template-valuebox-selected{
+        display:block;
+        margin:auto;
+        float:none;
+        clear:both;
+        padding:2px 0px;
+        border-radius:50%;
+        background-color:#ed6a3c;
+        font-weight:600;
+        color:#25252f;
+    }
+    
+    .wegas-editmode .pmg--app .wegas-template-valuebox-unit.wegas-template-valuebox-selected{
+        border: none;
+        border-radius:0px;
+        margin: 1px 1px;
+        padding:0;
+        width: 18px;
+        height: 16px;
+        float: left;
+        clear:none;
+        font-weight:300;
+        background: #446d71;
+        color:white;
+    }
+    
+    .pmg-nextweek {
+        width:112px;
+        height:30px;
+        float:none;
+        clear:both;
+        margin:8px auto;
+        border-radius: 6px;
+    }
+    
+    .wegas-editmode .pmg-nextweek{
+        width:80px;
+        height:30px;
+        float:right;
+        clear:none;
+        margin:36px 8px;
+        border-radius:8px;
+    }
+}
+
+@media screen and (max-width: 1100px) {
+    .pmg-header .pmg--header__identity{
+        width:80px;
+    }
+    
+    .wegas-editmode .pmg-header .pmg--header__identity{
+        width:180px;
+    }
+    
+    .pmg-header .pmg--header__identity .pmg--logo{
+        width:64px;
+        height:64px;
+        margin:54px 8px;
+    }
+    
+    .wegas-editmode .pmg-header .pmg--header__identity .pmg--logo{
+        width:104px;
+        height:104px;
+        margin:16px 38px 4px 38px;
+    }
+    
+    .pmg-header .pmg--header__identity .wegas-text{
+        display:none;
+    }
+    .wegas-editmode .pmg-header .pmg--header__identity .wegas-text{
+        display:block;
+    }
+    
+    .pmg-header .pmg--header__taskbar{
+        padding-left:80px;
+    }
+   
+    .wegas-editmode .pmg-header .pmg--header__taskbar{
+        padding-left:180px;
+    }
+    
+    .pmg--taskbar__menus .pmg--menus__main-menu .wegas-button{
+        padding:0px 12px;
+    }
+    .wegas-editmode .pmg--taskbar__menus .pmg--menus__main-menu .wegas-button{
+        padding:0px 16px;
+    }
+}
+
+
+

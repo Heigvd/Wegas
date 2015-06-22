@@ -91,10 +91,12 @@ public class AbstractGameController implements Serializable {
     public String getStaticClientScripts() throws IOException {
         String clientScriptUri = this.getCurrentGameModel().getProperties().getClientScriptUri();
         final List<String> files = new ArrayList<>();
-        for (String s : clientScriptUri.split(";")) {
-            s = s.trim();
-            s = s.startsWith("/") ? s : "/" + s;
-            files.add(s);
+        if (clientScriptUri != null) {
+            for (String s : clientScriptUri.split(";")) {
+                s = s.trim();
+                s = s.startsWith("/") ? s : "/" + s;
+                files.add(s);
+            }
         }
         return comboController.getCombinedFile(files, ComboController.MediaTypeJs);
     }

@@ -25,79 +25,24 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
             BOUNDING_TEMPLATE: "<div><div class='slidepanel-title' style='position:relative;'><h2></h2></div></div>",
             renderUI: function() {
                 this.handlers = {};
-
-                var cb = this.get(CONTENTBOX);
-
-                this.get("boundingBox").append("<div class='slidepanel-cleaner' style='position:relative; z-index:-1;'></div>")
-                    .one(".slidepanel-title h2").setContent(this.get("title"));
-
-                cb.setStyles({
-                    position: "absolute",
-                    width: "100%"
-                });
-
-                if (this.get("animation")) { // Slide animation
-                    this.animation = cb.plug(Y.Plugin.NodeFX, {
-                        from: {
-                            height: 0
-                        },
-                        to: {
-                            height: function(node) { // dynamic in case of change
-                                return node.get('scrollHeight'); // get expanded height (offsetHeight may be zero)
-                            }
-                        },
-                        easing: Y.Easing.easeOut,
-                        duration: 0.5
-                    }, this);
-
-                    this.cleaner = cb.ancestor().one(".slidepanel-cleaner").plug(Y.Plugin.NodeFX, {//compensates the non-height of the content's absolute position.
-                        from: {
-                            height: 0
-                        },
-                        to: {
-                            height: function(node) {
-                                return node.ancestor().one(".wegas-pmg-slidepanel-content").get('scrollHeight');
-                            }
-                        },
-                        easing: Y.Easing.easeOut,
-                        duration: 0.5
-                    }, this);
+                this.get("boundingBox").one(".slidepanel-title h2").setContent(this.get("title"));
+                if(this.get("openByDefault")){
+                    this.get("boundingBox").addClass("wegas-slidepanel-toggled");
                 }
             },
             bindUI: function() {
                 this.handlers.update = Wegas.Facade.Variable.after("update", this.syncUI, this);
-
-                this.get("boundingBox").one(".slidepanel-title").on('click', function(e) {
-                    e.preventDefault();
-                    this.get("boundingBox").toggleClass("wegas-slidepanel-toggled");
-                    if (this.get('animation')) {
-                        this.animation.fx.set('reverse', !this.animation.fx.get('reverse')) // toggle reverse
-                            .run();
-                        this.cleaner.fx.set('reverse', !this.cleaner.fx.get('reverse')) // toggle reverse
-                            .run();
-                    }
-                }, this);
-            },
-            syncUI: function() {
-                var cb = this.get(CONTENTBOX);
-                if (!cb.get("parentElement").hasClass("wegas-slidepanel-toggled") && cb.get('scrollHeight') > 0) {
-                    cb.ancestor().one(".slidepanel-cleaner").setStyle('height', cb.get('scrollHeight')); //compensates
-                                                                                                         // the
-                                                                                                         // non-height
-                                                                                                         // of the
-                                                                                                         // content's
-                                                                                                         // absolute
-                                                                                                         // position.
+                if (this.get("animation")) {
+                    this.get("boundingBox").one(".slidepanel-title").on('click', function(e) {
+                        e.preventDefault();
+                        this.get("boundingBox").toggleClass("wegas-slidepanel-toggled");
+                    }, this);
                 }
             },
             destructor: function() {
                 var k;
                 for (k in this.handlers) {
                     this.handlers[k].detach();
-                }
-                if (this.get('animation')) {
-                    this.animation.destroy();
-                    this.cleaner.destroy();
                 }
             }
         },
@@ -117,6 +62,13 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                     value: true,
                     _inputex: {
                         label: "Animation"
+                    }
+                },
+                openByDefault: {
+                    type: "boolean",
+                    value: true,
+                    _inputex: {
+                        label: "Open by default"
                     }
                 }
             }
@@ -174,30 +126,30 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                             columnsCfg: [{
                                 key: "label",
                                 label: "Name",
-                                sortable: true
+                                sortable: false
                             }, {
                                 label: "Grade",
                                 formatter: "skillLevel",
                                 key: "instance.properties.level",
-                                sortable: true,
+                                sortable: false,
                                 allowHTML: true
                             }, {
                                 label: "Monthly wages",
                                 key: "instance.properties.wage",
-                                sortable: true
+                                sortable: false
                             }, {
                                 label: "Rate",
                                 key: "instance.properties.activityRate",
-                                sortable: true
+                                sortable: false
                             }, {
                                 label: "Motiv.",
                                 key: "instance.properties.motivation",
-                                sortable: true
+                                sortable: false
                             }],
                             defaultSort: null
                         }, {
                             type: "Text",
-                            content: "<div class=\"pmg-legend\">\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nDelayed</div>\n<div><div class=\"worked\">&nbsp;</div>\nWorked</div>\n<div><div class=\"booked\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"unavailable\">&nbsp;</div>\nNot Available</div>\n</div>"
+                            content: "<div class=\"pmg-legend\">\n<div><div class=\"worked\">&nbsp;</div>\nWorked</div>\n<div><div class=\"booked\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"unavailable\">&nbsp;</div>\nNot Available</div>\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nDelay to assign/unassign</div>\n</div>"
                         }]
                     }).render(this.get(CONTENTBOX));
                     if (!autoReserve) {
@@ -230,8 +182,7 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                             }
                         });
 
-                    }
-
+                    }  
                     panel.on(["*:message", "*:showOverlay", "*:hideOverlay"], this.fire, this);
                     return panel;
                 }, this);

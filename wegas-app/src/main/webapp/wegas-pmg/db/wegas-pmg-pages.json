@@ -1,12 +1,11 @@
-{
+﻿{
     "1": {
         "type": "AbsoluteLayout",
-        "@name": "Main",
         "cssClass": "layout",
         "children": [
             {
                 "type": "List",
-                "cssClass": "vertical-menu",
+                "cssClass": "pmg--app",
                 "plugins": [
                     {
                         "fn": "CSSPosition",
@@ -20,7 +19,8 @@
                                 "right": ""
                             }
                         }
-                    }, {
+                    },
+                    {
                         "fn": "CSSSize",
                         "cfg": {
                             "styles": {
@@ -35,840 +35,903 @@
                 "children": [
                     {
                         "type": "List",
-                        "cssClass": "horizontal-menu pmg-header",
-                        "plugins": [
-                            {
-                                "fn": "CSSSize",
-                                "cfg": {
-                                    "styles": {
-                                        "width": "auto",
-                                        "height": "90px"
-                                    }
-                                }
-                            }
-                        ],
+                        "cssClass": "pmg-header",
                         "direction": "horizontal",
                         "name": "header",
                         "children": [
                             {
-                                "type": "AbsoluteLayout",
-                                "plugins": [
-                                    {
-                                        "fn": "CSSSize",
-                                        "cfg": {
-                                            "styles": {
-                                                "width": "440px",
-                                                "height": "90px"
-                                            }
-                                        }
-                                    }
-                                ],
+                                "type": "List",
+                                "cssClass": "pmg--header__identity",
+                                "direction": "vertical",
+                                "name": "identity",
                                 "children": [
+                                    {
+                                        "type": "Box",
+                                        "cssClass": "pmg--logo",
+                                        "name": "logo PMG"
+                                    },
                                     {
                                         "type": "Text",
-                                        "plugins": [
-                                            {
-                                                "fn": "CSSPosition",
-                                                "cfg": {
-                                                    "styles": {
-                                                        "position": "absolute",
-                                                        "top": "0px",
-                                                        "left": "56px"
-                                                    }
-                                                }
-                                            }, {
-                                                "fn": "CSSSize",
-                                                "cfg": {
-                                                    "styles": {
-                                                    }
-                                                }
-                                            }, {
-                                                "fn": "CSSText",
-                                                "cfg": {
-                                                    "styles": {
-                                                        "color": "#3C3C3C",
-                                                        "fontSize": "24px",
-                                                        "fontStyle": "italic",
-                                                        "textAlign": ""
-                                                    }
-                                                }
-                                            }, {
-                                                "fn": "CSSStyles",
-                                                "cfg": {
-                                                    "styles": {
-                                                        "font-variant": "small-caps"
-                                                    }
-                                                }
-                                            }
-                                        ],
                                         "content": "<p>Project Management Game</p>"
-                                    }, {
-                                        "type": "Image",
-                                        "plugins": [
-                                            {
-                                                "fn": "CSSPosition",
-                                                "cfg": {
-                                                    "styles": {
-                                                        "position": "absolute",
-                                                        "top": "20px",
-                                                        "left": "7px"
-                                                    }
-                                                }
-                                            }, {
-                                                "fn": "CSSSize",
-                                                "cfg": {
-                                                    "styles": {
-                                                        "position": "absolute",
-                                                        "height": "53px"
-                                                    }
-                                                }
-                                            }
-                                        ],
-                                        "url": " http://wegas.albasim.ch/wegas-pmg/images/pmg-logo-1.png"
-                                    }, {
-                                        "type": "PmgBreadcrumb",
-                                        "plugins": [
-                                            {
-                                                "fn": "CSSPosition",
-                                                "cfg": {
-                                                    "styles": {
-                                                        "position": "absolute",
-                                                        "top": "25px",
-                                                        "left": "72px"
-                                                    }
-                                                }
-                                            }, {
-                                                "fn": "CSSSize",
-                                                "cfg": {
-                                                    "styles": {
-                                                    }
-                                                }
-                                            }
-                                        ],
-                                        "locations": [
-                                            "phase1Name",
-                                            "phase2Name",
-                                            "phase3Name",
-                                            "phase4Name"
-                                        ],
-                                        "variable": "currentPhase"
-                                    }, {
-                                        "type": "Template",
-                                        "cssClass": "pmg-period",
-                                        "plugins": [
-                                            {
-                                                "fn": "CSSPosition",
-                                                "cfg": {
-                                                    "styles": {
-                                                        "position": "absolute",
-                                                        "zIndex": "10",
-                                                        "top": "50px",
-                                                        "left": "72px",
-                                                        "bottom": "",
-                                                        "right": ""
-                                                    }
-                                                }
-                                            }, {
-                                                "fn": "CSSSize",
-                                                "cfg": {
-                                                    "styles": {
-                                                        "width": "",
-                                                        "height": ""
-                                                    }
-                                                }
-                                            }
-                                        ],
-                                        "variable": {
-                                            "@class": "Script",
-                                            "content": "Variable.find(gameModel, \"currentPhase\");\n"
-                                        },
-                                        "data": {
-                                            "label": ""
-                                        },
-                                        "custom": "<div class='wegas-template-valuebox'><% if(this.label){ %><label><%= this.label %></label><% } %><div class='wegas-template-valuebox-units'><% var maxVal, phase = this.value, currentPeriod = Y.Wegas.Facade.Variable.cache.find('name', 'currentPeriod').get('items')[phase -1]; if (phase != 3) {maxVal = currentPeriod.getMaxValue()} else { var exec = Y.Wegas.Facade.Variable.cache.find('name', 'executionPeriods').get('value'); if (currentPeriod.getValue() >= exec) { maxVal = currentPeriod.getValue(); maxVal++} else { maxVal = exec}} %><% for(var i=+currentPeriod.getMinValue(); i < +maxVal + 1; i+=1){%><div class='wegas-template-valuebox-unit <%= +i < +currentPeriod.getValue() ? ' wegas-template-valuebox-previous' : '' %><%= +i === +currentPeriod.getValue() ? ' wegas-template-valuebox-selected' : '' %>'><%= ''+i %></div> <% } %></span></div></div>"
                                     }
                                 ]
-                            }, {
-                                "type": "AbsoluteLayout",
-                                "plugins": [
-                                    {
-                                        "fn": "CSSSize",
-                                        "cfg": {
-                                            "styles": {
-                                                "width": "100px",
-                                                "height": "90px"
-                                            }
-                                        }
-                                    }
-                                ],
+                            },
+                            {
+                                "type": "List",
+                                "cssClass": "pmg--header__taskbar",
+                                "direction": "vertical",
+                                "name": "taskbar",
                                 "children": [
                                     {
-                                        "label": "",
-                                        "type": "Button",
-                                        "cssClass": "pmg-nextweek",
-                                        "plugins": [
+                                        "type": "LoginButton",
+                                        "cssClass": "menu-loginbutton",
+                                        "forcedLabel": "Leave session",
+                                        "targetPageLoader": "maindisplayarea"
+                                    },
+                                    {
+                                        "type": "List",
+                                        "cssClass": "pmg--taskbar__infos",
+                                        "direction": "horizontal",
+                                        "name": "infos",
+                                        "children": [
                                             {
-                                                "fn": "ConditionalDisable",
-                                                "cfg": {
-                                                    "condition": {
-                                                        "@class": "Script",
-                                                        "content": "var phase = Variable.find(gameModel, 'currentPhase').getValue(self), period = Variable.find(gameModel, 'currentPeriod').item(phase - 1);return  (phase != 3 && period.getMaxValue() == period.getValue(self)) || (phase == 3 && Variable.find(gameModel, 'projectCompleteness').getValue(self) >= 100);",
-                                                        "language": "JavaScript"
+                                                "type": "List",
+                                                "cssClass": "pmg--infos__phases",
+                                                "direction": "horizontal",
+                                                "name": "phases",
+                                                "children": [
+                                                    {
+                                                        "type": "AbsoluteLayout",
+                                                        "cssClass": "pmg--phases__state",
+                                                        "children": [
+                                                            {
+                                                                "type": "PmgBreadcrumb",
+                                                                "plugins": [
+                                                                    {
+                                                                        "fn": "CSSPosition",
+                                                                        "cfg": {
+                                                                            "styles": {
+                                                                                "position": "absolute",
+                                                                                "top": "0px",
+                                                                                "left": "0px"
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "fn": "CSSSize",
+                                                                        "cfg": {
+                                                                            "styles": {}
+                                                                        }
+                                                                    }
+                                                                ],
+                                                                "locations": [
+                                                                    "phase1Name",
+                                                                    "phase2Name",
+                                                                    "phase3Name",
+                                                                    "phase4Name"
+                                                                ],
+                                                                "variable": "currentPhase"
+                                                            },
+                                                            {
+                                                                "type": "Template",
+                                                                "cssClass": "pmg-period",
+                                                                "plugins": [
+                                                                    {
+                                                                        "fn": "CSSSize",
+                                                                        "cfg": {
+                                                                            "styles": {
+                                                                                "width": "",
+                                                                                "height": ""
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "fn": "CSSPosition",
+                                                                        "cfg": {
+                                                                            "styles": {
+                                                                                "position": "absolute",
+                                                                                "top": "0px",
+                                                                                "left": "0px"
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                ],
+                                                                "variable": {
+                                                                    "@class": "Script",
+                                                                    "content": "Variable.find(gameModel, \"currentPhase\");\n"
+                                                                },
+                                                                "data": {
+                                                                    "label": ""
+                                                                },
+                                                                "custom": "<div class='wegas-template-valuebox'><% if(this.label){ %><label><%= this.label %></label><% } %><div class='wegas-template-valuebox-units'><% var maxVal, phase = this.value, currentPeriod = Y.Wegas.Facade.Variable.cache.find('name', 'currentPeriod').get('items')[phase -1]; if (phase != 3) {maxVal = currentPeriod.getMaxValue()} else { var exec = Y.Wegas.Facade.Variable.cache.find('name', 'executionPeriods').get('value'); if (currentPeriod.getValue() >= exec) { maxVal = currentPeriod.getValue(); maxVal++} else { maxVal = exec}} %><% for(var i=+currentPeriod.getMinValue(); i < +maxVal + 1; i+=1){%><div class='wegas-template-valuebox-unit <%= +i < +currentPeriod.getValue() ? ' wegas-template-valuebox-previous' : '' %><%= +i === +currentPeriod.getValue() ? ' wegas-template-valuebox-selected' : '' %>'><%= ''+i %></div> <% } %></span></div></div>"
+                                                            }
+                                                        ]
                                                     },
-                                                    "attribute": "cssClass",
-                                                    "value": "passPhase"
-                                                }
-                                            }, {
-                                                "fn": "ConditionalDisable2",
-                                                "cfg": {
-                                                    "condition": {
-                                                        "@class": "Script",
-                                                        "content": "var pCompleteness = Variable.find(gameModel, 'projectCompleteness').getValue(self), cPhase = Variable.find(gameModel, 'currentPhase').getValue(self), cPeriod = Variable.find(gameModel, 'currentPeriod').item(cPhase-1).getValue(self), lPhase = Variable.find(gameModel, 'phaseLimit').getValue(self), lPeriod = Variable.find(gameModel, 'periodLimit').getValue(self), executionPeriods = Variable.find(gameModel, 'executionPeriods').getValue(self); return ((cPhase >= lPhase) && (cPeriod >= lPeriod) && !((cPhase === 3) && (lPeriod > executionPeriods) && (pCompleteness < 100)))",
-                                                        "language": "JavaScript"
+                                                    {
+                                                        "label": "",
+                                                        "type": "Button",
+                                                        "cssClass": "pmg-nextweek",
+                                                        "plugins": [
+                                                            {
+                                                                "fn": "ConditionalDisable",
+                                                                "cfg": {
+                                                                    "condition": {
+                                                                        "@class": "Script",
+                                                                        "content": "var phase = Variable.find(gameModel, 'currentPhase').getValue(self), period = Variable.find(gameModel, 'currentPeriod').item(phase - 1);return  (phase != 3 && period.getMaxValue() == period.getValue(self)) || (phase == 3 && Variable.find(gameModel, 'projectCompleteness').getValue(self) >= 100);",
+                                                                        "language": "JavaScript"
+                                                                    },
+                                                                    "attribute": "cssClass",
+                                                                    "value": "passPhase"
+                                                                }
+                                                            },
+                                                            {
+                                                                "fn": "ConditionalDisable2",
+                                                                "cfg": {
+                                                                    "condition": {
+                                                                        "@class": "Script",
+                                                                        "content": "var pCompleteness = Variable.find(gameModel, 'projectCompleteness').getValue(self), cPhase = Variable.find(gameModel, 'currentPhase').getValue(self), cPeriod = Variable.find(gameModel, 'currentPeriod').item(cPhase-1).getValue(self), lPhase = Variable.find(gameModel, 'phaseLimit').getValue(self), lPeriod = Variable.find(gameModel, 'periodLimit').getValue(self), executionPeriods = Variable.find(gameModel, 'executionPeriods').getValue(self); return ((cPhase >= lPhase) && (cPeriod >= lPeriod) && !((cPhase === 3) && (lPeriod > executionPeriods) && (pCompleteness < 100)))",
+                                                                        "language": "JavaScript"
+                                                                    },
+                                                                    "attribute": "disabled",
+                                                                    "value": ""
+                                                                }
+                                                            },
+                                                            {
+                                                                "fn": "ConfirmExecuteScriptAction",
+                                                                "cfg": {
+                                                                    "targetEvent": "click",
+                                                                    "onClick": {
+                                                                        "@class": "Script",
+                                                                        "language": "JavaScript",
+                                                                        "content": "PMGSimulation.nextPeriod()"
+                                                                    },
+                                                                    "message": "Are you sure you want to continue?"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "List",
+                                                "cssClass": "pmg--infos__indicators",
+                                                "direction": "horizontal",
+                                                "name": "indicators",
+                                                "children": [
+                                                    {
+                                                        "type": "AbsoluteLayout",
+                                                        "cssClass": "pmg--indicator",
+                                                        "children": [
+                                                            {
+                                                                "type": "Template",
+                                                                "cssClass": "pmg--indicator__label",
+                                                                "plugins": [
+                                                                    {
+                                                                        "fn": "CSSPosition",
+                                                                        "cfg": {
+                                                                            "styles": {
+                                                                                "position": "absolute",
+                                                                                "top": "0px",
+                                                                                "left": "0px",
+                                                                                "zIndex": "10"
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "fn": "CSSSize",
+                                                                        "cfg": {
+                                                                            "styles": {}
+                                                                        }
+                                                                    }
+                                                                ],
+                                                                "variable": {
+                                                                    "@class": "Script",
+                                                                    "content": "Variable.find(gameModel, \"managementApproval\");\n"
+                                                                },
+                                                                "data": {
+                                                                    "label": "Indicator1"
+                                                                },
+                                                                "custom": "<%= this.variable.get(\"label\") %>"
+                                                            },
+                                                            {
+                                                                "type": "GaugeDisplay",
+                                                                "plugins": [
+                                                                    {
+                                                                        "fn": "CSSPosition",
+                                                                        "cfg": {
+                                                                            "styles": {
+                                                                                "position": "absolute",
+                                                                                "zIndex": "10",
+                                                                                "top": "0px",
+                                                                                "left": "0px",
+                                                                                "bottom": "",
+                                                                                "right": ""
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "fn": "CSSSize",
+                                                                        "cfg": {
+                                                                            "styles": {
+                                                                                "width": "",
+                                                                                "height": ""
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                ],
+                                                                "variable": {
+                                                                    "@class": "Script",
+                                                                    "content": "Variable.find(gameModel, \"managementApproval\");\n"
+                                                                },
+                                                                "label": "&nbsp;",
+                                                                "minValue": "",
+                                                                "maxValue": 200,
+                                                                "cfg": {
+                                                                    "pointer": {
+                                                                        "pointerlength": 0.55,
+                                                                        "strokeWidth": 0.05,
+                                                                        "color": "#FFFFFF"
+                                                                    },
+                                                                    "backgroundPercentColors": [
+                                                                        [
+                                                                            "0",
+                                                                            "#d45951"
+                                                                        ],
+                                                                        [
+                                                                            "0.328",
+                                                                            "#343843"
+                                                                        ],
+                                                                        [
+                                                                            "0.34",
+                                                                            "#eec76a"
+                                                                        ],
+                                                                        [
+                                                                            "0.658",
+                                                                            "#343843"
+                                                                        ],
+                                                                        [
+                                                                            "0.67",
+                                                                            "#69bd7f"
+                                                                        ]
+                                                                    ],
+                                                                    "lineWidth": 0.35,
+                                                                    "angle": 150
+                                                                }
+                                                            }
+                                                        ]
                                                     },
-                                                    "attribute": "disabled",
-                                                    "value": ""
-                                                }
-                                            }, {
-                                                "fn": "ConfirmExecuteScriptAction",
-                                                "cfg": {
-                                                    "targetEvent": "click",
-                                                    "onClick": {
-                                                        "@class": "Script",
-                                                        "language": "JavaScript",
-                                                        "content": "PMGSimulation.nextPeriod()"
+                                                    {
+                                                        "type": "AbsoluteLayout",
+                                                        "cssClass": "pmg--indicator",
+                                                        "children": [
+                                                            {
+                                                                "type": "Template",
+                                                                "cssClass": "pmg--indicator__label",
+                                                                "plugins": [
+                                                                    {
+                                                                        "fn": "CSSPosition",
+                                                                        "cfg": {
+                                                                            "styles": {
+                                                                                "position": "absolute",
+                                                                                "top": "0px",
+                                                                                "left": "0px"
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "fn": "CSSSize",
+                                                                        "cfg": {
+                                                                            "styles": {}
+                                                                        }
+                                                                    }
+                                                                ],
+                                                                "variable": {
+                                                                    "@class": "Script",
+                                                                    "content": "Variable.find(gameModel, \"userApproval\");\n"
+                                                                },
+                                                                "data": {
+                                                                    "label": "Indicator2"
+                                                                },
+                                                                "custom": "<%= this.variable.get(\"label\") %>"
+                                                            },
+                                                            {
+                                                                "type": "GaugeDisplay",
+                                                                "plugins": [
+                                                                    {
+                                                                        "fn": "CSSPosition",
+                                                                        "cfg": {
+                                                                            "styles": {
+                                                                                "position": "absolute",
+                                                                                "top": "0px",
+                                                                                "left": "0px",
+                                                                                "zIndex": "10"
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "fn": "CSSSize",
+                                                                        "cfg": {
+                                                                            "styles": {}
+                                                                        }
+                                                                    }
+                                                                ],
+                                                                "variable": {
+                                                                    "@class": "Script",
+                                                                    "content": "Variable.find(gameModel, \"userApproval\");\n"
+                                                                },
+                                                                "label": "&nbsp;",
+                                                                "minValue": "",
+                                                                "maxValue": 200,
+                                                                "cfg": {
+                                                                    "pointer": {
+                                                                        "pointerlength": 0.55,
+                                                                        "strokeWidth": 0.05,
+                                                                        "color": "#FFFFFF"
+                                                                    },
+                                                                    "backgroundPercentColors": [
+                                                                        [
+                                                                            "0",
+                                                                            "#d45951"
+                                                                        ],
+                                                                        [
+                                                                            "0.328",
+                                                                            "#343843"
+                                                                        ],
+                                                                        [
+                                                                            "0.34",
+                                                                            "#eec76a"
+                                                                        ],
+                                                                        [
+                                                                            "0.658",
+                                                                            "#343843"
+                                                                        ],
+                                                                        [
+                                                                            "0.67",
+                                                                            "#69bd7f"
+                                                                        ]
+                                                                    ],
+                                                                    "lineWidth": 0.35,
+                                                                    "angle": 150
+                                                                }
+                                                            }
+                                                        ]
                                                     },
-                                                    "message": "Are you sure you want to continue?"
-                                                }
-                                            }, {
-                                                "fn": "CSSSize",
-                                                "cfg": {
-                                                    "styles": {
-                                                        "width": "90px",
-                                                        "height": "46px"
+                                                    {
+                                                        "type": "GaugeDisplay",
+                                                        "cssClass": "pmg--indicator pmg--indicator--divided",
+                                                        "plugins": [
+                                                            {
+                                                                "fn": "ConditionalDisable",
+                                                                "cfg": {
+                                                                    "condition": {
+                                                                        "@class": "Script",
+                                                                        "content": "Variable.find(gameModel, \"currentPhase\").getValue(self)<3;\n"
+                                                                    },
+                                                                    "attribute": "disabled",
+                                                                    "value": ""
+                                                                }
+                                                            }
+                                                        ],
+                                                        "variable": {
+                                                            "@class": "Script",
+                                                            "content": "Variable.find(gameModel, \"quality\");\n"
+                                                        },
+                                                        "label": "Quality",
+                                                        "minValue": "",
+                                                        "maxValue": 200,
+                                                        "cfg": {
+                                                            "pointer": {
+                                                                "pointerlength": 0.55,
+                                                                "strokeWidth": 0.05,
+                                                                "color": "#FFFFFF"
+                                                            },
+                                                            "backgroundPercentColors": [
+                                                                [
+                                                                    "0",
+                                                                    "#d45951"
+                                                                ],
+                                                                [
+                                                                    "0.328",
+                                                                    "#343843"
+                                                                ],
+                                                                [
+                                                                    "0.34",
+                                                                    "#eec76a"
+                                                                ],
+                                                                [
+                                                                    "0.658",
+                                                                    "#343843"
+                                                                ],
+                                                                [
+                                                                    "0.67",
+                                                                    "#69bd7f"
+                                                                ]
+                                                            ],
+                                                            "lineWidth": 0.35,
+                                                            "angle": 150
+                                                        }
+                                                    },
+                                                    {
+                                                        "type": "GaugeDisplay",
+                                                        "cssClass": "pmg--indicator",
+                                                        "plugins": [
+                                                            {
+                                                                "fn": "ConditionalDisable",
+                                                                "cfg": {
+                                                                    "condition": {
+                                                                        "@class": "Script",
+                                                                        "content": "Variable.find(gameModel, \"currentPhase\").getValue(self)<3;\n"
+                                                                    },
+                                                                    "attribute": "disabled",
+                                                                    "value": ""
+                                                                }
+                                                            }
+                                                        ],
+                                                        "variable": {
+                                                            "@class": "Script",
+                                                            "content": "Variable.find(gameModel, \"costs\");\n"
+                                                        },
+                                                        "label": "Costs",
+                                                        "minValue": "",
+                                                        "maxValue": 200,
+                                                        "cfg": {
+                                                            "pointer": {
+                                                                "pointerlength": 0.55,
+                                                                "strokeWidth": 0.05,
+                                                                "color": "#FFFFFF"
+                                                            },
+                                                            "backgroundPercentColors": [
+                                                                [
+                                                                    "0",
+                                                                    "#d45951"
+                                                                ],
+                                                                [
+                                                                    "0.328",
+                                                                    "#343843"
+                                                                ],
+                                                                [
+                                                                    "0.34",
+                                                                    "#eec76a"
+                                                                ],
+                                                                [
+                                                                    "0.658",
+                                                                    "#343843"
+                                                                ],
+                                                                [
+                                                                    "0.67",
+                                                                    "#69bd7f"
+                                                                ]
+                                                            ],
+                                                            "lineWidth": 0.35,
+                                                            "angle": 150
+                                                        }
+                                                    },
+                                                    {
+                                                        "type": "GaugeDisplay",
+                                                        "cssClass": "pmg--indicator",
+                                                        "plugins": [
+                                                            {
+                                                                "fn": "ConditionalDisable",
+                                                                "cfg": {
+                                                                    "condition": {
+                                                                        "@class": "Script",
+                                                                        "content": "Variable.find(gameModel, \"currentPhase\").getValue(self)<3;\n"
+                                                                    },
+                                                                    "attribute": "disabled",
+                                                                    "value": ""
+                                                                }
+                                                            }
+                                                        ],
+                                                        "variable": {
+                                                            "@class": "Script",
+                                                            "content": "Variable.find(gameModel, \"delay\");\n"
+                                                        },
+                                                        "label": "Schedule",
+                                                        "minValue": "",
+                                                        "maxValue": 200,
+                                                        "cfg": {
+                                                            "pointer": {
+                                                                "pointerlength": 0.55,
+                                                                "strokeWidth": 0.05,
+                                                                "color": "#FFFFFF"
+                                                            },
+                                                            "backgroundPercentColors": [
+                                                                [
+                                                                    "0",
+                                                                    "#d45951"
+                                                                ],
+                                                                [
+                                                                    "0.328",
+                                                                    "#343843"
+                                                                ],
+                                                                [
+                                                                    "0.34",
+                                                                    "#eec76a"
+                                                                ],
+                                                                [
+                                                                    "0.658",
+                                                                    "#343843"
+                                                                ],
+                                                                [
+                                                                    "0.67",
+                                                                    "#69bd7f"
+                                                                ]
+                                                            ],
+                                                            "lineWidth": 0.35,
+                                                            "angle": 150
+                                                        }
+                                                    },
+                                                    {
+                                                        "type": "AbsoluteLayout",
+                                                        "cssClass": "pmg--time-cards",
+                                                        "children": [
+                                                            {
+                                                                "type": "Text",
+                                                                "plugins": [
+                                                                    {
+                                                                        "fn": "CSSPosition",
+                                                                        "cfg": {
+                                                                            "styles": {
+                                                                                "position": "absolute",
+                                                                                "top": "0px",
+                                                                                "left": "0px"
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "fn": "CSSSize",
+                                                                        "cfg": {
+                                                                            "styles": {}
+                                                                        }
+                                                                    }
+                                                                ],
+                                                                "content": "<p>Time cards</p>"
+                                                            },
+                                                            {
+                                                                "type": "NumberTemplate",
+                                                                "plugins": [
+                                                                    {
+                                                                        "fn": "CSSPosition",
+                                                                        "cfg": {
+                                                                            "styles": {
+                                                                                "position": "absolute",
+                                                                                "top": "0px",
+                                                                                "left": "0px",
+                                                                                "zIndex": "10"
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "fn": "CSSSize",
+                                                                        "cfg": {
+                                                                            "styles": {}
+                                                                        }
+                                                                    }
+                                                                ],
+                                                                "variable": {
+                                                                    "@class": "Script",
+                                                                    "content": "Variable.find(gameModel, \"timeCards\");\n"
+                                                                },
+                                                                "data": {
+                                                                    "label": ""
+                                                                }
+                                                            }
+                                                        ]
                                                     }
-                                                }
-                                            }, {
-                                                "fn": "CSSPosition",
-                                                "cfg": {
-                                                    "styles": {
-                                                        "position": "absolute",
-                                                        "top": "23px",
-                                                        "left": "5px",
-                                                        "zIndex": "10"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "List",
+                                        "cssClass": "pmg--taskbar__menus",
+                                        "direction": "horizontal",
+                                        "name": "menus",
+                                        "children": [
+                                            {
+                                                "type": "List",
+                                                "cssClass": "pmg--menus__main-menu",
+                                                "direction": "horizontal",
+                                                "name": "main-menu",
+                                                "children": [
+                                                    {
+                                                        "label": "Home",
+                                                        "type": "Button",
+                                                        "plugins": [
+                                                            {
+                                                                "fn": "OpenPageAction",
+                                                                "cfg": {
+                                                                    "targetEvent": "click",
+                                                                    "subpageId": "15",
+                                                                    "targetPageLoaderId": "maindisplayarea",
+                                                                    "variable": {
+                                                                        "@class": "Script",
+                                                                        "content": ""
+                                                                    }
+                                                                }
+                                                            }
+                                                        ],
+                                                        "data": {}
+                                                    },
+                                                    {
+                                                        "label": "Project",
+                                                        "type": "Button",
+                                                        "plugins": [
+                                                            {
+                                                                "fn": "OpenPageAction",
+                                                                "cfg": {
+                                                                    "targetEvent": "click",
+                                                                    "subpageId": 2,
+                                                                    "targetPageLoaderId": "maindisplayarea"
+                                                                }
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "label": "Tasks",
+                                                        "type": "Button",
+                                                        "plugins": [
+                                                            {
+                                                                "fn": "OpenPageAction",
+                                                                "cfg": {
+                                                                    "targetEvent": "click",
+                                                                    "subpageId": 13,
+                                                                    "targetPageLoaderId": "maindisplayarea"
+                                                                }
+                                                            },
+                                                            {
+                                                                "fn": "ConditionalDisable",
+                                                                "cfg": {
+                                                                    "condition": {
+                                                                        "@class": "Script",
+                                                                        "content": "Variable.find(gameModel, 'currentPhase').getValue(self)<2",
+                                                                        "language": "JavaScript"
+                                                                    },
+                                                                    "attribute": "disabled",
+                                                                    "value": ""
+                                                                }
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "label": "Gantt",
+                                                        "type": "Button",
+                                                        "plugins": [
+                                                            {
+                                                                "fn": "OpenPageAction",
+                                                                "cfg": {
+                                                                    "targetEvent": "click",
+                                                                    "subpageId": 14,
+                                                                    "targetPageLoaderId": "maindisplayarea"
+                                                                }
+                                                            },
+                                                            {
+                                                                "fn": "ConditionalDisable",
+                                                                "cfg": {
+                                                                    "condition": {
+                                                                        "@class": "Script",
+                                                                        "content": "Variable.find(gameModel, 'currentPhase').getValue(self)<2",
+                                                                        "language": "JavaScript"
+                                                                    },
+                                                                    "attribute": "disabled",
+                                                                    "value": ""
+                                                                }
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "label": "Resources",
+                                                        "type": "Button",
+                                                        "plugins": [
+                                                            {
+                                                                "fn": "OpenPageAction",
+                                                                "cfg": {
+                                                                    "targetEvent": "click",
+                                                                    "subpageId": 5,
+                                                                    "targetPageLoaderId": "maindisplayarea"
+                                                                }
+                                                            },
+                                                            {
+                                                                "fn": "ConditionalDisable",
+                                                                "cfg": {
+                                                                    "condition": {
+                                                                        "@class": "Script",
+                                                                        "content": "Variable.find(gameModel, 'currentPhase').getValue(self)<2",
+                                                                        "language": "JavaScript"
+                                                                    },
+                                                                    "attribute": "disabled",
+                                                                    "value": ""
+                                                                }
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "label": "EVM",
+                                                        "type": "Button",
+                                                        "plugins": [
+                                                            {
+                                                                "fn": "OpenPageAction",
+                                                                "cfg": {
+                                                                    "targetEvent": "click",
+                                                                    "subpageId": 10,
+                                                                    "targetPageLoaderId": "maindisplayarea"
+                                                                }
+                                                            },
+                                                            {
+                                                                "fn": "ConditionalDisable",
+                                                                "cfg": {
+                                                                    "condition": {
+                                                                        "@class": "Script",
+                                                                        "content": "Variable.find(gameModel, \"currentPhase\").getValue(self)<2 || !Variable.find(gameModel, \"evm\").getValue(self)",
+                                                                        "language": "JavaScript"
+                                                                    },
+                                                                    "attribute": "cssClass",
+                                                                    "value": "hidden-button"
+                                                                }
+                                                            }
+                                                        ]
                                                     }
-                                                }
-                                            }, {
-                                                "fn": "CSSBackground",
-                                                "cfg": {
-                                                    "styles": {
-                                                        "backgroundColor": "#0981A9"
+                                                ]
+                                            },
+                                            {
+                                                "type": "List",
+                                                "cssClass": "pmg--menus__secondary-menu",
+                                                "direction": "horizontal",
+                                                "name": "secondary-menu",
+                                                "children": [
+                                                    {
+                                                        "type": "Box",
+                                                        "cssClass": "pmg--menu__divider",
+                                                        "name": "divider"
+                                                    },
+                                                    {
+                                                        "label": "",
+                                                        "type": "Button",
+                                                        "cssClass": "pmg--icon-action",
+                                                        "plugins": [
+                                                            {
+                                                                "fn": "Tooltip",
+                                                                "cfg": {
+                                                                    "content": "<p>Actions</p>"
+                                                                }
+                                                            },
+                                                            {
+                                                                "fn": "OpenPageAction",
+                                                                "cfg": {
+                                                                    "targetEvent": "click",
+                                                                    "subpageId": "6",
+                                                                    "targetPageLoaderId": "maindisplayarea",
+                                                                    "variable": {
+                                                                        "@class": "Script",
+                                                                        "content": ""
+                                                                    }
+                                                                }
+                                                            }
+                                                        ],
+                                                        "data": {}
+                                                    },
+                                                    {
+                                                        "label": "",
+                                                        "type": "Button",
+                                                        "cssClass": "pmg--icon-question",
+                                                        "plugins": [
+                                                            {
+                                                                "fn": "Tooltip",
+                                                                "cfg": {
+                                                                    "content": "Questions"
+                                                                }
+                                                            },
+                                                            {
+                                                                "fn": "UnreadCount",
+                                                                "cfg": {
+                                                                    "variable": {
+                                                                        "content": "var currentPhase = Variable.find('currentPhase').getValue(self), currentPeriod = Variable.find('currentPeriod').item(currentPhase - 1).getValue(self), i, q, items = [], item; q = Variable.find('questions').item(currentPhase - 1); if (q) { for (i in q.get('items')) { item = q.item(i); if (item.get('@class') === 'QuestionDescriptor') { items.push(item); } else if (i == currentPeriod - 1 && item.get('@class') === 'ListDescriptor') { items = items.concat(item.flatten()); } } } return items;"
+                                                                    }
+                                                                }
+                                                            },
+                                                            {
+                                                                "fn": "OpenPageAction",
+                                                                "cfg": {
+                                                                    "targetEvent": "click",
+                                                                    "subpageId": 7,
+                                                                    "targetPageLoaderId": "maindisplayarea"
+                                                                }
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "label": "",
+                                                        "type": "Button",
+                                                        "cssClass": "pmg--icon-mail pmg--menu-btn-last",
+                                                        "plugins": [
+                                                            {
+                                                                "fn": "Tooltip",
+                                                                "cfg": {
+                                                                    "content": "<p>Mailbox</p>"
+                                                                }
+                                                            },
+                                                            {
+                                                                "fn": "UnreadCount",
+                                                                "cfg": {
+                                                                    "variable": {
+                                                                        "@class": "Script",
+                                                                        "content": "Variable.find(gameModel, \"inbox\");\n"
+                                                                    }
+                                                                }
+                                                            },
+                                                            {
+                                                                "fn": "OpenPageAction",
+                                                                "cfg": {
+                                                                    "targetEvent": "click",
+                                                                    "subpageId": 8,
+                                                                    "targetPageLoaderId": "maindisplayarea"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "data": {}
+                                                    },
+                                                    {
+                                                        "type": "Box",
+                                                        "cssClass": "pmg--menu__divider",
+                                                        "name": "divider"
+                                                    },
+                                                    {
+                                                        "label": "",
+                                                        "type": "Button",
+                                                        "cssClass": "pmg--icon-history",
+                                                        "plugins": [
+                                                            {
+                                                                "fn": "Tooltip",
+                                                                "cfg": {
+                                                                    "content": "<p>History</p>"
+                                                                }
+                                                            },
+                                                            {
+                                                                "fn": "OpenPageAction",
+                                                                "cfg": {
+                                                                    "targetEvent": "click",
+                                                                    "subpageId": "9",
+                                                                    "targetPageLoaderId": "maindisplayarea",
+                                                                    "variable": {
+                                                                        "@class": "Script",
+                                                                        "content": ""
+                                                                    }
+                                                                }
+                                                            }
+                                                        ],
+                                                        "data": {}
                                                     }
-                                                }
+                                                ]
                                             }
                                         ]
                                     }
                                 ]
-                            }, {
-                                "type": "AbsoluteLayout",
-                                "plugins": [
-                                    {
-                                        "fn": "CSSSize",
-                                        "cfg": {
-                                            "styles": {
-                                                "width": "90px",
-                                                "height": "90px"
-                                            }
-                                        }
-                                    }
-                                ],
-                                "children": [
-                                    {
-                                        "type": "Template",
-                                        "cssClass": "wegas-gauge",
-                                        "plugins": [
-                                            {
-                                                "fn": "CSSPosition",
-                                                "cfg": {
-                                                    "styles": {
-                                                        "position": "absolute",
-                                                        "zIndex": "10",
-                                                        "top": "45px",
-                                                        "left": "",
-                                                        "bottom": "",
-                                                        "right": ""
-                                                    }
-                                                }
-                                            }, {
-                                                "fn": "CSSSize",
-                                                "cfg": {
-                                                    "styles": {
-                                                        "width": "90px",
-                                                        "height": ""
-                                                    }
-                                                }
-                                            }
-                                        ],
-                                        "variable": {
-                                            "@class": "Script",
-                                            "content": "Variable.find(gameModel, \"managementApproval\");\n"
-                                        },
-                                        "data": {
-                                            "label": "Indicator1"
-                                        },
-                                        "custom": "<center><%= this.variable.get(\"label\") %></center>"
-                                    }, {
-                                        "type": "GaugeDisplay",
-                                        "plugins": [
-                                            {
-                                                "fn": "CSSPosition",
-                                                "cfg": {
-                                                    "styles": {
-                                                        "position": "absolute",
-                                                        "zIndex": "",
-                                                        "top": "",
-                                                        "left": "",
-                                                        "bottom": "",
-                                                        "right": ""
-                                                    }
-                                                }
-                                            }, {
-                                                "fn": "CSSSize",
-                                                "cfg": {
-                                                    "styles": {
-                                                        "width": "",
-                                                        "height": ""
-                                                    }
-                                                }
-                                            }
-                                        ],
-                                        "variable": {
-                                            "@class": "Script",
-                                            "content": "Variable.find(gameModel, \"managementApproval\");\n"
-                                        },
-                                        "label": "&nbsp;",
-                                        "minValue": "",
-                                        "maxValue": 200,
-                                        "cfg": {
-                                        }
-                                    }
-                                ]
-                            }, {
-                                "type": "AbsoluteLayout",
-                                "plugins": [
-                                    {
-                                        "fn": "CSSSize",
-                                        "cfg": {
-                                            "styles": {
-                                                "width": "90px",
-                                                "height": "90px"
-                                            }
-                                        }
-                                    }
-                                ],
-                                "children": [
-                                    {
-                                        "type": "Template",
-                                        "cssClass": "wegas-gauge",
-                                        "plugins": [
-                                            {
-                                                "fn": "CSSPosition",
-                                                "cfg": {
-                                                    "styles": {
-                                                        "position": "absolute",
-                                                        "zIndex": "10",
-                                                        "top": "45px",
-                                                        "left": "",
-                                                        "bottom": "",
-                                                        "right": ""
-                                                    }
-                                                }
-                                            }, {
-                                                "fn": "CSSSize",
-                                                "cfg": {
-                                                    "styles": {
-                                                        "width": "90px",
-                                                        "height": ""
-                                                    }
-                                                }
-                                            }
-                                        ],
-                                        "variable": {
-                                            "@class": "Script",
-                                            "content": "Variable.find(gameModel, \"userApproval\");\n"
-                                        },
-                                        "data": {
-                                            "label": "Indicator2"
-                                        },
-                                        "custom": "<center><%= this.variable.get(\"label\") %></center>"
-                                    }, {
-                                        "type": "GaugeDisplay",
-                                        "plugins": [
-                                            {
-                                                "fn": "CSSSize",
-                                                "cfg": {
-                                                    "styles": {
-                                                        "width": "",
-                                                        "height": ""
-                                                    }
-                                                }
-                                            }, {
-                                                "fn": "CSSPosition",
-                                                "cfg": {
-                                                    "styles": {
-                                                        "position": "absolute",
-                                                        "top": "0px",
-                                                        "left": "0px",
-                                                        "zIndex": "10"
-                                                    }
-                                                }
-                                            }
-                                        ],
-                                        "variable": {
-                                            "@class": "Script",
-                                            "content": "Variable.find(gameModel, \"userApproval\");\n"
-                                        },
-                                        "label": "&nbsp;",
-                                        "minValue": "",
-                                        "maxValue": 200,
-                                        "cfg": {
-                                        }
-                                    }
-                                ]
-                            }, {
-                                "type": "GaugeDisplay",
-                                "plugins": [
-                                    {
-                                        "fn": "ConditionalDisable",
-                                        "cfg": {
-                                            "condition": {
-                                                "@class": "Script",
-                                                "content": "Variable.find(gameModel, \"currentPhase\").getValue(self)<3;\n"
-                                            },
-                                            "attribute": "disabled",
-                                            "value": ""
-                                        }
-                                    }, {
-                                        "fn": "CSSSize",
-                                        "cfg": {
-                                            "styles": {
-                                                "width": "65px",
-                                                "height": "90px"
-                                            }
-                                        }
-                                    }
-                                ],
-                                "variable": {
-                                    "@class": "Script",
-                                    "content": "Variable.find(gameModel, \"quality\");\n"
-                                },
-                                "label": "Quality",
-                                "minValue": "",
-                                "maxValue": 200,
-                                "cfg": {
-                                }
-                            }, {
-                                "type": "GaugeDisplay",
-                                "plugins": [
-                                    {
-                                        "fn": "ConditionalDisable",
-                                        "cfg": {
-                                            "condition": {
-                                                "@class": "Script",
-                                                "content": "Variable.find(gameModel, \"currentPhase\").getValue(self)<3;\n"
-                                            },
-                                            "attribute": "disabled",
-                                            "value": ""
-                                        }
-                                    }, {
-                                        "fn": "CSSSize",
-                                        "cfg": {
-                                            "styles": {
-                                                "width": "65px",
-                                                "height": "90px"
-                                            }
-                                        }
-                                    }
-                                ],
-                                "variable": {
-                                    "@class": "Script",
-                                    "content": "Variable.find(gameModel, \"costs\");\n"
-                                },
-                                "label": "Costs",
-                                "minValue": "",
-                                "maxValue": 200,
-                                "cfg": {
-                                }
-                            }, {
-                                "type": "GaugeDisplay",
-                                "plugins": [
-                                    {
-                                        "fn": "ConditionalDisable",
-                                        "cfg": {
-                                            "condition": {
-                                                "@class": "Script",
-                                                "content": "Variable.find(gameModel, \"currentPhase\").getValue(self)<3;\n"
-                                            },
-                                            "attribute": "disabled",
-                                            "value": "65px"
-                                        }
-                                    }, {
-                                        "fn": "CSSSize",
-                                        "cfg": {
-                                            "styles": {
-                                                "width": "90px",
-                                                "height": ""
-                                            }
-                                        }
-                                    }
-                                ],
-                                "variable": {
-                                    "@class": "Script",
-                                    "content": "Variable.find(gameModel, \"delay\");\n"
-                                },
-                                "label": "Schedule",
-                                "minValue": "",
-                                "maxValue": 200,
-                                "cfg": {
-                                }
-                            }, {
-                                "type": "BoxTemplate",
-                                "cssClass": "pmg-timevariable",
-                                "plugins": [
-                                    {
-                                        "fn": "CSSPosition",
-                                        "cfg": {
-                                            "styles": {
-                                                "position": "absolute",
-                                                "top": "10px",
-                                                "right": "10px"
-                                            }
-                                        }
-                                    }
-                                ],
-                                "variable": {
-                                    "content": "Variable.find('timeCards')"
-                                },
-                                "data": {
-                                    "label": "Time cards"
-                                }
                             }
                         ]
-                    }, {
+                    },
+                    {
                         "type": "List",
-                        "cssClass": "horizontal-nav-menu",
-                        "plugins": [
-                            {
-                                "fn": "CSSPosition",
-                                "cfg": {
-                                    "styles": {
-                                        "position": "absolute",
-                                        "zIndex": "",
-                                        "top": "90px",
-                                        "left": "0px",
-                                        "bottom": "",
-                                        "right": "0px"
-                                    }
-                                }
-                            }
-                        ],
+                        "cssClass": "pmg--main-area",
                         "direction": "horizontal",
-                        "name": "menu-nav-hori",
-                        "children": [
-                            {
-                                "label": "Home",
-                                "type": "Button",
-                                "plugins": [
-                                    {
-                                        "fn": "OpenPageAction",
-                                        "cfg": {
-                                            "targetEvent": "click",
-                                            "subpageId": 15,
-                                            "targetPageLoaderId": "maindisplayarea"
-                                        }
-                                    }
-                                ]
-                            }, {
-                                "label": "Project",
-                                "type": "Button",
-                                "plugins": [
-                                    {
-                                        "fn": "OpenPageAction",
-                                        "cfg": {
-                                            "targetEvent": "click",
-                                            "subpageId": 2,
-                                            "targetPageLoaderId": "maindisplayarea"
-                                        }
-                                    }
-                                ]
-                            }, {
-                                "label": "Tasks",
-                                "type": "Button",
-                                "plugins": [
-                                    {
-                                        "fn": "OpenPageAction",
-                                        "cfg": {
-                                            "targetEvent": "click",
-                                            "subpageId": 13,
-                                            "targetPageLoaderId": "maindisplayarea"
-                                        }
-                                    }, {
-                                        "fn": "ConditionalDisable",
-                                        "cfg": {
-                                            "condition": {
-                                                "@class": "Script",
-                                                "content": "Variable.find(gameModel, 'currentPhase').getValue(self)<2",
-                                                "language": "JavaScript"
-                                            },
-                                            "attribute": "disabled",
-                                            "value": ""
-                                        }
-                                    }
-                                ]
-                            }, {
-                                "label": "Gantt",
-                                "type": "Button",
-                                "plugins": [
-                                    {
-                                        "fn": "OpenPageAction",
-                                        "cfg": {
-                                            "targetEvent": "click",
-                                            "subpageId": 14,
-                                            "targetPageLoaderId": "maindisplayarea"
-                                        }
-                                    }, {
-                                        "fn": "ConditionalDisable",
-                                        "cfg": {
-                                            "condition": {
-                                                "@class": "Script",
-                                                "content": "Variable.find(gameModel, 'currentPhase').getValue(self)<2",
-                                                "language": "JavaScript"
-                                            },
-                                            "attribute": "disabled",
-                                            "value": ""
-                                        }
-                                    }
-                                ]
-                            }, {
-                                "label": "Resources",
-                                "type": "Button",
-                                "plugins": [
-                                    {
-                                        "fn": "OpenPageAction",
-                                        "cfg": {
-                                            "targetEvent": "click",
-                                            "subpageId": 5,
-                                            "targetPageLoaderId": "maindisplayarea"
-                                        }
-                                    }, {
-                                        "fn": "ConditionalDisable",
-                                        "cfg": {
-                                            "condition": {
-                                                "@class": "Script",
-                                                "content": "Variable.find(gameModel, 'currentPhase').getValue(self)<2",
-                                                "language": "JavaScript"
-                                            },
-                                            "attribute": "disabled",
-                                            "value": ""
-                                        }
-                                    }
-                                ]
-                            }, {
-                                "label": "EVM",
-                                "type": "Button",
-                                "plugins": [
-                                    {
-                                        "fn": "OpenPageAction",
-                                        "cfg": {
-                                            "targetEvent": "click",
-                                            "subpageId": 10,
-                                            "targetPageLoaderId": "maindisplayarea"
-                                        }
-                                    }, {
-                                        "fn": "ConditionalDisable",
-                                        "cfg": {
-                                            "condition": {
-                                                "@class": "Script",
-                                                "content": "Variable.find(gameModel, \"currentPhase\").getValue(self)<2 || !Variable.find(gameModel, \"evm\").getValue(self)",
-                                                "language": "JavaScript"
-                                            },
-                                            "attribute": "cssClass",
-                                            "value": "hidden-button"
-                                        }
-                                    }
-                                ]
-                            }, {
-                                "type": "LoginButton",
-                                "cssClass": "menu-loginbutton",
-                                "targetPageLoader": "maindisplayarea"
-                            }
-                        ]
-                    }, {
-                        "type": "List",
-                        "cssClass": "horizontal-menu",
-                        "direction": "horizontal",
-                        "name": "folder",
+                        "name": "main",
                         "children": [
                             {
                                 "type": "PageLoader",
-                                "cssClass": "body",
-                                "plugins": [
-                                    {
-                                        "fn": "CSSPosition",
-                                        "cfg": {
-                                            "styles": {
-                                            }
-                                        }
-                                    }, {
-                                        "fn": "CSSBackground",
-                                        "cfg": {
-                                            "styles": {
-                                                "backgroundColor": "#ffffff"
-                                            }
-                                        }
-                                    }, {
-                                        "fn": "CSSStyles",
-                                        "cfg": {
-                                            "styles": {
-                                            }
-                                        }
-                                    }
-                                ],
+                                "cssClass": "pmg--body",
                                 "pageLoaderId": "maindisplayarea",
-                                "defaultPageId": 15
-                            }, {
-                                "type": "List",
-                                "cssClass": "vertical-menu vertical-nav-menu",
-                                "plugins": [
-                                    {
-                                        "fn": "CSSPosition",
-                                        "cfg": {
-                                            "styles": {
-                                                "position": "absolute",
-                                                "zIndex": "",
-                                                "top": "120px",
-                                                "left": "",
-                                                "bottom": "0px",
-                                                "right": "0px"
-                                            }
-                                        }
-                                    }
-                                ],
-                                "direction": "vertical",
-                                "name": "vertival-nav",
-                                "children": [
-                                    {
-                                        "label": "",
-                                        "type": "Button",
-                                        "cssClass": "actions",
-                                        "plugins": [
-                                            {
-                                                "fn": "Tooltip",
-                                                "cfg": {
-                                                    "content": "Actions"
-                                                }
-                                            }, {
-                                                "fn": "OpenPageAction",
-                                                "cfg": {
-                                                    "targetEvent": "click",
-                                                    "subpageId": 6,
-                                                    "targetPageLoaderId": "maindisplayarea"
-                                                }
-                                            }
-                                        ]
-                                    }, {
-                                        "label": "",
-                                        "type": "Button",
-                                        "cssClass": "questions",
-                                        "plugins": [
-                                            {
-                                                "fn": "Tooltip",
-                                                "cfg": {
-                                                    "content": "Questions"
-                                                }
-                                            }, {
-                                                "fn": "UnreadCount",
-                                                "cfg": {
-                                                    "variable": {
-                                                        "content": "var currentPhase = Variable.find('currentPhase').getValue(self), currentPeriod = Variable.find('currentPeriod').item(currentPhase - 1).getValue(self), i, q, items = [], item; q = Variable.find('questions').item(currentPhase - 1); if (q) { for (i in q.get('items')) { item = q.item(i); if (item.get('@class') === 'QuestionDescriptor') { items.push(item); } else if (i == currentPeriod - 1 && item.get('@class') === 'ListDescriptor') { items = items.concat(item.flatten()); } } } return items;"
-                                                    }
-                                                }
-                                            }, {
-                                                "fn": "OpenPageAction",
-                                                "cfg": {
-                                                    "targetEvent": "click",
-                                                    "subpageId": 7,
-                                                    "targetPageLoaderId": "maindisplayarea"
-                                                }
-                                            }
-                                        ]
-                                    }, {
-                                        "label": "",
-                                        "type": "Button",
-                                        "cssClass": "inbox",
-                                        "plugins": [
-                                            {
-                                                "fn": "Tooltip",
-                                                "cfg": {
-                                                    "content": "Mailbox"
-                                                }
-                                            }, {
-                                                "fn": "UnreadCount",
-                                                "cfg": {
-                                                    "variable": {
-                                                        "name": "inbox"
-                                                    }
-                                                }
-                                            }, {
-                                                "fn": "OpenPageAction",
-                                                "cfg": {
-                                                    "targetEvent": "click",
-                                                    "subpageId": 8,
-                                                    "targetPageLoaderId": "maindisplayarea"
-                                                }
-                                            }
-                                        ]
-                                    }, {
-                                        "label": "",
-                                        "type": "Button",
-                                        "cssClass": "history",
-                                        "plugins": [
-                                            {
-                                                "fn": "Tooltip",
-                                                "cfg": {
-                                                    "content": "History"
-                                                }
-                                            }, {
-                                                "fn": "OpenPageAction",
-                                                "cfg": {
-                                                    "targetEvent": "click",
-                                                    "subpageId": 9,
-                                                    "targetPageLoaderId": "maindisplayarea"
-                                                }
-                                            }
-                                        ]
-                                    }, {
-                                        "label": "",
-                                        "type": "Button",
-                                        "cssClass": "help",
-                                        "plugins": [
-                                            {
-                                                "fn": "OpenPageAction",
-                                                "cfg": {
-                                                    "targetEvent": "click",
-                                                    "subpageId": 10,
-                                                    "targetPageLoaderId": "maindisplayarea"
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ]
+                                "defaultPageId": "15",
+                                "variable": "",
+                                "page": {
+                                    "@class": "Script",
+                                    "content": ""
+                                }
                             }
                         ]
                     }
                 ]
             }
-        ]
+        ],
+        "@name": "Main"
     },
     "2": {
         "type": "List",
@@ -879,197 +942,135 @@
             {
                 "type": "List",
                 "cssClass": "pmg-project-overview",
-                "direction": "vertical",
+                "direction": "horizontal",
                 "name": "Overview",
                 "children": [
                     {
-                        "type": "Template",
-                        "cssClass": "pmg-project-overview-title",
-                        "plugins": [
-                            {
-                                "fn": "CSSSize",
-                                "cfg": {
-                                    "styles": {
-                                        "width": "",
-                                        "height": ""
-                                    }
-                                }
-                            }, {
-                                "fn": "CSSPosition",
-                                "cfg": {
-                                    "styles": {
-                                        "position": "absolute",
-                                        "zIndex": "",
-                                        "top": "",
-                                        "left": "",
-                                        "bottom": "",
-                                        "right": ""
-                                    }
-                                }
-                            }
-                        ],
-                        "variable": {
-                            "@class": "Script",
-                            "content": "Variable.find(gameModel, \"properties\");\n"
-                        },
-                        "data": {
-                            "label": "Init"
-                        },
-                        "custom": "<h2><%= Y.Wegas.PMGHelper.defaultPhaseNames[0] %></h2>"
-                    }, {
                         "type": "List",
-                        "cssClass": "pmg-project-overview-content initial-budget",
+                        "cssClass": "pmg-overview-left",
                         "direction": "horizontal",
-                        "name": "initial budget",
+                        "name": "Project Overview",
                         "children": [
                             {
                                 "type": "Text",
-                                "content": "<p><strong>Initial Budget</strong></p>"
-                            }, {
-                                "type": "NumberInput",
-                                "cssClass": "variableValue",
+                                "cssClass": "pmg-overview-title",
+                                "content": "<h2>Project overview</h2>"
+                            },
+                            {
+                                "type": "List",
+                                "cssClass": "pmg-project-overview-content initial-budget",
+                                "direction": "horizontal",
+                                "name": "initial budget",
+                                "children": [
+                                    {
+                                        "type": "Text",
+                                        "cssClass": "label",
+                                        "content": "<p>Initial Budget</p>"
+                                    },
+                                    {
+                                        "type": "NumberInput",
+                                        "cssClass": "variableValue",
+                                        "variable": {
+                                            "@class": "Script",
+                                            "content": "Variable.find(gameModel, \"initialBudget\");\n"
+                                        },
+                                        "readonly": {
+                                            "@class": "Script",
+                                            "content": "Variable.find(gameModel, \"currentPhase\").getValue(self)>1;\n"
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "Template",
+                                "cssClass": "pmg-project-overview-content",
                                 "variable": {
                                     "@class": "Script",
-                                    "content": "Variable.find(gameModel, \"initialBudget\");\n"
+                                    "content": "Variable.find(gameModel, \"tasks\");\n"
                                 },
-                                "readonly": {
+                                "data": {
+                                    "label": "Budgeted at completion (BAC)"
+                                },
+                                "custom": "<% \nvar bacs = Y.Wegas.PMGHelper.getBACTotal(),\nib = Y.Wegas.PMGHelper.getInitialBudget(),\novercost = (ib <= 0 ? \"\" : Math.round(parseInt((bacs * 10000 / ib), 10)/100)  + \"% of Initial Budget\")\n\n%>\n\n<div class='bacs'>\n    <span class='label'><%= this.label %></span>\n    <span class='variableValue'><%=  bacs %></span><span class='variablePercent'><%= overcost %></span>\n</div>"
+                            },
+                            {
+                                "type": "Template",
+                                "cssClass": "pmg-project-overview-content",
+                                "variable": {
                                     "@class": "Script",
-                                    "content": "Variable.find(gameModel, \"currentPhase\").getValue(self)>1;\n"
+                                    "content": "Variable.find(gameModel, \"tasks\");\n"
                                 },
-                                "showSaveButton": false,
-                                "showStatus": false
+                                "custom": "<%  var fixedCosts=0, wages=0, total=0, taskTotal=0, projectFixedCost = Y.Wegas.Facade.Variable.cache.find('name', 'projectFixedCosts').getInstance().get('value'), projectUnworkedHours = Y.Wegas.Facade.Variable.cache.find('name', 'projectUnworkedHours').getInstance().get('value'), bacs = Y.Wegas.PMGHelper.getBACTotal(), overcost; for(var i=0; i<this.variable.get('items').length; i++) { var properties = this.variable.get('items')[i].getInstance().get('properties'); wages = wages + parseFloat(properties.wages); if (properties.completeness > 0) fixedCosts = fixedCosts + parseFloat(properties.fixedCosts); } taskTotal = wages + fixedCosts + projectUnworkedHours; total = taskTotal + projectFixedCost; overcost = (bacs <= 0 ? \"\" : Math.round(parseInt((total * 10000 / bacs), 10)/100) + \"% of BAC\"); %> <div class='projectTotalCost'><span class='label'>Actual Costs (AC)</span><span class='variableValue'><%= total %></span><span class='variablePercent'><%= overcost %></span></div>"
                             }
                         ]
-                    }, {
-                        "type": "Template",
-                        "cssClass": "pmg-project-overview-title",
-                        "plugins": [
+                    },
+                    {
+                        "type": "List",
+                        "cssClass": "pmg-overview-right",
+                        "direction": "horizontal",
+                        "name": "Execution overview",
+                        "children": [
                             {
-                                "fn": "CSSSize",
-                                "cfg": {
-                                    "styles": {
-                                        "width": "",
-                                        "height": ""
-                                    }
-                                }
-                            }, {
-                                "fn": "CSSPosition",
-                                "cfg": {
-                                    "styles": {
-                                        "position": "absolute",
-                                        "zIndex": "",
-                                        "top": "",
-                                        "left": "",
-                                        "bottom": "",
-                                        "right": ""
-                                    }
-                                }
-                            }
-                        ],
-                        "variable": {
-                            "@class": "Script",
-                            "content": "Variable.find(gameModel, \"properties\");\n"
-                        },
-                        "data": {
-                            "label": "Planning"
-                        },
-                        "custom": "<h2><%= Y.Wegas.PMGHelper.defaultPhaseNames[1] %></h2>"
-                    }, {
-                        "type": "Template",
-                        "cssClass": "pmg-project-overview-content",
-                        "plugins": [
+                                "type": "Text",
+                                "cssClass": "pmg-overview-title",
+                                "content": "<h2>Project execution details</h2>"
+                            },
                             {
-                                "fn": "CSSPosition",
-                                "cfg": {
-                                    "styles": {
-                                        "position": "absolute",
-                                        "zIndex": "",
-                                        "top": "",
-                                        "left": "",
-                                        "bottom": "",
-                                        "right": ""
-                                    }
-                                }
-                            }, {
-                                "fn": "CSSSize",
-                                "cfg": {
-                                    "styles": {
-                                        "width": "",
-                                        "height": ""
-                                    }
-                                }
-                            }
-                        ],
-                        "variable": {
-                            "@class": "Script",
-                            "content": "Variable.find(gameModel, \"tasks\");\n"
-                        },
-                        "data": {
-                            "label": "Budget at completion"
-                        },
-                        "custom": "<% \nvar bacs = Y.Wegas.PMGHelper.getBACTotal(),\nib = Y.Wegas.PMGHelper.getInitialBudget(),\novercost = (ib <= 0 || bacs <= 0 ? \"\" : \"(\" + parseInt((bacs * 100 / ib), 10)  + \"%)\")\n\n%>\n\n<div class='bacs'>\n    <span class='label'><%= this.label %></span>\n    <span class='variableValue'><%=  bacs %> <%= overcost %></span>\n</div>"
-                    }, {
-                        "type": "Template",
-                        "cssClass": "pmg-project-overview-title",
-                        "plugins": [
+                                "type": "Template",
+                                "cssClass": "pmg-project-details-content",
+                                "variable": {
+                                    "@class": "Script",
+                                    "content": "Variable.find(gameModel, \"currentPhase\");\n"
+                                },
+                                "data": {
+                                    "label": "Progress"
+                                },
+                                "custom": "<%  var projectCompleteness = Y.Wegas.Facade.Variable.cache.find('name', 'projectCompleteness').getInstance().get('value'), currentPhase = Y.Wegas.Facade.Variable.cache.find('name', 'currentPhase').getInstance().get('value'),currentPeriod = Y.Wegas.Facade.Variable.cache.find('name', 'currentPeriod').item(currentPhase -1).getInstance().get('value');%>\n\n<div class='projectCompleteness'><span class='label'>Progress</span><span class='variableValue'><%= parseInt(projectCompleteness) %>%</span></div>"
+                            },
                             {
-                                "fn": "CSSSize",
-                                "cfg": {
-                                    "styles": {
-                                        "width": "",
-                                        "height": ""
-                                    }
-                                }
-                            }, {
-                                "fn": "CSSPosition",
-                                "cfg": {
-                                    "styles": {
-                                        "position": "absolute",
-                                        "zIndex": "",
-                                        "top": "",
-                                        "left": "",
-                                        "bottom": "",
-                                        "right": ""
-                                    }
-                                }
+                                "type": "Template",
+                                "cssClass": "pmg-project-details-content",
+                                "variable": {
+                                    "@class": "Script",
+                                    "content": "Variable.find(gameModel, \"tasks\");\n"
+                                },
+                                "custom": "<% var projectFixedCost = Y.Wegas.Facade.Variable.cache.find('name', 'projectFixedCosts').getInstance().get('value'); %><div class='projectFixedCost'><span class='label'>Project Fixed Costs</span><span class='variableValue'><%= projectFixedCost %></span></div>"
+                            },
+                            {
+                                "type": "Template",
+                                "cssClass": "pmg-project-details-content",
+                                "variable": {
+                                    "@class": "Script",
+                                    "content": "Variable.find(gameModel, \"tasks\");\n"
+                                },
+                                "custom": "<% var wages=0; for(var i=0; i<this.variable.get('items').length; i++) { var properties = this.variable.get('items')[i].getInstance().get('properties'); wages = wages + parseFloat(properties.wages); } %> <div class='wages'><span class='label'>Tasks Wages</span><span class='variableValue'><%= wages %></span></div>"
+                            },
+                            {
+                                "type": "Template",
+                                "cssClass": "pmg-project-details-content",
+                                "variable": {
+                                    "@class": "Script",
+                                    "content": "Variable.find(gameModel, \"tasks\");\n"
+                                },
+                                "custom": "<% var fixedCosts=0; for(var i=0; i<this.variable.get('items').length; i++) { var properties = this.variable.get('items')[i].getInstance().get('properties'); if (properties.completeness > 0) fixedCosts = fixedCosts + parseFloat(properties.fixedCosts); } %><div class='fixedCosts'><span class='label'>Task Fixed Costs</span><span class='variableValue'><%= fixedCosts %></span></div>"
+                            },
+                            {
+                                "type": "Template",
+                                "cssClass": "pmg-project-details-content",
+                                "variable": {
+                                    "@class": "Script",
+                                    "content": "Variable.find(gameModel, \"tasks\");\n"
+                                },
+                                "custom": "<% var projectUnworkedHours = Y.Wegas.Facade.Variable.cache.find('name', 'projectUnworkedHours').getInstance().get('value'); %><div class='unworkedHours'><span class='label'>Unworked Hours</span><span class='variableValue'><%= projectUnworkedHours %></span></div>"
                             }
-                        ],
-                        "variable": {
-                            "@class": "Script",
-                            "content": "Variable.find(gameModel, \"properties\");\n"
-                        },
-                        "data": {
-                            "label": "Exec"
-                        },
-                        "custom": "<h2><%= Y.Wegas.PMGHelper.defaultPhaseNames[2] %></h2>"
-                    }, {
-                        "type": "Template",
-                        "cssClass": "pmg-project-overview-content",
-                        "variable": {
-                            "@class": "Script",
-                            "content": "Variable.find(gameModel, \"currentPhase\");\n"
-                        },
-                        "data": {
-                            "label": "Progress"
-                        },
-                        "custom": "<%  var projectCompleteness = Y.Wegas.Facade.Variable.cache.find('name', 'projectCompleteness').getInstance().get('value'), currentPhase = Y.Wegas.Facade.Variable.cache.find('name', 'currentPhase').getInstance().get('value'),currentPeriod = Y.Wegas.Facade.Variable.cache.find('name', 'currentPeriod').item(currentPhase -1).getInstance().get('value');%>\n\n<div class='projectCompleteness'><span class='label'>Progress</span><span class='variableValue'><%= parseInt(projectCompleteness) %>%</span></div>"
-                    }, {
-                        "type": "Template",
-                        "cssClass": "pmg-project-overview-content",
-                        "variable": {
-                            "@class": "Script",
-                            "content": "Variable.find(gameModel, \"tasks\");\n"
-                        },
-                        "data": {
-                            "label": "Costs"
-                        },
-                        "custom": "<%  var fixedCosts=0, \nwages=0,\ntotal=0,\ntaskTotal=0, \nprojectFixedCost = Y.Wegas.Facade.Variable.cache.find('name', 'projectFixedCosts').getInstance().get('value'), \nprojectUnworkedHours = Y.Wegas.Facade.Variable.cache.find('name', 'projectUnworkedHours').getInstance().get('value'),\nbacs = Y.Wegas.PMGHelper.getBACTotal(),\novercost;\n\nfor(var i=0; i<this.variable.get('items').length; i++) { \n    var properties = this.variable.get('items')[i].getInstance().get('properties'); \n          wages = wages + parseFloat(properties.wages);\n           if (properties.completeness > 0) fixedCosts = fixedCosts + parseFloat(properties.fixedCosts);\n}\ntaskTotal = wages + fixedCosts + projectUnworkedHours; \ntotal = taskTotal + projectFixedCost; \novercost = (bacs <= 0 ? \"\" : \"(\" + parseInt((total * 100 / bacs), 10) + \"%)\");\n%>\n\n<div class='projectFixedCost'>\n  <span class='label'>Project Fixed Costs</span>\n  <span class='variableValue'><%= projectFixedCost %></span>\n</div>\n\n<div class='tasks'>\n<div class='taskTotal'><span class='label'>Tasks</span><span class='variableValue'><%= taskTotal %></span></div><div class='wages'><span class='label'>- Wages</span><span class='variableValue'><%= wages %></span></div><div class='fixedCosts'><span class='label'>- Fixed Costs</span><span class='variableValue'><%= fixedCosts %></span></div><div class='unworkedHours'><span class='label'>- Unworked Hours</span><span class='variableValue'><%= projectUnworkedHours %></span></div></div><div class='total'><span class='label'>TOTAL</span><span class='variableValue'><%= total %> <%= overcost %>  </span>\n</div>"
+                        ]
                     }
                 ]
-            }, {
+            },
+            {
                 "type": "List",
                 "cssClass": "charts-column",
-                "direction": "vertical",
+                "direction": "horizontal",
                 "name": "indicators",
                 "children": [
                     {
@@ -1077,16 +1078,17 @@
                         "cssClass": "indicators-management chart",
                         "title": "Indicators History: Management and Users",
                         "animation": false,
+                        "openByDefault": true,
                         "children": [
                             {
-                                "width": "55%",
                                 "type": "Chart",
                                 "chartType": "combo",
                                 "variables": [
                                     {
                                         "name": "managementApproval",
                                         "label": "Management"
-                                    }, {
+                                    },
+                                    {
                                         "name": "userApproval",
                                         "label": "Users"
                                     }
@@ -1104,24 +1106,27 @@
                                 "verticalGridlines": true
                             }
                         ]
-                    }, {
+                    },
+                    {
                         "type": "PmgSlidePanel",
                         "cssClass": "indicators-quality chart",
                         "title": "Indicators History: Quality, Costs, and Shedule",
                         "animation": false,
+                        "openByDefault": true,
                         "children": [
                             {
                                 "type": "Chart",
-                                "width": "55%",
                                 "chartType": "combo",
                                 "variables": [
                                     {
                                         "name": "costs",
                                         "label": "Costs"
-                                    }, {
+                                    },
+                                    {
                                         "name": "delay",
                                         "label": "Shedule"
-                                    }, {
+                                    },
+                                    {
                                         "name": "quality",
                                         "label": "Quality"
                                     }
@@ -1159,7 +1164,8 @@
                         "cfg": {
                             "columnPosition": 4
                         }
-                    }, {
+                    },
+                    {
                         "fn": "Taskonclickpopup",
                         "cfg": {
                             "width": "250px",
@@ -1174,36 +1180,41 @@
                     {
                         "key": "index",
                         "label": "No",
-                        "sortable": true,
+                        "sortable": false,
                         "allowHTML": true
-                    }, {
+                    },
+                    {
                         "key": "label",
                         "label": "Name",
-                        "sortable": true,
+                        "sortable": false,
                         "allowHTML": true
-                    }, {
+                    },
+                    {
                         "label": "Estimated</br>duration",
                         "width": "54px",
                         "name": "Estimatedduration",
                         "key": "instance%properties%duration",
                         "className": "right",
-                        "sortable": true,
+                        "sortable": false,
                         "allowHTML": true
-                    }, {
+                    },
+                    {
                         "label": "Fixed costs",
                         "name": "Fixedcosts",
                         "key": "instance%properties%fixedCosts",
                         "className": "right",
                         "formatter": "rounded",
-                        "sortable": true,
+                        "sortable": false,
                         "allowHTML": true
-                    }, {
+                    },
+                    {
                         "key": "requirements",
                         "label": "Ressources",
                         "formatter": "requieredRessources",
                         "sortable": false,
                         "allowHTML": true
-                    }, {
+                    },
+                    {
                         "allowHTML": true,
                         "label": "Assigned resources",
                         "name": "assignedResources",
@@ -1212,7 +1223,8 @@
                     }
                 ],
                 "defaultSort": null
-            }, {
+            },
+            {
                 "type": "Template",
                 "variable": {
                     "@class": "Script",
@@ -1241,11 +1253,14 @@
                                 "name": "periodPhase3"
                             }
                         }
-                    }, {
+                    },
+                    {
                         "fn": "Planification"
-                    }, {
+                    },
+                    {
                         "fn": "Plannificationcolor"
-                    }, {
+                    },
+                    {
                         "fn": "Taskonclickpopup"
                     }
                 ],
@@ -1256,12 +1271,13 @@
                     {
                         "key": "index",
                         "label": "No",
-                        "sortable": true,
+                        "sortable": false,
                         "allowHTML": true
-                    }, {
+                    },
+                    {
                         "key": "label",
                         "label": "Name",
-                        "sortable": true,
+                        "sortable": false,
                         "allowHTML": true
                     }
                 ],
@@ -1282,20 +1298,24 @@
         "@name": "Resources"
     },
     "6": {
-        "cssClass": "actions-page",
         "type": "List",
+        "cssClass": "action-page",
         "direction": "vertical",
+        "name": "folder",
         "children": [
             {
                 "type": "Text",
-                "content": "<div class='title'><h2>Available actions during this phase</h2></div><div class='title'><h2>Description</h2></div>"
-            }, {
+                "cssClass": "pmg-action-title",
+                "content": "<div class=\"title title-list\">\n<h2>Available actions during this phase</h2>\n</div>\n<div class=\"title title-message\">\n<h2>Description</h2>\n</div>"
+            },
+            {
                 "type": "MCQTabView",
-                "highlightUnanswered": false,
                 "variable": {
                     "content": "var currentPhase = Variable.find('currentPhase'); return Variable.find('actions').item(currentPhase.getValue(self) - 1);"
-                }
-            }, {
+                },
+                "highlightUnanswered": false
+            },
+            {
                 "label": "",
                 "type": "Button",
                 "cssClass": "wegas-icon-pdf",
@@ -1310,11 +1330,12 @@
                             },
                             "title": {
                                 "@class": "Script",
-                                "content": "var currentPhase = Variable.find('currentPhase').getValue(self) - 1, currentPeriod = Variable.find('currentPeriod').item(currentPhase).getValue(self); return '' + Variable.find('phaseNames').item(currentPhase).getInstance().get('value') + ' - Actions';"
+                                "content": "var currentPhase = Variable.find('currentPhase').getValue(self) - 1, currentPeriod = Variable.find('currentPeriod').item(currentPhase).getValue(self); return '' + Variable.find('actions').item(currentPhase).get('label') + ' Actions';"
                             },
                             "outputType": "html"
                         }
-                    }, {
+                    },
+                    {
                         "fn": "CSSStyles",
                         "cfg": {
                             "styles": {
@@ -1325,8 +1346,7 @@
                         }
                     }
                 ],
-                "data": {
-                }
+                "data": {}
             }
         ],
         "@name": "Actions"
@@ -1338,6 +1358,7 @@
         "children": [
             {
                 "type": "Template",
+                "cssClass": "pmg-question-title",
                 "variable": {
                     "@class": "Script",
                     "content": "Variable.find(gameModel, \"timeUnit\");\n"
@@ -1345,13 +1366,15 @@
                 "data": {
                     "label": "week"
                 },
-                "custom": "<div class='title'><h2>Questions to answer this <%= this.variable.getValue() %></h2></div><div class='title'><h2>Details</h2></div>"
-            }, {
+                "custom": "<div class='title title-list'><h2>Questions to answer this <%= this.variable.getValue() %></h2></div><div class='title title-message'><h2>Details</h2></div>"
+            },
+            {
                 "type": "MCQTabView",
                 "variable": {
                     "content": "var currentPhase = Variable.find('currentPhase').getValue(self), currentPeriod = Variable.find('currentPeriod').item(currentPhase - 1).getValue(self), i, q, items = [], item; q = Variable.find('questions').item(currentPhase - 1); if (q) { for (i in q.get('items')) { item = q.item(i); if (item.get('@class') === 'QuestionDescriptor') { items.push(item); } else if (i == currentPeriod - 1 && item.get('@class') === 'ListDescriptor') { items = items.concat(item.flatten()); } } } return items;"
                 }
-            }, {
+            },
+            {
                 "label": "",
                 "type": "Button",
                 "cssClass": "wegas-icon-pdf",
@@ -1366,11 +1389,12 @@
                             },
                             "title": {
                                 "@class": "Script",
-                                "content": "var currentPhase = Variable.find('currentPhase').getValue(self) - 1, currentPeriod = Variable.find('currentPeriod').item(currentPhase).getValue(self); return '' + Variable.find('phaseNames').item(currentPhase).getInstance().get('value') + ' (' + parseInt(currentPeriod, 10) + ') - Questions';"
+                                "content": "var currentPhase = Variable.find('currentPhase').getValue(self) - 1, currentPeriod = Variable.find('currentPeriod').item(currentPhase).getValue(self); return '' + Variable.find('questions').item(currentPhase).get('label') + '(' + parseInt(currentPeriod, 10) + ') - Questions';"
                             },
                             "outputType": "html"
                         }
-                    }, {
+                    },
+                    {
                         "fn": "CSSStyles",
                         "cfg": {
                             "styles": {
@@ -1381,43 +1405,53 @@
                         }
                     }
                 ],
-                "data": {
-                }
+                "data": {}
             }
         ],
         "@name": "Questions"
     },
     "8": {
-        "cssClass": "inbox-page",
         "type": "List",
+        "cssClass": "inbox-page",
         "direction": "vertical",
+        "name": "folder",
         "children": [
             {
                 "type": "Text",
-                "content": "<div class='title'><h2>Mailbox</h2></div><div class='title'><h2>Message</h2></div>"
-            }, {
+                "cssClass": "pmg-mail-title",
+                "content": "<div class=\"title title-list\">\n<h2>Mailbox</h2>\n</div>\n<div class=\"title title-message\">\n<h2>Message</h2>\n</div>"
+            },
+            {
                 "type": "InboxDisplay",
                 "variable": {
                     "name": "inbox"
-                }
+                },
+                "template": "inbox",
+                "setToReadAfter": 0.05,
+                "autoOpenFirstMail": false
             }
         ],
         "@name": "Mailbox"
     },
     "9": {
-        "cssClass": "history-page",
         "type": "List",
+        "cssClass": "history-page",
         "direction": "vertical",
+        "name": "folder",
         "children": [
             {
                 "type": "Text",
-                "content": "<div class='title'><h2>History</h2></div><div class='title'><h2>Details</h2></div>"
-            }, {
+                "cssClass": "pmg-action-title",
+                "content": "<div class=\"title title-list\">\n<h2>History</h2>\n</div>\n<div class=\"title title-message\">\n<h2>Details</h2>\n</div>"
+            },
+            {
                 "type": "InboxDisplay",
                 "variable": {
                     "name": "history"
                 },
-                "template": "clean"
+                "template": "clean",
+                "setToReadAfter": 0.05,
+                "autoOpenFirstMail": false
             }
         ],
         "@name": "History"
@@ -1449,10 +1483,12 @@
                             {
                                 "name": "planedValue",
                                 "label": "PV (Planed Value)"
-                            }, {
+                            },
+                            {
                                 "name": "earnedValue",
                                 "label": "EV (Earned Value)"
-                            }, {
+                            },
+                            {
                                 "name": "actualCost",
                                 "label": "AC (Actual Cost)"
                             }
@@ -1478,15 +1514,20 @@
                                 "name": "periodPhase3"
                             }
                         }
-                    }, {
+                    },
+                    {
                         "fn": "Plannificationcolor"
-                    }, {
+                    },
+                    {
                         "fn": "PlannificationActivityColor"
-                    }, {
+                    },
+                    {
                         "fn": "PlannificationProgressColor"
-                    }, {
+                    },
+                    {
                         "fn": "Taskonclickpopup"
-                    }, {
+                    },
+                    {
                         "fn": "PMGLineCompleteness"
                     }
                 ],
@@ -1497,25 +1538,28 @@
                     {
                         "key": "index",
                         "label": "No",
-                        "sortable": true,
+                        "sortable": false,
                         "allowHTML": true
-                    }, {
+                    },
+                    {
                         "key": "label",
                         "label": "Name",
-                        "sortable": true,
+                        "sortable": false,
                         "allowHTML": true
-                    }, {
+                    },
+                    {
                         "label": "Realised",
                         "name": "Realised",
                         "width": "7%",
                         "key": "instance.properties.completeness",
-                        "sortable": true,
+                        "sortable": false,
                         "allowHTML": true,
                         "className": "right"
                     }
                 ],
                 "defaultSort": null
-            }, {
+            },
+            {
                 "type": "Text",
                 "content": "<div class=\"pmg-legend\">\n<div>\n<div class=\"baseline\">&nbsp;</div>\nBaseline</div>\n<div>\n<div class=\"worked\">&nbsp;</div>\nWorked</div>\n<div>\n<div class=\"fill100\">&nbsp;</div>\nProjection</div>\n</div>"
             }
@@ -1536,50 +1580,67 @@
                 "columnsCfg": [
                     {
                         "key": "index",
-                        "label": "No"
-                    }, {
+                        "label": "No",
+                        "sortable": false
+                    },
+                    {
                         "key": "label",
-                        "label": "Name"
-                    }, {
+                        "label": "Name",
+                        "sortable": false
+                    },
+                    {
                         "label": "Estimated</br>duration",
                         "width": "54px",
                         "name": "Estimatedduration",
                         "key": "instance.properties.duration",
-                        "className": "right"
-                    }, {
+                        "className": "right",
+                        "sortable": false
+                    },
+                    {
                         "label": "Realised",
                         "name": "Realised",
                         "width": "7%",
                         "key": "instance.properties.completeness",
-                        "className": "right"
-                    }, {
+                        "className": "right",
+                        "sortable": false
+                    },
+                    {
                         "name": "Quality",
                         "label": "Quality",
                         "className": "right",
                         "key": "instance.properties.quality",
-                        "formatter": "quality"
-                    }, {
+                        "formatter": "quality",
+                        "sortable": false
+                    },
+                    {
                         "label": "Wages",
                         "name": "Wages",
                         "className": "right",
-                        "key": "instance.properties.wages"
-                    }, {
+                        "key": "instance.properties.wages",
+                        "sortable": false
+                    },
+                    {
                         "label": "Fixed costs",
                         "name": "Fixedcosts",
                         "formatter": "rounded",
                         "className": "right",
-                        "key": "instance.properties.fixedCosts"
-                    }, {
+                        "key": "instance.properties.fixedCosts",
+                        "sortable": false
+                    },
+                    {
                         "label": "BAC",
                         "name": "bac",
                         "className": "right",
-                        "key": "instance.properties.bac"
-                    }, {
+                        "key": "instance.properties.bac",
+                        "sortable": false
+                    },
+                    {
                         "key": "requirements",
                         "label": "Resources",
                         "formatter": "requieredRessources",
                         "sortable": false
-                    }, {
+                    },
+                    {
                         "label": "Assigned resources",
                         "name": "assignedResources",
                         "formatter": "assignedRessources",
@@ -1589,7 +1650,8 @@
                 "plugins": [
                     {
                         "fn": "Taskonclickpopup"
-                    }, {
+                    },
+                    {
                         "fn": "PMGLineCompleteness"
                     }
                 ]
@@ -1619,8 +1681,7 @@
             {
                 "type": "Template",
                 "custom": "<%== this.value || 'Unable to find welcome text' %>",
-                "data": {
-                },
+                "data": {},
                 "variable": {
                     "name": "homeText"
                 },
@@ -1632,7 +1693,8 @@
                                 "padding": "2%"
                             }
                         }
-                    }, {
+                    },
+                    {
                         "fn": "CSSPosition",
                         "cfg": {
                             "styles": {
@@ -1641,7 +1703,8 @@
                                 "left": "0px"
                             }
                         }
-                    }, {
+                    },
+                    {
                         "fn": "CSSSize",
                         "cfg": {
                             "styles": {
@@ -1651,7 +1714,8 @@
                         }
                     }
                 ]
-            }, {
+            },
+            {
                 "type": "Text",
                 "content": "<div class='title'><h2>News</h2></div></div>",
                 "plugins": [
@@ -1666,7 +1730,8 @@
                         }
                     }
                 ]
-            }, {
+            },
+            {
                 "type": "InboxList",
                 "variable": {
                     "name": "news"
@@ -1681,7 +1746,8 @@
                                 "right": "0px"
                             }
                         }
-                    }, {
+                    },
+                    {
                         "fn": "CSSSize",
                         "cfg": {
                             "styles": {
@@ -1714,7 +1780,8 @@
                                 "right": ""
                             }
                         }
-                    }, {
+                    },
+                    {
                         "fn": "CSSSize",
                         "cfg": {
                             "styles": {
@@ -1722,7 +1789,8 @@
                                 "height": ""
                             }
                         }
-                    }, {
+                    },
+                    {
                         "fn": "ConditionalDisable",
                         "cfg": {
                             "condition": {
@@ -1735,7 +1803,8 @@
                     }
                 ],
                 "content": "<p><strong>Advancement limit</strong></p>"
-            }, {
+            },
+            {
                 "label": "<span class='checkbox'>Advancement limit</span>",
                 "type": "Button",
                 "cssClass": "pmg-properties-button",
@@ -1750,7 +1819,8 @@
                                 "content": "var advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch (e){}\n if (advLimitDesc != undefined){ advLimitDesc.setValue(self, !advLimitDesc.getValue(self));};"
                             }
                         }
-                    }, {
+                    },
+                    {
                         "fn": "CSSPosition",
                         "cfg": {
                             "styles": {
@@ -1759,13 +1829,14 @@
                                 "left": "83px"
                             }
                         }
-                    }, {
+                    },
+                    {
                         "fn": "CSSSize",
                         "cfg": {
-                            "styles": {
-                            }
+                            "styles": {}
                         }
-                    }, {
+                    },
+                    {
                         "fn": "ConditionalDisable",
                         "cfg": {
                             "condition": {
@@ -1776,7 +1847,8 @@
                             "attribute": "cssClass",
                             "value": "selected"
                         }
-                    }, {
+                    },
+                    {
                         "fn": "ConditionalDisable2",
                         "cfg": {
                             "condition": {
@@ -1789,7 +1861,8 @@
                         }
                     }
                 ]
-            }, {
+            },
+            {
                 "type": "AdvancementLimit",
                 "plugins": [
                     {
@@ -1804,7 +1877,8 @@
                                 "right": ""
                             }
                         }
-                    }, {
+                    },
+                    {
                         "fn": "CSSSize",
                         "cfg": {
                             "styles": {
@@ -1814,7 +1888,8 @@
                         }
                     }
                 ]
-            }, {
+            },
+            {
                 "type": "Text",
                 "plugins": [
                     {
@@ -1829,7 +1904,8 @@
                                 "right": ""
                             }
                         }
-                    }, {
+                    },
+                    {
                         "fn": "CSSSize",
                         "cfg": {
                             "styles": {
@@ -1840,7 +1916,8 @@
                     }
                 ],
                 "content": "<p><strong>Options</strong></p>"
-            }, {
+            },
+            {
                 "label": "<span class='checkbox'>Autoreservation</span>",
                 "type": "Button",
                 "cssClass": "pmg-properties-button",
@@ -1854,7 +1931,8 @@
                                 "content": "if (Variable.find(gameModel, \"autoReservation\").getValue(self)){\n    Variable.find(gameModel, \"autoReservation\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"autoReservation\").setValue(self, true);\n}\n"
                             }
                         }
-                    }, {
+                    },
+                    {
                         "fn": "CSSPosition",
                         "cfg": {
                             "styles": {
@@ -1866,7 +1944,8 @@
                                 "right": ""
                             }
                         }
-                    }, {
+                    },
+                    {
                         "fn": "CSSSize",
                         "cfg": {
                             "styles": {
@@ -1874,7 +1953,8 @@
                                 "height": ""
                             }
                         }
-                    }, {
+                    },
+                    {
                         "fn": "ConditionalDisable",
                         "cfg": {
                             "condition": {
@@ -1886,9 +1966,9 @@
                         }
                     }
                 ],
-                "data": {
-                }
-            }, {
+                "data": {}
+            },
+            {
                 "label": "<span class='checkbox'>Force question replies</span>",
                 "type": "Button",
                 "cssClass": "pmg-properties-button",
@@ -1902,7 +1982,8 @@
                                 "content": "if (Variable.find(gameModel, \"forceQuestionReplies\").getValue(self)){\n    Variable.find(gameModel, \"forceQuestionReplies\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"forceQuestionReplies\").setValue(self, true);\n}\n"
                             }
                         }
-                    }, {
+                    },
+                    {
                         "fn": "CSSPosition",
                         "cfg": {
                             "styles": {
@@ -1914,7 +1995,8 @@
                                 "right": ""
                             }
                         }
-                    }, {
+                    },
+                    {
                         "fn": "CSSSize",
                         "cfg": {
                             "styles": {
@@ -1922,7 +2004,8 @@
                                 "height": ""
                             }
                         }
-                    }, {
+                    },
+                    {
                         "fn": "ConditionalDisable",
                         "cfg": {
                             "condition": {
@@ -1934,9 +2017,9 @@
                         }
                     }
                 ],
-                "data": {
-                }
-            }, {
+                "data": {}
+            },
+            {
                 "label": "<span class='checkbox'>EVM</span>",
                 "type": "Button",
                 "cssClass": "pmg-properties-button",
@@ -1950,7 +2033,8 @@
                                 "content": "if (Variable.find(gameModel, \"evm\").getValue(self)){\n    Variable.find(gameModel, \"evm\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"evm\").setValue(self, true);\n}\n"
                             }
                         }
-                    }, {
+                    },
+                    {
                         "fn": "CSSPosition",
                         "cfg": {
                             "styles": {
@@ -1962,7 +2046,8 @@
                                 "right": ""
                             }
                         }
-                    }, {
+                    },
+                    {
                         "fn": "CSSSize",
                         "cfg": {
                             "styles": {
@@ -1970,7 +2055,8 @@
                                 "height": ""
                             }
                         }
-                    }, {
+                    },
+                    {
                         "fn": "ConditionalDisable",
                         "cfg": {
                             "condition": {
@@ -1982,8 +2068,7 @@
                         }
                     }
                 ],
-                "data": {
-                }
+                "data": {}
             }
         ],
         "@name": "Properties"
@@ -1998,32 +2083,40 @@
                         {
                             "key": "name",
                             "label": " "
-                        }, {
+                        },
+                        {
                             "label": "Phase",
                             "script": "var names = ['Initiation', 'Planning', 'Executing', 'Closing'];return names[Variable.find(gameModel, 'currentPhase').getValue(self)-1]"
-                        }, {
+                        },
+                        {
                             "label": "Period",
                             "script": "var currentPhase = Variable.find('currentPhase'); return Variable.find('currentPeriod').item(currentPhase.getValue(self)-1).getValue(self)"
-                        }, {
+                        },
+                        {
                             "label": "Questions",
                             "script": "var currentPhase = Variable.find('currentPhase').getValue(self), currentPeriod = Variable.find('currentPeriod').item(currentPhase - 1).getValue(self), i, count = 0, total = 0, inst, q, items = [], item; q = Variable.find('questions').item(currentPhase - 1); if (q) { for (i in q.get('items')) { item = q.item(i); if (item.get('@class') === 'QuestionDescriptor') { items.push(item); } else if (+i === currentPeriod - 1 && item.get('@class') === 'ListDescriptor') { items = items.concat(item.flatten()); } } } for (i = 0; i < items.length; i = i + 1) { inst = items[i].getInstance(self); count += (inst.get('replies').length > 0 && inst.get('active')) ? 1 : 0; total += inst.get('active') ? 1 : 0; } return count + '/' + total;"
-                        }, {
+                        },
+                        {
                             "label": "Management",
                             "script": "Variable.find(gameModel, 'managementApproval').getValue(self)",
                             "formatter": "colored"
-                        }, {
+                        },
+                        {
                             "label": "User",
                             "script": "Variable.find(gameModel, 'userApproval').getValue(self)",
                             "formatter": "colored"
-                        }, {
+                        },
+                        {
                             "label": "Quality",
                             "script": "Variable.find(gameModel, 'quality').getValue(self)",
                             "formatter": "colored"
-                        }, {
+                        },
+                        {
                             "label": "Cost",
                             "script": "Variable.find(gameModel, 'costs').getValue(self)",
                             "formatter": "colored"
-                        }, {
+                        },
+                        {
                             "label": "Schedule",
                             "script": "Variable.find(gameModel, 'delay').getValue(self)",
                             "formatter": "colored"

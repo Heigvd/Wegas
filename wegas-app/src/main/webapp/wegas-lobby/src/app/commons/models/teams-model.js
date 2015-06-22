@@ -59,6 +59,10 @@ angular.module('wegas.models.teams', [])
                 }
             };
 
+        model.clearCache = function() {
+            teams.cache = null;
+        };
+
         /* Ask for all teams for current user. */
         model.getTeams = function() {
             var deferred = $q.defer();
@@ -210,31 +214,38 @@ angular.module('wegas.models.teams', [])
 
         /* Join an individual session for current player */
         model.joinIndividually = function(sessionToJoin) {
+            console.log(sessionToJoin);
             var deferred = $q.defer();
             Auth.getAuthenticatedUser().then(function(user) {
             	if(user !== null){
-            		if(sessionToJoin.access == "CLOSE"){
+                    if(sessionToJoin.access == "CLOSE"){
                         deferred.resolve(Responses.error("Session closed", false));
-                	}else{
-		            	var alreadyJoined = false;
-		            	sessionToJoin.teams.forEach(function(teamJoinable){
-		            		teams.cache.data.forEach(function(teamJoined){
-    		            		if(teamJoinable.id == teamJoined.id){
-    		            			alreadyJoined = true;
-    		            		}
+                    }else{
+                        if(teams.cache == null){
+                            teams.cache = {
+                                data: [],
+                                loading: false
+                            };
+                        }
+                        var alreadyJoined = false;
+                        sessionToJoin.teams.forEach(function(teamJoinable){
+                            teams.cache.data.forEach(function(teamJoined){
+                                if(teamJoinable.id == teamJoined.id){
+                                        alreadyJoined = true;
+                                }
                             });
-		            	});
-		                if (alreadyJoined) {
-		                    deferred.resolve(Responses.info("You have already join this session", false));
-		                } else {
-		                    $http.post(ServiceURL + "rest/Extended/GameModel/Game/" + sessionToJoin.id + "/Player").success(function(individualTeamJoined) {
-	                            cacheTeam(individualTeamJoined);
-		                        deferred.resolve(Responses.success("Session joined", individualTeamJoined));
-		                    }).error(function(data) {
-		                        deferred.resolve(Responses.danger("Error during joining session", false));
-		                    });
-		                }
-		            }
+                        });
+                        if (alreadyJoined) {
+                            deferred.resolve(Responses.info("You have already join this session", false));
+                        } else {
+                            $http.post(ServiceURL + "rest/Extended/GameModel/Game/" + sessionToJoin.id + "/Player").success(function(individualTeamJoined) {
+                            cacheTeam(individualTeamJoined);
+                                deferred.resolve(Responses.success("Session joined", individualTeamJoined));
+                            }).error(function(data) {
+                                deferred.resolve(Responses.danger("Error during joining session", false));
+                            });
+                        }
+                    }
                 } else {
                     deferred.resolve(Responses.danger("You need to be logged", false));
                 }

@@ -192,6 +192,7 @@ public class GameController {
                         withoutDebugTeam.add(teamToCheck);
                     }
                 }
+                em.detach(g);
                 g.setTeams(withoutDebugTeam);
                 retGames.add(g);
             }
