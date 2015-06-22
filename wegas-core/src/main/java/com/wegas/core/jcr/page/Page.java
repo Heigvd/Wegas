@@ -11,31 +11,41 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-////import javax.xml.bind.annotation.XmlRootElement;
-////import javax.xml.bind.annotation.XmlTransient;
+import com.wegas.core.Helper;
 import name.fraser.neil.plaintext.StandardBreakScorer;
 import name.fraser.neil.plaintext.diff_match_patch;
 import org.slf4j.LoggerFactory;
 
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+
+////import javax.xml.bind.annotation.XmlRootElement;
+////import javax.xml.bind.annotation.XmlTransient;
+
 /**
- *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 //@XmlRootElement
 public class Page {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(Page.class);
+    static final protected String INDEX_KEY = "index";
+    static final protected String NAME_KEY = "pageName";
+
     @JsonIgnore
     //@XmlTransient
     private static ObjectMapper mapper = new ObjectMapper();
+
     private String id;
+
     private JsonNode content;
+
     private String name;
+
+    private Integer index = 0;
 
     /**
      * @param id
@@ -48,18 +58,20 @@ public class Page {
     }
 
     /**
-     *
      * @param n
      * @throws RepositoryException
      * @throws IOException
      */
-    public Page(Node n) throws RepositoryException, IOException {
+    public Page(Node n) throws RepositoryException {
         this.id = n.getName();
         this.setContent(n.getProperty("content").getString());
-        if (n.hasProperty("pageName")) {
-            this.name = n.getProperty("pageName").getString();
-            this.injectAttrs();
+        if (n.hasProperty(NAME_KEY)) {
+            this.name = n.getProperty(NAME_KEY).getString();
         }
+        if (n.hasProperty(INDEX_KEY)) {
+            this.index = Helper.longToInt(n.getProperty(INDEX_KEY).getLong());
+        }
+        this.injectAttrs();
     }
 
     /**
@@ -69,7 +81,6 @@ public class Page {
     }
 
     /**
-     *
      * @return
      */
     public String getId() {
@@ -77,7 +88,6 @@ public class Page {
     }
 
     /**
-     *
      * @param id
      */
     public void setId(String id) {
@@ -85,7 +95,6 @@ public class Page {
     }
 
     /**
-     *
      * @return
      */
     public JsonNode getContent() {
@@ -93,7 +102,6 @@ public class Page {
     }
 
     /**
-     *
      * @param content
      */
     @JsonIgnore
@@ -102,17 +110,19 @@ public class Page {
     }
 
     /**
-     *
      * @param content
      * @throws IOException
      */
     @JsonIgnore
-    public final void setContent(String content) throws IOException {
-        this.content = mapper.readTree(content);
+    public final void setContent(String content) {
+        try {
+            this.content = mapper.readTree(content);
+        } catch (IOException e) {
+            this.content = null;
+        }
     }
 
     /**
-     *
      * @return
      */
     public String getName() {
@@ -120,7 +130,6 @@ public class Page {
     }
 
     /**
-     *
      * @param name
      */
     public void setName(String name) {
@@ -132,21 +141,26 @@ public class Page {
      */
     @JsonIgnore
     private void extractAttrs() {
-        JsonNode nameNode;
-        nameNode = this.content.path("@name");
-        if (!nameNode.isMissingNode()) {
-            this.name = nameNode.textValue();
+        JsonNode node;
+        node = this.content.path("@name");
+        if (!node.isMissingNode()) {
+            this.name = node.textValue();
             ((ObjectNode) this.content).remove("@name");
+        }
+        node = this.content.path("@index");
+        if (!node.isMissingNode()) {
+            this.index = node.intValue();
+            ((ObjectNode) this.content).remove("@index");
         }
     }
 
     @JsonIgnore
     private void injectAttrs() {
         ((ObjectNode) this.content).put("@name", this.name);
+        ((ObjectNode) this.content).put("@index", this.index);
     }
 
     /**
-     *
      * @param patch
      * @throws IOException
      */
@@ -159,8 +173,8 @@ public class Page {
     }
 
     //@TODO : tokenizer
+
     /**
-     *
      * @param jsonPath
      * @return
      */
@@ -177,5 +191,13 @@ public class Page {
             }
         }
         return node.asText();
+    }
+
+    public Integer getIndex() {
+        return index;
+    }
+
+    protected void setIndex(int index) {
+        this.index = index;
     }
 }
