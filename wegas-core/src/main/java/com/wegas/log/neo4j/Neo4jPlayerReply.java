@@ -5,7 +5,6 @@
  * Copyright (c) 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 package com.wegas.log.neo4j;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -15,7 +14,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.RequestManager;
-import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.DebugTeam;
@@ -52,15 +50,13 @@ public class Neo4jPlayerReply {
     }
 
     private enum TYPE {
+
         QUESTION,
         NUMBER
     }
 
     @Resource
     private SessionContext sessionContext;
-
-    @EJB
-    private VariableInstanceFacade variableInstanceFacade;
 
     public void onReplyValidate(@Observes QuestionDescriptorFacade.ReplyValidate event) throws JsonProcessingException {
         sessionContext.getBusinessObject(Neo4jPlayerReply.class).addPlayerReply(event.player, event.reply, (ChoiceDescriptor) event.choice.getDescriptor(), (QuestionDescriptor) event.question.getDescriptor());
@@ -72,12 +68,9 @@ public class Neo4jPlayerReply {
 
     @Asynchronous
     private void addNumberUpdate(Player player, NumberInstance numberInstance) throws NoPlayerException, JsonProcessingException {
-        if (player == null) {
-            player = variableInstanceFacade.findAPlayer(numberInstance);
-        }
-        if (player.getGame() instanceof DebugGame || player.getTeam() instanceof DebugTeam ||
-            Helper.isNullOrEmpty(player.getGameModel().getProperties().getLogID()) ||
-            !Neo4jUtils.checkDataBaseIsRunning()) {
+        if (player == null || player.getGame() instanceof DebugGame || player.getTeam() instanceof DebugTeam
+                || Helper.isNullOrEmpty(player.getGameModel().getProperties().getLogID())
+                || !Neo4jUtils.checkDataBaseIsRunning()) {
             return;
         }
         final String key = nodeKey(player, TYPE.NUMBER);
@@ -88,20 +81,20 @@ public class Neo4jPlayerReply {
     }
 
     /**
-     * Creates or adds a player and its answer data in the graph belonging to
-     * a given game.
+     * Creates or adds a player and its answer data in the graph belonging to a
+     * given game.
      *
      * @param player the player data
-     * @param reply  the player's answer data
+     * @param reply the player's answer data
      * @param choiceDescriptor the selected choice description
      * @param questionDescriptor the selected question description
      * @throws JsonProcessingException
      */
     @Asynchronous
     private synchronized void addPlayerReply(Player player, Reply reply, ChoiceDescriptor choiceDescriptor, QuestionDescriptor questionDescriptor) throws JsonProcessingException {
-        if (player.getGame() instanceof DebugGame ||
-            Helper.isNullOrEmpty(player.getGameModel().getProperties().getLogID()) ||
-            !Neo4jUtils.checkDataBaseIsRunning()) {
+        if (player.getGame() instanceof DebugGame
+                || Helper.isNullOrEmpty(player.getGameModel().getProperties().getLogID())
+                || !Neo4jUtils.checkDataBaseIsRunning()) {
             return;
         }
         String key = nodeKey(player, TYPE.QUESTION);
@@ -174,31 +167,33 @@ public class Neo4jPlayerReply {
     /**
      * Link a new node to an already existing newest filtered by key
      *
-     * @param key           key to filter "youngest" nodes
+     * @param key key to filter "youngest" nodes
      * @param relationLabel label to put onto the relation
-     * @param target        new node to create
-     * @param label         label to put onto the node
+     * @param target new node to create
+     * @param label label to put onto the node
      * @throws JsonProcessingException
      */
     private static void createLinkedToYoungest(String key, String relationLabel, ObjectNode target, String label) throws JsonProcessingException {
         String query = "CREATE (p:`" + label + "` " + objectMapper.writeValueAsString(target) + ") WITH p AS p Match (n " + key
-            + ") WHERE n <> p WITH max(n.starttime) AS max, p AS p MATCH (n " +
-            key + ") WHERE n.starttime = max AND n <> p WITH n AS n, p AS p CREATE (n)-[:`" +
-            relationLabel + "`]->(p) return p";
+                + ") WHERE n <> p WITH max(n.starttime) AS max, p AS p MATCH (n "
+                + key + ") WHERE n.starttime = max AND n <> p WITH n AS n, p AS p CREATE (n)-[:`"
+                + relationLabel + "`]->(p) return p";
         String result = Neo4jUtils.queryDBString(query);
         checkError(result);
     }
 
     /**
-     * Checks if an error occurred during the execution of a query. The potential
-     * error message is recorded in the JSON result of the query. If an error
-     * was found this method raises an exception.
+     * Checks if an error occurred during the execution of a query. The
+     * potential error message is recorded in the JSON result of the query. If
+     * an error was found this method raises an exception.
      *
      * @param result the result of the query
      */
     private static void checkError(String result) {
         String err = Neo4jUtils.extractErrorData(result);
-        if (err == null) return;
+        if (err == null) {
+            return;
+        }
         throw new RuntimeException(err);
     }
 }
