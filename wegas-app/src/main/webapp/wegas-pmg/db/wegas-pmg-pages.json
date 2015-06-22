@@ -61,13 +61,7 @@
                                 "cssClass": "pmg--header__taskbar",
                                 "direction": "vertical",
                                 "name": "taskbar",
-                                "children": [
-                                    {
-                                        "type": "LoginButton",
-                                        "cssClass": "menu-loginbutton",
-                                        "forcedLabel": "Leave session",
-                                        "targetPageLoader": "maindisplayarea"
-                                    },
+                                "children": [                                 
                                     {
                                         "type": "List",
                                         "cssClass": "pmg--taskbar__infos",
@@ -143,7 +137,7 @@
                                                                 "data": {
                                                                     "label": ""
                                                                 },
-                                                                "custom": "<div class='wegas-template-valuebox'><% if(this.label){ %><label><%= this.label %></label><% } %><div class='wegas-template-valuebox-units'><% var maxVal, phase = this.value, currentPeriod = Y.Wegas.Facade.Variable.cache.find('name', 'currentPeriod').get('items')[phase -1]; if (phase != 3) {maxVal = currentPeriod.getMaxValue()} else { var exec = Y.Wegas.Facade.Variable.cache.find('name', 'executionPeriods').get('value'); if (currentPeriod.getValue() >= exec) { maxVal = currentPeriod.getValue(); maxVal++} else { maxVal = exec}} %><% for(var i=+currentPeriod.getMinValue(); i < +maxVal + 1; i+=1){%><div class='wegas-template-valuebox-unit <%= +i < +currentPeriod.getValue() ? ' wegas-template-valuebox-previous' : '' %><%= +i === +currentPeriod.getValue() ? ' wegas-template-valuebox-selected' : '' %>'><%= ''+i %></div> <% } %></span></div></div>"
+                                                                "custom": "<% var maxVal, phase = this.value, currentPeriod = Y.Wegas.Facade.Variable.cache.find('name', 'currentPeriod').get('items')[phase -1]; if (phase != 3) {maxVal = currentPeriod.getMaxValue()} else { var exec = Y.Wegas.Facade.Variable.cache.find('name', 'executionPeriods').get('value'); if (currentPeriod.getValue() >= exec) { maxVal = currentPeriod.getValue(); maxVal++} else { maxVal = exec}} if(maxVal > 1){ %><div class='wegas-template-valuebox'><% if(this.label){ %><label><%= this.label %></label><% } %><div class='wegas-template-valuebox-units'><% for(var i=+currentPeriod.getMinValue(); i < +maxVal + 1; i+=1){%><div class='wegas-template-valuebox-unit <%= +i < +currentPeriod.getValue() ? ' wegas-template-valuebox-previous' : '' %><%= +i === +currentPeriod.getValue() ? ' wegas-template-valuebox-selected' : '' %>'><%= ''+i %></div> <% } %></span></div></div><% } %>"
                                                             }
                                                         ]
                                                     },
@@ -585,10 +579,11 @@
                                                                         }
                                                                     }
                                                                 ],
-                                                                "content": "<p>Time cards</p>"
-                                                            },
+                                                                "content": "<p>Time budget</p>"
+                                                            },                                                       
                                                             {
                                                                 "type": "NumberTemplate",
+                                                                "cssClass": "pmg--number",
                                                                 "plugins": [
                                                                     {
                                                                         "fn": "CSSPosition",
@@ -614,6 +609,16 @@
                                                                 },
                                                                 "data": {
                                                                     "label": ""
+                                                                }
+                                                            },
+                                                            {
+                                                                "type": "BoxTemplate",
+                                                                "cssClass": "pmg--cards",
+                                                                "variable": {
+                                                                    "content": "Variable.find('timeCards')"
+                                                                },
+                                                                "data": {
+                                                                        "label": ""
                                                                 }
                                                             }
                                                         ]
@@ -900,6 +905,12 @@
                                                             }
                                                         ],
                                                         "data": {}
+                                                    },
+                                                    {
+                                                        "type": "LoginButton",
+                                                        "cssClass": "menu-loginbutton",
+                                                        "forcedLabel": "",
+                                                        "targetPageLoader": "maindisplayarea"
                                                     }
                                                 ]
                                             }

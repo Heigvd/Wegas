@@ -27,8 +27,9 @@
     min-height:560px;
     overflow:auto;
 }
+
 .wegas-editmode .pmg--app{
-    min-width:1330px;
+    min-width:1350px;
 }
 
 /*--------------------------------header--------------------------------------*/
@@ -72,7 +73,7 @@
     position:relative;
     width:180px;
     height:20px;
-    padding:16px 0px 12px 0px;
+    padding:10px 0px 12px 0px;
     margin:0px;
     color:white;
     text-align:center;
@@ -97,7 +98,7 @@
     display:block;
     position:relative;
     width:100%;
-    height:124px;
+    height:108px;
     margin:0px;
     padding:0px;
 }
@@ -123,14 +124,14 @@
     position:relative;
     float:left;
     width:416px;
-    height:120px;
+    height:100px;
 }
 
 .pmg--phases__state  .wegas-pmg-breadcrumb {
     display:block;
     position:relative !important;
     width:376px;
-    margin:36px 8px 0px 32px;
+    margin: 24px 8px 0px 32px;
 }
 
 .wegas-pmg-breadcrumb span{
@@ -199,11 +200,11 @@
     display:block;
     position:relative !important;
     width:372px;
-    top:2px !important;
-    background-color:#25252f;
+    top:8px !important;
+    background:none;
     height:18px;
-    margin:0px 29px;
-    padding:1px;
+    margin: 0px 28px;
+    padding:0px;
     clear:both;
     float:none;
 }
@@ -211,9 +212,11 @@
 .pmg--app .wegas-template-valuebox-unit {
   background: #525564; 
   border: none;
-  margin: 1px 1px;
-  width: 21px;
-  height: 16px;
+  margin: 1px 1.5px 1px 1.75px;
+  width: 20px;
+  height: 18px;
+  padding:0px;
+  font-size:12px;
   line-height: 18px;
   float: left;
   color:white;
@@ -234,14 +237,15 @@
     display:block;
     position:relative !important;
     color: white;
-    width:80px;
+    width:100px;
     height:30px;
     float:right;
     line-height:28px;
     font-size:12px;
     font-weight: bolder;
     background: none;
-    margin:36px 8px;
+    padding-left:20px;
+    margin:24px 4px;
     border-radius:8px;
     background:none;
     background-color:#446d71;
@@ -250,6 +254,20 @@
 .pmg-nextweek:hover {
     background:none;
     background-color:#40868d;
+}
+
+.pmg-nextweek:before {
+    content: "\f101";
+    font-family:"FontAwesome";
+    display:block;
+    position:absolute;
+    top:0px;
+    left:4px;
+    width:20px;
+    font-size:21px;
+    line-height:30px;
+    height:30px;
+    color:white;
 }
 
 .pmg-nextweek:after {
@@ -284,7 +302,7 @@
     top:-8px;
     left:0px;
     width:1px;
-    height:124px;
+    height:108px;
     background-color:#4f515d;
 }
 
@@ -304,19 +322,18 @@
 }
 
 .pmg--indicator .percent{
-    margin:20px 34px 0px 34px;
+    margin:14px 34px 0px 34px;
     display:block;
     position:relative;
     height:20px;
     width:36px;
-    color:white;
-    background-color:#454753;
-    border-radius:4px;
+    color:#9d9ea3;
+    background-color:none;
     line-height:20px;   
 }
 
 .pmg--indicator.wegas-gauge .percent{
-    margin:24px 34px 0px 34px;
+    margin:18px 34px 0px 34px;
 }
 
 .pmg--taskbar__infos .pmg--infos__indicators .pmg--time-cards{
@@ -330,11 +347,13 @@
 .pmg--time-cards .wegas-text{
     display:block;
     position:relative !important;
-    width:129px;
+    width:100%;
     height:18px;
-    margin-top:60px;
-    padding:0px;
-    text-align:center;
+    margin-top:14px;
+    margin-bottom:2px;
+    box-sizing:border-box;
+    padding:0px 14px;
+    text-align:left;
     color:#9d9ea3;
     font-size:12px;
 }
@@ -342,8 +361,14 @@
     font-weight:500;
 }
 
-.pmg--time-cards .wegas-template{
+.pmg--time-cards .pmg--number{
     display:block;
+    position:absolute;
+    top:0px !important;
+    left:auto !important;
+    right:10px;
+    color:#ddd;
+    /*display:block;
     position:relative !important;
     width:80px;
     margin:0px 24px;
@@ -358,39 +383,41 @@
     background-image: url(../../wegas-pmg/images/pmg2_icon_time.png);
     background-size:21px;
     background-position:14px 8px;
-    background-repeat:no-repeat;
+    background-repeat:no-repeat;*/
+}
+.pmg--time-cards .pmg--cards{
+    display:block; 
+    position:relative !important;
+    width:100%;
+    margin:0px;
+    padding:0px;
 }
 
-.yui3-skin-sam .wegas-widgetmenu-hassubmenu.yui3-button.menu-loginbutton{
-    display:block;
-    position:absolute;
-    top:0px;
-    right:0px;
-    width:129px;
-    height:39px;
-    background:none;
-    color:#9a9b9d;
-    font-size:12px;
-    z-index:12; 
-    transition:.3s;
-    border-bottom:solid 1px #4f515d;
-}
-.yui3-skin-sam .yui3-button.wegas-widgetmenu-hassubmenu:after {
-  right: 4px;
-  top: 18px;
-  background-position-y: -40px;
+.pmg--cards .wegas-template-box{
+    padding:0px 32px 0px 14px;
 }
 
-.yui3-skin-sam .wegas-widgetmenu-hassubmenu.yui3-button.menu-loginbutton:hover{
-    background:#272731;
-    color:white;
+.pmg--cards .wegas-template-box .wegas-template-box-value{
+    display:none;
 }
+
+.pmg--cards .wegas-template-box .wegas-template-box-unit{
+   width:6px;
+   height:11px;
+   border:none;
+   background:#47b3b3;
+   padding:0px;
+   margin:2.5px 2px;
+   box-sizing: border-box;
+}
+
+
 
 .pmg--header__taskbar .pmg--taskbar__menus{
     display:block;
     position:relative;
     width:100%;
-    height:48px;
+    height: 64px;
     margin:0px;
     padding:0px;
     background: #272731;
@@ -400,7 +427,7 @@
     display:block;
     position:relative;
     width:auto;
-    height:48px;
+    height: 64px;
     float:left;
 }
 
@@ -409,10 +436,11 @@
     position:relative;
     width:auto;
     padding:0px 16px;
-    height:48px;
+    height: 64px;
     float:left;
     background:none;
-    color:#9a9b9d;
+    color:white;
+    font-size:15px;
     text-transform: uppercase;
     transition:.2s;
 }
@@ -422,15 +450,15 @@
     background:none;
 }
 
-.pmg--taskbar__menus .pmg--menus__main-menu  .hidden-button{
+.pmg--taskbar__menus .pmg--menus__main-menu  .hidden-button, .pmg--taskbar__menus .pmg--menus__main-menu .wegas-button.yui3-button-disabled{
     display:none;
 }
 
 .pmg--taskbar__menus .pmg--menus__secondary-menu{
     display:block;
     position:relative;
-    width:430px;
-    height:48px;
+    width:631px;   
+    height: 64px;
     float:right;
 }
 
@@ -438,35 +466,36 @@
     display:block;
     position:relative;
     width:1px;
-    height:48px;
+    height: 64px;
     float:left;
     background-color:#4f515d;
 }
 
-.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button{
+.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button, 
+.yui3-skin-sam .wegas-widgetmenu-hassubmenu.yui3-button.menu-loginbutton{
     display:block;
     position:relative;
     float:left;
     padding:0px;
     margin:0px;
-    width:100px;
-    height:48px;
+    width:167px;
+    height: 64px;
     text-indent:-1000px;
     overflow:hidden;
     background:none;
-    background-size:40px 30px;
+    background-size:auto 32px;
     background-position:center;
     background-repeat:no-repeat;
     cursor:pointer;
 }
 
 .pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.pmg--menu-btn-last{
-    width:99px;
+    width:166px;
 }
 
 .pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button:hover{
     border-top:solid 2px #ffb197;
-    background-size:40px 30px;
+    background-size:auto 32px;
     background-position:center;
     background-repeat:no-repeat;
 }
@@ -498,6 +527,10 @@
     background-color: #18d8d9;
 }
 
+.yui3-skin-sam .yui3-button.wegas-widgetmenu-hassubmenu:after {
+  display:none;
+}
+
 .pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.pmg--icon-action{
     background-image: url(../../wegas-pmg/images/pmg2_icon_actions.png);
 }
@@ -509,23 +542,12 @@
 }
 .pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.pmg--icon-history{
     background-image: url(../../wegas-pmg/images/pmg2_icon_folder.png); 
-    width:129px;
+    width:64px;
 }
-.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.yui3-button-selected.pmg--icon-action{
-    background-image: url(../../wegas-pmg/images/pmg2_icon_actions_hover.png);
-}
-.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.yui3-button-selected.pmg--icon-question{
-    background-image: url(../../wegas-pmg/images/pmg2_icon_choices_hover.png);
-}
-.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.yui3-button-selected.pmg--icon-mail{
-    background-image: url(../../wegas-pmg/images/pmg2_icon_mail_hover.png);
-}
-.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.yui3-button-selected.pmg--icon-history{
-    background-image: url(../../wegas-pmg/images/pmg2_icon_folder_hover.png); 
-}
-
-.pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.wegas-login:after{
-    display:none;
+.yui3-skin-sam .wegas-widgetmenu-hassubmenu.yui3-button.menu-loginbutton{
+    background-image: url(../../wegas-pmg/images/pmg2_icon_settings.png); 
+    width:64px;
+    border-left:solid 1px #4f515d;
 }
 
 .pmg--taskbar__menus .yui3-button-selected, .pmg--taskbar__menus .wegas-button.yui3-button-selected:hover{
@@ -539,9 +561,9 @@
     content:"";
     bottom:0px;
     left:50%;
-    width:16px;
-    height:8px;
-    margin-left:-8px;
+    width: 20px;
+    height: 8px;
+    margin-left: -10px;
     background:none;
     background-image:URL("../../wegas-pmg/images/btn_main_over.png");
     background-position:bottom center;
@@ -655,7 +677,7 @@ h2{
     line-height:40px;
     margin:0px;
     padding:0px 16px;
-    color:#333333;
+    color:#000000;
     font-weight:300;
     box-sizing: border-box;
     background-color:#d8d9dd;
@@ -676,14 +698,14 @@ h2{
 .wegas-mcqtabview .mcq-question .mcq-choice button{
     display:block;
     position:relative;
-    background:#d0d0d2;
+    background:#69bd7f;
     text-transform: uppercase;
     height:24px;
     margin:12px 16px;
     font-size:12px;
     padding:4px 8px 4px 24px;
     border-radius:6px;
-    color:#7b8390;
+    color:white;
     transition:.3s;
 }
 .wegas-mcqtabview .mcq-question .mcq-choice button:before{
@@ -709,7 +731,7 @@ h2{
 }
 
 .wegas-mcqtabview .mcq-question .mcq-choice button:hover{
-    background:#bcbcbd;
+    background:#74db8f;
 }
 
 .wegas-mcqtabview .mcq-replies-title{
@@ -1130,6 +1152,7 @@ td.yui3-datatable-col-Realised:after {
     margin:0px;
     padding:0px;
     height: 24px;
+    font-size:16px;
 }
 .pmg-project-execution-overview{
     width:100%;
@@ -1182,7 +1205,7 @@ td.yui3-datatable-col-Realised:after {
     width:100%;
     height:90px;
     padding:24px 0px;
-    font-size:24px;
+    font-size:21px;
     text-align:center;
     color:#96979c;
     box-sizing:border-box;
@@ -1449,14 +1472,20 @@ td.yui3-datatable-col-Realised:after {
 
 /* Media queries */
 
-@media screen and (max-width: 1329px) {
+@media screen and (max-width: 1339px) {
+    .pmg--taskbar__menus .pmg--menus__secondary-menu{
+        width:430px;
+    }
+    
+    .wegas-editmode .pmg--taskbar__menus .pmg--menus__secondary-menu{
+        width:631px;
+    }
+    
     .pmg--infos__phases .pmg--phases__state{
         display:block;
         position:relative;
-        float:none;
-        clear:both;
         width:114px;
-        margin:14px 32px 0px 32px;
+        margin:0px 32px 0px 32px;
         height:auto;
     }
     .wegas-editmode .pmg--infos__phases .pmg--phases__state{
@@ -1469,84 +1498,24 @@ td.yui3-datatable-col-Realised:after {
         clear:none;
     }
 
-    .pmg--phases__state  .wegas-pmg-breadcrumb {
-        display:block;
-        position:relative !important;
-        width:112px;
-        margin:0px;
-    }
-    .wegas-editmode .pmg--phases__state  .wegas-pmg-breadcrumb{
-       display:block;
-        position:relative !important;
-        width:376px;
-        margin:36px 8px 0px 32px;
-    }
-
     .wegas-pmg-breadcrumb span{
         display:none;
     }
     .wegas-editmode .wegas-pmg-breadcrumb span{
         display:block;
     }
-   
+    
     .wegas-pmg-breadcrumb .current{
         display:block;
-        width:100%;
-        margin:0px;
-        height:26px;
-        padding-bottom:0px;
-        border-top-left-radius: 2px;
-        border-top-right-radius: 2px;
-        background-color:#25252f;
-    }
-    .wegas-editmode .wegas-pmg-breadcrumb .current{
-        display:block;
-        position:relative;
-        width:80px;
-        height:30px;
-        padding:0px;
-        margin:0px 7px;
-        border-top-left-radius: 0px;
-        border-top-right-radius: 0px;
-        background-color: #ed6a3c;
-    }
-
-    .wegas-pmg-breadcrumb span:before, .wegas-pmg-breadcrumb span:after{
-        display:none;
-    }
-    .wegas-editmode .wegas-pmg-breadcrumb span:before, .wegas-editmode .wegas-pmg-breadcrumb span:after{
-        display:block;
+        padding-right:24px;
     }
     
-    .pmg--phases__state .pmg-period{
+     .wegas-editmode .wegas-pmg-breadcrumb .current{
         display:block;
-        position:relative !important;
-        width:112px;
-        background-color:#25252f;
-        height:16px;
-        margin:0px;
-        padding:3px 0px 9px 0px;
-        top:0px !important;
-        clear:both;
-        float:none;
-        border-bottom-left-radius: 2px;
-        border-bottom-right-radius: 2px;
+        padding-right:0px;
     }
-    .wegas-editmode .pmg--phases__state .pmg-period{
-        display:block;
-        position:relative !important;
-        width:372px;
-        top:2px !important;
-        background-color:#25252f;
-        height:18px;
-        margin:0px 29px;
-        padding:1px;
-        float:left;
-        clear:none;
-        border-bottom-left-radius: 0px;
-        border-bottom-right-radius: 0px;
-    }
-
+    
+    
     .pmg--app .wegas-template-valuebox-unit {
        display:none;
     }
@@ -1555,51 +1524,60 @@ td.yui3-datatable-col-Realised:after {
     }
     
     .pmg--app .wegas-template-valuebox-unit.wegas-template-valuebox-selected{
-        display:block;
-        margin:auto;
-        float:none;
-        clear:both;
-        padding:2px 0px;
-        border-radius:50%;
-        background-color:#ed6a3c;
-        font-weight:600;
-        color:#25252f;
+        display: block;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        float: none;
+        clear: both;
+        padding: 0px;
+        font-weight: 300;
+        color: white;
     }
     
     .wegas-editmode .pmg--app .wegas-template-valuebox-unit.wegas-template-valuebox-selected{
-        border: none;
-        border-radius:0px;
-        margin: 1px 1px;
-        padding:0;
-        width: 18px;
-        height: 16px;
+        position:relative;
+        top:auto;
+        left:auto;
         float: left;
         clear:none;
         font-weight:300;
-        background: #446d71;
+        background: #40868d;
         color:white;
     }
     
-    .pmg-nextweek {
-        width:112px;
-        height:30px;
-        float:none;
-        clear:both;
-        margin:8px auto;
-        border-radius: 6px;
+    .pmg-nextweek{
+        margin:24px 24px;
+    }
+    .wegas-editmode .pmg-nextweek{
+        margin:24px 4px;
     }
     
-    .wegas-editmode .pmg-nextweek{
-        width:80px;
-        height:30px;
-        float:right;
-        clear:none;
-        margin:36px 8px;
-        border-radius:8px;
+    .pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button{
+        width:100px;
+    }
+    
+    .wegas-editmode .pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button{
+        width:167px;
+    }
+
+    .pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.pmg--menu-btn-last{
+        width:99px;
+    }
+    
+    .wegas-editmode .pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.pmg--menu-btn-last{
+        width:166px;
+    }
+    
+    .wegas-editmode .pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.pmg--icon-history{
+        width:64px;
+    }
+    .wegas-editmode .wegas-widgetmenu-hassubmenu.yui3-button.menu-loginbutton{
+        width:64px;
     }
 }
 
-@media screen and (max-width: 1100px) {
+@media screen and (max-width: 1159px) {
     .pmg-header .pmg--header__identity{
         width:80px;
     }
@@ -1627,6 +1605,14 @@ td.yui3-datatable-col-Realised:after {
         display:block;
     }
     
+    .pmg--phases__state .wegas-pmg-breadcrumb{
+        margin:16px 8px 0px 32px; 
+    }
+    .wegas-editmode .pmg--phases__state .wegas-pmg-breadcrumb{
+        margin:24px 8px 0px 32px; 
+    }
+    
+    
     .pmg-header .pmg--header__taskbar{
         padding-left:80px;
     }
@@ -1635,11 +1621,57 @@ td.yui3-datatable-col-Realised:after {
         padding-left:180px;
     }
     
+    .pmg--infos__phases .pmg--phases__state{
+        padding:0px;
+        height: 56px;
+        margin:0px 32px 0px 32px;
+    }
+    .wegas-editmode .pmg--infos__phases .pmg--phases__state{
+        margin:0px;
+    }
+    
+     .pmg--app .wegas-template-valuebox-unit.wegas-template-valuebox-selected{
+        display: block;
+        position: absolute;
+        top: -33px;
+        left: 84px;
+        float: none;
+        clear: both;
+        background:none;
+        padding: 0px;
+        font-weight: 600;
+        color: white;
+    }
+    
+    .wegas-editmode .pmg--app .wegas-template-valuebox-unit.wegas-template-valuebox-selected{
+        position:relative;
+        top:auto;
+        left:auto;
+        float: left;
+        clear:none;
+        font-weight:300;
+        background: #40868d;
+        color:white;
+    }
+    
+    .pmg-nextweek{
+        float:none;
+        clear:both;
+        margin:0px 72px;
+    }
+    .wegas-editmode .pmg-nextweek{
+        float:left;
+        clear:none;
+        margin:24px 4px;
+    }
+    
     .pmg--taskbar__menus .pmg--menus__main-menu .wegas-button{
         padding:0px 12px;
+        font-size:13px;
     }
     .wegas-editmode .pmg--taskbar__menus .pmg--menus__main-menu .wegas-button{
         padding:0px 16px;
+        font-size:15px;
     }
 }
 
