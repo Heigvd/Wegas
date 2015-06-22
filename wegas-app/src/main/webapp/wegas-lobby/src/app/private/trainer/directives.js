@@ -74,7 +74,7 @@ angular.module('private.trainer.directives', [
                 Flash.danger("No scenario choosed");
             }
         };
-
+        
         $rootScope.$on('changeArchives', function(e, hasNewData) {
             if (hasNewData) {
                 SessionsModel.countArchivedSessions().then(function(response) {
@@ -128,7 +128,7 @@ angular.module('private.trainer.directives', [
                                     name: "",
                                     scenarioId: 0
                                 };
-                                parentCtrl.updateSessions();
+                                parentCtrl.updateSessions(true);
                             } else {
                                 response.flash();
                             }

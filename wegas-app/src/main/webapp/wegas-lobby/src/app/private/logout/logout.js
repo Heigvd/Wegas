@@ -12,10 +12,13 @@ angular.module('private.logout', [
         })
     ;
 })
-.controller('LogoutController', function LogoutController($state, Auth, SessionsModel, ScenariosModel, Flash) {
+.controller('LogoutController', function LogoutController($state, Auth, SessionsModel, ScenariosModel, TeamsModel, UsersModel, GroupsModel, Flash) {
     Auth.logout().then(function(response){
     	SessionsModel.clearCache();
     	ScenariosModel.clearCache();
+        TeamsModel.clearCache();
+        UsersModel.clearCache();
+        GroupsModel.clearCache();
         $state.go("wegas.public.login");
     });
 });

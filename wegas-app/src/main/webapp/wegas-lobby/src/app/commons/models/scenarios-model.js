@@ -131,7 +131,7 @@ angular.module('wegas.models.scenarios', [])
             _.each(properties, function(el, index) {
                 if (scenarioBeforeChange.properties[el] !== infos[el]) {
                     scenarioBeforeChange.properties[el] = infos[el];
-                    gameModelSetted = true
+                    scenarioSetted = true;
                 }
             });
 
@@ -273,7 +273,7 @@ angular.module('wegas.models.scenarios', [])
 
         model.copyScenario = function(scenarioId) {
             var deferred = $q.defer(),
-                url = "rest/Public/GameModel/" + scenarioId + "/Duplicate";
+                url = "rest/EditorExtended/GameModel/" + scenarioId + "/Duplicate";
             if (scenarioId) {
                 $http.post(ServiceURL + url, null, {
                     "headers": {

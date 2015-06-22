@@ -24,12 +24,11 @@ YUI.add("wegas-entitychooser", function(Y) {
             CONTENT_TEMPLATE: "<div><ul class='chooser-entities'></ul><div class='chooser-widget'></div></div>",
             renderUI: function() {
                 var items = this.get("variable.evaluated") ? this.get("variable.evaluated").flatten() : [],
-                    i, entityBox = this.get(CONTENTBOX).one(".chooser-entities");
-                for (i in items) {
+                    i, entityBox = this.get(CONTENTBOX).one(".chooser-entities"), length = items.length;
+                for (i = 0; i < length; i += 1) {
                     entityBox.append("<li class='chooser-entity' data-name='" + items[i].get("name") + "'>" +
                                      (items[i].get("title") || items[i].get("label")) + "</li>");
                 }
-                this.widget;
             },
             bindUI: function() {
                 this.get(CONTENTBOX).delegate("click", function(e) {

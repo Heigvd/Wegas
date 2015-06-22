@@ -13,6 +13,7 @@ YUI.add("wegas-pageloader", function(Y) {
     "use strict";
 
     var CONTENTBOX = "contentBox", WIDGET = "widget", PAGEID = "pageId",
+        PAGE_LOADER_INSTANCES = {},
         Wegas = Y.Wegas, PageLoader, pageloaderErrorMessageClass = "wegas-pageloader-error";
 
     /**
@@ -33,7 +34,7 @@ YUI.add("wegas-pageloader", function(Y) {
          * @private
          * @description Set variable with initials values.
          * Set page to default page
-         * Keep a references of all loaded PageLoaders in PageLoader.pageLoaderInstances.
+         * Keep a references of all loaded PageLoaders in PAGE_LOADER_INSTANCES.
          */
         initializer: function() {
             this.handlers = [];
@@ -41,8 +42,8 @@ YUI.add("wegas-pageloader", function(Y) {
              * Current page id
              */
             this._pageId = null;
-            PageLoader.pageLoaderInstances[this.get("pageLoaderId")] = this;    // We keep a references of all loaded
-                                                                                // PageLoaders
+            PAGE_LOADER_INSTANCES[this.get("pageLoaderId")] = this;    // We keep a references of all loaded
+            // PageLoaders
             this.publish("contentUpdated", {emitFacade: false});
             Y.fire("pageloader:created", this);
         },
@@ -108,7 +109,7 @@ YUI.add("wegas-pageloader", function(Y) {
          * @function
          * @private
          * @description Destroy widget and detach all functions created by this widget
-         * remove instance kept in PageLoader.pageLoaderInstances.
+         * remove instance kept in PAGE_LOADER_INSTANCES.
          */
         destructor: function() {
             if (this.get(WIDGET)) {
@@ -117,7 +118,7 @@ YUI.add("wegas-pageloader", function(Y) {
             Y.Array.each(this.handlers, function(h) {
                 h.detach();
             });
-            delete PageLoader.pageLoaderInstances[this.get("pageLoaderId")];
+            delete PAGE_LOADER_INSTANCES[this.get("pageLoaderId")];
         },
         /**
          * reload current page from cache
@@ -244,7 +245,7 @@ YUI.add("wegas-pageloader", function(Y) {
                                     "Wegas.PageLoader");
                             } finally {
                                 this.hideOverlay();
-                                this.fire("contentUpdated");
+                                this.fire("contentUpdated", {page: val});
                             }
                         }, this));
                     }, this));
@@ -310,9 +311,8 @@ YUI.add("wegas-pageloader", function(Y) {
                 }
             }
         },
-        pageLoaderInstances: {},
         find: function(id) {
-            return PageLoader.pageLoaderInstances[id];
+            return PAGE_LOADER_INSTANCES[id];
         }
     });
     Wegas.PageLoader = PageLoader;
