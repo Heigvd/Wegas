@@ -13,7 +13,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.wegas.core.Helper;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
@@ -24,7 +23,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * This class contains the methods used to access the neo4j database. It uses
@@ -38,6 +36,8 @@ import java.util.List;
 public class Neo4jUtils {
 
     protected static final String NEO4J_SERVER_URL = Helper.getWegasProperty("neo4j.server.url");
+
+    protected static final String NEO4J_BASIC_AUTH = Helper.getWegasProperty("neo4j.server.auth");
 
     private static final Logger logger = LoggerFactory.getLogger(Neo4jUtils.class);
 
@@ -149,7 +149,12 @@ public class Neo4jUtils {
 
     private static Invocation.Builder getBuilder(String URL) {
         WebTarget target = client.target(URL);
-        return target.request().accept(MediaType.APPLICATION_JSON);
+        if (Helper.isNullOrEmpty(NEO4J_BASIC_AUTH)) {
+            return target.request().accept(MediaType.APPLICATION_JSON);
+        } else {
+            return target.request().accept(MediaType.APPLICATION_JSON).header("Authorization", "Basic " + NEO4J_BASIC_AUTH);
+        }
+
     }
 
     /**
