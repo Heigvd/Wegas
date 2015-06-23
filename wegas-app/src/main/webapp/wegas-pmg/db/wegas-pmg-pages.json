@@ -1,4 +1,4 @@
-{
+﻿{
     "1": {
         "type": "AbsoluteLayout",
         "cssClass": "layout",
@@ -61,13 +61,7 @@
                                 "cssClass": "pmg--header__taskbar",
                                 "direction": "vertical",
                                 "name": "taskbar",
-                                "children": [
-                                    {
-                                        "type": "LoginButton",
-                                        "cssClass": "menu-loginbutton",
-                                        "forcedLabel": "Leave session",
-                                        "targetPageLoader": "maindisplayarea"
-                                    },
+                                "children": [                                 
                                     {
                                         "type": "List",
                                         "cssClass": "pmg--taskbar__infos",
@@ -143,7 +137,7 @@
                                                                 "data": {
                                                                     "label": ""
                                                                 },
-                                                                "custom": "<div class='wegas-template-valuebox'><% if(this.label){ %><label><%= this.label %></label><% } %><div class='wegas-template-valuebox-units'><% var maxVal, phase = this.value, currentPeriod = Y.Wegas.Facade.Variable.cache.find('name', 'currentPeriod').get('items')[phase -1]; if (phase != 3) {maxVal = currentPeriod.getMaxValue()} else { var exec = Y.Wegas.Facade.Variable.cache.find('name', 'executionPeriods').get('value'); if (currentPeriod.getValue() >= exec) { maxVal = currentPeriod.getValue(); maxVal++} else { maxVal = exec}} %><% for(var i=+currentPeriod.getMinValue(); i < +maxVal + 1; i+=1){%><div class='wegas-template-valuebox-unit <%= +i < +currentPeriod.getValue() ? ' wegas-template-valuebox-previous' : '' %><%= +i === +currentPeriod.getValue() ? ' wegas-template-valuebox-selected' : '' %>'><%= ''+i %></div> <% } %></span></div></div>"
+                                                                "custom": "<% var maxVal, phase = this.value, currentPeriod = Y.Wegas.Facade.Variable.cache.find('name', 'currentPeriod').get('items')[phase -1]; if (phase != 3) {maxVal = currentPeriod.getMaxValue()} else { var exec = Y.Wegas.Facade.Variable.cache.find('name', 'executionPeriods').get('value'); if (currentPeriod.getValue() >= exec) { maxVal = currentPeriod.getValue(); maxVal++} else { maxVal = exec}} if(maxVal > 1){ %><div class='wegas-template-valuebox'><% if(this.label){ %><label><%= this.label %></label><% } %><div class='wegas-template-valuebox-units'><% for(var i=+currentPeriod.getMinValue(); i < +maxVal + 1; i+=1){%><div class='wegas-template-valuebox-unit <%= +i < +currentPeriod.getValue() ? ' wegas-template-valuebox-previous' : '' %><%= +i === +currentPeriod.getValue() ? ' wegas-template-valuebox-selected' : '' %>'><%= ''+i %></div> <% } %></span></div></div><% } %>"
                                                             }
                                                         ]
                                                     },
@@ -585,10 +579,11 @@
                                                                         }
                                                                     }
                                                                 ],
-                                                                "content": "<p>Time cards</p>"
-                                                            },
+                                                                "content": "<p>Time budget</p>"
+                                                            },                                                       
                                                             {
                                                                 "type": "NumberTemplate",
+                                                                "cssClass": "pmg--number",
                                                                 "plugins": [
                                                                     {
                                                                         "fn": "CSSPosition",
@@ -614,6 +609,16 @@
                                                                 },
                                                                 "data": {
                                                                     "label": ""
+                                                                }
+                                                            },
+                                                            {
+                                                                "type": "BoxTemplate",
+                                                                "cssClass": "pmg--cards",
+                                                                "variable": {
+                                                                    "content": "Variable.find('timeCards')"
+                                                                },
+                                                                "data": {
+                                                                        "label": ""
                                                                 }
                                                             }
                                                         ]
@@ -900,6 +905,12 @@
                                                             }
                                                         ],
                                                         "data": {}
+                                                    },
+                                                    {
+                                                        "type": "LoginButton",
+                                                        "cssClass": "menu-loginbutton",
+                                                        "forcedLabel": "",
+                                                        "targetPageLoader": "maindisplayarea"
                                                     }
                                                 ]
                                             }
@@ -1677,86 +1688,28 @@
     },
     "15": {
         "type": "AbsoluteLayout",
+        "cssClass": "home-page",
         "children": [
             {
                 "type": "Template",
+                "cssClass": "pmg-welcome-text",
                 "custom": "<%== this.value || 'Unable to find welcome text' %>",
                 "data": {},
                 "variable": {
                     "name": "homeText"
-                },
-                "plugins": [
-                    {
-                        "fn": "CSSStyles",
-                        "cfg": {
-                            "styles": {
-                                "padding": "2%"
-                            }
-                        }
-                    },
-                    {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "0px",
-                                "left": "0px"
-                            }
-                        }
-                    },
-                    {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "width": "46%"
-                            }
-                        }
-                    }
-                ]
+                }
             },
             {
                 "type": "Text",
-                "content": "<div class='title'><h2>News</h2></div></div>",
-                "plugins": [
-                    {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "21px",
-                                "left": "50%"
-                            }
-                        }
-                    }
-                ]
+                "cssClass": "pmg-news-header",
+                "content": "<div class='title'><h2>News</h2></div></div>"
             },
             {
                 "type": "InboxList",
+                "cssClass": "pmg-news-content",
                 "variable": {
                     "name": "news"
-                },
-                "plugins": [
-                    {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "50px",
-                                "right": "0px"
-                            }
-                        }
-                    },
-                    {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "width": "50%"
-                            }
-                        }
-                    }
-                ]
+                }
             }
         ],
         "@name": "Home"
@@ -2129,7 +2082,53 @@
         "@name": "Dashboard"
     },
     "18": {
-        "type": "AbsoluteLayout"
+        "@name": "Statistics",
+        "type": "List",
+        "children": [
+            {
+                "type": "Statistics"
+            }
+        ]
+    },
+    "19": {
+        "@class": "Q1 Analysis",
+        "cssClass": "evm-page",
+        "direction": "vertical",
+        "type": "List",
+        "children": [
+            {
+                "type": "PmgSlidePanel",
+                "title": "Questions Analysis",
+                "cssClass": "evm",
+                "animation": false,
+                "children": [
+                    {
+                        "height": "200px",
+                        "chartType": "combo",
+                        "width": "90%",
+                        "horizontalGridlines": true,
+                        "legendPosition": "bottom",
+                        "type": "Chart",
+                        "verticalGridlines": true,
+                        "hMinEnd": {
+                            "name": "executionPeriods"
+                        },
+                        "minValue": 0,
+                        "maxValue": 200,
+                        "vStepValue": 25,
+                        "variables": [
+                            {
+                                "name": "managementApproval",
+                                "label": "Management"
+                            }, {
+                                "name": "userApproval",
+                                "label": "Users"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
     },
     "Team": {
         "type": "EditTeam"

@@ -28,29 +28,36 @@ YUI().add("ecc-entitychooser-pageloaderact", function(Y) {
             renderUI: function() {
                 var items = this.get("variable.evaluated") ? this.get("variable.evaluated").flatten() : [],
                     i, entityBox = this.get(CONTENTBOX), length = items.length;
+                    this.handlers = [];
                 for (i = 0; i < length; i += 1) {
                     entityBox.append("<li class='" + CLASSES.ENTITY + "' data-name='" + items[i].get("name") + "'>" +
                                      (items[i].get("title") || items[i].get("label")) + "</li>");
-                }
+                }               
             },
-            bindUI: function() {
+            bindUI: function() {               
                 this.get(CONTENTBOX).delegate("click", function(e) {
-                    this.get(CONTENTBOX).all("." + CLASSES.CHOOSEN).removeClass(CLASSES.CHOOSEN);
+                    this.detachHandlers();
                     e.target.addClass(CLASSES.CHOOSEN);
                     this.doAction(e.target.getData("name"));
-                }, "." + CLASSES.ENTITY, this);
+                }, "." + CLASSES.ENTITY, this);               
             },
             doAction: function(entityName, update) {
-                var pl = Y.Wegas.PageLoader.find(this.get("pageloader")), widget;
+                var pl = Y.Wegas.PageLoader.find(this.get("pageloader")), widget;                
                 if (!pl) {
                     Y.log("No pageloader", "error");
                     return;
                 }
                 if ("" + this.get("page") === "" + pl.get("pageId") ||
                     (update && "" + update.page === "" + this.get("page"))) {
+                    this.handlers.push(pl.after(["contentUpdated", "destroy"], function(){
+                        this.detachHandlers();
+                    }, this));
                     widget = Y.Widget.getByNode(pl.get("contentBox").one(this.get("widget")));
                     if (widget) {
                         widget.set(this.get("widgetATTR"), {name: entityName});
+                        this.handlers.push(widget.after(this.get("widgetATTR") + "Change", function(){
+                            this.detachHandlers();
+                        }, this));
                     } else {
                         Y.log("Couldn't find widget", "error");
                     }
@@ -58,6 +65,15 @@ YUI().add("ecc-entitychooser-pageloaderact", function(Y) {
                     pl.onceAfter("contentUpdated", Y.bind(this.doAction, this, entityName));
                     pl.set("pageId", this.get("page"));
                 }
+            },
+            detachHandlers: function(){
+                Y.Array.forEach(this.handlers, function(i){
+                    i.detach();
+                    this.get(CONTENTBOX).all("." + CLASSES.CHOOSEN).removeClass(CLASSES.CHOOSEN);
+                }, this);
+            },
+            destructor: function(){
+                this.detachHandlers();
             }
         }, {
             ATTRS: {

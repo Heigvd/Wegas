@@ -104,6 +104,13 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
+     * logout current user
+     */
+    public void logout() {
+        SecurityUtils.getSubject().logout();
+    }
+
+    /**
      *
      *
      * @return a User entity, based on the shiro login state
