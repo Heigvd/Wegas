@@ -8,26 +8,6 @@
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
 */
-/** Align center tabview labels to the left */
-.wegas-hostmode #centerTabView > div > .yui3-tabview-list {
-    left: 0px;
-    right: 0px;
-    position: fixed;
-}
-.wegas-hostmode  #centerTabView .wegas-toolbar-header {
-    padding-left: 0px;
-}
-.wegas-hostmode #leftTabView .yui3-tabview-list {
-    display: none;
-}
-.wegas-hostmode .wegas-layout-resizable .yui3-resize-handle {
-    background: white;
-    margin-top: 38px;
-}
-
-.wegas-editor-treeview-tablehd {
-    display: none; 
-}
 
 /* Header toggle button */
 .yui3-skin-sam .host-switchmode {
@@ -44,60 +24,6 @@
 .yui3-skin-sam .host-switchmode.yui3-button-selected {
     background: white;
     color: #072644;
-}
-
-/************************ leftTabView  ***************************************/
-#leftTabView .yui3-treeview-content > .noPlayer .yui3-treenode-content-header{
-    opacity: 0.5;
-    cursor: default;
-}
-#leftTabView .yui3-treeview-content>.yui3-treenode-selected .yui3-treenode-content-header,
-#leftTabView .yui3-treeview-content>.yui3-treeleaf-selected .yui3-treeleaf-content-header{
-    box-shadow: 0px 0px 1px #6D6D6D;
-    font-weight: bolder;
-    background-color: #EDEDED;
-}
-
-/************************* leftTabView Checkbox plugin   **********************/
-#leftTabView .wegas-toolbar .selectAll{
-    position: absolute;
-    right: 3px;
-    margin-top: .5em;
-    width: 90px;
-    height: 25px;
-    cursor: pointer;
-    background: url(../images/checkbox.png) 57px -42px no-repeat;
-}
-#leftTabView .wegas-toolbar .yui3-treenode-selected{
-    background: url(../images/checkbox.png) 57px -8px no-repeat;
-}
-#leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.yui3-treenode .yui3-treenode-content-header,
-#leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.yui3-treeleaf .yui3-treeleaf-content{
-    background: url(../images/checkbox.png) right -38px no-repeat;
-}
-#leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.yui3-treenode-selected .yui3-treenode-content-header,
-#leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.yui3-treeleaf-selected .yui3-treeleaf-content-header{
-    background: url(../images/checkbox.png) right -4px no-repeat;
-    background-color: #EDEDED;
-}
-#leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.yui3-treeleaf .yui3-treeleaf-content-header:hover {
-    background-color: transparent;
-    box-shadow: 0px 0px 1px #6D6D6D;
-}
-#leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.yui3-treeleaf-selected .yui3-treeleaf-content-header:hover {
-    background-color: #EDEDED;
-}
-
-/* Page title styles */
-.yui3-skin-sam .wegas-title {
-    margin-top: 4px;
-    font-size: 1.4em;
-    line-height: 1em;
-}
-.yui3-skin-sam .wegas-title div.subtitle  {
-    color: #e0e0e0;
-    font-style: italic;
-    font-size: 0.7em;
 }
 
 /* Dasboard styles */
@@ -125,4 +51,143 @@
 }
 .wegas-dashboard td.yui3-datatable-col-name .wegas-icon {
     width: 21px;
+}
+
+/**
+ * Trainer rework 
+ **/
+
+.uv-icon, .wegas-layout-left, .wegas-hastoolbar>.wegas-toolbar, .wegas-editor-treeview-tablehd{
+    display:none !important;
+}
+
+.yui3-skin-sam .wegas-layout-hd{
+    display:block;
+    position:absolute;
+    top:0px;
+    left:0px;
+    border-top:solid 6px #fa6942;
+    background-color:white;
+    width:100%;
+    height:56px;
+    box-sizing:border-box;
+    z-index:2;
+}
+
+.yui3-skin-sam .wegas-layout-bd{
+    display:block;
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    border:none;
+    margin:0;
+    padding:56px 0 0 0;
+    box-sizing:border-box;
+    background-color:#dddddd;
+    z-index:1;
+}
+
+.yui3-skin-sam .yui3-tabview-list {
+  border-bottom: none;
+  z-index: 4;
+  display: block;
+  position: absolute;
+  width: 100%;
+  height: 64px;
+  background-color: #dddddd;
+}
+
+.yui3-skin-sam .yui3-tab {
+  max-width: none;
+  height: 64px;
+  padding:0px !important;
+}
+
+.yui3-skin-sam .yui3-tab .yui3-tab-label{
+    width: 100%;
+    height: 64px;
+    padding:0px !important;
+    margin:0px;
+    background:#dddddd;
+    font-size: 18px;
+    line-height: 60px;
+    font-weight: 100;
+    color:#8c8c8c;
+    transition:.3s;
+}
+
+.yui3-skin-sam .yui3-tab .yui3-tab-label:hover{
+    background:#e3e2e2;
+    color:#8c8c8c;
+}
+
+.yui3-skin-sam .yui3-tabview-panel{
+    background-color:#f1f1f1;
+}
+
+.yui3-skin-sam .yui3-tab-label {
+    margin: 0px;
+    height: 100%;
+}
+
+.yui3-skin-sam .yui3-tab-selected .yui3-tab-label, 
+.yui3-skin-sam .yui3-tab-selected .yui3-tab-label:focus, 
+.yui3-skin-sam .yui3-tab-selected .yui3-tab-label:hover{
+    background-color:#f1f1f1;
+    color:#676767;
+}
+
+.yui3-skin-sam .wegas-title {
+  font-weight: normal;
+  font-size: 21px;
+  line-height: 1em;
+  text-shadow: none;
+  color: #fff;
+  margin: 0px;
+  padding:0px;
+}
+
+.yui3-skin-sam .wegas-title div:first-child{
+    float: left;
+    text-shadow: none;
+    line-height: 44px;
+    margin: 0px;
+    padding: 0px 12px;
+    color: #000000;
+    font-size: 21px;
+    font-weight: 600;
+}
+
+.yui3-skin-sam .wegas-title div.subtitle {
+    color: #727272;
+    font-style: italic;
+    font-size: 21px;
+    padding: 0px;
+    margin: 0px;
+    line-height: 44px;
+    font-weight: 100;
+    text-shadow: none;
+}
+
+.yui3-skin-sam .wegas-layout-hd .yui3-button {
+    color:#666666;
+    margin: 0px;
+    height: 54px;
+}
+.yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-login:before{
+    background: url(../../wegas-app/images/wegas-icon-toggle.png);
+}
+
+.yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-login:after{
+    color:#666666;
+}
+
+.yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-login img{
+    display:none;
+}
+
+.yui3-skin-sam thead{
+    display:none;
 }
