@@ -7,11 +7,7 @@
  */
 package com.wegas.mcq.ejb;
 
-import com.wegas.core.ejb.BaseFacade;
-import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.ejb.RequestFacade;
-import com.wegas.core.ejb.ScriptEventFacade;
-import com.wegas.core.ejb.ScriptFacade;
+import com.wegas.core.ejb.*;
 import com.wegas.core.event.internal.DescriptorRevivedEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
@@ -19,9 +15,13 @@ import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.mcq.persistence.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
@@ -29,11 +29,8 @@ import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
@@ -41,16 +38,22 @@ import org.slf4j.LoggerFactory;
 public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
 
     static final private Logger logger = LoggerFactory.getLogger(QuestionDescriptorFacade.class);
+
+    @Inject
+    private Event<ReplyValidate> replyValidate;
+
     /**
      *
      */
     @EJB
     private PlayerFacade playerFacade;
+
     /**
      *
      */
     @EJB
     private ScriptFacade scriptManager;
+
     /**
      *
      */
@@ -62,6 +65,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      */
     @EJB
     QuestionSingleton questionSingleton;
+
     /**
      *
      */
@@ -93,7 +97,6 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     }
 
     /**
-     *
      * @param event
      */
     public void descriptorRevivedEvent(@Observes DescriptorRevivedEvent event) {
@@ -126,7 +129,6 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     }
 
     /**
-     *
      * @param replyId
      * @param r
      * @return
@@ -138,8 +140,8 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     }
 
     /**
-     * @deprecated @param instanceId
      * @return
+     * @deprecated @param instanceId
      */
     public int findReplyCount(Long instanceId) {
         final Query query = getEntityManager().createQuery("SELECT COUNT(r) FROM Reply r WHERE r.questionInstance.id = :id");
@@ -152,7 +154,6 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     }
 
     /**
-     *
      * @param choiceId
      * @param player
      * @param startTime
@@ -161,7 +162,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     public Reply selectChoice(Long choiceId, Player player, Long startTime) {
         Reply reply = questionSingleton.createReply(choiceId, player, startTime);
         try {
-            scriptEvent.fire(player, "replySelect", new EventObject(reply));
+            scriptEvent.fire(player, "replySelect", new ReplyValidate(reply));
         } catch (WegasScriptException e) {
             // GOTCHA no eventManager is instantiated
             logger.error("EventListener error (\"replySelect\")", e);
@@ -171,17 +172,15 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     }
 
     /**
-     *
      * @param choiceId
      * @param playerId
      * @return
      */
     public Reply selectChoice(Long choiceId, Long playerId) {
-        return this.selectChoice(choiceId, playerFacade.find(playerId), Long.valueOf(0));
+        return this.selectChoice(choiceId, playerFacade.find(playerId), (long) 0);
     }
 
     /**
-     *
      * @param choiceId
      * @param playerId
      * @param startTime
@@ -192,14 +191,13 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     }
 
     /**
-     *
      * @param choiceId
      * @param playerId
      * @return
      */
     public Reply selectAndValidateChoice(Long choiceId, Long playerId) {
         Player player = playerFacade.find(playerId);
-        Reply reply = this.selectChoice(choiceId, player, Long.valueOf(0));
+        Reply reply = this.selectChoice(choiceId, player, (long) 0);
         try {
             this.validateReply(player, reply.getId());
         } catch (WegasRuntimeException e) {
@@ -219,7 +217,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      * @throws WegasRuntimeException
      */
     public Reply selectAndValidateChoiceTEST(Long choiceId, Long playerId) throws WegasRuntimeException {
-        Reply reply = this.selectChoiceTEST(choiceId, playerFacade.find(playerId), Long.valueOf(0));
+        Reply reply = this.selectChoiceTEST(choiceId, playerFacade.find(playerId), (long) 0);
         try {
             this.validateReply(playerId, reply.getId());
         } catch (WegasRuntimeException e) {
@@ -242,7 +240,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     public Reply selectChoiceTEST(Long choiceId, Player player, Long startTime) {
         Reply reply = questionSingleton.createReplyUntransactionnal(choiceId, player, startTime);
         try {
-            scriptEvent.fire(player, "replySelect", new EventObject(reply));
+            scriptEvent.fire(player, "replySelect", new ReplyValidate(reply));
         } catch (WegasScriptException e) {
             // GOTCHA no eventManager is instantiated
             logger.error("EventListener error (\"replySelect\") (TEST)", e);
@@ -252,7 +250,6 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     }
 
     /**
-     *
      * @param playerId
      * @param replyId
      * @return
@@ -260,7 +257,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     public Reply cancelReplyTransactionnal(Long playerId, Long replyId) {
         Reply reply = questionSingleton.cancelReplyTransactionnal(playerId, replyId);
         //try {
-        //scriptEvent.fire(playerFacade.find(playerId), "replyCancel", new EventObject(reply));// Throw an event
+        //scriptEvent.fire(playerFacade.find(playerId), "replyCancel", new ReplyValidate(reply));// Throw an event
         //} catch (WegasRuntimeException e) {
         // GOTCHA no eventManager is instantiated
         //}
@@ -268,7 +265,6 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     }
 
     /**
-     *
      * @param playerId
      * @param replyId
      * @return
@@ -279,7 +275,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         getEntityManager().remove(reply);
 
         try {
-            scriptEvent.fire(playerFacade.find(playerId), "replyCancel", new EventObject(reply));// Throw an event
+            scriptEvent.fire(playerFacade.find(playerId), "replyCancel", new ReplyValidate(reply));// Throw an event
         } catch (WegasRuntimeException e) {
             // GOTCHA no eventManager is instantiated
         }
@@ -288,7 +284,6 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     }
 
     /**
-     *
      * @param player
      * @param validateReply
      * @throws com.wegas.core.exception.client.WegasRuntimeException
@@ -298,16 +293,17 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         validateReply.setResult(choiceDescriptor.getInstance(player).getResult());// Refresh the current result
 
         scriptManager.eval(player, validateReply.getResult().getImpact());
+        final ReplyValidate replyValidate = new ReplyValidate(validateReply, choiceDescriptor.getInstance(player), validateReply.getQuestionInstance(), player);
         try {
-            scriptEvent.fire(player, "replyValidate", new EventObject(validateReply, choiceDescriptor.getInstance(player), validateReply.getQuestionInstance()));
+            scriptEvent.fire(player, "replyValidate", replyValidate);
         } catch (WegasRuntimeException e) {
             logger.error("EventListener error (\"replyValidate\")", e);
             // GOTCHA no eventManager is instantiated
         }
+        this.replyValidate.fire(replyValidate);
     }
 
     /**
-     *
      * @param player
      * @param replyVariableInstanceId
      */
@@ -316,7 +312,6 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     }
 
     /**
-     *
      * @param playerId
      * @param replyVariableInstanceId
      */
@@ -327,41 +322,49 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     /**
      *
      */
-    public static class EventObject {
+    public static class ReplyValidate {
 
         /**
          *
          */
-        public Reply reply;
+        final public Reply reply;
 
         /**
          *
          */
-        public ChoiceInstance choice;
+        final public ChoiceInstance choice;
 
         /**
          *
          */
-        public QuestionInstance question;
+        final public QuestionInstance question;
 
         /**
          *
+         */
+        final public Player player;
+
+        /**
          * @param reply
          * @param choice
          * @param question
          */
-        public EventObject(Reply reply, ChoiceInstance choice, QuestionInstance question) {
+
+        public ReplyValidate(Reply reply, ChoiceInstance choice, QuestionInstance question, Player player) {
             this.reply = reply;
             this.choice = choice;
             this.question = question;
+            this.player = player;
         }
 
         /**
-         *
          * @param reply
          */
-        public EventObject(Reply reply) {
+        public ReplyValidate(Reply reply) {
             this.reply = reply;
+            this.choice = null;
+            this.question = null;
+            this.player = null;
         }
 
     }
