@@ -1688,86 +1688,28 @@
     },
     "15": {
         "type": "AbsoluteLayout",
+        "cssClass": "home-page",
         "children": [
             {
                 "type": "Template",
+                "cssClass": "pmg-welcome-text",
                 "custom": "<%== this.value || 'Unable to find welcome text' %>",
                 "data": {},
                 "variable": {
                     "name": "homeText"
-                },
-                "plugins": [
-                    {
-                        "fn": "CSSStyles",
-                        "cfg": {
-                            "styles": {
-                                "padding": "2%"
-                            }
-                        }
-                    },
-                    {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "0px",
-                                "left": "0px"
-                            }
-                        }
-                    },
-                    {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "width": "46%"
-                            }
-                        }
-                    }
-                ]
+                }
             },
             {
                 "type": "Text",
-                "content": "<div class='title'><h2>News</h2></div></div>",
-                "plugins": [
-                    {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "21px",
-                                "left": "50%"
-                            }
-                        }
-                    }
-                ]
+                "cssClass": "pmg-news-header",
+                "content": "<div class='title'><h2>News</h2></div></div>"
             },
             {
                 "type": "InboxList",
+                "cssClass": "pmg-news-content",
                 "variable": {
                     "name": "news"
-                },
-                "plugins": [
-                    {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "50px",
-                                "right": "0px"
-                            }
-                        }
-                    },
-                    {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "width": "50%"
-                            }
-                        }
-                    }
-                ]
+                }
             }
         ],
         "@name": "Home"
