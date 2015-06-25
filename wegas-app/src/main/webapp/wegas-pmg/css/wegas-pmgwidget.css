@@ -346,26 +346,22 @@ tbody .past .activity {
 
 /* Line completeness plugin*/
 
-.task-execution-page .yui3-datatable-table .pmg-line-completeness-complete .yui3-datatable-col-index,
-.task-execution-page .yui3-datatable-table .pmg-line-completeness-complete:hover .yui3-datatable-col-index,
-.gantt-execution-page .yui3-datatable-table .pmg-line-completeness-complete .yui3-datatable-col-index{
-    border-left: solid 5px #69bd7f;
+.task-execution-page .yui3-datatable-table .pmg-line-completeness-complete,
+.task-execution-page .yui3-datatable-table .pmg-line-completeness-complete:hover,
+.gantt-execution-page .yui3-datatable-table .pmg-line-completeness-complete .yui3-datatable-col-index,
+.gantt-execution-page .yui3-datatable-table .pmg-line-completeness-complete .yui3-datatable-col-label,
+.gantt-execution-page .yui3-datatable-table .pmg-line-completeness-complete .yui3-datatable-col-Realised{
+    background-color:#ddfae4;
 }
 
-.task-execution-page .yui3-datatable-table .pmg-line-completeness-complete .yui3-datatable-col-Realised,
-.gantt-execution-page .yui3-datatable-table .pmg-line-completeness-complete .yui3-datatable-col-Realised {
-    color:#69bd7f;
-}
 
-.task-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-index,
-.task-execution-page .yui3-datatable-table .pmg-line-completeness-started:hover .yui3-datatable-col-index,
+.task-execution-page .yui3-datatable-table .pmg-line-completeness-started,
+.task-execution-page .yui3-datatable-table .pmg-line-completeness-started:hover,
 .gantt-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-index,
+.gantt-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-label,
+.gantt-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-Realised,
 .yui3-menu-content > button.pmg-line-completeness-started {
-    border-left: solid 5px #efc86b;
-}
-.task-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-Realised,
-.gantt-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-Realised{
-    color:#f2c252;
+    background-color:#fff1c2;
 }
 
 .yui3-button.pmg-menu-invalid {
