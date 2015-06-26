@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -61,10 +62,14 @@ public class Neo4jUtils {
         if (NEO4J_SERVER_URL.isEmpty()) {
             return false;
         }
-        Response response = getBuilder(NEO4J_SERVER_URL).get();
-        int status = response.getStatus();
-        response.close();
-        return status == 200;
+        try {
+            Response response = getBuilder(NEO4J_SERVER_URL).get();
+            int status = response.getStatus();
+            response.close();
+            return status == 200;
+        } catch (ProcessingException ex) {
+            return false;
+        }
     }
 
     /**
