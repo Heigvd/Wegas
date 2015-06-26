@@ -159,6 +159,22 @@ YUI.add('wegas-panel', function(Y) {
                         }]
                     }
                 }).render();
+            },
+            alert: function(msg, okCb) {
+                var panel = new Wegas.Panel({
+                    content: "<div class='icon icon-warn'>" + msg + "</div>",
+                    modal: true,
+                    width: 400,
+                    buttons: {
+                        footer: [{
+                            label: 'OK',
+                            action: function() {
+                                panel.exit();
+                                okCb && okCb();
+                            }
+                        }]
+                    }
+                }).render();
             }
         });
 });
