@@ -101,10 +101,12 @@ public class PlayerFacade extends BaseFacade<Player> {
     /**
      * @param player
      * @return
+     * @deprecated use player.privateInstances
      */
     public List<VariableInstance> getAssociatedInstances(final Player player) {
-        final Query findPlayerInstance = getEntityManager().createNamedQuery("findPlayerInstances");
-        return findPlayerInstance.setParameter("playerid", player.getId()).getResultList();
+        return player.getPrivateInstances();
+        //final Query findPlayerInstance = getEntityManager().createNamedQuery("findPlayerInstances");
+        //return findPlayerInstance.setParameter("playerid", player.getId()).getResultList();
     }
 
     /**
@@ -123,11 +125,11 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     @Override
     public void remove(final Player player) {
-        List<VariableInstance> instances = this.getAssociatedInstances(player);
+        //List<VariableInstance> instances = this.getAssociatedInstances(player);
         this.getEntityManager().remove(player);
-        for (VariableInstance i : instances) {
-            this.getEntityManager().remove(i);
-        }
+        //for (VariableInstance i : instances) {
+        //    this.getEntityManager().remove(i);
+        //}
     }
 
     /**
