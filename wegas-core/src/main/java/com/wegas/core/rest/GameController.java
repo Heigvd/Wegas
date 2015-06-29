@@ -23,6 +23,8 @@ import org.apache.shiro.SecurityUtils;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -31,8 +33,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -91,8 +91,8 @@ public class GameController {
     public Collection<Game> index(@PathParam("gameModelId") String gameModelId) {
         final Collection<Game> retGames = new ArrayList<>();
         final Collection<Game> games = (!gameModelId.isEmpty())
-                ? gameFacade.findByGameModelId(Long.parseLong(gameModelId), "createdTime ASC")
-                : gameFacade.findAll(Game.Status.LIVE);
+            ? gameFacade.findByGameModelId(Long.parseLong(gameModelId), "createdTime ASC")
+            : gameFacade.findAll(Game.Status.LIVE);
 
         for (Game g : games) {
             if (SecurityHelper.isPermitted(g, "Edit")) {
@@ -271,7 +271,7 @@ public class GameController {
                     if (player == null) {
                         if (game.getGameModel().getProperties().getFreeForAll()) {
                             Team team = new Team("Individually-" + Helper.genToken(20));
-                            teamFacade.create(game.getId(), team);
+                            team = teamFacade.create(game.getId(), team); // return managed team
                             playerFacade.create(team, currentUser);
                             r = Response.status(Response.Status.CREATED).entity(team).build();
                         }

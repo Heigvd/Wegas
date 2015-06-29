@@ -690,7 +690,7 @@ YUI().use(function(Y) {
             },
             "wegas-statistics": {
                 path: "js/widget/wegas-statistics-min.js",
-                requires: ["promise", "charts"],
+                requires: ["promise", "chart-js"],
                 ws_provides: "Statistics"
             }
         }
@@ -882,6 +882,10 @@ YUI().use(function(Y) {
             "font-awesome": {
                 type: CSS,
                 fullpath: "//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"
+            },
+            "chart-js":{
+                async:false,
+                fullpath: "//cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"
             }
         }
     };
