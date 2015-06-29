@@ -41,6 +41,7 @@ public class Player extends AbstractEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "player", cascade = CascadeType.REMOVE)
     private List<VariableInstance> privateInstances;
 
