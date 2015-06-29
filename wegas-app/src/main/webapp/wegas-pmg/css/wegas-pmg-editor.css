@@ -8,6 +8,7 @@
 .pmg-properties .hidden {
     display: none;
 }
+
 .pmg-properties .pmg-properties-button,
 .pmg-properties .pmg-properties-button:hover {
     background: transparent;
@@ -77,4 +78,123 @@
 /* Right panel forms */ 
 .editor-resources-skillset, .editor-resources-occupations {
     display: block !important;
+}
+
+/* ------ Dashboard ----- */
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-name {
+    width:calc(100% - 1042px);
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule{
+    display:block;
+    position:relative;
+    width:auto;
+    height:64px;
+    margin:0px;
+    padding:6px 16px 12px 16px;
+    border:none;
+    border-left:solid 1px #d4d4d4;
+    float:left;
+    box-sizing:border-box;
+    text-align:center;
+    font-weight:600;
+    color:#666666;
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase{
+    border-left:solid 3px #d4d4d4;
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule span{
+    padding:4px 9px;
+    color:white;
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule:before{
+    display:block;
+    position:relative;
+    font-size:15px;
+    color:#949494;
+    font-weight:300;
+    padding-top:3px;
+    padding-bottom:3px;
+    margin-bottom: 4px;
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase{
+    width:112px;
+}
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase:before{
+    content:"Phase";
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period{
+    width:80px;
+}
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period:before{
+    content:"Period";
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions{
+    width:112px;
+}
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions:before{
+    content:"Questions";
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management{
+    width:132px;
+}
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management:before{
+    content:"Management";
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User{
+    width:80px;
+}
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User:before{
+    content:"User";
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality{
+    width:88px;
+}
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality:before{
+    content:"Quality";
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs{
+    width:80px;
+}
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs:before{
+    content:"Costs";
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule{
+    width:96px;
+}
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule:before{
+    content:"Shedule";
 }

@@ -2026,61 +2026,6 @@
         ],
         "@name": "Properties"
     },
-    "17": {
-        "type": "AbsoluteLayout",
-        "children": [
-            {
-                "type": "Dashboard",
-                "tableCfg": {
-                    "columns": [
-                        {
-                            "key": "name",
-                            "label": " "
-                        },
-                        {
-                            "label": "Phase",
-                            "script": "var names = ['Initiation', 'Planning', 'Executing', 'Closing'];return names[Variable.find(gameModel, 'currentPhase').getValue(self)-1]"
-                        },
-                        {
-                            "label": "Period",
-                            "script": "var currentPhase = Variable.find('currentPhase'); return Variable.find('currentPeriod').item(currentPhase.getValue(self)-1).getValue(self)"
-                        },
-                        {
-                            "label": "Questions",
-                            "script": "var currentPhase = Variable.find('currentPhase').getValue(self), currentPeriod = Variable.find('currentPeriod').item(currentPhase - 1).getValue(self), i, count = 0, total = 0, inst, q, items = [], item; q = Variable.find('questions').item(currentPhase - 1); if (q) { for (i in q.get('items')) { item = q.item(i); if (item.get('@class') === 'QuestionDescriptor') { items.push(item); } else if (+i === currentPeriod - 1 && item.get('@class') === 'ListDescriptor') { items = items.concat(item.flatten()); } } } for (i = 0; i < items.length; i = i + 1) { inst = items[i].getInstance(self); count += (inst.get('replies').length > 0 && inst.get('active')) ? 1 : 0; total += inst.get('active') ? 1 : 0; } return count + '/' + total;"
-                        },
-                        {
-                            "label": "Management",
-                            "script": "Variable.find(gameModel, 'managementApproval').getValue(self)",
-                            "formatter": "colored"
-                        },
-                        {
-                            "label": "User",
-                            "script": "Variable.find(gameModel, 'userApproval').getValue(self)",
-                            "formatter": "colored"
-                        },
-                        {
-                            "label": "Quality",
-                            "script": "Variable.find(gameModel, 'quality').getValue(self)",
-                            "formatter": "colored"
-                        },
-                        {
-                            "label": "Cost",
-                            "script": "Variable.find(gameModel, 'costs').getValue(self)",
-                            "formatter": "colored"
-                        },
-                        {
-                            "label": "Schedule",
-                            "script": "Variable.find(gameModel, 'delay').getValue(self)",
-                            "formatter": "colored"
-                        }
-                    ]
-                },
-                "remoteScript": "PMGDashboard.dashboard()"
-            }
-        ],
-        "@name": "Dashboard"
-    },
     "18": {
         "@name": "Statistics",
         "type": "List",

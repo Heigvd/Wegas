@@ -24,9 +24,10 @@ YUI.add('wegas-dashboard', function(Y) {
         Promise = Y.Promise,
         teamTemplate = (new Y.Template()).compile(
             "<span class='wegas-icon wegas-icon-team'></span>" +
-            "<div class='dashboard-treeview dashboard-collapsed'><span class='wegas-icon dashboard-toggle'>Members</span><%= this.get('name') %>" +
+            "<span class='wegas-team-name'><%= this.get('name') %></span>"+
+            "<div class='dashboard-treeview dashboard-collapsed'><span class='wegas-icon dashboard-toggle'>Members</span>" +
             "<ul><% Y.Array.each(this.get('players'), function(p){ %>" +
-            "<li><span class='wegas-icon wegas-icon-player'></span><%= p.get('name') %></li>" +
+            "<li><span class='wegas-icon wegas-icon-player'></span><span class='wegas-player-name'><%= p.get('name') %></span></li>" +
             "<%});%></ul></div>"
         ),
         setTableData = function(table, data) {
@@ -149,11 +150,13 @@ YUI.add('wegas-dashboard', function(Y) {
             this.table.addColumn({
                 key: "menu",
                 label: " ",
-                cellTemplate: "<td class='{className}'>" +
-                              "<button class='yui3-button dashboard-open-team' title='View'></button>" +
-                              "<button class='yui3-button dashboard-impact-team' title='Impact'></button>" +
-                              "<button class='yui3-button dashboard-mail-team' title='Send Mail'></button>" +
-                              "<div class='dashboard-notes-team'><textarea class='disabled' placeholder='Notes' readonly='true'>{content}</textarea></div></td>"
+                cellTemplate:   "<td class='{className}'>" +
+                                    "<button class='yui3-button dashboard-open-team' title='View'></button>" +
+                                    "<button class='yui3-button dashboard-impact-team' title='Impact'></button>" +
+                                    "<button class='yui3-button dashboard-mail-team' title='Send Mail'></button>" +
+                                    "<button class='yui3-button dashboard-notes-team' title='Display notes'></button>" +
+                                    "<textarea class='disabled' placeholder='Notes' readonly='true'>{content}</textarea>" +
+                                "</td>"
             });
         },
         /**
@@ -210,7 +213,7 @@ YUI.add('wegas-dashboard', function(Y) {
                                     }
                                 },{
                                     name: "run",
-                                    label: "Run impact",
+                                    label: "Apply impact",
                                     classNames: "modal--footer-right modal--footer-valid",
                                     action: function() {
                                             this.item(0).run();
@@ -229,6 +232,21 @@ YUI.add('wegas-dashboard', function(Y) {
                 }
 
             }, ".yui3-datatable-col-menu .dashboard-impact-team", this);
+
+            this.get("boundingBox").delegate("click", function(e) { 
+                var numberOfPlayer = Wegas.Facade.Game.cache.getTeamById(this.table.getRecord(e.currentTarget).get("id")).get("players").length;
+                if(numberOfPlayer > 10){
+                    e.currentTarget.ancestor().ancestor().toggleClass("card-show-team-more");
+                }else{
+                    e.currentTarget.ancestor().ancestor().toggleClass("card-show-team-" + numberOfPlayer);
+                }
+                e.currentTarget.toggleClass("dashboard-collapsed");
+            },  ".yui3-datatable-col-name .dashboard-treeview", this);
+            
+            
+            this.get("boundingBox").delegate("click", function(e) { 
+                e.currentTarget.ancestor().ancestor().toggleClass("card-show-notes");
+            }, ".yui3-datatable-col-menu .dashboard-notes-team", this);
 
             //            this.updateHandler =
             //                Wegas.Facade.Variable.after("update", this.syncUI, this);       // Listen updates on the
@@ -297,9 +315,6 @@ YUI.add('wegas-dashboard', function(Y) {
                     this.showMessage("info", "Could not find a player");
                 }
             }, ".yui3-datatable-col-menu .dashboard-open-team", this);
-            this.get("boundingBox").delegate("click", function(e) {
-                e.currentTarget.toggleClass("dashboard-collapsed");
-            }, ".yui3-datatable-col-name .dashboard-treeview");
             this.bindTextarea();
         },
         bindTextarea: function() {
