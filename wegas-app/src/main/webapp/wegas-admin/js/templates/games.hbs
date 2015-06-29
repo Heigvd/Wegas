@@ -13,6 +13,7 @@
         <th>Game Status</th>
         <th>Comments</th>
         <th>To Game</th>
+        <th>Force Deletion</th>
     </tr>
     </thead>
     <tbody>
@@ -33,6 +34,7 @@
                 <td {{action "editComment" on="click"}}>{{textarea class="form-control" value=game.comments focus-out="acceptComment" rows="1" disabled="true"}}</td>
             {{/if}}
             <td><a target="_blank" {{bind-attr href="game.gameLink"}}>View</a></td>
+            <td><a target="_blank" {{action "forceDeletion" on="click"}}>delete</a></td>
         </tr>
     {{/each}}
     </tbody>

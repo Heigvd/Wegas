@@ -33,6 +33,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -215,23 +218,17 @@ public class GameController {
 
     /**
      * @param entityId
-     * @return
      */
     @DELETE
     @Path("{entityId: [1-9][0-9]*}")
-    public Game delete(@PathParam("entityId") Long entityId) {
+    @RequiresRoles("Administrator")
+    public void forceDelete(@PathParam("entityId") Long entityId) {
         Game entity = gameFacade.find(entityId);
-        SecurityHelper.checkPermission(entity, "Edit");
         switch (entity.getStatus()) {
-            case LIVE:
-                gameFacade.bin(entity);
-                break;
-            case BIN:
-                gameFacade.delete(entity);
+            case DELETE:
+                gameFacade.remove(entity);
                 break;
         }
-//      gameFacade.remove(entity);
-        return entity;
     }
 
     @DELETE
