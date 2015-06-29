@@ -5,77 +5,613 @@
  * Copyright (c) 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-col-name .dashboard-collapsed ul {
-    display: none;
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-table{
+    display:block;
+    position:relative;
+    width:100%;
+    height:100%;
+    margin:0px;
+    padding:32px;
+    box-sizing:border-box;
 }
 
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-col-name ul {
-    padding-left: 30px;
+.yui3-skin-sam .wegas-dashboard thead{
+    display:none;
 }
 
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-col-name ul:empty:before {
-    content: "empty";
-    font-style: italic;
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data{
+    display:block;
 }
 
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-col-name .dashboard-treeview {
-    cursor: pointer;
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr{
+    display: block;
+    width:100%;
+    height:auto;
+    min-height:64px;
+    overflow:auto;
+    margin: 12px 0px;
+    position: relative;
+    padding: 0px;
+    background-color: white;
+    border-radius: 2px;
+    box-sizing:border-box;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
 
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-col-name .dashboard-collapsed .dashboard-toggle {
-    background-position: 0px -74px;
-}
-
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-col-name .dashboard-toggle {
-    display: inline-block;
-    width: 14px;
-    height: 14px;
-    background: url(../../wegas-app/images/wegas-icon-toggle.png) no-repeat -0px -112px;
-    cursor: pointer;
-    margin-left: -3px;
-}
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-table .yui3-datatable-data .yui3-datatable-sorted,
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-table .yui3-datatable-columns .yui3-datatable-sorted{
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-name{
+    display:block;
+    position:relative;
+    width:auto;
+    height:64px;
+    padding:0px;
+    padding-left:80px;
+    padding-right:16px;
+    margin:0px;
     background: none;
-}
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-col-name button {
-    float: right;
-}
-
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-col-menu textarea {
-    width: 30em;
-    resize: none;
-    height: 2.5em;
-    transition: height 50ms 0.2s;
+    border: none;
+    box-sizing:border-box;
+    float:left;
 }
 
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-col-menu textarea.disabled {
-    cursor: pointer;
-    overflow: hidden;
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-name ul{
+    display:none;
+    
 }
 
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-col-menu textarea.enabled {
-    height: 100px;
-    transition: none;
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule{
+    display:block;
+    position:relative;
+    width:auto;
+    height:64px;
+    margin:0px;
+    padding:6px 16px 12px 16px;
+    border:none;
+    border-left:solid 1px #d4d4d4;
+    float:left;
+    box-sizing:border-box;
+    text-align:center;
+    font-weight:600;
+    color:#666666;
 }
 
-.yui3-skin-sam .dashboard-impact-panel .wegas-panel-content .yui3-widget-bd {
-    text-align: left;
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase{
+    border-left:solid 3px #d4d4d4;
 }
 
-.yui3-skin-sam .dashboard-impact-panel .inputEx-ListField > fieldset > div {
-    padding-left: 20px;
-}
-.yui3-skin-sam .dashboard-panel  div.inputEx-label label{
-    /* color: white; */
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule span{
+    padding:4px 9px;
+    color:white;
 }
 
-.yui3-skin-sam .dashboard-impact-panel .inputEx-WysiwygScript .inputEx-ListField .wegas-removebutton {
-    left: 0px;
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule:before{
+    display:block;
+    position:relative;
+    font-size:15px;
+    color:#949494;
+    font-weight:300;
+    padding-top:3px;
+    padding-bottom:3px;
+    margin-bottom: 4px;
 }
 
-.yui3-skin-sam .dashboard-impact-panel .inputEx-WysiwygScript .inputEx-ListField .wegas-moveupbutton,
-.yui3-skin-sam .dashboard-impact-panel .inputEx-WysiwygScript .inputEx-ListField .wegas-movedownbutton {
-    display: none;
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase:before{
+    content:"Phase";
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period:before{
+    content:"Period";
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions:before{
+    content:"Questions";
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management:before{
+    content:"Management";
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User:before{
+    content:"User";
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality:before{
+    content:"Quality";
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs:before{
+    content:"Costs";
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule:before{
+    content:"Shedule";
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td{
+    float:left;
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data .yui3-datatable-col-name > .wegas-icon{
+    display:block;
+    position:absolute;
+    top:6px;
+    left:0px;
+    width:64px;
+    height:64px;
+    background-color:#666666;
+    background-size:100%;
+    background-position:center;
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data .yui3-datatable-col-name {
+    line-height: 64px;
+    font-weight:600;
+    color:#666666;
+}
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data .yui3-datatable-col-name .dashboard-toggle{
+    
+}
+
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data .yui3-datatable-col-name .wegas-icon.wegas-icon-player{
+    background-image: url("../../wegas-app/images/icon_players.png");
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data .yui3-datatable-col-name .wegas-icon.wegas-icon-team{
+    background-image: url("../../wegas-app/images/icon_groups.png");
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data .yui3-datatable-col-menu{
+    display:block;
+    position:relative;
+    width:262px;
+    height:auto;
+    padding:0px;
+    margin:0px;
+    float:right;
+    border:none;
+    border-left:solid 2px #d4d4d4;
+    box-sizing:border-box;
+}
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-open-team,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-impact-team,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-mail-team,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .dashboard-notes-team{
+    width:65px;
+    height:64px;
+    display:block;
+    position:relative;
+    margin:0px;
+    padding:0px;
+    float:left;
+    border-left:solid 1px #d4d4d4;
+    box-sizing:border-box;
+}
+
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-open-team:active,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-open-team{
+    border:none;
+    background:none;
+    box-shadow: none;
+    border-left:solid 1px #d4d4d4;
+    background-size:100%;
+    background-repeat:no-repeat;
+    background-image:url("../../wegas-app/images/icon_vision.png");
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-impact-team:active,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-impact-team{
+    border:none;
+    background:none;
+    box-shadow: none;
+    border-left:solid 1px #d4d4d4;
+    background-size:100%;
+    background-repeat:no-repeat;
+    background-image:url("../../wegas-app/images/icon_impact.png");
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-mail-team:active,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-mail-team{
+    border:none;
+    background:none;
+    box-shadow: none;
+    border-left:solid 1px #d4d4d4;
+    background-size:100%;
+    background-repeat:no-repeat;
+    background-image:url("../../wegas-app/images/icon_mail.png");
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .dashboard-notes-team{
+    background-size:100%;
+    background-repeat:no-repeat;
+    cursor:pointer;
+    background-image:url("../../wegas-app/images/icon_texte.png");
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .dashboard-notes-team *{
+    display:none;
+}
+
+/* --- Modales --- */
+
+.yui3-skin-sam .yui3-widget-modal{
+    position:fixed;
+    display:block;
+    top:50% !important;
+    left:50% !important;
+    width:800px !important;
+    height:580px;
+    margin: -290px 0px 0px -400px;
+    background-color:white;
+    border-radius:8px;
+    z-index:100;
+    overflow-x:hidden;
+    overflow-y:auto;
+    max-width: none;
+
+}
+
+
+
+.yui3-skin-sam .yui3-widget-modal.dashboard-panel .wegas-panel-content{
+    width:100%;
+    height:100%;
+    margin:0px;
+    padding:0px;
+    background:none;
+    box-shadow:none;
+    border:none;
+}
+
+.yui3-skin-sam .yui3-widget-modal.dashboard-panel .yui3-widget-hd{
+    display:block;
+    position:relative;
+    width:100%;
+    height:65px;
+    box-sizing: border-box;
+    margin:0px;
+    padding:0px;
+    border-bottom:solid 1px #c1c1c1;
+}
+
+.yui3-skin-sam .yui3-widget-modal.dashboard-panel .yui3-widget-hd .wegas-modal-title{
+    display:block;
+    position:relative;
+    width:100%;
+    height:64px;
+    padding:0px 80px;
+    color: #666666;
+    font-weight: lighter;
+    line-height:64px;
+    box-sizing:border-box;
+    overflow:hidden;
+}
+
+.yui3-skin-sam .yui3-widget-modal.dashboard-panel .yui3-widget-hd .wegas-modal-title:before{
+    content:"";
+    display:block;
+    position:absolute;
+    top:0px;
+    left:0px;
+    height:64px;
+    width:64px;
+    background-color: #666666;
+    background-size:100%;
+    background-repeat:no-repeat;
+    // background-image:url("../../wegas-app/images/icon_texte.png");
+}
+.yui3-skin-sam .yui3-widget-modal.dashboard-panel .yui3-widget-hd .wegas-modal-title.wegas-modal-title-player:before{
+    background-image:url("../../wegas-app/images/icon_players.png");
+}
+.yui3-skin-sam .yui3-widget-modal.dashboard-panel .yui3-widget-hd .wegas-modal-title.wegas-modal-title-group:before{
+    background-image:url("../../wegas-app/images/icon_groups.png");
+}
+
+.yui3-skin-sam .yui3-widget-modal.dashboard-panel .yui3-widget-hd .modal--header-close{
+    display:block;
+    position:absolute;
+    top:0px;
+    right:0px;
+    width:64px;
+    height:64px;
+    background:none;
+    text-indent:-1000px;
+    overflow:hidden;
+}
+
+.yui3-skin-sam .yui3-widget-modal.dashboard-panel .yui3-widget-hd .modal--header-close:active{
+    border:none;
+    background:none;
+    box-shadow: none;
+}
+
+.yui3-skin-sam .yui3-widget-modal.dashboard-panel .yui3-widget-hd .modal--header-close:before{
+    content:"\f00d";
+    font-family:"FontAwesome";
+    display:block;
+    position:absolute;
+    top:0px;
+    left:0px;
+    width:64px;
+    height:64px;
+    line-height:64px;
+    font-size:24px;
+    color:#4b4b4b;
+    text-indent:0;
+    transition:.2s;
+}
+
+.yui3-skin-sam .yui3-widget-modal.dashboard-panel .yui3-widget-hd .modal--header-close:hover:before{
+    color:#666666;
+}
+
+.yui3-skin-sam .yui3-widget-modal.dashboard-panel .yui3-widget-bd{
+    width:100%;
+    height:450px;
+    box-sizing: border-box;
+    background: #f9f9f9;
+    padding: 0px;
+    overflow-x:hidden;
+    overflow-y:auto;
+}
+
+.yui3-skin-sam .yui3-widget-modal.dashboard-panel .yui3-widget-ft{
+    display:block;
+    position:relative;
+    width:100%;
+    height:65px;
+    padding:0px 8px;
+    border-top:solid 1px #c1c1c1;
+    box-sizing: border-box;
+}
+.yui3-skin-sam .yui3-widget-modal.dashboard-panel .yui3-widget-ft .yui3-widget-buttons{
+    display:block;
+    position:relative;
+    width:100%;
+    height:100%;
+    text-align:left;
+}
+
+.yui3-skin-sam .yui3-widget-modal.dashboard-panel .yui3-widget-ft .yui3-button{
+    display:block;
+    position:relative;
+    float:left;
+    margin:8px 4px;
+    padding:0px 16px;
+    height:48px;
+    background-color:#666666;
+    transition:.3s;
+}
+
+.yui3-skin-sam .yui3-widget-modal.dashboard-panel .yui3-widget-ft .yui3-button.wegas-advanced-feature{
+    display:none;
+}
+
+.yui3-skin-sam.wegas-advancedmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft.yui3-button.wegas-advanced-feature{
+    display:block;
+}
+
+
+.yui3-skin-sam .yui3-widget-modal.dashboard-panel .yui3-widget-ft .yui3-button:hover{
+    background-color:#4b4b4b;
+}
+
+.yui3-skin-sam .yui3-widget-modal.dashboard-panel .yui3-widget-ft .yui3-button.modal--footer-right{
+    float:right;
+}
+
+.yui3-skin-sam .yui3-widget-modal.dashboard-panel .yui3-widget-ft .yui3-button.modal--footer-valid{
+    background-color:#4caf50;
+}
+
+.yui3-skin-sam .yui3-widget-modal.dashboard-panel .yui3-widget-ft .yui3-button.modal--footer-secondary{
+    background-color:#b3b3b3;
+}
+
+@media screen and (max-width: 800px) {
+    .yui3-skin-sam .yui3-widget-modal{
+        width: 100% !important;
+        margin-left: 0;
+        margin-right: 0;
+        left: 0 !important;
+        border-radius:0px;
+    }
+}
+
+@media screen and (max-height: 580px) {
+    .yui3-skin-sam .yui3-widget-modal{
+        height: 100%;
+        top: 0 !important;
+        margin-top: 0;
+        margin-bottom: 0;
+        border-radius:0px;
+    }
+    
+    .yui3-skin-sam .yui3-widget-modal.dashboard-panel .wegas-panel-content .yui3-widget-bd{
+        height:calc(100% - 130px);
+    }
+}
+
+/* Input Tex */
+
+.wegas-form > div > div > fieldset > div {
+  padding-left: 0px !important;
+}
+
+.yui3-skin-sam .wegas-form{
+    width:100%;
+    height:100%;
+    box-sizing:border-box;
+    padding:24px 0px;
+}
+
+.yui3-skin-sam .wegas-form fieldset{
+    width:100%;
+    height:100%;    
+}
+
+.yui3-skin-sam .wegas-form .inputEx-fieldWrapper{
+    display:block;
+    position:relative;
+    width:100%;
+    height:auto;
+    margin:4px 0px;
+    padding:0px 64px !important;
+    box-sizing: border-box;
+    border:none;
+}
+
+.yui3-skin-sam .wegas-form .inputEx-label{
+    display:block;
+    position:relative;
+    width:112px !important;
+    height:48px;
+    margin: 0px!important;
+    padding:16px !important;
+    border:none;
+    box-sizing:border-box;
+    text-align:left;
+    float: left;
+}
+
+.yui3-skin-sam .wegas-form .inputEx-label label{
+    padding:0px;
+    margin:0px;
+    color:#9a9a9a;
+    font-size:12px;
+    padding:2px 0px;
+}
+
+.yui3-skin-sam .wegas-form div.inputEx-invalid > div.inputEx-label label {
+  color: #C00E0C;
+  background:none;
+}
+
+.yui3-skin-sam .wegas-form div.inputEx-invalid > div.inputEx-label:before {
+  display:block;
+  position:absolute;
+  top:16px;
+  left:-8px;
+  content:"\f071";
+  font-family:"FontAwesome";
+  font-size:16px;
+}
+
+.yui3-skin-sam .wegas-form div.inputEx-valid > div.inputEx-label label{
+    color:#9a9a9a;
+}
+.yui3-skin-sam .wegas-form div.inputEx-valid > div.inputEx-label:before {
+  display:none;
+}
+
+.yui3-skin-sam .wegas-form .inputEx-Field{
+    float:left;
+    width:560px;
+    margin:0px;
+    padding:0px;
+    text-align:left;
+    box-sizing: border-box;
+    padding-right:16px;
+}
+
+.yui3-skin-sam .wegas-form .inputEx-Field .inputEx-StringField-wrapper{
+    max-width: none; 
+}
+
+.wegas-form div.inputEx-StringField-wrapper input[type="text"]{
+    height:48px;
+    padding: 16px 12px;
+    border-radius: 6px;  
+    background:none;
+    font-size:16px;
+    transition:.3s;
+    box-sizing:border-box;
+}
+.wegas-form div.inputEx-StringField-wrapper input[type="text"]:focus{
+    background:white;
+}
+
+.wegas-form .mce-tinymce.mce-panel {
+    border-radius:6px;
+    width: 100%;
+}
+
+.wegas-form .mce-toolbar-grp{
+    border-top-right-radius:6px;
+    border-top-left-radius:6px;
+}
+
+.mce-edit-area, .mce-edit-area * {
+    border-bottom-right-radius:6px;
+    border-bottom-left-radius: 6px;
+    min-height:180px;
+}
+
+.yui3-skin-sam .wegas-form legend.inputEx-Group-legend {
+    margin-left:16px !important;
+    margin-bottom:8px;
+    padding:12px 0px !important;
+    color: #515151 !important; 
+    width: 100% !important; 
+    text-align:left !important;
+}
+.yui3-skin-sam .wegas-form  .inputEx-Group fieldset .inputEx-Group:first-child legend.inputEx-Group-legend {
+    margin-left:80px !important; 
+    margin-bottom:0px;
+}
+.yui3-skin-sam .wegas-form .inputEx-Group fieldset .inputEx-Group{
+    width:50%;
+    float:right;
+}
+.yui3-skin-sam .wegas-form .inputEx-Group fieldset .inputEx-Group:first-child{
+    width:50%;
+    float:left;
+}
+.yui3-skin-sam .wegas-form .inputEx-Group fieldset .inputEx-Group fieldset{
+    height:auto;
+}
+
+.yui3-skin-sam .wegas-form .inputEx-Group fieldset .inputEx-Group fieldset .inputEx-fieldWrapper{
+    padding-left:0px !important;
+}
+
+.yui3-skin-sam .wegas-form .inputEx-Group fieldset .inputEx-Group:first-child fieldset .inputEx-fieldWrapper{
+    padding-left:64px !important;
+    padding-right:0px !important;
+    margin:8px 0px;
+}
+
+.yui3-skin-sam .wegas-form .inputEx-Group fieldset .inputEx-Group:first-child fieldset .inputEx-label{
+    width:92px !important;
+    
+}
+.yui3-skin-sam .wegas-form .inputEx-Group fieldset .inputEx-Group fieldset .inputEx-Field{
+    width:190px;
+    padding:0px;
+}
+
+.yui3-skin-sam .wegas-form .inputEx-Group fieldset .inputEx-Group:first-child fieldset .inputEx-Field{
+    width:212px;
+    padding:0px;
 }
