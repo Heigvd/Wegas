@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
+import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.jparealm.GameAccount;
 import com.wegas.core.security.persistence.User;
@@ -27,7 +28,7 @@ import java.util.*;
  */
 @Entity
 @Table(uniqueConstraints = {
-//    @UniqueConstraint(columnNames = {"name"}), 
+    //    @UniqueConstraint(columnNames = {"name"}), 
     @UniqueConstraint(columnNames = {"token"})
 })
 @NamedQueries({
@@ -97,6 +98,9 @@ public class Game extends NamedEntity {
     @JsonManagedReference("game-team")
     @OrderBy("createdTime")
     private List<Team> teams = new ArrayList<>();
+
+    @OneToMany(mappedBy = "game", cascade = CascadeType.REMOVE)
+    private List<VariableInstance> privateInstances;
 
     /**
      *
@@ -394,6 +398,24 @@ public class Game extends NamedEntity {
      */
     public void setProperties(GameModelProperties p) {
         // So jersey don't yell
+    }
+
+    /**
+     * Retrieve all variableInstances that belongs to this game only (ie.
+     * gameScoped)
+     *
+     * @return all game gameScoped instances
+     */
+    public List<VariableInstance> getPrivateInstances() {
+        return privateInstances;
+    }
+
+    /**
+     *
+     * @param privateInstances
+     */
+    public void setPrivateInstances(List<VariableInstance> privateInstances) {
+        this.privateInstances = privateInstances;
     }
 
     /**

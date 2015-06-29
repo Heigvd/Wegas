@@ -108,23 +108,25 @@ public class TeamFacade extends BaseFacade<Team> {
      */
     @Override
     public void remove(Team entity) {
-        for (Player p : entity.getPlayers()) {
-            playerFacade.remove(p);
-        }
-        for (VariableInstance i : this.getAssociatedInstances(entity)) {
-            this.getEntityManager().remove(i);
-        }
+        //for (Player p : entity.getPlayers()) {
+        //    playerFacade.remove(p);
+        //}
+        //for (VariableInstance i : this.getAssociatedInstances(entity)) {
+        //    this.getEntityManager().remove(i);
+        //}
         this.getEntityManager().remove(entity);
     }
 
     /**
      * @param team
      * @return
+     * @deprecated  use JPA team.privateInstances
      */
     public List<VariableInstance> getAssociatedInstances(Team team) {
-        Query findInstances = getEntityManager().createNamedQuery("findTeamInstances");
-        findInstances.setParameter("teamid", team.getId());
-        return findInstances.getResultList();
+        return team.getPrivateInstances();
+        //Query findInstances = getEntityManager().createNamedQuery("findTeamInstances");
+        //findInstances.setParameter("teamid", team.getId());
+        //return findInstances.getResultList();
     }
 
     /**

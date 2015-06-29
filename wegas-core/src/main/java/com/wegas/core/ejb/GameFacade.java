@@ -218,16 +218,18 @@ public class GameFacade extends BaseFacade<Game> {
     @Override
     public void remove(final Game entity) {
         gameRemovedEvent.fire(new PreEntityRemoved(entity));
+
+        // This is for retrocompatibility w/ game models that do not habe DebugGame
         if (entity.getGameModel().getGames().size() <= 1
             && !(entity.getGameModel().getGames().get(0) instanceof DebugGame)) {// This is for retrocompatibility w/ game models that do not habe DebugGame
             gameModelFacade.remove(entity.getGameModel());
-        }
-        for (Team t : entity.getTeams()) {
-            teamFacade.remove(t);
+        } else {
+            super.remove(entity);
         }
 
-        super.remove(entity);
-
+        //for (Team t : entity.getTeams()) {
+        //    teamFacade.remove(t);
+        //}
         userFacade.deleteAccountPermissionByInstance("g" + entity.getId());
         userFacade.deleteRolePermissionsByInstance("g" + entity.getId());
     }
