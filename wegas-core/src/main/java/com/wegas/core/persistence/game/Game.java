@@ -99,6 +99,7 @@ public class Game extends NamedEntity {
     @OrderBy("createdTime")
     private List<Team> teams = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "game", cascade = CascadeType.REMOVE)
     private List<VariableInstance> privateInstances;
 
