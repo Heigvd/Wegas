@@ -1719,309 +1719,171 @@
         "cssClass": "pmg-properties",
         "children": [
             {
-                "type": "Text",
-                "plugins": [
-                    {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "zIndex": "",
-                                "top": "30px",
-                                "left": "83px",
-                                "bottom": "",
-                                "right": ""
+                "type": "AbsoluteLayout",
+                "cssClass": "pmg-properties-left",
+                "children": [
+                {
+                    "type": "Text",
+                    "cssClass":"pmg-properties-title",
+                    "plugins": [
+                        {
+                            "fn": "ConditionalDisable",
+                            "cfg": {
+                                "condition": {
+                                    "@class": "Script",
+                                    "content": "var advLimitDesc;\ntry {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){}\nreturn advLimitDesc !== undefined;\n"
+                                },
+                                "attribute": "cssClass",
+                                "value": "hidden"
                             }
                         }
-                    },
-                    {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "width": "",
-                                "height": ""
+                    ],
+                    "content": "<span>Advancement limit</span>"
+                },
+                {
+                    "label": "<span class='checkbox'>Advancement limit</span>",
+                    "type": "Button",
+                    "cssClass": "pmg-properties-button",
+                    "plugins": [
+                        {
+                            "fn": "ExecuteScriptAction",
+                            "cfg": {
+                                "targetEvent": "click",
+                                "onClick": {
+                                    "@class": "Script",
+                                    "language": "JavaScript",
+                                    "content": "var advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch (e){}\n if (advLimitDesc != undefined){ advLimitDesc.setValue(self, !advLimitDesc.getValue(self));};"
+                                }
+                            }
+                        },
+                        {
+                            "fn": "ConditionalDisable",
+                            "cfg": {
+                                "condition": {
+                                    "@class": "Script",
+                                    "content": "var  advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){} return (advLimitDesc === undefined || advLimitDesc.getValue(self));",
+                                    "language": "JavaScript"
+                                },
+                                "attribute": "cssClass",
+                                "value": "selected"
+                            }
+                        },
+                        {
+                            "fn": "ConditionalDisable2",
+                            "cfg": {
+                                "condition": {
+                                    "@class": "Script",
+                                    "content": "var  advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){} return (advLimitDesc === undefined);",
+                                    "language": "JavaScript"
+                                },
+                                "attribute": "cssClass",
+                                "value": "hidden"
                             }
                         }
-                    },
-                    {
-                        "fn": "ConditionalDisable",
-                        "cfg": {
-                            "condition": {
-                                "@class": "Script",
-                                "content": "var advLimitDesc;\ntry {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){}\nreturn advLimitDesc !== undefined;\n"
-                            },
-                            "attribute": "cssClass",
-                            "value": "hidden"
-                        }
-                    }
-                ],
-                "content": "<p><strong>Advancement limit</strong></p>"
+                    ]
+                },
+                {
+                    "cssClass":"pmg-advancement-limit-edtion",
+                    "type": "AdvancementLimit"
+                }]
             },
             {
-                "label": "<span class='checkbox'>Advancement limit</span>",
-                "type": "Button",
-                "cssClass": "pmg-properties-button",
-                "plugins": [
+                "type": "AbsoluteLayout",
+                "cssClass": "pmg-properties-right",
+                "children": [
                     {
-                        "fn": "ExecuteScriptAction",
-                        "cfg": {
-                            "targetEvent": "click",
-                            "onClick": {
-                                "@class": "Script",
-                                "language": "JavaScript",
-                                "content": "var advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch (e){}\n if (advLimitDesc != undefined){ advLimitDesc.setValue(self, !advLimitDesc.getValue(self));};"
-                            }
-                        }
+                        "type": "Text",
+                        "content": "<span>Options</span>",
+                        "cssClass":"pmg-properties-title"
                     },
                     {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "28px",
-                                "left": "83px"
-                            }
-                        }
-                    },
-                    {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {}
-                        }
-                    },
-                    {
-                        "fn": "ConditionalDisable",
-                        "cfg": {
-                            "condition": {
-                                "@class": "Script",
-                                "content": "var  advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){} return (advLimitDesc === undefined || advLimitDesc.getValue(self));",
-                                "language": "JavaScript"
+                        "label": "<span class='checkbox'>Autoreservation</span>",
+                        "type": "Button",
+                        "cssClass": "pmg-properties-button",
+                        "plugins": [
+                            {
+                                "fn": "ExecuteScriptAction",
+                                "cfg": {
+                                    "targetEvent": "click",
+                                    "onClick": {
+                                        "@class": "Script",
+                                        "content": "if (Variable.find(gameModel, \"autoReservation\").getValue(self)){\n    Variable.find(gameModel, \"autoReservation\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"autoReservation\").setValue(self, true);\n}\n"
+                                    }
+                                }
                             },
-                            "attribute": "cssClass",
-                            "value": "selected"
-                        }
+                            {
+                                "fn": "ConditionalDisable",
+                                "cfg": {
+                                    "condition": {
+                                        "@class": "Script",
+                                        "content": "Variable.find(gameModel, \"autoReservation\").getValue(self);\n"
+                                    },
+                                    "attribute": "cssClass",
+                                    "value": "selected"
+                                }
+                            }
+                        ],
+                        "data": {}
                     },
                     {
-                        "fn": "ConditionalDisable2",
-                        "cfg": {
-                            "condition": {
-                                "@class": "Script",
-                                "content": "var  advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){} return (advLimitDesc === undefined);",
-                                "language": "JavaScript"
+                        "label": "<span class='checkbox'>Force question replies</span>",
+                        "type": "Button",
+                        "cssClass": "pmg-properties-button",
+                        "plugins": [
+                            {
+                                "fn": "ExecuteScriptAction",
+                                "cfg": {
+                                    "targetEvent": "click",
+                                    "onClick": {
+                                        "@class": "Script",
+                                        "content": "if (Variable.find(gameModel, \"forceQuestionReplies\").getValue(self)){\n    Variable.find(gameModel, \"forceQuestionReplies\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"forceQuestionReplies\").setValue(self, true);\n}\n"
+                                    }
+                                }
                             },
-                            "attribute": "cssClass",
-                            "value": "hidden"
-                        }
+                            {
+                                "fn": "ConditionalDisable",
+                                "cfg": {
+                                    "condition": {
+                                        "@class": "Script",
+                                        "content": "Variable.find(gameModel, \"forceQuestionReplies\").getValue(self);\n"
+                                    },
+                                    "attribute": "cssClass",
+                                    "value": "selected"
+                                }
+                            }
+                        ],
+                        "data": {}
+                    },
+                    {
+                        "label": "<span class='checkbox'>EVM</span>",
+                        "type": "Button",
+                        "cssClass": "pmg-properties-button",
+                        "plugins": [
+                            {
+                                "fn": "ExecuteScriptAction",
+                                "cfg": {
+                                    "targetEvent": "click",
+                                    "onClick": {
+                                        "@class": "Script",
+                                        "content": "if (Variable.find(gameModel, \"evm\").getValue(self)){\n    Variable.find(gameModel, \"evm\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"evm\").setValue(self, true);\n}\n"
+                                    }
+                                }
+                            },
+                            {
+                                "fn": "ConditionalDisable",
+                                "cfg": {
+                                    "condition": {
+                                        "@class": "Script",
+                                        "content": "Variable.find(gameModel, \"evm\").getValue(self);\n"
+                                    },
+                                    "attribute": "cssClass",
+                                    "value": "selected"
+                                }
+                            }
+                        ],
+                        "data": {}
                     }
                 ]
-            },
-            {
-                "type": "AdvancementLimit",
-                "plugins": [
-                    {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "zIndex": "",
-                                "top": "60px",
-                                "left": "89px",
-                                "bottom": "",
-                                "right": ""
-                            }
-                        }
-                    },
-                    {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "width": "",
-                                "height": ""
-                            }
-                        }
-                    }
-                ]
-            },
-            {
-                "type": "Text",
-                "plugins": [
-                    {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "zIndex": "",
-                                "top": "185px",
-                                "left": "83px",
-                                "bottom": "",
-                                "right": ""
-                            }
-                        }
-                    },
-                    {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "width": "",
-                                "height": ""
-                            }
-                        }
-                    }
-                ],
-                "content": "<p><strong>Options</strong></p>"
-            },
-            {
-                "label": "<span class='checkbox'>Autoreservation</span>",
-                "type": "Button",
-                "cssClass": "pmg-properties-button",
-                "plugins": [
-                    {
-                        "fn": "ExecuteScriptAction",
-                        "cfg": {
-                            "targetEvent": "click",
-                            "onClick": {
-                                "@class": "Script",
-                                "content": "if (Variable.find(gameModel, \"autoReservation\").getValue(self)){\n    Variable.find(gameModel, \"autoReservation\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"autoReservation\").setValue(self, true);\n}\n"
-                            }
-                        }
-                    },
-                    {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "zIndex": "",
-                                "top": "210px",
-                                "left": "83px",
-                                "bottom": "",
-                                "right": ""
-                            }
-                        }
-                    },
-                    {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "width": "",
-                                "height": ""
-                            }
-                        }
-                    },
-                    {
-                        "fn": "ConditionalDisable",
-                        "cfg": {
-                            "condition": {
-                                "@class": "Script",
-                                "content": "Variable.find(gameModel, \"autoReservation\").getValue(self);\n"
-                            },
-                            "attribute": "cssClass",
-                            "value": "selected"
-                        }
-                    }
-                ],
-                "data": {}
-            },
-            {
-                "label": "<span class='checkbox'>Force question replies</span>",
-                "type": "Button",
-                "cssClass": "pmg-properties-button",
-                "plugins": [
-                    {
-                        "fn": "ExecuteScriptAction",
-                        "cfg": {
-                            "targetEvent": "click",
-                            "onClick": {
-                                "@class": "Script",
-                                "content": "if (Variable.find(gameModel, \"forceQuestionReplies\").getValue(self)){\n    Variable.find(gameModel, \"forceQuestionReplies\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"forceQuestionReplies\").setValue(self, true);\n}\n"
-                            }
-                        }
-                    },
-                    {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "zIndex": "",
-                                "top": "235px",
-                                "left": "83px",
-                                "bottom": "",
-                                "right": ""
-                            }
-                        }
-                    },
-                    {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "width": "",
-                                "height": ""
-                            }
-                        }
-                    },
-                    {
-                        "fn": "ConditionalDisable",
-                        "cfg": {
-                            "condition": {
-                                "@class": "Script",
-                                "content": "Variable.find(gameModel, \"forceQuestionReplies\").getValue(self);\n"
-                            },
-                            "attribute": "cssClass",
-                            "value": "selected"
-                        }
-                    }
-                ],
-                "data": {}
-            },
-            {
-                "label": "<span class='checkbox'>EVM</span>",
-                "type": "Button",
-                "cssClass": "pmg-properties-button",
-                "plugins": [
-                    {
-                        "fn": "ExecuteScriptAction",
-                        "cfg": {
-                            "targetEvent": "click",
-                            "onClick": {
-                                "@class": "Script",
-                                "content": "if (Variable.find(gameModel, \"evm\").getValue(self)){\n    Variable.find(gameModel, \"evm\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"evm\").setValue(self, true);\n}\n"
-                            }
-                        }
-                    },
-                    {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "zIndex": "",
-                                "top": "260px",
-                                "left": "83px",
-                                "bottom": "",
-                                "right": ""
-                            }
-                        }
-                    },
-                    {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "width": "",
-                                "height": ""
-                            }
-                        }
-                    },
-                    {
-                        "fn": "ConditionalDisable",
-                        "cfg": {
-                            "condition": {
-                                "@class": "Script",
-                                "content": "Variable.find(gameModel, \"evm\").getValue(self);\n"
-                            },
-                            "attribute": "cssClass",
-                            "value": "selected"
-                        }
-                    }
-                ],
-                "data": {}
             }
         ],
         "@name": "Properties"
