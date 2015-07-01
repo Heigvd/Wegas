@@ -7,11 +7,14 @@
  */
 package com.wegas.core.security.persistence;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.*;
 
 /**
@@ -52,6 +55,12 @@ public class Role extends AbstractEntity {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "role")
     private List<Permission> permissions = new ArrayList<>();
 
+    /**
+     *
+     */
+    @JsonIgnore
+    @ManyToMany(mappedBy = "roles")
+    private Set<AbstractAccount> abstractAccounts = new HashSet<>();
     /**
      *
      */
@@ -184,6 +193,28 @@ public class Role extends AbstractEntity {
         }
         return returnVal;
     }
+
+    public int getNumberOfMember(){
+        return abstractAccounts.size();
+    }
+
+    /**
+     * get role members 
+     * @return all accounts which are member of this role
+     */
+    public Set<AbstractAccount> getAbstractAccounts() {
+        return abstractAccounts;
+    }
+
+    /**
+     * set the role members
+     * @param abstractAccounts list of member
+     */
+    public void setAbstractAccounts(Set<AbstractAccount> abstractAccounts) {
+        this.abstractAccounts = abstractAccounts;
+    }
+
+
 
     @Override
     public String toString() {

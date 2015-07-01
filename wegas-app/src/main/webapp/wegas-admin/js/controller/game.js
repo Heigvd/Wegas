@@ -10,7 +10,7 @@
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 /*global define*/
-define(["ember"],function(Ember){
+define(["ember"], function(Ember) {
     "use strict";
     return Ember.ObjectController.extend({
         actions: {
@@ -20,6 +20,10 @@ define(["ember"],function(Ember){
             acceptComment: function() {
                 this.set('commentEdit', false);
                 this.get('model').save();
+            },
+            forceDeletion: function() {
+                var gameId = this.get("model").get("gameId");
+                Ember.$.ajax("rest/GameModel/Game/" + gameId, {method: "DELETE"});
             }
         },
         commentEdit: false,

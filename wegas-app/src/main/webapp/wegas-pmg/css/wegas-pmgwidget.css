@@ -33,13 +33,13 @@
 }
 
 .yui3-datatable-table .past .unavailable {
-    background-color: #FF6060;
+    background-color: #ea8d6c;
 }
 
-.pmg-legend .worked,
-.yui3-datatable-table .past .booked,
-.yui3-datatable-table .past .activity {
-    background-color: #63B1FF;
+.pmg-legend .worked, 
+.yui3-datatable-table .past .booked, 
+.yui3-datatable-table .past .activity{
+    background-color:#53a29d;
 }
 
 .yui3-datatable-table .past .booked {
@@ -48,9 +48,8 @@
     text-align: center;
 }
 
-.pmg-legend .unavailable,
-.yui3-datatable-table .unavailable {
-    background-color: #FF0000;
+.pmg-legend .unavailable, .yui3-datatable-table .unavailable{
+    background-color:#ed6a3c;
 }
 
 .pmg-legend .engagementDelay,
@@ -62,12 +61,22 @@
 
 .pmg-legend .fill100,
 .yui3-datatable-table .progress {
-    background-color: #3399FF;
     opacity: 0.3;
 }
 
+.pmg-legend .fill100, 
+.yui3-datatable-table .progress, 
+.pmg-legend .booked, 
+.yui3-datatable-table .booked,
+.gantt-planning-page .baseline{
+    background-color: #68ccc5;
+}
+
+
 .yui3-datatable-table .fill100 {
 }
+
+
 
 .yui3-datatable-table .fill0to25 {
     margin-right: 75%;
@@ -101,8 +110,8 @@ tbody .past .activity {
     opacity: 1;
 }
 
-.body .yui3-datatable-cell.schedulecolumn {
-    border-left: 1px solid lightgray;
+.yui3-skin-sam tbody .schedulecolumn{
+    border-left:solid 1px #dadadc;    
     -moz-user-select: none;
     -khtml-user-select: none;
     -webkit-user-select: none;
@@ -110,16 +119,14 @@ tbody .past .activity {
     user-select: none;
 }
 
-.yui3-skin-sam tbody .schedulecolumn.past {
-    background: #f7f7f7;
+.yui3-skin-sam tbody .schedulecolumn.past{
+    background-color:#deeced;
 }
 
-.yui3-datatable-columns .schedulecolumn.present {
-    /*background-image: url(../../wegas-pmg/images/next.png), url(../../wegas-pmg/images/h2.png);*/
-    /*background-repeat: no-repeat, repeat-x;*/
-    /*background-position: left, center;*/
-    background: #0981A9;
+.yui3-datatable-columns .schedulecolumn.present{
+    background-color:#343843;
     color: white;
+    text-shadow:none;
 }
 
 .body .yui3-datatable-columns .past {

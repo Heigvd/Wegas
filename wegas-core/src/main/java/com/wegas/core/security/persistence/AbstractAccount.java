@@ -90,6 +90,11 @@ public class AbstractAccount extends AbstractEntity {
      */
     @ManyToMany
     @JsonView(Views.ExtendedI.class)
+    @JoinTable(name = "abstractaccount_roles",
+            joinColumns = {
+                @JoinColumn(name = "abstractaccount_id", referencedColumnName = "id")},
+            inverseJoinColumns = {
+                @JoinColumn(name = "roles_id", referencedColumnName = "id")})
     private Set<Role> roles = new HashSet<>();
 
     /**
@@ -213,6 +218,15 @@ public class AbstractAccount extends AbstractEntity {
      */
     public void addRole(Role role) {
         this.roles.add(role);
+    }
+
+    /**
+     * strike out this account from the role
+     *
+     * @param role
+     */
+    public void removeRole(Role role) {
+        this.roles.remove(role);
     }
 
     /**

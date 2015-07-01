@@ -1482,36 +1482,6 @@ td.yui3-datatable-col-Realised:after {
     font-size: 9pt;
 }
 
-.yui3-skin-sam tbody .schedulecolumn{
-    border-left:solid 1px #dadadc;    
-}
-
-.yui3-skin-sam tbody .schedulecolumn.past{
-    background-color:#deeced;
-}
-
-.pmg-legend .unavailable, .yui3-datatable-table .unavailable{
-    background-color:#ed6a3c;
-}
-
-.yui3-datatable-table .past .unavailable {
-  background-color: #ea8d6c;
-}
-
-.pmg-legend .worked, .yui3-datatable-table .past .booked, 
-.yui3-datatable-table .past .activity, .gantt-planning-page .baseline{
-    background-color:#53a29d;
-}
-
-.pmg-legend .fill100, .yui3-datatable-table .progress, .pmg-legend .booked, .yui3-datatable-table .booked{
-    background-color: #68ccc5;
-}
-
-.yui3-datatable-columns .schedulecolumn.present{
-    background-color:#343843;
-    text-shadow:none;
-}
-
 .pmg-popup-overlay{
     background:rgb(250, 250, 250);
     border:none;

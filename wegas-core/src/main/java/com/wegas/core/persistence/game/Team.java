@@ -9,6 +9,7 @@ package com.wegas.core.persistence.game;
 
 import com.fasterxml.jackson.annotation.*;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 
 import javax.persistence.*;
@@ -67,6 +68,10 @@ public class Team extends AbstractEntity {
     @OneToMany(mappedBy = "team", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference(value = "player-team")
     private List<Player> players = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "team", cascade = CascadeType.REMOVE)
+    private List<VariableInstance> privateInstances;
 
     /**
      * The game model this belongs to
@@ -241,4 +246,24 @@ public class Team extends AbstractEntity {
     public String getGameIcon() {
         return this.getGame().getProperties().getIconUri();
     }
+
+    /**
+     * Retrieve all variableInstances that belongs to this team only (ie.
+     * teamScoped)
+     *
+     * @return all team's teamScoped instances
+     */
+    public List<VariableInstance> getPrivateInstances() {
+        return privateInstances;
+    }
+
+    /**
+     * Set privateInstances
+     *
+     * @param privateInstances
+     */
+    public void setPrivateInstance(List<VariableInstance> privateInstances) {
+        this.privateInstances = privateInstances;
+    }
+
 }

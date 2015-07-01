@@ -45,7 +45,7 @@ public class PeerReviewInstance extends VariableInstance {
     /**
      * List of review that contains feedback written by player owning this
      */
-    @OneToMany(mappedBy = "reviewer")
+    @OneToMany(mappedBy = "reviewer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> toReview = new ArrayList<>();
 
     /**
