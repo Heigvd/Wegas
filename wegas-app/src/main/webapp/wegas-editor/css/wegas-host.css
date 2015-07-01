@@ -12,9 +12,6 @@
     display:none !important;
 }
 
-.wegas-layout-left, .wegas-hastoolbar>.wegas-toolbar, .wegas-editor-treeview-tablehd{
-}
-
 .wegas-hastoolbar>.wegas-toolbar{
     display:block;
     background: #f1f1f1;
@@ -170,8 +167,8 @@
 
 .yui3-skin-sam .wegas-title {
   font-weight: normal;
-  font-size: 21px;
-  line-height: 1em;
+  font-size: 18px;
+  line-height:50px;
   text-shadow: none;
   color: #fff;
   margin: 0px;
@@ -183,33 +180,67 @@
     display: block;
     position: relative;
     width: auto;
-    max-width: 200px;
+    max-width: 500px;
     overflow: hidden;
     height: 50px;
     text-shadow: none;
-    line-height: 44px;
+    line-height: 50px;
     margin: 0;
     text-overflow: ellipsis;
     padding: 0 12px;
     white-space: nowrap;
     color: #000;
-    font-size: 21px;
+    box-sizing:border-box;
+    font-size: 16px;
     font-weight: 600;
 }
 
 .yui3-skin-sam .wegas-title div.subtitle {
     color: #727272;
     font-style: italic;
-    font-size: 21px;
-    padding: 0px;
-    margin: 0px;
-    max-width: 200px;
+    font-size: 16px;
+    padding: 0px 16px 0px 0px;
+    margin: 0;
+    width: auto;
+    max-width: 500px;
     overflow: hidden;
+    box-sizing: border-box;
     text-overflow: ellipsis;
     white-space: nowrap;
-    line-height: 44px;
+    line-height: 50px;
     font-weight: 100;
     text-shadow: none;
+}
+
+
+@media screen and (max-width: 1399px) {
+    .yui3-skin-sam .wegas-title div:first-child{
+        max-width: 450px;
+    }
+
+    .yui3-skin-sam .wegas-title div.subtitle {
+        max-width: 400px;
+    }
+}
+
+@media screen and (max-width: 1249px) {
+    .yui3-skin-sam .wegas-title div:first-child{
+        max-width: 300px;
+    }
+
+    .yui3-skin-sam .wegas-title div.subtitle {
+        max-width: 300px;
+    }
+}
+
+@media screen and (max-width: 999px) {
+    .yui3-skin-sam .wegas-title div:first-child{
+        max-width: 200px;
+    }
+
+    .yui3-skin-sam .wegas-title div.subtitle {
+        max-width: 200px;
+    }
 }
 
 .yui3-skin-sam .wegas-layout-hd .yui3-button {
@@ -238,6 +269,7 @@
     box-sizing: border-box;
     display: block;
 }
+
 .yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-login{
     padding-left: 40px;
     background-size: auto 32px;
@@ -251,6 +283,48 @@
     background-image: url(../../wegas-editor/images/user.png);
 }
 
+@media screen and (max-width: 799px) {
+    .yui3-skin-sam .wegas-title div:first-child{
+        max-width: 150px;
+    }
+
+    .yui3-skin-sam .wegas-title div.subtitle {
+        max-width: 150px;
+    }
+    
+    .yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-login{
+        max-width: 164px;
+    }
+}
+
+@media screen and (max-width: 599px) {
+    .yui3-skin-sam .wegas-title div:first-child{
+        max-width:180px;
+    }
+
+    .yui3-skin-sam .wegas-title div.subtitle {
+        display:none
+    }
+    
+    .yui3-skin-sam .wegas-layout-hd .yui3-button.host-switchmode{
+        max-width: 40px;
+        padding: 0px 20px 0px 40px;
+        text-indent:80px;
+        text-overflow: none;
+    }
+    .yui3-skin-sam .wegas-layout-hd .yui3-button.host-switchmode:before{
+        margin:0px 14px;
+    }
+    
+    .yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-login{
+        margin-left: 0px;
+        max-width: 40px;
+        text-indent:80px;
+        text-overflow: none;
+        background-position:center;
+    }
+}
+
 .yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-login:before{
     background: url(../../wegas-app/images/wegas-icon-toggle.png);
 }
@@ -261,4 +335,284 @@
 
 .yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-login img{
     display:none;
+}
+
+/* --- Modales --- */
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal{
+    position:absolute;
+    display:block;
+    top:0px !important;
+    left:0px !important;
+    width:100% !important;
+    height:100%;
+    margin:0px;
+    padding:0px;
+    max-width: none;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content {
+    position:fixed;
+    display:block;
+    top:50% !important;
+    left:50% !important;
+    width:260px !important;
+    height:96px;
+    padding:0px;
+    margin: -48px 0px 0px -130px;
+    background-color:white;
+    color:#666666;
+    border:none;
+    z-index:108;
+    border-radius:8px;
+    box-shadow:none;
+    overflow:hidden;
+    max-width: none;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content .yui3-widget-bd{
+    display:block;
+    position:relative;
+    width:100%;
+    height:48px;
+    margin:0px;
+    padding:0px;
+    border:none;
+    background:none;
+}
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content .yui3-widget-bd > .icon{
+  padding-top: 20px;
+  min-height:0px;
+  height:28px;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content .yui3-widget-bd > .icon.icon-info{
+    background:none;
+    background-image: url(../../wegas-editor/images/warn.png);
+    background-position:8px 8px;
+    background-repeat:no-repeat;
+    background-size:32px;
+}
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content .yui3-widget-bd > .icon.icon-error{
+    background:none;
+    background-image: url(../../wegas-editor/images/danger.png);
+    background-position:8px 8px;
+    background-repeat:no-repeat;
+    background-size:32px;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content .yui3-widget-ft{
+    display:block;
+    position:relative;
+    width:100%;
+    height:48px;
+    margin:0px;
+    padding:0px;
+    border:none;
+    background:none;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content .yui3-widget-ft .yui3-widget-buttons{
+    display:block;
+    position:relative;
+    width:100%;
+    height:100%;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content .yui3-widget-ft .yui3-button{
+    display:block;
+    position:relative;
+    width:auto;
+    float:right;
+    height:40px;
+    padding:0px 12px;
+    margin:4px;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-panel-content{
+    position:fixed;
+    display:block;
+    top:50% !important;
+    left:50% !important;
+    width:800px !important;
+    height:580px;
+    padding:0px;
+    margin: -290px 0px 0px -400px;
+    border:none;
+    box-shadow:none;
+    background:none;
+    background-color:white;
+    border-radius:8px;
+    z-index:100;
+    overflow-x:hidden;
+    overflow-y:auto;
+    max-width: none;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-hd{
+    display:block;
+    position:relative;
+    width:100%;
+    height:65px;
+    box-sizing: border-box;
+    margin:0px;
+    padding:0px;
+    border-bottom:solid 1px #c1c1c1;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-hd .wegas-modal-title{
+    display:block;
+    position:relative;
+    width:100%;
+    height:64px;
+    padding:0px 80px;
+    color: #666666;
+    font-weight: lighter;
+    line-height:64px;
+    box-sizing:border-box;
+    overflow:hidden;
+    white-space: nowrap; 
+    text-overflow: ellipsis;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-hd .wegas-modal-title:before{
+    content:"";
+    display:block;
+    position:absolute;
+    top:0px;
+    left:0px;
+    height:64px;
+    width:64px;
+    background-color: #666666;
+    background-size:100%;
+    background-repeat:no-repeat;
+}
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-hd .wegas-modal-title.wegas-modal-title-player:before{
+    background-image:url("../../wegas-app/images/icon_players.png");
+}
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-hd .wegas-modal-title.wegas-modal-title-group:before{
+    background-image:url("../../wegas-app/images/icon_groups.png");
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-hd .modal--header-close{
+    display:block;
+    position:absolute;
+    top:0px;
+    right:0px;
+    width:64px;
+    height:64px;
+    background:none;
+    text-indent:-1000px;
+    overflow:hidden;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-hd .modal--header-close:active{
+    border:none;
+    background:none;
+    box-shadow: none;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-hd .modal--header-close:before{
+    content:"\f00d";
+    font-family:"FontAwesome";
+    display:block;
+    position:absolute;
+    top:0px;
+    left:0px;
+    width:64px;
+    height:64px;
+    line-height:64px;
+    font-size:24px;
+    color:#4b4b4b;
+    text-indent:0;
+    transition:.2s;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-hd .modal--header-close:hover:before{
+    color:#666666;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-bd{
+    width:100%;
+    height:450px;
+    box-sizing: border-box;
+    background: #f9f9f9;
+    padding: 0px;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft{
+    display:block;
+    position:relative;
+    width:100%;
+    height:65px;
+    padding:0px 8px;
+    border-top:solid 1px #c1c1c1;
+    box-sizing: border-box;
+}
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft .yui3-widget-buttons{
+    display:block;
+    position:relative;
+    width:100%;
+    height:100%;
+    text-align:left;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft .yui3-button{
+    display:block;
+    position:relative;
+    float:left;
+    margin:8px 4px;
+    padding:0px 16px;
+    height:48px;
+    background-color:#666666;
+    transition:.3s;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft .yui3-button.wegas-advanced-feature{
+    display:none;
+}
+
+.yui3-skin-sam.wegas-hostmode.wegas-advancedmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft.yui3-button.wegas-advanced-feature{
+    display:block;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft .yui3-button:hover{
+    background-color:#4b4b4b;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft .yui3-button.modal--footer-right{
+    float:right;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft .yui3-button.modal--footer-valid{
+    background-color:#4caf50;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft .yui3-button.modal--footer-secondary{
+    background-color:#b3b3b3;
+}
+
+
+@media screen and (max-width: 800px) {
+    .yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-panel-content{
+        width: 100% !important;
+        margin-left: 0;
+        margin-right: 0;
+        left: 0 !important;
+        border-radius:0px;
+    }
+}
+
+@media screen and (max-height: 580px) {
+    .yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-panel-content{
+        height: 100%;
+        top: 0 !important;
+        margin-top: 0;
+        margin-bottom: 0;
+        border-radius:0px;
+    }
+    
+    .yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-panel-content .yui3-widget-bd{
+        height:calc(100% - 130px);
+    }
 }
