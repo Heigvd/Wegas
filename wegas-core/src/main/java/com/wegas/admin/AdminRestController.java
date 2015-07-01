@@ -18,6 +18,7 @@ import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 
 /**
  * @author Cyril Junod <cyril.junod at gmail.com>
@@ -25,6 +26,7 @@ import java.util.List;
 @Stateless
 @Path("Admin/")
 @Produces(MediaType.APPLICATION_JSON)
+@RequiresRoles("Administrator")
 public class AdminRestController {
 
     @EJB
@@ -33,7 +35,6 @@ public class AdminRestController {
     @Path("Game")
     @GET
     public Collection<GameAdmin> get(@QueryParam("type") String type) {
-        SecurityUtils.getSubject().checkRole("Administrator");
         String[] types = type.split(",");
         if (type == null) {
             return adminFacade.findAll();
@@ -53,14 +54,12 @@ public class AdminRestController {
     @Path("Game/Done")
     @GET
     public Collection<GameAdmin> getDone() {
-        SecurityUtils.getSubject().checkRole("Administrator");
         return adminFacade.findDone();
     }
 
     @GET
     @Path("Game/{gameId : ([1-9][0-9]*)}")
     public GameAdmin get(@PathParam("gameId") Long gameId) {
-        SecurityUtils.getSubject().checkRole("Administrator");
         return adminFacade.find(gameId);
     }
 
@@ -68,14 +67,12 @@ public class AdminRestController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("Game/{gameId : ([1-9][0-9]*)}")
     public GameAdmin update(@PathParam("gameId") Long gameId, GameAdmin game) {
-        SecurityUtils.getSubject().checkRole("Administrator");
         return adminFacade.update(gameId, game);
     }
 
     @GET
     @Path("rebuild")
     public Response rebuild() {
-        SecurityUtils.getSubject().checkRole("Administrator");
         adminFacade.rebuild();
         return Response.ok().build();
     }
@@ -83,7 +80,6 @@ public class AdminRestController {
     @DELETE
     @Path("Game/delete/{gameAdminId : ([1-9][0-9]*)}")
     public GameAdmin deleteGame(@PathParam("gameAdminId") Long gameAdminId) {
-        SecurityUtils.getSubject().checkRole("Administrator");
         adminFacade.deleteGame(adminFacade.find(gameAdminId));
         return adminFacade.find(gameAdminId);
     }

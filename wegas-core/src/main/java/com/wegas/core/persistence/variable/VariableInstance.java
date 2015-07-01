@@ -32,6 +32,9 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,26 +46,26 @@ import org.slf4j.LoggerFactory;
 @Inheritance(strategy = InheritanceType.JOINED)
 //@EntityListeners({VariableInstancePersistenceListener.class})
 @NamedQueries({
-    @NamedQuery(name = "findTeamInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.teamScopeKey = :teamid"),
-    @NamedQuery(name = "findPlayerInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.playerScopeKey = :playerid"),
-    @NamedQuery(name = "findInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE EXISTS " +
-            "(SELECT player From Player player WHERE player.id = :playerid AND " +
-            "(variableinstance.playerScopeKey = player.id OR variableinstance.teamScopeKey = player.teamId OR variableinstance.gameScopeKey = player.team.gameId))")
+    //@NamedQuery(name = "findTeamInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.teamScopeKey = :teamid"),
+    //@NamedQuery(name = "findPlayerInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.playerScopeKey = :playerid"),
+    @NamedQuery(name = "findInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE EXISTS "
+            + "(SELECT player From Player player WHERE player.id = :playerid AND "
+            + "(variableinstance.playerScopeKey = player.id OR variableinstance.teamScopeKey = player.teamId OR variableinstance.gameScopeKey = player.team.gameId))")
 })
 
 /*@Indexes(value = { // JPA 2.0 eclipse link extension TO BE REMOVED
     
-    @Index(name = "index_variableinstance_gamescope_id", columnNames = {"gamescope_id"}),
-    @Index(name = "index_variableinstance_teamscope_id", columnNames = {"teamscope_id"}),
-    @Index(name = "index_variableinstance_playerscope_id", columnNames = {"playerscope_id"})
-})*/
+ @Index(name = "index_variableinstance_gamescope_id", columnNames = {"gamescope_id"}),
+ @Index(name = "index_variableinstance_teamscope_id", columnNames = {"teamscope_id"}),
+ @Index(name = "index_variableinstance_playerscope_id", columnNames = {"playerscope_id"})
+ })*/
 
 /* JPA2.1 (GlassFish4) Indexes */
- @Table(indexes = {
- @Index(columnList = "gamescope_id"),
- @Index(columnList = "teamscope_id"),
- @Index(columnList = "playerscope_id")
- })
+@Table(indexes = {
+    @Index(columnList = "gamescope_id"),
+    @Index(columnList = "teamscope_id"),
+    @Index(columnList = "playerscope_id")
+})
 
 //@JsonIgnoreProperties(value={"descriptorId"})
 @JsonSubTypes(value = {
@@ -127,23 +130,33 @@ abstract public class VariableInstance extends AbstractEntity {
      */
     @Column(name = "variableinstances_key", insertable = false, updatable = false, columnDefinition = "bigint")
     private Long playerScopeKey;
+
+    @JoinColumn(name = "variableinstances_key", insertable = false, updatable = false)
+    private Player player;
+
     /**
      *
      */
     @Column(name = "gamevariableinstances_key", insertable = false, updatable = false, columnDefinition = "bigint")
     private Long gameScopeKey;
+
+    @JoinColumn(name = "gamevariableinstances_key", insertable = false, updatable = false)
+    private Game game;
     /**
      *
      */
     @Column(name = "teamvariableinstances_key", insertable = false, updatable = false, columnDefinition = "bigint")
     private Long teamScopeKey;
 
+    @JoinColumn(name = "teamvariableinstances_key", insertable = false, updatable = false)
+    private Team team;
+
     /**
      *
      * @return
      */
     @Override
-    public VariableInstance clone(){
+    public VariableInstance clone() {
         return (VariableInstance) super.clone();
     }
 

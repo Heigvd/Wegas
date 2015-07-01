@@ -9,11 +9,16 @@ package com.wegas.core.security.ejb;
 
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Role;
+import java.util.Set;
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -23,11 +28,27 @@ import javax.persistence.TypedQuery;
 @LocalBean
 public class RoleFacade extends BaseFacade<Role> {
 
+    private static Logger logger = LoggerFactory.getLogger(RoleFacade.class);
+
     /**
      *
      */
     public RoleFacade() {
         super(Role.class);
+    }
+
+    @Override
+    public void remove(Role role) {
+        // Strike out all members from the role to avoid pkey violation
+        Set<AbstractAccount> abstractAccounts = role.getAbstractAccounts();
+        logger.error("REMOVE ROLE " + role.getName() + " " + abstractAccounts.size() + " members");
+
+        for (AbstractAccount aa : role.getAbstractAccounts()) {
+            logger.error("Account: " +  aa);
+            aa.removeRole(role);
+        }
+
+        super.remove(role);
     }
 
     /**
