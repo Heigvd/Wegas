@@ -311,3 +311,47 @@
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule:before{
     content:"Shedule";
 }
+
+@media screen and (max-width: 1309px) {
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr{
+        min-height:128px;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule{
+        position:absolute;
+        top:64px;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase{
+        border-left:0px;
+        right:668px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period{
+        right:588px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions{
+        right:478px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management{
+        right:344px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User{
+        right:264px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality{
+        right:176px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs{
+        right:96px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule{
+        right:0px;
+    }
+}
