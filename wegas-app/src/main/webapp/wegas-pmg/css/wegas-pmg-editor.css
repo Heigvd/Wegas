@@ -215,7 +215,14 @@
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period,
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions,
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Directors,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Direction,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Equipe-projet,
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Mendants,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Team,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Personnel,
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality,
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs,
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule{
@@ -242,7 +249,13 @@
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period span,
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions span,
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Directors span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Direction span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Personnel span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Equipe-projet span,
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Mendants span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Team span,
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality span,
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs span,
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule span{
@@ -254,7 +267,13 @@
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period:before,
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions:before,
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Directors:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Direction:before,
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Mendants:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Team:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Equipe-projet:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Personnel:before,
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality:before,
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs:before,
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule:before{
@@ -289,16 +308,35 @@
     content:"Questions";
 }
 
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Directors,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Direction,
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management{
     width:132px;
 }
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Directors:before{
+    content:"Directors";
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Direction:before{
+    content:"Direction";
+}
+
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management:before{
     content:"Management";
 }
-
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Equipe-projet,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Personnel,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Mendants,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Team,
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User{
     width:80px;
 }
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Equipe-projet:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Personnel:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Mendants:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Team:before,
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User:before{
     content:"User";
 }
@@ -352,7 +390,13 @@
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Direction,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Directors,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Personnel,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Equipe-projet,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Mendants,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule{
@@ -362,8 +406,14 @@
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase:before,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period:before,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions:before,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Directors:before,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Direction:before,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management:before,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User:before,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Mendants:before,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Team:before,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Equipe-projet:before,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Personnel:before,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality:before,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs:before,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule:before{
@@ -387,8 +437,14 @@
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Phase,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Period,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Questions,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Directors,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Direction,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Management,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-User,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Equipe-projet,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Personnel,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Mendants,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Team,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Quality,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Costs,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Schedule{
@@ -414,10 +470,16 @@
         width:132px;
         border-right:solid 2px #d4d4d4;
     }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Directors,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Direction,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management{
         left:392px;
         width:calc(50% - 392px);
     }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Equipe-projet,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Personnel,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Mendants,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User{
         right:392px;
         width:calc(50% - 392px);
@@ -438,12 +500,18 @@
 }
 
 @media screen and (max-width: 1099px) {
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Directors,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Direction,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management{
         left:auto;
         right:517px;
         width:125px;
         border-left:solid 3px #d4d4d4;
     }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Equipe-projet,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Personnel,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Mendants,
+        .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Team,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User{
         right:392px;
         width:125px;
@@ -478,11 +546,17 @@
         width:100px;
     }
     
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Directors,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Direction,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management{
         left:300px;
         right:auto;
         width:125px;
     }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Equipe-projet,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Personnel,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Mendants,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Team,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User{
         left:425px;
         right:auto;
@@ -589,6 +663,12 @@
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Direction,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Directors,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Personnel,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Mendants,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Equipe-projet,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User{
         left:0px;
         right:auto;
@@ -602,28 +682,47 @@
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions{
        left:40%;
     }
-    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Directors,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Direction,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management{
        left:60%;
     }
     
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Personnel,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Mendants,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Equipe-projet,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User{
        left:80%;
     } 
 }
 
 @media screen and (max-width: 659px) {
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Directors,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Direction,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Teams,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Mendants,    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Personnel,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Equipe-projet,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User{
         top:128px;
         width:50%;
         left:50%;
     }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Directors,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Direction,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Management,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Mendants,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Personnel,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Equipe-projet,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-User{
         top:288px;
     }
     
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Directors,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Direction,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management{
        left:0%;
        border-left:none;
