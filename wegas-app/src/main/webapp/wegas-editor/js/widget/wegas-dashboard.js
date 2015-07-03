@@ -224,14 +224,6 @@ YUI.add('wegas-dashboard', function(Y) {
                                         this.item(0).viewSrc();
                                     }
                                 },
-                               /* {
-                                    name: "add",
-                                    label: "Add advanced impact",
-                                    classNames: "modal--footer-left modal--footer-secondary",
-                                    action: function() {
-                                        this.item(0).add();
-                                    }
-                                },*/
                                 {
                                     name: "run",
                                     label: "Apply impact",
