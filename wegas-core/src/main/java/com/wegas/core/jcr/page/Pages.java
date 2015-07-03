@@ -168,4 +168,52 @@ public class Pages implements AutoCloseable {
     public void close() throws RepositoryException {
         this.connector.close();
     }
+
+    /**
+     * Move page to new index. Updating other pages accordingly.
+     *
+     * @param pageId page's id to move
+     * @param pos    position to move page to.
+     * @throws RepositoryException
+     */
+    public void move(final String pageId, final int pos) throws RepositoryException {
+        Page page;
+        int oldPos = -1;
+        final LinkedList<Page> pages = this.getPages();
+        for (int i = 0; i < pages.size(); i++) {
+            if (pages.get(i).getId().equals(pageId)) {
+                oldPos = i;
+                break;
+            }
+        }
+        if (oldPos != -1) {
+            page = pages.remove(oldPos);
+            pages.add(pos, page);
+        }
+        for (int start = 0; start < pages.size(); start++) {
+            page = pages.get(start);
+            page.setIndex(start);
+            this.updateIndex(page);
+        }
+//        final NodeIterator query = this.connector.query("Select * FROM [nt:base] as n WHERE ISDESCENDANTNODE('" + this.gameModelId + "') order by n.index, localname(n)," +
+//            " LIMIT " + (Math.abs(pos - oldPos) + 1L) + " OFFSET " + Math.min(pos, oldPos));
+
+
+    }
+
+    private void updateIndex(Page page) throws RepositoryException {
+        Node n = this.connector.addChild(this.gameModelId, page.getId());
+        if (page.getIndex() != null) {
+            n.setProperty(Page.INDEX_KEY, page.getIndex());
+        }
+    }
+
+    private LinkedList<Page> getPages() throws RepositoryException {
+        final NodeIterator nodeIterator = this.connector.listChildren(this.gameModelId);
+        final LinkedList<Page> pages = new LinkedList<>();
+        while (nodeIterator.hasNext()) {
+            pages.add(new Page(nodeIterator.nextNode()));
+        }
+        return pages;
+    }
 }
