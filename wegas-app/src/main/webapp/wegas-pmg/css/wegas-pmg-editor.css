@@ -333,10 +333,19 @@
     width:80px;
 }
 
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Equipe-projet:before,
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Personnel:before,
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Mendants:before,
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Team:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Equipe-projet:before{
+    content:"Equipe projet";
+}
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Personnel:before{
+    content:"Personnel";
+}
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Mendants:before{
+    content:"Mendants";
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Team:before{
+    content:"Team";
+}
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User:before{
     content:"User";
 }
@@ -511,7 +520,7 @@
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Equipe-projet,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Personnel,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Mendants,
-        .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Team,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User{
         right:392px;
         width:125px;
@@ -701,7 +710,7 @@
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Directors,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Direction,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management,
-    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Teams,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Team,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Mendants,    
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Personnel,
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Equipe-projet,
