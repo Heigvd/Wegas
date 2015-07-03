@@ -25,10 +25,31 @@ YUI.add('wegas-dashboard', function(Y) {
         teamTemplate = (new Y.Template()).compile(
             "<span class='wegas-icon wegas-icon-team'></span>" +
             "<span class='wegas-team-name'><%= this.get('name') %></span>"+
-            "<div class='dashboard-treeview dashboard-collapsed'><span class='wegas-icon dashboard-toggle'>Members</span>" +
-            "<ul><% Y.Array.each(this.get('players'), function(p){ %>" +
-            "<li><span class='wegas-icon wegas-icon-player'></span><span class='wegas-player-name'><%= p.get('name') %></span></li>" +
-            "<%});%></ul></div>"
+            "<div class='wegas-details-wrapper wegas-team-details'>"+
+                "<span class='wegas-icon wegas-icon-details'>Details</span>" +
+                "<div class='wegas-details'>"+
+                    "<div class='wegas-players'>"+
+                        "<ul><% Y.Array.each(this.get('players'), function(p){ %>" +
+                            "<li><span class='wegas-icon wegas-icon-player'></span><span class='wegas-player-name'><%= p.get('name') %></span></li>" +
+                        "<%});%></ul>"+
+                    "</div>"+
+                    "<div class='wegas-notes'>"+
+                        "<textarea class='disabled' placeholder='Personnal trainer notes' readonly='true'><%= this.get('notes') %></textarea>" +
+                    "</div>"+
+                "</div>"+
+            "</div>"
+        ),
+        playerTemplate = (new Y.Template()).compile(
+            "<span class='wegas-icon wegas-icon-player'></span>" +
+            "<span class='wegas-player-name'><%= this.get('players')[0].get('name') %></span>"+
+            "<div class='wegas-details-wrapper wegas-player-details'>"+
+                "<span class='wegas-icon wegas-icon-details'>Notes</span>" +
+                "<div class='wegas-details'>"+
+                    "<div class='wegas-notes'>"+
+                        "<textarea class='disabled' placeholder='Personnal trainer notes' readonly='true'><%= this.get('notes') %></textarea>" +
+                    "</div>"+
+                "</div>"+
+            "</div>"
         ),
         setTableData = function(table, data) {
             var result;
@@ -154,8 +175,6 @@ YUI.add('wegas-dashboard', function(Y) {
                                     "<button class='yui3-button dashboard-open-team' title='View'></button>" +
                                     "<button class='yui3-button dashboard-impact-team' title='Impact'></button>" +
                                     "<button class='yui3-button dashboard-mail-team' title='Send Mail'></button>" +
-                                    "<button class='yui3-button dashboard-notes-team' title='Display notes'></button>" +
-                                    "<textarea class='disabled' placeholder='Notes' readonly='true'>{content}</textarea>" +
                                 "</td>"
             });
         },
@@ -200,18 +219,20 @@ YUI.add('wegas-dashboard', function(Y) {
                                 {
                                     name: "src",
                                     label: "View src",
-                                    classNames: "modal--footer-left wegas-advanced-feature",
+                                    classNames: "modal--footer-left wegas-advanced-feature modal--footer-secondary",
                                     action: function() {
                                         this.item(0).viewSrc();
                                     }
-                                },{
+                                },
+                               /* {
                                     name: "add",
                                     label: "Add advanced impact",
                                     classNames: "modal--footer-left modal--footer-secondary",
                                     action: function() {
                                         this.item(0).add();
                                     }
-                                },{
+                                },*/
+                                {
                                     name: "run",
                                     label: "Apply impact",
                                     classNames: "modal--footer-right modal--footer-valid",
@@ -234,23 +255,9 @@ YUI.add('wegas-dashboard', function(Y) {
             }, ".yui3-datatable-col-menu .dashboard-impact-team", this);
 
             this.get("boundingBox").delegate("click", function(e) { 
-                var numberOfPlayer = Wegas.Facade.Game.cache.getTeamById(this.table.getRecord(e.currentTarget).get("id")).get("players").length;
-                if(numberOfPlayer > 10){
-                    e.currentTarget.ancestor().ancestor().toggleClass("card-show-team-more");
-                }else{
-                    e.currentTarget.ancestor().ancestor().toggleClass("card-show-team-" + numberOfPlayer);
-                }
-                e.currentTarget.toggleClass("dashboard-collapsed");
-            },  ".yui3-datatable-col-name .dashboard-treeview", this);
+                e.currentTarget.ancestors("tr").toggleClass("card-show-details");
+            },  ".yui3-datatable-col-name .wegas-icon-details", this);
             
-            
-            this.get("boundingBox").delegate("click", function(e) { 
-                e.currentTarget.ancestor().ancestor().toggleClass("card-show-notes");
-            }, ".yui3-datatable-col-menu .dashboard-notes-team", this);
-
-            //            this.updateHandler =
-            //                Wegas.Facade.Variable.after("update", this.syncUI, this);       // Listen updates on the
-            // target datasource
             this.get("boundingBox").delegate("click", function(e) {
                 var team = Wegas.Facade.Game.cache.getTeamById(this.table.getRecord(e.currentTarget).get("id")),
                     i, header, statusNode = Y.Node.create("<span></span>");
@@ -320,7 +327,7 @@ YUI.add('wegas-dashboard', function(Y) {
         bindTextarea: function() {
             this.get("boundingBox").delegate("focus", function(e) {
                 e.currentTarget.removeClass("disabled").addClass("enabled").removeAttribute("readonly");
-            }, ".yui3-datatable-col-menu textarea.disabled");
+            }, ".wegas-notes textarea.disabled");
             this.get("boundingBox").delegate("blur", function(e) {
                 var team = Wegas.Facade.Game.cache.getTeamById(this.table.getRecord(e.currentTarget).get("id")), value = e.currentTarget.get("value");
                 e.currentTarget.removeClass("enabled").addClass("disabled").setAttribute("readonly", true);
@@ -328,7 +335,7 @@ YUI.add('wegas-dashboard', function(Y) {
                     team.set("notes", value);
                     Y.Wegas.Facade.Game.cache.put(team.toObject("players"), {});
                 }
-            }, ".yui3-datatable-col-menu textarea.enabled", this);
+            }, ".wegas-notes textarea.enabled", this);
         },
         /**
          * @function
@@ -356,32 +363,18 @@ YUI.add('wegas-dashboard', function(Y) {
          */
         genData: function(table, teams) {
             var gameModel = Wegas.Facade.GameModel.cache.getCurrentGameModel(),
-                columnsCfg = this.get("tableCfg.columns"), ret = [], result;
+                columnsCfg = this.get("tableCfg.columns"), ret = [], result, template;
 
-            if (gameModel.get("properties.freeForAll")) {                       // Retrieve the list of rows (depending on freeforall mode)
-                Y.Array.each(teams, function(t) {
-                    Y.Array.each(t.get("players"), function(p) {
-                        ret.push({
-                            name: "<span class='wegas-icon wegas-icon-player'></span><span class='wegas-player-name'>" + p.get("name") + "</span>",
-                            team: t,
-                            player: p,
-                            id: t.get("id"),
-                            menu: t.get("notes")
-                        });
-                    });
-                });
-            } else {
-                ret = Y.Array.map(teams, function(t) {
-                    return {
-                        //icon: "<span class='wegas-icon wegas-icon-team'></span>",
-                        name: teamTemplate(t),
-                        team: t,
-                        player: t.get("players").length > 0 ? t.get("players")[0] : null,
-                        id: t.get("id"),
-                        menu: t.get("notes")
-                    };
-                });
-            }
+            ret = Y.Array.map(teams, function(t) {
+                return {
+                    name: gameModel.get("properties.freeForAll") ? playerTemplate(t) : teamTemplate(t),
+                    team: t,
+                    player: t.get("players").length > 0 ? t.get("players")[0] : null,
+                    id: t.get("id"),
+                    menu: t.get("notes")
+                };
+            });
+            
             ret = Y.Array.filter(ret, function(i) {                             // Filter debug team (for game edition)
                 return !(i.team instanceof Wegas.persistence.DebugTeam);
             });

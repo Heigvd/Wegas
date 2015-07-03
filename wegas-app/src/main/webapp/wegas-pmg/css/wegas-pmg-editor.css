@@ -196,7 +196,19 @@
 /* ------ Dashboard ----- */
 
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-name {
-    width:calc(100% - 1042px);
+    width: calc(100% - 977px);
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details{
+    width: calc(100% + 436px);
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details .wegas-players{
+    width:calc(100% - 436px);
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details .wegas-notes{
+    width:436px;
 }
 
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase,
@@ -312,9 +324,28 @@
     content:"Shedule";
 }
 
-@media screen and (max-width: 1309px) {
+@media screen and (max-width: 1289px) {
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr{
         min-height:128px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-name, .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-menu {
+        border-bottom:solid 1px #d4d4d4;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-menu{
+        width:392px;
+        height:64px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-name{
+        width:calc(100% - 392px);
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-open-team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-impact-team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-mail-team{
+        width:130px;
+        height:64px;
+        background-size:auto 100%;
+        background-position:center;
     }
     
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase,
@@ -328,30 +359,347 @@
         position:absolute;
         top:64px;
     }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase:before,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period:before,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions:before,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management:before,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User:before,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality:before,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs:before,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule:before{
+        font-size:13px;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details{
+        height:288px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details{
+        width:calc(100% + 392px);
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details .wegas-notes{
+        width:calc(100% - 390px);
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details .wegas-players{
+        width:390px;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Phase,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Period,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Questions,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Management,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-User,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Quality,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Costs,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Schedule{
+        position:absolute;
+        top:224px;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details{
+        margin-bottom:12px;
+    }
     
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase{
         border-left:0px;
-        right:668px;
+        left:0px;
+        width:130px;
     }
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period{
-        right:588px;
+        left:130px;
+        width:130px;
     }
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions{
-        right:478px;
+        left:260px;
+        width:132px;
+        border-right:solid 2px #d4d4d4;
     }
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management{
-        right:344px;
+        left:392px;
+        width:calc(50% - 392px);
     }
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User{
-        right:264px;
+        right:392px;
+        width:calc(50% - 392px);
     }
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality{
-        right:176px;
+        right:260px;
+        width:132px;
+        border-left:solid 3px #d4d4d4;
     }
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs{
-        right:96px;
+        right:130px;
+        width:130px;
     }
     .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule{
-        right:0px;
+        right:0;
+        width:130px;
     }
+}
+
+@media screen and (max-width: 1099px) {
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management{
+        left:auto;
+        right:517px;
+        width:125px;
+        border-left:solid 3px #d4d4d4;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User{
+        right:392px;
+        width:125px;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase{
+        left:0px;
+        width:calc(33.3% - 214px);
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period{
+        left:calc(33.3% - 214px);
+        width:calc(33.3% - 214px);
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions{
+        left:calc(66.6% - 428px);
+        width:calc(33.3% - 214px);
+        border-right:0px;
+    }
+}
+
+@media screen and (max-width: 1007px) {
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase{
+        left:0px;
+        width:100px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period{
+        left:100px;
+        width:100px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions{
+        left:200px;
+        width:100px;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management{
+        left:300px;
+        right:auto;
+        width:125px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User{
+        left:425px;
+        right:auto;
+        width:125px;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-menu{
+        width:calc(100% - 550px);
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-open-team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-impact-team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-mail-team{
+        width:calc(100% / 3);  
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality{
+        right:calc(66.6% - 366px);
+        width:calc(33.3% - 183px);
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs{
+        right:calc(33.3% - 183px);
+        width:calc(33.3% - 183px);
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule{
+        right:0;
+        width:calc(33.3% - 183px);
+    }
+    
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Quality,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Costs,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Schedule{
+        border-top:solid 1px #d4d4d4;
+    }
+
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-name{
+        width:550px;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details{
+        width:calc(100% + 3px);
+        border-right:solid 3px #d4d4d4;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details .wegas-players{
+        width:300px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details .wegas-notes{
+        width:calc(100% - 300px);
+        
+    }
+    
+}
+
+@media screen and (max-width: 867px) {
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-menu{
+        width:197px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-open-team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-impact-team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-mail-team{
+        width:65px;  
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details{
+        width:calc(100% + 197px);
+        border-right:none;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-name{
+        width:calc(100% - 197px);
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr{
+        height:192px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details{
+        height:352px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality{
+        border-left:0px;
+        right:66.6%;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs{
+        right:33.3%;
+    }
+
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule{
+        top:128px;
+        width:33.3%;
+        border-top:solid 1px #d4d4d4;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Quality,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Costs,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Schedule{
+        top:288px;
+        width:33.3%;
+        border-top:solid 1px #d4d4d4;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User{
+        left:0px;
+        right:auto;
+        width:20%;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period{
+       left:20%;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions{
+       left:40%;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management{
+       left:60%;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User{
+       left:80%;
+    } 
+}
+
+@media screen and (max-width: 659px) {
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User{
+        top:128px;
+        width:50%;
+        left:50%;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Management,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-User{
+        top:288px;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management{
+       left:0%;
+       border-left:none;
+    } 
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr{
+        height:320px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details{
+        height:480px;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details{
+        width:100%;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details .wegas-players{
+        width:50%;
+        padding:0px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details .wegas-notes{
+        width:50%;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-name{
+        width:100%;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-menu{
+        position:absolute;
+        top:64px;
+        border-left:0px;
+        width:100%;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-menu{
+        position:absolute;
+        top:224px;
+        border-left:0px;
+        width:100%;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-open-team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-impact-team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-mail-team{
+        width:calc(100% / 3);  
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule{
+        top:192px;
+        border-bottom:solid 1px #d4d4d4;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Quality,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Costs,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Schedule{
+        top:352px;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions{
+        top:256px;
+        left:0px;
+        right:auto;
+        width:33.3%;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Phase,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Period,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Questions{
+        top:416px;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period{
+        left:33.3%;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions{
+        left:66.6%;
+    }
+    
 }
