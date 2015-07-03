@@ -788,8 +788,7 @@ app.once("render",
             ["Add to project variables",
                 'Variable.find(gameModel, "managementApproval").add(self, ${"type":"number", "label":"' +
                 varLabel("managementApproval") + '"});'],
-            'Variable.find(gameModel, "userApproval").add(self, ${"type":"number", "label": "' +
-            varLabel("userApproval") + '"});',
+            'Variable.find(gameModel, "userApproval").add(self, ${"type":"number", "label": "' + varLabel("userApproval") + '"});',
             'Variable.find(gameModel, "qualityImpacts").add(self, ${"type":"number", "label": "Quality"});',
             'Variable.find(gameModel, "timeCards").add(self, ${"type":"number", "label": "Time cards"});',
             'Variable.find(gameModel, "projectFixedCosts").add(self, ${"type":"number", "label": "Fixed costs"});',

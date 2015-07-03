@@ -67,7 +67,7 @@ YUI.add('wegas-pmg-advancementlimit', function(Y) {
         },
         phaseNode: function(phaseName, nbPeriod, phaseNumber) {
             var node = Y.Node.create("<div class='phase'></div>");
-            node.append("<p>" + phaseName + " :</p>");
+            node.append("<p>" + phaseName + "</p>");
             node.append(this.valueBoxNode(nbPeriod, phaseNumber));
             return node;
         },

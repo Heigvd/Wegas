@@ -1,22 +1,11 @@
 {
     "type": "ResizableLayout",
+    "cssClass":"wegas-trainer--app",
     "top": {
+        "cssClass":"wegas-trainer-banner",
         "height": 25,
         "children": [
             {
-                "type": "Button",
-                "cssClass": "wegas-logo",
-                "tooltip": "Back to lobby",
-                "plugins": [
-                    {
-                        "fn": "OpenUrlAction",
-                        "cfg": {
-                            "url": "",
-                            "target": "_self"
-                        }
-                    }
-                ]
-            }, {
                 "type": "Text",
                 "cssClass": "wegas-title"
             }, {
