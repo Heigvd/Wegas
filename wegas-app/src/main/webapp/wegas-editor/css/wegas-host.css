@@ -261,17 +261,25 @@
     background-size:100%;
     background-position:left center;
     background-repeat:no-repeat;
+    transition:.2s;
 }
 
 .yui3-skin-sam .wegas-layout-hd .yui3-button.host-switchmode{
-    width: auto;
+    width: 40px;
     height: 50px;
-    padding: 0px 16px 0px 40px;
+    padding: 0 0px 0 40px;
+    text-indent:1000px;
     position: relative;
     box-sizing: border-box;
     display: block;
+    overflow:hidden;
 }
-
+.yui3-skin-sam .wegas-layout-hd .yui3-button.host-switchmode:hover:before{
+    background-image: url(../../wegas-editor/images/scenarist_hover.png);
+    background-size:100%;
+    background-position:left center;
+    background-repeat:no-repeat;
+}
 .yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-login{
     padding-left: 40px;
     background-size: auto 32px;
@@ -283,6 +291,11 @@
     background-repeat: no-repeat;
     background-position: left center;
     background-image: url(../../wegas-editor/images/user.png);
+}
+
+.yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-login:hover{
+    color:#5bc4ec;
+    background-image: url(../../wegas-editor/images/user_hover.png);
 }
 
 @media screen and (max-width: 799px) {
