@@ -164,7 +164,6 @@
     background-color:#f1f1f1;
     color:#676767;
 }
-
 .yui3-skin-sam .wegas-title {
   font-weight: normal;
   font-size: 18px;
@@ -173,6 +172,8 @@
   color: #fff;
   margin: 0px;
   padding:0px;
+  display:block !important;
+  float:left !important;
 }
 
 .yui3-skin-sam .wegas-title div:first-child{
@@ -210,6 +211,7 @@
     line-height: 50px;
     font-weight: 100;
     text-shadow: none;
+    float: left;
 }
 
 
@@ -244,7 +246,7 @@
 }
 
 .yui3-skin-sam .wegas-layout-hd .yui3-button {
-    color:#666666;
+    color:#8e8f8f;
     margin: 0px;
     height: 50px;
 }
@@ -572,8 +574,29 @@
     display:none;
 }
 
-.yui3-skin-sam.wegas-hostmode.wegas-advancedmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft.yui3-button.wegas-advanced-feature{
+.yui3-skin-sam.wegas-hostmode.wegas-advancedmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft .yui3-button.wegas-advanced-feature{
     display:block;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft span:first-child, .wegas-sendmail-content .status{
+    display:block;
+    position:absolute;
+    width:auto;
+    padding:0px 12px;
+    height:28px;
+    line-height:28px;
+    background-color:rgba(255,255,255,0.5);
+    top:-28px;
+    right:0px;
+}
+
+.wegas-sendmail-content .status{
+    top:auto;
+    bottom:0px;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft span:first-child:empty, .wegas-sendmail-content .status:empty{
+    display:none;
 }
 
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft .yui3-button:hover{

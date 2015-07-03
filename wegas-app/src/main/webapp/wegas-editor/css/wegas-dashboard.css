@@ -5,6 +5,14 @@
  * Copyright (c) 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
+
+.yui3-skin-sam .wegas-icon-refresh {
+    background-position: center !important;
+    background-size: auto 100% !important;
+    background-image:url("../../wegas-editor/images/refresh.png") !important;
+    margin-right:8px !important;
+}
+
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-table{
     display:block;
     position:relative;
@@ -40,8 +48,7 @@
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-name{
     display:block;
     position:relative;
-    width:auto;
-    min-width:200px;
+    width:calc(100% - 197px);
     height:64px;
     line-height:44px;
     padding:0px;
@@ -54,22 +61,19 @@
     float:left;
 }
 
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-name .wegas-player-name{
-    line-height:64px;
-}
-
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-name .dashboard-treeview .dashboard-toggle{
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-name .wegas-details-wrapper > .wegas-icon.wegas-icon-details{
     display:block;
     position:absolute;
-    top:36px;
+    top:33px;
     left:80px;
     background:none;
-    background-image:url("../../wegas-app/images/icon_player_open.png");
-    background-size:auto 100%;
+    background-image:url("../../wegas-app/images/icon_player_close.png");
+    background-size:auto 18px;
     background-repeat:no-repeat;
+    background-position:left center;
     width:80px;
-    height:18px;
-    line-height: 18px;
+    height:24px;
+    line-height: 24px;
     padding-left: 24px;
     font-weight:300;
     cursor:pointer;
@@ -79,24 +83,100 @@
     user-select: none; /* Likely future */
 }
 
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-name .dashboard-treeview.dashboard-collapsed .dashboard-toggle{
-    background-image:url("../../wegas-app/images/icon_player_close.png");
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .wegas-details{
+    display:none;
 }
-
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-name .dashboard-treeview ul{
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details{
     display:block;
     position:absolute;
-    top:64px;
-    left:0px;
-    width:100%;
+    position: absolute;
+    top: 64px;
+    left: 0;
+    width: calc(100% + 197px);
+    height: 100%;
+    resize: none;
+    border:none;
+    color:white;
+    padding:0px;
+    margin:0px;
     background-color:#8f8f8f;
+    box-sizing: border-box;
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-name .wegas-details-wrapper > .wegas-icon.wegas-icon-details{
+    background-image:url("../../wegas-app/images/icon_player_open.png");
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details .wegas-notes{
+    display: block;
+    position: relative;
+    width: 50%;
+    float:right;
+    height: 100%;
+    resize: none;
+    border:none;
+    color:white;
+    margin:0px;
+    padding:0px;
+    background:none;
+    box-sizing: border-box;
+}
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details .wegas-notes textarea{
+    display:block;
+    width:100%;
+    height:100%;
+    padding:8px 16px;
+    resize: none;
+    background:none;
+    background-color:#ddd;
+    color:#666666;
+    border:none;
+    border-left:solid 3px #d4d4d4;
+    box-sizing:border-box;
+    background-image: url("../../wegas-editor/images/wegas-icon-notes.png");
+    background-size:32px;
+    background-position:right bottom;
+    background-repeat:no-repeat;
+}
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details .wegas-notes textarea:focus{
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12) inset, 0 1px 2px rgba(0,0,0,0.24) inset;
+    background-image: url("../../wegas-editor/images/wegas-icon-notes_focus.png");
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-player-details .wegas-details{
+    width:60%;
+}
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-player-details .wegas-details .wegas-notes{
+    width:100%;
+}
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details .wegas-notes textarea{
+    border:none;
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details .wegas-players{
+    display:block;
+    position:relative;
+    width:50%;
+    height:100%;
     padding:0px 0px 0px 72px;
     margin:0px;
     color:white;
+    float:left;
+    overflow-x:hidden;
+    overflow-y:auto;
     box-sizing:border-box;
 }
 
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-name .dashboard-treeview ul li{
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details .wegas-players ul{
+    display:block;
+    position:relative;
+    width:100%;
+    height:100%;
+    padding:0px;
+    margin:0px;
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details .wegas-players ul li{
     display:block;
     position:relative;
     width:100%;
@@ -105,7 +185,7 @@
     padding:0px;
 }
 
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-name .dashboard-treeview ul li .wegas-icon{
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details .wegas-players ul li .wegas-icon{
     display:block;
     position:relative;
     float:left;
@@ -117,7 +197,7 @@
     background-size:100%;
 }
 
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-name .dashboard-treeview ul li .wegas-player-name{
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details .wegas-players ul li .wegas-player-name{
     display:block;
     position:relative;
     float:left;
@@ -131,60 +211,15 @@
     text-overflow: ellipsis;
 }
 
-.yui3-skin-sam .wegas-icon-refresh {
-    background-position: center !important;
-    background-size: auto 100% !important;
-    background-image:url("../../wegas-editor/images/refresh.png") !important;
-    margin-right:8px !important;
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details{
+    height:160px;
 }
 
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-team-1{
-    margin-bottom:44px;
-}
-
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-team-2{
-    margin-bottom:76px;
-}
-
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-team-3{
-    margin-bottom:108px;
-}
-
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-team-4,
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-notes{
-    margin-bottom:140px;
-}
-
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-team-5{
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details{
     margin-bottom:172px;
 }
 
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-team-6{
-    margin-bottom:204px;
-}
-
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-team-7
-{
-    margin-bottom:236px;
-}
-
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-team-8{
-    margin-bottom:268px;
-}
-
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-team-9{
-    margin-bottom:300px;
-}
-
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-team-10{
-    margin-bottom:332px;
-}
-
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-team-more{
-    margin-bottom:350px;
-}
-
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-name .dashboard-treeview.dashboard-collapsed ul{
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-name ul{
     display:none;
 }
 
@@ -219,6 +254,15 @@
     white-space: nowrap;
     text-overflow: ellipsis;
 }
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data .yui3-datatable-col-name > .wegas-player-name{
+    display:block;
+    position:relative;
+    width:100%;
+    height:100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
 
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data .yui3-datatable-col-name .wegas-icon.wegas-icon-player{
     background-image: url("../../wegas-app/images/icon_players.png");
@@ -231,7 +275,7 @@
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data .yui3-datatable-col-menu{
     display:block;
     position:relative;
-    width:262px;
+    width:197px;
     height:auto;
     padding:0px;
     margin:0px;
@@ -243,8 +287,7 @@
 
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-open-team,
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-impact-team,
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-mail-team,
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-notes-team{
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-mail-team{
     width:65px;
     height:64px;
     display:block;
@@ -254,79 +297,339 @@
     float:left;
     border-left:solid 1px #d4d4d4;
     box-sizing:border-box;
+    transition: background-image .2s ease;
+
 }
 
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-open-team:focus,
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-open-team:active,
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-open-team{
     border:none;
     background:none;
     box-shadow: none;
     border-left:solid 1px #d4d4d4;
-    background-size:100%;
+    background-position:center;
+    background-size:auto 100%;
     background-repeat:no-repeat;
     background-image:url("../../wegas-app/images/icon_vision.png");
 }
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-open-team:hover{
+    background-image:url("../../wegas-app/images/icon_vision_hover.png");
+}
 
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-impact-team:focus,
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-impact-team:active,
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-impact-team{
     border:none;
     background:none;
     box-shadow: none;
     border-left:solid 1px #d4d4d4;
-    background-size:100%;
+    background-size: auto 100%;
+    background-position:center;
     background-repeat:no-repeat;
     background-image:url("../../wegas-app/images/icon_impact.png");
 }
 
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-impact-team:hover{
+    background-image:url("../../wegas-app/images/icon_impact_hover.png");
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-mail-team:focus,
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-mail-team:active,
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-mail-team{
     border:none;
     background:none;
     box-shadow: none;
     border-left:solid 1px #d4d4d4;
-    background-size:100%;
+    background-position:center;
+    background-size: auto 100%;
     background-repeat:no-repeat;
     background-image:url("../../wegas-app/images/icon_mail.png");
 }
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-notes-team:active,
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-notes-team{
-    border:none;
-    background:none;
-    box-shadow: none;
-    border-left:solid 1px #d4d4d4;
-    background-size:100%;
-    background-repeat:no-repeat;
-    background-image:url("../../wegas-app/images/icon_texte.png");
-}
 
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu textarea{
-    display:none;
-}
-
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-notes .yui3-datatable-col-menu textarea{
-    display: block;
-    position: absolute;
-    top: 64px;
-    left: 0px;
-    width: 100%;
-    width:calc(100%-2px);
-    height: 128px;
-    resize: none;
-    border:none;
-    color:white;
-    padding:8px 16px;
-    background-color:#8f8f8f;
-    box-sizing: border-box;
-    background-size:14px auto;
-    background-position:220px 0px;
-    background-repeat:no-repeat;
-    background-image:url("../../wegas-app/images/icon_note_open.png");
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-mail-team:hover{
+    background-image:url("../../wegas-app/images/icon_mail_hover.png");
 }
 
 .yui3-skin-sam .wegas-statistics{
     padding: 40px 32px;
     color:#666666;
 }
+
+/* ----------
+   Console custom
+   ---------- */
+
+.wegas-console-custom, .wegas-console-custom-content{
+    display:block;
+    position:relative;
+    width:100%;
+    height:100%;
+}
+.wegas-console-custom .modal--menu{
+    width:100%;
+    height:48px;
+    border-bottom:solid 1px #d4d4d4;
+    box-sizing: border-box;
+}
+
+.wegas-console-custom .modal--menu .modal--tab-btn{
+    display:blocK;
+    position:relative;
+    width:50%;
+    height:100%;
+    float:left;
+    border:none;
+    color:#666666;
+    background:white;
+    line-height:45px;
+    cursor:pointer;  
+    transition:.3s;
+}
+.wegas-console-custom .modal--menu .modal--tab-btn:hover{
+    border-bottom: solid 2px #41D2FA;
+    color:#232323;
+
+}
+.wegas-console-custom .modal--menu .modal--tab-btn.modal--tab-btn-selected{
+    border-bottom: solid 4px #41D2FA;
+    color:#232323;
+}
+
+.wegas-console-custom .modal--content-tabs{
+    display:block;
+    position:relative;
+    width:100%;
+    height:calc(100% - 48px);
+}
+.wegas-console-custom .modal--content-tabs .modal--content-tab{
+    display:none;
+    position:relative;
+    width:100%;
+    height:100%;
+    overflow-x:hidden;
+    overflow-y:auto;
+}
+.wegas-console-custom .modal--content-tabs .modal--content-tab.modal--content-selected{
+    display:block;
+}
+
+.wegas-console-custom .content-advanced-script{
+    width:100%;
+    height:auto;
+    display:block;
+    position:relative;
+}
+
+.modal--content-advanced .content-advanced-script-add{
+    display:block;
+    position:relative;
+    margin:32px auto !important;
+    width:56px;
+    height:56px;
+    background-color:#41D2FA;
+    border-radius:28px;
+    border:none;
+    margin:0px;
+    padding:0px;
+    font-size:12px;
+    text-transform: uppercase;
+    cursor:pointer;
+    color:white;
+    overflow:hidden;
+    white-space: nowrap;
+    transition:150ms;
+}
+
+.modal--content-advanced .content-advanced-script-add.secondary{
+    width:40px;
+    height:40px;
+    margin:4px auto !important;
+    background-color:#666666;
+    border-radius:20px;
+    font-size:10px;
+}
+
+.modal--content-advanced .content-advanced-script-add.secondary:hover{
+    width:80px;
+}
+
+.modal--content-advanced .content-advanced-script-add.secondary:before,
+.modal--content-advanced .content-advanced-script-add.secondary:after{
+    font-size:24px;
+    width:20px;
+    height:40px;
+    line-height:40px;
+    background-color:#666666;
+}
+.modal--content-advanced .content-advanced-script-add.secondary:before{
+    border-top-left-radius:20px;
+    border-bottom-left-radius:20px;
+    text-indent:10px;
+}
+
+.modal--content-advanced .content-advanced-script-add.secondary:after{
+    border-top-right-radius:20px;
+    border-bottom-right-radius:20px;
+}
+
+.modal--content-advanced .content-advanced-script-add:before{
+    content:"+";
+    display:block;
+    position:absolute;
+    top:0px;
+    right:50%;
+    font-size:24px;
+    width:28px;
+    height:56px;
+    line-height:56px;
+    border-top-left-radius:28px;
+    border-bottom-left-radius:28px;
+    background-color:#41D2FA;
+    overflow:hidden;
+    text-align: right;
+    text-indent:18px;
+    box-sizing:border-box;
+    transition:150ms;
+}
+
+.modal--content-advanced .content-advanced-script-add:after{
+    content:"+";
+    display:block;
+    position:absolute;
+    top:0px;
+    left:50%;
+    width:28px;
+    height:56px;
+    font-size:24px;
+    line-height:56px;
+    border-top-right-radius:28px;
+    border-bottom-right-radius:28px;
+    background-color:#41D2FA;
+    overflow:hidden;
+    text-align: left;
+    text-indent:-10px;
+    box-sizing:border-box;
+    transition:150ms;
+    
+}
+
+.modal--content-advanced .content-advanced-script-add:hover{
+    width:128px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+.modal--content-advanced .content-advanced-script-add:hover:before, .modal--content-advanced .content-advanced-script-add:hover:after{
+    width:0px;
+}
+
+.yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .inputEx-fieldWrapper{
+    width:100%;
+    height:auto;
+    display:block;
+    position:relative;
+    margin:0px;
+    padding:0px !important;
+}
+
+.yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .inputEx-fieldWrapper .inputEx-Field{
+    width:100%;
+}
+
+.yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .inputEx-fieldWrapper fieldset{
+    height:auto;
+    width:100%;
+}
+
+.yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .wegas-inputex-variabledescriptorselect-group{
+    position:relative;
+    display:block;
+    margin:0px;
+    padding:12px 96px;
+    width:100%;
+    min-height:80px;
+    border-bottom:solid 1px #c1c1c1;
+    box-sizing:border-box;
+}
+
+.yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .wegas-inputex-variabledescriptorselect-group:before{
+    content:"Impact";
+    display:block;
+    position:absolute;
+    width:80px;
+    height:80px;
+    line-height:44px;
+    top:0px;
+    left:0px;
+    text-align:center;
+}
+.yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .wegas-inputex-variabledescriptorselect-group:after{
+    content:"";
+    display:block;
+    position:absolute;
+    width:80px;
+    height:80px;
+    line-height:100px;
+    font-size:24px;
+    font-weight:500;
+    top:0px;
+    left:0px;
+    text-align:center;
+}
+
+.yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .wegas-inputex-variabledescriptorselect-group:nth-child(2):after{
+    content:"1"
+}
+.yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .wegas-inputex-variabledescriptorselect-group:nth-child(3):after{
+    content:"2"
+}
+.yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .wegas-inputex-variabledescriptorselect-group:nth-child(4):after{
+    content:"3"
+}
+.yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .wegas-inputex-variabledescriptorselect-group:nth-child(5):after{
+    content:"4"
+}
+.yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .wegas-inputex-variabledescriptorselect-group:nth-child(6):after{
+    content:"5"
+}
+.yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .wegas-inputex-variabledescriptorselect-group button{
+    display:none;
+}
+.yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .wegas-inputex-variabledescriptorselect-group:nth-child(6){
+    border-bottom:none;
+}
+.yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .wegas-inputex-variabledescriptorselect .inputEx-fieldWrapper{
+    width:auto !important;
+    float:left !important;
+}
+
+.yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .wegas-inputex-variabledescriptorselect .inputEx-CombineField{
+    width:100%;
+    height:28px;
+    margin-top:2px;
+    clear:both;
+    float:none !important;
+}
+
+.yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .wegas-inputex-variabledescriptorselect .inputEx-CombineField .inputEx-fieldWrapper{
+    width:50% !important;
+}
+@media screen and (max-width: 800px) {
+    .yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .wegas-inputex-variabledescriptorselect .inputEx-CombineField .inputEx-fieldWrapper{
+        width:100% !important;
+    }
+}
+.yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .wegas-inputex-variabledescriptorselect div.inputEx-StringField-wrapper input[type="text"] {
+  height: 28px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: none;
+  font-size: 13px;
+  transition: .3s;
+  box-sizing: border-box;
+}
+ 
+
 
 /* ----------
    Inputex 
@@ -445,7 +748,7 @@
 
 .yui3-skin-sam .wegas-form legend.inputEx-Group-legend {
     margin:0px !important;
-    padding: 32px 24px 24px 24px !important;
+    padding: 20px 24px 24px 24px !important;
     color: #515151 !important; 
     width: 100% !important; 
     box-sizing:border-box;
@@ -544,6 +847,7 @@
     background-color:#9a9a9a;
 }
 
+/* Inputex media queries */
 @media screen and (max-width: 800px) {
     .yui3-skin-sam .wegas-form .inputEx-Group fieldset .inputEx-Group:first-child fieldset .inputEx-fieldWrapper:last-child{
         min-height:0px;
@@ -598,10 +902,56 @@
     }
 }
 
-
 @media screen and (max-width: 460px) {
     .yui3-skin-sam .wegas-form .inputEx-Group fieldset .inputEx-Group, .yui3-skin-sam .wegas-form .inputEx-Group fieldset .inputEx-Group:first-child{
         padding:16px 24px !important;
     }
 }
 
+
+/* Cards media queries */
+@media screen and (max-width: 800px) {
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-player-details .wegas-details{
+        width:100%;
+    }
+}
+
+@media screen and (max-width: 560px) {
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr{
+        height:128px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details{
+        height:288px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .yui3-datatable-col-name {
+        margin-bottom:160px;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-name{
+        width:100%;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details{
+        width:100%;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details .wegas-players {
+        padding:0px;
+    }
+    
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu{
+        border-left:0px;
+        border-top:solid 1px #d4d4d4;
+        width:100%;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-open-team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-impact-team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-mail-team{
+        width:calc(100% / 3);  
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-open-team{
+        border-left:none;
+    }
+
+}
