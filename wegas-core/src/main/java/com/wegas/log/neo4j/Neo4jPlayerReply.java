@@ -84,9 +84,9 @@ public class Neo4jPlayerReply {
      * Creates or adds a player and its answer data in the graph belonging to a
      * given game.
      *
-     * @param player the player data
-     * @param reply the player's answer data
-     * @param choiceDescriptor the selected choice description
+     * @param player             the player data
+     * @param reply              the player's answer data
+     * @param choiceDescriptor   the selected choice description
      * @param questionDescriptor the selected question description
      * @throws JsonProcessingException
      */
@@ -117,9 +117,9 @@ public class Neo4jPlayerReply {
     /**
      * Creates a new Question node, with all the necessary properties.
      *
-     * @param player the player data
-     * @param reply the player's answer data
-     * @param choiceDescriptor the selected choice description
+     * @param player             the player data
+     * @param reply              the player's answer data
+     * @param choiceDescriptor   the selected choice description
      * @param questionDescriptor the selected question description
      * @return a node object
      */
@@ -135,7 +135,11 @@ public class Neo4jPlayerReply {
         jsonObject.put("choice", choiceDescriptor.getName());
         jsonObject.put("question", questionDescriptor.getName());
         jsonObject.put("result", reply.getResult().getName());
-        jsonObject.put("impact", StringEscapeUtils.escapeEcmaScript(reply.getResult().getImpact().getContent()));
+        if (reply.getResult().getImpact() != null) {
+            jsonObject.put("impact", StringEscapeUtils.escapeEcmaScript(reply.getResult().getImpact().getContent()));
+        } else {
+            jsonObject.put("impact", "");
+        }
         jsonObject.put("logID", player.getGameModel().getProperties().getLogID());
         return jsonObject;
     }
@@ -144,8 +148,8 @@ public class Neo4jPlayerReply {
      * Creates a new Number node, with all the necessary properties.
      *
      * @param player the player data
-     * @param name the variable name
-     * @param value the actual variable value
+     * @param name   the variable name
+     * @param value  the actual variable value
      * @return a node object
      * @throws JsonProcessingException
      */
@@ -167,10 +171,10 @@ public class Neo4jPlayerReply {
     /**
      * Link a new node to an already existing newest filtered by key
      *
-     * @param key key to filter "youngest" nodes
+     * @param key           key to filter "youngest" nodes
      * @param relationLabel label to put onto the relation
-     * @param target new node to create
-     * @param label label to put onto the node
+     * @param target        new node to create
+     * @param label         label to put onto the node
      * @throws JsonProcessingException
      */
     private static void createLinkedToYoungest(String key, String relationLabel, ObjectNode target, String label) throws JsonProcessingException {
