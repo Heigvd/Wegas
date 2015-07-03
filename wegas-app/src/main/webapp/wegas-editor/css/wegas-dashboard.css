@@ -357,6 +357,20 @@
     color:#666666;
 }
 
+.yui3-skin-sam .wegas-statistics .yui3-button {
+  vertical-align: middle;
+  padding: 8px 16px;
+  min-height: 26px;
+  margin: 0px 8px;
+  box-shadow: none;
+  background: none;
+  color: white;
+  font-size: 11px;
+  text-transform: uppercase;
+  background-color: #666666;
+  border-radius: 0;
+}
+
 /* ----------
    Console custom
    ---------- */
