@@ -157,6 +157,21 @@ public class PageController {
         }
     }
 
+    @PUT
+    @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}/move/{pos: ([0-9]+)}")
+    public Response move(@PathParam("gameModelId") String gameModelId,
+                         @PathParam("pageId") String pageId,
+                         @PathParam("pos") int pos) throws RepositoryException {
+
+        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
+
+        try (final Pages pages = new Pages(gameModelId)) {
+            pages.move(pageId, pos);
+            return Response.ok(pages.getIndex(), MediaType.APPLICATION_JSON)
+                .header("Page", "index").build();
+        }
+    }
+
     /**
      * Create a new page. page'id is generated. Page has no name
      *
