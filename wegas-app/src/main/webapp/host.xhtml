@@ -26,8 +26,15 @@
         // Handle switch from host to edit mode
         Y.use("wegas-button", function() {
             var editButton = new Y.Wegas.Button({
-                label: "Edit game",
-                cssClass: "host-switchmode"
+                label: "Edit scenario",
+                cssClass: "host-switchmode",
+                "plugins": [{
+                    "fn": "Tooltip",
+                    "cfg": {
+                        "content": "<p>Edit scenario for this session</p>"
+                    }
+                }]
+
             }).render(".wegas-layout-hd");
 
             editButton.on("click", function() {

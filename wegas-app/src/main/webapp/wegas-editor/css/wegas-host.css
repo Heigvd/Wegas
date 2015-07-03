@@ -6,123 +6,649 @@
  * Licensed under the MIT License
 */
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
-*/
-/** Align center tabview labels to the left */
-.wegas-hostmode #centerTabView > div > .yui3-tabview-list {
-    left: 0px;
-    right: 0px;
-    position: fixed;
-}
-.wegas-hostmode  #centerTabView .wegas-toolbar-header {
-    padding-left: 0px;
-}
-.wegas-hostmode #leftTabView .yui3-tabview-list {
-    display: none;
-}
-.wegas-hostmode .wegas-layout-resizable .yui3-resize-handle {
-    background: white;
-    margin-top: 38px;
+ * @author Raphaël Schmutz <raph@hat-owl.cc>
+ */
+.uv-icon{
+    display:none !important;
 }
 
-.wegas-editor-treeview-tablehd {
-    display: none; 
+.wegas-hastoolbar>.wegas-toolbar{
+    display:block;
+    background: #f1f1f1;
+    padding:24px 28px 8px 28px;
+}
+.wegas-hastoolbar>.wegas-toolbar .yui3-button {
+    display: block;
+    position: relative;
+    width: 120px;
+    color: #8c8c8c;
+    background: none;
+    padding: 0;
+    text-align: left;
+}
+.wegas-hastoolbar>.wegas-toolbar .yui3-button {
+    display: block;
+    position: relative;
+    width: 120px;
+    color: #8c8c8c;
+    background: none;
+    padding: 0;
+    text-align: left;
 }
 
-/* Header toggle button */
-.yui3-skin-sam .host-switchmode {
-    /* margin-right: 10px; */
-    padding: 3px 10px 3px 10px;
-    background: transparent;
-    color: white;
-    line-height: 0.5em; 
-    /* position: absolute; */
-    /* top: 12px; */
-    /* right: 133px; */
-    float: right;
+.wegas-hastoolbar>.wegas-toolbar .yui3-button:hover {
+    background:none;
+    color:#666666;
 }
-.yui3-skin-sam .host-switchmode.yui3-button-selected {
-    background: white;
-    color: #072644;
+.wegas-hastoolbar>.wegas-toolbar .yui3-button:focus{
+    background:none;
+    box-shadow:none;
 }
 
-/************************ leftTabView  ***************************************/
-#leftTabView .yui3-treeview-content > .noPlayer .yui3-treenode-content-header{
-    opacity: 0.5;
-    cursor: default;
-}
-#leftTabView .yui3-treeview-content>.yui3-treenode-selected .yui3-treenode-content-header,
-#leftTabView .yui3-treeview-content>.yui3-treeleaf-selected .yui3-treeleaf-content-header{
-    box-shadow: 0px 0px 1px #6D6D6D;
-    font-weight: bolder;
-    background-color: #EDEDED;
-}
-
-/************************* leftTabView Checkbox plugin   **********************/
-#leftTabView .wegas-toolbar .selectAll{
-    position: absolute;
-    right: 3px;
-    margin-top: .5em;
-    width: 90px;
-    height: 25px;
-    cursor: pointer;
-    background: url(../images/checkbox.png) 57px -42px no-repeat;
-}
-#leftTabView .wegas-toolbar .yui3-treenode-selected{
-    background: url(../images/checkbox.png) 57px -8px no-repeat;
-}
-#leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.yui3-treenode .yui3-treenode-content-header,
-#leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.yui3-treeleaf .yui3-treeleaf-content{
-    background: url(../images/checkbox.png) right -38px no-repeat;
-}
-#leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.yui3-treenode-selected .yui3-treenode-content-header,
-#leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.yui3-treeleaf-selected .yui3-treeleaf-content-header{
-    background: url(../images/checkbox.png) right -4px no-repeat;
-    background-color: #EDEDED;
-}
-#leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.yui3-treeleaf .yui3-treeleaf-content-header:hover {
-    background-color: transparent;
-    box-shadow: 0px 0px 1px #6D6D6D;
-}
-#leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.yui3-treeleaf-selected .yui3-treeleaf-content-header:hover {
-    background-color: #EDEDED;
+.yui3-skin-sam .wegas-layout-hd{
+    display:block;
+    position:absolute;
+    top:0px;
+    left:0px;
+    border-top:solid 6px #fa6942;
+    background-color:white;
+    width:100%;
+    height:56px;
+    box-sizing:border-box;
+    z-index:2;
+    min-width:0;
 }
 
-/* Page title styles */
+.yui3-skin-sam .wegas-layout-bd{
+    display:block;
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    border:none;
+    margin:0;
+    padding:56px 0 0 0;
+    box-sizing:border-box;
+    background-color:#dddddd;
+    z-index:1;
+}
+
+.yui3-skin-sam .wegas-layout-bd > div {
+    display:block;
+    position:relative;
+    width:100%;
+    height:100%;
+    margin:0px;
+    padding:0px;
+}
+
+.yui3-skin-sam .wegas-layout-center{
+    display:block;
+    position:relative !important;
+    width:100% !important;
+    height: 100% !important;
+    top:auto !important;
+    left:auto !important;
+    right:auto !important;
+    overflow: visible !important;
+}
+
+.yui3-skin-sam .wegas-layout-center  > yui3-tabview, .yui3-skin-sam .wegas-layout-center > yui3-tabview > yui3-tabview-content{
+    display:block;
+    position:relative;
+    width:100%;
+    height:100%;
+    margin:0px;
+    padding:0px;
+}
+
+.yui3-skin-sam .yui3-tabview-list {
+  border-bottom: none;
+  z-index: 4;
+  display: block;
+  position: absolute;
+  top:0px;
+  left:0px;
+  width: 100%;
+  height: 64px;
+  margin:0px;
+  padding:0px;
+  background-color: #dddddd;
+}
+
+.yui3-skin-sam .yui3-tab {
+  max-width: none;
+  height: 64px;
+  padding:0px !important;
+}
+
+.yui3-skin-sam .yui3-tab .yui3-tab-label{
+    width: 100%;
+    height: 64px;
+    padding:0px !important;
+    margin:0px;
+    background:#dddddd;
+    font-size: 18px;
+    line-height: 60px;
+    font-weight: 100;
+    color:#8c8c8c;
+    transition:.3s;
+}
+
+.yui3-skin-sam .yui3-tab .yui3-tab-label:hover{
+    background:#e3e2e2;
+    color:#8c8c8c;
+}
+
+.yui3-skin-sam .yui3-tabview-panel{
+    display:block !important;
+    position:absolute !important;
+    top: 0px !important;
+    left:0px !important;
+    width: 100% !important;
+    height: 100% !important;
+    padding:64px 0 0 0 !important;
+    background-color:#f1f1f1 !important;
+    box-sizing:border-box !important;
+}
+
+.yui3-skin-sam .yui3-tab-label {
+    margin: 0px;
+    height: 100%;
+}
+
+.yui3-skin-sam .yui3-tab-selected .yui3-tab-label, 
+.yui3-skin-sam .yui3-tab-selected .yui3-tab-label:focus, 
+.yui3-skin-sam .yui3-tab-selected .yui3-tab-label:hover{
+    background-color:#f1f1f1;
+    color:#676767;
+}
 .yui3-skin-sam .wegas-title {
-    margin-top: 4px;
-    font-size: 1.4em;
-    line-height: 1em;
-}
-.yui3-skin-sam .wegas-title div.subtitle  {
-    color: #e0e0e0;
-    font-style: italic;
-    font-size: 0.7em;
+  font-weight: normal;
+  font-size: 18px;
+  line-height:50px;
+  text-shadow: none;
+  color: #fff;
+  margin: 0px;
+  padding:0px;
+  display:block !important;
+  float:left !important;
 }
 
-/* Dasboard styles */
-.yui3-skin-sam .wegas-dashboard-colored {
+.yui3-skin-sam .wegas-title div:first-child{
+    float: left;
+    display: block;
+    position: relative;
+    width: auto;
+    max-width: 500px;
+    overflow: hidden;
+    height: 50px;
+    text-shadow: none;
+    line-height: 50px;
+    margin: 0;
+    text-overflow: ellipsis;
+    padding: 0 12px;
+    white-space: nowrap;
+    color: #000;
+    box-sizing:border-box;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.yui3-skin-sam .wegas-title div.subtitle {
+    color: #727272;
+    font-style: italic;
+    font-size: 16px;
+    padding: 0px 16px 0px 0px;
+    margin: 0;
+    width: auto;
+    max-width: 500px;
+    overflow: hidden;
+    box-sizing: border-box;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 50px;
+    font-weight: 100;
+    text-shadow: none;
+    float: left;
+}
+
+
+@media screen and (max-width: 1399px) {
+    .yui3-skin-sam .wegas-title div:first-child{
+        max-width: 450px;
+    }
+
+    .yui3-skin-sam .wegas-title div.subtitle {
+        max-width: 400px;
+    }
+}
+
+@media screen and (max-width: 1249px) {
+    .yui3-skin-sam .wegas-title div:first-child{
+        max-width: 300px;
+    }
+
+    .yui3-skin-sam .wegas-title div.subtitle {
+        max-width: 300px;
+    }
+}
+
+@media screen and (max-width: 999px) {
+    .yui3-skin-sam .wegas-title div:first-child{
+        max-width: 200px;
+    }
+
+    .yui3-skin-sam .wegas-title div.subtitle {
+        max-width: 200px;
+    }
+}
+
+.yui3-skin-sam .wegas-layout-hd .yui3-button {
+    color:#8e8f8f;
+    margin: 0px;
+    height: 50px;
+}
+.yui3-skin-sam .wegas-layout-hd .yui3-button.host-switchmode:before{
+    content: "";
+    width: 32px;
+    height: 50px;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background-image: url(../../wegas-editor/images/scenarist.png);
+    background-size:100%;
+    background-position:left center;
+    background-repeat:no-repeat;
+    transition:.2s;
+}
+
+.yui3-skin-sam .wegas-layout-hd .yui3-button.host-switchmode{
+    width: 40px;
+    height: 50px;
+    padding: 0 0px 0 40px;
+    text-indent:1000px;
+    position: relative;
+    box-sizing: border-box;
+    display: block;
+    overflow:hidden;
+}
+.yui3-skin-sam .wegas-layout-hd .yui3-button.host-switchmode:hover:before{
+    background-image: url(../../wegas-editor/images/scenarist_hover.png);
+    background-size:100%;
+    background-position:left center;
+    background-repeat:no-repeat;
+}
+.yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-login{
+    padding-left: 40px;
+    background-size: auto 32px;
+    margin-left: 16px;
+    max-width:260px;
+    overflow:hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-image: url(../../wegas-editor/images/user.png);
+}
+
+.yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-login:hover{
+    color:#5bc4ec;
+    background-image: url(../../wegas-editor/images/user_hover.png);
+}
+
+@media screen and (max-width: 799px) {
+    .yui3-skin-sam .wegas-title div:first-child{
+        max-width: 150px;
+    }
+
+    .yui3-skin-sam .wegas-title div.subtitle {
+        max-width: 150px;
+    }
+    
+    .yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-login{
+        max-width: 164px;
+    }
+}
+
+@media screen and (max-width: 599px) {
+    .yui3-skin-sam .wegas-title div:first-child{
+        max-width:180px;
+    }
+
+    .yui3-skin-sam .wegas-title div.subtitle {
+        display:none
+    }
+    
+    .yui3-skin-sam .wegas-layout-hd .yui3-button.host-switchmode{
+        max-width: 40px;
+        padding: 0px 20px 0px 40px;
+        text-indent:80px;
+        text-overflow: none;
+    }
+    .yui3-skin-sam .wegas-layout-hd .yui3-button.host-switchmode:before{
+        margin:0px 14px;
+    }
+    
+    .yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-login{
+        margin-left: 0px;
+        max-width: 40px;
+        text-indent:80px;
+        text-overflow: none;
+        background-position:center;
+    }
+}
+
+.yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-login:before{
+    background: url(../../wegas-app/images/wegas-icon-toggle.png);
+}
+
+.yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-login:after{
+    color:#666666;
+}
+
+.yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-login img{
+    display:none;
+}
+
+/* --- Modales --- */
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal{
+    position:absolute;
+    display:block;
+    top:0px !important;
+    left:0px !important;
+    width:100% !important;
+    height:100%;
+    margin:0px;
+    padding:0px;
+    max-width: none;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content {
+    position:fixed;
+    display:block;
+    top:50% !important;
+    left:50% !important;
+    width:260px !important;
+    height:96px;
+    padding:0px;
+    margin: -48px 0px 0px -130px;
+    background-color:white;
+    color:#666666;
+    border:none;
+    z-index:108;
+    border-radius:8px;
+    box-shadow:none;
+    overflow:hidden;
+    max-width: none;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content .yui3-widget-bd{
+    display:block;
+    position:relative;
+    width:100%;
+    height:48px;
+    margin:0px;
+    padding:0px;
+    border:none;
+    background:none;
+}
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content .yui3-widget-bd > .icon{
+  padding-top: 20px;
+  min-height:0px;
+  height:28px;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content .yui3-widget-bd > .icon.icon-info{
+    background:none;
+    background-image: url(../../wegas-editor/images/warn.png);
+    background-position:8px 8px;
+    background-repeat:no-repeat;
+    background-size:32px;
+}
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content .yui3-widget-bd > .icon.icon-error{
+    background:none;
+    background-image: url(../../wegas-editor/images/danger.png);
+    background-position:8px 8px;
+    background-repeat:no-repeat;
+    background-size:32px;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content .yui3-widget-ft{
+    display:block;
+    position:relative;
+    width:100%;
+    height:48px;
+    margin:0px;
+    padding:0px;
+    border:none;
+    background:none;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content .yui3-widget-ft .yui3-widget-buttons{
+    display:block;
+    position:relative;
+    width:100%;
+    height:100%;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content .yui3-widget-ft .yui3-button{
+    display:block;
+    position:relative;
+    width:auto;
+    float:right;
+    height:40px;
+    padding:0px 12px;
+    margin:4px;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-panel-content{
+    position:fixed;
+    display:block;
+    top:50% !important;
+    left:50% !important;
+    width:800px !important;
+    height:580px;
+    padding:0px;
+    margin: -290px 0px 0px -400px;
+    border:none;
+    box-shadow:none;
+    background:none;
+    background-color:white;
+    border-radius:8px;
+    z-index:100;
+    overflow-x:hidden;
+    overflow-y:auto;
+    max-width: none;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-hd{
+    display:block;
+    position:relative;
+    width:100%;
+    height:65px;
+    box-sizing: border-box;
+    margin:0px;
+    padding:0px;
+    border-bottom:solid 1px #c1c1c1;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-hd .wegas-modal-title{
+    display:block;
+    position:relative;
+    width:100%;
+    height:64px;
+    padding:0px 80px;
+    color: #666666;
+    font-weight: lighter;
+    line-height:64px;
+    box-sizing:border-box;
+    overflow:hidden;
+    white-space: nowrap; 
+    text-overflow: ellipsis;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-hd .wegas-modal-title:before{
+    content:"";
+    display:block;
+    position:absolute;
+    top:0px;
+    left:0px;
+    height:64px;
+    width:64px;
+    background-color: #666666;
+    background-size:100%;
+    background-repeat:no-repeat;
+}
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-hd .wegas-modal-title.wegas-modal-title-player:before{
+    background-image:url("../../wegas-app/images/icon_players.png");
+}
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-hd .wegas-modal-title.wegas-modal-title-group:before{
+    background-image:url("../../wegas-app/images/icon_groups.png");
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-hd .modal--header-close{
+    display:block;
+    position:absolute;
+    top:0px;
+    right:0px;
+    width:64px;
+    height:64px;
+    background:none;
+    text-indent:-1000px;
+    overflow:hidden;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-hd .modal--header-close:active{
+    border:none;
+    background:none;
+    box-shadow: none;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-hd .modal--header-close:before{
+    content:"\f00d";
+    font-family:"FontAwesome";
+    display:block;
+    position:absolute;
+    top:0px;
+    left:0px;
+    width:64px;
+    height:64px;
+    line-height:64px;
+    font-size:24px;
+    color:#4b4b4b;
+    text-indent:0;
+    transition:.2s;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-hd .modal--header-close:hover:before{
+    color:#666666;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-bd{
+    width:100%;
+    height:450px;
+    box-sizing: border-box;
+    background: #f9f9f9;
     padding: 0px;
 }
-.yui3-skin-sam .wegas-dashboard-colored span {
-    padding: 7px 7px 6px;
-    width: auto;
-    height: auto;
-    display: block;
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft{
+    display:block;
+    position:relative;
+    width:100%;
+    height:65px;
+    padding:0px 8px;
+    border-top:solid 1px #c1c1c1;
+    box-sizing: border-box;
 }
-.wegas-dashboard .yui3-datatable-header,
-.wegas-dashboard .yui3-datatable-cell {
-    text-align: center;
-    min-width: 70px;
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft .yui3-widget-buttons{
+    display:block;
+    position:relative;
+    width:100%;
+    height:100%;
+    text-align:left;
 }
-.wegas-dashboard td.yui3-datatable-col-name {
-    min-width: 200px;
-    text-align: left;
-    margin-left: 11px;
-    padding-left: 18px;
-    min-height: 19px;
-    height: 19px;
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft .yui3-button{
+    display:block;
+    position:relative;
+    float:left;
+    margin:8px 4px;
+    padding:0px 16px;
+    height:48px;
+    background-color:#666666;
+    transition:.3s;
 }
-.wegas-dashboard td.yui3-datatable-col-name .wegas-icon {
-    width: 21px;
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft .yui3-button.wegas-advanced-feature{
+    display:none;
+}
+
+.yui3-skin-sam.wegas-hostmode.wegas-advancedmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft .yui3-button.wegas-advanced-feature{
+    display:block;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft span:first-child, .wegas-sendmail-content .status{
+    display:block;
+    position:absolute;
+    width:auto;
+    padding:0px 12px;
+    height:28px;
+    line-height:28px;
+    background-color:rgba(255,255,255,0.5);
+    top:-28px;
+    right:0px;
+}
+
+.wegas-sendmail-content .status{
+    top:auto;
+    bottom:0px;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft span:first-child:empty, .wegas-sendmail-content .status:empty{
+    display:none;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft .yui3-button:hover{
+    background-color:#4b4b4b;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft .yui3-button.modal--footer-right{
+    float:right;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft .yui3-button.modal--footer-valid{
+    background-color:#4caf50;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft .yui3-button.modal--footer-secondary{
+    background-color:#b3b3b3;
+}
+
+
+@media screen and (max-width: 800px) {
+    .yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-panel-content{
+        width: 100% !important;
+        margin-left: 0;
+        margin-right: 0;
+        left: 0 !important;
+        border-radius:0px;
+    }
+}
+
+@media screen and (max-height: 580px) {
+    .yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-panel-content{
+        height: 100%;
+        top: 0 !important;
+        margin-top: 0;
+        margin-bottom: 0;
+        border-radius:0px;
+    }
+    
+    .yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-panel-content .yui3-widget-bd{
+        height:calc(100% - 130px);
+    }
 }
