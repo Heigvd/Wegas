@@ -76,7 +76,7 @@
     border:none;
     box-shadow: none;
     margin:24px 32px;
-    color:#9a9a9a;
+    color:#666666;
 }
 
 .pmg-properties .hidden {
@@ -84,17 +84,30 @@
 }
 
 .pmg-properties .checkbox {
-    background-image: url(../../wegas-editor/images/checkbox_off.png);
-    background-position:left center;
-    background-size:auto 100%;
-    background-repeat: no-repeat;
+    background:none;
     padding-top: 3px;
     padding-bottom: 3px;
     padding-left: 32px;
 }
+.pmg-properties .checkbox:before {
+    display:block;
+    position:absolute;
+    top:0px;
+    left:0px;
+    content:"";
+    width:24px;
+    height:24px;
+    background:none;
+    border:solid 1px #666666;
+    border-radius:4px;
+}
 
 .pmg-properties .selected .checkbox {
-    background-image: url(../../wegas-editor/images/checkbox_on.png);
+    background:none;
+}
+.pmg-properties .selected .checkbox:before {
+    background:#ec8e5b;
+
 }
 
 /****************************** advancementlimit ******************************/
@@ -117,7 +130,7 @@
 .wegas-pmg-advancementlimit .phase p {
     display: block;
     padding:6px 0px;
-    color: #9a9a9a;
+    color: #666666;
     float: left;
 }
 
