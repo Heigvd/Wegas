@@ -20,7 +20,7 @@ angular.module('wegas.models.sessions', [])
                         waitSessions = $interval(function() {
                             if (!sessions.cache[status].loading) {
                                 sessions.stopWaiting(waitSessions);
-                                deferred.resolve(true)
+                                deferred.resolve(true);
                             }
                         }, 500);
                     return deferred.promise;
@@ -287,6 +287,13 @@ angular.module('wegas.models.sessions', [])
             $http
                 .get(ServiceURL + url)
                 .success(function(sessionRefreshed) {
+                    if(sessionRefreshed){
+                        sessionRefreshed.teams.forEach(function(team){
+                            if(team["@class"] == "DebugTeam"){
+                                sessionRefreshed.teams = _.without(sessionRefreshed.teams, team);
+                            }
+                        });
+                    }
                     uncacheSession(status, sessionToRefresh);
                     cacheSession(status, sessionRefreshed);
                     cachedSession = sessions.findSession(status, sessionRefreshed.id);
