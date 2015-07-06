@@ -28,6 +28,9 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                     nodeGroups: [{
                         nodeClass: "widget-node",
                         parentNode: ".container-node"
+                    }, {
+                        nodeClass: "page-node",
+                        parentNode: ".yui3-treeview-content"
                     }]
                 });
                 this.toolbar.add({
@@ -63,7 +66,11 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
             }, this);
             if (DATASOURCE.editable) {
                 this.treeView.sortable.on("sort", function(e) {
-                    if (!e.dropWidget.get(BOUNDING_BOX).hasClass("container-node")) { //@TODO: find something better.
+                    if (e.dragWidget.get("data.page")) {
+                        DATASOURCE.move(e.dragWidget.get("data.page"), e.index, Y.bind(function(){
+                            this.getIndex();
+                        }, this));
+                    } else if (!e.dropWidget.get(BOUNDING_BOX).hasClass("container-node")) { //@TODO: find something better.
                         e.preventDefault();
                         this.getIndex();
                     } else if (e.dropWidget.get("data.widget")) {
@@ -135,7 +142,7 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                 return;
             }
             selected = widget.get("boundingBox").hasClass("highlighted") ? 2 : 0;
-            if (widget.each && !(widget instanceof Wegas.PageLoader)) {
+            if (widget.isAugmentedBy(Wegas.Parent)) {
                 treeNode = new Y.TreeNode({
                     label: widget.getEditorLabel() || "<i>" + widget.getType() + "</i>",
                     tooltip: "Type: " + widget.getType(),
@@ -196,7 +203,8 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                 if (index.hasOwnProperty(i)) {
                     tmpPageId = "" + index[i].id;
                     node = new Y.TreeNode({
-                        label: index[i].name ? index[i].name + " (" + tmpPageId + ")" : "<i>Unnamed (" + tmpPageId + ")</i>",
+                        label: index[i].name ? index[i].name + " (" + tmpPageId + ")" :
+                        "<i>Unnamed (" + tmpPageId + ")</i>",
                         data: {
                             page: tmpPageId,
                             name: index[i].name
@@ -303,7 +311,7 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
             this.treeView.destroy();
             this.dsEvent.detach();
             this.plCreationEvent.detach();
-            Y.Wegas.DataSource.abort(this.indexReq);
+            Wegas.DataSource.abort(this.indexReq);
         }
     }, {
         CSS_PREFIX: "wegas-page-editor",
