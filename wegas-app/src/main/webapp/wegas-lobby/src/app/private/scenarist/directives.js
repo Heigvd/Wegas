@@ -33,13 +33,9 @@ angular.module('private.scenarist.directives', [
                 });
             }
             ScenariosModel.getScenarios('LIVE').then(function(response) {
-                if (response.isErroneous()) {
-                    response.flash();
-                } else {
-                    ctrl.scenarios = response.data || [];
-                    if (updateDisplay) {
-                        updateDisplayScenarios();
-                    }
+                ctrl.scenarios = response.data || [];
+                if (updateDisplay) {
+                    updateDisplayScenarios();
                 }
             });
         };

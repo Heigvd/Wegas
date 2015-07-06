@@ -112,8 +112,6 @@ angular.module('private.trainer.directives', [
                 ScenariosModel.getScenarios("LIVE").then(function(response) {
                     if (!response.isErroneous()) {
                         scope.scenarios = response.data;
-                    } else {
-                        Flash.danger("Error loading scenarios")
                     }
                 });
                 scope.newSession = {
