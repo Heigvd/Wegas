@@ -238,7 +238,7 @@ YUI.add('wegas-dashboard', function(Y) {
                                     action: "exit"
                                 }
                             ]
-                        },
+                        }
                     }).render().get("boundingBox").addClass("dashboard-impact-panel").addClass("dashboard-panel");
                 } else {
                     this.showMessage("info", "Could not find a player");
@@ -356,15 +356,17 @@ YUI.add('wegas-dashboard', function(Y) {
         genData: function(table, teams) {
             var gameModel = Wegas.Facade.GameModel.cache.getCurrentGameModel(),
                 columnsCfg = this.get("tableCfg.columns"), ret = [], result, template;
-
-            ret = Y.Array.map(teams, function(t) {
-                return {
-                    name: gameModel.get("properties.freeForAll") ? playerTemplate(t) : teamTemplate(t),
-                    team: t,
-                    player: t.get("players").length > 0 ? t.get("players")[0] : null,
-                    id: t.get("id"),
-                    menu: t.get("notes")
-                };
+            
+            teams.forEach(function(t){
+                if(t.get("players").length > 0){
+                    ret.push({
+                        name: gameModel.get("properties.freeForAll") ? playerTemplate(t) : teamTemplate(t),
+                        team: t,
+                        player: t.get("players").length > 0 ? t.get("players")[0] : null,
+                        id: t.get("id"),
+                        menu: t.get("notes")
+                    });
+                }
             });
             
             ret = Y.Array.filter(ret, function(i) {                             // Filter debug team (for game edition)
