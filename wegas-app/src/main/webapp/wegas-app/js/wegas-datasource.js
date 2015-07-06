@@ -1423,6 +1423,30 @@ YUI.add('wegas-datasource', function(Y) {
                 });
             }
         },
+        move: function(pageId, pos, callback) {
+            this.getMeta(pageId, Y.bind(function(meta) {
+                if (+meta.index === pos) {
+                    //Same pos. return old index
+                    this.getIndex(callback);
+                    return;
+                } else {
+                    this.index = null;
+                    return this.sendRequest({
+                        request: "" + pageId + "/move/" + pos,
+                        cfg: {
+                            method: PUT
+                        },
+                        on: {
+                            success: function(e) {
+                                if (callback instanceof Function) {
+                                    callback(e.response.results);
+                                }
+                            }
+                        }
+                    });
+                }
+            }, this));
+        },
         getMeta: function(pageId, callback) {
             this.getIndex(function(index) {
                 if (Y.Lang.isFunction(callback)) {
