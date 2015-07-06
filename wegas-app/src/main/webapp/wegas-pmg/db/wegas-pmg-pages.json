@@ -51,8 +51,9 @@
                                         "name": "logo PMG"
                                     },
                                     {
-                                        "type": "Text",
-                                        "content": "<p>Project Management Game</p>"
+                                        "type": "Template",
+                                        "cssClass": "pmg-title",
+                                        "custom": "<% var gameModel = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel(), name; %> <p>Project Management Game<br /><b><% if(gameModel.get('properties.freeForAll')){ name = Y.Wegas.Facade.Game.cache.getCurrentPlayer().get('name'); }else{ name = Y.Wegas.Facade.Game.cache.getCurrentTeam().get('name'); } %><%= name %></b></p>"
                                     }
                                 ]
                             },

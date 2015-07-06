@@ -68,15 +68,28 @@
     background-size:100% auto;
 }
 
-.pmg-header .pmg--header__identity .wegas-text{
+.pmg-header .pmg--header__identity .wegas-template{
     display:block;
     position:relative;
     width:180px;
     height:20px;
-    padding:10px 0px 12px 0px;
+    padding:2px 0px 12px 0px;
     margin:0px;
     color:white;
+    font-weight:300;
     text-align:center;
+}
+.pmg-header .pmg--header__identity .wegas-template b{
+    display:block;
+    position:relative;
+    font-weight:600;
+    padding:4px 8px;
+    width:100%;
+    box-sizing:border-box;
+    height:auto;
+    overflow:hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .pmg-header .pmg--header__taskbar{
@@ -1127,7 +1140,7 @@ h2{
 }
 
 .pmg--body .yui3-datatable-header{
-    padding: 0 16px 8px 16px;
+    padding: 0 16px 8pxf 16px;
 }
 .pmg--body .yui3-datatable-header.right{
     text-align:right;
@@ -1648,10 +1661,10 @@ td.yui3-datatable-col-Realised:after {
         margin:16px 38px 4px 38px;
     }
     
-    .pmg-header .pmg--header__identity .wegas-text{
+    .pmg-header .pmg--header__identity .wegas-template{
         display:none;
     }
-    .wegas-editmode .pmg-header .pmg--header__identity .wegas-text{
+    .wegas-editmode .pmg-header .pmg--header__identity .wegas-template{
         display:block;
     }
     
