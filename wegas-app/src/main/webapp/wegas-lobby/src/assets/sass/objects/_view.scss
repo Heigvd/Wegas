@@ -95,6 +95,16 @@
             }
         }
     }
+    
+    &.view--admin-menu{
+        @include make-xs-column(12, 96px);
+        @include make-md-column(3, 96px);
+        overflow-x:hidden;
+        .form{
+            margin:0px;
+            padding:0px;
+        }
+    }
 
     &.view--new-session,
     &.view--join-session,
@@ -108,6 +118,8 @@
             padding:0px;
         }
     }
+    
+    &.view--admin-content,
     &.view--sessions-list,
     &.view--scenarios-list,
     &.view--history-list {
