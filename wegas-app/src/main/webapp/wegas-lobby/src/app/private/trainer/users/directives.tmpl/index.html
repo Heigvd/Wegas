@@ -33,8 +33,8 @@
 		ng-if="(!usersIndexCtrl.session.properties.freeForAll && usersIndexCtrl.session.teams.length < 1)
 		|| (usersIndexCtrl.session.properties.freeForAll && usersIndexCtrl.session.players.length < 1)"
 		class="modal__content__empty">No players</div>
-	<div ng-if="!usersIndexCtrl.session.properties.freeForAll" class="view__users-teams"  trainer-sessions-users-team-list teams="usersIndexCtrl.session.teams"></div>
-	<div ng-if="usersIndexCtrl.session.properties.freeForAll" class="view__users-individual" trainer-sessions-users-individual-list players="usersIndexCtrl.session.players"></div>
+	<div ng-if="!usersIndexCtrl.session.properties.freeForAll" class="view view__users-teams"  trainer-sessions-users-team-list teams="usersIndexCtrl.session.teams"></div>
+	<div ng-if="usersIndexCtrl.session.properties.freeForAll" class="view view__users-individual" trainer-sessions-users-individual-list players="usersIndexCtrl.session.players"></div>
 </div>
 <div ng-if="usersIndexCtrl.playersViewActived" class="modal__tools">
 	<div class="col-xs-3 col-xs-push-9">

@@ -151,7 +151,31 @@ angular.module('wegas.models.sessions', [])
                 });
                 return deferred.promise;
             };
-
+        
+        /* Remove team form persistante datas and change cached datas (Used from trainer workspace) */
+        model.removeTeamToSession = function(sessionId, teamId) {
+            var deferred = $q.defer();
+            session = sessions.findSession("LIVE", sessionId) || sessions.findSession("BIN", sessionId),
+            team = undefined;
+            if (session) {
+                team = _.find(session.teams, function(t) {
+                    return t.id == teamId;
+                });
+                if (team) {
+                    $http.delete(ServiceURL + "rest/GameModel/Game/Team/" + team.id).success(function(data) {
+                        session.teams = _.without(session.teams, team);
+                        deferred.resolve(Responses.success("Team has been removed from the session", team));
+                    }).error(function(data) {
+                        deferred.resolve(Responses.danger("Error during removing team of session", false));
+                    });
+                } else {
+                    deferred.resolve(Responses.danger("No team found", false));
+                }
+            } else {
+                deferred.resolve(Responses.danger("No team found", false));
+            }
+            return deferred.promise;
+        };
 
         /* Remove player form persistante datas and change cached datas (Used from trainer and player workspace) */
         model.removePlayerToSession = function(sessionId, playerId, teamId) {
