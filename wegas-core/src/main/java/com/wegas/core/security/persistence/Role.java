@@ -8,6 +8,7 @@
 package com.wegas.core.security.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import java.util.ArrayList;
@@ -26,7 +27,8 @@ import javax.persistence.*;
     @UniqueConstraint(columnNames = "name")
 })
 @Cacheable(true)
-@NamedQueries({@NamedQuery(name = "Role.findByName", query = "SELECT a FROM Role a WHERE a.name = :name")})
+@NamedQueries({
+    @NamedQuery(name = "Role.findByName", query = "SELECT a FROM Role a WHERE a.name = :name")})
 public class Role extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
@@ -61,6 +63,7 @@ public class Role extends AbstractEntity {
     @JsonIgnore
     @ManyToMany(mappedBy = "roles")
     private Set<AbstractAccount> abstractAccounts = new HashSet<>();
+
     /**
      *
      */
@@ -194,12 +197,16 @@ public class Role extends AbstractEntity {
         return returnVal;
     }
 
-    public int getNumberOfMember(){
+    public int getNumberOfMember() {
         return abstractAccounts.size();
     }
 
+    public void setNumberOfMember(int numberOfMember) {
+    }
+
     /**
-     * get role members 
+     * get role members
+     *
      * @return all accounts which are member of this role
      */
     public Set<AbstractAccount> getAbstractAccounts() {
@@ -208,13 +215,12 @@ public class Role extends AbstractEntity {
 
     /**
      * set the role members
+     *
      * @param abstractAccounts list of member
      */
     public void setAbstractAccounts(Set<AbstractAccount> abstractAccounts) {
         this.abstractAccounts = abstractAccounts;
     }
-
-
 
     @Override
     public String toString() {
