@@ -606,9 +606,85 @@
 .yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .wegas-inputex-variabledescriptorselect-group:nth-child(6):after{
     content:"5"
 }
+
 .yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .wegas-inputex-variabledescriptorselect-group button{
-    display:none;
+    display:block;
+    width:40px;
+    height:40px;
+    position:absolute;
+    top:0px;
+    right:0px;
+    left:auto;
+    margin:0px;
+    padding:0px;
+    min-height:0px;
 }
+
+.yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .wegas-inputex-variabledescriptorselect-group .wegas-removebutton{
+    margin:20px 0px;
+    background:none;
+    right:40px;
+}
+
+.yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .wegas-inputex-variabledescriptorselect-group .wegas-removebutton .wegas-icon{
+    display:block;
+    position:relative;
+    width:100%;
+    height:100%;
+    padding:0px;
+    margin:0px;
+    background:none;
+    background-image:url("../../wegas-editor/images/trash.png");
+    background-repeat: no-repeat;
+    background-position:center;
+    background-size:100%;
+}
+
+.yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .wegas-inputex-variabledescriptorselect-group .wegas-moveupbutton{
+    margin:20px 20px 0px 0px;
+    background:none;
+    right:0px;
+    width:20px;
+    height:20px;
+}
+
+.yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .wegas-inputex-variabledescriptorselect-group .wegas-moveupbutton .wegas-icon{
+    display:block;
+    position:relative;
+    width:100%;
+    height:100%;
+    padding:0px;
+    margin:0px;
+    background:none !important;
+    background-image:url("../../wegas-editor/images/icon-up.png") !important;
+    background-repeat: no-repeat !important;
+    background-position:center !important;
+    background-size:100% !important;
+}
+
+.yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .wegas-inputex-variabledescriptorselect-group .wegas-movedownbutton{
+    margin:0px 20px 20px 0px;
+    background:none;
+    top:40px;
+    right:0px;
+    width:20px;
+    height:20px;
+}
+    
+.yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .wegas-inputex-variabledescriptorselect-group .wegas-movedownbutton .wegas-icon{
+    display:block;
+    position:relative;
+    width:100%;
+    height:100%;
+    padding:0px;
+    margin:0px;
+    background:none !important;
+    background-image:url("../../wegas-editor/images/icon-down.png") !important;
+    background-repeat: no-repeat !important;
+    background-position:center !important;
+    background-size:100% !important;
+}
+
 .yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .wegas-inputex-variabledescriptorselect-group:nth-child(6){
     border-bottom:none;
 }
