@@ -92,9 +92,9 @@ div.inputEx-fieldWrapper {
     padding: 20px 10px 20px !important;
 }
 
-.inputEx-required .inputEx-label label:after {
+/*.inputEx-required .inputEx-label label:after {
      content: "•"
-}
+}*/
 
 .wegas-form div.inputEx-fieldWrapper,
 .wegas-form div.inputEx-Field {
