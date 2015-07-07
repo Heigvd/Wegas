@@ -31,8 +31,8 @@ YUI.addGroup("wegas-pmg", {
         "wegas-pmg-slidepanel": {
             requires: ['anim', 'wegas-pmgwidget-css', "wegas-pmg-datatable", "wegas-pmg-reservation",
                 "wegas-pmg-occupationcolor", "wegas-pmg-activitycolor", "wegas-pmg-assignment",
-                "wegas-scheduledatatable", "wegas-text", "wegas-pmg-autoreservation-color", "wegas-pmg-linefilter"],
-            ws_provides: ["PmgSlidePanel", "PmgResourcesPanels"]
+                "wegas-scheduledatatable", "wegas-text", "wegas-pmg-autoreservation-color", "wegas-pmg-linefilter", "chart-js"],
+            ws_provides: ["PmgSlidePanel", "PmgResourcesPanels", "PmgIterationsPanels"]
         },
         "wegas-pmg-reservation": {
             path: 'js/plugin/wegas-pmg-reservation-min.js',
@@ -96,15 +96,15 @@ YUI.addGroup("wegas-pmg", {
             ws_provides: 'Tablepopup'
         },
         /*"wegas-pmg-tabletooltip": {
-            path: 'js/plugin/wegas-pmg-tabletooltip-min.js',
-            requires: ['overlay', 'wegas-pmgwidget-css'],
-            ws_provides: 'Tabletooltip'
-        },*/
+         path: 'js/plugin/wegas-pmg-tabletooltip-min.js',
+         requires: ['overlay', 'wegas-pmgwidget-css'],
+         ws_provides: 'Tabletooltip'
+         },*/
         /*"wegas-pmg-taskpopup": {
-            path: 'js/plugin/wegas-pmg-taskpopup-min.js',
-            requires: ['overlay', 'wegas-pmgwidget-css'],
-            ws_provides: 'Taskpopup'
-        },*/
+         path: 'js/plugin/wegas-pmg-taskpopup-min.js',
+         requires: ['overlay', 'wegas-pmgwidget-css'],
+         ws_provides: 'Taskpopup'
+         },*/
         "wegas-pmg-taskonclickpopup": {
             path: 'js/plugin/wegas-pmg-taskonclickpopup-min.js',
             requires: ['overlay', 'wegas-pmgwidget-css'],

@@ -145,14 +145,9 @@ public class ListUtils {
     }
 
     /**
-     * This function takes two lists and merge them.<br/> Assumptions:<br/>
-     * - An element from the new list is new if it has no <code>ID</code> or if
-     * it's <code>ID</code> is missing in the old list<br/>
-     * - 2 Abstract entities with the same <code>ID</code> have to be
-     * merged<br/>
-     * - An element from the old list has to be removed if its <code>ID</code>
-     * is missing in the new list
-     *
+     * make the old list content the same as newlist one
+     * only references are copied, elements are not merged ever
+     * 
      * @param <E>     extends (@see AbstractEntity) the element type
      * @param oldList The list containing old elements
      * @param newList The list containing new elements

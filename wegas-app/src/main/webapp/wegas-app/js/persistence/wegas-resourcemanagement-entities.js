@@ -229,7 +229,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     }]
             },
             separator1: {
-                label : "\u2501\u2501\u2501\u2501"
+                label: "\u2501\u2501\u2501\u2501"
             },
             getConfidence: {
                 label: "Get confidence",
@@ -314,7 +314,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     }]
             },
             separator2: {
-                label : "\u2501\u2501\u2501\u2501"
+                label: "\u2501\u2501\u2501\u2501"
             },
             addOccupation: {
                 label: "Add occupation",
@@ -653,7 +653,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     }]
             },
             separator1: {
-                label : "\u2501\u2501\u2501\u2501"
+                label: "\u2501\u2501\u2501\u2501"
             },
             getActive: {
                 label: "Is active",
@@ -846,6 +846,100 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             taskDescriptorId: {
                 type: STRING
+            }
+        }
+    });
+
+
+    /*
+     * BURNDOWN
+     */
+    persistence.BurndownDescriptor = Y.Base.create("BurndownDescriptor", persistence.VariableDescriptor, [], {
+    }, {
+        ATTRS: {
+            "@class": {
+                value: "BurndownDescriptor"
+            },
+            title: {
+                type: STRING,
+                optional: true,
+                _inputex: {
+                    label: "Label",
+                    description: "Displayed to players",
+                    index: -1
+                }
+            },
+            description: {
+                type: STRING,
+                format: HTML,
+                optional: true,
+                _inputex: {
+                    index: -1
+                }
+            },
+            defaultInstance: {
+                properties: {
+                    '@class': {
+                        type: STRING,
+                        _inputex: {
+                            _type: HIDDEN,
+                            value: 'BurndownInstance'
+                        }
+                    },
+                    id: IDATTRDEF,
+                    iterations: {
+                        type: ARRAY,
+                        _inputex: {
+                            _type: HIDDEN,
+                            value: []
+                        }
+                    }
+                }
+            }
+        },
+        METHODS: {
+        }
+    });
+    /**
+     * BurndownInstance mapper
+     */
+    persistence.BurndownInstance = Y.Base.create("BurndownInstance", persistence.VariableInstance, [], {}, {
+        ATTRS: {
+            "@class": {
+                value: "BurndownInstance"
+            },
+            iterations: {
+                type: ARRAY,
+                value: []
+            }
+        }
+    });
+
+    persistence.Iteration = Y.Base.create("Assignment", persistence.Entity, [], {}, {
+        ATTRS: {
+            "@class": {
+                value: "Iteration"
+            },
+            name: {
+                type: STRING
+            },
+            beginAt: {
+                type: NUMBER
+            },
+            totalWorkload: {
+                type: NUMBER
+            },
+            plannedWorkloads: {
+                type: ARRAY
+            },
+            replannedWorkloads: {
+                type: ARRAY
+            },
+            workloads: {
+                type: ARRAY
+            },
+            taskDescriptorsId: {
+                type: ARRAY
             }
         }
     });

@@ -52,7 +52,6 @@
                                     },
                                     {
                                         "type": "Template",
-                                        "cssClass": "pmg-title",
                                         "custom": "<% var gameModel = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel(), name; %> <p>Project Management Game<br /><b><% if(gameModel.get('properties.freeForAll')){ name = Y.Wegas.Facade.Game.cache.getCurrentPlayer().get('name'); }else{ name = Y.Wegas.Facade.Game.cache.getCurrentTeam().get('name'); } %><%= name %></b></p>"
                                     }
                                 ]
@@ -62,7 +61,7 @@
                                 "cssClass": "pmg--header__taskbar",
                                 "direction": "vertical",
                                 "name": "taskbar",
-                                "children": [                                 
+                                "children": [
                                     {
                                         "type": "List",
                                         "cssClass": "pmg--taskbar__infos",
@@ -581,7 +580,7 @@
                                                                     }
                                                                 ],
                                                                 "content": "<p>Time budget</p>"
-                                                            },                                                       
+                                                            },
                                                             {
                                                                 "type": "NumberTemplate",
                                                                 "cssClass": "pmg--number",
@@ -619,7 +618,7 @@
                                                                     "content": "Variable.find('timeCards')"
                                                                 },
                                                                 "data": {
-                                                                        "label": ""
+                                                                    "label": ""
                                                                 }
                                                             }
                                                         ]
@@ -769,6 +768,31 @@
                                                                     "condition": {
                                                                         "@class": "Script",
                                                                         "content": "Variable.find(gameModel, \"currentPhase\").getValue(self)<2 || !Variable.find(gameModel, \"evm\").getValue(self)",
+                                                                        "language": "JavaScript"
+                                                                    },
+                                                                    "attribute": "cssClass",
+                                                                    "value": "hidden-button"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }, {
+                                                        "label": "Iterations",
+                                                        "type": "Button",
+                                                        "plugins": [
+                                                            {
+                                                                "fn": "OpenPageAction",
+                                                                "cfg": {
+                                                                    "targetEvent": "click",
+                                                                    "subpageId": 20,
+                                                                    "targetPageLoaderId": "maindisplayarea"
+                                                                }
+                                                            },
+                                                            {
+                                                                "fn": "ConditionalDisable",
+                                                                "cfg": {
+                                                                    "condition": {
+                                                                        "@class": "Script",
+                                                                        "content": "Variable.find(gameModel, \"currentPhase\").getValue(self)<2 || !Variable.find(gameModel, \"burndownEnabled\").getValue(self)",
                                                                         "language": "JavaScript"
                                                                     },
                                                                     "attribute": "cssClass",
@@ -1304,7 +1328,7 @@
         "children": [
             {
                 "type": "PmgResourcesPanels",
-                "cssClass": "resources-page"
+                "cssClass": "resources-page slidepaneled-page"
             }
         ],
         "@name": "Resources"
@@ -1723,70 +1747,70 @@
                 "type": "AbsoluteLayout",
                 "cssClass": "pmg-properties-left",
                 "children": [
-                {
-                    "type": "Text",
-                    "cssClass":"pmg-properties-title",
-                    "plugins": [
-                        {
-                            "fn": "ConditionalDisable",
-                            "cfg": {
-                                "condition": {
-                                    "@class": "Script",
-                                    "content": "var advLimitDesc;\ntry {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){}\nreturn advLimitDesc !== undefined;\n"
-                                },
-                                "attribute": "cssClass",
-                                "value": "hidden"
-                            }
-                        }
-                    ],
-                    "content": "<span>Advancement limit</span>"
-                },
-                {
-                    "label": "<span class='checkbox'>Advancement limit</span>",
-                    "type": "Button",
-                    "cssClass": "pmg-properties-button",
-                    "plugins": [
-                        {
-                            "fn": "ExecuteScriptAction",
-                            "cfg": {
-                                "targetEvent": "click",
-                                "onClick": {
-                                    "@class": "Script",
-                                    "language": "JavaScript",
-                                    "content": "var advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch (e){}\n if (advLimitDesc != undefined){ advLimitDesc.setValue(self, !advLimitDesc.getValue(self));};"
+                    {
+                        "type": "Text",
+                        "cssClass": "pmg-properties-title",
+                        "plugins": [
+                            {
+                                "fn": "ConditionalDisable",
+                                "cfg": {
+                                    "condition": {
+                                        "@class": "Script",
+                                        "content": "var advLimitDesc;\ntry {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){}\nreturn advLimitDesc !== undefined;\n"
+                                    },
+                                    "attribute": "cssClass",
+                                    "value": "hidden"
                                 }
                             }
-                        },
-                        {
-                            "fn": "ConditionalDisable",
-                            "cfg": {
-                                "condition": {
-                                    "@class": "Script",
-                                    "content": "var  advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){} return (advLimitDesc === undefined || advLimitDesc.getValue(self));",
-                                    "language": "JavaScript"
-                                },
-                                "attribute": "cssClass",
-                                "value": "selected"
+                        ],
+                        "content": "<span>Advancement limit</span>"
+                    },
+                    {
+                        "label": "<span class='checkbox'>Advancement limit</span>",
+                        "type": "Button",
+                        "cssClass": "pmg-properties-button",
+                        "plugins": [
+                            {
+                                "fn": "ExecuteScriptAction",
+                                "cfg": {
+                                    "targetEvent": "click",
+                                    "onClick": {
+                                        "@class": "Script",
+                                        "language": "JavaScript",
+                                        "content": "var advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch (e){}\n if (advLimitDesc != undefined){ advLimitDesc.setValue(self, !advLimitDesc.getValue(self));};"
+                                    }
+                                }
+                            },
+                            {
+                                "fn": "ConditionalDisable",
+                                "cfg": {
+                                    "condition": {
+                                        "@class": "Script",
+                                        "content": "var  advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){} return (advLimitDesc === undefined || advLimitDesc.getValue(self));",
+                                        "language": "JavaScript"
+                                    },
+                                    "attribute": "cssClass",
+                                    "value": "selected"
+                                }
+                            },
+                            {
+                                "fn": "ConditionalDisable2",
+                                "cfg": {
+                                    "condition": {
+                                        "@class": "Script",
+                                        "content": "var  advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){} return (advLimitDesc === undefined);",
+                                        "language": "JavaScript"
+                                    },
+                                    "attribute": "cssClass",
+                                    "value": "hidden"
+                                }
                             }
-                        },
-                        {
-                            "fn": "ConditionalDisable2",
-                            "cfg": {
-                                "condition": {
-                                    "@class": "Script",
-                                    "content": "var  advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){} return (advLimitDesc === undefined);",
-                                    "language": "JavaScript"
-                                },
-                                "attribute": "cssClass",
-                                "value": "hidden"
-                            }
-                        }
-                    ]
-                },
-                {
-                    "cssClass":"pmg-advancement-limit-edtion",
-                    "type": "AdvancementLimit"
-                }]
+                        ]
+                    },
+                    {
+                        "cssClass": "pmg-advancement-limit-edtion",
+                        "type": "AdvancementLimit"
+                    }]
             },
             {
                 "type": "AbsoluteLayout",
@@ -1795,7 +1819,7 @@
                     {
                         "type": "Text",
                         "content": "<span>Options</span>",
-                        "cssClass":"pmg-properties-title"
+                        "cssClass": "pmg-properties-title"
                     },
                     {
                         "label": "<span class='checkbox'>Autoreservation</span>",
@@ -1808,7 +1832,7 @@
                                     "targetEvent": "click",
                                     "onClick": {
                                         "@class": "Script",
-                                        "content": "if (Variable.find(gameModel, \"autoReservation\").getValue(self)){\n    Variable.find(gameModel, \"autoReservation\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"autoReservation\").setValue(self, true);\n}\n"
+                                        "content": "var blnDesc = Variable.find(gameModel, \"autoReservation\"); blnDesc.setValue(self, ! blnDesc.getValue(self));"
                                     }
                                 }
                             },
@@ -1837,7 +1861,7 @@
                                     "targetEvent": "click",
                                     "onClick": {
                                         "@class": "Script",
-                                        "content": "if (Variable.find(gameModel, \"forceQuestionReplies\").getValue(self)){\n    Variable.find(gameModel, \"forceQuestionReplies\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"forceQuestionReplies\").setValue(self, true);\n}\n"
+                                        "content": "var blnDesc = Variable.find(gameModel, \"forceQuestionReplies\"); blnDesc.setValue(self, ! blnDesc.getValue(self));"
                                     }
                                 }
                             },
@@ -1866,7 +1890,7 @@
                                     "targetEvent": "click",
                                     "onClick": {
                                         "@class": "Script",
-                                        "content": "if (Variable.find(gameModel, \"evm\").getValue(self)){\n    Variable.find(gameModel, \"evm\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"evm\").setValue(self, true);\n}\n"
+                                        "content": "var blnDesc = Variable.find(gameModel, \"evm\"); blnDesc.setValue(self, ! blnDesc.getValue(self));"
                                     }
                                 }
                             },
@@ -1876,6 +1900,34 @@
                                     "condition": {
                                         "@class": "Script",
                                         "content": "Variable.find(gameModel, \"evm\").getValue(self);\n"
+                                    },
+                                    "attribute": "cssClass",
+                                    "value": "selected"
+                                }
+                            }
+                        ],
+                        "data": {}
+                    }, {
+                        "label": "<span class='checkbox'>Burndowns</span>",
+                        "type": "Button",
+                        "cssClass": "pmg-properties-button",
+                        "plugins": [
+                            {
+                                "fn": "ExecuteScriptAction",
+                                "cfg": {
+                                    "targetEvent": "click",
+                                    "onClick": {
+                                        "@class": "Script",
+                                        "content": "var blnDesc = Variable.find(gameModel, \"burndownEnabled\"); blnDesc.setValue(self, ! blnDesc.getValue(self));"
+                                    }
+                                }
+                            },
+                            {
+                                "fn": "ConditionalDisable",
+                                "cfg": {
+                                    "condition": {
+                                        "@class": "Script",
+                                        "content": "Variable.find(gameModel, \"burndownEnabled\").getValue(self);\n"
                                     },
                                     "attribute": "cssClass",
                                     "value": "selected"
@@ -1937,6 +1989,20 @@
                 ]
             }
         ]
+    },
+    "20": {
+        "cssClass": "pmg-iterations-page slidepaneled-page",
+        "type": "List",
+        "direction": "vertical",
+        "children": [{
+                "type": "Text",
+                "content": "<div class=\"pmg-title\">Iterations</div>"
+            }, {
+                "type": "PmgIterationsPanels",
+                "cssClass": "pmg-iterations-panels"
+            }
+        ],
+        "@name": "Burndowns"
     },
     "Team": {
         "type": "EditTeam"

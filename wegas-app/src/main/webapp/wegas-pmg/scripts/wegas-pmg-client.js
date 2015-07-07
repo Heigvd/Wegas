@@ -40,8 +40,14 @@ app.once("render",
                 }
             },
             getCurrentPhaseName: function() {
-                return Y.Wegas.PMGHelper.getPhaseName(Y.Wegas.Facade.VariableDescriptor.cache.find("name",
-                    "currentPhase").get("value"));
+                return Y.Wegas.PMGHelper.getPhaseName(Y.Wegas.PMGHelper.getCurrentPhaseNumber());
+            },
+            getCurrentPeriodNumber: function() {
+                var phaseNumber = Y.Wegas.PMGHelper.getCurrentPhaseNumber();
+                return Y.Wegas.Facade.VariableDescriptor.cache.find("name", "currentPeriod").get("items")[phaseNumber - 1].getValue();
+            },
+            getCurrentPhaseNumber: function(){
+                return Y.Wegas.Facade.VariableDescriptor.cache.find("name", "currentPhase").get("value");
             },
             getBACTotal: function() {
                 var i, bacs = 0, tasks = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "tasks"), task;

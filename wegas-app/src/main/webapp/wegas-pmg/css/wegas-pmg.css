@@ -667,6 +667,7 @@ h2{
     padding:0px 24px 24px 24px;
     float:right;
 }
+
 .home-page .pmg-news-content .wegas-inbox-list-content{
     display:block;
     position:relative;
@@ -1189,19 +1190,117 @@ td.yui3-datatable-col-Realised:after {
 }
 
 /*----------------------------------SlidePanel----------------------------*/
-.resources-page .slidepanel-title {
+.slidepaneled-page .slidepanel-title {
     height:48px;
     line-height:48px;
     width:100%; 
 }
 
-/*---------------------------- project-page & evm-page ---------------------------------*/
-.project-page, .evm-page{
+.slidepaneled-page .wegas-pmg-slidepanel{
+    display:block;
+    position:relative;
+}
+
+.slidepaneled-page .slidepanel-title{
+    padding-left: 32px;
+    cursor:pointer;
+    background-color:#d8d9dd;
+    box-sizing:border-box;
+    transition:.3s;
+}
+
+.slidepaneled-page .wegas-slidepanel-toggled .slidepanel-title{
+    background-color:white;
+    transition:.3s;
+}
+.slidepaneled-page .wegas-slidepanel-toggled .slidepanel-title:hover{
+    background-color:#f1f1f1;
+}
+
+.slidepaneled-page .slidepanel-title h2{
+    color:#3e404c;
+    transition:.3s;
+    padding:0px;
+    margin:0px;
+    line-height:52px;
+}
+
+.slidepaneled-page .wegas-slidepanel-toggled .slidepanel-title h2{
+    color:#3e404c;
+}
+
+.slidepaneled-page .wegas-pmg-slidepanel.wegas-slidepanel-toggled{
+    border:solid 1px white;
+    border-bottom:solid 1px #d8d9dd;
+    max-height:48px;
+    overflow:hidden;
+    transition:.3s;
+}
+
+.slidepaneled-page .wegas-pmg-slidepanel{
+    margin-bottom:8px;
+    border:solid 1px #d8d9dd;
+    border-bottom:solid 4px #d8d9dd;
+    max-height:1500px;
+    transition:.3s;
+}
+
+.wegas-pmg-slidepanel .wegas-pmg-slidepanel-content{
+    display:block;
+    position:relative;
+    opacity:1;
+    visibility:visible;
+    transition:.3s;
+}
+
+.wegas-pmg-slidepanel.wegas-slidepanel-toggled .wegas-pmg-slidepanel-content{
+    opacity:1;
+    visibility:visible;
+    transition:.3s;
+}
+
+.slidepaneled-page .slidepanel-title:before{
+    width:18px;
+    height:18px;
+    margin:16px 7px;
+    border-radius:50%;
+    top:0px;
+    left:0px;
+    font-size:14px;
+    line-height:18px;
+    text-align:center;
+    display:block;
+    position:absolute;
+    content:"\f104";
+    font-family:"FontAwesome";
+    transform:rotate(270deg);
+    border:solid 1px #3e404c;
+    color:#3e404c;
+}
+
+.slidepaneled-page .wegas-slidepanel-toggled .slidepanel-title:before{
+    transform:rotate(180deg);
+    border:solid 1px #3e404c;
+    color:#3e404c;
+    transition:.3s;
+}
+
+
+
+
+/*-------------------- project-page, evm-page & iterations-page --------------------*/
+.pmg-iterations-page .toolbar .add-iteration {
+    font-family: "FontAwesome";
+    cursor: pointer;
+    color: #656774;
+}
+
+.project-page, .evm-page, .pmg-iterations-page {
     display: block;
     position:relative;
     width: 100%;
     height: 100%;
-    padding: 0px 24px 24px 24px;
+    padding: 16px 24px 24px 24px;
     box-sizing: border-box;
     margin: 0px;
     border: none;
@@ -1229,14 +1328,17 @@ td.yui3-datatable-col-Realised:after {
 .project-page .indicators-quality{
     padding-left:24px;
 }
+
+.pmg-title,
 .evm-page .slidepanel-title,
 .project-page .pmg-overview-title, 
 .project-page .indicators-management .slidepanel-title, 
 .project-page .indicators-quality .slidepanel-title{
     width:100%;
-    margin:16px 0px;
+    margin: 0px 0px 16px 0px;
 }
 
+.pmg-title,
 .evm-page .slidepanel-title h2,
 .project-page .pmg-overview-title h2, .project-page .indicators-management .slidepanel-title h2, .project-page .indicators-quality .slidepanel-title h2{
     width:100%;
@@ -1338,7 +1440,7 @@ td.yui3-datatable-col-Realised:after {
     position:relative;
     width:50%;
     float:left;
-    margin:0px;
+    margin-bottom: 16px;
     padding:0px;
     box-sizing:border-box;
 }
@@ -1372,96 +1474,6 @@ td.yui3-datatable-col-Realised:after {
 }
 
 /*---------------------------- Resources page ---------------------*/
-.resources-page .wegas-pmg-slidepanel{
-    display:block;
-    position:relative;
-}
-
-.resources-page .slidepanel-title{
-    padding-left: 32px;
-    cursor:pointer;
-    background-color:#d8d9dd;
-    box-sizing:border-box;
-    transition:.3s;
-}
-
-.resources-page .wegas-slidepanel-toggled .slidepanel-title{
-    background-color:white;
-    transition:.3s;
-}
-
-.resources-page .wegas-slidepanel-toggled .slidepanel-title:hover{
-    background-color:#f1f1f1;
-}
-
-.resources-page .slidepanel-title h2{
-    color:#3e404c;
-    transition:.3s;
-    padding:0px;
-    margin:0px;
-    line-height:52px;
-}
-
-.resources-page .wegas-slidepanel-toggled .slidepanel-title h2{
-    color:#3e404c;
-}
-
-.resources-page .wegas-pmg-slidepanel.wegas-slidepanel-toggled{
-    border:solid 1px white;
-    border-bottom:solid 1px #d8d9dd;
-    max-height:48px;
-    overflow:hidden;
-    transition:.3s;
-}
-
-.resources-page .wegas-pmg-slidepanel{
-    margin-bottom:8px;
-    border:solid 1px #d8d9dd;
-    border-bottom:solid 4px #d8d9dd;
-    max-height:1500px;
-    transition:.3s;
-}
-
-.wegas-pmg-slidepanel .wegas-pmg-slidepanel-content{
-    display:block;
-    position:relative;
-    opacity:1;
-    visibility:visible;
-    transition:.3s;
-}
-
-.wegas-pmg-slidepanel.wegas-slidepanel-toggled .wegas-pmg-slidepanel-content{
-    opacity:1;
-    visibility:visible;
-    transition:.3s;
-}
-
-.resources-page .slidepanel-title:before{
-    width:18px;
-    height:18px;
-    margin:16px 7px;
-    border-radius:50%;
-    top:0px;
-    left:0px;
-    font-size:14px;
-    line-height:18px;
-    text-align:center;
-    display:block;
-    position:absolute;
-    content:"\f104";
-    font-family:"FontAwesome";
-    transform:rotate(270deg);
-    border:solid 1px #3e404c;
-    color:#3e404c;
-}
-
-.resources-page .wegas-slidepanel-toggled .slidepanel-title:before{
-    transform:rotate(180deg);
-    border:solid 1px #3e404c;
-    color:#3e404c;
-    transition:.3s;
-}
-
 .wegas-pmg-reservation .present, .wegas-pmg-reservation .futur {
     cursor: pointer;
 }
@@ -1737,6 +1749,3 @@ td.yui3-datatable-col-Realised:after {
         font-size:14px;
     }
 }
-
-
-

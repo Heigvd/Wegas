@@ -271,7 +271,49 @@ var PMGHelper = (function() {
         return isTaskInstanceCompleted(taskDescriptor.getInstance(self));
     }
 
+    /**
+     * verify if the taskdescriptor is part of any burndown iteration
+     * @param {type} taskDescriptor the task we look for
+     * @param {type} burndownInstance set of iteration to look in
+     * @returns {Boolean}
+     */
+    function isTaskInBurndown(taskDescriptor, burndownInstance) {
+        var iterations = burndownInstance.getIterations(),
+            i, it;
+        for (i in iterations) {
+            it = iterations[i];
+            if (it.getTasks().contains(taskDescriptor)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
+    /**
+     * Determine whether or not an iteration has begun. Such an iteration has
+     * begun if at least one of its task has begun or if the planned start
+     * period is in the past
+     * 
+     * @param {type} iteration
+     * @returns {Boolean}
+     */
+    function hasIterationBegun(iteration) {
+        var taskDescriptors = iteration.getTasks(),
+            taskInstance, i;
+
+        if (PMGHelper.getCurrentPeriod() > iteration.getBeginAt()) {
+            return true;
+        }
+
+        for (i in taskDescriptors) {
+            taskInstance = taskDescriptors[i];
+            if (taskInstance.getPropertyD("completeness") > 0.0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     return {
         automatedReservation: function() {
@@ -335,6 +377,12 @@ var PMGHelper = (function() {
         },
         isTaskInstanceCompleted: function(taskInstance) {
             return isTaskInstanceCompleted(taskInstance);
+        },
+        isTaskInBurndown: function(taskDescriptor, burndownInstance) {
+            return isTaskInBurndown(taskDescriptor, burndownInstance);
+        },
+        hasIterationBegun: function(iteration) {
+            return hasIterationBegun(iteration);
         }
     };
 
