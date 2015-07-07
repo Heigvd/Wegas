@@ -219,26 +219,34 @@
         h3{
             padding:64px 16px 16px 16px;
         }
+    }
+    
+    &.view__users-individual{
+        padding:0px 16px;
+    }
 
-        .view__users-individual{
-            padding:0px 16px;
-        }
+    &.view__users-teams{
 
-        .view__users-teams{
-
-            & .view__users-team {
-                padding-bottom:16px;
-                clear:both;
-                & > h4{
-                margin:0px 16px 16px 16px;
-                padding:16px 0px;
-                font-size:15px;
-                font-weight:500;
-                border-bottom:solid 1px $border;
-            }
+        & .view__users-team {
+            padding-bottom:16px;
+            clear:both;
+            & > h4{
+                margin:0px 0px 16px 0px;
+                padding:0px;
+                height:48px;
+                display: block;
+                span{
+                    font-size:15px;
+                    line-height: 48px;
+                    height: 48px;
+                    font-weight:500;
+                    float: left;
+                    margin-left:16px;
+                }
             }
         }
     }
+    
 
     // Styles de décorations
     @each $level in $backgrounds-levels {

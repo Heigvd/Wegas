@@ -1,4 +1,13 @@
-<div class="view__users-team" ng-repeat="team in teams" ng-if="team.players.length > 0">
-	<h4>{{team.name}}</h4>
+<div class="view__users-team" ng-repeat="team in teams">
+	<h4>
+            <span>{{team.name}}</span>
+             <a 
+	    	class="button button--small button--round button--danger-reverse button--label-off button--trash" 
+	    	title="Remove team"
+                    confirmed-click="remove(team.id)" 
+                    ng-confirm-click="Are you sure you want to remove this team from the session ? This action is irreversible.">
+	    	<span class="button__label">Remove team</span>
+	    </a>
+        </h4>
 	<div class="view__users-individual" trainer-sessions-users-individual-list players="team.players"></div>
 </div>
