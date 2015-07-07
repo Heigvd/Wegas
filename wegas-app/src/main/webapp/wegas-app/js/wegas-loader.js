@@ -101,7 +101,7 @@ YUI().use(function(Y) {
             },
             "wegas-resourcemanagement-entities": {
                 path: "js/persistence/wegas-resourcemanagement-entities-min.js",
-                ws_provides: ["ResourceDescriptor", "TaskDescriptor"]
+                ws_provides: ["ResourceDescriptor", "TaskDescriptor", "BurndownDescriptor"]
             },
             /**
              * Widgets
