@@ -229,7 +229,7 @@ YUI.add('wegas-dashboard', function(Y) {
                                     label: "Apply impact",
                                     classNames: "modal--footer-right modal--footer-valid",
                                     action: function() {
-                                            this.item(0).run();
+                                            this.item(0).run(this);
                                     }
                                 },{
                                     name: 'proceed',
