@@ -607,7 +607,7 @@
     content:"5"
 }
 
-.yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .wegas-inputex-variabledescriptorselect-group button{
+.yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .wegas-inputex-variabledescriptorselect-group > button{
     display:block;
     width:40px;
     height:40px;
