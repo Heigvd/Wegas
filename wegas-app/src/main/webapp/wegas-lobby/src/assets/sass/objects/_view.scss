@@ -139,6 +139,11 @@
             @include make-md-column(6);
             margin-top:28px;
             padding:0px;
+            
+            @media screen and (max-width: 991px) {
+                max-width:480px;
+                margin:0 0 8px 0;
+            }
         }
         .view__list{
             @include make-xs-column(12);
@@ -147,6 +152,10 @@
             box-sizing: border-box;
             overflow-x:hidden;
             overflow-y:auto;
+            
+            @media screen and (max-width: 991px) {
+                height:calc(100% - 133px);
+            }
 
             &.ng-enter,
             &.ng-leave
@@ -176,6 +185,11 @@
             }
             &.view__list--with-archive{
                 height:calc(100% - 162px);
+                
+                @media screen and (max-width: 991px) {
+                    height:calc(100% - 213px);
+                }
+                
             }
         }
         .view__no-group{

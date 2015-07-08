@@ -122,7 +122,7 @@ $card-margin-size: 8px;
             }
         }
     }
-
+    
     &.card--scenario {
         &.card--big {
             height: inherit;
@@ -210,5 +210,25 @@ $card-margin-size: 8px;
                 padding:$size-action-margin 16px;
             }
         }
+    }
+    
+    &.card--trainer-session{
+        .card__description{
+            width:calc(100% - 612px);
+            box-sizing:border-box;
+            .line{
+                width:100%;
+                box-sizing:border-box;
+                overflow:hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+        }
+        
+        @media screen and (max-width: 800px) {
+            .card__description{
+                width: calc(100% - 96px);
+            }
+	}
     }
 }
