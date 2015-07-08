@@ -10,6 +10,11 @@ angular.module('wegas.models.teams', [])
                         return t.id == id;
                     });
                 },
+                findTeamBySessionId: function(sessionId) {
+                    return _.find(teams.cache.data, function(t) {
+                        return t.gameId == sessionId;
+                    });
+                },
                 stopWaiting: function(waitFunction) {
                     $interval.cancel(waitFunction);
                 },
@@ -134,8 +139,43 @@ angular.module('wegas.models.teams', [])
                     }
                 }
             } else {
-                model.getTeams(teamsListName).then(function() {
+                model.getTeams().then(function() {
                     team = teams.findTeam(id);
+                    if (team) {
+                        deferred.resolve(Responses.success("Team find", team));
+                    } else {
+                        deferred.resolve(Responses.danger("No team find", false));
+                    }
+                });
+            }
+            return deferred.promise;
+        };
+        
+        /* Ask for one team joined. */
+        model.getTeamBySessionId = function(sessionId) {
+            var deferred = $q.defer(),
+            	team = null;
+            if (teams.cache) {
+                if (teams.cache.loading) {
+                    teams.wait().then(function() {
+                    	team = teams.findTeamBySessionId(sessionId);
+                        if (team) {
+                            deferred.resolve(Responses.success("Team find", team));
+                        } else {
+                            deferred.resolve(Responses.danger("No team find", false));
+                        }
+                    });
+                } else {
+                    team = teams.findTeamBySessionId(sessionId);
+                    if (team) {
+                        deferred.resolve(Responses.success("Team find", team));
+                    } else {
+                        deferred.resolve(Responses.danger("No team find", false));
+                    }
+                }
+            } else {
+                model.getTeams().then(function() {
+                    team = teams.findTeamBySessionId(sessionId);
                     if (team) {
                         deferred.resolve(Responses.success("Team find", team));
                     } else {
