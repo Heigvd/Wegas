@@ -61,6 +61,9 @@ $buttons-icon : (
         $size-pixel:nth($size, 2);
         &.button--#{$size-name}{
             padding:$size-pixel/3 $size-pixel/2 $size-pixel/3 ($size-pixel + $size-pixel/8);
+            &:focus{
+                padding:$size-pixel/3 $size-pixel/2 $size-pixel/3 ($size-pixel + $size-pixel/8);
+            }
             &:before{
                 padding:$size-pixel/4.5 0px;
                 font-size:$size-pixel/2.5;
