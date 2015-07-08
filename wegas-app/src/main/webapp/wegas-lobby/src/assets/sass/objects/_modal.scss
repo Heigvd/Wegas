@@ -176,41 +176,41 @@
 	}
 	.modal__content{
 		width:100%;
-		height:401px;
+		height:calc(100% - 179px);
 		box-sizing: border-box;
 		background: $background-default-secondary;
 		padding: 1em;
 		overflow-x:hidden;
 		overflow-y:auto;
 		h2 {
-			margin: 0;
-			margin-bottom: 8px;
-			font-size: 18px;
+                    margin: 0;
+                    margin-bottom: 8px;
+                    font-size: 18px;
 		}
 		&.modal__content--nav-off{
-			height:450px;
+                    height:calc(100% - 130px);
 		}
 		&.modal__content--tools-off{
-			height:466px;
+                    height:calc(100% - 114px);
 		}
 		&.modal__content--nav-tools-off{
-			height:515px;
+                    height:calc(100% - 65px);
 		}
 
 		.modal__content__colors{
-			display:block;
-			position:relative;
-			width:100%;
-			height:100px;
+                    display:block;
+                    position:relative;
+                    width:100%;
+                    height:100px;
 		}
 
 		.modal__content__icons{
-			display:block;
-			position:relative;
-			width:100%;
-			height:300px;
-			overflow-x:hidden;
-			overflow-y:auto;
+                    display:block;
+                    position:relative;
+                    width:100%;
+                    height:300px;
+                    overflow-x:hidden;
+                    overflow-y:auto;
 		}
 	}
 
