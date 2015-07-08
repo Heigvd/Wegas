@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import javax.jcr.*;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
-import javax.jcr.query.QueryResult;
 
 /**
  * @author Cyril Junod <cyril.junod at gmail.com>
@@ -54,10 +53,24 @@ public class PageConnector {
         return this.query("Select * FROM [nt:base] as n WHERE ISDESCENDANTNODE('/" + gameModelName + "') order by n.index, localname(n)");
     }
 
-    protected NodeIterator query(String query) throws RepositoryException {
+    protected NodeIterator query(final String query) throws RepositoryException {
+        return this.query(query, -1, -1);
+    }
+
+    protected NodeIterator query(final String query, final int limit) throws RepositoryException {
+        return this.query(query, limit, -1);
+    }
+
+    protected NodeIterator query(final String query, final int limit, final int offset) throws RepositoryException {
         final QueryManager queryManager = session.getWorkspace().getQueryManager();
-        final QueryResult result = queryManager.createQuery(query, Query.JCR_SQL2).execute();
-        return result.getNodes();
+        final Query q = queryManager.createQuery(query, Query.JCR_SQL2);
+        if (limit > 0) {
+            q.setLimit(limit);
+            if (offset > -1) {
+                q.setOffset(offset);
+            }
+        }
+        return q.execute().getNodes();
     }
 
     /**

@@ -150,7 +150,7 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
                             }, {
                                 label: "Editor position",
                                 value: meta.index,
-                                type: "uneditable",
+                                type: "hidden",
                                 name: "index"
                             }],
                             wrapperClassName: "inputEx-fieldWrapper wegas-pagename-edition"

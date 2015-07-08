@@ -216,4 +216,12 @@ public class Pages implements AutoCloseable {
         }
         return pages;
     }
+
+    public Page getDefaultPage() throws RepositoryException {
+        final NodeIterator query = this.connector.query("Select * FROM [nt:base] as n WHERE ISDESCENDANTNODE('/" + this.gameModelId + "') order by n.index, localname(n)", 1);
+        if(query.hasNext()){
+            return new Page(query.nextNode());
+        }
+        return null;
+    }
 }
