@@ -1393,6 +1393,9 @@ YUI.add('wegas-datasource', function(Y) {
          */
         getPage: function(pageId, callback) {
             var page = null;
+            if (pageId === "default" && !this.editable) {
+                pageId = 1;
+            }
             if (this.getCache(pageId)) {
                 page = Y.clone(this.getCache(pageId));
                 page["@pageId"] = pageId;
@@ -1407,9 +1410,10 @@ YUI.add('wegas-datasource', function(Y) {
                         success: Y.bind(function(e) {
                             var page;
                             if (callback instanceof Function) {
-                                page = Y.clone(this.getCache(pageId));
+                                var pId = e.data.getResponseHeader("Page") || pageId;
+                                page = Y.clone(this.getCache(pId));
                                 if (page) {
-                                    page["@pageId"] = pageId;
+                                    page["@pageId"] = pId;
                                     callback(page);
                                 }
                             }

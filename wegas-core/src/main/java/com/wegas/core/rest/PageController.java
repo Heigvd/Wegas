@@ -67,11 +67,16 @@ public class PageController {
      */
     @GET
     @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}")
-    public Response getPage(@PathParam("gameModelId") String gameModelId,
+    public Response getPage(@PathParam("gameModelId") final String gameModelId,
                             @PathParam("pageId") String pageId)
         throws RepositoryException {
         try (final Pages pages = new Pages(gameModelId)) {
-            Page page = pages.getPage(pageId);
+            Page page;
+            if (pageId.equals("default")) {
+                page = pages.getDefaultPage();
+            } else {
+                page = pages.getPage(pageId);
+            }
 
             SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + gameModelId);
 
@@ -82,7 +87,7 @@ public class PageController {
                 }
             }
             return Response.ok(page.getContent(), MediaType.APPLICATION_JSON)
-                .header("Page", pageId).build();
+                .header("Page", page.getId()).build();
         }
     }
 
