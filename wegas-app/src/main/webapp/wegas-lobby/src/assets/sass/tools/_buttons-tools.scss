@@ -36,6 +36,9 @@ $buttons-icon : (
 %button--with-icon{
     $btn-default-size: nth(nth($sizes, 1),2);
     padding:$btn-default-size/3 $btn-default-size/2 $btn-default-size/3 ($btn-default-size + $btn-default-size/8);
+    &:focus{
+        padding:$btn-default-size/3 $btn-default-size/2 $btn-default-size/3 ($btn-default-size + $btn-default-size/8);
+    }
     &:before{
         content:"A";
         display:block;
