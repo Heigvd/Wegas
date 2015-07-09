@@ -2,10 +2,20 @@
 	<div class="container">
 		<div class="row view--albasim">
 			<div class="view__logo-albasim"></div>
-			<h2 class="view__first-subtitle">The "learning by doing" solution from AlbaSIM</h2>
+			<h2 class="view__first-subtitle">{{ 'WEGAS-SLOGAN' | translate }}</h2>
 		</div>
 		<div ui-view="form"></div>
-		<p class="view__first-subtitle subtitle--medium">{{ 'CREATE-ACCOUNT-LABEL' | translate }} <a class="link link--simple-primary" ui-sref="wegas.public.signup">{{'CREATE-ACCOUNT-BTN' | translate}}</a></p>
-	</div>
+		<p class="view__first-subtitle subtitle--account">{{ 'CREATE-ACCOUNT-LABEL' | translate }} <a class="link link--simple-primary" ui-sref="wegas.public.signup">{{'CREATE-ACCOUNT-BTN' | translate}}</a></p>
+		<p ng-if="publicCtrl.currentLanguage == 'en'" class="view__first-subtitle subtitle--language">
+                    <span>{{'LANGUAGE-ENGLISH-NAME' | translate}}</span>
+                    <span> - </span>
+                    <a class="link link--simple-primary" ng-click="publicCtrl.changeLanguage('fr')">{{'LANGUAGE-FRENCH-NAME' | translate}}</a>
+                </p>
+                <p ng-if="publicCtrl.currentLanguage == 'fr'" class="view__first-subtitle subtitle--language">
+                    <a class="link link--simple-primary" ng-click="publicCtrl.changeLanguage('en')">{{'LANGUAGE-ENGLISH-NAME' | translate}}</a>
+                    <span> - </span>
+                    <span>{{'LANGUAGE-FRENCH-NAME' | translate}}</span>
+                </p>
+        </div>
 </div>
 <div class="view view--modal" ui-view="modal"></div>
