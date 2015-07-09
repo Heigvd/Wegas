@@ -1,7 +1,7 @@
 angular.module('wegas.service.auth', [
     'wegas.models.sessions'
 ])
-    .service('Auth', function($http, $q, $interval, Responses) {
+    .service('Auth', function($http, $q, $interval, $translate, Responses) {
         var service = this,
             authenticatedUser = null,
             rights = null,
@@ -89,18 +89,30 @@ angular.module('wegas.service.auth', [
                 }
             }).success(function(data) {
                 if (data.events !== undefined && data.events.length == 0) {
-                    deferred.resolve(Responses.success("You are connected", true));
+                    $translate('COMMONS-AUTH-LOGIN-FLASH-SUCCESS').then(function (message) {
+                        deferred.resolve(Responses.success(message, true));
+                    });
                     service.getAuthenticatedUser();
                 } else if (data.events !== undefined) {
-                    deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+                    console.log(data.events[0].exceptions[0].message);
+                    $translate('COMMONS-AUTH-LOGIN-FLASH-ERROR-CLIENT').then(function (message) {
+                        deferred.resolve(Responses.danger(message, false));
+                    });
                 } else {
-                    deferred.resolve(Responses.danger("Whoops...", false));
+                    $translate('COMMONS-AUTH-LOGIN-FLASH-ERROR-SERVER').then(function (message) {
+                        deferred.resolve(Responses.danger(message, false));
+                    });
                 }
             }).error(function(data) {
                 if (data.events !== undefined && data.events.length > 0) {
-                    deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+                    console.log(data.events[0].exceptions[0].message);
+                    $translate('COMMONS-AUTH-LOGIN-FLASH-ERROR-CLIENT').then(function (message) {
+                        deferred.resolve(Responses.danger(message, false));
+                    });
                 } else {
-                    deferred.resolve(Responses.danger("Whoops...", false));
+                    $translate('COMMONS-AUTH-LOGIN-FLASH-ERROR-SERVER').then(function (message) {
+                        deferred.resolve(Responses.danger(message, false));
+                    });
                 }
             });
             return deferred.promise;
@@ -111,9 +123,13 @@ angular.module('wegas.service.auth', [
                 url = "rest/User/Logout";
             $http.get(ServiceURL + url).success(function(data) {
                 authenticatedUser = null;
-                deferred.resolve(Responses.success("Logout successfully", true));
+                $translate('COMMONS-AUTH-LOGOUT-FLASH-SUCCESS').then(function (message) {
+                    deferred.resolve(Responses.success(message, true));
+                });
             }).error(function(data) {
-                deferred.resolve(Responses.danger("Error when logout", false));
+                $translate('COMMONS-AUTH-LOGOUT-FLASH-ERROR').then(function (message) {
+                    deferred.resolve(Responses.danger(message, false));
+                });
             });
             return deferred.promise;
         };
@@ -129,8 +145,13 @@ angular.module('wegas.service.auth', [
                 "firstname": firstname,
                 "lastname": lastname
             }).success(function(data) {
-                deferred.resolve(Responses.success("Account created", true));
+                $translate('COMMONS-AUTH-CREATE-ACCOUNT-FLASH-SUCCESS').then(function (message) {
+                    deferred.resolve(Responses.success(message, true));
+                });
             }).error(function(data) {
+                $translate('COMMONS-AUTH-CREATE-ACCOUNT-FLASH-ERROR').then(function (message) {
+                    deferred.resolve(Responses.danger(message, true));
+                });
                 deferred.resolve(Responses.danger(data.message, false));
             });
             return deferred.promise;
@@ -148,17 +169,22 @@ angular.module('wegas.service.auth', [
                 }
             })
                 .success(function(data) {
-                    deferred.resolve(Responses.success("A new password has been send", true));
+                    $translate('COMMONS-AUTH-PASSWORD-FLASH-SUCCESS').then(function (message) {
+                        deferred.resolve(Responses.success(message, true));
+                    });
                 })
                 .error(function(data) {
-                    deferred.resolve(Responses.danger("Error during password generation", false));
+                    $translate('COMMONS-AUTH-PASSWORD-FLASH-ERROR').then(function (message) {
+                        deferred.resolve(Responses.danger(message, false));
+                    });
                 });
             return deferred.promise;
         };
 
         service.loginAsGuest = function() {
             var deferred = $q.defer(),
-                url = "rest/User/GuestLogin/";
+                url = "rest/User/GuestLogin/",
+                messageARendre;
             service.getAuthenticatedUser().then(function(noUser) {
                 if (noUser == null) {
                     $http.post(ServiceURL + url, {
@@ -173,14 +199,20 @@ angular.module('wegas.service.auth', [
                     })
                         .success(function(data) {
                             service.getAuthenticatedUser().then(function(guest){
-                                deferred.resolve(Responses.success("Connected as guest", guest));
+                                $translate('COMMONS-AUTH-GUEST-FLASH-SUCCESS').then(function (message) {
+                                    deferred.resolve(Responses.success(message, guest));
+                                });
                             });
                         })
                         .error(function(data) {
-                            deferred.resolve(Responses.danger("Error during connection", false));
+                            $translate('COMMONS-AUTH-GUEST-FLASH-ERROR').then(function (message) {
+                                deferred.resolve(Responses.danger(message, false));
+                            });
                         });
                 }else{
-                    deferred.resolve(Responses.danger("Error during connection", false));
+                    $translate('COMMONS-AUTH-GUEST-FLASH-ERROR').then(function (message) {
+                        deferred.resolve(Responses.danger(message, false));
+                    });
                 }
             });
             return deferred.promise;

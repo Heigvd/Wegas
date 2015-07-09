@@ -13,7 +13,7 @@ angular.module('public.login', [
         })
     ;
 })
-.controller('PublicLoginCtrl', function PublicLoginCtrl($scope, Flash, Auth, $state) {
+.controller('PublicLoginCtrl', function PublicLoginCtrl($scope, Flash, Auth, $state, $translate) {
 
     var publicLoginCtrl = this;
 
@@ -29,7 +29,9 @@ angular.module('public.login', [
                 }
             });
         } else {
-            Flash.danger('username/password cannot be empty');
+            $translate('LOGIN-FLASH-EMPTY').then(function (message) {
+                Flash.danger(message);
+            });
         }
     };
 });
