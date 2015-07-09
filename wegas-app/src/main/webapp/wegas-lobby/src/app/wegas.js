@@ -1,5 +1,14 @@
 var ServiceURL = "",
     MAX_DISPLAYED_CHARS = 32;
+    
+Storage.prototype.setObject = function(key, value) {
+    this.setItem(key, JSON.stringify(value));
+}
+ 
+Storage.prototype.getObject = function(key) {
+    var value = this.getItem(key);
+    return value && JSON.parse(value);
+}
 
 angular.module('Wegas', [
     'flash',
@@ -7,6 +16,7 @@ angular.module('Wegas', [
     'ngAnimate',
     'angular-loading-bar',
     'angularModalService',
+    'pascalprecht.translate',
     'wegas.service.responses',
     'wegas.service.auth',
     'wegas.directives.illustrations',

@@ -3,7 +3,7 @@ angular.module('public', [
     'public.signup',
     'public.password'
 ])
-.config(function ($stateProvider) {
+.config(function ($stateProvider, $translateProvider) {
     $stateProvider
         .state('wegas.public', {
             url: 'public',
@@ -19,6 +19,30 @@ angular.module('public', [
             }
         })
     ;
+    
+    $translateProvider.translations('en', {
+        'PASSWORD-BTN': "Password forgotten",
+        'CREATE-ACCOUNT-LABEL': "Haven't yet a Wegas account ?",
+        'CREATE-ACCOUNT-BTN': "Create account",
+        'LOGIN-BTN': "Login"
+    });
+    
+    $translateProvider.translations('fr', {
+        'PASSWORD-BTN': "Mot de passe oublié",
+        'CREATE-ACCOUNT-LABEL': "Pas encore de compte Wegas ?",
+        'CREATE-ACCOUNT-BTN': "Créer un compte",
+        'LOGIN-BTN': "Connexion"
+    });
+ 
+    if(localStorage.getObject("wegas-config@public")){
+        $translateProvider.preferredLanguage(localStorage.getObject("wegas-config@public").language);
+    }else{
+        localStorage.setObject("wegas-config@public", {
+            'language':'fr'
+        });
+        $translateProvider.preferredLanguage('fr');
+    }
+    console.log(localStorage.getObject('wegas-config@public'));
 })
 .controller('PublicIndexCtrl', function PublicIndexCtrl($scope, $rootScope, $state, Auth) {
 
