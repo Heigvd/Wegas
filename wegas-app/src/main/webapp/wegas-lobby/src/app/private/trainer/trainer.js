@@ -17,14 +17,14 @@ angular.module('private.trainer', [
         })
     ;
 })
-.controller('TrainerCtrl', function TrainerCtrl($state, Auth, ViewInfos) {
-    var trainerCtrl = this;
+.controller('TrainerCtrl', function TrainerCtrl($rootScope, $state, Auth, $translate, WegasTranslations) {
     Auth.getAuthenticatedUser().then(function(user){
         if(user != null){
             if(!user.isAdmin && !user.isScenarist && !user.isTrainer){
                 $state.go("wegas.private.player");
             }
-            ViewInfos.editName("Trainer workspace");
+            console.log(WegasTranslations.workspaces['TRAINER'][localStorage.getObject("wegas-config@public").language]);
+            $rootScope.translationWorkspace = {workspace: WegasTranslations.workspaces['TRAINER'][localStorage.getObject("wegas-config@public").language]};
         }
     });
 })

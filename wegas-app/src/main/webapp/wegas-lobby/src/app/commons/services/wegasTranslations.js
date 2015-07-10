@@ -166,10 +166,34 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"Error during connection",
                                 'fr':"Erreur durant la connexion"
                             },
-                            // Private
+                            // Private Commons
                             'PRIVATE-WS-TITLE':{
                                 'en':"{{workspace}} workspace",
                                 'fr':"Espace de travail - {{workspace}}"
+                            },
+                            'PRIVATE-WS-PLAYER-BTN':{
+                                'en':"Player",
+                                'fr':"Joueur"
+                            },
+                            'PRIVATE-WS-TRAINER-BTN':{
+                                'en':"Trainer",
+                                'fr':"Animateur"
+                            },
+                            'PRIVATE-WS-SCENARIST-BTN':{
+                                'en':"Scenarist",
+                                'fr':"Scénariste"
+                            },
+                            'PRIVATE-WS-ADMIN-BTN':{
+                                'en':"Administrator",
+                                'fr':"Administrateur"
+                            },
+                            'PRIVATE-WS-PROFILE-BTN':{
+                                'en':"Edit profile",
+                                'fr':"Editer mon profile"
+                            },
+                            'PRIVATE-WS-LOGOUT-BTN':{
+                                'en':"Logout",
+                                'fr':"Déconnexion"
                             }
                         },
                         workspaces : {

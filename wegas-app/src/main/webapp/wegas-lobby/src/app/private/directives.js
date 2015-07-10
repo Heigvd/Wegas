@@ -1,7 +1,5 @@
-angular.module('private.directives', [
-    'wegas.service.viewInfos'
-])
-    .directive('privateSidebar', function($state, ViewInfos, Auth) {
+angular.module('private.directives', [])
+    .directive('privateSidebar', function($state, $rootScope, Auth) {
         return {
             templateUrl: 'app/private/directives.tmpl/sidebar.html',
             link: function(scope, element, attrs) {
@@ -11,14 +9,10 @@ angular.module('private.directives', [
                 });
 
                 scope.$watch(function() {
-                    return ViewInfos.name;
-                }, function(newVal, oldVal) {
-                    scope.name = newVal;
+                    return $rootScope.translationWorkspace;
+                }, function(newValue) {
+                    scope.translationWorkspace = newValue;
                 });
-
-                scope.profile = function() {
-                    alert('Sorry... Not yet implemented');
-                };
 
                 scope.logout = function() {
                     Auth.logout().then(function() {
@@ -47,6 +41,7 @@ angular.module('private.directives', [
                 scope.logout = function() {
                     $state.go("wegas.private.logout");
                 };
+                
                 $('h2.view__headding-workspace').unbind("click");
                 $('h2.view__headding-workspace').on('click', function(e) {
                     e.preventDefault();
