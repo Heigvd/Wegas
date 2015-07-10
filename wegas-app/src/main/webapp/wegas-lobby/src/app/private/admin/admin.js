@@ -17,20 +17,17 @@ angular.module('private.admin', [
         })
     ;
 })
-.controller('AdminCtrl', function AdminCtrl($state, Auth, ViewInfos) {
+.controller('AdminCtrl', function AdminCtrl($rootScope, $state, Auth, $translate, WegasTranslations) {
     var ctrl = this;
         ctrl.serviceUrl = ServiceURL;
     Auth.getAuthenticatedUser().then(function(user){
         if(user != null){
             if(!user.isAdmin){
                 $state.go("wegas.private.scenarist");
-            }else{
-                
             }
-            ViewInfos.editName("Admin workspace");
+            $rootScope.translationWorkspace = {workspace: WegasTranslations.workspaces['ADMIN'][localStorage.getObject("wegas-config@public").language]};
         }
     });
-
 })
 .directive('scenarioCreateUpload', function(ScenariosModel) {
         return {
