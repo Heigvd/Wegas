@@ -10,7 +10,7 @@
  * @author Cyril Junod <cyril.junod at gmail.com>
  * @author Gérald Eberle
  */
-/*global Chart*/
+/*global Chartist*/
 YUI.add("wegas-statistics", function(Y) {
     "use strict";
     var Data,
@@ -19,6 +19,19 @@ YUI.add("wegas-statistics", function(Y) {
             "#7E5A92",
             "#380A51",
             "#200131"],
+        CHART_BAR_OPT = {
+            width: 600,
+            height: 400,
+            axisY: {
+                labelInterpolationFnc: function(v) {
+                    return v + "%";
+                },
+                scaleMinSpace: 20,
+                onlyInteger: true
+            },
+            low: 0,
+            high: 100
+        },
         Promise = Y.Promise,// remove me to use native promise
         getPath = function(entity) {
             var title = entity.getEditorLabel(), parent = entity.parentDescriptor;
@@ -34,12 +47,35 @@ YUI.add("wegas-statistics", function(Y) {
                 throw new Error("No logID defined");
             }
         },
+        inlineSvgStyle = function(node) {
+            var tw = document.createTreeWalker(node, 1), n, img = new Image();
+            while ((n = tw.nextNode())) {
+                n.setAttribute("style", getComputedStyle(n).cssText);
+            }
+        },
+        svgToPng = function(node) {
+            return new Promise(function(resolve, reject) {
+                var img = new Image();
+                img.src = "data:image/svg+xml;base64," +
+                          btoa(unescape(encodeURIComponent((new XMLSerializer()).serializeToString(node))));
+                img.onload = function() {
+                    var can = document.createElement("canvas"), ctx = can.getContext("2d"), target = new Image();
+                    can.width = img.width;
+                    can.height = img.height;
+                    ctx.drawImage(img, 0, 0, img.width, img.height);
+                    target.src = can.toDataURL();
+                    resolve(target);
+                };
+                img.onerror = reject;
+            });
+
+        },
         Stats = Y.Base.create("wegas-statistics", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
             CONTENT_TEMPLATE: "<div><div class='stats-question' style='display: inline-block'>" +
                               "<select><option value='null' disabled>-Question-</option></select><button class='gen-button'>Generate all</button>" +
                               "<i class='loading fa fa-spinner fa-pulse fa-lg' style='display: none'></i>" +
                               "<div>Answer count: <span class='question-answer-count'></span></div>" +
-                              "<canvas class='chart' width='600' height='400'></canvas></div>" +
+                              "<div class='chart'></div><div class='tmpNode'></div></div>" +
                               "<div class='stats-number' style='display: none;vertical-align: top'>" +
                               "<select><option value='null' disabled>-Number-</option></select>" +
                               "<canvas class='chart' style='width:600px;height:400px'></canvas></div></div>",
@@ -64,10 +100,12 @@ YUI.add("wegas-statistics", function(Y) {
                         click: Y.bind(this.genAllQuestion, this)
                     }
                 }).render();
-                this.ctx = {
-                    question: this.get("contentBox").one(".stats-question canvas.chart").getDOMNode().getContext("2d"),
-                    number: this.get("contentBox").one(".stats-number canvas.chart").getDOMNode().getContext("2d")
-                };
+                this.chart = new Chartist.Bar(this.get("contentBox").one(".stats-question div.chart").getDOMNode(),
+                    {
+                        labels: [],
+                        series: []
+                    },
+                    CHART_BAR_OPT);
                 Y.Array.each(questions, function(i) {
                     selectQNode.appendChild("<option value='" + i.get("name") + "'>" + getPath(i) + "</option>");
                 });
@@ -104,7 +142,7 @@ YUI.add("wegas-statistics", function(Y) {
             genAllQuestion: function() {
                 var questions = Y.Wegas.Facade.Variable.cache.findAll("@class", "QuestionDescriptor"),
                     promiseChain, i, drawQ = Y.bind(this.drawQuestion, this),
-                    wHand = window.open(), wHandInfo, addToWindow, panel, setInitialState;
+                    wHand = window.open(), wHandInfo, addToWindow, panel, setInitialState, tmpChart;
                 panel = new Y.Wegas.Panel({
                     content: "<span class='fa fa-spinner fa-pulse fa-lg'> </span> Processing",
                     modal: true,
@@ -123,33 +161,50 @@ YUI.add("wegas-statistics", function(Y) {
                     color: "white",
                     backgroundColor: "rgba(0,0,0,0.4)"
                 });
+                tmpChart = new Chartist.Bar(this.get("contentBox").one(".tmpNode").getDOMNode(), {
+                    labels: [],
+                    series: []
+                }, CHART_BAR_OPT);
                 setInitialState = Y.bind(function() {
+                    Y.one(tmpChart.container).empty();
+                    tmpChart.detach();
                     wHandInfo.remove();
-                    if (this.chart) {
-                        this.chart.destroy();
-                        this.chart = null;
-                    }
-                    this.get("contentBox").one(".stats-question select").getDOMNode().value = "null";
+                    /*  this.chart.update({
+                     labels: [],
+                     series: []
+                     });
+                     this.get("contentBox").one(".stats-question select").getDOMNode().value = "null";*/
                     panel.exit();
                 }, this);
+
                 addToWindow = function(question) {
+                    var qName = question.get("name"), total;
                     if (wHand.closed) {
                         throw new Error("Window has been closed, halting");
                     }
-                    return drawQ(question.get("name"))
+                    return this._gmPromise.then(function(gm) {
+                        return Data.getQuestion(getLogID(gm), qName);
+                    })
+                        .then(Y.bind(Data.genQuestionData, null, qName))
                         .then(function(result) {
-                            Y.one(wHand.document.body)
-                                .append("<div style='display:inline-block;width:600px;margin:1px;border:1px solid #888888'><div>" +
-                                        getPath(question) + " (Count: " + result[1] +
-                                        ")</div><img src='" +
-                                        result[0].toBase64Image() +
-                                        "'/></div>");
+                            tmpChart.update(result[0]);
+                            inlineSvgStyle(tmpChart.container.firstChild);
+                            total = result[1];
+                            return svgToPng(tmpChart.container.firstChild);
+                        }).catch(function() {
+                            //Image creation failed, return svg instead
+                            return tmpChart.container.firstChild;
+                        }).then(function(newNode) {
+                            var n = Y.Node.create("<div style ='display:inline-block;width:610px;padding:10px;margin:1px;border:1px solid #888888'> <div>" +
+                                                  getPath(question) + " (Count: " + total + ")</div></div>");
+                            n.append(Y.one(newNode.cloneNode(true)).setStyle("overflow", "visible"));
+                            Y.one(wHand.document.body).append(n);
                         });
                 };
 
                 promiseChain = Promise.resolve();
                 for (i = 0; i < questions.length; i += 1) {
-                    promiseChain = promiseChain.then(Y.bind(addToWindow, null, questions[i]));
+                    promiseChain = promiseChain.then(Y.bind(addToWindow, this, questions[i]));
                 }
                 promiseChain
                     .then(setInitialState)
@@ -163,52 +218,16 @@ YUI.add("wegas-statistics", function(Y) {
                 return this._gmPromise.then(function(gm) {
                     loading.show();
                     return Data.getQuestion(getLogID(gm), questionName);
-                }).then(Y.bind(function(v) {
-                    var question = Y.Wegas.Facade.Variable.cache.find("name", questionName),
-                        choices = {}, data = {
-                            labels: [],
-                            datasets: [{
-                                fillColor: COLORS[0],
-                                data: []
-                            }]
-                        }, res = data.datasets[0].data, labels = data.labels, count = 0;
-                    Y.Array.each(question.get("items"), function(i) {
-                        choices[(i.get("name"))] = 0;
-                    });
-                    Y.Array.each(v, function(i) {
-                        choices[i.choice] += 1;
-                        count += 1;
-                    });
-                    Y.Object.each(choices, function(v, k) {
-                        //                            res.push({
-                        //                                category: Y.Wegas.Facade.Variable.cache.find("name",
-                        // k).get("label"), values: v / (count ? count : 1) * 100 });
-                        labels.push(Y.Wegas.Facade.Variable.cache.find("name", k).get("label"));
-                        res.push(v / (count ? count : 1) * 100);
-                    });
-                    if (this.chart) {
-                        this.chart.destroy();
-                        this.chart = null;
-                    }
-                    this.chart = new Chart(this.ctx.question).Bar(data, {
-                        //                         responsive: true,
-                        animation: false,
-                        scaleOverride: true,
-                        scaleLabel: "<%=value%>%",
-                        scaleSteps: 10,
-                        scaleStepWidth: 10,
-                        scaleStartValue: 0
-                    });
-                    this.get("contentBox").one(".question-answer-count").set("text", count);
-                    return [this.chart, count];
-                }, this)).catch(function(e) {
+                }).then(Y.bind(Data.genQuestionData, null, questionName)).catch(function(e) {
                     Y.log(e, "error", "Y.Wegas.Statistics");
                     loading.hide();
                     throw e;
-                }).then(function(val) {
+                }).then(Y.bind(function(val) {
+                    this.chart.update(val[0]);
+                    this.get("contentBox").one(".question-answer-count").set("text", val[1]);
                     loading.hide();
                     return val;
-                });
+                }, this));
             },
             destructor: function() {
                 this._gmPromise = null;
@@ -223,7 +242,7 @@ YUI.add("wegas-statistics", function(Y) {
     Y.Wegas.Statistics = Stats;
     Data = (function() {
         var baseURI = Y.Wegas.app.get("base"),
-            getQuestion, getNumber, getStats, getCurrentGameModel;
+            getQuestion, getNumber, getStats, getCurrentGameModel, genQuestionData;
         getStats = function(type, logID, name) {
             if (Y.Array.indexOf(["Question", "Number"], type) < 0) {
                 return Promise.reject(new Error("Type " + type + " not available"));
@@ -256,6 +275,45 @@ YUI.add("wegas-statistics", function(Y) {
         getQuestion = function(logID, qName) {
             return getStats("Question", logID, qName);
         };
+        genQuestionData = function(questionName, questionData) {
+            var question = Y.Wegas.Facade.Variable.cache.find("name", questionName),
+                choices = {}, data = {
+                    labels: [],
+                    series: [{
+                        fillColor: COLORS[0],
+                        data: []
+                    }]
+                }, res = data.series[0].data, labels = data.labels, count = 0;
+            Y.Array.each(question.get("items"), function(i) {
+                choices[(i.get("name"))] = 0;
+            });
+            Y.Array.each(questionData, function(i) {
+                choices[i.choice] += 1;
+                count += 1;
+            });
+            Y.Object.each(choices, function(v, k) {
+                //                            res.push({
+                //                                category: Y.Wegas.Facade.Variable.cache.find("name",
+                // k).get("label"), values: v / (count ? count : 1) * 100 });
+                labels.push(Y.Wegas.Facade.Variable.cache.find("name", k).get("label"));
+                res.push(v / (count ? count : 1) * 100);
+            });
+            //                    if (this.chart) {
+            //                        this.chart.destroy();
+            //                        this.chart = null;
+            //                    }
+            //                    this.chart = new Chart(this.ctx.question).Bar(data, {
+            //                        //                         responsive: true,
+            //                        animation: false,
+            //                        scaleOverride: true,
+            //                        scaleLabel: "<%=value%>%",
+            //                        scaleSteps: 10,
+            //                        scaleStepWidth: 10,
+            //                        scaleStartValue: 0
+            //                    });
+
+            return [data, count];
+        };
         getNumber = function(logID, qName) {
             return getStats("Number", logID, qName);
         };
@@ -275,7 +333,8 @@ YUI.add("wegas-statistics", function(Y) {
         return {
             getCurrentGameModel: getCurrentGameModel,
             getQuestion: getQuestion,
-            getNumber: getNumber
+            getNumber: getNumber,
+            genQuestionData: genQuestionData
         };
     }());
 })
