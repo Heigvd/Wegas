@@ -149,6 +149,7 @@ tbody .past .activity {
     vertical-align: middle;
 }
 
+.iteration-tasks-toolbar,
 .yui3-datatable-col-assignments .assignment {
     display: block;
     float: left;
@@ -156,6 +157,7 @@ tbody .past .activity {
     text-align: center;
 }
 
+.iteration-tasks-toolbar span,
 .yui3-datatable-col-assignments .assignment span {
     display: block;
     position:relative;
@@ -165,6 +167,7 @@ tbody .past .activity {
     width: 16px;
 }
 
+.iteration-tasks-toolbar .add:before,
 .yui3-datatable-col-assignments .assignment .assign:before {
     content:"\f067";
     display:block;
@@ -186,6 +189,7 @@ tbody .past .activity {
     // background-image: url(../../wegas-pmg/images/add.png);
 }
 
+.iteration-tasks-list,
 .yui3-datatable-col-assignments .tasks {
     display: block;
     position: relative;
@@ -196,12 +200,14 @@ tbody .past .activity {
     margin-top:-1px;
 }
 
+.iteration-tasks-list .task,
 .yui3-datatable-col-assignments .task {
     display: inline-block;
     position: relative;
     margin: 0 1px;
 }
 
+.iteration-tasks-list .task:hover .label,
 .yui3-datatable-col-assignments .task:hover .label {
     background: #585a66;
     color: white;
@@ -209,6 +215,10 @@ tbody .past .activity {
 
 .yui3-datatable-col-assignments .task .label {
     cursor: move;
+}
+
+.iteration-tasks-list .task .label,
+.yui3-datatable-col-assignments .task .label {
     padding: 2px 4px;
     display: block;
     font-style: normal;
@@ -226,6 +236,7 @@ tbody .past .activity {
     border-radius: 3px;
 }
 
+.iteration-tasks-list .menu,
 .tasks .task .menu {
     display: none;
     position: absolute;
@@ -241,11 +252,12 @@ tbody .past .activity {
     z-index:9;
 }
 
+.iteration-tasks-list .task .remove:before,
 .tasks .task .remove:before{
     content:"\f068";
     display:block;
     position:absolute;
-    top:0px;
+    top: 0px;
     left:0px;
     width:16px;
     height:16px;
@@ -260,11 +272,13 @@ tbody .past .activity {
     line-height:16px;
     font-style:normal;
 }
+.iteration-tasks-list .task .remove:hover:before,
 .tasks .task .remove:hover:before{
     color:#f4817a;
     border-color:#f4817a;
 }
 
+.iteration-tasks-list .task .remove,
 .tasks .task .remove,
 .tasks .task .dirleft,
 .tasks .task .dirright {
@@ -276,6 +290,8 @@ tbody .past .activity {
     display: block;
     position:absolute;
 }
+
+.iteration-tasks-list .task .remove,
 .tasks .task .remove {
     top: 0px;
     left:50%;
@@ -294,6 +310,8 @@ tbody .past .activity {
     margin-left:-2px;
 }
 
+.iteration-tasks-list .task:hover .menu,
+.iteration-tasks-list .task:hover .menu:hover,
 .tasks .task:hover .menu,
 .tasks .task:hover .menu:hover {
     display: block;
@@ -452,3 +470,62 @@ tbody .past .activity {
 .indicators-management .yui3-numericaxis + .yui3-numericaxis {
     display: none;
 }
+
+
+/* Iteration Widget */
+.wegas-pmg-iteration-widget-content > div {
+    display: block;
+    margin: 16px;
+    float: left;
+}
+
+.wegas-pmg-iteration-widget-content .iteration-config {
+}
+
+.wegas-pmg-iteration-widget-content .iteration-config > div {
+    display: flex;
+}
+
+.wegas-pmg-iteration-widget-content .begin-at-container > * {
+    display: inline;
+}
+
+
+.wegas-pmg-iteration-widget-content .begin-at-container input {
+    width: 30px;
+}
+
+.wegas-pmg-iteration-widget-content .iteration-planning .planning-initial input:first-child,
+.wegas-pmg-iteration-widget-content .iteration-planning .planning-initial span:first-child {
+    margin-left: 30px;
+}
+
+
+.wegas-pmg-iteration-widget-content .iteration-planning .planning-ongoing span {
+    color:white;
+}
+
+.wegas-pmg-iteration-widget-content .iteration-planning .planning-ongoing span:first-child {
+    margin-left: 0;
+    clear: both;
+}
+
+.wegas-pmg-iteration-widget-content .iteration-planning .planning-ongoing input:first-of-type {
+    margin-left: 0px;
+}
+
+.wegas-pmg-iteration-widget-content .iteration-planning span {
+    width: 34px;
+}
+.wegas-pmg-iteration-widget-content .iteration-planning input {
+    width: 26px;
+}
+
+.wegas-pmg-iteration-widget-content .iteration-planning span,
+.wegas-pmg-iteration-widget-content .iteration-planning input {
+    margin-left: 18px;
+    display: block;
+    float: left;
+    text-align: center
+}
+

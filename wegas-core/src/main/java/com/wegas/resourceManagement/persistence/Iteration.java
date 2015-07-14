@@ -13,8 +13,8 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.persistence.ListUtils;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -60,21 +60,21 @@ public class Iteration extends AbstractEntity {
      * planned workload from beginAt period
      */
     @ElementCollection
-    private Map<Long, Double> plannedWorkloads;
-
-    /**
-     * maps a period number with workload for past period and current one:
-     * indicates the total remaining workload for the corresponding period.
-     */
-    @ElementCollection
-    private Map<Long, Double> workloads;
+    private Map<Long, Double> plannedWorkloads = new HashMap<>();
 
     /**
      * maps a period number with workload for current period and future ones:
      * Indicate the planned workload consumption
      */
     @ElementCollection
-    private Map<Long, Double> replannedWorkloads;
+    private Map<Long, Double> replannedWorkloads = new HashMap<>();
+
+    /**
+     * maps a period number with workload for past period and current one:
+     * indicates the total remaining workload for the corresponding period.
+     */
+    @OneToMany(mappedBy = "iteration", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Workload> workloads = new ArrayList();
 
     /**
      * Tasks composing the iteration
@@ -182,7 +182,7 @@ public class Iteration extends AbstractEntity {
      *
      * @return
      */
-    public Map<Long, Double> getWorkloads() {
+    public List<Workload> getWorkloads() {
         return workloads;
     }
 
@@ -191,8 +191,16 @@ public class Iteration extends AbstractEntity {
      *
      * @param workloads
      */
-    public void setWorkloads(Map<Long, Double> workloads) {
+    public void setWorkloads(List<Workload> workloads) {
         this.workloads = workloads;
+    }
+
+    public void addWorkload(Long periodNumber, Double workload) {
+        Workload newWorkload = new Workload();
+        newWorkload.setPeriodNumber(periodNumber);
+        newWorkload.setWorkload(workload);
+        newWorkload.setIteration(this);
+        this.workloads.add(newWorkload);
     }
 
     /**
@@ -231,12 +239,28 @@ public class Iteration extends AbstractEntity {
         this.tasks = tasks;
     }
 
+    public void addTask(TaskDescriptor taskD) {
+        this.tasks.add(taskD);
+    }
+
     public List<Long> getTaskDescriptorsId() {
         List<Long> ids = new ArrayList<>();
         for (TaskDescriptor td : getTasks()) {
             ids.add(td.getId());
         }
         return ids;
+    }
+
+    public void setTaskDescriptorsId(List<Long> taskDescriptorsId) {
+        // NOPE 
+    }
+
+    public void plan(Long periodNumber, Double workload) {
+        this.getPlannedWorkloads().put(periodNumber, workload);
+    }
+
+    public void replan(Long periodNumber, Double workload) {
+        this.getReplannedWorkloads().put(periodNumber, workload);
     }
 
     /**

@@ -9,17 +9,14 @@ package com.wegas.resourceManagement.ejb;
 
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.ejb.ScriptEventFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.resourceManagement.persistence.BurndownDescriptor;
 import com.wegas.resourceManagement.persistence.BurndownInstance;
 import com.wegas.resourceManagement.persistence.Iteration;
-import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +68,7 @@ public class IterationFacade extends BaseFacade<Iteration> {
         return this.addIteration(findBurndownInstance, iteration);
     }
 
-    public void removeIteration(Long burndownInstanceId, Long iterationId) {
+    public void removeIteration(Long iterationId) {
         Iteration findIteration = this.find(iterationId);
         getEntityManager().remove(findIteration);
     }

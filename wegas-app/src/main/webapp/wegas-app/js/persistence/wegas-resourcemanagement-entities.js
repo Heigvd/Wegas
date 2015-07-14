@@ -915,7 +915,69 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
         }
     });
 
-    persistence.Iteration = Y.Base.create("Assignment", persistence.Entity, [], {}, {
+    persistence.Iteration = Y.Base.create("Assignment", persistence.Entity, [], {
+        getTaskDescriptors: function() {
+            var ids = this.get("taskDescriptorsId"), i, taskDs = [];
+            for (i = 0; i < ids.length; i += 1) {
+                taskDs.push(Y.Wegas.Facade.Variable.cache.find("id", ids[i]));
+            }
+            return taskDs;
+        },
+        getRemainingWorkload: function() {
+            var taskI, taskDs, i, workload = 0;
+            taskDs = this.getTaskDescriptors();
+            for (i = 0; i < taskDs.length; i += 1) {
+                taskI = taskDs[i].getInstance();
+                workload += taskI.get("duration") * Y.Array.reduce(taskI.get("requirements"), 0, function(previous, current) {
+                    return previous + current.get("quantity") * (100 - current.get("completeness") / 100);
+                });
+            }
+            return workload;
+        },
+        getTotalWorkload: function() {
+            var taskI, taskDs, i, workload = 0;
+            if (this.hasBegun()) {
+                return this.get("totalWorkload");
+            } else {
+                taskDs = this.getTaskDescriptors();
+                for (i = 0; i < taskDs.length; i += 1) {
+                    taskI = taskDs[i].getInstance();
+                    workload += taskI.get("properties.duration") * Y.Array.reduce(taskI.get("requirements"), 0, function(previous, current) {
+                        return previous + current.get("quantity");
+                    });
+                }
+                return workload;
+            }
+        },
+        getStatus: function() {
+            var tasks = this.getTaskDescriptors(),
+                i, taskI, started, completed = tasks.length > 0,
+                completeness;
+
+            started = Y.Wegas.PMGHelper.getCurrentPhaseNumber() > 3 && Y.Wegas.PMGHelper.getCurrentPeriodNumber() > this.get("beginAt");
+
+            for (i = 0; i < tasks.length; i += 1) {
+                taskI = tasks[i].getInstance();
+                completeness = taskI.get("properties.completeness");
+                if (completeness < 100) {
+                    completed = false;
+                }
+                if (completeness > 0) {
+                    started = true;
+                }
+            }
+            if (completed) {
+                return "COMPLETED";
+            } else if (started) {
+                return "STARTED";
+            } else {
+                return "NOT_STARTED";
+            }
+        },
+        hasBegun: function() {
+            return this.getStatus() !== "NOT_STARTED";
+        }
+    }, {
         ATTRS: {
             "@class": {
                 value: "Iteration"

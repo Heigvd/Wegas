@@ -32,7 +32,7 @@ YUI.addGroup("wegas-pmg", {
             requires: ['anim', 'wegas-pmgwidget-css', "wegas-pmg-datatable", "wegas-pmg-reservation",
                 "wegas-pmg-occupationcolor", "wegas-pmg-activitycolor", "wegas-pmg-assignment",
                 "wegas-scheduledatatable", "wegas-text", "wegas-pmg-autoreservation-color", "wegas-pmg-linefilter", "chart-js"],
-            ws_provides: ["PmgSlidePanel", "PmgResourcesPanels", "PmgIterationsPanels"]
+            ws_provides: ["PmgSlidePanel", "PmgResourcesPanels", "PmgIterationsPanels", "PmgIterationWidget"]
         },
         "wegas-pmg-reservation": {
             path: 'js/plugin/wegas-pmg-reservation-min.js',
