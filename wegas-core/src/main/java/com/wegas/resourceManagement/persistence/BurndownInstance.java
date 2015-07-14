@@ -29,7 +29,7 @@ public class BurndownInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
 
-    @OneToMany(mappedBy = "burndownInstance", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "burndownInstance", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Iteration> iterations = new ArrayList<>();
 
     /**

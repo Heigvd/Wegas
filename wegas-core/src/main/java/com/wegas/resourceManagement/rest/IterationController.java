@@ -36,18 +36,6 @@ public class IterationController {
     private IterationFacade iterationFacade;
 
     /**
-     * Add a new iteration to the burndownInstance
-     *
-     * @param burndownInstanceId the burndownInstance to add iteration in
-     * @param iteration          iteration to add
-     * @return the brand new iteration
-     */
-    @POST
-    public Iteration createIteration(@PathParam("brnDwnId") Long burndownInstanceId, Iteration iteration) {
-        return iterationFacade.addIteration(burndownInstanceId, iteration);
-    }
-
-    /**
      * Fetch all iteration to the burndown instance
      *
      * @param burndownInstanceId id of the burndown instance we look iterations
@@ -71,32 +59,5 @@ public class IterationController {
     public Iteration getIteration(@PathParam("brnDwnId") Long burndownInstanceId,
             @PathParam("iterationId") Long iterationId) {
         return iterationFacade.find(iterationId);
-    }
-
-    /**
-     *
-     * @param burndownInstanceId burndown owning the iteration to update
-     * @param iterationId        id of iteration to update
-     * @param iteration          iteration itself
-     * @return the updated iteration
-     */
-    @PUT
-    @Path("{iterationId : [1-9][0-9]*}")
-    public Iteration updateIteration(
-            @PathParam("brnDwnId") Long burndownInstanceId, @PathParam("iterationId") Long iterationId, Iteration iteration) {
-        return iterationFacade.update(iterationId, iteration);
-    }
-
-    /**
-     * Delete an iteration
-     *
-     * @param burndownInstanceId burndown owning the iteration to deleted
-     * @param iterationId        id of iteration to delete
-     */
-    @DELETE
-    @Path("{iterationId : [1-9][0-9]*}")
-    public void deleteIteration(
-            @PathParam("brnDwnId") Long burndownInstanceId, @PathParam("iterationId") Long iterationId) {
-        iterationFacade.removeIteration(burndownInstanceId, iterationId);
     }
 }
