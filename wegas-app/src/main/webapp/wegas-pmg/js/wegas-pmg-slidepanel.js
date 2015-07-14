@@ -24,9 +24,19 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
         {
             BOUNDING_TEMPLATE: "<div><div class='slidepanel-title' style='position:relative;'><h2></h2></div></div>",
             renderUI: function() {
+                var title = this.get("title"), pattern = /%([a-zA-Z0-9_]*)%/g,
+                    args = title.match(pattern), i, str;
+
+
+                if (args) {
+                    for (i = 0; i < args.length; i += 1) {
+                        str = Y.Wegas.Facade.Variable.cache.find("name", args[i].replace(/%/g, "")).get("label");
+                        title = title.replace(args[i], str);
+                    }
+                }
                 this.handlers = {};
-                this.get("boundingBox").one(".slidepanel-title h2").setContent(this.get("title"));
-                if(this.get("openByDefault")){
+                this.get("boundingBox").one(".slidepanel-title h2").setContent(title);
+                if (this.get("openByDefault")) {
                     this.get("boundingBox").addClass("wegas-slidepanel-toggled");
                 }
             },
@@ -46,33 +56,33 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                 }
             }
         },
-        {
-            ATTRS: {
-                title: {
-                    type: "string",
-                    validator: function(s) {
-                        return s === null || Y.Lang.isString(s);
-                    },
-                    _inputex: {
-                        label: "Title"
-                    }
+    {
+        ATTRS: {
+            title: {
+                type: "string",
+                validator: function(s) {
+                    return s === null || Y.Lang.isString(s);
                 },
-                animation: {
-                    type: "boolean",
-                    value: true,
-                    _inputex: {
-                        label: "Animation"
-                    }
-                },
-                openByDefault: {
-                    type: "boolean",
-                    value: true,
-                    _inputex: {
-                        label: "Open by default"
-                    }
+                _inputex: {
+                    label: "Title"
+                }
+            },
+            animation: {
+                type: "boolean",
+                value: true,
+                _inputex: {
+                    label: "Animation"
+                }
+            },
+            openByDefault: {
+                type: "boolean",
+                value: true,
+                _inputex: {
+                    label: "Open by default"
                 }
             }
-        });
+        }
+    });
     Wegas.PmgSlidePanel = SlidePanel;
 
     /**
@@ -95,62 +105,62 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                     var panel = new Wegas.PmgSlidePanel({
                         title: vd.get("label"),
                         children: [{
-                            type: "PmgDatatable",
-                            plugins: [{
-                                fn: "ScheduleDT",
-                                cfg: {
-                                    variable: {
-                                        name: "periodPhase3"
+                                type: "PmgDatatable",
+                                plugins: [{
+                                        fn: "ScheduleDT",
+                                        cfg: {
+                                            variable: {
+                                                name: "periodPhase3"
+                                            }
+                                        }
+                                    }, {
+                                        fn: "Assignment",
+                                        cfg: {
+                                            taskList: {
+                                                name: "tasks"
+                                            },
+                                            columnPosition: 5
+                                        }
+                                    }, {
+                                        fn: "OccupationColor",
+                                        cfg: {
+                                            autoReservation: autoReserve
+                                        }
+                                    }, {
+                                        fn: "ActivityColor"
                                     }
-                                }
+                                ],
+                                variable: {
+                                    name: vd.get("name")
+                                },
+                                columnsCfg: [{
+                                        key: "label",
+                                        label: "Name",
+                                        sortable: false
+                                    }, {
+                                        label: "Grade",
+                                        formatter: "skillLevel",
+                                        key: "instance.properties.level",
+                                        sortable: false,
+                                        allowHTML: true
+                                    }, {
+                                        label: "Monthly wages",
+                                        key: "instance.properties.wage",
+                                        sortable: false
+                                    }, {
+                                        label: "Rate",
+                                        key: "instance.properties.activityRate",
+                                        sortable: false
+                                    }, {
+                                        label: "Motiv.",
+                                        key: "instance.properties.motivation",
+                                        sortable: false
+                                    }],
+                                defaultSort: null
                             }, {
-                                fn: "Assignment",
-                                cfg: {
-                                    taskList: {
-                                        name: "tasks"
-                                    },
-                                    columnPosition: 5
-                                }
-                            }, {
-                                fn: "OccupationColor",
-                                cfg: {
-                                    autoReservation: autoReserve
-                                }
-                            }, {
-                                fn: "ActivityColor"
-                            }
-                            ],
-                            variable: {
-                                name: vd.get("name")
-                            },
-                            columnsCfg: [{
-                                key: "label",
-                                label: "Name",
-                                sortable: false
-                            }, {
-                                label: "Grade",
-                                formatter: "skillLevel",
-                                key: "instance.properties.level",
-                                sortable: false,
-                                allowHTML: true
-                            }, {
-                                label: "Monthly wages",
-                                key: "instance.properties.wage",
-                                sortable: false
-                            }, {
-                                label: "Rate",
-                                key: "instance.properties.activityRate",
-                                sortable: false
-                            }, {
-                                label: "Motiv.",
-                                key: "instance.properties.motivation",
-                                sortable: false
-                            }],
-                            defaultSort: null
-                        }, {
-                            type: "Text",
-                            content: "<div class=\"pmg-legend\">\n<div><div class=\"worked\">&nbsp;</div>\nWorked</div>\n<div><div class=\"booked\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"unavailable\">&nbsp;</div>\nNot Available</div>\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nToo late to change</div>\n</div>"
-                        }]
+                                type: "Text",
+                                content: "<div class=\"pmg-legend\">\n<div><div class=\"worked\">&nbsp;</div>\nWorked</div>\n<div><div class=\"booked\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"unavailable\">&nbsp;</div>\nNot Available</div>\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nToo late to change</div>\n</div>"
+                            }]
                     }).render(this.get(CONTENTBOX));
                     if (!autoReserve) {
                         var dt = panel.item(0);
@@ -182,7 +192,7 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                             }
                         });
 
-                    }  
+                    }
                     panel.on(["*:message", "*:showOverlay", "*:hideOverlay"], this.fire, this);
                     return panel;
                 }, this);
