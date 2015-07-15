@@ -18,7 +18,6 @@ angular.module('private.player.team.directives', [])
             ctrl.user = user;
             if (user !== null) {
                 TeamsModel.getTeam($stateParams.id).then(function(response) {
-                    console.log(response);
                     if (response.isErroneous()) {
                         $scope.close();
                     } else {
@@ -35,7 +34,6 @@ angular.module('private.player.team.directives', [])
         });
         ctrl.refreshTeam = function () {
             TeamsModel.refreshTeam(ctrl.team).then(function(response) {
-                console.log(response);
                 if (!response.isErroneous()) {
                     ctrl.team = response.data;
                 } else {
