@@ -29,6 +29,10 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"English",
                                 'fr':"Anglais"
                             },
+                            'LOADING':{
+                                'en':"Loading",
+                                'fr':"Chargement"
+                            },
                             // Public
                             'WEGAS-SLOGAN': {
                                 'en':"The \"learning by doing\" solution from AlbaSim",
@@ -358,7 +362,57 @@ angular.module('wegas.service.wegasTranslations', [])
                             'PLAYER-JOIN-TEAM-KEY-FLASH-ERROR': {
                                 'en':"This is not a valid access key",
                                 'fr':"Clé invalide"
+                            },
+                            // Private Trainer
+                            'TRAINER-INDEX-ADD-TITLE':{
+                                'en':"Add session",
+                                'fr':"Créer une partie"
+                            },
+                            'TRAINER-INDEX-ADD-NAME-INPUT':{
+                                'en':"Session name",
+                                'fr':"Nom de la partie"
+                            },
+                            'TRAINER-INDEX-ADD-SCENARIO-INPUT':{
+                                'en':"Based on scenario",
+                                'fr':"Basé sur le scénario"
+                            },
+                            'TRAINER-INDEX-ADD-BTN':{
+                                'en':"Create session",
+                                'fr':"Créer la partie"
+                            },
+                            'TRAINER-INDEX-LIST-TITLE':{
+                                'en':"Current sessions",
+                                'fr':"Parties en cours"
+                            },
+                            'TRAINER-CARD-ACCESS-TITLE':{
+                                'en':"Access to new players",
+                                'fr':"Accès pour nouveaux joueurs"
+                            },
+                            'TRAINER-CARD-ACCESS-CLOSE':{
+                                'en':"No other player can join",
+                                'fr':"Aucun autre joueur peut rejoindre la partie"
+                            },
+                            'TRAINER-CARD-ACCESS-OPEN':{
+                                'en':"Players can join with key :",
+                                'fr':"Nouveaux joueurs peuvent rejoindre avec la clé :"
+                            },
+                            'TRAINER-CARD-SETTINGS-BTN':{
+                                'en':"Settings",
+                                'fr':"Paramètres"
+                            },
+                            'TRAINER-CARD-USERS-BTN':{
+                                'en':"Manage users",
+                                'fr':"Gérer les utilisateurs"
+                            },
+                            'TRAINER-CARD-MOVE-ARCHIVE-BTN':{
+                                'en':"Move to archives",
+                                'fr':"Déplacer dans les archives"
+                            },
+                            'TRAINER-CARD-MONITORING-BTN':{
+                                'en':"Monitoring session",
+                                'fr':"Gèrer la partie"
                             }
+                            
                         },
                         workspaces : {
                             'PLAYER':{
