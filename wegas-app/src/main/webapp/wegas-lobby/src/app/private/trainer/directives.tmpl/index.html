@@ -1,9 +1,9 @@
 <div class="view view--new-session view--bottom">
-	<h3>Add session</h3>
+	<h3>{{'TRAINER-INDEX-ADD-TITLE' | translate}}</h3>
 	<trainer-sessions-add></trainer-sessions-add>
 </div>
 <div class="view view--sessions-list view--middle">
-	<h3>Current sessions</h3>
+	<h3>{{'TRAINER-INDEX-LIST-TITLE' | translate}}</h3>
 	<div class="view__tools">
 		<div class="tool tool--search tool--open">
 			<a class="tool__link"></a>
@@ -34,6 +34,6 @@
 	<div 
 		ng-if="trainerIndexCtrl.loading.all"
 		class="view__list">
-		Loading
+		{{'LOADING' | translate}}
 	</div>
 </div>
