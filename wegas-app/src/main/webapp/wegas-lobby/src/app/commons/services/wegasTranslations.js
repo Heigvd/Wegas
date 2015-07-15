@@ -20,7 +20,7 @@ angular.module('wegas.service.wegasTranslations', [])
                 $get : function() {
                     return { 
                         translations : {
-                            // Communs
+                            // Commons
                             'LANGUAGE-FRENCH-NAME': {
                                 'en':"French",
                                 'fr':"Français"
@@ -122,6 +122,7 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"Please, enter your email",
                                 'fr':"Merci d'entrer votre email"
                             },
+                            // Commons Auth service
                             'COMMONS-AUTH-PASSWORD-FLASH-SUCCESS':{
                                 'en':"A new password has been send",
                                 'fr':"Un nouveau mot de passe a été envoyé"
@@ -135,7 +136,7 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'fr':"Compte créé"
                             },
                             'COMMONS-AUTH-CREATE-ACCOUNT-FLASH-ERROR':{
-                                'en':"Error during account creation",
+                                'en':"Error while creating account",
                                 'fr':"Erreur durant la création du compte"
                             },
                             'COMMONS-AUTH-LOGIN-FLASH-SUCCESS':{
@@ -155,16 +156,90 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'fr':"Vous êtes déconnecté"
                             },
                             'COMMONS-AUTH-LOGOUT-FLASH-ERROR':{
-                                'en':"Error when logout",
+                                'en':"Error while logout",
                                 'fr':"Erreur durant la déconnexion"
+                            },
+                            'COMMONS-AUTH-CURRENT-FLASH-ERROR':{
+                                'en':"You need to be logged",
+                                'fr':"Connexion nécessaire"
                             },
                             'COMMONS-AUTH-GUEST-FLASH-SUCCESS':{
                                 'en':"Connected as guest",
                                 'fr':"Connecté en tant qu'invité"
                             },
                             'COMMONS-AUTH-GUEST-FLASH-ERROR':{
-                                'en':"Error during connection",
+                                'en':"Error while connection",
                                 'fr':"Erreur durant la connexion"
+                            },
+                            // Commons Teams model
+                            'COMMONS-TEAMS-FIND-FLASH-SUCCESS':{
+                                'en':"Teams found",
+                                'fr':"Equipes trouvées"
+                            },
+                            'COMMONS-TEAMS-GET-FLASH-SUCCESS':{
+                                'en':"Team found",
+                                'fr':"Equipe trouvée"
+                            },
+                            'COMMONS-TEAMS-GET-FLASH-ERROR':{
+                                'en':"No team found",
+                                'fr':"Aucune équipe trouvée"
+                            },
+                            'COMMONS-TEAMS-JOIN-FLASH-SUCCESS':{
+                                'en':"You have joined the team",
+                                'fr':"Vous avez rejoint l'équipe"
+                            },
+                            'COMMONS-TEAMS-JOIN-FLASH-ERROR':{
+                                'en':"Error while joining team",
+                                'fr':"Erreur durant la tentative de rejoindre l'équipe "
+                            },
+                            'COMMONS-TEAMS-JOIN-INDIVIDUALLY-FLASH-SUCCESS':{
+                                'en':"You have joined the session",
+                                'fr':"Vous avez rejoint la partie"
+                            },
+                            'COMMONS-TEAMS-JOIN-INDIVIDUALLY-FLASH-ERROR':{
+                                'en':"Error while joining session",
+                                'fr':"Erreur durant la tentative de rejoindre la partie "
+                            },
+                            'COMMONS-TEAMS-ALREADY-JOIN-FLASH-INFO': {
+                                'en':"You have already join this session",
+                                'fr':"Vous avez déjà rejoint cette partie"
+                            },
+                            'COMMONS-TEAMS-LEAVE-FLASH-SUCCESS':{
+                                'en':"You have leaved the session",
+                                'fr':"Vous avez rejoint la partie"
+                            },
+                            'COMMONS-TEAMS-LEAVE-FLASH-ERROR':{
+                                'en':"Error while leaving session",
+                                'fr':"Erreur durant la tentative de quitter la partie "
+                            },
+                            'COMMONS-TEAMS-NO-TEAM-FLASH-ERROR':{
+                                'en':"No team found",
+                                'fr':"Aucune équipe trouvée"
+                            },
+                            'COMMONS-TEAMS-NO-PLAYER-FLASH-ERROR':{
+                                'en':"No player found in the team",
+                                'fr':"Aucun joueur dans cette équipe"
+                            },
+                            'COMMONS-TEAMS-RELOAD-FLASH-SUCCESS': {
+                                'en':"Team reloaded",
+                                'fr':"Equipe rechargée"
+                            },
+                            'COMMONS-TEAMS-RELOAD-FLASH-ERROR': {
+                                'en':"Error while reloading team",
+                                'fr':"Erreur durant le rechargement de l'équipe"
+                            },
+                            'COMMONS-TEAMS-CREATE-FLASH-SUCCESS': {
+                                'en':"Team created",
+                                'fr':"Equipe Créée"
+                            },
+                            'COMMONS-TEAMS-CREATE-FLASH-ERROR': {
+                                'en':"Error while creating team",
+                                'fr':"Erreur durant la création de l'équipe"
+                            },
+                            // Commons Sessions model
+                            'COMMONS-SESSIONS-CLOSE-FLASH-ERROR': {
+                                'en':"Closed Session",
+                                'fr':"Partie fermée"
                             },
                             // Private Commons
                             'PRIVATE-WS-TITLE':{
@@ -215,6 +290,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'PLAYER-INDEX-NO-SESSION':{
                                 'en':"No session",
                                 'fr':"Pas de partie"
+                            },
+                            'PLAYER-CARD-TEAM-TITLE':{
+                                'en':"Team",
+                                'fr':"Equipe"
                             },
                             'PLAYER-CARD-TEAM-BTN':{
                                 'en':"View team",
@@ -275,6 +354,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'PLAYER-MODALE-TEAM-RELOAD-BTN':{
                                 'en':"Reload team",
                                 'fr':"Recharger l'équipe"
+                            },
+                            'PLAYER-JOIN-TEAM-KEY-FLASH-ERROR': {
+                                'en':"This is not a valid access key",
+                                'fr':"Clé invalide"
                             }
                         },
                         workspaces : {

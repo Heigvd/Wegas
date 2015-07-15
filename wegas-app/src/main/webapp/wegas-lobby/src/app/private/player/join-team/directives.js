@@ -7,7 +7,7 @@ angular.module('private.player.join.directives', [])
         },
         controller: 'PlayerSessionJoinController as playerSessionJoinCtrl'
     };
-}).controller('PlayerSessionJoinController', function PlayerSessionJoinController($rootScope, $scope, $stateParams, $interval, SessionsModel, TeamsModel, Flash){
+}).controller('PlayerSessionJoinController', function PlayerSessionJoinController($rootScope, $scope, $stateParams, $translate, $interval, SessionsModel, TeamsModel, Flash){
     /* Assure access to ctrl. */
     var ctrl = this,
         refresher = null,
@@ -25,7 +25,9 @@ angular.module('private.player.join.directives', [])
                             $scope.close();
                         }
                     }else{
-                        Flash.danger("Session closed");
+                        $translate('COMMONS-SESSIONS-CLOSE-FLASH-ERROR').then(function (message) {
+                            Flash.danger(message);
+                        });
                     }
                 }
             });
@@ -71,7 +73,9 @@ angular.module('private.player.join.directives', [])
                         }
                     });
                 }else{
-                    Flash.danger("Session closed");
+                    $translate('COMMONS-SESSIONS-CLOSE-FLASH-ERROR').then(function (message) {
+                        Flash.danger(message);
+                    });
                 }
             }
         }

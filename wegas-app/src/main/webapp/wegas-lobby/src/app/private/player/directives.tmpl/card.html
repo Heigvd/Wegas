@@ -6,7 +6,7 @@
       {{ team.gameName | limitTo : MAX_DISPLAYED_CHARS}}<span ng-if="team.gameName.length > MAX_DISPLAYED_CHARS">...</span>
     </div>
     <div ng-if="!team.gameFreeForAll" class="line line--secondary">
-    	Team "{{team.name | limitTo : (MAX_DISPLAYED_CHARS - 10)}}<span ng-if="team.name.length > (MAX_DISPLAYED_CHARS - 10)">...</span>"
+    	{{'PLAYER-CARD-TEAM-TITLE' | translate}} "{{team.name | limitTo : (MAX_DISPLAYED_CHARS - 10)}}<span ng-if="team.name.length > (MAX_DISPLAYED_CHARS - 10)">...</span>"
     </div>
 </div>
 <div class="card__actions">
