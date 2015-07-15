@@ -191,9 +191,90 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"Edit profile",
                                 'fr':"Editer mon profile"
                             },
+                            'PRIVATE-WS-ACCESS-KEY':{
+                                'en':"Access key",
+                                'fr':"Clé d'accès"
+                            },
                             'PRIVATE-WS-LOGOUT-BTN':{
                                 'en':"Logout",
                                 'fr':"Déconnexion"
+                            },
+                            // Private Player
+                            'PLAYER-INDEX-ADD-TITLE':{
+                                'en':"Join a session",
+                                'fr':"Rejoindre une partie"
+                            },
+                            'PLAYER-INDEX-JOIN-BTN':{
+                                'en':"Join",
+                                'fr':"Rejoindre"
+                            },
+                            'PLAYER-INDEX-LIST-TITLE':{
+                                'en':"My sessions",
+                                'fr':"Mes parties"
+                            },
+                            'PLAYER-INDEX-NO-SESSION':{
+                                'en':"No session",
+                                'fr':"Pas de partie"
+                            },
+                            'PLAYER-CARD-TEAM-BTN':{
+                                'en':"View team",
+                                'fr':"Voir l'équipe"
+                            },
+                            'PLAYER-CARD-LEAVE-BTN':{
+                                'en':"Leave sesion",
+                                'fr':"Quitter la session"
+                            },
+                            'PLAYER-CARD-LEAVE-CONFIRM':{
+                                'en':"Are you sure you want to leave the session ? This action is irreversible.",
+                                'fr':"Êtes-vous sûre de vouloir quitter cette partie ? Cette action est irreversible."
+                            },
+                            'PLAYER-CARD-PLAY-BTN':{
+                                'en':"Play session",
+                                'fr':"Jouer"
+                            },
+                            'PLAYER-MODALE-JOIN-TEAM-CREATE-INPUT':{
+                                'en':"Team name",
+                                'fr':"Nom de l'équipe"
+                            },
+                            'PLAYER-MODALE-JOIN-TEAM-CREATE-BTN':{
+                                'en':"Create team",
+                                'fr':"Créer une équipe"
+                            },
+                            'PLAYER-MODALE-JOIN-TEAM-EXISTING-MESSAGE':{
+                                'en':"Existing team",
+                                'fr':"L'équipe existe déjà"
+                            },
+                            'PLAYER-MODALE-JOIN-TEAM-NUMBER-PLAYER':{
+                                'en':"player(s)",
+                                'fr':"joueur(s)"
+                            },
+                            'PLAYER-MODALE-JOIN-TEAM-JOIN-BTN':{
+                                'en':"Join team",
+                                'fr':"Rejoindre la partie"
+                            },
+                            'PLAYER-MODALE-JOIN-TEAM-PLAYERS-LIST':{
+                                'en':"Players from team",
+                                'fr':"Joueurs de l'équipe"
+                            },
+                            'PLAYER-MODALE-JOIN-TEAM-HIDE-TOGGLE':{
+                                'en':"{{toggle}} players",
+                                'fr':"{{toggle}} les joueurs"
+                            },
+                            'PLAYER-MODALE-JOIN-TEAM-JOIN-OR-CREATE-MESSAGE':{
+                                'en':"Join an existing team or create a new team",
+                                'fr':"Vous pouvez rejoindre une équipe existante ou créer une nouvelle équipe"
+                            },
+                            'PLAYER-MODALE-JOIN-TEAM-JOIN-MESSAGE':{
+                                'en':"Join an existing team",
+                                'fr':"Vous pouvez rejoindre une équipe existante"
+                            },
+                            'PLAYER-MODALE-JOIN-TEAM-CREATE-MESSAGE':{
+                                'en':"Create your team",
+                                'fr':"Créez votre équipe"
+                            },
+                            'PLAYER-MODALE-TEAM-RELOAD-BTN':{
+                                'en':"Reload team",
+                                'fr':"Recharger l'équipe"
                             }
                         },
                         workspaces : {
@@ -213,8 +294,17 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"Administrator",
                                 'fr':"Administrateur"
                             }                                    
+                        },
+                        hideToggle : {
+                            'HIDE':{
+                                'en':"Hide",
+                                'fr':"Masquer"
+                            },
+                            'SHOW':{
+                                'en':"Show",
+                                'fr':"Afficher"
+                            } 
                         }
-                        
                     };
                 }
             };

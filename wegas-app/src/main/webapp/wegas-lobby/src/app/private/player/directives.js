@@ -12,7 +12,6 @@ angular.module('private.player.directives', [])
             updateTeams = function() {
                 TeamsModel.getTeams().then(function(response) {
                     if (!response.isErroneous()) {
-                        console.log(response.data);
                         ctrl.teams = response.data || [];
                     } else {
                         ctrl.teams = [];
