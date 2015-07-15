@@ -10,17 +10,17 @@
     </div>
 </div>
 <div class="card__actions">
-    <a ng-if="!team.gameFreeForAll" class="button button--medium button--round button--default-reverse button--label-off button--team" title="View team" ui-sref="wegas.private.player.team({id: team.id})">
-      <span class="button__label">View team</span>
+    <a ng-if="!team.gameFreeForAll" class="button button--medium button--round button--default-reverse button--label-off button--team" title="{{'PLAYER-CARD-TEAM-BTN' | translate}}" ui-sref="wegas.private.player.team({id: team.id})">
+      <span class="button__label">{{'PLAYER-CARD-TEAM-BTN' | translate}}</span>
     </a> 
     <a 
       class="button button--medium button--round button--danger-reverse button--label-off button--sign-out" 
-      title="Leave Session" 
+      title="{{'PLAYER-CARD-LEAVE-BTN' | translate}}" 
       confirmed-click="leave(team.id)" 
-      ng-confirm-click="Are you sure you want to leave the session ? This action is irreversible.">
-      <span class="button__label">Leave session</span>
+      ng-confirm-click="{{'PLAYER-CARD-LEAVE-CONFIRM' | translate}}">
+      <span class="button__label">{{'PLAYER-CARD-LEAVE-BTN' | translate}}</span>
     </a>  
-    <a class="button button--medium button--round button--info button--label-off button--play" title="Play session" href="{{ServiceURL}}game-play.html?gameId={{team.gameId}}" target="_blank">
-      <span class="button__label">Play session</span>
+    <a class="button button--medium button--round button--info button--label-off button--play" title="{{'PLAYER-CARD-PLAY-BTN' | translate}}" href="{{ServiceURL}}game-play.html?gameId={{team.gameId}}" target="_blank">
+      <span class="button__label">{{'PLAYER-CARD-PLAY-BTN' | translate}}</span>
     </a>
 </div>

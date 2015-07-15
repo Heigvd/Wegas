@@ -121,7 +121,7 @@ angular.module('private.player.join.directives', [])
         }
     };
 })
-.directive('playerSessionTeam', function(){
+.directive('playerSessionTeam', function(WegasTranslations){
     return {
         templateUrl: 'app/private/player/join-team/directives.tmpl/team-card.html',
         scope: {
@@ -131,14 +131,14 @@ angular.module('private.player.join.directives', [])
         link: function(scope, elem, attrs){
             scope.showPlayers = false;
             scope.MAX_DISPLAYED_CHARS = MAX_DISPLAYED_CHARS;
-
-            scope.titleShowPlayers = "Show players";
+            
+            scope.hideToggle = {toggle: WegasTranslations.hideToggle['SHOW'][localStorage.getObject("wegas-config@public").language]};
             scope.tooglePlayersVisibility = function(){
                 scope.showPlayers = !scope.showPlayers;
                 if(scope.showPlayers){
-                    scope.titleShowPlayers = "Hide players";
+                    scope.hideToggle = {toggle: WegasTranslations.hideToggle['HIDE'][localStorage.getObject("wegas-config@public").language]};
                 }else{
-                    scope.titleShowPlayers = "Show players";
+                    scope.hideToggle = {toggle: WegasTranslations.hideToggle['SHOW'][localStorage.getObject("wegas-config@public").language]};
                 }
             }
         }

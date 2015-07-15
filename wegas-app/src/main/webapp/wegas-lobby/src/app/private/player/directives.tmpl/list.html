@@ -1,4 +1,4 @@
-<h3>My sessions</h3>
+<h3>{{'PLAYER-INDEX-LIST-TITLE' | translate}}</h3>
 <div class="view__list" ng-if="teams.length > 0">
   <div 
     class="card card--big card--player-session" 
@@ -8,4 +8,4 @@
     player-team-card >
   </div>
 </div>
-<p class="view__list view__list--no-content" ng-if="teams.length < 1">No sessions</p>
+<p class="view__list view__list--no-content" ng-if="teams.length < 1">{{'PLAYER-INDEX-NO-SESSION' | translate}}</p>
