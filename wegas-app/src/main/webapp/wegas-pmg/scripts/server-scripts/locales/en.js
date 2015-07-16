@@ -86,7 +86,7 @@ i18nTable.en = {
         endOfTask: {
             from: "Project Tracking",
             subject: "Task \"%task%\" completed",
-            content: "Hello, <br /> <br /> We inform you that task \"%task%\" has been completed on %at% <br /><br />Regards"
+            content: "Hello, <br /> <br /> We inform you that task \"%task%\" has been completed on %step% <br /><br />Regards"
         }
     },
     date: {
