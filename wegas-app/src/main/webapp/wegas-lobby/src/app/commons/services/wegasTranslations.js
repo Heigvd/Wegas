@@ -47,7 +47,15 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"Loading",
                                 'fr':"Chargement"
                             },
+                            'MODALE-CLOSE':{
+                                'en': "Close",
+                                'fr': "Fermer"
+                            },
                             // Public
+                            'WEGAS-TITLE': {
+                                'en':"Wegas",
+                                'fr':"Wegas"
+                            },
                             'WEGAS-SLOGAN': {
                                 'en':"The \"learning by doing\" solution from AlbaSim",
                                 'fr':"La solution \"learning by doing\" développée par AlbaSim"
@@ -543,9 +551,21 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"Create " + keywords.session.singular.en,
                                 'fr':"Créer la " + keywords.session.singular.fr
                             },
+                            'TRAINER-INDEX-ARCHIVE-BTN':{
+                                'en':"Archived " + keywords.session.singular.en,
+                                'fr':startSentence(keywords.session.singular.fr) + " archivée"
+                            },
+                            'TRAINER-INDEX-ARCHIVES-BTN':{
+                                'en':"archived " + keywords.session.plural.en,
+                                'fr':keywords.session.plural.fr + " archivées"
+                            },
                             'TRAINER-INDEX-LIST-TITLE':{
                                 'en':"Current " + keywords.session.plural.en,
                                 'fr':startSentence(keywords.session.plural.fr) + " en cours"
+                            },
+                            'TRAINER-INDEX-LIST-NO-SESSION':{
+                                'en':"No current " + keywords.session.singular.en + " with the name ",
+                                'fr':"Aucune "+ keywords.session.singular.fr+ " en cours avec le nom "
                             },
                             'TRAINER-CARD-ACCESS-TITLE':{
                                 'en':"Access to new " + keywords.player.plural.en,
@@ -601,7 +621,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
                             'TRAINER-MODALE-USERS-REMOVE-PLAYER-CONFIRM':{
                                 'en':"Are you sure you want to remove this "+ keywords.player.singular.en +" from the "+ keywords.session.singular.en +" ? This action is irreversible.",
-                                'fr':"Êtes vous sûre de vouloir supprimer le "+ keywords.player.singular.fr +" de la "+ keywords.session.singular.en +" ? Cette action est irréversible."
+                                'fr':"Êtes vous sûre de vouloir supprimer le "+ keywords.player.singular.fr +" de la "+ keywords.session.singular.fr +" ? Cette action est irréversible."
                             },
                             'TRAINER-MODALE-USERS-REMOVE-TEAM-BTN':{
                                 'en':"Remove " + keywords.team.singular.en,
@@ -609,7 +629,39 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
                             'TRAINER-MODALE-USERS-REMOVE-TEAM-CONFIRM':{
                                 'en':"Are you sure you want to remove this "+ keywords.team.singular.en +" from the "+ keywords.session.singular.en +" ? This action is irreversible.",
-                                'fr':"Êtes vous sûre de vouloir supprimer l'"+ keywords.team.singular.fr +" de la "+ keywords.session.singular.en +" ? Cette action est irréversible."
+                                'fr':"Êtes vous sûre de vouloir supprimer l'"+ keywords.team.singular.fr +" de la "+ keywords.session.singular.fr +" ? Cette action est irréversible."
+                            },
+                            'TRAINER-MODALE-ARCHIVE-TITLE':{
+                                'en':"Archived "+ keywords.session.plural.en,
+                                'fr':startSentence(keywords.session.plural.fr) + " archivées"
+                            },
+                            'TRAINER-MODALE-ARCHIVE-SEARCH-INPUT':{
+                                'en':"Search "+ keywords.session.singular.en,
+                                'fr':"Rechercher une "+ keywords.session.singular.fr
+                            },
+                            'TRAINER-MODALE-ARCHIVE-SETTINGS-BTN':{
+                                'en':"Settings",
+                                'fr':"Paramètres"
+                            },
+                            'TRAINER-MODALE-ARCHIVE-USERS-BTN':{
+                                'en':"Manage users",
+                                'fr':"Gérer les utilisateurs"
+                            },
+                            'TRAINER-MODALE-ARCHIVE-MOVE-CURRENT-BTN':{
+                                'en':"Move to current " + keywords.session.plural.en,
+                                'fr':"Redéplacer dans les "+ keywords.session.plural.fr + " en cours"
+                            },
+                            'TRAINER-MODALE-ARCHIVE-DELETE-BTN':{
+                                'en':"Delete "+ keywords.session.singular.en,
+                                'fr':"Supprimer la "+ keywords.session.singular.fr
+                            },
+                            'TRAINER-MODALE-ARCHIVE-DELETE-CONFIRM':{
+                                'en':"Are you sure you want to delete this archived " + keywords.session.singular.en + " ? This action is irreversible.",
+                                'fr':"Êtes-vous sûre de vouloir supprimer cette " + keywords.session.singular.fr + " archivée ? Cette action est irréversible."
+                            },
+                            'TRAINER-MODALE-ARCHIVE-NO-SESSION':{
+                                'en':"No archived " + keywords.session.singular.en + " with the name ",
+                                'fr':"Aucune "+ keywords.session.singular.fr+ " archivée avec le nom "
                             }
                         },
                         workspaces : {

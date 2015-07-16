@@ -28,7 +28,8 @@
 	</div>
 	<div ng-if="(!trainerIndexCtrl.loading.all) && (trainerIndexCtrl.nbArchives > 0)" class="view__archives">
 		<a class="button button--small button--default button--archive" ui-sref=".archives">
-			<span class="button__label">{{trainerIndexCtrl.nbArchives}} &nbsp; archives</span>
+			<span ng-if="trainerIndexCtrl.nbArchives == 1" class="button__label">{{trainerIndexCtrl.nbArchives}} {{'TRAINER-INDEX-ARCHIVE-BTN' | translate}}</span>
+                        <span ng-if="trainerIndexCtrl.nbArchives > 1" class="button__label">{{trainerIndexCtrl.nbArchives}} {{'TRAINER-INDEX-ARCHIVES-BTN' | translate}}</span>
 		</a>
 	</div>
 	<div 
