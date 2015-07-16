@@ -388,6 +388,59 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"Pages",
                                 'fr':"Pages"
                             },
+                            // Private - Edit Profile
+                            'PRIVATE-PROFILE-INPUT-LABEL-EMAIL':{
+                                'en':"Email",
+                                'fr':"Email"
+                            },
+                            'PRIVATE-PROFILE-INPUT-LABEL-PASSWORD': {
+                                'en':"Password",
+                                'fr':"Mot de passe"
+                            },
+                            'PRIVATE-PROFILE-INPUT-LABEL-PASSWORD-AGAIN':{
+                                'en':"Password",
+                                'fr':"Mot de passe"
+                            },
+                            'PRIVATE-PROFILE-INPUT-LABEL-USERNAME': {
+                                'en':"Username",
+                                'fr':"Nom d'utilisateur"
+                            },
+                            'PRIVATE-PROFILE-INPUT-LABEL-FIRSTNAME': {
+                                'en':"Firstname",
+                                'fr':"Prénom"
+                            },
+                            'PRIVATE-PROFILE-INPUT-LABEL-LASTNAME': {
+                                'en':"Lastname",
+                                'fr':"Nom de famille"
+                            },
+                             'PRIVATE-PROFILE-INPUT-PLACEHOLDER-EMAIL':{
+                                'en':"Please enter your email",
+                                'fr':"Merci d'entrer votre email"
+                            },
+                            'PRIVATE-PROFILE-INPUT-PLACEHOLDER-PASSWORD': {
+                                'en':"Password",
+                                'fr':"Mot de passe"
+                            },
+                            'PRIVATE-PROFILE-INPUT-PLACEHOLDER-PASSWORD-AGAIN':{
+                                'en':"Confirm password",
+                                'fr':"Confirmer le mot de passe"
+                            },
+                            'PRIVATE-PROFILE-INPUT-PLACEHOLDER-USERNAME': {
+                                'en':"Please enter your username",
+                                'fr':"Merci d'entrer votre nom d'utilisateur"
+                            },
+                            'PRIVATE-PROFILE-INPUT-PLACEHOLDER-FIRSTNAME': {
+                                'en':"Please enter your firstname",
+                                'fr':"Merci d'entrer votre prénom"
+                            },
+                            'PRIVATE-PROFILE-INPUT-PLACEHOLDER-LASTNAME': {
+                                'en':"Please enter your lastname",
+                                'fr':"Merci d'entrer votre nom de famille"
+                            },
+                            'PRIVATE-PROFILE-SAVE-BTN': {
+                                'en':"Save changes",
+                                'fr':"Sauver les modifications"
+                            },
                             // Private Player
                             'PLAYER-INDEX-ADD-TITLE':{
                                 'en':"Join a " + keywords.session.singular.en,
