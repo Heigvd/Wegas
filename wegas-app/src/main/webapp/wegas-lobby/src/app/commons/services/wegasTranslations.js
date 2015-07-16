@@ -8,13 +8,29 @@ angular.module('wegas.service.wegasTranslations', [])
                     return translationsToReturn;
                 },
                 default: function(){
-                    if(localStorage.getObject("wegas-config@public")){
-                        $translateProvider.preferredLanguage(localStorage.getObject("wegas-config@public").language);
+                    if(localStorage.getObject("wegas-config")){
+                        $translateProvider.preferredLanguage(localStorage.getObject("wegas-config").commons.language);
                     }else{
-                        localStorage.setObject("wegas-config@public", {
-                            'language':'en'
+                        var frList = ['fr', 'fr-fr', 'fr-ch', 'fr-mc', 'fr-ca', 'fr-lu'], isFr = false,
+                            language = window.navigator.userLanguage || window.navigator.language;
+                        frList.forEach(function(frCode){
+                            if(language.toLowerCase() === frCode){
+                                isFr = true;
+                            }
                         });
-                        $translateProvider.preferredLanguage('en');
+                        if(isFr){
+                            localStorage.setObject("wegas-config", {
+                                'commons':{'language':'fr'},
+                                'users':{}
+                            });
+                            $translateProvider.preferredLanguage('fr');
+                        }else{
+                            localStorage.setObject("wegas-config", {
+                                'commons':{'language':'en'},
+                                'users':{}
+                            });
+                            $translateProvider.preferredLanguage('en');
+                        }
                     } 
                 },
                 $get : function() {
@@ -36,12 +52,12 @@ angular.module('wegas.service.wegasTranslations', [])
                         translations : {
                             // Commons
                             'LANGUAGE-FRENCH-NAME': {
-                                'en':"French",
+                                'en':"Français",
                                 'fr':"Français"
                             },
                             'LANGUAGE-ENGLISH-NAME': {
                                 'en':"English",
-                                'fr':"Anglais"
+                                'fr':"English"
                             },
                             'LOADING':{
                                 'en':"Loading",
@@ -51,6 +67,7 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en': "Close",
                                 'fr': "Fermer"
                             },
+
                             // Public
                             'WEGAS-TITLE': {
                                 'en':"Wegas",
@@ -148,6 +165,7 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"Please, enter your email",
                                 'fr':"Merci d'entrer votre email"
                             },
+
                             // Commons Auth service
                             'COMMONS-AUTH-PASSWORD-FLASH-SUCCESS':{
                                 'en':"A new password has been send",
@@ -197,6 +215,7 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"Error while connection",
                                 'fr':"Erreur durant la connexion"
                             },
+
                             // Commons Teams model
                             'COMMONS-TEAMS-FIND-FLASH-SUCCESS':{
                                 'en':startSentence(keywords.team.plural.en)+ " found",
@@ -262,11 +281,13 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"Error while creating "+ keywords.team.singular.en,
                                 'fr':"Erreur durant la création de l'"+ keywords.team.singular.fr
                             },
+
                             // Commons Sessions model
                             'COMMONS-SESSIONS-CLOSE-FLASH-ERROR': {
                                 'en': "Closed " + keywords.session.singular.en,
                                 'fr': startSentence(keywords.session.singular.fr) + " fermée"
                             },
+
                             // Private Commons
                             'PRIVATE-WS-TITLE':{
                                 'en':"{{workspace}} " + keywords.workspace.singular.en,
@@ -396,6 +417,7 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"Pages",
                                 'fr':"Pages"
                             },
+
                             // Private - Edit Profile
                             'PRIVATE-PROFILE-INPUT-LABEL-EMAIL':{
                                 'en':"Email",
@@ -449,6 +471,7 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"Save changes",
                                 'fr':"Sauver les modifications"
                             },
+
                             // Private Player
                             'PLAYER-INDEX-ADD-TITLE':{
                                 'en':"Join a " + keywords.session.singular.en,
@@ -534,6 +557,7 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"This is not a valid " + keywords.token.singular.en,
                                 'fr':startSentence(keywords.token.singular.fr) + " invalide"
                             },
+
                             // Private Trainer
                             'TRAINER-INDEX-ADD-TITLE':{
                                 'en':"Add " + keywords.session.singular.en,
@@ -662,6 +686,91 @@ angular.module('wegas.service.wegasTranslations', [])
                             'TRAINER-MODALE-ARCHIVE-NO-SESSION':{
                                 'en':"No archived " + keywords.session.singular.en + " with the name ",
                                 'fr':"Aucune "+ keywords.session.singular.fr+ " archivée avec le nom "
+                            },
+
+                            // Private Scenarist
+                            'SCENARIST-INDEX-ADD-TITLE':{
+                                'en':"New " + keywords.scenario.singular.en,
+                                'fr':"Nouveau " + keywords.scenario.singular.fr
+                            },
+                            'SCENARIST-INDEX-ADD-NAME-INPUT':{
+                                'en':startSentence(keywords.scenario.singular.en) + " name",
+                                'fr':"Nom du " + keywords.scenario.singular.fr 
+                            },
+                            'SCENARIST-INDEX-ADD-SCENARIO-INPUT':{
+                                'en':"Based on " + keywords.scenario.singular.en,
+                                'fr':"Basé sur le " + keywords.scenario.singular.fr
+                            },
+                            'SCENARIST-INDEX-ADD-BTN':{
+                                'en':"Create",
+                                'fr':"Créer"
+                            },
+                            'SCENARIST-INDEX-ARCHIVE-BTN':{
+                                'en':"Archived " + keywords.scenario.singular.en,
+                                'fr':startSentence(keywords.scenario.singular.fr) + " archivé"
+                            },
+                            'SCENARIST-INDEX-ARCHIVES-BTN':{
+                                'en':"archived " + keywords.scenario.plural.en,
+                                'fr':keywords.scenario.plural.fr + " archivés"
+                            },
+                            'SCENARIST-INDEX-LIST-TITLE':{
+                                'en':"Current " + keywords.scenario.plural.en,
+                                'fr':startSentence(keywords.scenario.plural.fr) + " en cours"
+                            },
+                            'SCENARIST-INDEX-LIST-NO-SCENARIO':{
+                                'en':"No current " + keywords.scenario.singular.en + " with the name ",
+                                'fr':"Aucun "+ keywords.scenario.singular.fr+ " en cours avec le nom "
+                            },
+                            'SCENARIST-MODALE-ARCHIVE-TITLE':{
+                                'en':"Archived "+ keywords.scenario.plural.en,
+                                'fr':startSentence(keywords.scenario.plural.fr) + " archivés"
+                            },
+                            'SCENARIST-MODALE-ARCHIVE-SEARCH-INPUT':{
+                                'en':"Search "+ keywords.scenario.singular.en,
+                                'fr':"Rechercher un "+ keywords.scenario.singular.fr
+                            },
+                            'SCENARIST-MODALE-ARCHIVE-MOVE-CURRENT-BTN':{
+                                'en':"Move to current " + keywords.scenario.plural.en,
+                                'fr':"Redéplacer dans les "+ keywords.scenario.plural.fr + " en cours"
+                            },
+                            'SCENARIST-MODALE-ARCHIVE-DELETE-BTN':{
+                                'en':"Delete "+ keywords.scenario.singular.en,
+                                'fr':"Supprimer le "+ keywords.scenario.singular.fr
+                            },
+                            'SCENARIST-MODALE-ARCHIVE-DELETE-CONFIRM':{
+                                'en':"Are you sure you want to delete this archived " + keywords.scenario.singular.en + " ? This action is irreversible.",
+                                'fr':"Êtes-vous sûre de vouloir supprimer ce " + keywords.scenario.singular.fr + " archivé ? Cette action est irréversible."
+                            },
+                            'SCENARIST-MODALE-ARCHIVE-NO-SCENARIO':{
+                                'en':"No archived " + keywords.scenario.singular.en + " with the name ",
+                                'fr':"Aucun "+ keywords.scenario.singular.fr+ " archivé avec le nom "
+                            },
+                            'SCENARIST-CARD-SETTINGS-BTN':{
+                                'en':"Settings",
+                                'fr':"Paramètres"
+                            },
+                            'SCENARIST-CARD-USERS-BTN':{
+                                'en':"Manage users",
+                                'fr':"Gérer les utilisateurs"
+                            },
+                            'SCENARIST-CARD-VERSIONS-BTN':{
+                                'en':"Manage versions",
+                                'fr':"Gérer les versions"
+                            },
+                            'SCENARIST-CARD-MOVE-ARCHIVE-BTN':{
+                                'en':"Move to archives",
+                                'fr':"Déplacer dans les archives"
+                            },
+                            'SCENARIST-CARD-EDIT-BTN':{
+                                'en':"Edit " + keywords.scenario.singular.en,
+                                'fr':"Modifier le " + keywords.scenario.singular.fr
+                            },
+                            
+
+                            // So Long, and Thanks for All the Fish
+                            'END':{
+                                'en':"This is the end",
+                                'fr':"C'est la fin"
                             }
                         },
                         workspaces : {

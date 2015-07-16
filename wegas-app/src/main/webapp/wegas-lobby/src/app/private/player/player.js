@@ -18,6 +18,6 @@ angular.module('private.player', [
 })
 .controller('PlayerCtrl', function PlayerCtrl($rootScope, $state, Auth, WegasTranslations, $translate) {
     Auth.getAuthenticatedUser().then(function(user){
-        $rootScope.translationWorkspace = {workspace: WegasTranslations.workspaces['PLAYER'][localStorage.getObject("wegas-config@public").language]};
+        $rootScope.translationWorkspace = {workspace: WegasTranslations.workspaces['PLAYER'][$translate.use()]};
     });
 });

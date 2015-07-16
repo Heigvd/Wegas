@@ -21,14 +21,15 @@ angular.module('public', [
     ;
 })
 .controller('PublicIndexCtrl', function PublicIndexCtrl($scope, $rootScope, $state, $translate, Auth) {
-    var ctrl = this;
-    ctrl.currentLanguage = localStorage.getObject("wegas-config@public").language;
+    var ctrl = this,
+        config = localStorage.getObject("wegas-config");
+
+    ctrl.currentLanguage = config.commons.language;
     ctrl.changeLanguage = function(key){
-        var config = localStorage.getObject("wegas-config@public");
-        config.language = key;
+        config.commons.language = key;
         ctrl.currentLanguage = key;
         $translate.use(key);
-        localStorage.setObject("wegas-config@public", config);
+        localStorage.setObject("wegas-config", config);
     };
     Auth.getAuthenticatedUser().then(function(user){
         if(user != null){
