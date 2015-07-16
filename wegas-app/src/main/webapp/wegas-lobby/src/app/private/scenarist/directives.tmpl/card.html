@@ -6,19 +6,19 @@
   <div ng-if="!((scenario.comments == null) || (scenario.comments == ''))" class="line line--optional">{{scenario.comments | limitTo: MAX_DISPLAYED_CHARS}}<span ng-if="scenario.comments.length > MAX_DISPLAYED_CHARS">...</span></div>
 </div>
 <div class="card__actions">
-  <a class="button button--medium button--round button--default-reverse button--label-off button--settings" title="Settings" ui-sref=".settings({scenarioId: scenario.id})">
-    <span class="button__label">Settings</span>
+  <a class="button button--medium button--round button--default-reverse button--label-off button--settings" title="{{'SCENARIST-CARD-SETTINGS-BTN' | translate}}" ui-sref=".settings({scenarioId: scenario.id})">
+    <span class="button__label">{{'SCENARIST-CARD-SETTINGS-BTN' | translate}}</span>
   </a>
-  <a class="button button--medium button--round button--default-reverse button--label-off button--user" title="Manage users" ui-sref=".coscenarists({scenarioId: scenario.id})">
-    <span class="button__label">Manage User</span>
+  <a class="button button--medium button--round button--default-reverse button--label-off button--user" title="{{'SCENARIST-CARD-USERS-BTN' | translate}}" ui-sref=".coscenarists({scenarioId: scenario.id})">
+    <span class="button__label">{{'SCENARIST-CARD-USERS-BTN' | translate}}</span>
   </a>
-  <a class="button button--medium button--round button--default-reverse button--label-off button--fork" title="Versions management" ui-sref=".history({scenarioId: scenario.id})">
-    <span class="button__label">Versions management</span>
+  <a class="button button--medium button--round button--default-reverse button--label-off button--fork" title="{{'SCENARIST-CARD-VERSIONS-BTN' | translate}}" ui-sref=".history({scenarioId: scenario.id})">
+    <span class="button__label">{{'SCENARIST-CARD-VERSIONS-BTN' | translate}}</span>
   </a>
-  <a class="button button--medium button--round button--default-reverse button--label-off button--archive" title="Move to archive" ng-click="archive(scenario)">
-    <span class="button__label">Archive scenario</span>
+  <a class="button button--medium button--round button--default-reverse button--label-off button--archive" title="{{'SCENARIST-CARD-MOVE-ARCHIVE-BTN' | translate}}" ng-click="archive(scenario)">
+    <span class="button__label">{{'SCENARIST-CARD-MOVE-ARCHIVE-BTN' | translate}}</span>
   </a>
-  <a class="button button--medium button--round button--info button--label-off button--scenarist" title="Edit scenario" href="{{ServiceURL}}edit.html?gameModelId={{scenario.id}}" target="_blank">
-    <span class="button__label">Edit scenario</span>
+  <a class="button button--medium button--round button--info button--label-off button--scenarist" title="{{'SCENARIST-CARD-EDIT-BTN' | translate}}" href="{{ServiceURL}}edit.html?gameModelId={{scenario.id}}" target="_blank">
+    <span class="button__label">{{'SCENARIST-CARD-EDIT-BTN' | translate}}</span>
   </a>
 </div>

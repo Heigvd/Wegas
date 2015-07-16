@@ -5,5 +5,5 @@
       scenario-card >
 </div>
 <div ng-if="(search !== '') && (scenarios | filter:{name: search}).length == 0">
-    No current scenario with the name "{{search}}"
+    {{'SCENARIST-INDEX-LIST-NO-SCENARIO' | translate}}"{{search}}"
 </div>

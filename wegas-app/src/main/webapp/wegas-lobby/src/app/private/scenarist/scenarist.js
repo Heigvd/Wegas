@@ -29,7 +29,7 @@ angular.module('private.scenarist', [
                     $state.go("wegas.private.player");
                 }
             }
-            $rootScope.translationWorkspace = {workspace: WegasTranslations.workspaces['SCENARIST'][localStorage.getObject("wegas-config@public").language]};
+            $rootScope.translationWorkspace = {workspace: WegasTranslations.workspaces['SCENARIST'][$translate.use()]};
         }
     });
 });

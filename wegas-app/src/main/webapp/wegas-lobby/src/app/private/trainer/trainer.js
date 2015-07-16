@@ -23,8 +23,7 @@ angular.module('private.trainer', [
             if(!user.isAdmin && !user.isScenarist && !user.isTrainer){
                 $state.go("wegas.private.player");
             }
-            console.log(WegasTranslations.workspaces['TRAINER'][localStorage.getObject("wegas-config@public").language]);
-            $rootScope.translationWorkspace = {workspace: WegasTranslations.workspaces['TRAINER'][localStorage.getObject("wegas-config@public").language]};
+            $rootScope.translationWorkspace = {workspace: WegasTranslations.workspaces['TRAINER'][$translate.use()]};
         }
     });
 })

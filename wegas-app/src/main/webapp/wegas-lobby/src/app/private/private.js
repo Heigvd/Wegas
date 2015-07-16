@@ -27,7 +27,7 @@ angular.module('private', [
         })
     ;
 })
-.controller('PrivateCtrl', function PrivateCtrl($state, Auth, $scope) {
+.controller('PrivateCtrl', function PrivateCtrl($state, Auth, $translate, $scope) {
     var privateCtrl = this;
     privateCtrl.loading = 0;
     $scope.$on('cfpLoadingBar:loading', function () {
@@ -52,5 +52,22 @@ angular.module('private', [
             $state.go("wegas.public");
         }
         privateCtrl.user = user;
+        var config = localStorage.getObject("wegas-config");
+        console.log(config.users[user.email]);
+        if(config.users[user.email]){
+            if(config.commons.language !== config.users[user.email].language){
+                config.commons.language = config.users[user.email].language;
+                localStorage.setObject("wegas-config", config);
+            }
+            $translate.use(config.users[user.email].language);
+        }else{
+            console.log(config.commons.language);
+            config.users[user.email] = {
+                language : config.commons.language           
+            };
+            localStorage.setObject("wegas-config", config);
+            console.log(config);
+            $translate.use(config.users[user.email].language);
+        }
     });
 });

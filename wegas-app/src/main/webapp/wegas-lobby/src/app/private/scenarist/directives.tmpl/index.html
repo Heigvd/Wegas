@@ -5,7 +5,7 @@
 >
 </div>
 <div class="view view--sessions-list view--middle">
-	<h3>Current scenarios</h3>
+	<h3>{{'SCENARIST-INDEX-LIST-TITLE' | translate}}</h3>
 	<div class="view__tools">
 		<div class="tool tool--search tool--open">
 			<a class="tool__link"></a>
@@ -30,8 +30,9 @@
 	</div>
 	<div ng-if="scenaristIndexCtrl.nbArchives > 0" class="view__archives">
 		<a class="button button--small button--default button--archive" ui-sref=".archives">
-			<span class="button__label">{{scenaristIndexCtrl.nbArchives}} &nbsp; archives</span>
-		</a>
+			<span ng-if="scenaristIndexCtrl.nbArchives == 1" class="button__label">{{scenaristIndexCtrl.nbArchives}} {{'SCENARIST-INDEX-ARCHIVE-BTN' | translate}}</span>
+			<span ng-if="scenaristIndexCtrl.nbArchives > 1" class="button__label">{{scenaristIndexCtrl.nbArchives}} {{'SCENARIST-INDEX-ARCHIVES-BTN' | translate}}</span>
+                </a>
 	</div>
 
 </div>

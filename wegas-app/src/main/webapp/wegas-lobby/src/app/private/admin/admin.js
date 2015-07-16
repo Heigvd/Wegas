@@ -25,7 +25,7 @@ angular.module('private.admin', [
             if(!user.isAdmin){
                 $state.go("wegas.private.scenarist");
             }
-            $rootScope.translationWorkspace = {workspace: WegasTranslations.workspaces['ADMIN'][localStorage.getObject("wegas-config@public").language]};
+            $rootScope.translationWorkspace = {workspace: WegasTranslations.workspaces['ADMIN'][$translate.use()]};
         }
     });
 })
