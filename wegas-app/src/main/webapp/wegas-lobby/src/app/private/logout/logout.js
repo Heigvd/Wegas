@@ -4,15 +4,15 @@ angular.module('private.logout', [
     $stateProvider
         .state('wegas.private.logout', {
             url: 'logout',
-        	views: {
-    		 	'workspace': {
+            views: {
+                'workspace': {
                     controller: 'LogoutController as logoutCtrl',
                 }
             }
         })
     ;
 })
-.controller('LogoutController', function LogoutController($state, Auth, SessionsModel, ScenariosModel, TeamsModel, UsersModel, GroupsModel, Flash) {
+.controller('LogoutController', function LogoutController($state, Auth, SessionsModel, ScenariosModel, TeamsModel, UsersModel, GroupsModel) {
     Auth.logout().then(function(response){
     	SessionsModel.clearCache();
     	ScenariosModel.clearCache();
