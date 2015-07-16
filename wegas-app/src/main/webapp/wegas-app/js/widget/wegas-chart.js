@@ -67,7 +67,7 @@ YUI.add('wegas-chart', function(Y) {
                     return;
                 }
                 vd.position = i;
-                vd.label = variables[i].label || variables[i].name;
+                vd.label = variables[i].label || vd.get("label");
 
                 this.vdList[i] = null;
                 this.historyRequest(vd);

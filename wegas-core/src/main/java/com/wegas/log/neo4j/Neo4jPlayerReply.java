@@ -135,6 +135,7 @@ public class Neo4jPlayerReply {
         jsonObject.put("choice", choiceDescriptor.getName());
         jsonObject.put("question", questionDescriptor.getName());
         jsonObject.put("result", reply.getResult().getName());
+        jsonObject.put("times", reply.getQuestionInstance().getReplies().size());
         if (reply.getResult().getImpact() != null) {
             jsonObject.put("impact", StringEscapeUtils.escapeEcmaScript(reply.getResult().getImpact().getContent()));
         } else {
