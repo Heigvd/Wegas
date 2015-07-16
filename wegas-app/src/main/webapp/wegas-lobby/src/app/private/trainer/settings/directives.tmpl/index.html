@@ -9,16 +9,16 @@
 <div class="modal__nav modal__nav--2tab">
     <a 	class="modal__nav__tab modal__nav__tab--left"
         ng-class="{'modal__nav__tab--active': settingsIndexCtrl.tabs.infos}"
-        ng-click="settingsIndexCtrl.activeTab('infos')">Infos</a>	
+        ng-click="settingsIndexCtrl.activeTab('infos')">{{'PRIVATE-MODALE-TABS-INFOS' | translate}}</a>	
     <a  class="modal__nav__tab modal__nav__tab--right"
         ng-class="{'modal__nav__tab--active': settingsIndexCtrl.tabs.advanced}"
-        ng-click="settingsIndexCtrl.activeTab('advanced')">Advanced</a>
+        ng-click="settingsIndexCtrl.activeTab('advanced')">{{'PRIVATE-MODALE-TABS-ADVANCED' | translate}}</a>
 </div>
 <div 	ng-if="settingsIndexCtrl.tabs.infos"
-		class="modal__content"
-		active-infos="settingsIndexCtrl.infos"
-		check-change="settingsIndexCtrl.checkChanges"
-		trainer-sessions-customize-infos>
+        class="modal__content"
+        active-infos="settingsIndexCtrl.infos"
+        check-change="settingsIndexCtrl.checkChanges"
+        trainer-sessions-customize-infos>
 </div>
 <!-- Advanced -->
 <div    ng-if="settingsIndexCtrl.tabs.advanced"
@@ -27,11 +27,11 @@
         trainer-sessions-customize-advanced>
 </div>
 <div class="modal__tools">
-	<p ng-if="settingsIndexCtrl.hasChanges.all" class="modal__tools__message"><i class="fa fa-warning"></i> Some changes aren't saved</p>
+	<p ng-if="settingsIndexCtrl.hasChanges.all" class="modal__tools__message"><i class="fa fa-warning"></i> {{'PRIVATE-MODALE-SETTINGS-NOT-SAVED-WARNING' | translate}}</p>
 	<a class="modal__tools__button button button--small button--success" ng-click="settingsIndexCtrl.save()">
-   		<span class="button__label">Save change</span>
+            <span class="button__label">{{'PRIVATE-MODALE-SETTINGS-SAVE-BTN' | translate}}</span>
 	</a>
 	<a class="modal__tools__button button button--small button--default" ng-click="settingsIndexCtrl.cancel()">
-   		<span class="button__label">Cancel</span>
+            <span class="button__label">{{'PRIVATE-MODALE-SETTINGS-CANCEL-BTN' | translate}}</span>
 	</a>
 </div>
