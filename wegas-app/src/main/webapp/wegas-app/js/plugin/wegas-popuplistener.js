@@ -57,18 +57,27 @@ YUI.add('wegas-popuplistener', function(Y) {
                 }, event.timeout);
             }
         },
-        onShowOverlay: function(e) {
+        onShowOverlay: function(e, klass) {
+            var node = this.get(HOST).get(this.get("targetAttr"));
             if (this.counter === 0) {
-                PopupListener.showOverlay(this.get(HOST).get(this.get("targetAttr")));
+                PopupListener.showOverlay(node);
+            }
+            if (klass){
+                node.addClass(klass);
             }
             this.counter += 1;
             e.halt(true);
         },
-        onHideOverlay: function(e) {
+        onHideOverlay: function(e, klass) {
+            var node = this.get(HOST).get(this.get("targetAttr"));
             this.counter -= 1;
+
             if (this.counter < 1) {
-                PopupListener.hideOverlay(this.get(HOST).get(this.get("targetAttr")));
+                PopupListener.hideOverlay(node);
                 this.counter = 0;
+            }
+            if (klass){
+                node.removeClass(klass);
             }
             e.halt(true);
         }

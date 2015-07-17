@@ -9,10 +9,10 @@ package com.wegas.core.ejb;
 
 import com.pusher.rest.Pusher;
 import com.pusher.rest.data.PresenceUser;
+import com.pusher.rest.data.Result;
 import com.wegas.core.Helper;
 import com.wegas.core.event.client.EntityUpdatedEvent;
 import com.wegas.core.exception.internal.NoPlayerException;
-import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.GameScope;
@@ -20,6 +20,7 @@ import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
+import java.io.ByteArrayOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,11 +29,12 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import java.io.IOException;
-import java.util.AbstractMap;
+import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.MissingResourceException;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * @author Yannick Lagger <lagger.yannick@gmail.com>
@@ -44,6 +46,13 @@ public class WebsocketFacade {
     private static final Logger logger = LoggerFactory.getLogger(WebsocketFacade.class);
 
     private final Pusher pusher;
+    private final static String GLOBAL_CHANNEL = "presence-global";
+
+    public enum WegasStatus {
+        DOWN,
+        READY,
+        OUTDATED
+    };
 
     /**
      *
@@ -56,6 +65,21 @@ public class WebsocketFacade {
      */
     @EJB
     private UserFacade userFacade;
+
+    /**
+     *
+     * @param status
+     * @param socketId
+     */
+    public void sendLifeCycleEvent(WegasStatus status, final String socketId) {
+        pusher.trigger(GLOBAL_CHANNEL, "LifeCycleEvent",
+                "{\"@class\": \"LifeCycleEvent\", \"status\": \"" + status.toString() + "\"}", socketId);
+    }
+
+    public void sendPopup(String channel, String message, final String socketId) {
+        pusher.trigger(channel, "CustomEvent",
+                "{\"@class\": \"CustomEvent\", \"type\": \"popupEvent\", \"payload\": {\"content\": \"<p>" + message + "</p>\"}}", socketId);
+    }
 
     private String getProperty(String property) {
         try {
@@ -127,6 +151,7 @@ public class WebsocketFacade {
 //        }
         for (int i = 0; i < events.getUpdatedEntities().size(); i++) {
             v = events.getUpdatedEntities().get(i);
+            logger.error("Entity: " + v);
             if (v.getScope() instanceof GameModelScope /*
                      * ||
                      * v.getScope().getBroadcastScope().equals(GameModelScope.class.getSimpleName())
@@ -135,12 +160,15 @@ public class WebsocketFacade {
             } else if (v.getScope() instanceof GameScope
                     || v.getScope().getBroadcastScope().equals(GameScope.class.getSimpleName())) {
                 putInstance(games, variableInstanceFacade.findGame(v).getId(), v);
+                logger.error("GameScope Entity: " + v);
             } else if (v.getScope() instanceof TeamScope
                     || v.getScope().getBroadcastScope().equals(TeamScope.class.getSimpleName())) {
                 putInstance(teams, variableInstanceFacade.findTeam(v).getId(), v);
+                logger.error("TeamScope Entity: " + v);
             } else if (v.getScope() instanceof PlayerScope
                     || v.getScope().getBroadcastScope().equals(PlayerScope.class.getSimpleName())) {
                 putInstance(players, variableInstanceFacade.findAPlayer(v).getId(), v);
+                logger.error("PlayerScope Entity: " + v);
             }
         }
 
@@ -149,11 +177,46 @@ public class WebsocketFacade {
         propagate(players, "Player-", socketId);
     }
 
+    private String gzip(String data) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        GZIPOutputStream gzos = new GZIPOutputStream(baos);
+        OutputStreamWriter osw = new OutputStreamWriter(gzos, "UTF-8");
+
+        osw.append(data);
+        osw.flush();
+        osw.close();
+
+        byte[] ba = baos.toByteArray();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < ba.length; i++) {
+            // @hack convert to uint array
+            /* 
+             * Sending a byte[] through pusher result takes lot of place cause 
+             * json is like "data: [31, 8, -127, ...]", full text
+             */
+            sb.append(Character.toString((char) Byte.toUnsignedInt(ba[i])));
+        }
+        return sb.toString();
+    }
+
     private void propagate(Map<Long, EntityUpdatedEvent> map, String prefix, final String socketId) {
         for (Entry<Long, EntityUpdatedEvent> entry : map.entrySet()) {
             try {
-                pusher.trigger(prefix + entry.getKey(), "EntityUpdatedEvent", entry.getValue().toJson(), socketId);
+                logger.error("EntityUpdatedEvent.entites: " + prefix + entry.getKey() + ": " + entry.getValue().getUpdatedEntities().size());
+
+                String gzippedJson = gzip(entry.getValue().toJson());
+
+                Result result = pusher.trigger(prefix + entry.getKey(), "EntityUpdatedEvent.gz", gzippedJson, socketId);
+
+                logger.error("PUSHER RESULT" + result.getMessage() + " : " + result.getStatus() + " : " + result.getHttpStatus());
+                if (result.getHttpStatus() == 403) {
+                    // Pusher Message Quota Reached...
+                } else if (result.getHttpStatus() == 413) {
+                    // wooops pusher error (too big ?)
+                    this.sendLifeCycleEvent(WegasStatus.OUTDATED, socketId);
+                }
             } catch (IOException ex) {
+                logger.error("     IOEX <----------------------", ex);
                 //
             }
         }
