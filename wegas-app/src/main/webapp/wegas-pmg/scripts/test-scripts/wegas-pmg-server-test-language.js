@@ -108,12 +108,8 @@ var PMGTest = (function() {
                         root: fullKey
                     });
                 } else {
-                    printMessage("VALUE: " + value);
                     a1 = value.match(/%([a-zA-Z0-9_]*)%/g) || [];
                     a2 = current.t2[key].match(/%([a-zA-Z0-9_]*)%/g) || [];
-
-                    printMessage("a1: " + a1);
-                    printMessage("a2: " + a2);
 
                     m1 = {};
                     m2 = {};
