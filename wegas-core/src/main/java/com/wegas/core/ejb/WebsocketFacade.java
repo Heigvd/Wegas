@@ -49,6 +49,7 @@ public class WebsocketFacade {
     private final static String GLOBAL_CHANNEL = "presence-global";
 
     public enum WegasStatus {
+
         DOWN,
         READY,
         OUTDATED
@@ -72,13 +73,17 @@ public class WebsocketFacade {
      * @param socketId
      */
     public void sendLifeCycleEvent(WegasStatus status, final String socketId) {
-        pusher.trigger(GLOBAL_CHANNEL, "LifeCycleEvent",
-                "{\"@class\": \"LifeCycleEvent\", \"status\": \"" + status.toString() + "\"}", socketId);
+        if (this.pusher != null) {
+            pusher.trigger(GLOBAL_CHANNEL, "LifeCycleEvent",
+                    "{\"@class\": \"LifeCycleEvent\", \"status\": \"" + status.toString() + "\"}", socketId);
+        }
     }
 
     public void sendPopup(String channel, String message, final String socketId) {
-        pusher.trigger(channel, "CustomEvent",
-                "{\"@class\": \"CustomEvent\", \"type\": \"popupEvent\", \"payload\": {\"content\": \"<p>" + message + "</p>\"}}", socketId);
+        if (this.pusher != null) {
+            pusher.trigger(channel, "CustomEvent",
+                    "{\"@class\": \"CustomEvent\", \"type\": \"popupEvent\", \"payload\": {\"content\": \"<p>" + message + "</p>\"}}", socketId);
+        }
     }
 
     private String getProperty(String property) {
