@@ -837,6 +837,126 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"Delete version",
                                 'fr':"Supprimer la version"
                             },
+                            'ADMIN-INDEX-TITLE':{
+                                'en':"Welcome to admin",
+                                'fr':"Bienvenue dans la console d'admin"
+                            },
+                            'ADMIN-INDEX-ACTIONS-TITLE':{
+                                'en':"Available actions",
+                                'fr':"Actions disponibles"
+                            },
+                            'ADMIN-INDEX-USERS-BTN':{
+                                'en':"Users",
+                                'fr':"Utilisateurs"
+                            },
+                            'ADMIN-INDEX-GROUPS-BTN':{
+                                'en':"Groups",
+                                'fr':"Groupes"
+                            },
+                            'ADMIN-INDEX-SESSIONS-BTN':{
+                                'en':keywords.session.plural.en,
+                                'fr':keywords.session.plural.fr
+                            },
+                            'ADMIN-INDEX-UPLOAD-TITLE':{
+                                'en':"Upload a " + keywords.scenario.singular.en,
+                                'fr':"Télécharger un " + keywords.scenario.singular.fr
+                            },
+                            'ADMIN-USERS-TITLE':{
+                                'en':"Existing users",
+                                'fr':"Utilisateurs existants"
+                            },
+                            'ADMIN-USERS-CARD-TITLE':{
+                                'en':"User ",
+                                'fr':"Utilisateur "
+                            },
+                            'ADMIN-USERS-CARD-EDIT-BTN':{
+                                'en':"Edit user",
+                                'fr':"Modifier l'utilisateur"
+                            },
+                            'ADMIN-USERS-CARD-DELETE-BTN':{
+                                'en':"Delete user",
+                                'fr':"Supprimer l'utilisateur"
+                            },
+                            'ADMIN-USERS-CARD-DELETE-CONFIRM':{
+                                'en':"Are you sure you want to delete this user ? This action is irreversible.",
+                                'fr':"Êtes-vous sûre de vouloir supprimer cet utilisateur ? Cette action est irréversible."
+                            },
+                            'ADMIN-USERS-MODALE-EDIT-TITLE':{
+                                'en':"Edit profile",
+                                'fr':"Modifier le profile"
+                            },
+                            'ADMIN-USERS-MODALE-GROUPS-TITLE':{
+                                'en':"Manage user's groups",
+                                'fr':"Gestion des groupes de l'utilisateur"
+                            },
+                            'ADMIN-USERS-MODALE-GROUPS-ADD-BTN':{
+                                'en':"Add user in group",
+                                'fr':"Ajouter l'utilisateur dans un groupe"
+                            },
+                            'ADMIN-USERS-MODALE-GROUPS-REMOVE-BTN':{
+                                'en':"Remove user from this group",
+                                'fr':"Enlever l'utilisateur du groupe"
+                            },
+                            'ADMIN-USERS-MODALE-GROUPS-SELECT-INPUT':{
+                                'en':"Please select a group",
+                                'fr':"Choisir un groupe"
+                            },
+                            'ADMIN-GROUPS-TITLE':{
+                                'en':"Groups",
+                                'fr':"Groupes"
+                            },
+                            'ADMIN-GROUPS-NEW-INPUT':{
+                                'en':"New group name",
+                                'fr':"Nom du nouveau groupe"
+                            },
+                            'ADMIN-GROUPS-NEW-BTN':{
+                                'en':"New group",
+                                'fr':"Nouveau groupe "
+                            },
+                            'ADMIN-GROUPS-CARD-EDIT-BTN':{
+                                'en':"Edit group",
+                                'fr':"Modifier le groupe"
+                            },
+                            'ADMIN-GROUPS-CARD-DELETE-BTN':{
+                                'en':"Delete group",
+                                'fr':"Supprimer le groupe"
+                            },
+                            'ADMIN-GROUPS-CARD-DELETE-CONFIRM':{
+                                'en':"Are you sure you want to delete this group ? This action is irreversible.",
+                                'fr':"Êtes-vous sûre de vouloir supprimer ce groupe ? Cette action est irréversible."
+                            },
+                            'ADMIN-GROUPS-MODALE-NAME-TITLE':{
+                                'en':"Edit name",
+                                'fr':"Modifier le nom"
+                            },
+                            'ADMIN-GROUPS-MODALE-NAME-INPUT':{
+                                'en':"Group name",
+                                'fr':"Nom du groupe"
+                            },
+                            'ADMIN-MODALE-PERMISSION-TITLE':{
+                                'en':"Edit permissions",
+                                'fr':"Modifier les permissions"
+                            },
+                            'ADMIN-MODALE-PERMISSION-ADD-BTN':{
+                                'en':"Add permission",
+                                'fr':"Ajouter une permission"
+                            },
+                            'ADMIN-MODALE-PERMISSION-REMOVE-BTN':{
+                                'en':"Remove permission",
+                                'fr':"Supprimer la permission"
+                            },
+                            'ADMIN-MODALE-PERMISSION-SAVE-BTN':{
+                                'en':"Save changes",
+                                'fr':"Sauver les changements"
+                            },
+                            'ADMIN-MODALE-PERMISSION-SAVE-CONFIRM':{
+                                'en':"Are you sure you want to save your changes ? This action is irreversible.",
+                                'fr':"Êtes-vous sûre de vouloir sauver vos changements ? Cette action est irréversible."
+                            },
+                            'ADMIN-MODALE-PERMISSION-INPUT':{
+                                'en':"Permission chain",
+                                'fr':"Expression de la permission"
+                            },
                             // So Long, and Thanks for All the Fish
                             'END':{
                                 'en':"This is the end",
