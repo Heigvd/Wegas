@@ -262,8 +262,8 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'fr':"Aucune "+ keywords.team.singular.fr +" trouvée"
                             },
                             'COMMONS-TEAMS-NO-PLAYER-FLASH-ERROR':{
-                                'en':"No "+ keywords.player.singular.en +" found in the "+ keywords.team.singular.en,
-                                'fr':"Aucun "+ keywords.player.singular.fr +" dans cette "+ keywords.team.singular.fr
+                                'en':"No "+ keywords.player.singular.en +" found",
+                                'fr':"Aucun "+ keywords.player.singular.fr + " trouvé"
                             },
                             'COMMONS-TEAMS-RELOAD-FLASH-SUCCESS': {
                                 'en':startSentence(keywords.team.singular.en)+ " reloaded",
@@ -289,22 +289,258 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
                             'COMMONS-SESSIONS-NO-SESSION-FLASH-ERROR': {
                                 'en': "No " + keywords.session.singular.en + "choosed",
-                                'fr': "Aucune " + keywords.session.singular.fr) + " choisie"
+                                'fr': "Aucune " + keywords.session.singular.fr + " choisie"
                             },
+                            'COMMONS-SESSIONS-FIND-FLASH-SUCCESS': {
+                                'en': startSentence(keywords.session.plural.en) + " found",
+                                'fr': startSentence(keywords.session.plural.fr) + " trouvées"
+                            },
+                            'COMMONS-SESSIONS-FIND-FLASH-ERROR': {
+                                'en': "Error while loading  " + keywords.session.plural.en,
+                                'fr': "Une erreur est survenue durant le chargement des " + keywords.session.plural.fr
+                            },
+                            'COMMONS-SESSIONS-GET-FLASH-SUCCESS': {
+                                'en': startSentence(keywords.session.singular.en) + " found",
+                                'fr': startSentence(keywords.session.singular.fr) + " trouvée"
+                            },
+                            'COMMONS-SESSIONS-GET-FLASH-ERROR':{
+                                'en': "No " + keywords.session.singular.en + " found", 
+                                'fr': "Aucune " + keywords.session.singular.fr + " trouvée"
+                            },
+                            'COMMONS-SESSIONS-UPDATE-FLASH-SUCCESS': {
+                                'en': startSentence(keywords.session.singular.en) + " up-to-date",
+                                'fr': startSentence(keywords.session.singular.fr) + " mise à jour"
+                            },
+                            'COMMONS-SESSIONS-UPDATE-FLASH-ERROR': {
+                                'en': "Error while updating  " + keywords.session.singular.en,
+                                'fr': "Une erreur est survenue durant la mise à jour de la " + keywords.session.singular.fr
+                            },
+                            'COMMONS-SESSIONS-UPDATE-NO-SESSION-FLASH-ERROR': {
+                                'en': "No " + keywords.session.singular.en + " to update",
+                                'fr': "Aucune " + keywords.session.singular.fr + " à mettre à jour"
+                            },
+                            'COMMONS-SESSIONS-TEAM-REMOVE-FLASH-SUCCESS': {
+                                'en': startSentence(keywords.team.singular.en) + " has been removed from the " + keywords.session.singular.en,
+                                'fr': "L'" + keywords.team.singular.fr + " a été supprimée de la " + keywords.session.singular.fr
+                            },
+                            'COMMONS-SESSIONS-TEAM-REMOVE-FLASH-ERROR': {
+                                'en': "Error while " + keywords.team.singular.en + " suppression",
+                                'fr': "Une erreur a été rencontrée durant la suppression de l'" + keywords.team.singular.fr
+                            },
+                            'COMMONS-SESSIONS-PLAYER-REMOVE-FLASH-SUCCESS': {
+                                'en': startSentence(keywords.player.singular.en) + " has been removed from the " + keywords.session.singular.en,
+                                'fr': "Le " + keywords.player.singular.fr + " a été supprimée de la " + keywords.session.singular.fr
+                            },
+                            'COMMONS-SESSIONS-PLAYER-REMOVE-FLASH-ERROR': {
+                                'en': "Error while " + keywords.player.singular.en + " suppression",
+                                'fr': "Une erreur a été rencontrée durant la suppression du " + keywords.player.singular.fr
+                            },
+                            'COMMONS-SESSIONS-REFRESH-SUCCESS': {
+                                'en': startSentence(keywords.session.singular.en) + " refreshed",
+                                'fr': startSentence(keywords.session.singular.fr) + " rafraichie"
+                            },
+                            'COMMONS-SESSIONS-REFRESH-ERROR': {
+                                'en': "Error while refreshing " + keywords.session.singular.en,
+                                'fr': "Une erreur a été rencontrée durant le rafraichissement du " + keywords.session.singular.fr
+                            },
+                            'COMMONS-SESSIONS-EDIT-ACCESS-SUCCESS': {
+                                'en': "{{access}} " + keywords.session.singular.en,
+                                'fr': startSentence(keywords.session.singular.fr) + " {{access}}"
+                            },
+                            'COMMONS-SESSIONS-EDIT-ACCESS-ERROR': {
+                                'en': "Error while editing " + keywords.session.singular.en + " access",
+                                'fr': "Une erreur a été rencontrée durant l'édition de l'accès à la " + keywords.session.singular.fr
+                            },
+                            'COMMONS-SESSIONS-CREATE-SUCCESS': {
+                                'en': startSentence(keywords.session.singular.en) + " created",
+                                'fr': startSentence(keywords.session.singular.fr) + " créée"
+                            },
+                            'COMMONS-SESSIONS-CREATE-ERROR': {
+                                'en': "Error while creating " + keywords.session.singular.en,
+                                'fr': "Une erreur a été rencontrée durant la création de la " + keywords.session.singular.fr
+                            },
+                            'COMMONS-SESSIONS-ADD-TRAINER-SUCCESS': {
+                                'en': startSentence(keywords.trainer.singular.en) + " added",
+                                'fr': startSentence(keywords.trainer.singular.fr) + " ajouté"
+                            },
+                            'COMMONS-SESSIONS-ADD-TRAINER-ERROR': {
+                                'en': "Error while adding " + keywords.trainer.singular.en,
+                                'fr': "Une erreur a été rencontrée durant l'ajout du " + keywords.trainer.singular.fr
+                            },
+                            'COMMONS-SESSIONS-ALREADY-TRAINER-INFO': {
+                                'en': "This user is already a " + keywords.trainer.singular.en + " for this " + keywords.session.singular.en,
+                                'fr': "Cet utilisateur est déjà un " + keywords.trainer.singular.fr + " pour la " + keywords.session.singular.fr
+                            },
+                            'COMMONS-SESSIONS-NO-ACCESS-ERROR': {
+                                'en': "This user is already a " + keywords.trainer.singular.en + " for this " + keywords.session.singular.en,
+                                'fr': "Cet utilisateur est déjà un " + keywords.trainer.singular.fr + " pour la " + keywords.session.singular.fr
+                            },
+                            'COMMONS-SESSIONS-REMOVE-TRAINER-SUCCESS': {
+                                'en': startSentence(keywords.trainer.singular.en) + " removed",
+                                'fr': startSentence(keywords.trainer.singular.fr) + " enlevé"
+                            },
+                            'COMMONS-SESSIONS-REMOVE-TRAINER-ERROR': {
+                                'en': "You can not remove this " + keywords.trainer.singular.en,
+                                'fr': "Vous ne pouvez pas enlever cet " + keywords.trainer.singular.fr
+                            },
+                            'COMMONS-SESSIONS-ARCHIVE-SUCCESS': {
+                                'en': startSentence(keywords.session.singular.en) + " archived",
+                                'fr': startSentence(keywords.session.singular.fr) + " archivée"
+                            },
+                            'COMMONS-SESSIONS-ARCHIVE-ERROR': {
+                                'en': "Error while archiving " + keywords.session.singular.en,
+                                'fr': "Une erreur a été rencontrée durant l'archivage de la " + keywords.session.singular.fr
+                            },
+                            'COMMONS-SESSIONS-UNARCHIVE-SUCCESS': {
+                                'en': startSentence(keywords.session.singular.en) + " unarchived",
+                                'fr': startSentence(keywords.session.singular.fr) + " désarchivée"
+                            },
+                            'COMMONS-SESSIONS-UNARCHIVE-ERROR': {
+                                'en': "Error while unarchiving " + keywords.session.singular.en,
+                                'fr': "Une erreur a été rencontrée durant le désarchivage de la " + keywords.session.singular.fr
+                            },
+                            'COMMONS-SESSIONS-SUPPRESSION-SUCCESS': {
+                                'en': startSentence(keywords.session.singular.en) + " suppressed",
+                                'fr': startSentence(keywords.session.singular.fr) + " supprimée"
+                            },
+                            'COMMONS-SESSIONS-SUPPRESSION-ERROR': {
+                                'en': "Error while unarchiving " + keywords.session.singular.en,
+                                'fr': "Une erreur a été rencontrée durant le désarchivage de la " + keywords.session.singular.fr
+                            },
+                            'COMMONS-SESSIONS-WRONG-OBJECT-ERROR': {
+                                'en': "This is not a " + keywords.session.singular.en,
+                                'fr': "Ce n'est pas une " + keywords.session.singular.fr
+                            },
+
 
                             // Commons Scenarios Model
                             'COMMONS-SCENARIOS-NO-SCENARIO-FLASH-ERROR': {
                                 'en': "No " + keywords.scenario.singular.en + "choosed",
-                                'fr': "Aucun " + keywords.scenario.singular.fr) + " choisi"
+                                'fr': "Aucun " + keywords.scenario.singular.fr + " choisi"
                             },
                             'COMMONS-SCENARIOS-NO-TEMPLATE-FLASH-ERROR': {
                                 'en': "You need to choose a " + keywords.scenario.singular.en + " template",
-                                'fr': "Vous devez choisir un template de " + keywords.scenario.singular.fr)
+                                'fr': "Vous devez choisir un template de " + keywords.scenario.singular.fr
                             },
                             'COMMONS-SCENARIOS-EMPTY-NAME-FLASH-ERROR': {
                                 'en': "Name field can not be empty",
                                 'fr': "Vous devez donner un nom à votre " + keywords.scenario.singular.fr
                             },
+                            'COMMONS-SCENARIOS-NO-NAME-TEMPLATE-FLASH-ERROR': {
+                                'en': "Name or template is missing",
+                                'fr': "Vous devez renseigner le nom et le template"
+                            },
+                            'COMMONS-SCENARIOS-FIND-FLASH-SUCCESS': {
+                                'en': startSentence(keywords.scenario.plural.en) + " found",
+                                'fr': startSentence(keywords.scenario.plural.fr) + " trouvés"
+                            },
+                            'COMMONS-SCENARIOS-FIND-FLASH-ERROR': {
+                                'en': "Error while loading  " + keywords.scenario.plural.en,
+                                'fr': "Une erreur est survenue durant le chargement des " + keywords.scenario.plural.fr
+                            },
+                            'COMMONS-SCENARIOS-GET-FLASH-SUCCESS': {
+                                'en': startSentence(keywords.scenario.singular.en) + " found",
+                                'fr': startSentence(keywords.scenario.singular.fr) + " trouvé"
+                            },
+                            'COMMONS-SCENARIOS-GET-FLASH-ERROR': {
+                                'en': "No  " + keywords.scenario.singular.en + " found",
+                                'fr': "Aucun " + keywords.scenario.singular.fr + " trouvé"
+                            },
+                            'COMMONS-SCENARIOS-CREATE-FLASH-SUCCESS': {
+                                'en': startSentence(keywords.scenario.singular.en) + " created",
+                                'fr': startSentence(keywords.scenario.singular.fr) + " créé"
+                            },
+                            'COMMONS-SCENARIOS-CREATE-FLASH-ERROR': {
+                                'en': "Error while creating  " + keywords.scenario.singular.en,
+                                'fr': "Une erreur est survenue durant la création des " + keywords.scenario.singular.fr
+                            },
+                            'COMMONS-SCENARIOS-COPY-FLASH-SUCCESS': {
+                                'en': startSentence(keywords.scenario.singular.en) + " copy",
+                                'fr': startSentence(keywords.scenario.singular.fr) + " copié"
+                            },
+                            'COMMONS-SCENARIOS-COPY-FLASH-ERROR': {
+                                'en': "Error while copying  " + keywords.scenario.singular.en,
+                                'fr': "Une erreur est survenue durant la copie du " + keywords.scenario.singular.fr
+                            },
+                            'COMMONS-SCENARIOS-NO-COPY-FLASH-ERROR': {
+                                'en': "You need to set which " + keywords.scenario.singular.en + " will be copied",
+                                'fr': "Vous devez selectionner un " + keywords.scenario.singular.fr + " à copier"
+                            },
+                            'COMMONS-SCENARIOS-UPDATE-FLASH-SUCCESS': {
+                                'en': startSentence(keywords.scenario.singular.en) + " updated",
+                                'fr': startSentence(keywords.scenario.singular.fr) + " modifié"
+                            },
+                            'COMMONS-SCENARIOS-UPDATE-FLASH-ERROR': {
+                                'en': "Error while updating " + keywords.scenario.singular.en,
+                                'fr': "Une erreur est survenue durant la mis à jour du " + keywords.scenario.singular.fr
+                            },
+                            'COMMONS-SCENARIOS-NO-UPDATE-FLASH-ERROR': {
+                                'en': "No " + keywords.scenario.singular.en + " to update",
+                                'fr': "Pas de " + keywords.scenario.singular.fr + " à mettre à jour"
+                            },
+
+                            'COMMONS-SCENARIOS-VERSIONS-FIND-FLASH-SUCCESS': {
+                                'en': "Versions loaded",
+                                'fr': "Versions chargées"
+                            },
+                            'COMMONS-SCENARIOS-VERSIONS-FIND-FLASH-ERROR': {
+                                'en': "Error while loading versions",
+                                'fr': "Une erreur est survenue durant le chargement des versions"
+                            },
+                            'COMMONS-SCENARIOS-VERSIONS-CREATE-FLASH-SUCCESS': {
+                                'en': "Version created",
+                                'fr': "Version créée"
+                            },
+                            'COMMONS-SCENARIOS-VERSIONS-CREATE-FLASH-ERROR': {
+                                'en': "Error while creating version",
+                                'fr': "Une erreur est survenue durant la création de la version"
+                            },
+                            'COMMONS-SCENARIOS-VERSIONS-DELETE-FLASH-SUCCESS': {
+                                'en': "Version deleted",
+                                'fr': "Version supprimée"
+                            },
+                            'COMMONS-SCENARIOS-VERSIONS-DELETE-FLASH-ERROR': {
+                                'en': "Error while deleting version",
+                                'fr': "Une erreur est survenue durant la suppression de la version"
+                            },
+                            'COMMONS-SCENARIOS-VERSIONS-RESTORE-FLASH-SUCCESS': {
+                                'en': startSentence(keywords.scenario.singular.en) + " has been duplicated with name: \"{{name}}\"",
+                                'fr': startSentence(keywords.scenario.singular.fr) + " a été dupliqué sous le nom : \"{{name}}\""
+                            },
+                            'COMMONS-SCENARIOS-VERSIONS-RESTORE-FLASH-ERROR': {
+                                'en': "Error while duplicating  " + keywords.scenario.singular.en,
+                                'fr': "Une erreur est survenue durant la diplication des " + keywords.scenario.singular.fr
+                            },
+
+                            'COMMONS-SCENARIOS-ARCHIVE-FLASH-SUCCESS': {
+                                'en': startSentence(keywords.scenario.singular.en) + " archived",
+                                'fr': startSentence(keywords.scenario.singular.fr) + " archivé"
+                            },
+                            'COMMONS-SCENARIOS-ARCHIVE-FLASH-ERROR': {
+                                'en': "Error while archiving " + keywords.scenario.singular.en,
+                                'fr': "Une erreur a été rencontrée durant l'archivage du " + keywords.scenario.singular.fr
+                            },
+                            'COMMONS-SCENARIOS-UNARCHIVE-FLASH-SUCCESS': {
+                                'en': startSentence(keywords.scenario.singular.en) + " unarchived",
+                                'fr': startSentence(keywords.scenario.singular.fr) + " désarchivé"
+                            },
+                            'COMMONS-SCENARIOS-UNARCHIVE-FLASH-ERROR': {
+                                'en': "Error while unarchiving " + keywords.scenario.singular.en,
+                                'fr': "Une erreur a été rencontrée durant le désarchivage du " + keywords.scenario.singular.fr
+                            },
+                            'COMMONS-SCENARIOS-SUPPRESSION-FLASH-SUCCESS': {
+                                'en': startSentence(keywords.scenario.singular.en) + " suppressed",
+                                'fr': startSentence(keywords.scenario.singular.fr) + " supprimé"
+                            },
+                            'COMMONS-SCENARIOS-SUPPRESSION-FLASH-ERROR': {
+                                'en': "Error while unarchiving " + keywords.scenario.singular.en,
+                                'fr': "Une erreur a été rencontrée durant le désarchivage de la " + keywords.scenario.singular.fr
+                            },
+                            'COMMONS-SCENARIOS-WRONG-OBJECT-FLASH-ERROR': {
+                                'en': "This is not a " + keywords.session.singular.en,
+                                'fr': "Ce n'est pas un " + keywords.session.singular.fr
+                            },
+
                             // Commons Users Model
                             'COMMONS-USERS-LOAD-FLASH-ERROR': {
                                 'en': 'Unable to load user informations.',
@@ -312,6 +548,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
 
                             // Private Commons
+                            'PRIVATE-ARCHIVES-COUNT':{
+                                'en':"Archives count",
+                                'fr':"Nombre d'archives"
+                            },
                             'PRIVATE-WS-TITLE':{
                                 'en':"{{workspace}} " + keywords.workspace.singular.en,
                                 'fr':startSentence(keywords.workspace.singular.fr) + " - {{workspace}}"
@@ -1013,6 +1253,16 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"Show",
                                 'fr':"Afficher"
                             } 
+                        },
+                        access: {
+                            'OPEN':{
+                                'en':"Open",
+                                'fr':"ouverte"
+                            },
+                            'CLOSE':{
+                                'en':"Closed",
+                                'fr':"fermée"
+                            }
                         }
                     };
                 }
