@@ -282,10 +282,33 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'fr':"Erreur durant la création de l'"+ keywords.team.singular.fr
                             },
 
-                            // Commons Sessions model
+                            // Commons Sessions Model
                             'COMMONS-SESSIONS-CLOSE-FLASH-ERROR': {
                                 'en': "Closed " + keywords.session.singular.en,
                                 'fr': startSentence(keywords.session.singular.fr) + " fermée"
+                            },
+                            'COMMONS-SESSIONS-NO-SESSION-FLASH-ERROR': {
+                                'en': "No " + keywords.session.singular.en + "choosed",
+                                'fr': "Aucune " + keywords.session.singular.fr) + " choisie"
+                            },
+
+                            // Commons Scenarios Model
+                            'COMMONS-SCENARIOS-NO-SCENARIO-FLASH-ERROR': {
+                                'en': "No " + keywords.scenario.singular.en + "choosed",
+                                'fr': "Aucun " + keywords.scenario.singular.fr) + " choisi"
+                            },
+                            'COMMONS-SCENARIOS-NO-TEMPLATE-FLASH-ERROR': {
+                                'en': "You need to choose a " + keywords.scenario.singular.en + " template",
+                                'fr': "Vous devez choisir un template de " + keywords.scenario.singular.fr)
+                            },
+                            'COMMONS-SCENARIOS-EMPTY-NAME-FLASH-ERROR': {
+                                'en': "Name field can not be empty",
+                                'fr': "Vous devez donner un nom à votre " + keywords.scenario.singular.fr
+                            },
+                            // Commons Users Model
+                            'COMMONS-USERS-LOAD-FLASH-ERROR': {
+                                'en': 'Unable to load user informations.',
+                                'fr': "Impossible de charger les informations de l'utilisateur"
                             },
 
                             // Private Commons

@@ -60,12 +60,10 @@ angular.module('private', [
             }
             $translate.use(config.users[user.email].language);
         }else{
-            console.log(config.commons.language);
             config.users[user.email] = {
                 language : config.commons.language           
             };
             localStorage.setObject("wegas-config", config);
-            console.log(config);
             $translate.use(config.users[user.email].language);
         }
     });

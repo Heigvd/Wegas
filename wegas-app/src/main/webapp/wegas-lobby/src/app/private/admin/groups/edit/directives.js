@@ -20,12 +20,12 @@ angular.module('private.admin.groups.edit.directives', [])
 
         ctrl.removePermission = function(permission) {
             ctrl.group.permissions = _.without(ctrl.group.permissions, permission);
-        }
+        };
 
         ctrl.addPermission = function() {
-        	var newPermission = {'id':null, "@class":"Permission","value":"", "inducedPermission":""}
+            var newPermission = {'id':null, "@class":"Permission","value":"", "inducedPermission":""};
             ctrl.group.permissions.push(newPermission);
-        }
+        };
 
         ctrl.save = function () {
           	GroupsModel.updateGroup(ctrl.group).then(function (response) {
@@ -33,6 +33,6 @@ angular.module('private.admin.groups.edit.directives', [])
                     response.flash();
                 }
             });
-        }
+        };
     })
     ;
