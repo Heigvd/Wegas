@@ -1,4 +1,4 @@
-<h2>Coscenarists</h2>
+<h2>{{'SCENARIST-MODALE-USERS-TITLE' | translate}}</h2>
 <article class="card card--flat card--big card--coscenarist-permission" ng-repeat="permission in permissions track by permission.user.id" permission="permission">
   <div class="card__illustration illustration illustration--big illustration--icon" illustration="ICON_grey_user"></div>
 <div class="card__description">
@@ -8,8 +8,8 @@
 </div>
 <scenarist-coscenarists-user-permissions class="card__detailled-actions" user-permissions="permission" scenario="scenario"></scenarist-coscenarists-user-permissions>
 <div class="card__actions">
-  <a class="button button--medium button--round button--default-reverse button--label-off button--trash" title="Remove scenarist" ng-click="removeUser(scenario.id, permission.user.id)">
-    <span class="button__label">Remove scenarist</span>
+  <a class="button button--medium button--round button--default-reverse button--label-off button--trash" title="{{'SCENARIST-MODALE-USERS-REMOVE-BTN' |translate}}" ng-click="removeUser(scenario.id, permission.user.id)">
+    <span class="button__label">{{'SCENARIST-MODALE-USERS-REMOVE-BTN' | translate}}</span>
   </a>
 </div>
 </article>

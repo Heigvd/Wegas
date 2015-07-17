@@ -377,6 +377,14 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':startSentence(keywords.token.singular.en) + " is required",
                                 'fr':"La " + keywords.token.singular.fr + " est obligatoire"
                             },
+                            'PRIVATE-SCENARIOS-NAME-LABEL-INPUT':{
+                                'en':"Name",
+                                'fr':"Nom"
+                            },
+                            'PRIVATE-SCENARIOS-NAME-PLACEHOLDER-INPUT':{
+                                'en':"Name is required",
+                                'fr':"Le nom est obligatoire"
+                            },
                             'PRIVATE-SCENARIOS-COMMENTS-LABEL-INPUT':{
                                 'en':"Comments",
                                 'fr':"Commentaires"
@@ -765,8 +773,70 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"Edit " + keywords.scenario.singular.en,
                                 'fr':"Modifier le " + keywords.scenario.singular.fr
                             },
-                            
-
+                            'SCENARIST-MODALE-USERS-TITLE':{
+                                'en':"Co-" + keywords.scenarist.plural.en,
+                                'fr':"Co-" + keywords.scenarist.plural.fr
+                            },
+                            'SCENARIST-MODALE-USERS-SHARE-INPUT':{
+                                'en':"Share with user",
+                                'fr':"Partager avec un utilisateur"
+                            },
+                            'SCENARIST-MODALE-USERS-EDIT-CHECKBOX':{
+                                'en':"Edit " + keywords.scenario.singular.en,
+                                'fr':"Modifier le " + keywords.scenario.singular.fr
+                            },
+                            'SCENARIST-MODALE-USERS-DUPLICATE-CHECKBOX':{
+                                'en':"Duplicate " + keywords.scenario.singular.en,
+                                'fr':"Dupliquer le " + keywords.scenario.singular.fr
+                            },
+                            'SCENARIST-MODALE-USERS-CREATE-CHECKBOX':{
+                                'en':"Create "+ keywords.session.singular.en +" from " + keywords.scenario.singular.en,
+                                'fr':"Créer une "+ keywords.session.singular.fr +" à partire du " + keywords.scenario.singular.fr
+                            },
+                            'SCENARIST-MODALE-USERS-REMOVE-BTN':{
+                                'en':"Remove access for this user",
+                                'fr':"Supprimer les accès pour cet utilisateur"
+                            },
+                            'SCENARIST-MODALE-VERSIONS-NEW-BTN':{
+                                'en':"New version",
+                                'fr':"Nouvelle version"
+                            },
+                            'SCENARIST-MODALE-VERSIONS-NEW-TITLE-BTN':{
+                                'en':"This actions will store a new version of the " + keywords.scenario.singular.en + ". The version can be restored as a new scenario.",
+                                'fr':"Cette action va enregistrer une nouvelle version du " + keywords.scenario.singular.fr + ". La version peut "
+                            },
+                            'SCENARIST-MODALE-VERSIONS-DUPLICATE-BTN':{
+                                'en':"Duplicate",
+                                'fr':"Dupliquer"
+                            },
+                            'SCENARIST-MODALE-VERSIONS-DUPLICATE-TITLE-BTN':{
+                                'en':"This will generate a new "+ keywords.scenario.singular.en +" based on this one.",
+                                'fr':"Cette action génère un nouveau " + keywords.scenario.singular.fr + " basé sur celui-ci"
+                            },
+                            'SCENARIST-MODALE-VERSIONS-PDF-BTN':{
+                                'en':"PDF",
+                                'fr':"PDF"
+                            },
+                            'SCENARIST-MODALE-VERSIONS-JSON-BTN':{
+                                'en':"JSON",
+                                'fr':"JSON"
+                            },
+                            'SCENARIST-MODALE-VERSIONS-NO-VERSION':{
+                                'en':"There is no version actually.",
+                                'fr':"Ce " + keywords.scenario.singular.fr + " n'a pas encore de version."
+                            },
+                            'SCENARIST-MODALE-VERSIONS-AVAILABLE-VERSIONS':{
+                                'en':"Available versions",
+                                'fr':"Versions disponibles"
+                            },
+                            'SCENARIST-MODALE-VERSIONS-CREATE-BTN':{
+                                'en':"Create a new " + keywords.scenario.singular.en + " from this version",
+                                'fr':"Créer un nouveau " + keywords.scenario.singular.fr + " depuis cette version"
+                            },
+                            'SCENARIST-MODALE-VERSIONS-DELETE-BTN':{
+                                'en':"Delete version",
+                                'fr':"Supprimer la version"
+                            },
                             // So Long, and Thanks for All the Fish
                             'END':{
                                 'en':"This is the end",

@@ -1,23 +1,23 @@
 <div class="infos--main">
-	<label class="infos__label">Name</label>
-	<input ng-model="activeInfos.name" class="input input--small" type="text" placeholder="Name is required" />
-	<label class="infos__label">Comment</label>
-	<textarea ng-model="activeInfos.comments" class="input input--small input--multi-lines" placeholder="Comment is optionnal"></textarea>
+	<label class="infos__label">{{'PRIVATE-SCENARIOS-NAME-LABEL-INPUT' | translate}}</label>
+	<input ng-model="activeInfos.name" class="input input--small" type="text" placeholder="{{'PRIVATE-SCENARIOS-NAME-PLACEHOLDER-INPUT' | translate}}" />
+	<label class="infos__label">{{'PRIVATE-SCENARIOS-COMMENTS-LABEL-INPUT' | translate}}</label>
+	<textarea ng-model="activeInfos.comments" class="input input--small input--multi-lines" placeholder="{{'PRIVATE-SCENARIOS-COMMENTS-PLACEHOLDER-INPUT' | translate}}"></textarea>
 </div>
 <div class="infos--secondary">
-	<label class="infos__label">Type</label>
+	<label class="infos__label">{{'PRIVATE-SCENARIOS-TYPE-LABEL-CHECKBOX' | translate}}</label>
 	<label class="choice">
 		<div class="choice__box">
 			<input ng-model="activeInfos.individual" type="radio" ng-value="true" />
 			<div class="choice__box__display"></div>
 		</div>
-		<div class="choice__label">Individual</div>
+		<div class="choice__label">{{'PRIVATE-SCENARIOS-TYPE-INDIVIDUALLY-CHECKBOX' | translate}}</div>
  	</label>
  	<label class="choice">
 		<div class="choice__box">
 			<input ng-model="activeInfos.individual" type="radio" ng-value="false" />
 			<div class="choice__box__display"></div>
 		</div>
-		<div class="choice__label">In team</div>
+		<div class="choice__label">{{'PRIVATE-SCENARIOS-TYPE-IN-TEAM-CHECKBOX' | translate}}</div>
  	</label>
 </div>

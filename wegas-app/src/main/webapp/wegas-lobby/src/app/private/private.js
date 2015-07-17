@@ -53,7 +53,6 @@ angular.module('private', [
         }
         privateCtrl.user = user;
         var config = localStorage.getObject("wegas-config");
-        console.log(config.users[user.email]);
         if(config.users[user.email]){
             if(config.commons.language !== config.users[user.email].language){
                 config.commons.language = config.users[user.email].language;
