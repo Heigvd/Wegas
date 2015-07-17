@@ -7,7 +7,7 @@ angular.module('private.trainer.directives', [
             controller: "TrainerIndexController as trainerIndexCtrl"
         };
     })
-    .controller("TrainerIndexController", function TrainerIndexController($rootScope, $scope, SessionsModel, Flash) {
+    .controller("TrainerIndexController", function TrainerIndexController($rootScope, $scope, $translate, SessionsModel, Flash) {
         var ctrl = this,
             initMaxSessionsDisplayed = function() {
                 if (ctrl.sessions.length > 12) {
@@ -71,7 +71,9 @@ angular.module('private.trainer.directives', [
                     }
                 });
             } else {
-                Flash.danger("No scenario choosed");
+                $translate('COMMONS-SCENARIOS-NO-SCENARIO-FLASH-ERROR').then(function (message) {
+                    Flash.danger(message);
+                });
             }
         };
         
@@ -103,7 +105,7 @@ angular.module('private.trainer.directives', [
             ctrl.nbArchives = response.data;
         });
     })
-    .directive('trainerSessionsAdd', function(ScenariosModel, SessionsModel, Flash) {
+    .directive('trainerSessionsAdd', function(ScenariosModel, SessionsModel, Flash, $translate) {
         return {
             templateUrl: 'app/private/trainer/directives.tmpl/add-form.html',
             scope: false,
@@ -132,7 +134,9 @@ angular.module('private.trainer.directives', [
                             }
                         });
                     } else {
-                        Flash.warning("No scenario choosed");
+                        $translate('COMMONS-SCENARIOS-NO-SCENARIO-FLASH-ERROR').then(function (message) {
+                            Flash.warning(message);
+                        });
                     }
                 };
             }

@@ -74,7 +74,6 @@ angular
 
             modal.close.then(function(result) {
                 $('body').removeClass('modal-displayed');
-
                 // Ensure a state will be found
                 var destination = ($state.previous.name == "") ? "wegas.public" : $state.previous.name;
                 $state.go(destination);

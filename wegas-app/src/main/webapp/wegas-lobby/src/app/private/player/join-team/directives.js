@@ -17,7 +17,7 @@ angular.module('private.player.join.directives', [])
                     $interval.cancel(refresher);
                     $scope.close();
                 }else{
-                    if(response.data.access != "CLOSE"){
+                    if(response.data.access !== "CLOSE"){
                         if(!response.data.properties.freeForAll){
                             ctrl.sessionToJoin = response.data;
                         }else{
@@ -59,8 +59,8 @@ angular.module('private.player.join.directives', [])
     /* Method used to create new team and join this new team in the session. */
     ctrl.createTeam = function(){
         if(!ctrl.newTeam.alreadyUsed){
-            if(ctrl.newTeam.name != ""){
-                if(ctrl.sessionToJoin.access != "CLOSE"){
+            if(ctrl.newTeam.name !== ""){
+                if(ctrl.sessionToJoin.access !== "CLOSE"){
                     $interval.cancel(refresher);
                     TeamsModel.createTeam(ctrl.sessionToJoin, ctrl.newTeam.name).then(function(responseCreate){
                         if(!responseCreate.isErroneous()){
@@ -144,7 +144,7 @@ angular.module('private.player.join.directives', [])
                 }else{
                     scope.hideToggle = {toggle: WegasTranslations.hideToggle['SHOW'][localStorage.getObject("wegas-config@public").language]};
                 }
-            }
+            };
         }
     };
 });
