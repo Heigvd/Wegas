@@ -14,11 +14,6 @@
 YUI.add("wegas-statistics", function(Y) {
     "use strict";
     var Data,
-        COLORS = ["#582A72",
-            "#AD9DB6",
-            "#7E5A92",
-            "#380A51",
-            "#200131"],
         CHART_BAR_OPT = {
             width: 600,
             height: 400,
@@ -28,6 +23,9 @@ YUI.add("wegas-statistics", function(Y) {
                 },
                 scaleMinSpace: 20,
                 onlyInteger: true
+            },
+            axisX: {
+                offset: 50
             },
             low: 0,
             high: 100
@@ -57,7 +55,7 @@ YUI.add("wegas-statistics", function(Y) {
             return new Promise(function(resolve, reject) {
                 var img = new Image();
                 img.src = "data:image/svg+xml;base64," +
-                          btoa(unescape(encodeURIComponent((new XMLSerializer()).serializeToString(node))));
+                          btoa(window.unescape(encodeURIComponent((new XMLSerializer()).serializeToString(node))));
                 img.onload = function() {
                     var can = document.createElement("canvas"), ctx = can.getContext("2d"), target = new Image();
                     can.width = img.width;
@@ -120,24 +118,6 @@ YUI.add("wegas-statistics", function(Y) {
                     .on("valueChange", Y.bind(function(e) {
                         this.drawQuestion(e.newVal);
                     }, this)));
-                /*      this.get("contentBox").one(".stats-number select").on("valueChange", function(e) {
-                 gmPromise.then(function(gm) {
-                 return Data.getNumber(getLogID(gm), e.newVal);
-                 }).then(function(v) {
-                 var res = [];
-                 Y.Array.each(v, function(i) {
-                 res.push({
-                 category: (new Date(i.starttime)).toLocaleString(),
-                 values: i.number
-                 });
-                 });
-                 chartNumber.set("dataProvider", res);
-                 chartNumber.render(chartNNode);
-                 return 1;
-                 }).catch(function(e) {
-                 Y.log(e, "error", "Y.Wegas.Statistics");
-                 });
-                 });*/
             },
             genAllQuestion: function() {
                 var questions = Y.Wegas.Facade.Variable.cache.findAll("@class", "QuestionDescriptor"),
@@ -169,11 +149,6 @@ YUI.add("wegas-statistics", function(Y) {
                     Y.one(tmpChart.container).empty();
                     tmpChart.detach();
                     wHandInfo.remove();
-                    /*  this.chart.update({
-                     labels: [],
-                     series: []
-                     });
-                     this.get("contentBox").one(".stats-question select").getDOMNode().value = "null";*/
                     panel.exit();
                 }, this);
 
@@ -280,37 +255,27 @@ YUI.add("wegas-statistics", function(Y) {
                 choices = {}, data = {
                     labels: [],
                     series: [{
-                        fillColor: COLORS[0],
                         data: []
                     }]
                 }, res = data.series[0].data, labels = data.labels, count = 0;
             Y.Array.each(question.get("items"), function(i) {
-                choices[(i.get("name"))] = 0;
+                choices[(i.get("name"))] = {};
+                Y.Array.each(i.get("results"), function(r) {
+                    choices[(i.get("name"))][r.get("label")] = 0;
+                });
+
             });
             Y.Array.each(questionData, function(i) {
-                choices[i.choice] += 1;
+                choices[i.choice][i.result] += 1;
                 count += 1;
             });
             Y.Object.each(choices, function(v, k) {
-                //                            res.push({
-                //                                category: Y.Wegas.Facade.Variable.cache.find("name",
-                // k).get("label"), values: v / (count ? count : 1) * 100 });
-                labels.push(Y.Wegas.Facade.Variable.cache.find("name", k).get("label"));
-                res.push(v / (count ? count : 1) * 100);
+                Y.Object.each(v, function(val, key) {
+                    labels.push(Y.Wegas.Facade.Variable.cache.find("name", k).get("label") +
+                                (key ? " (" + key + ")" : ""));
+                    res.push(val / (count ? count : 1) * 100);
+                });
             });
-            //                    if (this.chart) {
-            //                        this.chart.destroy();
-            //                        this.chart = null;
-            //                    }
-            //                    this.chart = new Chart(this.ctx.question).Bar(data, {
-            //                        //                         responsive: true,
-            //                        animation: false,
-            //                        scaleOverride: true,
-            //                        scaleLabel: "<%=value%>%",
-            //                        scaleSteps: 10,
-            //                        scaleStepWidth: 10,
-            //                        scaleStartValue: 0
-            //                    });
 
             return [data, count];
         };
@@ -337,5 +302,4 @@ YUI.add("wegas-statistics", function(Y) {
             genQuestionData: genQuestionData
         };
     }());
-})
-;
+});
