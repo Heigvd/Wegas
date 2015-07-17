@@ -5,10 +5,14 @@ services: postgresql
 branches:
   only:
   - master
+sudo: false
+addons:
+  apt:
+    packages:
+    - sshpass
 before_script:
 - psql -c 'create database wegas_test;' -U postgres
 - psql -c "create user \"user\" with superuser password '1234';" -U postgres
-- sudo apt-get update > /dev/null && sudo apt-get install sshpass
 install:
 - mvn -P release-profile generate-resources
 script:
