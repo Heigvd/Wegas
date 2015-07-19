@@ -16,4 +16,4 @@ script:
   - secure: IldKSO+pk6RwzzF8iZt0qwh3yx1v49FAis/vJgUIDNWwDVQhOm7T5aJ4MUmbrGZgOFr9cCvlAO4A6qolf2Zn1cipaHzpyGzg5vhVlN1SEYh/WYYm9bTrDS0LqG6xL1Kp+YJD8B48rteEFG7dAL9au9w8ipoTO+PW66CbcoxDR5o=
   - secure: dc1+zvl7dLsaietPU2/s/MKyIopVry5BTS5sS6z+D2e50JH1zvhFoLD92UDJM0rs8zDWa4nzrwG0yYj8roDlVzCj+VJ+VMyQFspHtcHle109Uqo+V0Ac3BSfugkchbJfO2I545CiVXnJGR/SxOfiLPwPy7rRUU0YT34xyW5A8b0=
 after_success:
-- if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then openssl aes-256-cbc -K $encrypted_0b9fb0e4186f_key -iv $encrypted_0b9fb0e4186f_iv -in .id_rsa.enc -out .id_rsa -d; scp -i .id_rda -oStrictHostKeyChecking=no wegas-app/target/Wegas.war $USER@dev.albasim.ch:/home/drop; fi
+- if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then openssl aes-256-cbc -K $encrypted_0b9fb0e4186f_key -iv $encrypted_0b9fb0e4186f_iv -in .id_rsa.enc -out .id_rsa -d; scp -i .id_rda -oStrictHostKeyChecking=no wegas-app/target/Wegas.war drop@dev.albasim.ch:/home/drop; fi
