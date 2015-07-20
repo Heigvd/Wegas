@@ -1,14 +1,14 @@
 <form class="form" ng-submit="addSession()">
 	<div class="form__row">
-		<input class="input input--small" type="text" id="scenario-name" ng-model="newSession.name" placeholder="Session name" autocomplete="off">
+		<input class="input input--small" type="text" id="scenario-name" ng-model="newSession.name" placeholder="{{'TRAINER-INDEX-ADD-NAME-INPUT' | translate}}" autocomplete="off">
     </div>
     <div class="form__row fade" ng-if="newSession.name != ''">
         <select class="input input--small" id="scenario-template" ng-model="newSession.scenarioId">
-            <option value="0">Based on scenario</option>
+            <option value="0">{{'TRAINER-INDEX-ADD-SCENARIO-INPUT' | translate}}</option>
             <option ng-repeat="scenario in scenarios | filter: { canInstantiate: true }" value="{{scenario.id}}">{{scenario.name}}</option>
         </select>
     </div>
     <div class="form__row form__row--right">
-    	<input class="form__row__btn button button--default" type="submit" value="Create session" />
+    	<input class="form__row__btn button button--default" type="submit" value="{{'TRAINER-INDEX-ADD-BTN' | translate}}" />
 	</div>
 </form>

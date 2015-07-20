@@ -3,10 +3,10 @@
             <span>{{team.name}}</span>
              <a 
 	    	class="button button--small button--round button--danger-reverse button--label-off button--trash" 
-	    	title="Remove team"
+	    	title="{{'TRAINER-MODALE-USERS-REMOVE-TEAM-BTN' | translate}}"
                     confirmed-click="remove(team.id)" 
-                    ng-confirm-click="Are you sure you want to remove this team from the session ? This action is irreversible.">
-	    	<span class="button__label">Remove team</span>
+                    ng-confirm-click="{{'TRAINER-MODALE-USERS-REMOVE-TEAM-CONFIRM' | translate}}">
+	    	<span class="button__label">{{'TRAINER-MODALE-USERS-REMOVE-TEAM-BTN' | translate}}</span>
 	    </a>
         </h4>
 	<div class="view__users-individual" trainer-sessions-users-individual-list players="team.players"></div>

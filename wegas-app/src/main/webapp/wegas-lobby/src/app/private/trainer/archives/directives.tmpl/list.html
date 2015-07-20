@@ -10,33 +10,29 @@
     <div class="card__actions">
         <a
             class="button button--medium button--round button--default-reverse button--label-off button--settings"
-            title="Show settings"
+            title="{{'TRAINER-MODALE-ARCHIVE-SETTINGS-BTN' | translate}}"
             ng-click="details(session)">
-            <span class="button__label">Show settings</span>
+            <span class="button__label">{{'TRAINER-MODALE-ARCHIVE-SETTINGS-BTN' | translate}}</span>
         </a>
-
         <a
             class="button button--medium button--round button--default-reverse button--label-off button--user"
-            title="Show settings"
+            title="{{'TRAINER-MODALE-ARCHIVE-USERS-BTN' | translate}}"
             ng-click="users(session)">
-            <span class="button__label">Manage Users</span>
+            <span class="button__label">{{'TRAINER-MODALE-ARCHIVE-USERS-BTN' | translate}}</span>
         </a>
-
-
-
-        <a class="button button--medium button--round button--default-reverse button--label-off button--undo" title="Move to current sessions" ng-click="unarchive(session)">
-            <span class="button__label">Move to current sessions</span>
+        <a class="button button--medium button--round button--default-reverse button--label-off button--undo" title="{{'TRAINER-MODALE-ARCHIVE-MOVE-CURRENT-BTN' | translate}}" ng-click="unarchive(session)">
+            <span class="button__label">{{'TRAINER-MODALE-ARCHIVE-MOVE-CURRENT-BTN' | translate}}</span>
         </a>
         <a
             class="button button--medium button--round button--danger-reverse button--label-off button--trash"
-            title="Delete session"
+            title="{{'TRAINER-MODALE-ARCHIVE-DELETE-BTN' | translate}}"
             confirmed-click="delete(session)"
-            ng-confirm-click="Are you sure you want to delete this archived session ? This action is irreversible.">
-            <span class="button__label">Delete session</span>
+            ng-confirm-click="{{'TRAINER-MODALE-ARCHIVE-DELETE-CONFIRM' | translate}}">
+            <span class="button__label">{{'TRAINER-MODALE-ARCHIVE-DELETE-BTN' | translate}}</span>
         </a>
 
     </div>
 </div>
 <div ng-if="(sessions | filter:{name: search}).length == 0">
-    No archived session with the name "{{search}}"
+    {{'TRAINER-MODALE-ARCHIVE-NO-SESSION' | translate}}"{{search}}"
 </div>
