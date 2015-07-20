@@ -94,7 +94,8 @@ angular.module('wegas.service.auth', [
                     });
                     service.getAuthenticatedUser();
                 } else if (data.events !== undefined) {
-                    console.log(data.events[0].exceptions[0].message);
+                    console.log("WEGAS LOBBY : Error during login")
+                    console.log(data.events);
                     $translate('COMMONS-AUTH-LOGIN-FLASH-ERROR-CLIENT').then(function (message) {
                         deferred.resolve(Responses.danger(message, false));
                     });
@@ -105,7 +106,8 @@ angular.module('wegas.service.auth', [
                 }
             }).error(function(data) {
                 if (data.events !== undefined && data.events.length > 0) {
-                    console.log(data.events[0].exceptions[0].message);
+                    console.log("WEGAS LOBBY : Error during login")
+                    console.log(data.events);
                     $translate('COMMONS-AUTH-LOGIN-FLASH-ERROR-CLIENT').then(function (message) {
                         deferred.resolve(Responses.danger(message, false));
                     });

@@ -33,7 +33,6 @@ angular.module('private.scenarist.directives', [
                 });
             }
             ScenariosModel.getScenarios('LIVE').then(function(response) {
-                console.log(response);
                 ctrl.scenarios = response.data || [];
                 if (updateDisplay) {
                     updateDisplayScenarios();

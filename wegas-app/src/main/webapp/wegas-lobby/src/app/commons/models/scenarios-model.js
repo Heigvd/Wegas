@@ -485,27 +485,16 @@ angular.module('wegas.models.scenarios', [])
         model.deleteVersionHistory = function(scenarioId, version) {
             var deferred = $q.defer();
             var url = "rest/Public/GameModel/" + scenarioId + "/File/delete/History/" + version;
-
             $http.delete(ServiceURL + url, {
                 "headers": {
                     "managed-mode": "true"
                 }
-            })
-                .success(function(data) {
-                    if (data.events !== undefined && data.events.length == 0) {
-                        $translate('COMMONS-SCENARIOS-VERSIONS-DELETE-FLASH-SUCCESS').then(function (message) {
-                            deferred.resolve(Responses.success(message, true));
-                        });
-                    } else{
-                        if (data.events !== undefined) {
-                            console.log("WEGAS LOBBY : Error while deleting scenario version");
-                            console.log(data.events);
-                        } 
-                        $translate('COMMONS-SCENARIOS-VERSIONS-DELETE-FLASH-ERROR').then(function (message) {
-                            deferred.resolve(Responses.danger(message, false));
-                        });
-                    } 
-                }).error(function(data) {
+            }).success(function(data) {
+                if (data.events !== undefined && data.events.length == 0) {
+                    $translate('COMMONS-SCENARIOS-VERSIONS-DELETE-FLASH-SUCCESS').then(function (message) {
+                        deferred.resolve(Responses.success(message, true));
+                    });
+                } else{
                     if (data.events !== undefined) {
                         console.log("WEGAS LOBBY : Error while deleting scenario version");
                         console.log(data.events);
@@ -513,38 +502,34 @@ angular.module('wegas.models.scenarios', [])
                     $translate('COMMONS-SCENARIOS-VERSIONS-DELETE-FLASH-ERROR').then(function (message) {
                         deferred.resolve(Responses.danger(message, false));
                     });
+                } 
+            }).error(function(data) {
+                if (data.events !== undefined) {
+                    console.log("WEGAS LOBBY : Error while deleting scenario version");
+                    console.log(data.events);
+                } 
+                $translate('COMMONS-SCENARIOS-VERSIONS-DELETE-FLASH-ERROR').then(function (message) {
+                    deferred.resolve(Responses.danger(message, false));
                 });
-
+            });
             return deferred.promise;
         };
 
         model.restoreVersionHistory = function(scenarioId, version) {
-
-            var deferred = $q.defer();
-            var url = "rest/Public/GameModel/" + scenarioId + "/Restore/History/" + version;
-
+            var deferred = $q.defer(),
+                url = "rest/Public/GameModel/" + scenarioId + "/Restore/History/" + version;
             $http.get(ServiceURL + url, {
                 "headers": {
                     "managed-mode": "true"
                 }
-            })
-                .success(function(data) {
-                    if (data.events !== undefined && data.events.length == 0) {
-                        var newScenario = data.entities[0];
-                        cacheScenario("LIVE", newScenario);
-                        $translate('COMMONS-SCENARIOS-VERSIONS-RESTORE-FLASH-SUCCESS', { name: newScenario.name}).then(function (message) {
-                            deferred.resolve(Responses.success(message, newScenario));
-                        });
-                    } else{
-                        if (data.events !== undefined) {
-                            console.log("WEGAS LOBBY : Error while restoring scenario version");
-                            console.log(data.events);
-                        } 
-                        $translate('COMMONS-SCENARIOS-VERSIONS-RESTORE-FLASH-ERROR').then(function (message) {
-                            deferred.resolve(Responses.danger(message, false));
-                        });
-                    }
-                }).error(function(data) {
+            }).success(function(data) {
+                if (data.events !== undefined && data.events.length == 0) {
+                    var newScenario = data.entities[0];
+                    cacheScenario("LIVE", newScenario);
+                    $translate('COMMONS-SCENARIOS-VERSIONS-RESTORE-FLASH-SUCCESS', { name: newScenario.name}).then(function (message) {
+                        deferred.resolve(Responses.success(message, newScenario));
+                    });
+                } else{
                     if (data.events !== undefined) {
                         console.log("WEGAS LOBBY : Error while restoring scenario version");
                         console.log(data.events);
@@ -552,13 +537,22 @@ angular.module('wegas.models.scenarios', [])
                     $translate('COMMONS-SCENARIOS-VERSIONS-RESTORE-FLASH-ERROR').then(function (message) {
                         deferred.resolve(Responses.danger(message, false));
                     });
+                }
+            }).error(function(data) {
+                if (data.events !== undefined) {
+                    console.log("WEGAS LOBBY : Error while restoring scenario version");
+                    console.log(data.events);
+                } 
+                $translate('COMMONS-SCENARIOS-VERSIONS-RESTORE-FLASH-ERROR').then(function (message) {
+                    deferred.resolve(Responses.danger(message, false));
                 });
+            });
             return deferred.promise;
         };
 
-        /*  ---------------------------------
-ARCHIVED SCENARIOS SERVICES
---------------------------------- */
+    /*  ---------------------------------
+            ARCHIVED SCENARIOS SERVICES
+        --------------------------------- */
         model.countArchivedScenarios = function() {
             var deferred = $q.defer();
             $http.get(ServiceURL + "rest/GameModel/status/BIN/count").success(function(data) {
@@ -567,7 +561,7 @@ ARCHIVED SCENARIOS SERVICES
                 });
             });
             return deferred.promise;
-        }
+        };
 
         model.archiveScenario = function(scenarioToArchive) {
             var deferred = $q.defer();
