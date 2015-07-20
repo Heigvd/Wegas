@@ -6,13 +6,15 @@ branches:
   only:
   - master
 sudo: false
+addons:
+  ssh_known_hosts: dev.albasim.ch
 before_script:
 - psql -c 'create database wegas_test;' -U postgres
 - psql -c "create user \"user\" with superuser password '1234';" -U postgres
 - openssl aes-256-cbc -K $encrypted_fb8fa6aea355_key -iv $encrypted_fb8fa6aea355_iv
   -in .id_rsa.enc -out .id_rsa -d
 - chmod 400 .id_rsa
-- scp -B -oStrictHostKeyChecking=no -i .id_rsa license $USER@dev.albasim.ch:/home/drop/autodeploy/
+- scp -B -i .id_rsa license $USER@dev.albasim.ch:/home/drop/autodeploy/
 install:
 - mvn -P release-profile generate-resources
 script:
