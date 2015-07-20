@@ -9,7 +9,7 @@
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-/*global Pusher:true, YUI_config:true */
+/*global Pusher:true, YUI_config:true, Zlib */
 YUI.add('wegas-pusher-connector', function(Y) {
     "use strict";
 
@@ -60,12 +60,25 @@ YUI.add('wegas-pusher-connector', function(Y) {
             }, this);
             this._set("status", pusherInstance.connection.state);
             pusherInstance.subscribe('Game-' +
-                                     Wegas.Facade.Game.get("currentGameId")).bind_all(Y.bind(this.eventReceived, this));
+                Wegas.Facade.Game.get("currentGameId")).bind_all(Y.bind(this.eventReceived, this));
             pusherInstance.subscribe('Team-' +
-                                     Wegas.Facade.Game.get("currentTeamId")).bind_all(Y.bind(this.eventReceived, this));
+                Wegas.Facade.Game.get("currentTeamId")).bind_all(Y.bind(this.eventReceived, this));
             pusherInstance.subscribe('Player-' +
-                                     Wegas.Facade.Game.get("currentPlayerId")).bind_all(Y.bind(this.eventReceived,
-                    this));
+                Wegas.Facade.Game.get("currentPlayerId")).bind_all(Y.bind(this.eventReceived,
+                this));
+            pusherInstance.subscribe('presence-global').bind_all(Y.bind(this.eventReceived,
+                this));
+        },
+        gunzip: function(data) {
+            var ba, i, compressed, zlib, inflated;
+            ba = [];
+            for (i = 0; i < data.length; i += 1) {
+                ba.push(data.charCodeAt(i));
+            }
+            compressed = new Uint8Array(ba);
+            zlib = new Zlib.Gunzip(compressed);
+            inflated = zlib.decompress();
+            return String.fromCharCode.apply(null, inflated);
         },
         /**
          * @function
@@ -76,6 +89,10 @@ YUI.add('wegas-pusher-connector', function(Y) {
          */
         eventReceived: function(event, data) {
             if (event.indexOf("pusher") !== 0) {                               //ignore pusher specific event
+                if (event.match(/\.gz$/)) {
+                    event = event.replace(/\.gz$/, "");
+                    data = this.gunzip(data);
+                }
                 this.publish(event, {
                     emitFacade: false
                 });
