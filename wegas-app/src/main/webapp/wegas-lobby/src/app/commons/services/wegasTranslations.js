@@ -207,6 +207,10 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"You need to be logged",
                                 'fr':"Connexion nécessaire"
                             },
+                            'COMMONS-AUTH-IS-ADMIN-FLASH-ERROR':{
+                                'en':"You need to be admin",
+                                'fr':"Connexion en tant qu'administrateur nécessaire"
+                            },
                             'COMMONS-AUTH-GUEST-FLASH-SUCCESS':{
                                 'en':"Connected as guest",
                                 'fr':"Connecté en tant qu'invité"
@@ -412,7 +416,6 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'fr': "Ce n'est pas une " + keywords.session.singular.fr
                             },
 
-
                             // Commons Scenarios Model
                             'COMMONS-SCENARIOS-NO-SCENARIO-FLASH-ERROR': {
                                 'en': "No " + keywords.scenario.singular.en + "choosed",
@@ -542,9 +545,147 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
 
                             // Commons Users Model
+                            'COMMONS-USERS-LOAD-FLASH-SUCCESS': {
+                                'en': 'Users loaded',
+                                'fr': "Utilisateurs chargés"
+                            },
+                            'COMMONS-USERS-FULL-LOAD-FLASH-SUCCESS': {
+                                'en': 'FUll profile loaded',
+                                'fr': "Utilisateurs chargés"
+                            },
                             'COMMONS-USERS-LOAD-FLASH-ERROR': {
                                 'en': 'Unable to load user informations.',
                                 'fr': "Impossible de charger les informations de l'utilisateur"
+                            },
+                            'COMMONS-USERS-FIND-FLASH-SUCCESS': {
+                                'en': "Users found",
+                                'fr': "Utilisateurs trouvés"
+                            },
+                            'COMMONS-USERS-FIND-FLASH-ERROR': {
+                                'en': "Error while loading  users",
+                                'fr': "Une erreur est survenue durant le chargement des utilisateurs"
+                            },
+                            'COMMONS-USERS-GET-FLASH-SUCCESS': {
+                                'en': "User found",
+                                'fr': "Utilisateur trouvé"
+                            },
+                            'COMMONS-USERS-GET-FLASH-ERROR': {
+                                'en': "No user found",
+                                'fr': "Aucun utilisateur trouvé"
+                            },
+                            'COMMONS-USERS-UPDATE-FLASH-SUCCESS': {
+                                'en': "User updated",
+                                'fr': "Données utilisateur mises à jour"
+                            },
+                            'COMMONS-USERS-UPDATE-FLASH-ERROR': {
+                                'en': "Error while updating user",
+                                'fr': "Une erreur est survenue durant la mise à jour des données de l'utilisateur"
+                            },
+                            'COMMONS-USERS-UPDATE-PASSWORD-FLASH-SUCCESS': {
+                                'en': "Passwords do not match",
+                                'fr': "Les mots de passes ne sont pas identiques"
+                            },
+                            'COMMONS-USERS-DELETE-FLASH-SUCCESS': {
+                                'en': "User deleted",
+                                'fr': "Utilisateur supprimé"
+                            },
+                            'COMMONS-USERS-DELETE-FLASH-ERROR': {
+                                'en': "Error while deleting  users",
+                                'fr': "Une erreur est survenue durant la suppression de l'utilisateur"
+                            },
+
+                            // Commons Groups Model
+                            'COMMONS-GROUPS-FIND-FLASH-SUCCESS': {
+                                'en': "Groups found",
+                                'fr': "Groupes trouvés"
+                            },
+                            'COMMONS-GROUPS-FIND-FLASH-ERROR': {
+                                'en': "Error while loading groups",
+                                'fr': "Une erreur est survenue durant le chargement des groupes"
+                            },
+                            'COMMONS-GROUPS-GET-FLASH-SUCCESS': {
+                                'en': "Group found",
+                                'fr': "Groupe trouvé"
+                            },
+                            'COMMONS-GROUPS-GET-FLASH-ERROR': {
+                                'en': "No group found",
+                                'fr': "Aucun groupe trouvé"
+                            },
+                            'COMMONS-GROUPS-CREATE-FLASH-SUCCESS': {
+                                'en': "Group created",
+                                'fr': "Groupe créé"
+                            },
+                            'COMMONS-GROUPS-CREATE-FLASH-ERROR': {
+                                'en': "Error while creating group",
+                                'fr': "Une erreur est survenue durant la création du groupe"
+                            },
+                            'COMMONS-GROUPS-CREATE-EMPTY-NAME-FLASH-ERROR': {
+                                'en': "You need to specify a group name",
+                                'fr': "Vous devez spécifier un nom de groupe"
+                            },
+                            'COMMONS-GROUPS-UPDATE-FLASH-SUCCESS': {
+                                'en': "Group updated",
+                                'fr': "Groupe mis à jour"
+                            },
+                            'COMMONS-GROUPS-UPDATE-FLASH-ERROR': {
+                                'en': "Error while updating group",
+                                'fr': "Une erreur est survenue durant la mise à jour du groupe"
+                            },
+                            'COMMONS-GROUPS-DELETE-FLASH-SUCCESS': {
+                                'en': "Group deleted",
+                                'fr': "Groupe supprimé"
+                            },
+                            'COMMONS-GROUPS-DELETE-FLASH-ERROR': {
+                                'en': "Error while deleting group",
+                                'fr': "Une erreur est survenue durant la suppression du groupe"
+                            },
+
+                            // Commons Permissions Model
+                            'COMMONS-PERMISSIONS-SESSIONS-CREATE-FLASH-SUCCESS': {
+                                'en': "Trainer added",
+                                'fr': "Animateur ajouté"
+                            },
+                            'COMMONS-PERMISSIONS-SESSIONS-CREATE-FLASH-ERROR': {
+                                'en': "Error while adding trainer",
+                                'fr': "Une erreur est survenue durant l'ajout de l'animateur"
+                            },
+                            'COMMONS-PERMISSIONS-SESSIONS-ALREADY-CREATE-FLASH-INFO': {
+                                'en': "This user is already a trainer for this session",
+                                'fr': "Cet utilisateur est déjà un animateur pour cette partie"
+                            },
+                            'COMMONS-PERMISSIONS-SESSIONS--DELETE-FLASH-SUCCESS': {
+                                'en': "Trainer removed",
+                                'fr': "Droits de l'animateur enlevé"
+                            },
+                            'COMMONS-PERMISSIONS-SESSIONS--DELETE-FLASH-ERROR': {
+                                'en': "Error while removiong trainer",
+                                'fr': "Une erreur est survenue durant la suppression des droits de l'animateur"
+                            },
+
+                            'COMMONS-PERMISSIONS-SCENARIOS-FIND-FLASH-SUCCESS': {
+                                'en': "Permissions loaded",
+                                'fr': "Permissions chargée"
+                            },
+                            'COMMONS-PERMISSIONS-SCENARIOS-FIND-FLASH-ERROR': {
+                                'en': "Error while loading permissions",
+                                'fr': "Une erreur est survenue durant le chargement des permissions"
+                            },
+                            'COMMONS-PERMISSIONS-SCENARIOS-UPDATE-FLASH-SUCCESS': {
+                                'en': "Permissions updated",
+                                'fr': "Permissions mises à jour"
+                            },
+                            'COMMONS-PERMISSIONS-SCENARIOS-UPDATE-FLASH-ERROR': {
+                                'en': "Error while updating permissions",
+                                'fr': "Une erreur est survenue durant l'édition de permissions"
+                            },
+                            
+                            'COMMONS-PERMISSIONS-SCENARIOS-DELETE-FLASH-SUCCESS': {
+                                'en': "Permissions removed",
+                                'fr': "Permissions enlevées"
+                            },
+                            'COMMONS-PERMISSIONS-SCENARIOS-DELETE-FLASH-ERROR': {
+                                'en': "Error while removiong permissions",
+                                'fr': "Une erreur est survenue durant l'édition des permissions"
                             },
 
                             // Private Commons
