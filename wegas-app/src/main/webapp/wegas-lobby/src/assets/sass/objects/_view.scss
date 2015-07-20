@@ -15,7 +15,7 @@
         @include make-row(0px);
         width:100%;
         height:54px;
-        // z-index:4;
+        z-index:4;
         overflow:visible;
     }
 
@@ -303,7 +303,7 @@
     }
 
     .view--separate-shadow{
-        @include material-shadow(2);
+        @include material-shadow(1);
     }
 
     // Elements
@@ -452,4 +452,40 @@
             float:right;
         }
     }
+    
+     &.view--menu{
+        .action{
+            &.action--language{
+                .subactions{
+                    display:none;
+                    
+                    &.subactions--show{
+                        display:block;
+                        position:absolute;
+                        top:50px;
+                        right:50px;
+                        width: 120px;
+                        padding: 8px 16px 4px 16px;
+                        background: white;
+                        @include material-shadow(1);
+                        
+                        .subaction{
+                            width:100%;
+                            padding-bottom:4px;
+                            a{
+                                color:$primary-color;
+                                text-decoration:none;
+                                &:hover{
+                                    color:lighten($primary-color, 10%);
+                                    text-decoration:none;
+                                    cursor:pointer;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 }

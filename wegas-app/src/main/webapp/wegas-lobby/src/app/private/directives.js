@@ -1,24 +1,28 @@
-angular.module('private.directives', [
-    'wegas.service.viewInfos'
-])
-    .directive('privateSidebar', function($state, ViewInfos, Auth) {
+angular.module('private.directives', [])
+    .directive('privateSidebar', function($state, $rootScope, $translate, WegasTranslations, Auth) {
         return {
             templateUrl: 'app/private/directives.tmpl/sidebar.html',
             link: function(scope, element, attrs) {
-
+                var config = localStorage.getObject("wegas-config");
+                scope.currentLanguage = $translate.use();
+                scope.languages = WegasTranslations.languages;
+                    
                 Auth.getAuthenticatedUser().then(function(user) {
                     scope.user = user;
+                    scope.changeLanguage = function(key){
+                        config.commons.language = key;
+                        config.users[scope.user.email].language = key;
+                        scope.currentLanguage = key;
+                        $translate.use(key);
+                        localStorage.setObject("wegas-config", config);
+                    };
                 });
 
                 scope.$watch(function() {
-                    return ViewInfos.name;
-                }, function(newVal, oldVal) {
-                    scope.name = newVal;
+                    return $rootScope.translationWorkspace;
+                }, function(newValue) {
+                    scope.translationWorkspace = newValue;
                 });
-
-                scope.profile = function() {
-                    alert('Sorry... Not yet implemented');
-                };
 
                 scope.logout = function() {
                     Auth.logout().then(function() {
@@ -43,10 +47,11 @@ angular.module('private.directives', [
                     }
                     $state.go(profileState);
                 };
-
+                
                 scope.logout = function() {
                     $state.go("wegas.private.logout");
                 };
+                
                 $('h2.view__headding-workspace').unbind("click");
                 $('h2.view__headding-workspace').on('click', function(e) {
                     e.preventDefault();
@@ -66,8 +71,19 @@ angular.module('private.directives', [
                             $menuToggler.trigger('click');
                         }
                     }
+                    if($(".action--language .subactions").hasClass("subactions--show")){
+                        $(".action--language .subactions").removeClass("subactions--show");
+                    }
                     return;
                 });
+                $(element).ready(function(){
+                    $(".action--language").on("click", ".button--language", function(e){
+                        e.stopPropagation();
+                        e.preventDefault();
+                        $(".action--language .subactions").toggleClass("subactions--show");
+                    });
+                });
+               
             }
         };
     });
