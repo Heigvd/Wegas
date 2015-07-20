@@ -177,6 +177,20 @@ font {
     -moz-transition: opacity 0.5s ease-in-out;
     transition: opacity 0.5s ease-in-out;
 }
+
+ .wegas-loading.maintenance .wegas-loading-overlay {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.wegas-loading.maintenance .wegas-loading-overlay:after {
+    content: "Temporarly Down For Maintenance. Please Wait";
+    opacity: 1;
+    margin-left : -11em;
+    color: rgb(176, 16, 16);
+    text-shadow: 0 0 2px #D78B8B;
+    font-weight: 900;
+    font-size: 1.5em;
+}
 .wegas-loading-overlay.wegas-loading-long:after {
     opacity: 1;
 }

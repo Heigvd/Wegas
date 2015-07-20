@@ -62,7 +62,7 @@ YUI().use(function(Y) {
              * Persistence
              */
             "wegas-datasource": {
-                requires: ["datasource-io", "json", "widget"]
+                requires: ["datasource-io", "json", "widget", "gzip"]
             },
             "wegas-scripteval": {
                 path: "js/persistence/wegas-scripteval-min.js",
@@ -837,6 +837,9 @@ YUI().use(function(Y) {
         modules: {
             gauge: {
                 path: "gauge-min.js"
+            },
+            gzip: {
+                path: "zlib_and_gzip.min.js"
             },
             diff_match_patch: {
                 path: "diffmatchpatch/diff_match_patch.js"
