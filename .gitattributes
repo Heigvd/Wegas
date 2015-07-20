@@ -35,4 +35,5 @@
 *.woff binary
 *.ttf binary
 *.mp3 binary
+*.enc binary
 
