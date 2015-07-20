@@ -74,12 +74,10 @@ angular.module('private.directives', [])
                     if($(".action--language .subactions").hasClass("subactions--show")){
                         $(".action--language .subactions").removeClass("subactions--show");
                     }
-                    console.log("World");
                     return;
                 });
                 $(element).ready(function(){
                     $(".action--language").on("click", ".button--language", function(e){
-                        console.log("Hello");
                         e.stopPropagation();
                         e.preventDefault();
                         $(".action--language .subactions").toggleClass("subactions--show");
