@@ -312,7 +312,6 @@ angular.module('wegas.models.teams', [])
 
         /* Join an individual session for current player */
         model.joinIndividually = function(sessionToJoin) {
-            console.log(sessionToJoin);
             var deferred = $q.defer();
             Auth.getAuthenticatedUser().then(function(user) {
             	if(user !== null){
