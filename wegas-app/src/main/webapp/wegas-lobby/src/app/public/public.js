@@ -20,11 +20,12 @@ angular.module('public', [
         })
     ;
 })
-.controller('PublicIndexCtrl', function PublicIndexCtrl($scope, $rootScope, $state, $translate, Auth) {
+.controller('PublicIndexCtrl', function PublicIndexCtrl($scope, $rootScope, $state, $translate, WegasTranslations, Auth) {
     var ctrl = this,
         config = localStorage.getObject("wegas-config");
 
     ctrl.currentLanguage = config.commons.language;
+    ctrl.languages = WegasTranslations.languages;
     ctrl.changeLanguage = function(key){
         config.commons.language = key;
         ctrl.currentLanguage = key;
