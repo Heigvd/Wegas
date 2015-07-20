@@ -26,6 +26,12 @@
         <li class="action">
             <a ng-click="logout()" class="button button--default-reverse button--label-off button--sign-out" title="{{'PRIVATE-WS-LOGOUT-BTN' | translate}}"><span class="button__label">{{'PRIVATE-WS-LOGOUT-BTN' | translate}}</span></a>
         </li>
+        <li class="action action--language" ng-if="languages.length > 1">
+            <a class="button button--default-reverse button--label-off button--language" title="Change language"><span class="button__label">Change language</span></a>
+            <ul class="subactions">
+                <li class="subaction "ng-repeat="language in languages"><a class="subaction__link" ng-click="changeLanguage(language.key)">{{language.name}}</a></li>
+            </ul>
+        </li>
         <li class="action">
             <a ng-click="editProfile()" class="button button--default-reverse button--user button-without-label" title="{{'PRIVATE-WS-PROFILE-BTN' | translate}}"><span class="button__label">{{ user.username }}</span></a>
         </li>

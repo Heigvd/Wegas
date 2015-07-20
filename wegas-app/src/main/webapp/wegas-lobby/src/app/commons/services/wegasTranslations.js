@@ -35,21 +35,25 @@ angular.module('wegas.service.wegasTranslations', [])
                 },
                 $get : function() {
                     var keywords = {
-                        player: { singular:{ en:"player", fr:"joueur"}, plural:{ en:"players", fr:"joueurs"}},
-                        trainer: {singular:{ en:"trainer", fr:"animateur"}, plural:{ en:"trainers", fr:"animateurs"}},
-                        scenarist: { singular:{ en:"scenarist", fr:"scénariste"}, plural:{ en:"scenarists", fr:"scénaristes"}},
-                        admin: { singular:{ en:"administrator", fr:"administrateur"}, plural:{ en:"administrators", fr:"administrateurs"}},
-                        team: { singular:{ en:"team", fr:"équipe"}, plural:{ en:"teams", fr:"équipes"}},
-                        session: { singular:{ en:"session", fr:"partie"}, plural:{ en:"sessions", fr:"parties"}},
-                        scenario: { singular:{ en:"scenario", fr:"scenario"}, plural:{ en:"scenarios", fr:"scenarios"}},
-                        token: { singular:{ en:"access key", fr:"clé d'accès"}, plural:{ en:"access keys", fr:"clés d'accès"}},
-                        workspace: { singular:{ en:"workspace", fr:"espace de travail"}, plural:{ en:"workspaces", fr:"espaces de travail"}},
-                    },
-                    startSentence = function(word){
-                        return word.charAt(0).toUpperCase() + word.slice(1);
-                    };
+                            'player': { singular:{ en:"player", fr:"joueur"}, plural:{ en:"players", fr:"joueurs"}},
+                            'trainer': {singular:{ en:"trainer", fr:"animateur"}, plural:{ en:"trainers", fr:"animateurs"}},
+                            'scenarist': { singular:{ en:"scenarist", fr:"scénariste"}, plural:{ en:"scenarists", fr:"scénaristes"}},
+                            'admin': { singular:{ en:"administrator", fr:"administrateur"}, plural:{ en:"administrators", fr:"administrateurs"}},
+                            'team': { singular:{ en:"team", fr:"équipe"}, plural:{ en:"teams", fr:"équipes"}},
+                            'session': { singular:{ en:"session", fr:"partie"}, plural:{ en:"sessions", fr:"parties"}},
+                            'scenario': { singular:{ en:"scenario", fr:"scenario"}, plural:{ en:"scenarios", fr:"scenarios"}},
+                            'token': { singular:{ en:"access key", fr:"clé d'accès"}, plural:{ en:"access keys", fr:"clés d'accès"}},
+                            'workspace': { singular:{ en:"workspace", fr:"espace de travail"}, plural:{ en:"workspaces", fr:"espaces de travail"}}
+                        },
+                        startSentence = function(word){
+                            return word.charAt(0).toUpperCase() + word.slice(1);
+                        };
                     return { 
-                        translations : {
+                        'languages' : [
+                            {'key': 'fr', 'name': "Français"},
+                            {'key': 'en', 'name': "English"}
+                        ],
+                        'translations' : {
                             // Commons
                             'LANGUAGE-FRENCH-NAME': {
                                 'en':"Français",
@@ -64,10 +68,10 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'fr':"Chargement"
                             },
                             'MODALE-CLOSE':{
-                                'en': "Close",
-                                'fr': "Fermer"
+                                'en':"Close",
+                                'fr':"Fermer"
                             },
-
+                            
                             // Public
                             'WEGAS-TITLE': {
                                 'en':"Wegas",
@@ -115,7 +119,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
                             'CREATE-ACCOUNT-INPUT-PASSWORD-AGAIN':{
                                 'en':"password again",
-                                'fr':"Pas encore de compte Wegas ?"
+                                'fr':"mot de passe à nouveau"
                             },
                             'CREATE-ACCOUNT-INPUT-USERNAME': {
                                 'en':"username",
@@ -590,7 +594,7 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'fr': "Utilisateur supprimé"
                             },
                             'COMMONS-USERS-DELETE-FLASH-ERROR': {
-                                'en': "Error while deleting  users",
+                                'en': "Error while deleting users",
                                 'fr': "Une erreur est survenue durant la suppression de l'utilisateur"
                             },
 
@@ -642,24 +646,24 @@ angular.module('wegas.service.wegasTranslations', [])
 
                             // Commons Permissions Model
                             'COMMONS-PERMISSIONS-SESSIONS-CREATE-FLASH-SUCCESS': {
-                                'en': "Trainer added",
-                                'fr': "Animateur ajouté"
+                                'en': startSentence(keywords.trainer.singular.en) + " added",
+                                'fr': startSentence(keywords.trainer.singular.fr) + " ajouté"
                             },
                             'COMMONS-PERMISSIONS-SESSIONS-CREATE-FLASH-ERROR': {
-                                'en': "Error while adding trainer",
-                                'fr': "Une erreur est survenue durant l'ajout de l'animateur"
+                                'en': "Error while adding " + keywords.trainer.singular.en,
+                                'fr': "Une erreur est survenue durant l'ajout de l'" + keywords.trainer.singular.fr
                             },
                             'COMMONS-PERMISSIONS-SESSIONS-ALREADY-CREATE-FLASH-INFO': {
-                                'en': "This user is already a trainer for this session",
-                                'fr': "Cet utilisateur est déjà un animateur pour cette partie"
+                                'en': "This user is already a " + keywords.trainer.singular.en + " for this " + keywords.session.singular.en,
+                                'fr': "Cet utilisateur est déjà un " + keywords.trainer.singular.fr + " pour cette " + keywords.session.singular.fr
                             },
                             'COMMONS-PERMISSIONS-SESSIONS--DELETE-FLASH-SUCCESS': {
-                                'en': "Trainer removed",
-                                'fr': "Droits de l'animateur enlevé"
+                                'en': startSentence(keywords.trainer.singular.en) + " removed",
+                                'fr': "Droits de l'" + keywords.trainer.singular.fr + " enlevé"
                             },
                             'COMMONS-PERMISSIONS-SESSIONS--DELETE-FLASH-ERROR': {
-                                'en': "Error while removiong trainer",
-                                'fr': "Une erreur est survenue durant la suppression des droits de l'animateur"
+                                'en': "Error while removiong " + keywords.trainer.singular.en,
+                                'fr': "Une erreur est survenue durant la suppression des droits de l'" + keywords.trainer.singular.fr
                             },
 
                             'COMMONS-PERMISSIONS-SCENARIOS-FIND-FLASH-SUCCESS': {
@@ -1367,7 +1371,7 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'fr':"C'est la fin"
                             }
                         },
-                        workspaces : {
+                        'workspaces' : {
                             'PLAYER':{
                                 'en':startSentence(keywords.player.singular.en),
                                 'fr':startSentence(keywords.player.singular.fr)
@@ -1385,7 +1389,7 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'fr':startSentence(keywords.admin.singular.fr)
                             }                                    
                         },
-                        hideToggle : {
+                        'hideToggle' : {
                             'HIDE':{
                                 'en':"Hide",
                                 'fr':"Masquer"
@@ -1395,7 +1399,7 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'fr':"Afficher"
                             } 
                         },
-                        access: {
+                        'access': {
                             'OPEN':{
                                 'en':"Open",
                                 'fr':"ouverte"
