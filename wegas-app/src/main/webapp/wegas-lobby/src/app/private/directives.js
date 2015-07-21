@@ -1,5 +1,5 @@
 angular.module('private.directives', [])
-    .directive('privateSidebar', function($state, $rootScope, $translate, WegasTranslations, Auth) {
+    .directive('privateSidebar', function($state, $rootScope, $translate, $timeout, WegasTranslations, Auth) {
         return {
             templateUrl: 'app/private/directives.tmpl/sidebar.html',
             link: function(scope, element, attrs) {
@@ -50,6 +50,26 @@ angular.module('private.directives', [])
 
                 scope.editProfile = function() {
                     // Decide which controller to display in background
+                    switch($state.current.name){
+                        case "wegas.private.scenarist":
+                            profileState = "wegas.private.profile.scenarist";
+                            break;
+                        case "wegas.private.trainer":
+                            profileState = "wegas.private.profile.trainer";
+                            break;
+                        case "wegas.private.player":
+                            profileState = "wegas.private.profile.player";
+                            break;
+                        case "wegas.private.admin":
+                            profileState = "wegas.private.profile.admin";
+                            break;
+                        case "wegas.private.admin.users":
+                            profileState = "wegas.private.profile.admin.users";
+                            break;
+                        default:
+                            profileState = "wegas.private.profile";
+                         
+                    };
                     if ($state.current.name == "wegas.private.scenarist") {
                         profileState = "wegas.private.profile.scenarist";
                     } else if ($state.current.name == "wegas.private.trainer") {
@@ -94,15 +114,14 @@ angular.module('private.directives', [])
                     }
                     return;
                 });
-                $('.action--language').unbind("click");
-                $(element).ready(function(){
+                $timeout(function(){
+                    $('.action--language').unbind("click");
                     $(".action--language").on("click", ".button--language", function(e){
                         e.stopPropagation();
                         e.preventDefault();
                         $(".action--language .subactions").toggleClass("subactions--show");
                     });
                 });
-               
             }
         };
     });
