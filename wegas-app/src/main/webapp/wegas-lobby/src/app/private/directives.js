@@ -8,7 +8,6 @@ angular.module('private.directives', [])
                 scope.languages = WegasTranslations.languages;
                     
                 Auth.getAuthenticatedUser().then(function(user) {
-                    console.log($state);
                     scope.user = user;
                     scope.changeLanguage = function(key){
                         var type = "";
@@ -98,7 +97,6 @@ angular.module('private.directives', [])
                 $('.action--language').unbind("click");
                 $(element).ready(function(){
                     $(".action--language").on("click", ".button--language", function(e){
-                        console.log("Bonjour language");
                         e.stopPropagation();
                         e.preventDefault();
                         $(".action--language .subactions").toggleClass("subactions--show");
