@@ -1,16 +1,15 @@
-<h3>Add scenario</h3>
-
+<h3>{{'SCENARIST-INDEX-ADD-TITLE' | translate}}</h3>
 <form class="form form__create-scenario" ng-submit="createScenario()">
   <div class="form__row">
-    <input class="form__row__entry input input--small" type="text" id="session-token" ng-model="newScenario.name" placeholder="Scenario name" autocomplete="off">
+    <input class="form__row__entry input input--small" type="text" id="session-token" ng-model="newScenario.name" placeholder="{{'SCENARIST-INDEX-ADD-NAME-INPUT' | translate}}" autocomplete="off">
   </div>
   <div class="form__row fade" ng-if="newScenario.name != ''">
     <select class="form__row__entry input input--small" ng-model="newScenario.templateId">
-        <option value="0">Based on scenario</option>
+        <option value="0">{{'SCENARIST-INDEX-ADD-SCENARIO-INPUT' | translate}}</option>
         <option ng-repeat="scenario in scenarios | filter: { canDuplicate: true }" value="{{scenario.id}}">{{scenario.name}}</option>
     </select>
   </div>
   <div class="form__row form__row--right">
-    <input class="form__row__btn button button--default" type="submit" value="Create" />
+    <input class="form__row__btn button button--default" type="submit" value="{{'SCENARIST-INDEX-ADD-BTN' | translate}}" />
   </div>
 </form>

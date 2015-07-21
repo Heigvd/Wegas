@@ -1,5 +1,5 @@
-<p ng-if="!newTeam && teams.length >= 1">Join an existing team</p>
-<p ng-if="newTeam && teams.length >= 1">Join an existing team or create a new team</p>
+<p ng-if="!newTeam && teams.length >= 1">{{'PLAYER-MODALE-JOIN-TEAM-JOIN-MESSAGE' | translate }}</p>
+<p ng-if="newTeam && teams.length >= 1">{{'PLAYER-MODALE-JOIN-TEAM-JOIN-OR-CREATE-MESSAGE' | translate }}</p>
 <div 
 	class="card card--medium card--users" 
 	ng-repeat="team in teams | orderBy:'name' track by team.id"
@@ -7,4 +7,4 @@
 	team="team"
 	player-session-team>
 </div>
-<p ng-if="teams.length < 1">Create your team.</p>
+<p ng-if="teams.length < 1">{{'PLAYER-MODALE-JOIN-TEAM-CREATE-MESSAGE' | translate }}</p>

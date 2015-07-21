@@ -20,12 +20,12 @@ angular.module('private.admin.users.edit.directives', [])
 
         ctrl.removePermission = function(permission) {
            ctrl.user.account.permissions = _.without(ctrl.user.account.permissions, permission);
-        }
+        };
 
         ctrl.addPermission = function() {
-            var newPermission = {'id':null, "@class":"Permission","value":"", "inducedPermission":""}
+            var newPermission = {'id':null, "@class":"Permission","value":"", "inducedPermission":""};
             ctrl.user.account.permissions.push(newPermission);
-        }
+        };
         
         ctrl.save = function () {
             UsersModel.updateUser(ctrl.user.account).then(function (response) {
@@ -33,7 +33,7 @@ angular.module('private.admin.users.edit.directives', [])
                     response.flash();
                 }
             });
-        }
+        };
     })
     .directive('adminUsersEditGroups', function(GroupsModel) {
         return {
@@ -54,9 +54,9 @@ angular.module('private.admin.users.edit.directives', [])
                 scope.addGroup = function() {
                     var new_group = angular.copy(scope.groups[0])
                     scope.user.account.roles.push(new_group);
-                }
+                };
             }
-        }
+        };
     })
     .directive('adminUsersEditGroup', function(GroupsModel) {
         return {
@@ -88,9 +88,9 @@ angular.module('private.admin.users.edit.directives', [])
 
                 scope.removeGroup = function() {
                     scope.user.account.roles = _(scope.user.account.roles).filter(function (r) {
-                        return r.id != scope.selectedGroup.id
+                        return r.id !== scope.selectedGroup.id;
                     });
-                }
+                };
             }
-        }
+        };
     });

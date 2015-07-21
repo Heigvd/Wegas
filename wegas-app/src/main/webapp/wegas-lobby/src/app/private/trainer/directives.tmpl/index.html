@@ -1,9 +1,9 @@
 <div class="view view--new-session view--bottom">
-	<h3>Add session</h3>
+	<h3>{{'TRAINER-INDEX-ADD-TITLE' | translate}}</h3>
 	<trainer-sessions-add></trainer-sessions-add>
 </div>
 <div class="view view--sessions-list view--middle">
-	<h3>Current sessions</h3>
+	<h3>{{'TRAINER-INDEX-LIST-TITLE' | translate}}</h3>
 	<div class="view__tools">
 		<div class="tool tool--search tool--open">
 			<a class="tool__link"></a>
@@ -28,12 +28,13 @@
 	</div>
 	<div ng-if="(!trainerIndexCtrl.loading.all) && (trainerIndexCtrl.nbArchives > 0)" class="view__archives">
 		<a class="button button--small button--default button--archive" ui-sref=".archives">
-			<span class="button__label">{{trainerIndexCtrl.nbArchives}} &nbsp; archives</span>
+			<span ng-if="trainerIndexCtrl.nbArchives == 1" class="button__label">{{trainerIndexCtrl.nbArchives}} {{'TRAINER-INDEX-ARCHIVE-BTN' | translate}}</span>
+                        <span ng-if="trainerIndexCtrl.nbArchives > 1" class="button__label">{{trainerIndexCtrl.nbArchives}} {{'TRAINER-INDEX-ARCHIVES-BTN' | translate}}</span>
 		</a>
 	</div>
 	<div 
 		ng-if="trainerIndexCtrl.loading.all"
 		class="view__list">
-		Loading
+		{{'LOADING' | translate}}
 	</div>
 </div>
