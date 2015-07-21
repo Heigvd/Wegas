@@ -24,8 +24,18 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
         {
             BOUNDING_TEMPLATE: "<div><div class='slidepanel-title' style='position:relative;'><h2></h2></div></div>",
             renderUI: function() {
+                var title = this.get("title"), pattern = /%([a-zA-Z0-9_]*)%/g,
+                    args = title.match(pattern), i, str;
+
+
+                if (args) {
+                    for (i = 0; i < args.length; i += 1) {
+                        str = Y.Wegas.Facade.Variable.cache.find("name", args[i].replace(/%/g, "")).get("label");
+                        title = title.replace(args[i], str);
+                    }
+                }
                 this.handlers = {};
-                this.get("boundingBox").one(".slidepanel-title h2").setContent(this.get("title"));
+                this.get("boundingBox").one(".slidepanel-title h2").setContent(title);
                 if (this.get("openByDefault")) {
                     this.get("boundingBox").addClass("wegas-slidepanel-toggled");
                 }

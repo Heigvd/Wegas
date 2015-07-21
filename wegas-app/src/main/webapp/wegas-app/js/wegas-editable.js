@@ -196,6 +196,9 @@ YUI.add('wegas-editable', function(Y) {
         getEditorLabel: function() {
             return this.getLabel();
         },
+        getTreeEditorLabel: function() {
+            return this.getEditorLabel();
+        },
         /**
          * Check if this widget is augmented (extended) by a specifique Widget
          * @param {Class} extension to check for

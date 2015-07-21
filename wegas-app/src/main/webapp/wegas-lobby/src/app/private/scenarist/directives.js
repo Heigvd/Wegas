@@ -80,7 +80,7 @@ angular.module('private.scenarist.directives', [
             controller: 'ScenaristIndexController as scenaristIndexCtrl'
         };
     })
-    .directive('scenaristScenarioCreate', function(Flash) {
+    .directive('scenaristScenarioCreate', function(Flash, $translate) {
         return {
             templateUrl: 'app/private/scenarist/directives.tmpl/create.html',
             scope: {
@@ -100,10 +100,14 @@ angular.module('private.scenarist.directives', [
                             scope.create(scope.newScenario.name, scope.newScenario.templateId);
                             resetNewScenario();
                         } else {
-                            Flash.danger('You need to choose a template scenario');
+                            $translate('COMMONS-SCENARIOS-NO-TEMPLATE-FLASH-ERROR').then(function (message) {
+                                Flash.danger(message);
+                            });
                         }
                     } else {
-                        Flash.danger('Name field can not be empty');
+                        $translate('COMMONS-SCENARIOS-EMPTY-NAME-FLASH-ERROR').then(function (message) {
+                            Flash.danger(message);
+                        });
                     }
                 };
                 resetNewScenario();

@@ -62,7 +62,7 @@
 		&.link--active{
 			background:none;
 			color:$white;
-		}
+                }
 	}
 
 	&.link--medium{
@@ -99,6 +99,15 @@
 			color:$white;
 		}
 	}
+        
+        &.link--language{
+            padding-right:16px;
+
+            &.link--active{
+                color:#666666;
+                text-decoration: none;
+            }
+        }
 
     @each $button-type in $buttons-types{
         $type-name : nth($button-type, 1); 

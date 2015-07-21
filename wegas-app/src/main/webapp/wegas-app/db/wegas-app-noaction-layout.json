@@ -1,6 +1,6 @@
 {
     "type": "PageLoader",
-    "defaultPageId": 1,
+    "defaultPageId": "default",
     "pageLoaderId": "previewPageLoader",
     "cssClass": "wegas-playerview",
     "plugins": [

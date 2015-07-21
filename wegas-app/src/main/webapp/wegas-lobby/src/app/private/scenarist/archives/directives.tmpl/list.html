@@ -8,18 +8,18 @@
         <div ng-if="!((scenario.comments == null) || (scenario.comments == ''))" class="line line--optionnal">{{scenario.comments | limitTo: MAX_DISPLAYED_CHARS}}<span ng-if="scenario.comments.length > MAX_DISPLAYED_CHARS">...</span></div>
     </div>
     <div class="card__actions">
-        <a class="button button--medium button--round button--default-reverse button--label-off button--undo" title="Move to current scenarios" ng-click="unarchive(scenario)">
-            <span class="button__label">Move to current scenarios</span>
+        <a class="button button--medium button--round button--default-reverse button--label-off button--undo" title="{{'SCENARIST-MODALE-ARCHIVE-MOVE-CURRENT-BTN' | translate}}" ng-click="unarchive(scenario)">
+            <span class="button__label">{{'SCENARIST-MODALE-ARCHIVE-MOVE-CURRENT-BTN' | translate}}</span>
         </a>
         <a 
             class="button button--medium button--round button--danger-reverse button--label-off button--trash" 
-            title="Delete scenario" 
+            title="{{'SCENARIST-MODALE-ARCHIVE-DELETE-BTN' | translate}}" 
             confirmed-click="delete(scenario)" 
-            ng-confirm-click="Are you sure you want to delete the scenario ? This action is irreversible.">
-            <span class="button__label">Delete scenario</span>
+            ng-confirm-click="{{'SCENARIST-MODALE-ARCHIVE-DELETE-CONFIRM' | translate}}">
+            <span class="button__label">{{'SCENARIST-MODALE-ARCHIVE-DELETE-BTN' | translate}}</span>
         </a> 
     </div>
 </div>
 <div ng-if="(scenarios | filter:{name: search}).length == 0">
-    No archived scenario with the name "{{search}}"
+    {{'SCENARIST-MODALE-ARCHIVE-NO-SCENARIO' | translate}}"{{search}}"
 </div>

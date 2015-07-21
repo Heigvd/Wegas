@@ -66,6 +66,7 @@ var PMGTest = (function() {
     function testLocaleCompletness() {
         var missingInEn = assertTranslationsExists(i18nTable.fr, i18nTable.en),
             missingInFr = assertTranslationsExists(i18nTable.en, i18nTable.fr),
+            argsNotMatch = assertArgumentsMatch(i18nTable.en, i18nTable.fr),
             message = "";
 
         if (missingInEn.length > 0) {
@@ -74,12 +75,73 @@ var PMGTest = (function() {
         if (missingInFr.length > 0) {
             message += "Missing FR translations : " + missingInFr;
         }
+        if (argsNotMatch.length > 0) {
+            message += "Arguments mismatch : " + argsNotMatch;
+        }
+
+
 
         if (message) {
             throw new Error(message);
         }
     }
 
+    function assertArgumentsMatch(table1, table2, root) {
+        var key, value, missings = [], queue = [],
+            current, a1, a2, m1, m2, i;
+
+        queue.push({
+            t1: table1,
+            t2: table2,
+            root: root
+        });
+
+        while (current = queue.pop()) {
+            for (key in current.t1) {
+                var fullKey = (current.root ? current.root + "." + key : key);
+                value = current.t1[key];
+                if (typeof value !== "string") {
+                    // Go deeper
+                    queue.push({
+                        t1: current.t1[key],
+                        t2: current.t2[key],
+                        root: fullKey
+                    });
+                } else {
+                    a1 = value.match(/%([a-zA-Z0-9_]*)%/g) || [];
+                    a2 = current.t2[key].match(/%([a-zA-Z0-9_]*)%/g) || [];
+
+                    m1 = {};
+                    m2 = {};
+                    for (i = 0; i < a1.length; i += 1) {
+                        m1[a1[i]] = false;
+                    }
+                    for (i = 0; i < a2.length; i += 1) {
+                        m2[a2[i]] = false;
+                    }
+                    for (i in m1) {
+                        if (m2[i] !== undefined) {
+                            m1[i] = true;
+                            m2[i] = true;
+                        }
+                    }
+                    for (i in m1) {
+                        if (!m1[i]) {
+                            missings.push("ARGUMENT %" + i + "% NOT CONSISTENT FOR KEY " + fullKey);
+                        }
+                    }
+                    for (i in m2) {
+                        if (!m2[i]) {
+                            missings.push("ARGUMENT %" + i + "% NOT CONSISTENT FOR KEY " + fullKey);
+                        }
+                    }
+                }
+            }
+        }
+
+        return missings;
+
+    }
 
     function assertTranslationsExists(table1, table2, root) {
         var key, value, missings = [], queue = [],

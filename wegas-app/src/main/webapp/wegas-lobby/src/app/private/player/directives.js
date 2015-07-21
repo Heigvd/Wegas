@@ -4,7 +4,7 @@ angular.module('private.player.directives', [])
             templateUrl: 'app/private/player/directives.tmpl/index.html',
             controller: 'PlayerController as playerCtrl'
         };
-    }).controller("PlayerController", function PlayerController($rootScope, $state, TeamsModel, SessionsModel, Flash) {
+    }).controller("PlayerController", function PlayerController($rootScope, $state, $translate, TeamsModel, SessionsModel, Flash) {
         /* Assure access to ctrl. */
         var ctrl = this,
 
@@ -12,7 +12,6 @@ angular.module('private.player.directives', [])
             updateTeams = function() {
                 TeamsModel.getTeams().then(function(response) {
                     if (!response.isErroneous()) {
-                        console.log(response.data);
                         ctrl.teams = response.data || [];
                     } else {
                         ctrl.teams = [];
@@ -27,7 +26,9 @@ angular.module('private.player.directives', [])
         ctrl.checkToken = function(token) {
             SessionsModel.findSessionToJoin(token).then(function(findResponse) {
                 if (findResponse.isErroneous()) {
-                    Flash.danger("This is not a valid access key");
+                    $translate('PLAYER-JOIN-TEAM-KEY-FLASH-ERROR').then(function (message) {
+                        Flash.danger(message);
+                    });
                 } else {
                     if (findResponse.data.access != "CLOSE") {
                         var alreadyJoin = false;
@@ -37,7 +38,9 @@ angular.module('private.player.directives', [])
                             }
                         });
                         if(alreadyJoin){
-                            Flash.info("You have already join this session");
+                            $translate('COMMONS-TEAMS-ALREADY-JOIN-FLASH-INFO').then(function (message) {
+                                Flash.info(message);
+                            });
                         }else{
                             if (findResponse.data.properties.freeForAll) {
                                 TeamsModel.joinIndividually(findResponse.data).then(function(joinResponse) {
@@ -54,7 +57,9 @@ angular.module('private.player.directives', [])
                             }
                         }
                     } else {
-                        Flash.danger("Session closed");
+                        $translate('COMMONS-SESSIONS-CLOSE-FLASH-ERROR').then(function (message) {
+                            Flash.danger(message);
+                        });
                     }
                 }
             });

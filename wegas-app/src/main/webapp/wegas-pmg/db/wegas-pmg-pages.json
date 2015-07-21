@@ -1112,7 +1112,7 @@
                     {
                         "type": "PmgSlidePanel",
                         "cssClass": "indicators-management chart",
-                        "title": "Indicators History: Management and Users",
+                        "title": "Indicators History: %managementApproval% and %userApproval%",
                         "animation": false,
                         "openByDefault": true,
                         "children": [
@@ -1121,12 +1121,10 @@
                                 "chartType": "combo",
                                 "variables": [
                                     {
-                                        "name": "managementApproval",
-                                        "label": "Management"
+                                        "name": "managementApproval"
                                     },
                                     {
-                                        "name": "userApproval",
-                                        "label": "Users"
+                                        "name": "userApproval"
                                     }
                                 ],
                                 "hStart": 0,

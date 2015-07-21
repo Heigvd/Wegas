@@ -30,12 +30,16 @@ $buttons-icon : (
     (admin, $fa-var-gavel),
     (refresh, $fa-var-refresh),
     (repeat, $fa-var-repeat),
-    (duplicate, $fa-var-files-o)
+    (duplicate, $fa-var-files-o),
+    (language, $fa-var-globe)
 );
 
 %button--with-icon{
     $btn-default-size: nth(nth($sizes, 1),2);
     padding:$btn-default-size/3 $btn-default-size/2 $btn-default-size/3 ($btn-default-size + $btn-default-size/8);
+    &:focus{
+        padding:$btn-default-size/3 $btn-default-size/2 $btn-default-size/3 ($btn-default-size + $btn-default-size/8);
+    }
     &:before{
         content:"A";
         display:block;
@@ -58,6 +62,9 @@ $buttons-icon : (
         $size-pixel:nth($size, 2);
         &.button--#{$size-name}{
             padding:$size-pixel/3 $size-pixel/2 $size-pixel/3 ($size-pixel + $size-pixel/8);
+            &:focus{
+                padding:$size-pixel/3 $size-pixel/2 $size-pixel/3 ($size-pixel + $size-pixel/8);
+            }
             &:before{
                 padding:$size-pixel/4.5 0px;
                 font-size:$size-pixel/2.5;

@@ -1,7 +1,5 @@
 angular
-.module('private.scenarist.history', [
-    'private.scenarist.history.directives'
-    ])
+.module('private.scenarist.history', ['private.scenarist.history.directives'])
 .config(function ($stateProvider) {
     $stateProvider
     .state('wegas.private.scenarist.history', {
@@ -13,7 +11,7 @@ angular
         }
     });
 })
-.controller("ScenaristHistoryController", function ScenaristHistoryController($state, WegasModalService, Auth){
+.controller("ScenaristHistoryController", function ScenaristHistoryController($state, $translate, WegasModalService, Auth){
     Auth.getAuthenticatedUser().then(function(user) {
         if (user != null) {
             if (user.isAdmin || user.isScenarist) {

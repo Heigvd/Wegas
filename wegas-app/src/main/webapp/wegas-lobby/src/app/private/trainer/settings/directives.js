@@ -14,7 +14,6 @@ angular.module('private.trainer.settings.directives', [
             initTabs = function() {
                 return {
                     infos: false,
-                    display: false,
                     advanced: false
                 }
             };
@@ -22,8 +21,6 @@ angular.module('private.trainer.settings.directives', [
         ctrl.session = {};
         ctrl.hasChanges = {
             all: false,
-            color: false,
-            icon: false, 
             name: false,
             comment: false, 
             token: false,
@@ -85,22 +82,7 @@ angular.module('private.trainer.settings.directives', [
 
         ctrl.checkChanges = function(type, changes){
             if(ctrl.session['@class'] == "Game"){
-                var oldColor = "orange",
-                    oldIcon = "gamepad",
-                    oldLibrary = "fa",
-                    icon = ctrl.session.properties.iconUri.split("_");
-                if (icon.length >= 3 && icon[0] == "ICON") {
-                    oldColor = icon[1];
-                    oldIcon = icon[2];
-                    oldLibrary = icon[3] || "fa";
-                }
                 switch(type){
-                    case "color":
-                        ctrl.hasChanges.color = (oldColor !== changes);
-                        break;
-                    case "icon":
-                        ctrl.hasChanges.icon = (oldIcon !== changes.key) || (oldLibrary !== changes.library);
-                        break;
                     case "name":
                         ctrl.hasChanges.name = (ctrl.session.name !== changes);
                         break;
@@ -129,7 +111,7 @@ angular.module('private.trainer.settings.directives', [
                         ctrl.hasChanges.logID = (ctrl.session.gameModel.properties.logID !==  changes);
                         break;
                 }
-                ctrl.hasChanges.all =   ctrl.hasChanges.color || ctrl.hasChanges.icon || ctrl.hasChanges.name 
+                ctrl.hasChanges.all =   ctrl.hasChanges.name 
                                         || ctrl.hasChanges.token || ctrl.hasChanges.comments || ctrl.hasChanges.individual
                                         || ctrl.hasChanges.scriptUri || ctrl.hasChanges.clientScriptUri || ctrl.hasChanges.cssUri 
                                         || ctrl.hasChanges.pagesUri || ctrl.hasChanges.logID;
@@ -139,19 +121,7 @@ angular.module('private.trainer.settings.directives', [
         ctrl.activeTab = function(tab) {
             ctrl.tabs = initTabs();
             ctrl.tabs[tab] = true;
-        }
-
-        ctrl.changeColor = function(newColor) {
-            ctrl.infos.color = newColor;
-            ctrl.checkChanges("color", newColor);
-        }
-        ctrl.changeIcon = function(iconKey, iconLib) {
-            ctrl.infos.icon = {
-                key:iconKey,
-                library:iconLib
-            };
-            ctrl.checkChanges("icon", ctrl.infos.icon);
-        }
+        };
 
         ctrl.save = function() {
             SessionsModel.updateSession(ctrl.session, ctrl.infos).then(function(response){
@@ -175,7 +145,7 @@ angular.module('private.trainer.settings.directives', [
                 return ctrl.infos[el];
             }, function(newValue) {
                 ctrl.checkChanges(el, newValue)
-            })
+            });
         });
 
         ctrl.updateSession();
@@ -201,30 +171,6 @@ angular.module('private.trainer.settings.directives', [
                 activeInfos: "="
             },
             templateUrl: 'app/private/trainer/settings/directives.tmpl/infos-advanced.html'
-        }
-    })
-    .directive('trainerSessionsCustomizeIcons', function(Customize) {
-        return {
-            templateUrl: 'app/private/trainer/settings/directives.tmpl/icons-picker.html',
-            scope: {
-                activeIcon: "=",
-                change: "="
-            },
-            link: function(scope, element, attrs) {
-                scope.icons = Customize.iconsPalette();
-            }
-        }
-    })
-    .directive('trainerSessionsCustomizeColors', function(Customize) {
-        return {
-            templateUrl: 'app/private/trainer/settings/directives.tmpl/colors-picker.html',
-            scope: {
-                activeColor: "=",
-                change: "="
-            },
-            link: function(scope, element, attrs) {
-                scope.colors = Customize.colorsPalette();
-            }
         }
     })
     ;

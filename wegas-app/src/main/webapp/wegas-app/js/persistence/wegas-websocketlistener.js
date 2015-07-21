@@ -16,9 +16,31 @@ YUI.add('wegas-websocketlistener', function(Y) {
             Y.later(50, this, function() { //let ds render.
                 var dataSource = Y.Wegas.Facade[this.get("dataSource")];
                 if (dataSource) {
-                    this._hdl = dataSource.on("EntityUpdatedEvent", this.onVariableInstanceUpdate, this);
+                    this._hdl = [];
+                    this._hdl.push(dataSource.on("EntityUpdatedEvent", this.onVariableInstanceUpdate, this));
+                    this._hdl.push(dataSource.on("CustomEvent", this.onVariableInstanceUpdate, this));
+                    this._hdl.push(dataSource.on("LifeCycleEvent", this.onLifeCycleEvent, this));
                 }
             });
+        },
+        onLifeCycleEvent: function(data) {
+            var payload = Y.JSON.parse(data),
+                cache = this.get("host").cache,
+                node = Y.Widget.getByNode(".wegas-login-page") ||
+                (Y.Widget.getByNode("#centerTabView") &&
+                    Y.Widget.getByNode("#centerTabView").get("selection")) ||
+                Y.Widget.getByNode(".wegas-playerview");
+
+            if (payload.status === "DOWN") {
+                node.showOverlay("maintenance");
+            } else if (payload.status === "READY") {
+                node.hideOverlay("maintenance");
+            } else if (payload.status === "OUTDATED") {
+                node.showMessage("error", "Some of your data are outdated, please refresh the page");
+            } else {
+                node.showMessage("warn", "Unexcpected Error: Please refresh the page");
+                node.showOverlay("error");
+            }
         },
         onVariableInstanceUpdate: function(data) {
             Y.log("Websocket event received.", "info", "Wegas.WebsocketListener");
@@ -30,7 +52,12 @@ YUI.add('wegas-websocketlistener', function(Y) {
             });
         },
         destructor: function() {
-            this._hdl && this._hdl.detach();
+            var i;
+            if (this._hdl) {
+                for (i in this._hdl) {
+                    this._hdl[i].detach();
+                }
+            }
         }
     }, {
         ATTRS: {
