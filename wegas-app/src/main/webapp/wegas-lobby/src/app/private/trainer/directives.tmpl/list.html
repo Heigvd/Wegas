@@ -7,5 +7,5 @@
 	trainer-session >
 </div>
 <div ng-if="(search !== '') && (sessions | filter:{name: search}).length == 0">
-    No current session with the name "{{search}}"
+    {{'TRAINER-INDEX-LIST-NO-SESSION' | translate}}"{{search}}"
 </div>

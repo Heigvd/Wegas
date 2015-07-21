@@ -7,7 +7,7 @@ angular.module('private.trainer.archives.directives', [])
             templateUrl: 'app/private/trainer/archives/directives.tmpl/index.html',
             controller: "TrainerArchivesIndexController as trainerArchivesIndexController"
         };
-    }).controller("TrainerArchivesIndexController", function TrainerArchivesIndexController($timeout, $rootScope, $scope, $state, SessionsModel, Flash) {
+    }).controller("TrainerArchivesIndexController", function TrainerArchivesIndexController($timeout, $translate, $rootScope, $scope, $state, SessionsModel, Flash) {
         var ctrl = this;
         ctrl.archives = [];
         ctrl.search = "";
@@ -35,7 +35,9 @@ angular.module('private.trainer.archives.directives', [])
                     }
                 });
             } else {
-                Flash.danger("No scenario choosed");
+                $translate('COMMONS-SESSIONS-NO-SESSION-FLASH-ERROR').then(function (message) {
+                    Flash.danger(message);
+                });
             }
         };
 
@@ -50,7 +52,9 @@ angular.module('private.trainer.archives.directives', [])
                     }
                 });
             } else {
-                Flash.danger("No session choosed");
+                $translate('COMMONS-SESSIONS-NO-SESSION-FLASH-ERROR').then(function (message) {
+                    Flash.danger(message);
+                });
             }
         };
 
@@ -61,7 +65,9 @@ angular.module('private.trainer.archives.directives', [])
                     $state.go('wegas.private.trainer.archives.settings', {id: session.id});
                 }, 1500);
             } else {
-                Flash.danger("No session choosed");
+                $translate('COMMONS-SESSIONS-NO-SESSION-FLASH-ERROR').then(function (message) {
+                    Flash.danger(message);
+                });
             }
         };
 
@@ -72,7 +78,9 @@ angular.module('private.trainer.archives.directives', [])
                     $state.go('wegas.private.trainer.archives.users', {id: session.id});
                 }, 1500);
             } else {
-                Flash.danger("No session choosed");
+                $translate('COMMONS-SESSIONS-NO-SESSION-FLASH-ERROR').then(function (message) {
+                    Flash.danger(message);
+                });
             }
         };
 

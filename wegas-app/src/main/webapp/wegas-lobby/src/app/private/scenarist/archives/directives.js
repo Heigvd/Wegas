@@ -7,7 +7,7 @@ angular.module('private.scenarist.archives.directives', [])
             templateUrl: 'app/private/scenarist/archives/directives.tmpl/index.html',
             controller: "ScenaristArchivesIndexController as scenaristArchivesIndexCtrl"
         };
-    }).controller("ScenaristArchivesIndexController", function ScenaristArchivesIndexController($rootScope, $scope, ScenariosModel, Flash) {
+    }).controller("ScenaristArchivesIndexController", function ScenaristArchivesIndexController($rootScope, $scope, $translate, ScenariosModel, Flash) {
         var ctrl = this;
         ctrl.archives = [];
         ctrl.search = "";
@@ -31,7 +31,9 @@ angular.module('private.scenarist.archives.directives', [])
                     }
                 });
             } else {
-                Flash.danger("No scenario choosed");
+                $translate('COMMONS-SCENARIOS-NO-SCENARIO-FLASH-ERROR').then(function (message) {
+                    Flash.danger(message);
+                });
             }
         };
 
@@ -45,7 +47,9 @@ angular.module('private.scenarist.archives.directives', [])
                     }
                 });
             } else {
-                Flash.danger("No scenario choosed");
+                $translate('COMMONS-SCENARIOS-NO-SCENARIO-FLASH-ERROR').then(function (message) {
+                    Flash.danger(message);
+                });
             }
         };
 

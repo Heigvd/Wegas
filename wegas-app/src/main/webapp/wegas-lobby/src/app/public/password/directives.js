@@ -8,7 +8,7 @@ angular.module('public.password.directives', [])
             controller: "PublicPasswordController as publicPasswordCtrl"
         };
     })
-    .controller('PublicPasswordController', function PublicPasswordController($scope, $state, $stateParams, Auth, Flash) {
+    .controller('PublicPasswordController', function PublicPasswordController($scope, $state, $stateParams, $translate, Auth, Flash) {
         var publicPasswordCtrl = this;
         publicPasswordCtrl.formInfo = {
             email: ""
@@ -22,7 +22,9 @@ angular.module('public.password.directives', [])
                     }
                 });
             } else {
-                Flash.danger('Please, enter an email');
+                $translate('PASSWORD-FLASH-EMPTY').then(function (message) {
+                    Flash.danger(message);
+                });
             }
         };
         publicPasswordCtrl.remindPassword = remindPassword;
