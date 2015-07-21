@@ -10,7 +10,6 @@ package com.wegas.core.rest.util;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.WebsocketFacade;
-import com.wegas.core.event.client.EntityUpdatedEvent;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasWrappedException;
 import com.wegas.core.exception.internal.NoPlayerException;
@@ -126,14 +125,13 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                 /*
                  * EntityUpdatedEvent propagates changes through websocket
                  */
-                EntityUpdatedEvent e = new EntityUpdatedEvent(updatedInstances);
                 //serverResponse.getEvents().add(e);
                 try {
                     WebsocketFacade websocketFacade = Helper.lookupBy(WebsocketFacade.class, WebsocketFacade.class);
                     if (managedMode.matches("^[\\d\\.]+$")) { //Socket id
-                        websocketFacade.onRequestCommit(e, managedMode);
+                        websocketFacade.onRequestCommit(updatedInstances, managedMode);
                     } else {
-                        websocketFacade.onRequestCommit(e);
+                        websocketFacade.onRequestCommit(updatedInstances);
                     }
                 } catch (NamingException | NoPlayerException ex) {
                     java.util.logging.Logger.getLogger(ManagedModeResponseFilter.class.getName()).log(Level.SEVERE, null, ex);
