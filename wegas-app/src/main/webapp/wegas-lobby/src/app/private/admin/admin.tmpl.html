@@ -1,11 +1,11 @@
-<div class="view view--new-session view--bottom">
-    <h3>Available actions</h3>
-    <p><button class="button button--default" ui-sref="wegas.private.admin.users">Users</button></p>
-    <p><button class="button button--default" ui-sref="wegas.private.admin.groups">Groups</button></p>
-    <p><a class="button button--default" href="{{ServiceURL}}wa.html">Sessions</a></p>
-    <h3>Upload a scenario</h3>
+<div class="view view--admin-menu view--bottom">
+    <h3>{{'ADMIN-INDEX-ACTIONS-TITLE' | translate}}</h3>
+    <p><button class="button button--default" ui-sref="wegas.private.admin.users">{{'ADMIN-INDEX-USERS-BTN' | translate}}</button></p>
+    <p><button class="button button--default" ui-sref="wegas.private.admin.groups">{{'ADMIN-INDEX-GROUPS-BTN' | translate}}</button></p>
+    <p><a class="button button--default" href="{{ServiceURL}}wa.html">{{'ADMIN-INDEX-SESSIONS-BTN' | translate}}</a></p>
+    <h3>{{'ADMIN-INDEX-UPLOAD-TITLE' | translate}}</h3>
     <p><input id="import-json-scenario" type="file" value="upload a scenario" scenario-create-upload /></p>
 </div>
-<div class="view view--sessions-list view--middle" ui-view="admin-container">
-    <h1>Welcome to admin</h1>
+<div class="view view--admin-content view--middle" ui-view="admin-container">
+    <h1>{{'ADMIN-INDEX-TITLE' | translate}}</h1>
 </div>

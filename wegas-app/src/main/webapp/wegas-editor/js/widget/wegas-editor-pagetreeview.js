@@ -28,6 +28,9 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                     nodeGroups: [{
                         nodeClass: "widget-node",
                         parentNode: ".container-node"
+                    }, {
+                        nodeClass: "page-node",
+                        parentNode: ".yui3-treeview-content"
                     }]
                 });
                 this.toolbar.add({
@@ -57,13 +60,17 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                 }
             });
             this.plCreationEvent = Y.after("pageloader:created", function(e) {
-                if(e.get("pageLoaderId") === this._pageLoaderId){
+                if (e.get("pageLoaderId") === this._pageLoaderId) {
                     this.set("pageLoader", this._pageLoaderId);
                 }
             }, this);
             if (DATASOURCE.editable) {
                 this.treeView.sortable.on("sort", function(e) {
-                    if (!e.dropWidget.get(BOUNDING_BOX).hasClass("container-node")) { //@TODO: find something better.
+                    if (e.dragWidget.get("data.page")) {
+                        DATASOURCE.move(e.dragWidget.get("data.page"), e.index, Y.bind(function(){
+                            this.getIndex();
+                        }, this));
+                    } else if (!e.dropWidget.get(BOUNDING_BOX).hasClass("container-node")) { //@TODO: find something better.
                         e.preventDefault();
                         this.getIndex();
                     } else if (e.dropWidget.get("data.widget")) {
@@ -135,9 +142,9 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                 return;
             }
             selected = widget.get("boundingBox").hasClass("highlighted") ? 2 : 0;
-            if (widget.each && !(widget instanceof Wegas.PageLoader)) {
+            if (widget.isAugmentedBy(Wegas.Parent)) {
                 treeNode = new Y.TreeNode({
-                    label:   widget.getEditorLabel() || "<i>" + widget.getType() + "</i>",
+                    label: widget.getEditorLabel() || "<i>" + widget.getType() + "</i>",
                     tooltip: "Type: " + widget.getType(),
                     selected: selected,
                     data: {
@@ -151,7 +158,7 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                 }, this);
             } else {
                 treeNode = new Y.TreeLeaf({
-                    label:   widget.getEditorLabel() || ("<i>" + widget.getType() + "</i>"),
+                    label: widget.getEditorLabel() || ("<i>" + widget.getType() + "</i>"),
                     tooltip: "Type: " + widget.getType(),
                     selected: selected,
                     data: {
@@ -165,7 +172,7 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
         },
         buildIndex: function(index) {
             var i, node, page = -1,
-                twState,
+                twState, tmpPageId,
                 pageFound = false,
                 buildSub = function(node, widget) {
                     this.buildSubTree(node, widget);
@@ -194,24 +201,25 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
 
             for (i in index) {
                 if (index.hasOwnProperty(i)) {
+                    tmpPageId = "" + index[i].id;
                     node = new Y.TreeNode({
-                        label: index[i] !== "" ? index[i] + " (" + i + ")" : "<i>Unnamed (" + i + ")</i>",
+                        label: index[i].name ? index[i].name + " (" + tmpPageId + ")" :
+                        "<i>Unnamed (" + tmpPageId + ")</i>",
                         data: {
-                            page: i,
-                            name: index[i]
+                            page: tmpPageId,
+                            name: index[i].name
                         },
                         cssClass: "page-node",
                         iconCSS: "wegas-icon-page"
                     });
                     this.treeView.add(node);
-                    if (+i === +page) {                                         //current page
+                    if (tmpPageId === "" + page) {                                         //current page
                         pageFound = true;
 
                         node.get(BOUNDING_BOX).addClass("current-page");
                         buildSub.call(this, node, this.get("pageLoader").get("widget"));
                     }
-                    node.set("collapsed", (+i !== +page));
-
+                    node.set("collapsed", (tmpPageId !== "" + page));
                 }
             }
             if (!pageFound) {                                                   //no page is selected
@@ -303,7 +311,7 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
             this.treeView.destroy();
             this.dsEvent.detach();
             this.plCreationEvent.detach();
-            Y.Wegas.DataSource.abort(this.indexReq);
+            Wegas.DataSource.abort(this.indexReq);
         }
     }, {
         CSS_PREFIX: "wegas-page-editor",

@@ -15,7 +15,7 @@
         @include make-row(0px);
         width:100%;
         height:54px;
-        // z-index:4;
+        z-index:4;
         overflow:visible;
     }
 
@@ -95,6 +95,16 @@
             }
         }
     }
+    
+    &.view--admin-menu{
+        @include make-xs-column(12, 96px);
+        @include make-md-column(3, 96px);
+        overflow-x:hidden;
+        .form{
+            margin:0px;
+            padding:0px;
+        }
+    }
 
     &.view--new-session,
     &.view--join-session,
@@ -108,6 +118,8 @@
             padding:0px;
         }
     }
+    
+    &.view--admin-content,
     &.view--sessions-list,
     &.view--scenarios-list,
     &.view--history-list {
@@ -127,6 +139,11 @@
             @include make-md-column(6);
             margin-top:28px;
             padding:0px;
+            
+            @media screen and (max-width: 991px) {
+                max-width:480px;
+                margin:0 0 8px 0;
+            }
         }
         .view__list{
             @include make-xs-column(12);
@@ -135,6 +152,10 @@
             box-sizing: border-box;
             overflow-x:hidden;
             overflow-y:auto;
+            
+            @media screen and (max-width: 991px) {
+                height:calc(100% - 133px);
+            }
 
             &.ng-enter,
             &.ng-leave
@@ -164,6 +185,11 @@
             }
             &.view__list--with-archive{
                 height:calc(100% - 162px);
+                
+                @media screen and (max-width: 991px) {
+                    height:calc(100% - 213px);
+                }
+                
             }
         }
         .view__no-group{
@@ -219,26 +245,34 @@
         h3{
             padding:64px 16px 16px 16px;
         }
+    }
+    
+    &.view__users-individual{
+        padding:0px 16px;
+    }
 
-        .view__users-individual{
-            padding:0px 16px;
-        }
+    &.view__users-teams{
 
-        .view__users-teams{
-
-            & .view__users-team {
-                padding-bottom:16px;
-                clear:both;
-                & > h4{
-                margin:0px 16px 16px 16px;
-                padding:16px 0px;
-                font-size:15px;
-                font-weight:500;
-                border-bottom:solid 1px $border;
-            }
+        & .view__users-team {
+            padding-bottom:16px;
+            clear:both;
+            & > h4{
+                margin:0px 0px 16px 0px;
+                padding:0px;
+                height:48px;
+                display: block;
+                span{
+                    font-size:15px;
+                    line-height: 48px;
+                    height: 48px;
+                    font-weight:500;
+                    float: left;
+                    margin-left:16px;
+                }
             }
         }
     }
+    
 
     // Styles de décorations
     @each $level in $backgrounds-levels {
@@ -269,7 +303,7 @@
     }
 
     .view--separate-shadow{
-        @include material-shadow(2);
+        @include material-shadow(1);
     }
 
     // Elements
@@ -418,4 +452,40 @@
             float:right;
         }
     }
+    
+     &.view--menu{
+        .action{
+            &.action--language{
+                .subactions{
+                    display:none;
+                    
+                    &.subactions--show{
+                        display:block;
+                        position:absolute;
+                        top:50px;
+                        right:50px;
+                        width: 120px;
+                        padding: 8px 16px 4px 16px;
+                        background: white;
+                        @include material-shadow(1);
+                        
+                        .subaction{
+                            width:100%;
+                            padding-bottom:4px;
+                            a{
+                                color:$primary-color;
+                                text-decoration:none;
+                                &:hover{
+                                    color:lighten($primary-color, 10%);
+                                    text-decoration:none;
+                                    cursor:pointer;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 }

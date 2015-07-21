@@ -653,6 +653,9 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
         },
         size: function() {
             return this.get("items").length;
+        },
+        getTreeEditorLabel: function(){
+            return "\u229e " + this.getEditorLabel();
         }
     }, {
         ATTRS: {

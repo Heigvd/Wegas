@@ -82,10 +82,24 @@ YUI.add('wegas-console-custom', function(Y) {
                     this.srcField = new Y.inputEx.WysiwygScript({
                         parentEl: contentAdvanced
                     });
-                    cb.append('<div><div class="results wegas-advanced-feature"></div><div class="status"></div></div>');
+                    cb.append('<div class="wegas-status-bar wegas-status-bar-hidden"><div class="results wegas-advanced-feature"></div><div class="status"></div></div>');
                     Y.one(this.srcField.getEl()).all("div > button").remove();
                 },
                 bindUI: function() {
+                    Y.Wegas.Facade.Variable.on("WegasOutOfBoundException", function(e){
+                        var message;
+                        if(e.value < e.min){
+                            message = e.variableName + " can not be less than " + e.min;
+                        }else{
+                            if(e.value > e.max){
+                                message = e.variableName + " can not be more than " + e.max;
+                            }else{
+                                message = "Something's wrong with " + e.variableName;
+                            }
+                        }
+                        this.setStatus(message);
+                        e.halt();
+                    }, this);
                     this.get(CONTENTBOX).delegate("click", function(e) {
                         var modalContent = this.get(CONTENTBOX).one(".modal--content-selected");
                         if(!modalContent.hasClass("modal--content-basics")){
@@ -94,7 +108,6 @@ YUI.add('wegas-console-custom', function(Y) {
                             this.get(CONTENTBOX).one(".modal--tab-btn-selected").removeClass("modal--tab-btn-selected");
                             this.get(CONTENTBOX).one("#basics-impacts-btn").addClass("modal--tab-btn-selected");
                         }
-                        
                     }, "#basics-impacts-btn", this);
                     this.get(CONTENTBOX).delegate("click", function(e) {
                         var modalContent = this.get(CONTENTBOX).one(".modal--content-selected");
@@ -123,10 +136,10 @@ YUI.add('wegas-console-custom', function(Y) {
                     this.srcField.viewSrc.fire("click");
                 },
                 add: function() {
-                    this.srcField.addButton.fire("click");
+                    this.srcField.addButton.fire("click");                   
                 },
                 setStatus: function(status) {
-                    this.get("statusNode").set("text", status);
+                    this.get(CONTENTBOX).one(".wegas-status-bar .status").set("text", status);
                 },
                 getBasicsImpactsScript: function(){
                     if (!this.validate()) {
@@ -142,12 +155,11 @@ YUI.add('wegas-console-custom', function(Y) {
                     }
                     return this.srcField.getValue();
                 },
-                run: function() {
+                run: function(modale) {
                     var script, tabSelected;
                     if (running) {
                         return;
                     }
-                   
                     if(this.get("customImpacts").length > 0){
                         tabSelected = this.get(CONTENTBOX).one(".modal--content-selected");
                         if(tabSelected.hasClass("modal--content-basics")){
@@ -160,28 +172,43 @@ YUI.add('wegas-console-custom', function(Y) {
                     }
                     if(script !== false){
                         running = true;
-                        this.setStatus("Running...");
+                        this.get(CONTENTBOX).one(".wegas-status-bar").removeClass("wegas-status-bar-hidden");
+                        this.get(CONTENTBOX).one(".status").addClass("status--running");
                         Y.Wegas.Facade.Variable.script.run(script, {
                             on: {
-                                success: Y.bind(function(e) {
+                                success: Y.bind(function(event) {
                                     running = false;
-                                    this.hideOverlay();
-                                    this.get(CONTENTBOX).one(".results").prepend('<div class="result">Script exectuted. Returned value: ' +
-                                                                                 Y.JSON.stringify(e.response.results.entities[0]) +
-                                                                                 "</div>");
-                                    this.setStatus("Impact successfully executed");
+                                    this.get(CONTENTBOX).one(".wegas-status-bar").addClass("wegas-status-bar-transition");
+                                    Y.later(200, this, function(){
+                                        this.get(CONTENTBOX).one(".wegas-status-bar").removeClass("wegas-status-bar-transition");
+                                        this.get(CONTENTBOX).one(".status").removeClass("status--running").addClass("status--success");
+                                        this.hideOverlay();
+                                        this.get(CONTENTBOX).one(".results").prepend('<div class="result">Script exectuted. Returned value: ' +
+                                                                                     Y.JSON.stringify(event.response.results.entities[0]) +
+                                                                                     "</div>");
+                                        if(modale){
+                                            Y.later(1000, window, function(){
+                                                modale.exit();
+                                            }, [], false);
+                                        }
+                                    }, [], false);
                                 }, this),
                                 failure: Y.bind(function(e) {
                                     running = false;
+                                    this.get(CONTENTBOX).one(".status").removeClass("status--running").addClass("status--error");
                                     this.hideOverlay();
                                     this.get(CONTENTBOX).one(".results").prepend('<div class="result error">Error executing script: ' +
                                                                                  e.response.results.message + "</div>");
-                                    this.setStatus("Impact failed");
+                                     Y.later(2500, this, function(){
+                                        this.get(CONTENTBOX).one(".wegas-status-bar").addClass("wegas-status-bar-hidden");
+                                        this.get(CONTENTBOX).one(".status").removeClass("status--error");
+                                        this.setStatus("");
+                                    }, [], false);
                                 }, this)
                             }
                         }, this.get("player"));
                     }
-                },
+                }, 
                 extractForm: function() {
                     var inputs = this._form.inputs, i, out = [];
                     for (i = 0; i < inputs.length; i += 1) {

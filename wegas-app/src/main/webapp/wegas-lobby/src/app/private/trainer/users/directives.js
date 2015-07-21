@@ -97,6 +97,16 @@ angular.module('private.trainer.users.directives', [
                 }
             });
         };
+        
+        ctrl.removeTeam = function(teamId) {
+            SessionsModel.removeTeamToSession($stateParams.id, teamId).then(function(response) {
+                if (!response.isErroneous()) {
+                    ctrl.updateSession();
+                }else{
+                    response.flash();
+                }
+            });
+        };
 
         ctrl.updateSession();
     })
@@ -111,7 +121,7 @@ angular.module('private.trainer.users.directives', [
             link: function(scope, element, attrs, parentCtrl) {
                 scope.remove = function(trainerId) {
                     parentCtrl.removeTrainer(trainerId);
-                }
+                };
             }
         }
     })
@@ -126,7 +136,7 @@ angular.module('private.trainer.users.directives', [
             link: function(scope, element, attrs, parentCtrl) {
                 scope.remove = function(playerId, teamId) {
                     parentCtrl.removePlayer(playerId, teamId);
-                }
+                };
             }
         }
     })
@@ -137,6 +147,11 @@ angular.module('private.trainer.users.directives', [
             require: "^trainerSessionsUsersIndex",
             scope: {
                 teams: '='
+            },
+            link: function(scope, element, attrs, parentCtrl) {
+                scope.remove = function(teamId) {
+                    parentCtrl.removeTeam(teamId);
+                };
             }
         }
     });

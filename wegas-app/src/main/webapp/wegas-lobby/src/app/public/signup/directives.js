@@ -8,7 +8,7 @@ angular.module('public.signup.directives', [])
     		templateUrl: 'app/public/signup/directives.tmpl/index.html'
         };
     })
-    .controller('PublicSignupController', function PublicSignupController($scope, Auth, Flash) {
+    .controller('PublicSignupController', function PublicSignupController($scope,$translate, Auth, Flash) {
         var ctrl = this;
         ctrl.newUser = {
         	email:"",
@@ -29,13 +29,19 @@ angular.module('public.signup.directives', [])
 		                    }
 		                });
 		            } else {
-		                Flash('danger', 'Passwords are different');
+                                $translate('CREATE-ACCOUNT-FLASH-WRONG-PASS2').then(function (message) {
+                                    Flash.danger(message);
+                                });
 		            }
 		        }else{
-	                Flash('danger', 'Firstname and lastname are required');
+                            $translate('CREATE-ACCOUNT-FLASH-WRONG-NAME').then(function (message) {
+                                Flash.danger(message);
+                            });
 		        }
 	        } else {
-	            Flash('danger', 'Your password should contains at least 3 characters');
+                    $translate('CREATE-ACCOUNT-FLASH-WRONG-PASS').then(function (message) {
+                        Flash.danger(message);
+                    });
 	        }
 	    };
     });

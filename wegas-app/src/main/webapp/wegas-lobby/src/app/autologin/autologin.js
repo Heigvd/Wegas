@@ -33,9 +33,9 @@ angular.module('autologin', [
         if(!responseToken.isErroneous()){
             Auth.getAuthenticatedUser().then(function(user){
                 if(user){
-                    var session = responseToken.data;
-                    SessionsModel.getSession("played", session.id).then(function(responsePlayedSession){
-                        if(!responsePlayedSession.isErroneous()){
+                    var session = responseToken.data; 
+                    TeamsModel.getTeamBySessionId(session.id).then(function(responseTeam){
+                        if(!responseTeam.isErroneous()){
                             window.location.href = ServiceURL + "game-play.html?gameId=" + session.id;
                         } else {
                             if(session.properties.freeForAll){

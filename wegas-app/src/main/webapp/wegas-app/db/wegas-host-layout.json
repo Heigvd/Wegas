@@ -38,7 +38,10 @@
                         ]
                     }
                 ],
-                "plugins": [{"fn": "ExtraTabs"}]
+                "plugins": [{"fn": "ExtraTabs"}, 
+                    {"fn": "PopupListener"},
+                    {"fn": "ServerPopupListener"}
+                    ]
             }
         ]
     }

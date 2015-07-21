@@ -8,16 +8,19 @@
 package com.wegas.core.jcr.page;
 
 import com.wegas.core.jcr.SessionHolder;
-import javax.jcr.*;
 import org.slf4j.LoggerFactory;
 
+import javax.jcr.*;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
+
 /**
- *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 public class PageConnector {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(PageConnector.class);
+
     private final Session session;
 
     public PageConnector() throws RepositoryException {
@@ -42,19 +45,35 @@ public class PageConnector {
     }
 
     /**
-     *
      * @param gameModelName
      * @return
-     * @throws PathNotFoundException
      * @throws RepositoryException
      */
-    protected NodeIterator listChildren(String gameModelName) throws PathNotFoundException, RepositoryException {
-        NodeIterator ni = this.getRootNode(gameModelName).getNodes();
-        return ni;
+    protected NodeIterator listChildren(String gameModelName) throws RepositoryException {
+        return this.query("Select * FROM [nt:base] as n WHERE ISDESCENDANTNODE('/" + gameModelName + "') order by n.index, localname(n)");
+    }
+
+    protected NodeIterator query(final String query) throws RepositoryException {
+        return this.query(query, -1, -1);
+    }
+
+    protected NodeIterator query(final String query, final int limit) throws RepositoryException {
+        return this.query(query, limit, -1);
+    }
+
+    protected NodeIterator query(final String query, final int limit, final int offset) throws RepositoryException {
+        final QueryManager queryManager = session.getWorkspace().getQueryManager();
+        final Query q = queryManager.createQuery(query, Query.JCR_SQL2);
+        if (limit > 0) {
+            q.setLimit(limit);
+            if (offset > -1) {
+                q.setOffset(offset);
+            }
+        }
+        return q.execute().getNodes();
     }
 
     /**
-     *
      * @param gameModelName
      * @param path
      * @return
@@ -71,7 +90,6 @@ public class PageConnector {
     }
 
     /**
-     *
      * @param gameModelName
      * @param name
      * @return
@@ -89,7 +107,6 @@ public class PageConnector {
     }
 
     /**
-     *
      * @param gameModelName
      * @param name
      * @throws RepositoryException
@@ -106,7 +123,6 @@ public class PageConnector {
     }
 
     /**
-     *
      * @param gameModelName
      * @throws RepositoryException
      */
@@ -119,7 +135,6 @@ public class PageConnector {
     }
 
     /**
-     *
      * @throws RepositoryException
      */
     protected void save() throws RepositoryException {
@@ -127,7 +142,6 @@ public class PageConnector {
     }
 
     /**
-     *
      * @param gameModelName
      * @return
      * @throws RepositoryException

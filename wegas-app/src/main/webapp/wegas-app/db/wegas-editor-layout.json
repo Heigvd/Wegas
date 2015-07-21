@@ -184,7 +184,7 @@
                             {
                                 "type": "PageLoader",
                                 "pageLoaderId": "previewPageLoader",
-                                "defaultPageId": 1,
+                                "defaultPageId": "default",
                                 "cssClass": "editor-preview wegas-playerview",
                                 "plugins": [
                                     {

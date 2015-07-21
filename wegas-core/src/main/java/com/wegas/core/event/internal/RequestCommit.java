@@ -13,6 +13,7 @@ import java.io.Serializable;
 /**
  *
  * @author Yannick Lagger <lagger.yannick at gmail.com>
+ * @deprecated 
  */
 public class RequestCommit implements Serializable {
 

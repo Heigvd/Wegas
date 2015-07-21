@@ -1,5 +1,5 @@
 angular.module('wegas.models.sessions', [])
-    .service('SessionsModel', function($http, $q, $interval, Auth, Responses) {
+    .service('SessionsModel', function($http, $q, $interval, $translate, WegasTranslations, Auth, Responses) {
         /* Namespace for model accessibility. */
         var model = this,
             sessions = {
@@ -37,20 +37,34 @@ angular.module('wegas.models.sessions', [])
                     }).success(function(data) {
                         if (data.events !== undefined && data.events.length == 0) {
                             sessions.cache[status].data = data.entities;
-                            deferred.resolve(Responses.success("Sessions loaded", sessions.cache[status]));
+                            $translate('COMMONS-SESSIONS-FIND-FLASH-SUCCESS').then(function (message) {
+                                deferred.resolve(Responses.success(message, sessions.cache[status]));
+                            });
                         } else if (data.events !== undefined) {
                             sessions.cache[status].data = [];
-                            deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+                            console.log("WEGAS LOBBY : Error while loading sessions : ")
+                            console.log(Responses.danger(data.events[0].exceptions));
+                            $translate('COMMONS-SESSIONS-FIND-FLASH-ERROR').then(function (message) {
+                                deferred.resolve(Responses.danger(message, false));
+                            });
                         } else {
                             sessions.cache[status].data = [];
-                            deferred.resolve(Responses.danger("Whoops...", false));
+                            $translate('COMMONS-SESSIONS-FIND-FLASH-ERROR').then(function (message) {
+                                deferred.resolve(Responses.danger(message, false));
+                            });
                         }
                     }).error(function(data) {
                         sessions.cache[status].data = [];
                         if (data.events !== undefined && data.events.length > 0) {
-                            deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+                            console.log("WEGAS LOBBY : Error while loading sessions : ")
+                            console.log(Responses.danger(data.events[0].exceptions));
+                            $translate('COMMONS-SESSIONS-FIND-FLASH-ERROR').then(function (message) {
+                                deferred.resolve(Responses.danger(message, false));
+                            });
                         } else {
-                            deferred.resolve(Responses.danger("Whoops...", false));
+                            $translate('COMMONS-SESSIONS-FIND-FLASH-ERROR').then(function (message) {
+                                deferred.resolve(Responses.danger(message, false));
+                            });
                         }
                     });
                 } else {
@@ -91,12 +105,12 @@ angular.module('wegas.models.sessions', [])
                 }
                 if (gameSetted) {
                     $http.put(ServiceURL + "rest/GameModel/Game/" + sessionBeforeChange.id, sessionBeforeChange).success(function(data) {
-                        deferred.resolve(Responses.success("Game updated", sessionBeforeChange));
+                        deferred.resolve(sessionBeforeChange);
                     }).error(function(data) {
-                        deferred.resolve(Responses.danger("Error during game update", false));
+                        deferred.resolve(false);
                     });
                 } else {
-                    deferred.resolve(Responses.info("Nothing to set in game", sessionBeforeChange));
+                    deferred.resolve(sessionBeforeChange);
                 }
                 return deferred.promise;
             },
@@ -106,12 +120,6 @@ angular.module('wegas.models.sessions', [])
                     gameModelSetted = false,
                     scenarioBeforeChange = sessionBeforeChange.gameModel,
                     properties = ["scriptUri","clientScriptUri","cssUri","pagesUri","logID"];
-
-                if (scenarioBeforeChange.properties.iconUri !== ("ICON_" + sessionInfos.color + "_" + sessionInfos.icon.key + "_" + sessionInfos.icon.library)) {
-                    sessionBeforeChange.properties.iconUri = "ICON_" + sessionInfos.color + "_" + sessionInfos.icon.key + "_" + sessionInfos.icon.library;
-                    scenarioBeforeChange.properties.iconUri = "ICON_" + sessionInfos.color + "_" + sessionInfos.icon.key + "_" + sessionInfos.icon.library;
-                    gameModelSetted = true;
-                }
                 if (scenarioBeforeChange.properties.freeForAll !== sessionInfos.individual) {
                     sessionBeforeChange.properties.freeForAll = sessionInfos.individual;
                     scenarioBeforeChange.properties.freeForAll = sessionInfos.individual;
@@ -121,22 +129,20 @@ angular.module('wegas.models.sessions', [])
                     scenarioBeforeChange.comments = sessionInfos.comments;
                     gameModelSetted = true;
                 }
-                
                 _.each(properties, function(el, index) {
                     if (scenarioBeforeChange.properties[el] !== sessionInfos[el]) {
                         scenarioBeforeChange.properties[el] = sessionInfos[el];
                         gameModelSetted = true
                     }
                 });
-
                 if (gameModelSetted) {
                     $http.put(ServiceURL + "rest/Public/GameModel/" + scenarioBeforeChange.id, scenarioBeforeChange).success(function(data) {
-                        deferred.resolve(Responses.success("GameModel updated", data));
+                        deferred.resolve(sessionBeforeChange);
                     }).error(function(data) {
-                        deferred.resolve(Responses.danger("Error during gameModel update", false));
+                        deferred.resolve(false);
                     });
                 } else {
-                    deferred.resolve(Responses.info("Nothing to set in gameModel", scenarioBeforeChange));
+                    deferred.resolve(sessionBeforeChange);
                 }
                 return deferred.promise;
             },
@@ -151,14 +157,46 @@ angular.module('wegas.models.sessions', [])
                 });
                 return deferred.promise;
             };
-
+        
+        /* Remove team form persistante datas and change cached datas (Used from trainer workspace) */
+        model.removeTeamToSession = function(sessionId, teamId) {
+            var deferred = $q.defer(),
+                session = sessions.findSession("LIVE", sessionId) || sessions.findSession("BIN", sessionId),
+                team = undefined;
+            if (session) {
+                team = _.find(session.teams, function(t) {
+                    return t.id == teamId;
+                });
+                if (team) {
+                    $http.delete(ServiceURL + "rest/GameModel/Game/Team/" + team.id).success(function(data) {
+                        session.teams = _.without(session.teams, team);
+                        $translate('COMMONS-SESSIONS-TEAM-REMOVE-FLASH-SUCCESS').then(function (message) {
+                            deferred.resolve(Responses.success(message, team));
+                        });
+                    }).error(function(data) {
+                        $translate('COMMONS-SESSIONS-TEAM-REMOVE-FLASH-ERROR').then(function (message) {
+                            deferred.resolve(Responses.danger(message, false));
+                        });
+                    });
+                } else {
+                    $translate('COMMONS-TEAMS-NO-TEAM-FLASH-ERROR').then(function (message) {
+                        deferred.resolve(Responses.danger(message, false));
+                    });
+                }
+            } else {
+                $translate('COMMONS-TEAMS-NO-TEAM-FLASH-ERROR').then(function (message) {
+                    deferred.resolve(Responses.danger(message, false));
+                });
+            }
+            return deferred.promise;
+        };
 
         /* Remove player form persistante datas and change cached datas (Used from trainer and player workspace) */
         model.removePlayerToSession = function(sessionId, playerId, teamId) {
-            var deferred = $q.defer();
-            session = sessions.findSession("LIVE", sessionId) || sessions.findSession("BIN", sessionId),
-            team = undefined,
-            player = undefined;
+            var deferred = $q.defer(),
+                session = sessions.findSession("LIVE", sessionId) || sessions.findSession("BIN", sessionId),
+                team = undefined,
+                player = undefined;
             if (session) {
                 team = _.find(session.teams, function(t) {
                     return t.id == teamId;
@@ -177,18 +215,28 @@ angular.module('wegas.models.sessions', [])
                             if(session.properties.freeForAll){
                                 session.players = _.without(session.players, player);
                             }
-                            deferred.resolve(Responses.success("Player has been removed from the session", player));
+                            $translate('COMMONS-SESSIONS-PLAYER-REMOVE-FLASH-SUCCESS').then(function (message) {
+                                deferred.resolve(Responses.success(message, team));
+                            });
                         }).error(function(data) {
-                            deferred.resolve(Responses.danger("Error during removing player of session", false));
+                            $translate('COMMONS-SESSIONS-PLAYER-REMOVE-FLASH-ERROR').then(function (message) {
+                                deferred.resolve(Responses.danger(message, false));
+                            });
                         });
                     } else {
-                        deferred.resolve(Responses.danger("No player found", false));
+                        $translate('COMMONS-TEAMS-NO-PLAYER-FLASH-ERROR').then(function (message) {
+                            deferred.resolve(Responses.danger(message, false));
+                        });
                     }
                 } else {
-                    deferred.resolve(Responses.danger("No team found", false));
+                    $translate('COMMONS-TEAMS-NO-TEAM-FLASH-ERROR').then(function (message) {
+                        deferred.resolve(Responses.danger(message, false));
+                    });
                 }
             } else {
-                deferred.resolve(Responses.danger("No team found", false));
+                $translate('COMMONS-TEAMS-NO-TEAM-FLASH-ERROR').then(function (message) {
+                    deferred.resolve(Responses.danger(message, false));
+                });
             }
             return deferred.promise;
         };
@@ -200,12 +248,18 @@ angular.module('wegas.models.sessions', [])
                 ignoreLoadingBar: true
             }).success(function(data) {
                 if (data) {
-                    deferred.resolve(Responses.success("Session find", data));
+                    $translate('COMMONS-SESSIONS-GET-FLASH-SUCCESS').then(function (message) {
+                        deferred.resolve(Responses.success(message, data));
+                    });
                 } else {
-                    deferred.resolve(Responses.danger("No Session find", false));
+                    $translate('COMMONS-SESSIONS-GET-FLASH-ERROR').then(function (message) {
+                        deferred.resolve(Responses.danger(message, false));
+                    });
                 }
             }).error(function(data) {
-                deferred.resolve(Responses.danger("No session find", false));
+                $translate('COMMONS-SESSIONS-GET-FLASH-ERROR').then(function (message) {
+                    deferred.resolve(Responses.danger(message, data));
+                });
             });
             return deferred.promise;
         };
@@ -218,10 +272,14 @@ angular.module('wegas.models.sessions', [])
                     if (sessions.cache[status]) {
                         if (sessions.cache[status].loading) {
                             sessions.wait(status).then(function() {
-                                deferred.resolve(Responses.success("Sessions find", sessions.cache[status].data));
+                                $translate('COMMONS-SESSIONS-FIND-FLASH-SUCCESS').then(function (message) {
+                                    deferred.resolve(Responses.success(message, sessions.cache[status].data));
+                                });
                             });
                         } else {
-                            deferred.resolve(Responses.success("Sessions find", sessions.cache[status].data));
+                            $translate('COMMONS-SESSIONS-FIND-FLASH-SUCCESS').then(function (message) {
+                                deferred.resolve(Responses.success(message, sessions.cache[status].data));
+                            });
                         }
                     } else {
                         sessions.cache[status] = {
@@ -234,7 +292,9 @@ angular.module('wegas.models.sessions', [])
                         });
                     }
                 } else {
-                    deferred.resolve(Responses.danger("You need to be logged", false));
+                    $translate('COMMONS-AUTH-CURRENT-FLASH-ERROR').then(function (message) {
+                        deferred.resolve(Responses.danger(message, false));
+                    });
                 }
             });
             return deferred.promise;
@@ -249,26 +309,38 @@ angular.module('wegas.models.sessions', [])
                     sessions.wait(status).then(function() {
                         session = sessions.findSession(status, id);
                         if (session) {
-                            deferred.resolve(Responses.success("Session find", session));
+                            $translate('COMMONS-SESSIONS-GET-FLASH-SUCCESS').then(function (message) {
+                                deferred.resolve(Responses.success(message, session));
+                            });
                         } else {
-                            deferred.resolve(Responses.danger("No session find", false));
+                            $translate('COMMONS-SESSIONS-GET-FLASH-ERROR').then(function (message) {
+                                deferred.resolve(Responses.danger(message, false));
+                            });
                         }
                     });
                 } else {
                     session = sessions.findSession(status, id);
                     if (session) {
-                        deferred.resolve(Responses.success("Session find", session));
+                        $translate('COMMONS-SESSIONS-GET-FLASH-SUCCESS').then(function (message) {
+                            deferred.resolve(Responses.success(message, session));
+                        });
                     } else {
-                        deferred.resolve(Responses.danger("No session find", false));
+                        $translate('COMMONS-SESSIONS-GET-FLASH-ERROR').then(function (message) {
+                            deferred.resolve(Responses.danger(message, false));
+                        });
                     }
                 }
             } else {
                 model.getSessions(status).then(function() {
                     session = sessions.findSession(status, id);
                     if (session) {
-                        deferred.resolve(Responses.success("Session find", session));
+                        $translate('COMMONS-SESSIONS-GET-FLASH-SUCCESS').then(function (message) {
+                            deferred.resolve(Responses.success(message, session));
+                        });
                     } else {
-                        deferred.resolve(Responses.danger("No session find", false));
+                        $translate('COMMONS-SESSIONS-GET-FLASH-ERROR').then(function (message) {
+                            deferred.resolve(Responses.danger(message, false));
+                        });
                     }
                 });
             }
@@ -297,9 +369,13 @@ angular.module('wegas.models.sessions', [])
                     uncacheSession(status, sessionToRefresh);
                     cacheSession(status, sessionRefreshed);
                     cachedSession = sessions.findSession(status, sessionRefreshed.id);
-                    deferred.resolve(Responses.success("Session refreshed", cachedSession));
+                    $translate('COMMONS-SESSIONS-REFRESH-SUCCESS').then(function (message) {
+                        deferred.resolve(Responses.success(message, cachedSession));
+                    });
                 }).error(function(data) {
-                    deferred.resolve(Responses.danger("Whoops", false));
+                    $translate('COMMONS-SESSIONS-REFRESH-ERROR').then(function (message) {
+                        deferred.resolve(Responses.danger(message, false));
+                    });
                 });
             return deferred.promise;
         };
@@ -308,7 +384,7 @@ angular.module('wegas.models.sessions', [])
         model.createSession = function(sessionName, scenarioId) {
             var deferred = $q.defer();
             Auth.getAuthenticatedUser().then(function(user) {
-                if (user != null) {
+                if (user !== null) {
                     /* Todo Check Values ? */
                     var newSession = {
                         "@class": "Game",
@@ -318,12 +394,18 @@ angular.module('wegas.models.sessions', [])
                     };
                     $http.post(ServiceURL + "rest/GameModel/" + newSession.gameModelId + "/Game?view=EditorExtended", newSession).success(function(data) {
                         cacheSession("LIVE", data)
-                        deferred.resolve(Responses.success("Session created", data));
+                        $translate('COMMONS-SESSIONS-CREATE-SUCCESS').then(function (message) {
+                            deferred.resolve(Responses.success(message, data));
+                        });
                     }).error(function(data) {
-                        deferred.resolve(Responses.danger("Error during session creation", data));
+                        $translate('COMMONS-SESSIONS-CREATE-ERROR').then(function (message) {
+                            deferred.resolve(Responses.danger(message, false));
+                        });
                     });
                 } else {
-                    deferred.resolve(Responses.danger("No user authenticate", false));
+                    $translate('COMMONS-AUTH-CURRENT-FLASH-ERROR').then(function (message) {
+                        deferred.resolve(Responses.danger(message, false));
+                    });
                 }
             });
             return deferred.promise;
@@ -333,21 +415,29 @@ angular.module('wegas.models.sessions', [])
         model.updateSession = function(session, infosToSet) {
             var deferred = $q.defer();
             if (session && infosToSet) {
-                updateGameSession(infosToSet, session).then(function(responseGame) {
-                    if (!responseGame.isErroneous()) {
-                        updateGameModelSession(infosToSet, responseGame.data).then(function(responseGameModel) {
-                            if (!responseGameModel.isErroneous()) {
-                                deferred.resolve(Responses.success("Session up-to-date", responseGameModel.data));
+                updateGameSession(infosToSet, session).then(function(sessionSetted) {
+                    if (sessionSetted) {
+                        updateGameModelSession(infosToSet, sessionSetted).then(function(sessionSetted2) {
+                            if (sessionSetted2) {
+                                $translate('COMMONS-SESSIONS-UPDATE-FLASH-SUCCESS').then(function (message) {
+                                    deferred.resolve(Responses.success(message, sessionSetted2));
+                                });
                             } else {
-                                deferred.resolve(responseGameModel);
+                                $translate('COMMONS-SESSIONS-UPDATE-FLASH-ERROR').then(function (message) {
+                                    deferred.resolve(Responses.danger(message, false));
+                                });
                             }
                         });
                     } else {
-                        deferred.resolve(responseGame);
+                        $translate('COMMONS-SESSIONS-UPDATE-FLASH-ERROR').then(function (message) {
+                            deferred.resolve(Responses.danger(message, false));
+                        });
                     }
                 });
             } else {
-                deferred.resolve(Responses.danger("No session to update", false));
+                $translate('COMMONS-SESSIONS-UPDATE-NO-SESSION-FLASH-ERROR').then(function (message) {
+                    deferred.resolve(Responses.danger(message, false));
+                });
             }
             return deferred.promise;
         };
@@ -355,22 +445,26 @@ angular.module('wegas.models.sessions', [])
         /* Update the comment of a session. */
         model.updateAccessSession = function(sessionToSet) {
             var deferred = $q.defer(),
-                message = "Error during session name update",
                 sessionBeforeChange = sessions.findSession("LIVE", sessionToSet.id);
             if (sessionBeforeChange != undefined) {
                 if (sessionBeforeChange.access == "OPEN") {
                     sessionBeforeChange.access = "CLOSE";
-                    message = "Session close";
                 } else {
                     sessionBeforeChange.access = "OPEN";
-                    message = "Session open";
                 }
                 $http.put(ServiceURL + "rest/GameModel/Game/" + sessionToSet.id, sessionBeforeChange, {
                     ignoreLoadingBar: true
                 }).success(function(data) {
-                    deferred.resolve(Responses.success(message, data));
+                    $translate(
+                        'COMMONS-SESSIONS-EDIT-ACCESS-SUCCESS', 
+                        {access: WegasTranslations.access[sessionBeforeChange.access][$translate.use()]}
+                    ).then(function (message) {
+                        deferred.resolve(Responses.success(message, data));
+                    });
                 }).error(function(data) {
-                    deferred.resolve(Responses.danger(message, false));
+                    $translate('COMMONS-SESSIONS-EDIT-ACCESS-ERROR').then(function (message) {
+                        deferred.resolve(Responses.danger(message, false));
+                    });
                 });
             }
             return deferred.promise;
@@ -389,15 +483,23 @@ angular.module('wegas.models.sessions', [])
                 if (!alreadyIn) {
                     $http.post(ServiceURL + "rest/Extended/User/addAccountPermission/Game:View,Edit:g" + session.id + "/" + trainer.id).success(function(data) {
                         session.trainers.push(trainer);
-                        deferred.resolve(Responses.success("Trainer added", trainer));
+                        $translate('COMMONS-SESSIONS-ADD-TRAINER-SUCCESS').then(function (message) {
+                            deferred.resolve(Responses.success(message, trainer));
+                        });
                     }).error(function(data) {
-                        deferred.resolve(Responses.danger("Error for adding trainer", false));
+                        $translate('COMMONS-SESSIONS-ADD-TRAINER-ERROR').then(function (message) {
+                            deferred.resolve(Responses.danger(message, false));
+                        });
                     });
                 } else {
-                    deferred.resolve(Responses.info("This user is already a trainer for this session", false));
+                    $translate('COMMONS-SESSIONS-ALREADY-TRAINER-INFO').then(function (message) {
+                        deferred.resolve(Responses.danger(message, false));
+                    });
                 }
             } else {
-                deferred.resolve(Responses.danger("No access to this session", false));
+                $translate('COMMONS-SESSIONS-NO-ACCESS-ERROR').then(function (message) {
+                    deferred.resolve(Responses.danger(message, false));
+                });
             }
             return deferred.promise;
         };
@@ -406,19 +508,25 @@ angular.module('wegas.models.sessions', [])
         model.removeTrainerToSession = function(session, trainerId) {
             var deferred = $q.defer();
             if (session) {
-                trainer = _.find(session.trainers, function(t) {
+                var trainer = _.find(session.trainers, function(t) {
                     return t.id == trainerId;
                 });
                 if (trainer) {
                     $http.delete(ServiceURL + "rest/Extended/User/DeleteAccountPermissionByInstanceAndAccount/g" + session.id + "/" + trainer.id).success(function(data) {
                         session.trainers = _.without(session.trainers, trainer);
-                        deferred.resolve(Responses.success("Trainer removed", trainer));
+                        $translate('COMMONS-SESSIONS-REMOVE-TRAINER-SUCCESS').then(function (message) {
+                            deferred.resolve(Responses.success(message, trainer));
+                        });
                     }).error(function(data) {
-                        deferred.resolve(Responses.danger("You can not remove this trainer", data));
+                        $translate('COMMONS-SESSIONS-REMOVE-TRAINER-ERROR').then(function (message) {
+                            deferred.resolve(Responses.danger(message, false));
+                        });
                     });
                 }
             } else {
-                deferred.resolve(Response.danger("No access to this session", false));
+                $translate('COMMONS-SESSIONS-ADD-TRAINER-ERROR').then(function (message) {
+                    deferred.resolve(Responses.danger(message, false));
+                });
             }
             return deferred.promise;
         };
@@ -431,16 +539,22 @@ angular.module('wegas.models.sessions', [])
                     if (sessionArchived) {
                         uncacheSession("LIVE", sessionToArchive);
                         cacheSession("BIN", sessionToArchive);
-                        deferred.resolve(Responses.success("Session archived", sessionToArchive));
+                        $translate('COMMONS-SESSIONS-ARCHIVE-SUCCESS').then(function (message) {
+                            deferred.resolve(Responses.success(message, sessionToArchive));
+                        });
                     } else {
-                        deferred.resolve(Responses.danger("Error during session archivage", false));
+                        $translate('COMMONS-SESSIONS-ARCHIVE-ERROR').then(function (message) {
+                            deferred.resolve(Responses.danger(message, false));
+                        });
                     }
                 });
             } else {
-                deferred.resolve(Responses.danger("This is not a session", false));
+                $translate('COMMONS-SESSIONS-WRONG-OBJECT-ERROR').then(function (message) {
+                    deferred.resolve(Responses.danger(message, false));
+                });
             }
             return deferred.promise;
-        }
+        };
 
         /* Edit session status from "BIN" to "LIVE" */
         model.unarchiveSession = function(sessionToUnarchive) {
@@ -450,25 +564,33 @@ angular.module('wegas.models.sessions', [])
                     if (sessionUnarchived) {
                         uncacheSession("BIN", sessionToUnarchive);
                         cacheSession("LIVE", sessionToUnarchive);
-                        deferred.resolve(Responses.success("Session unarchived", sessionToUnarchive));
+                        $translate('COMMONS-SESSIONS-UNARCHIVE-SUCCESS').then(function (message) {
+                            deferred.resolve(Responses.success(message, sessionToUnarchive));
+                        });
                     } else {
-                        deferred.resolve(Responses.danger("Error during session unsarchivage", false));
+                        $translate('COMMONS-SESSIONS-UNARCHIVE-ERROR').then(function (message) {
+                            deferred.resolve(Responses.danger(message, false));
+                        });
                     }
                 });
             } else {
-                deferred.resolve(Responses.danger("This is not a session", false));
+                $translate('COMMONS-SESSIONS-WRONG-OBJECT-ERROR').then(function (message) {
+                    deferred.resolve(Responses.danger(message, false));
+                });
             }
             return deferred.promise;
-        }
+        };
 
         /* Count all sessions with "BIN" status */
         model.countArchivedSessions = function() {
             var deferred = $q.defer();
             $http.get(ServiceURL + "rest/GameModel/Game/status/BIN/count").success(function(data) {
-                deferred.resolve(Responses.success("Number of archived sessions", data));
+                $translate('PRIVATE-ARCHIVES-COUNT').then(function (message) {
+                    deferred.resolve(Responses.info(message, data));
+                });
             });
             return deferred.promise;
-        }
+        };
 
         /* Delete an archived session, passing this session in parameter. */
         model.deleteArchivedSession = function(sessionToDelete) {
@@ -477,14 +599,20 @@ angular.module('wegas.models.sessions', [])
                 setSessionStatus(sessionToDelete.id, "DELETE").then(function(data) {
                     if (data) {
                         uncacheSession("BIN", sessionToDelete);
-                        deferred.resolve(Responses.success("Session suppressed", sessionToDelete));
+                        $translate('COMMONS-SESSIONS-SUPPRESSION-SUCCESS').then(function (message) {
+                            deferred.resolve(Responses.success(message, sessionToDelete));
+                        });
                     } else {
-                        deferred.resolve(Responses.danger("Error during session suppression", false));
+                        $translate('COMMONS-SESSIONS-SUPPRESSION-ERROR').then(function (message) {
+                            deferred.resolve(Responses.danger(message, false));
+                        });
                     }
                 });
             } else {
-                deferred.resolve(Responses.danger("This is not a session", false));
+                $translate('COMMONS-SESSIONS-WRONG-OBJECT-ERROR').then(function (message) {
+                    deferred.resolve(Responses.danger(message, false));
+                });
             }
             return deferred.promise;
-        }
+        };
     });

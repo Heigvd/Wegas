@@ -62,7 +62,7 @@ YUI().use(function(Y) {
              * Persistence
              */
             "wegas-datasource": {
-                requires: ["datasource-io", "json", "widget"]
+                requires: ["datasource-io", "json", "widget", "gzip"]
             },
             "wegas-scripteval": {
                 path: "js/persistence/wegas-scripteval-min.js",
@@ -690,7 +690,7 @@ YUI().use(function(Y) {
             },
             "wegas-statistics": {
                 path: "js/widget/wegas-statistics-min.js",
-                requires: ["promise", "chart-js"],
+                requires: ["promise", "chartist"],
                 ws_provides: "Statistics"
             }
         }
@@ -838,6 +838,9 @@ YUI().use(function(Y) {
             gauge: {
                 path: "gauge-min.js"
             },
+            gzip: {
+                path: "zlib_and_gzip.min.js"
+            },
             diff_match_patch: {
                 path: "diffmatchpatch/diff_match_patch.js"
             }
@@ -883,9 +886,16 @@ YUI().use(function(Y) {
                 type: CSS,
                 fullpath: "//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"
             },
-            "chart-js":{
-                async:false,
+            "chart-js": {
+                async: false,
                 fullpath: "//cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"
+            },
+            "chartist": {
+                fullpath: "//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js",
+                requires: ["chartistcss"]
+            },
+            chartistcss: {
+                fullpath: "//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css"
             }
         }
     };

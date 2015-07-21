@@ -1,7 +1,8 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <!doctype html>
 <html class="no-js" ng-app="Wegas">
     <head>
-        <meta charset="utf-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <title>Wegas - Web game authoring system</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width">

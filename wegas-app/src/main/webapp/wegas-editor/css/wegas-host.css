@@ -17,6 +17,7 @@
     background: #f1f1f1;
     padding:24px 28px 8px 28px;
 }
+
 .wegas-hastoolbar>.wegas-toolbar .yui3-button {
     display: block;
     position: relative;
@@ -26,6 +27,7 @@
     padding: 0;
     text-align: left;
 }
+
 .wegas-hastoolbar>.wegas-toolbar .yui3-button {
     display: block;
     position: relative;
@@ -40,6 +42,7 @@
     background:none;
     color:#666666;
 }
+
 .wegas-hastoolbar>.wegas-toolbar .yui3-button:focus{
     background:none;
     box-shadow:none;
@@ -591,6 +594,126 @@
     display:block;
 }
 
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-status-bar{
+    display:block;
+    position:absolute;
+    visibility:visible;
+    opacity:1;
+    top:0px;
+    left:0px;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0, 0.6);
+    color:white;
+    transition:.2s;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-status-bar.wegas-status-bar-hidden{
+    visibility:hidden;
+    opacity:0;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-status-bar .results{
+    display:none;
+}
+
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-status-bar .status{
+    display:block;
+    position:absolute;
+    opacity:1;
+    visibility:visible;
+    top:50%;
+    left:50%;
+    width:120px;
+    height:120px;
+    box-sizing:border-box;
+    margin:-60px 0 0 -60px;
+}
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-status-bar.wegas-status-bar-hidden .status{
+    opacity:0;
+    visibility:hidden;
+}
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-status-bar.wegas-status-bar-transition .status{
+    opacity:0;
+    visibility:hidden;
+    transition:.2s;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-status-bar .status.status--running{
+    -webkit-animation: rotation .6s infinite linear;
+    -moz-animation: rotation .6s infinite linear;
+    -o-animation: rotation .6s infinite linear;
+    animation: rotation .6s infinite linear;
+    border-left: 6px solid rgba(0, 174, 239, .15);
+    border-right: 6px solid rgba(0, 174, 239, .15);
+    border-bottom: 6px solid rgba(0, 174, 239, .15);
+    border-top: 6px solid rgba(0, 174, 239, .8);
+    border-radius: 50%;
+    width:60px;
+    height:60px;
+    box-sizing:border-box;
+    margin:-30px 0 0 -30px;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-status-bar .status.status--success:before{
+    content:"\f00c";
+    font-family:"FontAwesome";
+    top:0px;
+    left:0px;
+    position:absolute;
+    display:block;
+    width:88px;
+    height:88px;
+    margin:16px;
+    font-size:32px;
+    line-height:88px;
+    background:#4caf50;
+    color:white;
+    overflow:hidden;
+    border-radius: 50%;
+    -webkit-animation: success .3s ease;
+    -webkit-animation-fill-mode:forwards;
+    -moz-animation: success .3s ease;
+    -moz-animation-fill-mode:forwards;
+    -o-animation: success .3s ease;
+    -o-animation-fill-mode:forwards;
+    animation: success .3s ease;
+    animation-fill-mode:forwards;
+}
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-status-bar .status.status--error{
+    padding-top:100px;
+    width:140px;
+    -webkit-animation: error .3s ease;
+    -webkit-animation-fill-mode:forwards;
+    -moz-animation: error .3s ease;
+    -moz-animation-fill-mode:forwards;
+    -o-animation: error .3s ease;
+    -o-animation-fill-mode:forwards;
+    animation: error .3s ease;
+    animation-fill-mode:forwards;
+}
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-status-bar .status.status--error:before{
+    content:"\f12a";
+    font-family:"FontAwesome";
+    top:0px;
+    left:0px;
+    position:absolute;
+    display:block;
+    width:64px;
+    height:64px;
+    margin:28px 38px 8px 38px;
+    font-size:32px;
+    line-height:64px;
+    background:#e51c23;
+    color:white;
+    overflow:hidden;
+    border-radius: 50%;
+}
+
+
+
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft span:first-child, .wegas-sendmail-content .status{
     display:block;
     position:absolute;
@@ -650,5 +773,158 @@
     
     .yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-panel-content .yui3-widget-bd{
         height:calc(100% - 130px);
+    }
+}
+
+@-webkit-keyframes rotation {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(359deg);
+  }
+}
+
+@-moz-keyframes rotation {
+  from {
+    -moz-transform: rotate(0deg);
+  }
+  to {
+    -moz-transform: rotate(359deg);
+  }
+}
+
+@-o-keyframes rotation {
+  from {
+    -o-transform: rotate(0deg);
+  }
+  to {
+    -o-transform: rotate(359deg);
+  }
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+}
+
+@-webkit-keyframes success {
+    from {
+        opacity:0;
+        width:8px;
+        height:8px;
+        margin:56px;
+        line-height:8px;
+        font-size:4px;
+        visibility:hidden;
+        -webkit-transform:rotate(-45deg);
+    }
+    to{
+        -webkit-transform:rotate(10deg);
+        opacity:1;
+        visibility:visible;
+    }
+}
+
+@-moz-keyframes success {
+    from {
+        opacity:0;
+        width:8px;
+        height:8px;
+        margin:56px;
+        line-height:8px;
+        font-size:4px;
+        visibility:hidden;
+        -moz-transform:rotate(-45deg);
+    }
+    to{
+        -moz-transform:rotate(10deg);
+        opacity:1;
+        visibility:visible;
+    }
+}
+
+@-o-keyframes success {
+    from {
+        opacity:0;
+        width:8px;
+        height:8px;
+        margin:56px;
+        line-height:8px;
+        font-size:4px;
+        visibility:hidden;
+        -o-transform:rotate(-45deg);
+    }
+    to{
+        -o-transform:rotate(10deg);
+        opacity:1;
+        visibility:visible;
+    }
+}
+
+@keyframes success {
+    from {
+        opacity:0;
+        width:8px;
+        height:8px;
+        margin:56px;
+        line-height:8px;
+        font-size:4px;
+        visibility:hidden;
+        transform:rotate(-45deg);
+    }
+    to{
+        transform:rotate(10deg);
+        opacity:1;
+        visibility:visible;
+    }
+}
+
+
+@-webkit-keyframes error {
+    from {
+        opacity:0;
+        visibility:hidden;
+    }
+    to{
+        opacity:1;
+        visibility: visible;
+    }
+}
+
+@-moz-keyframes error {
+    from {
+        opacity:0;
+        visibility:hidden;
+    }
+    to{
+        opacity:1;
+        visibility: visible;
+    }
+}
+
+@-o-keyframes error {
+    from {
+        opacity:0;
+        visibility:hidden;
+    }
+    to{
+        opacity:1;
+        visibility: visible;
+    }
+}
+
+@keyframes error {
+    from {
+        opacity:0;
+        visibility:hidden;
+    }
+    to{
+        opacity:1;
+        visibility: visible;
     }
 }

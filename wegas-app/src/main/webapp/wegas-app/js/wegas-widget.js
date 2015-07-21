@@ -61,8 +61,8 @@ YUI.add("wegas-widget", function(Y) {
          * @private
          * @description show an loading - overlay on all the screen.
          */
-        showOverlay: function() {
-            this.fire("wegas:showOverlay");
+        showOverlay: function(klass) {
+            this.fire("wegas:showOverlay", klass);
             this.overlayCounter += 1;
             return this;
         },
@@ -71,8 +71,8 @@ YUI.add("wegas-widget", function(Y) {
          * @private
          * @description hide overlay (see function showOverlay).
          */
-        hideOverlay: function() {
-            this.fire("wegas:hideOverlay");
+        hideOverlay: function(klass) {
+            this.fire("wegas:hideOverlay", klass);
             this.overlayCounter -= 1;
             return this;
         },
