@@ -31,6 +31,7 @@ import javax.ejb.Stateless;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.MissingResourceException;
@@ -126,22 +127,23 @@ public class WebsocketFacade {
     /**
      * fire and forget pusher events
      *
-     * @param events Event to send
+     * @param variableInstances instances to propagate
      */
     @Asynchronous
-    public void onRequestCommit(final EntityUpdatedEvent events) throws NoPlayerException {
-        this.onRequestCommit(events, null);
+    public void onRequestCommit(final List<VariableInstance> variableInstances) throws NoPlayerException {
+        this.onRequestCommit(variableInstances, null);
     }
 
     /**
      * fire and forget pusher events
      *
-     * @param events   Event to send
+     * @param variableInstances variable instance to propagate
      * @param socketId Client's socket id. Prevent that specific client to
      *                 receive this particular message
+     * @throws com.wegas.core.exception.internal.NoPlayerException
      */
     @Asynchronous
-    public void onRequestCommit(final EntityUpdatedEvent events, final String socketId) throws NoPlayerException {
+    public void onRequestCommit(final List<VariableInstance> variableInstances, final String socketId) throws NoPlayerException {
         if (this.pusher == null) {
             return;
         }
@@ -154,8 +156,8 @@ public class WebsocketFacade {
 //        if (!gameModel.getProperties().getWebsocket().equals("")) {
 //            return;
 //        }
-        for (int i = 0; i < events.getUpdatedEntities().size(); i++) {
-            v = events.getUpdatedEntities().get(i);
+        for (int i = 0; i < variableInstances.size(); i++) {
+            v = variableInstances.get(i);
             logger.error("Entity: " + v);
             if (v.getScope() instanceof GameModelScope /*
                      * ||
