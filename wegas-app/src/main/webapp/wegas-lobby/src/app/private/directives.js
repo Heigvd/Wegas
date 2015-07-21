@@ -8,13 +8,32 @@ angular.module('private.directives', [])
                 scope.languages = WegasTranslations.languages;
                     
                 Auth.getAuthenticatedUser().then(function(user) {
+                    console.log($state);
                     scope.user = user;
                     scope.changeLanguage = function(key){
+                        var type = "";
                         config.commons.language = key;
                         config.users[scope.user.email].language = key;
                         scope.currentLanguage = key;
                         $translate.use(key);
                         localStorage.setObject("wegas-config", config);
+                        switch ($state.current.name){
+                            case "wegas.private.scenarist":
+                                type = "SCENARIST";
+                                break;
+                            case "wegas.private.trainer":
+                                type = "TRAINER";
+                                break;
+                            case "wegas.private.player":
+                                type = "PLAYER";
+                                break;
+                            case "wegas.private.admin":
+                            case "wegas.private.admin.users":
+                            case "wegas.private.admin.groups":
+                                type = "ADMIN";
+                                break;          
+                        };
+                        $rootScope.translationWorkspace = {workspace: WegasTranslations.workspaces[type][$translate.use()]};
                     };
                 });
 
@@ -76,8 +95,10 @@ angular.module('private.directives', [])
                     }
                     return;
                 });
+                $('.action--language').unbind("click");
                 $(element).ready(function(){
                     $(".action--language").on("click", ".button--language", function(e){
+                        console.log("Bonjour language");
                         e.stopPropagation();
                         e.preventDefault();
                         $(".action--language .subactions").toggleClass("subactions--show");
