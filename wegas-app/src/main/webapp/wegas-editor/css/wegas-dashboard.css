@@ -817,6 +817,7 @@
     transition:.3s;
     box-sizing:border-box;
 }
+.wegas-form div.inputEx-StringField-wrapper input[type="text"].selected,
 .wegas-form div.inputEx-StringField-wrapper input[type="text"]:focus{
     background:white;
 }

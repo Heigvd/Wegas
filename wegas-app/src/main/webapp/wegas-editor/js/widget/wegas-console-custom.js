@@ -131,6 +131,17 @@ YUI.add('wegas-console-custom', function(Y) {
                             e.currentTarget.remove();
                         }
                     }, ".content-advanced-script-add", this);
+                    this.get(CONTENTBOX).delegate("keyup", function(e){
+                        if(this.get("value").length > 0){
+                            if(!this.hasClass("selected")){
+                                this.addClass("selected"); 
+                            }
+                        }else{
+                            if(this.hasClass("selected")){
+                                this.removeClass("selected"); 
+                            }
+                        }
+                    }, "input[type='text']");
                 }, 
                 viewSrc: function() {
                     this.srcField.viewSrc.fire("click");
