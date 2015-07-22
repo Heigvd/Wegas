@@ -38,7 +38,6 @@ var PMGSimulation = (function() {
         var i, activeTasks = getActiveTasks(), iterations = getIterations(), iteration;
         AUTOMATED_RESERVATION = PMGHelper.automatedReservation();
         debug("runSimulation(current period number: " + CURRENT_PERIOD_NUMBER + ")");
-        printMessage("runSimulation(current period number: " + CURRENT_PERIOD_NUMBER + ")");
 
         // Init tables
         resourceTable = {};
@@ -51,12 +50,11 @@ var PMGSimulation = (function() {
             };
         }
 
-        printMessage("Fill iterationTable");
         // Init Iteration Status Table
         for (i = 0; i < iterations.length; i += 1) {
-            printMessage("IT : " + i);
             iteration = iterations[i];
             iterationTable[iteration.id] = PMGHelper.getIterationStatus(iteration);
+            iterationTable[iteration.id].spent = 0;
         }
 
         // Calculus
@@ -79,7 +77,6 @@ var PMGSimulation = (function() {
 
         if (replannedWL.isEmpty() === 0) {
             printMessage("EMPTY ITERATION");
-
         }
 
         for (k in replannedWL) {
@@ -116,19 +113,19 @@ var PMGSimulation = (function() {
 
     function updateIterations() {
         var i, iterations = getIterations(), iteration, finalStatus,
-            pwls, rpwls, k, workloads;
+            pwls, rpwls, k, workloads, spent;
         for (i = 0; i < iterations.length; i += 1) {
             iteration = iterations[i];
             finalStatus = PMGHelper.getIterationStatus(iteration);
             iterationTable[iteration.id].final = finalStatus;
+            spent = iterationTable[iteration.id].spent;
             if (finalStatus.status === "NOT_STARTED") {
                 // CASE I NOT_STARTED
             } else if (finalStatus.status === "STARTED") {
                 if (iterationTable[iteration.id].status === "NOT_STARTED") {
                     // CASE II JUST STARTED
-                    printMessage("I) JUST STARTED");
                     iteration.setTotalWorkload(iterationTable[iteration.id].remainingWorkload);
-                    iteration.addWorkload(CURRENT_PERIOD_NUMBER, iteration.getTotalWorkload());
+                    iteration.addWorkload(CURRENT_PERIOD_NUMBER, iteration.getTotalWorkload(), 0);
                     rpwls = iteration.getReplannedWorkloads();
                     pwls = iteration.getPlannedWorkloads();
 
@@ -141,13 +138,13 @@ var PMGSimulation = (function() {
                     // CASE III
                     workloads = Java.from(iteration.getWorkloads());
                     // Detect if iteration workload has changed due to player actions (impact on requirements, etc)
-                    if (iterationTable[iteration.id].remainingWorkload !== workloads[workloads.length - 1].getWorkload()) {
-                        iteration.addWorkload(CURRENT_PERIOD_NUMBER, iterationTable[iteration.id].remainingWorkload);
+                    if (Math.abs(iterationTable[iteration.id].remainingWorkload - workloads[workloads.length - 1].getWorkload()) > 0.00001) {
+                        iteration.addWorkload(CURRENT_PERIOD_NUMBER, iterationTable[iteration.id].remainingWorkload, 0);
                     }
                 }
 
                 // CASE II, III
-                iteration.addWorkload(CURRENT_PERIOD_NUMBER + 1, iterationTable[iteration.id].final.remainingWorkload);
+                iteration.addWorkload(CURRENT_PERIOD_NUMBER + 1, iterationTable[iteration.id].final.remainingWorkload, spent);
 
                 updateIterationPlanning(iteration);
             } else if (finalStatus.status === "COMPLETED") {
@@ -155,17 +152,17 @@ var PMGSimulation = (function() {
                     if (iterationTable[iteration.id].status === "NOT_STARTED") {
                         // CASE (II + IV) in one time
                         iteration.setTotalWorkload(iterationTable[iteration.id].remainingWorkload);
-                        iteration.addWorkload(CURRENT_PERIOD_NUMBER, iterationTable[iteration.id].remainingWorkload);
+                        iteration.addWorkload(CURRENT_PERIOD_NUMBER, iterationTable[iteration.id].remainingWorkload, 0);
                     } else {
                         // CASE IV: JUST COMPLETED
                         workloads = Java.from(iteration.getWorkloads());
                         // Detect if iteration workload has changed due to player actions (impact on requirements, etc)
                         if (iterationTable[iteration.id].remainingWorkload !== workloads[workloads.length - 1].getWorkload()) {
-                            iteration.addWorkload(CURRENT_PERIOD_NUMBER, iterationTable[iteration.id].remainingWorkload);
+                            iteration.addWorkload(CURRENT_PERIOD_NUMBER, iterationTable[iteration.id].remainingWorkload, 0);
                         }
                     }
 
-                    iteration.addWorkload(CURRENT_PERIOD_NUMBER + 1, iterationTable[iteration.id].final.remainingWorkload);
+                    iteration.addWorkload(CURRENT_PERIOD_NUMBER + 1, iterationTable[iteration.id].final.remainingWorkload, spent);
                     updateIterationPlanning(iteration);
                 }
                 // CASE V: COMPLETED
@@ -839,7 +836,8 @@ var PMGSimulation = (function() {
             sameNeedActivities = getActivitiesFromRequirement(allActivities, requirement),
             effectiveTotalOfEmployees = sameNeedActivities.length,
             totalOfEmployees = sumRequierementsQuantities(taskInst.requirements),
-            grade;
+            grade,
+            iteration;
 
         debug("baseAdvance : " + stepAdvance + ", #sameNeedActivities: " + effectiveTotalOfEmployees);
         // Iterate through resources to sum various factor components
@@ -927,14 +925,20 @@ var PMGSimulation = (function() {
                 + skillFactor * (averageSkillsetQuality - requirement.level); //skillset (level) quality
         }
 
-// Compute new quality 
+        // Compute new quality 
         if (requirement.completeness + stepAdvance > 0) {
             stepQuality = (stepQuality / 2) * 100; //step Quality
             requirement.quality = (requirement.quality * requirement.completeness + stepQuality * stepAdvance) / (requirement.completeness + stepAdvance);
             debug("StepQuality: " + requirement.quality + ", sumSkillsetXActivityRate: " + sumSkillsetXActivityRate + ", sumMotivationXActivityRate: " + sumMotivationXActivityRate);
         }
 
-//set Wage (add 1/steps of the need's wage at task);
+        // sum spent workload
+        iteration = PMGHelper.getIterationFromTask(taskDesc, Variable.find(gameModel, "burndown").getInstance(self));
+        if (iteration && iterationTable[iteration.id]) {
+            iterationTable[iteration.id].spent += sumActivityRate / (100 * STEPS);
+        }
+
+        //set Wage (add 1/steps of the need's wage at task);
         var oWages = taskInst.getPropertyD("wages"),
             wages = Y.Array.sum(sameNeedActivities, function(a) {
                 return getResourceStepWages(a.resourceInstance);

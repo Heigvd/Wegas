@@ -278,6 +278,16 @@ var PMGHelper = (function() {
      * @returns {Boolean}
      */
     function isTaskInBurndown(taskDescriptor, burndownInstance) {
+        return getIterationFromTask(taskDescriptor, burndownInstance) !== null;
+    }
+
+    /**
+     * 
+     * @param {type} taskDescriptor
+     * @param {type} burndownInstance
+     * @returns {Iteration} the iteration or null
+     */
+    function getIterationFromTask(taskDescriptor, burndownInstance) {
         var iterations,
             i, it;
         iterations = burndownInstance.getIterations();
@@ -285,10 +295,10 @@ var PMGHelper = (function() {
         for (i in iterations) {
             it = iterations[i];
             if (it.getTasks().contains(taskDescriptor)) {
-                return true;
+                return it;
             }
         }
-        return false;
+        return null;
     }
 
     /**
@@ -526,6 +536,9 @@ var PMGHelper = (function() {
         },
         removeIteration: function(iterationId) {
             return removeIteration(iterationId);
+        },
+        getIterationFromTask: function(taskDescriptor, burndownInstance) {
+            return getIterationFromTask(taskDescriptor, burndownInstance);
         },
         isTaskInBurndown: function(taskDescriptor, burndownInstance) {
             return isTaskInBurndown(taskDescriptor, burndownInstance);
