@@ -908,10 +908,20 @@
     width:calc(100% - 112px);
 }
 
+.yui3-skin-sam .wegas-form .wegas-sendmail-content .mce-panel iframe{
+    height:160px !important;
+}
+
+.yui3-skin-sam .wegas-form .modal--content-basics .mce-panel iframe{
+    height:120px !important; 
+}
+
 .yui3-skin-sam div.inputEx-RadioField-choice{
-    width:100%;
+    width:auto;
     height:16px;
     overflow:hidden;
+    float: left !important;
+    padding-top: 0.8em !important;
 }
 .yui3-skin-sam div.inputEx-RadioField-choice input{
     display:block;
