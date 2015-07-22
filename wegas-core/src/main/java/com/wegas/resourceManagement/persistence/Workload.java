@@ -46,9 +46,15 @@ public class Workload extends AbstractEntity implements Serializable {
     private Long periodNumber;
 
     /**
-     * workload
+     * workload to do before doing the period 
      */
     private Double workload;
+
+    /**
+     * effective workload spent during the last period
+     */
+    private Double spentWorkload;
+    
 
     public Long getPeriodNumber() {
         return periodNumber;
@@ -64,6 +70,14 @@ public class Workload extends AbstractEntity implements Serializable {
 
     public void setWorkload(Double workload) {
         this.workload = workload;
+    }
+
+    public Double getSpentWorkload() {
+        return spentWorkload;
+    }
+
+    public void setSpentWorkload(Double spentWorkload) {
+        this.spentWorkload = spentWorkload;
     }
 
     public Iteration getIteration() {
@@ -84,5 +98,6 @@ public class Workload extends AbstractEntity implements Serializable {
         Workload o = (Workload) other;
         this.setPeriodNumber(o.getPeriodNumber());
         this.setWorkload(o.getWorkload());
+        this.setSpentWorkload(o.getSpentWorkload());
     }
 }

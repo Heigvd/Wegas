@@ -195,10 +195,11 @@ public class Iteration extends AbstractEntity {
         this.workloads = workloads;
     }
 
-    public void addWorkload(Long periodNumber, Double workload) {
+    public void addWorkload(Long periodNumber, Double workload, Double spent) {
         Workload newWorkload = new Workload();
         newWorkload.setPeriodNumber(periodNumber);
         newWorkload.setWorkload(workload);
+        newWorkload.setSpentWorkload(spent);
         newWorkload.setIteration(this);
         this.workloads.add(newWorkload);
     }
