@@ -6,6 +6,7 @@
  * Licensed under the MIT License
  */
 html{
+    min-height:100px;
     height:100%;
 }
 
