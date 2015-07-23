@@ -5,4 +5,9 @@
             <column name="spentworkload" type="FLOAT8(17)"/>
         </addColumn>
     </changeSet>
+    <changeSet author="maxence" id="1437649651">
+        <addColumn tableName="workload">
+            <column name="lastworkedstep" type="int4"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

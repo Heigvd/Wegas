@@ -196,10 +196,15 @@ public class Iteration extends AbstractEntity {
     }
 
     public void addWorkload(Long periodNumber, Double workload, Double spent) {
+        this.addWorkload(periodNumber, workload, spent, 10);
+    }
+
+    public void addWorkload(Long periodNumber, Double workload, Double spent, Integer lastWorkedStep) {
         Workload newWorkload = new Workload();
         newWorkload.setPeriodNumber(periodNumber);
         newWorkload.setWorkload(workload);
         newWorkload.setSpentWorkload(spent);
+        newWorkload.setLastWorkedStep(lastWorkedStep);
         newWorkload.setIteration(this);
         this.workloads.add(newWorkload);
     }
@@ -256,12 +261,20 @@ public class Iteration extends AbstractEntity {
         // NOPE 
     }
 
+    private void internalPlan(Long periodNumber, Double workload, Map<Long, Double> planning) {
+        if (workload > 0) {
+            planning.put(periodNumber, workload);
+        } else {
+            planning.remove(periodNumber);
+        }
+    }
+
     public void plan(Long periodNumber, Double workload) {
-        this.getPlannedWorkloads().put(periodNumber, workload);
+        internalPlan(periodNumber, workload, this.getPlannedWorkloads());
     }
 
     public void replan(Long periodNumber, Double workload) {
-        this.getReplannedWorkloads().put(periodNumber, workload);
+        internalPlan(periodNumber, workload, this.getReplannedWorkloads());
     }
 
     /**
