@@ -183,7 +183,7 @@ font {
 }
 
 .wegas-loading.maintenance .wegas-loading-overlay:after {
-    content: "Temporarly Down For Maintenance. Please Wait";
+    content: "Temporarily Down For Maintenance. Please Wait";
     opacity: 1;
     margin-left : -11em;
     color: rgb(176, 16, 16);

@@ -255,11 +255,11 @@ YUI.add('wegas-dashboard', function(Y) {
                     i, header, statusNode = Y.Node.create("<span></span>");
                 if (team && team.get("players").length) {
                     if(!Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties.freeForAll")){
-                        header = "<span class='wegas-modal-title wegas-modal-title-group'>Send E-Mail to players of team \"" + team.get("name") + "\"</span>";
+                        header = "<span class='wegas-modal-title wegas-modal-title-group'>Send real E-Mail to players of team \"" + team.get("name") + "\"</span>";
                     }else{
-                        header = "<span class='wegas-modal-title wegas-modal-title-player'>Send E-Mail to player \"" + team.get("players")[0].get("name") + "\"</span>";
+                        header = "<span class='wegas-modal-title wegas-modal-title-player'>Send real E-Mail to player \"" + team.get("players")[0].get("name") + "\"</span>";
                     }
-                    new Y.Wegas.Panel({
+                    var modalEmail = new Y.Wegas.Panel({
                         cssClass: "wegas-form-panel",
                         modal: true,
                         children: [{
@@ -299,7 +299,19 @@ YUI.add('wegas-dashboard', function(Y) {
                                 this.exit();
                             }
                         }
-                    }).render().get("boundingBox").addClass("dashboard-mail-panel").addClass("dashboard-panel");
+                    }).render().get("boundingBox");
+                    modalEmail.addClass("dashboard-mail-panel").addClass("dashboard-panel");
+                    modalEmail.delegate("keyup", function(e){
+                        if(this.get("value").length > 0){
+                            if(!this.hasClass("selected")){
+                                this.addClass("selected"); 
+                            }
+                        }else{
+                            if(this.hasClass("selected")){
+                                this.removeClass("selected"); 
+                            }
+                        }
+                    }, "input[type='text']");
                 } else {
                     this.showMessage("info", "Could not find a player");
                 }

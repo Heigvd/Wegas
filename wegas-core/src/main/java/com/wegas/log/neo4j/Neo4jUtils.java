@@ -107,7 +107,7 @@ public class Neo4jUtils {
             String err = "";
             while (ite1.hasNext()) {
                 JsonNode jn1 = ite1.next();
-                err += ", " + jn1.asText();
+                err += ", " + jn1.path("message").asText();
             }
             if ("".equals(err)) return null;
             return err.substring(2);
