@@ -1,5 +1,5 @@
 angular.module('private.directives', [])
-    .directive('privateSidebar', function($state, $rootScope, $translate, WegasTranslations, Auth) {
+    .directive('privateSidebar', function($state, $rootScope, $translate, $timeout, WegasTranslations, Auth) {
         return {
             templateUrl: 'app/private/directives.tmpl/sidebar.html',
             link: function(scope, element, attrs) {
@@ -10,11 +10,29 @@ angular.module('private.directives', [])
                 Auth.getAuthenticatedUser().then(function(user) {
                     scope.user = user;
                     scope.changeLanguage = function(key){
+                        var type = "";
                         config.commons.language = key;
                         config.users[scope.user.email].language = key;
                         scope.currentLanguage = key;
                         $translate.use(key);
                         localStorage.setObject("wegas-config", config);
+                        switch ($state.current.name){
+                            case "wegas.private.scenarist":
+                                type = "SCENARIST";
+                                break;
+                            case "wegas.private.trainer":
+                                type = "TRAINER";
+                                break;
+                            case "wegas.private.player":
+                                type = "PLAYER";
+                                break;
+                            case "wegas.private.admin":
+                            case "wegas.private.admin.users":
+                            case "wegas.private.admin.groups":
+                                type = "ADMIN";
+                                break;          
+                        };
+                        $rootScope.translationWorkspace = {workspace: WegasTranslations.workspaces[type][$translate.use()]};
                     };
                 });
 
@@ -32,6 +50,26 @@ angular.module('private.directives', [])
 
                 scope.editProfile = function() {
                     // Decide which controller to display in background
+                    switch($state.current.name){
+                        case "wegas.private.scenarist":
+                            profileState = "wegas.private.profile.scenarist";
+                            break;
+                        case "wegas.private.trainer":
+                            profileState = "wegas.private.profile.trainer";
+                            break;
+                        case "wegas.private.player":
+                            profileState = "wegas.private.profile.player";
+                            break;
+                        case "wegas.private.admin":
+                            profileState = "wegas.private.profile.admin";
+                            break;
+                        case "wegas.private.admin.users":
+                            profileState = "wegas.private.profile.admin.users";
+                            break;
+                        default:
+                            profileState = "wegas.private.profile";
+                         
+                    };
                     if ($state.current.name == "wegas.private.scenarist") {
                         profileState = "wegas.private.profile.scenarist";
                     } else if ($state.current.name == "wegas.private.trainer") {
@@ -76,14 +114,14 @@ angular.module('private.directives', [])
                     }
                     return;
                 });
-                $(element).ready(function(){
+                $timeout(function(){
+                    $('.action--language').unbind("click");
                     $(".action--language").on("click", ".button--language", function(e){
                         e.stopPropagation();
                         e.preventDefault();
                         $(".action--language .subactions").toggleClass("subactions--show");
                     });
                 });
-               
             }
         };
     });
