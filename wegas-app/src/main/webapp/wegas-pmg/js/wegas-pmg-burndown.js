@@ -34,8 +34,6 @@ YUI.add("wegas-pmg-burndown", function(Y) {
             "<input class=\"begin-at-input\" />" +
             "</div>" +
             "</div>" +
-            "<div class=\"minp\"></div>" +
-            "<div class=\"maxp\"></div>" +
             "</div>" +
             "<div class=\"iteration-chart\">" +
             "<div class=\"chart ct-chart\"></div>" +
@@ -71,11 +69,16 @@ YUI.add("wegas-pmg-burndown", function(Y) {
                 iterations = this.getBurndown().get("iterations"),
                 targetId = this.get("iterationId");
             for (i in iterations) {
-                if (iterations[i].get("id") === targetId) {
-                    return iterations[i];
+                if (iterations.hasOwnProperty(i)) {
+                    if (iterations[i].get("id") === targetId) {
+                        return iterations[i];
+                    }
                 }
             }
             return null;
+        },
+        getInterpolatedPeriodNumber: function(x1, y1, y2) {
+            return x1 + -y1 / (y2 - y1);
         },
         syncUI: function() {
             var CB = this.get(CONTENTBOX),
@@ -98,38 +101,28 @@ YUI.add("wegas-pmg-burndown", function(Y) {
                 replanningSerie = [],
                 tasks = iteration.getTaskDescriptors(),
                 taskD, i, node, wl,
-                data, options;
+                x,
+                projectedWorkload, parentBB;
 
-            data = {
-                series: []
-            };
-
-            options = {
-                width: 0,
-                height: 200,
-                low: 0,
-                lineSmooth: Chartist.Interpolation.none(),
-                showArea: true,
-                axisX: {
-                    type: Chartist.AutoScaleAxis,
-                    onlyInteger: true
-                },
-                axisY: {
-                    low: 0,
-                    type: Chartist.AutoScaleAxis,
-                    onlyInteger: true
-                }
-            };
-
+            parentBB = this.get("parent").get("boundingBox");
             if (status === "NOT_STARTED") {
-                CB.addClass("iteration-not-started");
+                parentBB.addClass("iteration-not-started");
+                if (!CB.one(".iteration-config .rm-iteration")) {
+                    CB.one(".iteration-config").append("<i class=\"rm-iteration fa fa-minus-square-o fa-3x\"></i>");
+                }
             } else if (status === "STARTED") {
-                CB.removeClass("iteration-not-started");
-                CB.addClass("iteration-started");
+                if (CB.one(".iteration-config .rm-iteration")) {
+                    CB.one(".iteration-config .rm-iteration").remove();
+                }
+                parentBB.removeClass("iteration-not-started");
+                parentBB.addClass("iteration-started");
             } else {
-                CB.removeClass("iteration-not-started");
-                CB.removeClass("iteration-started");
-                CB.addClass("iteration-completed");
+                if (CB.one(".iteration-config .rm-iteration")) {
+                    CB.one(".iteration-config .rm-iteration").remove();
+                }
+                parentBB.removeClass("iteration-not-started");
+                parentBB.removeClass("iteration-started");
+                parentBB.addClass("iteration-completed");
             }
 
             node = CB.one(".iteration-tasks-list");
@@ -142,16 +135,6 @@ YUI.add("wegas-pmg-burndown", function(Y) {
                     "</em>");
             }
 
-            // edit beginAt only available when iteration has not started yet
-            if (status === "NOT_STARTED") {
-                CB.one(".begin-at-label").setContent("Begin at period: ");
-                CB.one(".begin-at-input").set("value", iteration.get("beginAt"));
-                CB.one(".iteration-tasks-toolbar").setContent("<span class=\"add\"></span>");
-            } else {
-                CB.one(".begin-at-label").setContent("Began at period: ");
-                this.get(CONTENTBOX).one(".begin-at-input-container").setContent('<p>' +
-                    iteration.get("beginAt") + '</p>');
-            }
             CB.one(".iteration-tasks-toolbar").set("content", "<div class=\"tasks\"></div>");
 
             minPeriod = Math.min(Math.min.apply(null, iteration.get("workloads").map(function(e) {
@@ -166,6 +149,17 @@ YUI.add("wegas-pmg-burndown", function(Y) {
                 this.getMaxKey(replanning),
                 iteration.get("beginAt") + this.getMaxKey(planning)) + 1;
 
+            // edit beginAt only available when iteration has not started yet
+            if (status === "NOT_STARTED") {
+                CB.one(".begin-at-label").setContent("Will begin at period: ");
+                CB.one(".begin-at-input").set("value", iteration.get("beginAt"));
+                CB.one(".iteration-tasks-toolbar").setContent("<span class=\"add\"></span>");
+            } else {
+                CB.one(".begin-at-label").setContent("Began at period: ");
+                this.get(CONTENTBOX).one(".begin-at-input-container").setContent('<p>' +
+                    minPeriod + '</p>');
+            }
+
             totalWorkload = iteration.getTotalWorkload();
 
             if (status === "STARTED") {
@@ -178,40 +172,57 @@ YUI.add("wegas-pmg-burndown", function(Y) {
             node = CB.one(".planning-initial");
             node.setContent("");
 
+            /*
+             * Compute initial planning serie
+             */
+            projectedWorkload = totalWorkload;
             for (period = minPeriod; period <= maxPeriod; period += 1) {
+                if (projectedWorkload < 0) {
+
+                    x = this.getInterpolatedPeriodNumber(period - 1,
+                        planningSerie[planningSerie.length - 1].y, projectedWorkload);
+                    projectedWorkload = 0;
+
+                } else {
+                    x = period;
+                }
                 planningSerie.push({
-                    x: period,
-                    y: totalWorkload
+                    x: x,
+                    y: projectedWorkload
                 });
 
                 if (period >= iteration.get("beginAt")) {
                     wl = planning[period - iteration.get("beginAt")] || 0;
-                    Y.log("Consume: " + wl);
-
                     wl.toFixed(2);
 
-
-                    if (status === "NOT_STARTED" && totalWorkload > 0) {
+                    if (status === "NOT_STARTED" && projectedWorkload > 0) {
+                        // If there is something in the iteration and it still is editable 
+                        // Add an input
                         node.append("<input class=\"planning planning-p" + period + "\" period=\"" + period + "\" value=\"" + wl + " \"/>");
                         //this.handlers.push(input.on("change", this.plan, this));
                     } else {
+                        // Otherwise, just add a span
                         if (period < maxPeriod) {
                             node.append("<span class=\"planning\">" + wl + "</span>");
                         }
                     }
-                    //totalWorkload -= wl;
-                    totalWorkload = totalWorkload - wl;
+                    //projectedWorkload -= wl;
+                    projectedWorkload = projectedWorkload - wl;
                 } else {
+                    // period < beginAt means iteration has started earlied than projected
+                    // 0 workload 
                     node.append("<span class=\"planning\">0</span>");
                 }
 
             }
-            // Add a period to shwo there is no more progress
-            if (totalWorkload > 0) {
+
+            // If the planning is not complete (i.e. projectedWorkload > 0)
+            // Add a period to show there is no more progress
+            if (projectedWorkload > 0) {
                 maxPeriod += 1;
                 planningSerie.push({
                     x: maxPeriod,
-                    y: totalWorkload
+                    y: projectedWorkload
                 });
             }
 
@@ -225,20 +236,21 @@ YUI.add("wegas-pmg-burndown", function(Y) {
                 });
                 for (i = 0; i < workloads.length; i += 1) {
                     remainingWorkload = workloads[i].get("val.workload");
-                    wl = remainingWorkload.toFixed(2);
-                    node.append("<span class=\"workload\">" + wl + "</span>");
                     period = workloads[i].get("val.periodNumber");
-                    retroPlanning[period] = (retroPlanning[period] || 0) + workloads[i].get("val.spentWorkload")
-                    Y.log("p: " + period);
-                    Y.log("wl: " + wl);
+
+                    wl = workloads[i].get("val.spentWorkload");
+                    retroSum += wl;
+                    retroPlanning[period] = (retroPlanning[period] || 0) + wl;
+
+                    x = period - (10 - workloads[i].get("val.lastWorkedStep"))/10;
+                    wl = remainingWorkload.toFixed(2);
                     effectiveSerie.push({
-                        x: period,
+                        x: x,
                         y: wl
                     });
                 }
 
                 wl = iteration.getRemainingWorkload();
-                Y.log("EFFECTVE REM: " + wl);
                 /* Iteration remainingWorkload changed since last "nextPeriod" */
                 if (Math.abs(wl - remainingWorkload) > 0.0001) {
                     remainingWorkload = wl;
@@ -254,11 +266,7 @@ YUI.add("wegas-pmg-burndown", function(Y) {
                 });
 
 
-                retroSum = wl;
-                for (period in retroPlanning){
-                    retroSum += retroPlanning[period];
-                }
-
+                retroSum += wl;
 
                 // Retro
                 for (period in retroPlanning) {
@@ -266,24 +274,40 @@ YUI.add("wegas-pmg-burndown", function(Y) {
                         x: period,
                         y: retroSum
                     });
-                    retroSum -= retroPlanning[+period+1] || 0;
+                    retroSum -= retroPlanning[+period + 1] || 0;
+                }
+                for (period = minPeriod; period < currentPeriod; period += 1) {
+                    node.append("<span class=\"workload\">n/a</span>");
                 }
 
                 // Replanning
-
-                for (period = this.getMinKey(replanning); period <= this.getMaxKey(replanning); period += 1) {
+                for (period = currentPeriod; period <= this.getMaxKey(replanning); period += 1) {
+                    // Get replanned workload
                     wl = (replanning[period] || 0).toFixed(2);
+
+                    if (status !== "NOT_STARTED" && (remainingWorkload > 0 || wl > 0)) {
+                        node.append("<input class=\"replanning\" period=\"" + period + "\" value=\"" + wl + " \"/>");
+                    }
+
                     remainingWorkload = remainingWorkload - wl;
+                    if (remainingWorkload < 0) {
+                        // if y value < 0, use segment (previousPeriod, previousWorkload) -> (currentPeriod, currentWorkload) to
+                        // compute new x value for y=0
+                        x = this.getInterpolatedPeriodNumber(period,
+                            replanningSerie[replanningSerie.length - 1].y,
+                            remainingWorkload);
+                        remainingWorkload = 0;
+                    } else {
+                        x = period + 1;
+                    }
                     replanningSerie.push({
-                        x: period + 1,
+                        x: x,
                         y: remainingWorkload
                     });
-                    if (remainingWorkload > 0) {
-                        node.append("<input class=\"replanning\" period=\"" + period + "\" value=\"" + wl + " \"/>");
-                        //this.handlers.push(input.on("change", this.plan, this));
-                    }
                 }
-                if (remainingWorkload > 0) {
+
+                // Still some workload to consume, add an input
+                if (status === "STARTED" && remainingWorkload > 0) {
                     node.append("<input class=\"replanning\" period=\"" + period + "\" value=\"0\"/>");
                     maxPeriod += 1;
                     replanningSerie.push({
@@ -293,34 +317,44 @@ YUI.add("wegas-pmg-burndown", function(Y) {
                 }
             }
 
-            options.width = (maxPeriod - minPeriod + 1) * 50;
-
-            CB.one(".iteration-config .minp").setContent("minp: " + minPeriod);
-            CB.one(".iteration-config .maxp").setContent("maxp: " + maxPeriod);
-
-            data.series.push({
-                name: "planning",
-                data: planningSerie
-            });
-            data.series.push({
-                name: "effective",
-                data: effectiveSerie
-            });
-            data.series.push({
-                name: "re plan",
-                data: replanningSerie
-            });
-            data.series.push({
-                name: "Retro",
-                data: retroSerie
-            });
-
+            Y.log("Min Period: " + minPeriod);
+            Y.log("Max Period: " + maxPeriod);
             Y.log("Planning: " + JSON.stringify(planningSerie));
             Y.log("Retro: " + JSON.stringify(retroSerie));
             Y.log("Effective: " + JSON.stringify(effectiveSerie));
             Y.log("Replan: " + JSON.stringify(replanningSerie));
 
-            this.chart = new Chartist.Line(".chart-" + iteration.get("id"), data, options);
+            this.chart = new Chartist.Line(".chart-" + iteration.get("id"), {
+                series: [{
+                        name: "planning",
+                        data: planningSerie
+                    }, {
+                        name: "effective",
+                        data: effectiveSerie
+                    }, {
+                        name: "replan",
+                        data: replanningSerie
+                    }, {
+                        name: "Retro",
+                        data: retroSerie
+                    }
+                ]
+            }, {
+                width: 15 + (maxPeriod - minPeriod + 1) * 50,
+                height: 200,
+                low: 0,
+                lineSmooth: Chartist.Interpolation.none(),
+                showArea: true,
+                axisX: {
+                    type: Chartist.AutoScaleAxis,
+                    onlyInteger: true
+                },
+                axisY: {
+                    low: 0,
+                    type: Chartist.AutoScaleAxis,
+                    onlyInteger: true
+                }
+            });
         },
         bindUI: function() {
             var input, CB = this.get(CONTENTBOX);
@@ -330,11 +364,15 @@ YUI.add("wegas-pmg-burndown", function(Y) {
             this.handlers.push(CB.delegate("click", this.createMenu, ".iteration-tasks-toolbar .add", this));
             //this.handlers.push(CB.delegate("click", this.createMenu, ".iteration-tasks-toolbar .add", this));
             this.handlers.push(CB.delegate("click", this.removeTask, ".task .remove", this));
+            this.handlers.push(CB.delegate("click", this.destroyIteration, ".iteration-config .rm-iteration", this));
 
             input = CB.one(".begin-at-input");
             if (input) {
                 this.handlers.push(input.on("change", this.updateBeginAt, this));
             }
+        },
+        destroyIteration: function(e) {
+            this.execScript("PMGHelper.removeIteration(" + this.get("iterationId") + ");");
         },
         removeTask: function(e) {
             var node = e.target.get("parentNode").get("parentNode");

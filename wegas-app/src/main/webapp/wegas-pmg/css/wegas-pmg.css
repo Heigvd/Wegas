@@ -7,7 +7,7 @@
  */
 
 /*--------------------------------PMG - Global container--------------------------------------*/
-.layout * {
+.layout {
     font-family: Helvetica, Arial, "Lucida Grande", sans-serif;
     font-weight:300;
 }
@@ -1289,10 +1289,10 @@ td.yui3-datatable-col-Realised:after {
 
 
 /*-------------------- project-page, evm-page & iterations-page --------------------*/
-.pmg-iterations-page .toolbar .add-iteration {
-    font-family: "FontAwesome";
+.pmg-iterations-page .rm-iteration, .pmg-iterations-page .toolbar .add-iteration {
     cursor: pointer;
     color: #656774;
+    bottom: 0;
 }
 
 .project-page, .evm-page, .pmg-iterations-page {

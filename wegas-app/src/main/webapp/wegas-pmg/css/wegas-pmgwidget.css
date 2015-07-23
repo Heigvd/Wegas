@@ -370,23 +370,23 @@ tbody .past .activity {
 }
 
 /* Line completeness plugin*/
-
+.iteration-completed .slidepanel-title,
 .task-execution-page .yui3-datatable-table .pmg-line-completeness-complete,
 .task-execution-page .yui3-datatable-table .pmg-line-completeness-complete:hover,
 .gantt-execution-page .yui3-datatable-table .pmg-line-completeness-complete .yui3-datatable-col-index,
 .gantt-execution-page .yui3-datatable-table .pmg-line-completeness-complete .yui3-datatable-col-label,
 .gantt-execution-page .yui3-datatable-table .pmg-line-completeness-complete .yui3-datatable-col-Realised{
-    background-color:#ddfae4;
+    background-color:#ddfae4 !important;
 }
 
-
+.iteration-started .slidepanel-title,
 .task-execution-page .yui3-datatable-table .pmg-line-completeness-started,
 .task-execution-page .yui3-datatable-table .pmg-line-completeness-started:hover,
 .gantt-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-index,
 .gantt-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-label,
 .gantt-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-Realised,
 .yui3-menu-content > button.pmg-line-completeness-started {
-    background-color:#fff1c2;
+    background-color:#fff1c2 !important;
 }
 
 .yui3-button.pmg-menu-invalid {
@@ -480,6 +480,7 @@ tbody .past .activity {
 }
 
 .wegas-pmg-iteration-widget-content .iteration-config {
+    height: 100%;
 }
 
 .wegas-pmg-iteration-widget-content .iteration-config > div {
@@ -497,7 +498,7 @@ tbody .past .activity {
 
 .wegas-pmg-iteration-widget-content .iteration-planning .planning-initial input:first-child,
 .wegas-pmg-iteration-widget-content .iteration-planning .planning-initial span:first-child {
-    margin-left: 59px;
+    margin-left: 50px;
 }
 
 
@@ -514,25 +515,26 @@ tbody .past .activity {
     margin-left: 0px;
 }
 
+.wegas-pmg-iteration-widget-content .iteration-planning input,
 .wegas-pmg-iteration-widget-content .iteration-planning span {
-    width: 26px;
-}
-.wegas-pmg-iteration-widget-content .iteration-planning input {
-    width: 26px;
+    width: 50px;
+    height: 21px;
+    /* background-color: pink; */
+    box-sizing: border-box;
+    /* border: 1px solid black; */
 }
 
 .wegas-pmg-iteration-widget-content .iteration-planning span,
 .wegas-pmg-iteration-widget-content .iteration-planning input {
-    margin-left: 13px;
+    margin-left: 0px;
     display: block;
     float: left;
     text-align: center
+;
 }
 
 
-
 /* Iteration Chart */
-
 .ct-line {
   stroke: red;
   stroke-width: 2px;
@@ -582,7 +584,7 @@ tbody .past .activity {
 .ct-series-c .ct-line {
     stroke : #68ccc5;
 }
-.ct-series-c .ct-area{
+.ct-series-c .ct-area {
     fill : #68ccc5;
     fill-opacity: .3;
 }
@@ -593,7 +595,7 @@ tbody .past .activity {
 .ct-series-d .ct-line {
     /* stroke: rgb(221, 84, 0); */
 }
-.ct-series-c .ct-area{
-    fill : #68ccc5;
-    fill-opacity: 0;
+.ct-series-d .ct-area{
+    /*fill: #68ccc5;
+    fill-opacity: 0;*/
 }

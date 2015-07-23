@@ -43,6 +43,7 @@ var PMGSimulation = (function() {
         resourceTable = {};
         iterationTable = {};
         taskTable = {};
+        debug("runSimulation::fillTaskTable");
         for (i = 0; i < activeTasks.length; i += 1) {
             taskTable[activeTasks[i].descriptor.name] = {
                 completeness: activeTasks[i].getPropertyD("completeness"),
@@ -51,10 +52,12 @@ var PMGSimulation = (function() {
         }
 
         // Init Iteration Status Table
+        debug("runSimulation::fillIterationTable");
         for (i = 0; i < iterations.length; i += 1) {
             iteration = iterations[i];
             iterationTable[iteration.id] = PMGHelper.getIterationStatus(iteration);
             iterationTable[iteration.id].spent = 0;
+            iterationTable[iteration.id].lastWorkedStep = 0;
         }
 
         // Calculus
@@ -69,20 +72,14 @@ var PMGSimulation = (function() {
     function updateIterationPlanning(iteration) {
         var remainingWL = iterationTable[iteration.id].final.remainingWorkload,
             replannedWL = iteration.getReplannedWorkloads(),
-            remainingPlannedWL = 0, i, keys, diff, k, planned, nPlanned;
+            remainingPlannedWL = 0, i, keys, diff, k, planned, nPlanned, toRemove = [];
 
-        /*Java.from(iteration.getReplannedWorkloads.keySet().toArray()).each(function(k) {
-         replannedWL[k] = iteration.getReplannedWorkloads.get(k)
-         });*/
-
-        if (replannedWL.isEmpty() === 0) {
-            printMessage("EMPTY ITERATION");
-        }
-
-        for (k in replannedWL) {
+        keys = Y.Object.keys(replannedWL);
+        for (k in keys) {
+            k = keys[k];
             if (k <= CURRENT_PERIOD_NUMBER) {
                 // destory the past
-                replannedWL.remove(k);
+                iteration.replan(k, 0);
             } else {
                 remainingPlannedWL += replannedWL[k];
             }
@@ -97,16 +94,19 @@ var PMGSimulation = (function() {
             diff = remainingWL - remainingPlannedWL;
 
             for (i = 0; diff > 0; i += 1) {
+                debug("Diff: " + diff);
                 k = keys[i];
                 planned = replannedWL[k];
                 nPlanned = Math.min(planned, diff);
+                debug("planed: " + planned);
+                debug("nPlaned: " + nPlanned);
                 if (nPlanned > 0.0) {
-                    replannedWL.put(k, nPlanned);
+                    iteration.replan(k, nPlanned);
                 } else {
+                    debug("remove replanned for " + k);
                     replannedWL.remove(k);
                 }
                 diff -= nPlanned;
-                planned -= nPlanned;
             }
         }
     }
@@ -130,8 +130,10 @@ var PMGSimulation = (function() {
                     pwls = iteration.getPlannedWorkloads();
 
                     for (k in pwls) {
+                        debug("INITIALIZE replanning: " + k);
+                        // first planned period is the current period, lets ignore it
                         if (k > 0) {
-                            rpwls.put(CURRENT_PERIOD_NUMBER + k, pwls[k]);
+                            iteration.replan(CURRENT_PERIOD_NUMBER + k, pwls[k]);
                         }
                     }
                 } else {
@@ -162,7 +164,8 @@ var PMGSimulation = (function() {
                         }
                     }
 
-                    iteration.addWorkload(CURRENT_PERIOD_NUMBER + 1, iterationTable[iteration.id].final.remainingWorkload, spent);
+                    iteration.addWorkload(CURRENT_PERIOD_NUMBER + 1, iterationTable[iteration.id].final.remainingWorkload,
+                        spent, iterationTable[iteration.id].lastWorkedStep);
                     updateIterationPlanning(iteration);
                 }
                 // CASE V: COMPLETED
@@ -258,7 +261,7 @@ var PMGSimulation = (function() {
         // Calculate progress for each requirement
         Y.Array.each(getDistinctRequirements(activities), function(r) {
             debug("step(): computeReq:" + r);
-            calculateRequirementProgress(r, activities);
+            calculateRequirementProgress(r, activities, currentStep);
         });
 
         // Consolidate requirments progress & quality into tasks
@@ -816,7 +819,7 @@ var PMGSimulation = (function() {
      * @param {Array} allActivities
      * @returns {Number} a number between 0 and 100
      */
-    function calculateRequirementProgress(requirement, allActivities) {
+    function calculateRequirementProgress(requirement, allActivities, stepNumber) {
         debug("calculateRequirementProgress(requirement: " + requirement + ", task: " + requirement.getTaskInstance() + ")");
         var i, employeeInst, activityRate, averageSkillsetQuality, correctedRessources,
             taskInst = requirement.getTaskInstance(),
@@ -933,9 +936,12 @@ var PMGSimulation = (function() {
         }
 
         // sum spent workload
+
+        debug("iterationSpentWorkload");
         iteration = PMGHelper.getIterationFromTask(taskDesc, Variable.find(gameModel, "burndown").getInstance(self));
         if (iteration && iterationTable[iteration.id]) {
             iterationTable[iteration.id].spent += sumActivityRate / (100 * STEPS);
+            iterationTable[iteration.id].lastWorkedStep = stepNumber;
         }
 
         //set Wage (add 1/steps of the need's wage at task);

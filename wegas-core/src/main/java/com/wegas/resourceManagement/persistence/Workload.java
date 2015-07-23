@@ -46,7 +46,7 @@ public class Workload extends AbstractEntity implements Serializable {
     private Long periodNumber;
 
     /**
-     * workload to do before doing the period 
+     * workload to do before doing the period
      */
     private Double workload;
 
@@ -54,7 +54,11 @@ public class Workload extends AbstractEntity implements Serializable {
      * effective workload spent during the last period
      */
     private Double spentWorkload;
-    
+
+    /**
+     * Period subdivision step
+     */
+    private Integer lastWorkedStep;
 
     public Long getPeriodNumber() {
         return periodNumber;
@@ -78,6 +82,14 @@ public class Workload extends AbstractEntity implements Serializable {
 
     public void setSpentWorkload(Double spentWorkload) {
         this.spentWorkload = spentWorkload;
+    }
+
+    public Integer getLastWorkedStep() {
+        return lastWorkedStep;
+    }
+
+    public void setLastWorkedStep(Integer lastWorkedStep) {
+        this.lastWorkedStep = lastWorkedStep;
     }
 
     public Iteration getIteration() {

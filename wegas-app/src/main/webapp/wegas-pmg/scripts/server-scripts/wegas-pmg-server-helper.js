@@ -343,13 +343,13 @@ var PMGHelper = (function() {
             printMessage("TaskD: " + taskD);
             completeness = taskD.getNumberInstanceProperty(self, "completeness");
             printMessage("Completeness: " + completeness);
-            if (completed && completeness < 100) {
+            if (completeness < 100) {
+                itStatus.remainingWorkload += getRemainingTaskWorkload(taskD.getInstance(self));
                 completed = false;
             }
             if (completeness > 0) {
                 started = true;
             }
-            itStatus.remainingWorkload += getRemainingTaskWorkload(taskD.getInstance(self));
             printMessage("Remaining: " + itStatus.remainingWorkload);
         }
 
@@ -563,6 +563,9 @@ var PMGHelper = (function() {
         },
         removeTaskFromIteration: function(taskDescriptorId, iterationId) {
             return removeTaskFromIteration(Variable.find(taskDescriptorId), findIteration(iterationId));
+        },
+        findIteration: function(iterationId){
+            return findIteration(iterationId);
         }
     };
 
