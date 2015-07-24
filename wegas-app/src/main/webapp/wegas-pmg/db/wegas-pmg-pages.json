@@ -62,7 +62,7 @@
                                 "cssClass": "pmg--header__taskbar",
                                 "direction": "vertical",
                                 "name": "taskbar",
-                                "children": [                                 
+                                "children": [
                                     {
                                         "type": "List",
                                         "cssClass": "pmg--taskbar__infos",
@@ -581,7 +581,7 @@
                                                                     }
                                                                 ],
                                                                 "content": "<p>Time budget</p>"
-                                                            },                                                       
+                                                            },
                                                             {
                                                                 "type": "NumberTemplate",
                                                                 "cssClass": "pmg--number",
@@ -619,7 +619,7 @@
                                                                     "content": "Variable.find('timeCards')"
                                                                 },
                                                                 "data": {
-                                                                        "label": ""
+                                                                    "label": ""
                                                                 }
                                                             }
                                                         ]
@@ -1094,7 +1094,6 @@
                         "children": [
                             {
                                 "type": "Chart",
-                                "chartType": "combo",
                                 "variables": [
                                     {
                                         "name": "managementApproval"
@@ -1103,17 +1102,13 @@
                                         "name": "userApproval"
                                     }
                                 ],
-                                "hStart": 0,
-                                "hStep": 1,
-                                "hMinEnd": {
+                                "low": 0,
+                                "high": 200,
+                                "width": "100%",
+                                "xMinMax": {
                                     "name": "executionPeriods"
                                 },
-                                "minValue": 0,
-                                "maxValue": 200,
-                                "vStepValue": 25,
-                                "legendPosition": "bottom",
-                                "horizontalGridlines": true,
-                                "verticalGridlines": true
+                                "showXLabels": false
                             }
                         ]
                     },
@@ -1126,7 +1121,6 @@
                         "children": [
                             {
                                 "type": "Chart",
-                                "chartType": "combo",
                                 "variables": [
                                     {
                                         "name": "costs",
@@ -1134,24 +1128,19 @@
                                     },
                                     {
                                         "name": "delay",
-                                        "label": "Shedule"
+                                        "label": "Schedule"
                                     },
                                     {
                                         "name": "quality",
                                         "label": "Quality"
                                     }
                                 ],
-                                "hStart": 0,
-                                "hStep": 1,
-                                "hMinEnd": {
+                                "low": 0,
+                                "high": 200,
+                                "width": "100%",
+                                "xMinMax": {
                                     "name": "executionPeriods"
-                                },
-                                "minValue": 0,
-                                "maxValue": 200,
-                                "vStepValue": 25,
-                                "legendPosition": "bottom",
-                                "horizontalGridlines": true,
-                                "verticalGridlines": true
+                                }
                             }
                         ]
                     }
@@ -1481,14 +1470,7 @@
                         "type": "Chart",
                         "width": "90%",
                         "height": "400px",
-                        "chartType": "combo",
-                        "horizontalGridlines": true,
-                        "legendPosition": "bottom",
-                        "verticalGridlines": true,
-                        "hMinEnd": {
-                            "name": "executionPeriods"
-                        },
-                        "minValue": 0,
+                        "low": 0,
                         "variables": [
                             {
                                 "name": "planedValue",
@@ -1721,70 +1703,70 @@
                 "type": "AbsoluteLayout",
                 "cssClass": "pmg-properties-left",
                 "children": [
-                {
-                    "type": "Text",
-                    "cssClass":"pmg-properties-title",
-                    "plugins": [
-                        {
-                            "fn": "ConditionalDisable",
-                            "cfg": {
-                                "condition": {
-                                    "@class": "Script",
-                                    "content": "var advLimitDesc;\ntry {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){}\nreturn advLimitDesc !== undefined;\n"
-                                },
-                                "attribute": "cssClass",
-                                "value": "hidden"
-                            }
-                        }
-                    ],
-                    "content": "<span>Advancement limit</span>"
-                },
-                {
-                    "label": "<span class='checkbox'>Advancement limit</span>",
-                    "type": "Button",
-                    "cssClass": "pmg-properties-button",
-                    "plugins": [
-                        {
-                            "fn": "ExecuteScriptAction",
-                            "cfg": {
-                                "targetEvent": "click",
-                                "onClick": {
-                                    "@class": "Script",
-                                    "language": "JavaScript",
-                                    "content": "var advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch (e){}\n if (advLimitDesc != undefined){ advLimitDesc.setValue(self, !advLimitDesc.getValue(self));};"
+                    {
+                        "type": "Text",
+                        "cssClass": "pmg-properties-title",
+                        "plugins": [
+                            {
+                                "fn": "ConditionalDisable",
+                                "cfg": {
+                                    "condition": {
+                                        "@class": "Script",
+                                        "content": "var advLimitDesc;\ntry {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){}\nreturn advLimitDesc !== undefined;\n"
+                                    },
+                                    "attribute": "cssClass",
+                                    "value": "hidden"
                                 }
                             }
-                        },
-                        {
-                            "fn": "ConditionalDisable",
-                            "cfg": {
-                                "condition": {
-                                    "@class": "Script",
-                                    "content": "var  advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){} return (advLimitDesc === undefined || advLimitDesc.getValue(self));",
-                                    "language": "JavaScript"
-                                },
-                                "attribute": "cssClass",
-                                "value": "selected"
+                        ],
+                        "content": "<span>Advancement limit</span>"
+                    },
+                    {
+                        "label": "<span class='checkbox'>Advancement limit</span>",
+                        "type": "Button",
+                        "cssClass": "pmg-properties-button",
+                        "plugins": [
+                            {
+                                "fn": "ExecuteScriptAction",
+                                "cfg": {
+                                    "targetEvent": "click",
+                                    "onClick": {
+                                        "@class": "Script",
+                                        "language": "JavaScript",
+                                        "content": "var advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch (e){}\n if (advLimitDesc != undefined){ advLimitDesc.setValue(self, !advLimitDesc.getValue(self));};"
+                                    }
+                                }
+                            },
+                            {
+                                "fn": "ConditionalDisable",
+                                "cfg": {
+                                    "condition": {
+                                        "@class": "Script",
+                                        "content": "var  advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){} return (advLimitDesc === undefined || advLimitDesc.getValue(self));",
+                                        "language": "JavaScript"
+                                    },
+                                    "attribute": "cssClass",
+                                    "value": "selected"
+                                }
+                            },
+                            {
+                                "fn": "ConditionalDisable2",
+                                "cfg": {
+                                    "condition": {
+                                        "@class": "Script",
+                                        "content": "var  advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){} return (advLimitDesc === undefined);",
+                                        "language": "JavaScript"
+                                    },
+                                    "attribute": "cssClass",
+                                    "value": "hidden"
+                                }
                             }
-                        },
-                        {
-                            "fn": "ConditionalDisable2",
-                            "cfg": {
-                                "condition": {
-                                    "@class": "Script",
-                                    "content": "var  advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){} return (advLimitDesc === undefined);",
-                                    "language": "JavaScript"
-                                },
-                                "attribute": "cssClass",
-                                "value": "hidden"
-                            }
-                        }
-                    ]
-                },
-                {
-                    "cssClass":"pmg-advancement-limit-edtion",
-                    "type": "AdvancementLimit"
-                }]
+                        ]
+                    },
+                    {
+                        "cssClass": "pmg-advancement-limit-edtion",
+                        "type": "AdvancementLimit"
+                    }]
             },
             {
                 "type": "AbsoluteLayout",
@@ -1793,7 +1775,7 @@
                     {
                         "type": "Text",
                         "content": "<span>Options</span>",
-                        "cssClass":"pmg-properties-title"
+                        "cssClass": "pmg-properties-title"
                     },
                     {
                         "label": "<span class='checkbox'>Autoreservation</span>",
