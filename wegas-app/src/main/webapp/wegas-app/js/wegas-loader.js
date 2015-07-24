@@ -174,9 +174,12 @@ YUI().use(function(Y) {
                 requires: ["inputex-textarea", "button"],
                 ws_provides: "Chat"
             },
+            "wegas-chart-css": {
+                type: CSS
+            },
             "wegas-chart": {
                 path: "js/widget/wegas-chart-min.js",
-                requires: ["charts", "charts-legend"],
+                requires: ["chartist", "wegas-chart-css"],
                 ws_provides: "Chart"
             },
             "wegas-langselector": {
