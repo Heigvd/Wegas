@@ -479,6 +479,10 @@ img.inputEx-ListField-delButton {
 .wegas-form .mce-container {
     margin: 0;
     padding: 0;
+    height:auto !important;
+}
+.wegas-form .mce-container iframe{
+    height:auto !important;
 }
 
 .wegas-form .mce-panel {
