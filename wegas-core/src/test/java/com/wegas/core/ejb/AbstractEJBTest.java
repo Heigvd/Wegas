@@ -93,7 +93,7 @@ public class AbstractEJBTest {
         gameModelFacade.remove(gameModel.getId());
         RequestFacade rm = AbstractEJBTest.lookupBy(RequestFacade.class);
         rm.getRequestManager().setPlayer(null);
-        rm.getRequestManager().clearUpdatedInstances();
+        rm.getRequestManager().clearUpdatedEntities();
     }
 
     public static <T> T lookupBy(Class<T> type, Class service) throws NamingException {

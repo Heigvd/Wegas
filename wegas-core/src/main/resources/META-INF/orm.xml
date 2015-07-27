@@ -8,6 +8,7 @@
       <entity-listeners>
 <!--    Default Entity Listener      -->
 <!--        <entity-listener class="com.wegas.core.persistence.variableinstance.VariableInstancePersistenceListener" />-->
+            <entity-listener class="com.wegas.core.persistence.EntityListener" />
       </entity-listeners>
     </persistence-unit-defaults>
   </persistence-unit-metadata>

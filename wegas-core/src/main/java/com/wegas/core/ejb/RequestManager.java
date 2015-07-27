@@ -7,10 +7,12 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.Helper;
 import com.wegas.core.event.client.ClientEvent;
 import com.wegas.core.event.client.CustomEvent;
 import com.wegas.core.event.client.ExceptionEvent;
 import com.wegas.core.exception.client.WegasRuntimeException;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -25,8 +27,10 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.script.ScriptEngine;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
@@ -52,7 +56,9 @@ public class RequestManager {
     /**
      *
      */
-    private List<VariableInstance> updatedInstances = new ArrayList<>();
+    private List<AbstractEntity> updatedEntities = new ArrayList<>();
+
+    private Map<String, List<AbstractEntity>> dispatchedEntities = new HashMap<>();
 
     /**
      *
@@ -69,18 +75,37 @@ public class RequestManager {
      */
     private ScriptEngine currentEngine = null;
 
-    /**
-     * @param instance
-     */
-    public void addUpdatedInstance(VariableInstance instance) {
-        if (!this.getUpdatedInstances().contains(instance)) {
-            this.getUpdatedInstances().add(instance);
+    public void addUpdatedEntities(Map<String, List<AbstractEntity>> entities) {
+        if (entities != null) {
+            for (String audiance : entities.keySet()) {
+                this.addUpdatedEntity(audiance, entities.get(audiance));
+            }
+        }
+    }
+
+    public void addUpdatedEntity(String audience, List<AbstractEntity> updated) {
+        for (AbstractEntity entity : updated) {
+            this.addUpdatedEntity(audience, entity);
+        }
+    }
+
+    public void addUpdatedEntity(String audience, AbstractEntity updated) {
+        if (!dispatchedEntities.containsKey(audience)) {
+            dispatchedEntities.put(audience, new ArrayList<>());
+        }
+        List<AbstractEntity> entities = dispatchedEntities.get(audience);
+        if (!entities.contains(updated)) {
+            entities.add(updated);
+        }
+
+        if (!updatedEntities.contains(updated)) {
+            this.updatedEntities.add(updated);
         }
     }
 
     /**
-     * https://java.net/jira/browse/GLASSFISH-21195
-     * this event should be fired from {@link com.wegas.core.persistence.NumberListener}
+     * https://java.net/jira/browse/GLASSFISH-21195 this event should be fired
+     * from {@link com.wegas.core.persistence.NumberListener}
      *
      * @param numberInstance to be forwarded to event
      */
@@ -129,22 +154,28 @@ public class RequestManager {
     /**
      * @return the updatedInstances
      */
-    public List<VariableInstance> getUpdatedInstances() {
-        return updatedInstances;
+    public List<AbstractEntity> getUpdatedEntites() {
+        return updatedEntities;
     }
 
     /**
-     * @param updatedInstances the updatedInstances to set
+     *
+     * @param updatedEntities
      */
-    public void setUpdatedInstances(List<VariableInstance> updatedInstances) {
-        this.updatedInstances = updatedInstances;
+    public void setUpdatedEntities(List<AbstractEntity> updatedEntities) {
+        this.updatedEntities = updatedEntities;
     }
 
     /**
      *
      */
-    public void clearUpdatedInstances() {
-        this.updatedInstances.clear();
+    public void clearUpdatedEntities() {
+        this.updatedEntities.clear();
+        this.dispatchedEntities.clear();
+    }
+
+    public Map<String, List<AbstractEntity>> getDispatchedEntities() {
+        return dispatchedEntities;
     }
 
     /**
