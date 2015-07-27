@@ -32,9 +32,14 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,7 +88,7 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "ObjectInstance", value = ObjectInstance.class),
     @JsonSubTypes.Type(name = "PeerReviewInstance", value = PeerReviewInstance.class)
 })
-abstract public class VariableInstance extends AbstractEntity {
+abstract public class VariableInstance extends AbstractEntity implements Broadcastable {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(VariableInstance.class);
@@ -160,19 +165,37 @@ abstract public class VariableInstance extends AbstractEntity {
         return (VariableInstance) super.clone();
     }
 
-    /**
-     *
-     */
-    @PostUpdate
-//    @PostRemove
-//    @PostPersist
-    public void onInstanceUpdate() {
-        if (this.getScope() == null) {                                          // If the instance has no scope, it means it's a default
-            return;                                                             // default Instance and the updated event is not sent
+    public String getAudience() {
+        if (this.teamScopeKey != null) {
+            return this.getAudianceTokenForTeam(this.teamScopeKey);
+        } else if (this.playerScopeKey != null) {
+            return this.getAudianceTokenForPlayer(this.playerScopeKey);
+        } else if (this.gameScopeKey != null) {
+            return this.getAudianceTokenForGame(this.gameScopeKey);
+        } else if (this.gameModelScope != null) {
+            return this.getAudianceTokenForGameModel(this.getGameModelScope().getVariableDescriptor().getId());
+        } else {
+            // Default instance
+            return null;
         }
-        RequestFacade.lookup().getRequestManager().addUpdatedInstance(this);
     }
 
+    @Override
+    public Map<String, List<AbstractEntity>> getEntities() {
+        Map<String, List<AbstractEntity>> map = new HashMap<>();
+        ArrayList<AbstractEntity> entities = new ArrayList<>();
+        entities.add(this);
+        map.put(this.getAudience(), entities);
+        return map;
+    }
+
+    /**
+     *
+     * //@PostUpdate // @PostRemove // @PostPersist public void
+     * onInstanceUpdate() { // If the instance has no scope, it means it's a
+     * default if (this.getScope() != null) { //
+     * RequestFacade.lookup().getRequestManager().addUpdatedInstance(this); } }
+     */
     /**
      * @return the scope
      */
@@ -199,7 +222,11 @@ abstract public class VariableInstance extends AbstractEntity {
     //@XmlTransient
     @JsonIgnore
     public VariableDescriptor getDescriptor() {
-        return this.getScope().getVariableDescriptor();
+        if (this.getScope() != null) {
+            return this.getScope().getVariableDescriptor();
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -375,6 +402,12 @@ abstract public class VariableInstance extends AbstractEntity {
      */
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + "( " + getId() + ", " + this.getDescriptor().getName() + ")";
+        if (this.defaultDescriptor != null) {
+            return "Default " + this.getClass().getSimpleName() + "( " + getId() + ") for " + this.defaultDescriptor.getName();
+        } else if (this.getDescriptor() != null) {
+            return this.getClass().getSimpleName() + "( " + getId() + ") for " + this.getDescriptor().getName();
+        } else {
+            return this.getClass().getSimpleName() + "( " + getId() + ") NO DESC";
+        }
     }
 }

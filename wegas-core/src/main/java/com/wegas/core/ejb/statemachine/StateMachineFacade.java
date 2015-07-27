@@ -85,7 +85,8 @@ public class StateMachineFacade {
         logger.debug("Received PlayerAction event");
         Player player = playerAction.getPlayer();
         if (player == null) {
-            player = variableInstanceFacade.findAPlayer(requestManager.getUpdatedInstances().get(0));
+            throw new NoPlayerException("StateMachine Facade: NO PLAYER");
+            //player = variableInstanceFacade.findAPlayer(requestManager.getUpdatedInstances().get(0));
         }
         this.runForPlayer(player);
     }

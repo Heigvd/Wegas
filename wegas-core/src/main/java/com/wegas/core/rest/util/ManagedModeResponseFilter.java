@@ -13,6 +13,7 @@ import com.wegas.core.ejb.WebsocketFacade;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasWrappedException;
 import com.wegas.core.exception.internal.NoPlayerException;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.apache.http.HttpStatus;
@@ -26,6 +27,7 @@ import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.ext.Provider;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 /**
@@ -112,14 +114,16 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                 response.setStatus(HttpStatus.SC_OK);
             }
 
-            if (!rollbacked && !rmf.getRequestManager().getUpdatedInstances().isEmpty()) {
-                List<VariableInstance> updatedInstances = rmf.getUpdatedInstances();
+            if (!rollbacked && !rmf.getRequestManager().getUpdatedEntites().isEmpty()) {
+                List<AbstractEntity> updatedEntities = rmf.getUpdatedEntities();
+                Map<String, List<AbstractEntity>> dispatchedEntities = rmf.getDispatchedEntities();
+                
                 /*
                  * Merge updatedInstance within ManagedResponse entities
                  */
-                for (VariableInstance vi : updatedInstances) {
-                    if (!entities.contains(vi)) {
-                        entities.add(vi);
+                for (AbstractEntity ae : updatedEntities) {
+                    if (!entities.contains(ae)) {
+                        entities.add(ae);
                     }
                 }
                 /*
@@ -129,9 +133,9 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                 try {
                     WebsocketFacade websocketFacade = Helper.lookupBy(WebsocketFacade.class, WebsocketFacade.class);
                     if (managedMode.matches("^[\\d\\.]+$")) { //Socket id
-                        websocketFacade.onRequestCommit(updatedInstances, managedMode);
+                        websocketFacade.onRequestCommit(dispatchedEntities, managedMode);
                     } else {
-                        websocketFacade.onRequestCommit(updatedInstances);
+                        websocketFacade.onRequestCommit(dispatchedEntities);
                     }
                 } catch (NamingException | NoPlayerException ex) {
                     java.util.logging.Logger.getLogger(ManagedModeResponseFilter.class.getName()).log(Level.SEVERE, null, ex);
