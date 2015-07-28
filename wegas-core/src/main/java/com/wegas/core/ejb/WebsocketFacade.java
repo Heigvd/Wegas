@@ -132,7 +132,7 @@ public class WebsocketFacade {
     /**
      * fire and forget pusher events
      *
-     * @param updatedEntities entity to propagate mapped by audiance
+     * @param updatedEntities entity to propagate mapped by audience
      * @param socketId        Client's socket id. Prevent that specific client
      *                        to receive this particular message
      * @throws com.wegas.core.exception.internal.NoPlayerException
@@ -144,9 +144,9 @@ public class WebsocketFacade {
         }
         VariableInstance v;
 
-        for (String audiance : updatedEntities.keySet()) {
-            List<AbstractEntity> toPropagate = updatedEntities.get(audiance);
-            propagate(toPropagate, audiance, socketId);
+        for (String audience : updatedEntities.keySet()) {
+            List<AbstractEntity> toPropagate = updatedEntities.get(audience);
+            propagate(toPropagate, audience, socketId);
         }
     }
 
@@ -172,15 +172,15 @@ public class WebsocketFacade {
         return sb.toString();
     }
 
-    private void propagate(List<AbstractEntity> entities, String audiance, final String socketId) {
+    private void propagate(List<AbstractEntity> entities, String audience, final String socketId) {
         try {
-            logger.error("EntityUpdatedEvent.entites: " + audiance + ": " + entities.size());
+            logger.error("EntityUpdatedEvent.entites: " + audience + ": " + entities.size());
 
             EntityUpdatedEvent event = new EntityUpdatedEvent(entities);
 
             String gzippedJson = gzip(event.toJson());
 
-            Result result = pusher.trigger(audiance, "EntityUpdatedEvent.gz", gzippedJson, socketId);
+            Result result = pusher.trigger(audience, "EntityUpdatedEvent.gz", gzippedJson, socketId);
 
             logger.error("PUSHER RESULT" + result.getMessage() + " : " + result.getStatus() + " : " + result.getHttpStatus());
             if (result.getHttpStatus() == 403) {

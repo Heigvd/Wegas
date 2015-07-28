@@ -426,7 +426,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      Map<String, List<AbstractEntity>> map = new HashMap<>();
      ArrayList<AbstractEntity> entities = new ArrayList<>();
      entities.add(this);
-     map.put(this.getAudianceToken(this.getGameModel()), entities);
+     map.put(this.getAudienceToken(this.getGameModel()), entities);
      return map;
      }*/
     /**
