@@ -59,15 +59,17 @@ YUI.add('wegas-pusher-connector', function(Y) {
                 Y.Wegas.app.set("socketId", pusherInstance.connection.socket_id); // Store current socket id into app
             }, this);
             this._set("status", pusherInstance.connection.state);
+
+            pusherInstance.subscribe('GameModel-' +
+                Wegas.Facade.GameModel.get("currentGameModelId")).bind_all(Y.bind(this.eventReceived, this));
             pusherInstance.subscribe('Game-' +
                 Wegas.Facade.Game.get("currentGameId")).bind_all(Y.bind(this.eventReceived, this));
             pusherInstance.subscribe('Team-' +
                 Wegas.Facade.Game.get("currentTeamId")).bind_all(Y.bind(this.eventReceived, this));
             pusherInstance.subscribe('Player-' +
-                Wegas.Facade.Game.get("currentPlayerId")).bind_all(Y.bind(this.eventReceived,
-                this));
-            pusherInstance.subscribe('presence-global').bind_all(Y.bind(this.eventReceived,
-                this));
+                Wegas.Facade.Game.get("currentPlayerId")).bind_all(Y.bind(this.eventReceived, this));
+
+            pusherInstance.subscribe('presence-global').bind_all(Y.bind(this.eventReceived, this));
         },
         gunzip: function(data) {
             var ba, i, compressed, zlib, inflated;
