@@ -78,6 +78,12 @@
         <dependency>
             <groupId>com.madgag</groupId>
             <artifactId>util-diff</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         
         <dependency>

@@ -92,7 +92,7 @@ public class StateMachineController {
                         }
                         stateMachineInstance.setCurrentStateId(transition.getNextStateId());
                         stateMachineInstance.transitionHistoryAdd(transitionId);
-                        requestManager.addUpdatedEntity(stateMachineInstance.getAudience(), stateMachineInstance); /* Force in case next state == current state */
+                        requestManager.addUpdatedEntity(stateMachineInstance.getAudiance(), stateMachineInstance); /* Force in case next state == current state */
 
                         if (stateMachineInstance.getCurrentState().getOnEnterEvent() != null) {
                             impacts.add(stateMachineInstance.getCurrentState().getOnEnterEvent());
