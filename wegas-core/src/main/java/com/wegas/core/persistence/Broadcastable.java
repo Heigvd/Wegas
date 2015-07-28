@@ -22,50 +22,47 @@ import java.util.Map;
 public interface Broadcastable {
 
     @JsonIgnore
-    default public String getAudianceTokenForGameModel(Long id) {
+    default public String getAudienceTokenForGameModel(Long id) {
         return "GameModel-" + id;
     }
 
     @JsonIgnore
-    default public String getAudianceTokenForGame(Long id) {
+    default public String getAudienceTokenForGame(Long id) {
         return "Game-" + id;
     }
 
     @JsonIgnore
-    default public String getAudianceTokenForTeam(Long id) {
+    default public String getAudienceTokenForTeam(Long id) {
         return "Team-" + id;
     }
 
     @JsonIgnore
-    default public String getAudianceTokenForPlayer(Long id) {
+    default public String getAudienceTokenForPlayer(Long id) {
         return "Player-" + id;
     }
 
     @JsonIgnore
-    default public String getAudianceToken(Game game) {
-        return this.getAudianceTokenForGame(game.getId());
+    default public String getAudienceToken(Game game) {
+        return this.getAudienceTokenForGame(game.getId());
     }
 
     @JsonIgnore
-    default public String getAudianceToken(GameModel gameModel) {
-        return this.getAudianceTokenForGame(gameModel.getId());
+    default public String getAudienceToken(GameModel gameModel) {
+        return this.getAudienceTokenForGame(gameModel.getId());
     }
 
     @JsonIgnore
-    default public String getAudianceToken(Team team) {
-        return this.getAudianceTokenForGame(team.getId());
+    default public String getAudienceToken(Team team) {
+        return this.getAudienceTokenForGame(team.getId());
     }
 
     @JsonIgnore
-    default public String getAudianceToken(Player player) {
-        return this.getAudianceTokenForGame(player.getId());
+    default public String getAudienceToken(Player player) {
+        return this.getAudienceTokenForGame(player.getId());
     }
 
     /**
-     * key identifier may be: - GameModel-<ID>
-     * - Game-<ID>
-     * - Team-<ID>
-     * - Player-<ID>
+     * key identifier may be: GameModel-<ID>, Game-<ID>, Team-<ID> or Player-<ID>
      *
      * @return
      */

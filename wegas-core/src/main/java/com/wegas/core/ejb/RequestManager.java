@@ -77,8 +77,8 @@ public class RequestManager {
 
     public void addUpdatedEntities(Map<String, List<AbstractEntity>> entities) {
         if (entities != null) {
-            for (String audiance : entities.keySet()) {
-                this.addUpdatedEntity(audiance, entities.get(audiance));
+            for (String audience : entities.keySet()) {
+                this.addUpdatedEntity(audience, entities.get(audience));
             }
         }
     }

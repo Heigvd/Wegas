@@ -166,15 +166,15 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     @JsonIgnore
-    public String getAudiance() {
+    public String getAudience() {
         if (this.teamScopeKey != null) {
-            return this.getAudianceTokenForTeam(this.teamScopeKey);
+            return this.getAudienceTokenForTeam(this.teamScopeKey);
         } else if (this.playerScopeKey != null) {
-            return this.getAudianceTokenForPlayer(this.playerScopeKey);
+            return this.getAudienceTokenForPlayer(this.playerScopeKey);
         } else if (this.gameScopeKey != null) {
-            return this.getAudianceTokenForGame(this.gameScopeKey);
+            return this.getAudienceTokenForGame(this.gameScopeKey);
         } else if (this.gameModelScope != null) {
-            return this.getAudianceTokenForGameModel(this.getGameModelScope().getVariableDescriptor().getId());
+            return this.getAudienceTokenForGameModel(this.getGameModelScope().getVariableDescriptor().getId());
         } else {
             // Default instance
             return null;
@@ -186,7 +186,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
         Map<String, List<AbstractEntity>> map = new HashMap<>();
         ArrayList<AbstractEntity> entities = new ArrayList<>();
         entities.add(this);
-        map.put(this.getAudiance(), entities);
+        map.put(this.getAudience(), entities);
         return map;
     }
 
