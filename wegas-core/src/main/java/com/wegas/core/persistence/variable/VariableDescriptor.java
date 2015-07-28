@@ -37,11 +37,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.GameScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
+import java.util.HashMap;
+import java.util.Map;
 import org.eclipse.persistence.annotations.JoinFetch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +82,7 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "ObjectDescriptor", value = ObjectDescriptor.class),
     @JsonSubTypes.Type(name = "PeerReviewDescriptor", value = PeerReviewDescriptor.class)
 })
-abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity implements Searchable, LabelledEntity {
+abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity implements Searchable, LabelledEntity /*, Broadcastable */ {
 
     private static final long serialVersionUID = 1L;
 
@@ -417,6 +420,15 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         }
     }
 
+    /*
+     @Override
+     public Map<String, List<AbstractEntity>> getEntities() {
+     Map<String, List<AbstractEntity>> map = new HashMap<>();
+     ArrayList<AbstractEntity> entities = new ArrayList<>();
+     entities.add(this);
+     map.put(this.getAudianceToken(this.getGameModel()), entities);
+     return map;
+     }*/
     /**
      *
      * @param criterias
