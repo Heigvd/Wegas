@@ -119,10 +119,12 @@ public class UserFacade extends BaseFacade<User> {
         final Subject subject = SecurityUtils.getSubject();
 
         if (subject.isRemembered() || subject.isAuthenticated()) {
-            return accountFacade.find((Long) subject.getPrincipal()).getUser();
-        } else {
-            throw new WegasNotFoundException("Unable to find user");
+            AbstractAccount account = accountFacade.find((Long) subject.getPrincipal());
+            if (account != null) {
+                return account.getUser();
+            }
         }
+        throw new WegasNotFoundException("Unable to find user");
     }
 
     /**
