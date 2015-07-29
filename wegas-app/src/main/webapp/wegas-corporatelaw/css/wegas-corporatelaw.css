@@ -176,6 +176,8 @@
 .centered-content {
     padding-left : 20%;
     width: 60%;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 
