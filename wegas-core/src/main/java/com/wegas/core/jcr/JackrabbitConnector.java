@@ -170,7 +170,7 @@ public class JackrabbitConnector {
             // delete marked for deletion
             deleteWorkspaces(toDelete);
         } catch (RepositoryException ex) {
-            logger.warn("", ex);
+            logger.warn("Unable to close repository: " + ex.getMessage());
         }
     }
 }
