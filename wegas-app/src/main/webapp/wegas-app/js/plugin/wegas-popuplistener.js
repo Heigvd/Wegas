@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Wegas
  * http://wegas.albasim.ch
  *
@@ -17,7 +17,7 @@ YUI.add('wegas-popuplistener', function(Y) {
     PopupListener = Y.Base.create("wegas-popuplistener", Plugin.Base, [], {
         initializer: function() {
             this.counter = 0;
-            this.onHostEvent("*:showOverlay", this.onShowOverlay);
+//            this.onHostEvent("*:showOverlay", this.onShowOverlay);
             this.onHostEvent("*:hideOverlay", this.onHideOverlay);
             this.onHostEvent("*:message", this.onShowMessage);
         },
@@ -110,7 +110,7 @@ YUI.add('wegas-popuplistener', function(Y) {
     Plugin.PopupListener = PopupListener;
 
     /**
-     *
+     * 
      */
     Plugin.ServerPopupListener = Y.Base.create("wegas-serverpopuplistener", Plugin.Base, [], {
         initializer: function() {
