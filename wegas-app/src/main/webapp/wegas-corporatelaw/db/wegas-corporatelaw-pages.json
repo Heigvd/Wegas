@@ -9,7 +9,7 @@
                         "fn": "CSSPosition",
                         "cfg": {
                             "styles": {
-                                "position": "absolute",
+                                "position": "relative",
                                 "zIndex": "10",
                                 "top": "0px",
                                 "left": "0px",
@@ -50,7 +50,7 @@
                                         "cfg": {
                                             "styles": {
                                                 "width": "98px",
-                                                "height": "98px"
+                                                "height": "79px"
                                             }
                                         }
                                     }],
@@ -303,24 +303,25 @@
                             }]
                     }, {
                         "type": "List",
+                        "cssClass": "main-horizontal-list",
                         "plugins": [{
                                 "fn": "CSSSize",
                                 "cfg": {
                                     "styles": {
                                         "width": "100%",
-                                        "height": ""
+                                        "height": "calc(100% - 116px)"
                                     }
                                 }
                             }, {
                                 "fn": "CSSPosition",
                                 "cfg": {
                                     "styles": {
-                                        "position": "absolute",
+                                        "position": "relative",
                                         "zIndex": "",
-                                        "top": "116px",
-                                        "left": "",
+                                        "top": "0px",
+                                        "left": "0px",
                                         "bottom": "0px",
-                                        "right": ""
+                                        "right": "0px"
                                     }
                                 }
                             }],
@@ -333,12 +334,10 @@
                                         "fn": "CSSPosition",
                                         "cfg": {
                                             "styles": {
-                                                "position": "absolute",
+                                                "position": "relative",
                                                 "zIndex": "",
-                                                "top": "0px",
-                                                "left": "0px",
-                                                "bottom": "0px",
-                                                "right": "50px"
+                                                "height": "100%",
+                                                "width": "calc(100% - 50px)"
                                             }
                                         }
                                     }, {
@@ -379,14 +378,14 @@
                                         "cfg": {
                                             "styles": {
                                                 "width": "50px",
-                                                "height": ""
+                                                "height": "100%"
                                             }
                                         }
                                     }, {
                                         "fn": "CSSPosition",
                                         "cfg": {
                                             "styles": {
-                                                "position": "absolute",
+                                                "position": "relative",
                                                 "zIndex": "",
                                                 "top": "0px",
                                                 "left": "",
@@ -575,7 +574,7 @@
                         "fn": "CSSPosition",
                         "cfg": {
                             "styles": {
-                                "position": "absolute",
+                                "position": "relative",
                                 "zIndex": "10",
                                 "top": "0px",
                                 "left": "0px",
@@ -608,7 +607,7 @@
                         "fn": "CSSPosition",
                         "cfg": {
                             "styles": {
-                                "position": "absolute",
+                                "position": "relative",
                                 "top": "0px",
                                 "left": "0px",
                                 "zIndex": "10"
@@ -637,7 +636,7 @@
                         "fn": "CSSPosition",
                         "cfg": {
                             "styles": {
-                                "position": "absolute",
+                                "position": "relative",
                                 "zIndex": "10",
                                 "top": "0px",
                                 "left": "0px",
@@ -674,7 +673,7 @@
                         "fn": "CSSPosition",
                         "cfg": {
                             "styles": {
-                                "position": "absolute",
+                                "position": "relative",
                                 "top": "0px",
                                 "left": "0px",
                                 "zIndex": "10"
@@ -704,7 +703,7 @@
                         "fn": "CSSPosition",
                         "cfg": {
                             "styles": {
-                                "position": "absolute",
+                                "position": "relative",
                                 "top": "0px",
                                 "left": "0px",
                                 "zIndex": "10"
@@ -735,7 +734,7 @@
                         "fn": "CSSPosition",
                         "cfg": {
                             "styles": {
-                                "position": "absolute",
+                                "position": "relative",
                                 "zIndex": "10",
                                 "top": "0px",
                                 "left": "0px",
@@ -768,7 +767,7 @@
                         "fn": "CSSPosition",
                         "cfg": {
                             "styles": {
-                                "position": "absolute",
+                                "position": "relative",
                                 "top": "0px",
                                 "left": "0px",
                                 "zIndex": "10"
@@ -796,7 +795,7 @@
                         "fn": "CSSPosition",
                         "cfg": {
                             "styles": {
-                                "position": "absolute",
+                                "position": "relative",
                                 "zIndex": "10",
                                 "top": "0px",
                                 "left": "0.5px",
@@ -837,7 +836,6 @@
                         "fn": "CSSPosition",
                         "cfg": {
                             "styles": {
-                                "position": "absolute",
                                 "zIndex": "10",
                                 "top": "0px",
                                 "left": "0px",
@@ -872,7 +870,7 @@
                         "fn": "CSSPosition",
                         "cfg": {
                             "styles": {
-                                "position": "absolute",
+                                "position": "relative",
                                 "zIndex": "10",
                                 "top": "0px",
                                 "left": "0px",
@@ -884,7 +882,7 @@
                         "fn": "CSSSize",
                         "cfg": {
                             "styles": {
-                                "width": "",
+                                "width": "100%",
                                 "height": ""
                             }
                         }

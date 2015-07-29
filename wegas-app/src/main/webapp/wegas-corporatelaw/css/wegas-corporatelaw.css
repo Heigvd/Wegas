@@ -19,6 +19,15 @@
   font-weight: 300;
 }
 
+.mainColumn > div:first-child {
+    height:100%;
+}
+
+.main-horizontal-list .wegas-list-content{
+    height: 100%
+}
+
+
 .law-layout .fa {
     font-family: FontAwesome
 }
