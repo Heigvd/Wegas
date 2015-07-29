@@ -33,8 +33,9 @@ public class TestHelper {
 
         // Init shiro
         SecurityUtils.setSecurityManager(new IniSecurityManagerFactory("classpath:shiro.ini").getInstance());
-        Logger.getLogger("javax.enterprise.system.tools.deployment").setLevel(Level.OFF);
-        Logger.getLogger("javax.enterprise.system").setLevel(Level.OFF);
+        Logger.getLogger("javax.enterprise.system.tools.deployment").setLevel(Level.SEVERE);
+        Logger.getLogger("javax.enterprise.system").setLevel(Level.SEVERE);
+        org.glassfish.ejb.LogFacade.getLogger().setLevel(Level.SEVERE);
 
         return EJBContainer.createEJBContainer(properties);
     }
