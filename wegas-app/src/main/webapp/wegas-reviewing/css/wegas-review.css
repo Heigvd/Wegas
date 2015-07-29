@@ -26,7 +26,7 @@
     font-size: 1.3em;
 }
 .wegas-review-widget .description {
-    margin: 5px;
+    margin: 0px 5px;
 }
 
 .wegas-review-widget .subtitle {
@@ -54,6 +54,10 @@
 .wegas-review-widget .toReview .description,
 .wegas-review-evaluation {
     background-color: #666;
+}
+
+.wegas-review-widget .toReview .content {
+    margin: 0px 5px;
 }
 
 .wegas-review-widget .toReview .content,
