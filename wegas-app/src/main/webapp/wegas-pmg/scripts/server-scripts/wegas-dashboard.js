@@ -67,15 +67,17 @@ var PMGDashboard = (function() {
                                                                            1).getScope().getVariableInstances()[teamId].getValue();
             obj = {
                 "id": teamId,
-                "Phase": phaseName[currentPhase[teamId].getValue() - 1],
-                "Period": currentPeriod,
-                "Questions": questionAnswered(teamId, currentPhase[teamId].getValue(), currentPeriod),
-                "Quality": quality[teamId].getValue(),
-                "Costs": cost[teamId].getValue(),
-                "Schedule": schedule[teamId].getValue()
+                "data":{
+                    "Phase": {"value": phaseName[currentPhase[teamId].getValue() - 1], "colorize" : false},
+                    "Period": {"value": currentPeriod, "colorize" : false},
+                    "Questions": {"value": questionAnswered(teamId, currentPhase[teamId].getValue(), currentPeriod), "colorize" : false},
+                    "Quality": {"value": quality[teamId].getValue(), "colorize" : true},
+                    "Costs": {"value": cost[teamId].getValue(), "colorize" : true},
+                    "Schedule": {"value": schedule[teamId].getValue(), "colorize" : true},
+                    "Management": {"value": management[teamId].getValue(), "colorize" : true, "label": managementLabel},
+                    "User": {"value": user[teamId].getValue(), "colorize" : true, "label": userLabel}
+                }
             };
-            obj[managementLabel] = management[teamId].getValue();
-            obj[userLabel] = user[teamId].getValue();
             arr.push(obj);
         }
         return JSON.stringify(arr);
