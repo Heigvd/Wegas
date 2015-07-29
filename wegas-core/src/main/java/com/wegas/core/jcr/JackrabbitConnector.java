@@ -128,10 +128,10 @@ public class JackrabbitConnector {
                 }
 
             } catch (SQLException ex) {
-                logger.warn("Delete workspace failed: getConnection failed", ex);
+                logger.warn("Delete workspace failed: getConnection failed");
             }
         } catch (NamingException ex) {
-            logger.warn("Delete workspace failed: no \"jdbc/jcr\" resource found", ex);
+            logger.warn("Delete workspace failed: no \"jdbc/jcr\" resource found");
         }
     }
 
