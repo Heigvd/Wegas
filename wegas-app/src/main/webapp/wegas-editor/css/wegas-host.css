@@ -5,17 +5,26 @@
  * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
 */
-/**
- * @author Raphaël Schmutz <raph@hat-owl.cc>
- */
 .uv-icon{
     display:none !important;
 }
-
-.wegas-hastoolbar>.wegas-toolbar{
-    display:block;
+.wegas-hastoolbar>.wegas-toolbar {
+    display: block;
+    height: 62px;
     background: #f1f1f1;
-    padding:24px 28px 8px 28px;
+    padding: 24px 28px 8px;
+    box-sizing: border-box;
+}
+
+.wegas-hastoolbar>.wegas-toolbar-sibling {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding:62px 0 0 0;
+    overflow: auto;
+    height: 100% !important;
+    width:100%;
+    box-sizing:border-box;
 }
 
 .wegas-hastoolbar>.wegas-toolbar .yui3-button {
