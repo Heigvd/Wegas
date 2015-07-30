@@ -772,7 +772,20 @@
 .modal--content-advanced .content-advanced-script-add:hover:before, .modal--content-advanced .content-advanced-script-add:hover:after{
     width:0px;
 }
+.wegas-dashboard-infos{
+    height:100%;
+}
 
+.wegas-dashboard-infos .mce-tinymce{
+    height:100%;
+    border:none;
+}
+.wegas-dashboard-infos .mce-tinymce .mce-container-body{
+    height:100%;
+}
+.wegas-dashboard-infos .mce-tinymce .mce-container-body .mce-edit-area{
+    height:calc(100% - 35px);
+}
 .yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .inputEx-fieldWrapper{
     width:100%;
     height:auto;

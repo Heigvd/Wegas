@@ -33,8 +33,55 @@ YUI.add('wegas-dashboard', function(Y) {
             this.get("contentBox").delegate("click", function(event) {
                 event.stopPropagation();
                 event.preventDefault();
-                var team = Y.Wegas.Facade.Game.cache.getTeamById(this.get("team").get("id"));
-                
+                var team = Y.Wegas.Facade.Game.cache.getTeamById(this.get("team").get("id")),
+                    game = Y.Wegas.Facade.Game.cache.getCurrentGame(),
+                    statusNode = Y.Node.create("<span></span>"),
+                    header = "<span class='wegas-modal-title wegas-modal-title-player'>Infos - Player \"" + team.get("players")[0].get("name") + "\"</span>",
+                    modalInfos = new Y.Wegas.Panel({
+                        modal: true,
+                        team: team,
+                        children: [{
+                            type: "DashboardInfos",
+                            team: team
+                        }],
+                        headerContent: header,
+                        footerContent: statusNode,
+                        width: 600,
+                        zIndex: 5000,
+                        buttons: {
+                            header: [
+                                {
+                                    name: 'cancel',
+                                    classNames: "modal--header-close",
+                                    label: 'Cancel',
+                                    action: "exit"
+                                }
+                            ],
+                            footer: [
+                                {
+                                    name: "save",
+                                    label: "Save",
+                                    classNames: "modal--footer-right modal--footer-valid",
+                                    action: function() {
+                                        if (team.get("notes") !== this.item(0).getNote()) {
+                                            team.set("notes", this.item(0).getNote());
+                                            Y.Wegas.Facade.Game.cache.put(team.toObject("players"), {});
+                                        }
+                                    }
+                                },{
+                                    name: 'cancel',
+                                    label: 'Cancel',
+                                    classNames: "modal--footer-right",
+                                    action: "exit"
+                                }
+                            ]
+                        }
+                    }); 
+                    modalInfos.render().get("boundingBox").addClass("dashboard-infos-panel").addClass("dashboard-panel");
+                if(!game.get("properties.freeForAll")){
+                    modalInfos.plug(Y.Wegas.DashboardInfosTeam);
+                }
+
             }, ".bloc--info-notes", this);
             
             this.get("contentBox").delegate("click", function(event) {
@@ -240,7 +287,7 @@ YUI.add('wegas-dashboard', function(Y) {
     });
     Y.Wegas.DashboardCardMonitoring.NS = "DashboardCardMonitoring";
     
-    Y.Wegas.DashboardCardGroupByTeam = Y.Base.create("wegas-dashboard-card-broup-by-team", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], { 
+    Y.Wegas.DashboardCardGroupByTeam = Y.Base.create("wegas-dashboard-card-group-by-team", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], { 
         initializer: function() {
             var host = this.get("host");
             this.afterHostMethod("syncUI", function() {
@@ -251,26 +298,52 @@ YUI.add('wegas-dashboard', function(Y) {
     });
     Y.Wegas.DashboardCardGroupByTeam.NS = "DashboardCardGroupByTeam";
     
+    Y.Wegas.DashboardInfosTeam = Y.Base.create("wegas-dashboard-infos-team", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], { 
+        initializer: function() {
+            var host = this.get("host");
+            this.afterHostEvent("render", function() {
+                host.get("contentBox")
+                    .one(".wegas-modal-title")
+                    .removeClass("wegas-modal-title-player")
+                    .addClass("wegas-modal-title-group");
+            //      .set("content", 'Infos - Team "'+ host.get("team").get("name") +'"');
+            });
+        }
+    });
+    Y.Wegas.DashboardInfosTeam.NS = "DashboardInfosTeam";
+    
     Y.Wegas.DashboardInfos = Y.Base.create("wegas-dashboard-infos", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-        CONTENT_TEMPLATE:"<div class='wegas-dashboard-infos'></div>",
-        renderUI: function() {
-            
-        },
-        bindUI: function() {
-            
-        },
+        CONTENT_TEMPLATE:"<div class='wegas-dashboard-infos'><textarea class='infos-comments' placeholder='Enter a comment here'></textarea></div>",
+        renderUI: function() {},
+        bindUI: function() {},
         syncUI: function() {
-            
+            var infos = this;
+            tinyMCE.init({
+                "width": "100%",
+                "height": "100%",
+                "menubar":false,
+                "statusbar": false,
+                "toolbar": "bold italic | alignleft aligncenter alignright alignjustify | bullist numlist",
+                "selector":'.infos-comments',
+                setup: function (mce) {
+                    mce.on('init', function(args) {
+                        infos.set("editor", args.target);
+                        if(infos.get("team").get("notes")){
+                            infos.get("editor").setContent(infos.get("team").get("notes"));
+                        }else{
+                            infos.get("editor").setContent("You can write notes here");
+                        }
+                    });
+                }
+            });
         },
         initializer: function(config) {
             this.set("team", config.team);
-            this.renderUI();
-            this.bindUI();
-            this.syncUI();
+        },
+        getNote: function(){
+            return this.get("editor").getContent();
         }
     });
-    
-    
     
     /**
      * @name Y.Wegas.Dashboard
@@ -327,9 +400,7 @@ YUI.add('wegas-dashboard', function(Y) {
                         }
                     }
                 }else{
-                    console.log(Y.one(".wegas-dashboard").hasClass("dashboard--big"));
                     if(!Y.one(".wegas-dashboard").hasClass("dashboard--big")){
-                        console.log("JE SUI GROS!");
                         Y.one(".wegas-dashboard")
                             .removeClass("dashboard--large")
                             .removeClass("dashboard--medium")
@@ -342,7 +413,6 @@ YUI.add('wegas-dashboard', function(Y) {
                 }
         },
         _cleanClass: function(){
-            console.log("YOOOOOOOOOOOOOO");
             Y.one(".wegas-dashboard")
                 .removeClass("dashboard--big")
                 .removeClass("dashboard--large")
@@ -418,17 +488,6 @@ YUI.add('wegas-dashboard', function(Y) {
         }
     }, {
         ATTRS: {
-            tableCfg: {
-                value: {
-                    columns: []
-                },
-                getter: function(v) {
-                    var clone = Y.clone(v), dashboard = Y.namespace("Wegas.Config.Dashboard"),
-                        cols = Y.Lang.isFunction(dashboard) ? dashboard().columns : dashboard.columns;
-                    clone.columns = clone.columns.concat(cols);
-                    return clone;
-                }
-            },
             /**
              * server script to get table data.
              * format: [{id:TEAMID[, TABLE_KEY:VALUE]*}*]
@@ -446,8 +505,3 @@ YUI.add('wegas-dashboard', function(Y) {
         }
     });
 });
-
-
-
-
-Dash
