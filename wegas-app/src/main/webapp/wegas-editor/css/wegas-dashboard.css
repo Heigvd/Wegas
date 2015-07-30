@@ -37,6 +37,7 @@
     background-color:#666666;
     background-size:100%;
     background-position:center;
+    background-repeat:no-repeat;
 }
 
 .card.card--player .card__icon{
@@ -45,6 +46,12 @@
 
 .card.card--team .card__icon{
     background-image: url("../../wegas-app/images/icon_groups.png");
+}
+
+.dashboard--small .card__icon{
+    width:25%;
+    height:56px;
+    background-size:auto 100%;
 }
 
 .card .card__title{
@@ -61,6 +68,31 @@
     text-overflow: ellipsis;
     overflow:hidden;
     white-space:nowrap;
+}
+
+.dashboard--large .card__title{
+    
+}
+
+.dashboard--medium .card__title{
+    width:calc(100% - 344px);
+}
+
+.dashboard--small .card__title{
+    width:75%;
+    height:56px;
+    line-height:56px;
+}
+
+.dashboard--medium .card__blocs--monitoring, .dashboard--small .card__blocs--monitoring{
+    width:100%;
+    border-left:0px;
+}
+
+
+.dashboard--small .bloc.bloc.bloc--monitoring{
+    border-top:solid 1px #d4d4d4;
+    width:25%;
 }
 
 .card__blocs .title{
@@ -86,7 +118,20 @@
     box-sizing:border-box;
 }
 
-.dashboard--medium .card__blocs--monitoring{
+ .dashboard--small .card__blocs--actions, .dashboard--small .card__blocs--infos{
+    width:50%;
+    border-top:solid 3px #d4d4d4;
+}
+
+.dashboard--small .card__blocs--actions .bloc, .dashboard--small .card__blocs--infos .bloc{
+    width:50%;
+}
+
+.dashboard--small .card__blocs--infos{
+    border-left:none;
+}
+
+.dashboard--medium .card__blocs--monitoring, .dashboard--small .card__blocs--monitoring{
     border-top:solid 3px #d4d4d4;
 }
 
@@ -107,6 +152,18 @@
 
 .dashboard--large .bloc.bloc--monitoring{
     width:64px;
+}
+.dashboard--medium .bloc.bloc--monitoring{
+    width:12.5%;
+}
+
+.dashboard--small .card__blocs--monitoring .title{
+    border:none;
+}
+
+.dashboard--small .bloc.bloc.bloc--monitoring{
+    border-top:solid 1px #d4d4d4;
+    width:25%;
 }
 
 .bloc span{

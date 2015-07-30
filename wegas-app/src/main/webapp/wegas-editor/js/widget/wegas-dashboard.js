@@ -11,7 +11,6 @@
  */
 YUI.add('wegas-dashboard', function(Y) {
     "use strict";
-    
     Y.Wegas.DashboardCard = Y.Base.create("wegas-dashboard-card", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], { 
         CONTENT_TEMPLATE:   "<div class='wegas-dashboard-card card card--player'>"+
                                 "<div class='card__icon'></div>"+
@@ -34,13 +33,20 @@ YUI.add('wegas-dashboard', function(Y) {
             this.get("contentBox").delegate("click", function(event) {
                 event.stopPropagation();
                 event.preventDefault();
+                var team = Y.Wegas.Facade.Game.cache.getTeamById(this.get("team").get("id"));
+                
+            }, ".bloc--info-notes", this);
+            
+            this.get("contentBox").delegate("click", function(event) {
+                event.stopPropagation();
+                event.preventDefault();
                 var team = this.get("team");
                 if (team && team.get("players").length) {
                     window.open("game-lock.html?id=" + team.get("players")[0].get("id"));
                 } else {
                     this.showMessage("info", "Could not find a player");
                 }
-            }, ".action--view", this);
+            }, ".bloc--info-view", this);
             
             this.get("contentBox").delegate("click", function(event) {
                 event.stopPropagation();
@@ -101,7 +107,7 @@ YUI.add('wegas-dashboard', function(Y) {
                 } else {
                     this.showMessage("info", "Could not find a player");
                 }
-            }, ".action--impacts", this);
+            }, ".bloc--action-impacts", this);
             
             this.get("contentBox").delegate("click", function(event) {
                 event.preventDefault();
@@ -173,7 +179,7 @@ YUI.add('wegas-dashboard', function(Y) {
                     this.showMessage("info", "Could not find a player");
                 }
 
-            }, ".action--email", this);
+            }, ".bloc--action-email", this);
         },
         syncUI: function() { 
             this.get("contentBox")
@@ -186,8 +192,11 @@ YUI.add('wegas-dashboard', function(Y) {
             if(!config.individually){
                 this.plug(Y.Wegas.DashboardCardGroupByTeam);
             }
-            if(config.custom !== null && config.custom !== undefined){
-                this.set("monitoring", config.custom);
+            if(config.monitoredData !== null && config.columns !== null){
+                this.set("monitoring", {
+                    columns : config.columns,
+                    data : config.monitoredData
+                });
                 this.plug(Y.Wegas.DashboardCardMonitoring);
             }
             this.renderUI();
@@ -196,39 +205,34 @@ YUI.add('wegas-dashboard', function(Y) {
         }
     });
     Y.Wegas.DashboardCardMonitoring = Y.Base.create("wegas-dashboard-card-monitoring", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], { 
-        _renderBlocInfo: function(container, index, data){
-            var label = data.label || index,
-                valueClass = data.colorize && typeof data.value === "number" ? (data.label < 75 ? "danger" : (data.label > 125 ? "success" : "warning")) : "";
-            container.append(   "<div class='bloc bloc--monitoring bloc--monitoring-"+ index +"'>"+
-                                    "<span class='label'>" + label + "</span>"+
-                                    "<span class='value "+ valueClass +"'>" + data.value + "</span>"+
-                                "</div>");
+        _renderBlocInfo: function(container, column, value){
+            var bloc = Y.Node.create("<div class='bloc bloc--monitoring'>"+
+                                            "<span class='label'>" + column.label + "</span>"+
+                                            "<span class='value'>" + value + "</span>"+
+                                        "</div>");
+            if(column.formatter != "null" && column.formatter != "undefined"){
+                eval("("+column.formatter+")")(bloc, value);
+            }
+            container.append(bloc);
         },
         _renderCustomInfos : function(){
             var host = this.get("host"),
+                rend = this._renderBlocInfo,
                 node = Y.Node.create(   "<div class='card__blocs card__blocs--monitoring'>"+                                    
                                             "<span class='title'>Monitoring</span>"+
                                         "</div>");
-                node.setStyle('width', ((Object.keys(host.get("monitoring").data).length * 80) + 2) + "px");
-                                                        
+                                
             this.get("host")
                 .get("contentBox")
                 .append(node);
-
-
-            this.get("host")
-                .get("contentBox").one(".card__title") 
-                .setStyle("width", "calc(100% - "+ ((Object.keys(host.get("monitoring").data).length * 80) + 346) +"px)");
-
-
             
-            for(var index in host.get("monitoring").data) { 
-                this._renderBlocInfo(node, index, host.get("monitoring").data[index]);
-            }
+            host.get("monitoring").columns.forEach(function(column){ 
+                rend(node, column, host.get("monitoring").data[column.label]);
+            });
         },
         initializer: function() {
             this.afterHostMethod("syncUI", function() {
-                if(Object.keys(this.get("host").get("monitoring").data).length > 0){
+                if(this.get("host").get("monitoring").columns.length > 0){
                     this._renderCustomInfos();
                 }
             });
@@ -247,6 +251,27 @@ YUI.add('wegas-dashboard', function(Y) {
     });
     Y.Wegas.DashboardCardGroupByTeam.NS = "DashboardCardGroupByTeam";
     
+    Y.Wegas.DashboardInfos = Y.Base.create("wegas-dashboard-infos", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+        CONTENT_TEMPLATE:"<div class='wegas-dashboard-infos'></div>",
+        renderUI: function() {
+            
+        },
+        bindUI: function() {
+            
+        },
+        syncUI: function() {
+            
+        },
+        initializer: function(config) {
+            this.set("team", config.team);
+            this.renderUI();
+            this.bindUI();
+            this.syncUI();
+        }
+    });
+    
+    
+    
     /**
      * @name Y.Wegas.Dashboard
      * @extends Y.Widget
@@ -256,81 +281,74 @@ YUI.add('wegas-dashboard', function(Y) {
      */
     Y.Wegas.Dashboard = Y.Base.create("wegas-dashboard", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         CONTENT_TEMPLATE:"<div class='wegas-dashboard'></div>",
-        _resizeCards: function(windowWidth, custom){
+        _resizeCards: function(windowWidth, columns){
+                if(columns === null || columns === undefined){
+                    columns = [];
+                }
                 var limit = {
-                    large: 560 + (Object.keys(custom.data).length * 80),
-                    medium: 560 + (Object.keys(custom.data).length * 65),
-                    small: (Object.keys(custom.data).length * 65) + 64,
-                    extrasmall: 80 + 150 + 234 + 64
+                    large: 560 + (columns.length * 80),
+                    medium: 560 + (columns.length * 65),
+                    small: (columns.length * 65) + 64
                 };
                 if(windowWidth < limit.large){
                     if(windowWidth >= limit.medium){
                         if(!Y.one(".wegas-dashboard").hasClass("dashboard--large")){
                             Y.one(".wegas-dashboard")
+                                    .removeClass("dashboard--big")
                                     .removeClass("dashboard--medium")
                                     .removeClass("dashboard--small")                                    
-                                    .removeClass("dashboard--extrasmall")                                    
                                     .addClass("dashboard--large");
-                            Y.all(".card__title") 
-                                .setStyle("width", "calc(100% - "+ ((Object.keys(custom.data).length * 65) + 346) +"px)");
-                            Y.all(".card__blocs--monitoring")
-                                .setStyle('width', ((Object.keys(custom.data).length * 65) + 2) + "px");
+                            Y.all(".card__title").removeAttribute('style') 
+                                .setStyle("width", "calc(100% - "+ ((columns.length * 65) + 346) +"px)");
+                            Y.all(".card__blocs--monitoring").removeAttribute('style')
+                                .setStyle('width', ((columns.length * 65) + 2) + "px");
                         }
                     }else{
                         if(windowWidth >= limit.small){
                             if(!Y.one(".wegas-dashboard").hasClass("dashboard--medium")){
                                 Y.one(".wegas-dashboard")
+                                    .removeClass("dashboard--big")
                                     .removeClass("dashboard--large")
                                     .removeClass("dashboard--small")
-                                    .removeClass("dashboard--extrasmall")                                    
                                     .addClass("dashboard--medium");
-                                Y.all(".card__title") 
-                                    .setStyle("width", "calc(100% - 344px)");
-                                Y.all(".card__blocs--monitoring")
-                                    .setStyle('width', "100%")
-                                    .setStyle('border-left', "none");
+                                Y.all(".card__title").removeAttribute('style');
+                                Y.all(".card__blocs--monitoring").removeAttribute("style");
                             }
                         }else{
-                            if(windowWidth >= limit.extrasmall){
-                                if(!Y.one(".wegas-dashboard").hasClass("dashboard--small")){
-                                    Y.one(".wegas-dashboard")
-                                        .removeClass("dashboard--large")
-                                        .removeClass("dashboard--medium")
-                                        .removeClass("dashboard--extrasmall")
-                                        .addClass("dashboard--small");
-                                    Y.all(".card__title") 
-                                        .setStyle("width", "calc(100% - 80px)");
-                                    Y.all(".card__blocs--monitoring")
-                                        .setStyle('width', "100%")
-                                        .setStyle('border-left', "none");
-                                }
-                            }else{
-                                if(!Y.one(".wegas-dashboard").hasClass("dashboard--extrasmall")){
-                                    Y.one(".wegas-dashboard")
-                                        .removeClass("dashboard--small")
-                                        .addClass("dashboard--extrasmall");
-                                    Y.all(".card__title") 
-                                        .setStyle("width", "calc(100% - 80px)");
-                                    Y.all(".card__blocs--monitoring")
-                                        .setStyle('width', "100%")
-                                        .setStyle('border-left', "none");
-                                }
+                            if(!Y.one(".wegas-dashboard").hasClass("dashboard--small")){
+                                Y.one(".wegas-dashboard")
+                                    .removeClass("dashboard--big")
+                                    .removeClass("dashboard--large")
+                                    .removeClass("dashboard--medium")
+                                    .addClass("dashboard--small");
+                                Y.all(".card__title").removeAttribute('style');
+                                Y.all(".card__blocs--monitoring").removeAttribute("style");
                             }
                         }
                     }
                 }else{
-                    if(Y.one(".wegas-dashboard").hasClass("dashboard--large")){
+                    console.log(Y.one(".wegas-dashboard").hasClass("dashboard--big"));
+                    if(!Y.one(".wegas-dashboard").hasClass("dashboard--big")){
+                        console.log("JE SUI GROS!");
                         Y.one(".wegas-dashboard")
                             .removeClass("dashboard--large")
                             .removeClass("dashboard--medium")
                             .removeClass("dashboard--small")
-                            .removeClass("dashboard--extrasmall");
-                        Y.all(".card__title").setStyle("width", "calc(100% - "+ ((Object.keys(custom.data).length * 80) + 346) +"px)");
-                        Y.all(".card__blocs--monitoring").setStyle('width', ((Object.keys(custom.data).length * 80) + 2) + "px");
+                            .addClass("dashboard--big");
+                      
+                        Y.all(".card__title").removeAttribute('style').setStyle("width", "calc(100% - "+ ((columns.length * 80) + 346) +"px)");
+                        Y.all(".card__blocs--monitoring").removeAttribute('style').setStyle('width', ((columns.length * 80) + 2) + "px");    
                     }
                 }
         },
-        
+        _cleanClass: function(){
+            console.log("YOOOOOOOOOOOOOO");
+            Y.one(".wegas-dashboard")
+                .removeClass("dashboard--big")
+                .removeClass("dashboard--large")
+                .removeClass("dashboard--medium")
+                .removeClass("dashboard--small");
+        },
         renderUI: function() {
             if(this.toolbar) {
                 this.toolbar.add(new Y.Wegas.Button({
@@ -343,36 +361,33 @@ YUI.add('wegas-dashboard', function(Y) {
                 }));
             }
         },
-        bindUI: function() {},
+        bindUI: function() {
+        },
         syncUI: function() {
             var gameModel = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel(), 
                 teams = Y.Wegas.Facade.Game.cache.getCurrentGame().get("teams"),
                 resize = this._resizeCards,
-                contentBox = this.get("contentBox"), custom;
+                cleanClass = this._cleanClass,
+                contentBox = this.get("contentBox");
             this._getCustomData(this.get("remoteScript")).then(function(res) {
+                cleanClass();
                 contentBox.empty();
                 teams.forEach(function(team){
-                    custom = null;
-                    res.forEach(function(data){
-                        if(data.id === team.get("id")){
-                            custom = data;
-                        }
-                    });
                     if(team.get("@class") !== "DebugTeam" && team.get("players").length > 0){
                         new Y.Wegas.DashboardCard({
                             "team": team, 
                             "individually": gameModel.get("properties.freeForAll"),
                             "container": contentBox,
-                            "custom": custom
+                            "monitoredData": (res instanceof Object && Object.keys(res).length === 0) ? null : res.data[team.get("id")],
+                            "columns": (res instanceof Object && Object.keys(res).length === 0) ? null : res.columns
                         });
                     }
-                    Y.one(window).on("resize", function(e){
-                        var windowWidth = e.target.get('winWidth');
-                        resize(windowWidth, custom);
-
-                    });
-                    resize(window.innerWidth, custom);
                 });
+                Y.one(window).purge().on("resize", function(e){
+                    var windowWidth = e.target.get('winWidth');
+                    resize(windowWidth, res.columns);
+                }, this);
+                resize(window.innerWidth, res.columns);
             });
         },
         _getCustomData: function(script){
@@ -431,3 +446,8 @@ YUI.add('wegas-dashboard', function(Y) {
         }
     });
 });
+
+
+
+
+Dash

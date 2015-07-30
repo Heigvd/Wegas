@@ -48,6 +48,7 @@ var PMGDashboard = (function() {
     }
 
     function dashboard() {
+        // Find all values
         var teams = self.getGame().getTeams(),
             currentPhase = getInstances("currentPhase"),
             currentPeriod = getInstances("currentPeriod"),
@@ -60,29 +61,54 @@ var PMGDashboard = (function() {
             phaseName = ['Initiation', 'Planning', 'Executing', 'Closing'],
             managementLabel = getLabel("managementApproval"),
             userLabel = getLabel("userApproval"),
-            obj;
+            
+            // Formatter function
+            formatter = function(bloc, value){
+                bloc.one(".value")
+                    .setStyle("background-color", (value < 75 ? "#ff4a03" : (value > 125 ? "#4caf50" : "#ffa709")))
+                    .setStyle("color", "white")
+                    .setStyle("font-weight", "bold")
+                    .setStyle("border-radius", "2px");
+            },
+            
+            // Columns & data object structure
+            monitoring = {
+                "columns":[
+                    { "label":"Phase", "formatter":null },
+                    { "label":"Period", "formatter":null },
+                    { "label":"Questions", "formatter":null },
+                    { "label":"Quality", "formatter":formatter },
+                    { "label":"Costs", "formatter":formatter },
+                    { "label":"Schedule", "formatter":formatter },
+                    { "label":managementLabel, "formatter":formatter },
+                    { "label":userLabel, "formatter":formatter }
+                ],
+                "data":{}
+            };
+            
+        // Find data by team
         for (t = 0; t < teams.size(); t++) {
             teamId = new Long(teams.get(t).getId());
-            currentPeriod = Variable.find(gameModel, 'currentPeriod').item(currentPhase[teamId].getValue() -
-                                                                           1).getScope().getVariableInstances()[teamId].getValue();
-            obj = {
-                "id": teamId,
-                "data":{
-                    "Phase": {"value": phaseName[currentPhase[teamId].getValue() - 1], "colorize" : false},
-                    "Period": {"value": currentPeriod, "colorize" : false},
-                    "Questions": {"value": questionAnswered(teamId, currentPhase[teamId].getValue(), currentPeriod), "colorize" : false},
-                    "Quality": {"value": quality[teamId].getValue(), "colorize" : true},
-                    "Costs": {"value": cost[teamId].getValue(), "colorize" : true},
-                    "Schedule": {"value": schedule[teamId].getValue(), "colorize" : true},
-                    "Management": {"value": management[teamId].getValue(), "colorize" : true, "label": managementLabel},
-                    "User": {"value": user[teamId].getValue(), "colorize" : true, "label": userLabel}
-                }
+            currentPeriod = Variable.find(gameModel, 'currentPeriod').item(currentPhase[teamId].getValue() - 1).getScope().getVariableInstances()[teamId].getValue();
+            monitoring.data[teamId] = {
+                "Phase": phaseName[currentPhase[teamId].getValue() - 1],
+                "Period": currentPeriod,
+                "Questions": questionAnswered(teamId, currentPhase[teamId].getValue(), currentPeriod),
+                "Quality": quality[teamId].getValue(),
+                "Costs": cost[teamId].getValue(),
+                "Schedule": schedule[teamId].getValue()
             };
-            arr.push(obj);
+            monitoring.data[teamId][managementLabel] = management[teamId].getValue();
+            monitoring.data[teamId][userLabel] = user[teamId].getValue();
         }
-        return JSON.stringify(arr);
+        
+        // Stringify formatter functions
+        monitoring.columns.forEach(function(column){
+            column.formatter =  column.formatter + "";
+        });
+        // Return stringified object
+        return JSON.stringify(monitoring);
     }
-
     return {
         dashboard: dashboard
     };
