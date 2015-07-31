@@ -99,7 +99,7 @@ var StatisticHelper = (function() {
         sd = Math.sqrt(sd);
 
         if (values.length % 2 === 1) {
-            median = sortedValues[Math.ceil(values.length / 2)];
+            median = sortedValues[Math.floor(values.length / 2)];
         } else {
             x = values.length / 2;
             median = (sortedValues[x - 1] + sortedValues[x]) / 2;
