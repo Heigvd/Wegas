@@ -36,6 +36,22 @@
 .yui3-skin-sam .wegas-inbox .unread {
     font-weight: bolder;
 }
+.wegas-inbox-list-content .msg {
+    margin: 10px 0px;
+    border-left: solid 2px rgb(226, 182, 166);}
+.wegas-inbox-list-content .msg-header {
+    border-bottom: solid 1px #7a838c;
+    margin-bottom: 10px;
+}
+.wegas-inbox-list-content .msg-header .msg-from {
+    float: left;
+}
+.wegas-inbox-list-content .msg-header .msg-date {
+    float: right;
+}
+.wegas-inbox-list-content .msg-body {
+    clear: both;
+}
 .yui3-skin-sam .wegas-inbox .msg-subject {
     /* float: left; */
     /* word-break: break-word; */
@@ -50,6 +66,7 @@
     max-width: 15%;
     /* background-color: rgb(26, 26, 172); */
 }
+.wegas-inbox-list-content .msg-header .msg-from,
 .yui3-skin-sam .wegas-inbox .msg-from,
 .yui3-skin-sam .wegas-inbox .msg-attachement {
     color: #757575;
@@ -90,9 +107,10 @@
 }
 .wegas-inbox-list .msg-subject {
     font-weight: bolder;
+    float: left;
 }
 .wegas-inbox-list .msg-body {
-    max-height: 10000px;
+    /* max-height: 10000px; */
     overflow: hidden;
     -webkit-transition: max-height 0.8s;
     -moz-transition: max-height 0.8s;
