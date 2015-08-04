@@ -1,0 +1,149 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
+
+.card{
+    display: block;
+    position: relative;
+    width:calc(100%- 64px);
+    height:auto;
+    min-height:80px;
+    margin:12px 32px;
+    background:white;
+    padding: 0px;
+    border-radius: 2px;
+    box-sizing:border-box;
+    overflow:hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
+.card .card__icon{
+    display:block;
+    position:relative;
+    width:80px;
+    height:80px;
+    float:left;
+    background-color:#666666;
+}
+
+.card .card__icon i{
+    display:block;
+    position:relative;
+    width:100%;
+    height:100%;
+    font-size:36px;
+    line-height:80px;
+    text-align:center;
+    color:white;
+}
+
+.card .card__title{
+    display:block;
+    position:relative;
+    width:100%;
+    height:80px;
+    line-height:80px;
+    font-weight:bold;
+    float:left;
+    box-sizing:border-box;
+    padding:0px 16px;
+    color:#666666;
+    text-overflow: ellipsis;
+    overflow:hidden;
+    white-space:nowrap;
+}
+
+.card.card--illustred .card__title{
+    width:calc(100% - 80px);
+}
+
+.card__blocs{
+    display:block;
+    position:relative;
+    width:132px;
+    height:auto;
+    border-left:solid 2px #d4d4d4;
+    box-sizing:border-box;
+}
+
+.card__blocs.card__blocs--right{
+    float:right;
+}
+
+.card__blocs.card__blocs--left{
+    float:right;
+}
+
+.card__blocs .title{
+    display:block;
+    position:relative;
+    width:100%;
+    height:24px;
+    box-sizing:border-box;
+    border-left:solid 1px #d4d4d4;
+    border-bottom:solid 1px #d4d4d4;
+    line-height:24px;
+    font-size:12px;
+    text-align:center;
+}
+
+.card__blocs .bloc{
+    display:block;
+    position:relative;
+    width:65px;
+    height:56px;
+    float:left;
+    box-sizing:border-box;
+    border-left:solid 1px #d4d4d4;
+    background:none;
+}
+
+.card__blocs.card__blocs--untitled .bloc{
+    height:80px;
+}
+
+.card__blocs .bloc.bloc--icon{
+    background-position:center;
+    background-repeat:no-repeat;
+    background-size: auto 100%;
+    text-indent:9999px;
+    white-space: nowrap;
+    overflow:hidden;
+    transition:background .3s;
+}
+
+.card__blocs .bloc.bloc--info-details{
+    background-image:url("/Wegas/wegas-editor/css/../../wegas-app/images/icon_infos.png");
+}
+
+.card__blocs .bloc.bloc--info-details:hover{
+    background-image:url("/Wegas/wegas-editor/css/../../wegas-app/images/icon_infos_hover.png");
+}
+
+.card__blocs .bloc.bloc--info-view{
+    background-image:url("/Wegas/wegas-editor/css/../../wegas-app/images/icon_vision.png");
+}
+
+.card__blocs .bloc.bloc--info-view:hover{
+    background-image:url("/Wegas/wegas-editor/css/../../wegas-app/images/icon_vision_hover.png");
+}
+
+.card__blocs .bloc.bloc--action-impacts{
+    background-image:url("/Wegas/wegas-editor/css/../../wegas-app/images/icon_impact.png");
+}
+
+.card__blocs .bloc.bloc--action-impacts:hover{
+    background-image:url("/Wegas/wegas-editor/css/../../wegas-app/images/icon_impact_hover.png");
+}
+
+.card__blocs .bloc.bloc--action-email{
+    background-image:url("/Wegas/wegas-editor/css/../../wegas-app/images/icon_mail.png");
+}
+
+.card__blocs .bloc.bloc--action-email:hover{
+    background-image:url("/Wegas/wegas-editor/css/../../wegas-app/images/icon_mail_hover.png");
+}

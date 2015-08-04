@@ -30,7 +30,6 @@ YUI().use(function(Y) {
         YUI_config.Wegas = {};
     }
     YUI_config.Wegas.modulesByType = {};
-
     /**
      *
      */
@@ -404,6 +403,23 @@ YUI().use(function(Y) {
             "wegas-panelcss": {
                 type: CSS
             },
+            "wegas-card-bloc": {
+                ws_provides: "CardBloc" 
+            },
+            "wegas-card": {
+                ws_provides: "Card",
+                requires: ["wegas-cardcss", "wegas-modal", "wegas-card-bloc"] 
+            },
+            "wegas-cardcss": {
+                type: CSS
+            },
+            "wegas-modal": {
+                ws_provides: "Modal",
+                requires: "wegas-modalcss"
+            },
+            "wegas-modalcss": {
+                type: CSS
+            },
             "wegas-menu": {
                 requires: ["button", "wegas-menucss"],
                 ws_provides: "WegasMenu"
@@ -663,17 +679,26 @@ YUI().use(function(Y) {
             "wegas-dashboardcss": {
                 type: CSS
             },
+            "wegas-dashboard-plugs": {
+                path: "js/plugin/wegas-dashboard-min.js",
+                requires: ["base", "plugin", "wegas-plugin", "wegas-editable"],
+                ws_provides: "DashboardPlugs"
+            },
             "wegas-dashboard": {
                 path: "js/widget/wegas-dashboard-min.js",
-                requires: ["datatable",
-                    "template",
-                    "wegas-dashboardcss",
-                    "event-focus",
-                    "wegas-console-custom",
-                    "wegas-sendmail",
+                requires: [
+                    "wegas-card",
                     "font-awesome",
+                    'wegas-dashboard-plugs',
+                    "wegas-dashboardcss",
                     "promise"],
                 ws_provides: "Dashboard"
+            },
+            "wegas-teams-dashboard": {
+                path: "js/widget/wegas-dashboard-teams-min.js",
+                requires: ["wegas-dashboard", "wegas-modal",
+                           "wegas-console-custom", "wegas-sendmail"],
+                ws_provides: "TeamsDashboard"
             },
             "wegas-resetter": {
                 path: "js/widget/wegas-resetter-min.js",
