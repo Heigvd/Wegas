@@ -51,6 +51,7 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     font-size: 16px;
+    float:left;
 }
 
 .modal .modal__header .button.button--close{

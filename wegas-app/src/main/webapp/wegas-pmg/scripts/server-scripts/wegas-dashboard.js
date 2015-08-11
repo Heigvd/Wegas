@@ -7,7 +7,7 @@
  */
 
 /*global Variable, gameModel, self, Y, PMGSimulation, debug, com, java, Java */
-var PMGDashboard = (function() {
+var PMGDashboards = (function() {
     "use strict";
     var Long = Java.type("java.lang.Long");
 
@@ -47,7 +47,7 @@ var PMGDashboard = (function() {
         return Variable.find(gameModel, name).getLabel();
     }
 
-    function dashboard() {
+    function overview() {
         // Find all values
         var teams = self.getGame().getTeams(),
             currentPhase = getInstances("currentPhase"),
@@ -64,7 +64,7 @@ var PMGDashboard = (function() {
             
             // Formatter function
             formatter = function(bloc, value){
-                bloc.one(".value")
+                bloc.one(".bloc__value")
                     .setStyle("background-color", (value < 75 ? "#ff4a03" : (value > 125 ? "#4caf50" : "#ffa709")))
                     .setStyle("color", "white")
                     .setStyle("font-weight", "bold")
@@ -73,15 +73,19 @@ var PMGDashboard = (function() {
             
             // Columns & data object structure
             monitoring = {
-                "columns":[
-                    { "label":"Phase", "formatter":null },
-                    { "label":"Period", "formatter":null },
-                    { "label":"Questions", "formatter":null },
-                    { "label":"Quality", "formatter":formatter },
-                    { "label":"Costs", "formatter":formatter },
-                    { "label":"Schedule", "formatter":formatter },
-                    { "label":managementLabel, "formatter":formatter },
-                    { "label":userLabel, "formatter":formatter }
+                "structure":[{
+                    title: "Monitoring",
+                    items:[    
+                        { "label":"Phase", "formatter":null },
+                        { "label":"Period", "formatter":null },
+                        { "label":"Questions", "formatter":null },
+                        { "label":"Quality", "formatter":formatter },
+                        { "label":"Costs", "formatter":formatter },
+                        { "label":"Schedule", "formatter":formatter },
+                        { "label":managementLabel, "formatter":formatter },
+                        { "label":userLabel, "formatter":formatter }
+                    ]
+                }
                 ],
                 "data":{}
             };
@@ -103,13 +107,15 @@ var PMGDashboard = (function() {
         }
         
         // Stringify formatter functions
-        monitoring.columns.forEach(function(column){
-            column.formatter =  column.formatter + "";
+        monitoring.structure.forEach(function(groupItems){
+            groupItems.items.forEach(function(item){
+                item.formatter =  item.formatter + "";
+            });
         });
         // Return stringified object
         return JSON.stringify(monitoring);
     }
     return {
-        dashboard: dashboard
+        overview: overview
     };
 })();

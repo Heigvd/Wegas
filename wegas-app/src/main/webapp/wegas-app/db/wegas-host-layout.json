@@ -24,6 +24,7 @@
                         "label": "Overview",
                         "children": [
                             {
+                                "name": "overview",
                                 "type": "TeamsDashboard",
                                 "remoteScript": "",
                                 "plugins": [
