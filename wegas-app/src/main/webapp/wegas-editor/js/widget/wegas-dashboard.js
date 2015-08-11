@@ -28,6 +28,7 @@ YUI.add('wegas-dashboard', function(Y) {
             }
         },
         syncUI:function(){
+            console.log("SYNC! BAM!");
             var context = this;
             context._getMonitoredData().then(function(monitoredBlocs){
                 context.removeAll();
@@ -38,9 +39,11 @@ YUI.add('wegas-dashboard', function(Y) {
                         "blocs": context._combineBlocs(data, monitoredBlocs)
                     }));
                 });
-                (context.get("resize")) ? context.plug(Y.Wegas.CardsResizable) : null;
-                context.CardsResizable.resetClassSize();
-                context.CardsResizable.resize();
+                if(context.get("resize")){
+                    context.plug(Y.Wegas.CardsResizable);
+                    context.CardsResizable.resetClassSize();
+                    context.CardsResizable.resize();
+                }
             });
         },
         _addOriginalBloc: function(idCard, originalBloc){
@@ -51,13 +54,16 @@ YUI.add('wegas-dashboard', function(Y) {
         },
         _resetToInitialBlocs: function(data){
             data.blocs = [];
-            this.ORIGINAL_BLOCS[data.id].forEach(function(bloc){
-                data.blocs.push(bloc);
-            });
+            if(this.ORIGINAL_BLOCS[data.id]){
+                this.ORIGINAL_BLOCS[data.id].forEach(function(bloc){
+                    data.blocs.push(bloc);
+                });
+            }
         },
         _combineBlocs: function(data, monitoredBlocs){ 
             var blocs, newBlocs, newBloc;
             this._resetToInitialBlocs(data);
+            console.log(data.blocs);
             blocs = data.blocs;
             if(monitoredBlocs !== null && monitoredBlocs.data && monitoredBlocs.data[data.id]){
                 monitoredBlocs.structure.forEach(function(blocsToAdd){
@@ -108,6 +114,7 @@ YUI.add('wegas-dashboard', function(Y) {
             }
         },
         initializer: function(){
+            console.log("INIT DASH");
             var context = this;
             context.get("cardsData").forEach(function(data){
                 if(data.blocs && data.blocs.length > 0){

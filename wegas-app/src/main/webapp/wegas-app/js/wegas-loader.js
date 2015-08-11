@@ -707,6 +707,11 @@ YUI().use(function(Y) {
                             ],
                 ws_provides: "TeamsDashboard"
             },
+            "wegas-teams-overview-dashboard": {
+                path: "js/widget/wegas-dashboard-teams-overview-min.js",
+                requires:   ["wegas-teams-dashboard"],
+                ws_provides: "TeamsOverviewDashboard"
+            },
             "wegas-resetter": {
                 path: "js/widget/wegas-resetter-min.js",
                 ws_provides: "Resetter"
