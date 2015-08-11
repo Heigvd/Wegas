@@ -145,3 +145,23 @@
 .wegas-advancedmode .modal .modal__footer .button.button--advanced{
     display:block;
 }
+
+@media screen and (max-width: 800px) {
+    .modal{
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+        left: 0;
+        border-radius:0px;
+    }
+}
+
+@media screen and (max-height: 580px) {
+    .modal{
+        height: 100%;
+        top: 0;
+        margin-top: 0;
+        margin-bottom: 0;
+        border-radius:0px;
+    }
+}

@@ -762,31 +762,6 @@
     background-color:#b3b3b3;
 }
 
-
-@media screen and (max-width: 800px) {
-    .yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-panel-content{
-        width: 100% !important;
-        margin-left: 0;
-        margin-right: 0;
-        left: 0 !important;
-        border-radius:0px;
-    }
-}
-
-@media screen and (max-height: 580px) {
-    .yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-panel-content{
-        height: 100%;
-        top: 0 !important;
-        margin-top: 0;
-        margin-bottom: 0;
-        border-radius:0px;
-    }
-    
-    .yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-panel-content .yui3-widget-bd{
-        height:calc(100% - 130px);
-    }
-}
-
 @-webkit-keyframes rotation {
   from {
     -webkit-transform: rotate(0deg);
