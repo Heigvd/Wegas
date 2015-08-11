@@ -132,8 +132,7 @@ YUI.add('wegas-teams-dashboard', function(Y) {
     },{
         "ATTRS":{
             "team": {}
-        }
-        
+        }   
     });
     
     Y.Wegas.ImpactsTeamModal = Y.Base.create("wegas-impacts-team-modal", Y.Wegas.Modal, [],{
@@ -175,7 +174,6 @@ YUI.add('wegas-teams-dashboard', function(Y) {
         "ATTRS":{
             "team": {}
         }
-        
     });
     
     Y.Wegas.EmailTeamModal = Y.Base.create("wegas-email-team-modal", Y.Wegas.Modal, [],{
@@ -212,7 +210,6 @@ YUI.add('wegas-teams-dashboard', function(Y) {
         "ATTRS":{
             "team": {}
         }
-        
     });
     
     Y.Wegas.TeamDetails = Y.Base.create("wegas-team-details", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {

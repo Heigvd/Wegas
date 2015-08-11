@@ -6,7 +6,7 @@
  * Licensed under the MIT License
  */
 /**
- * @author Ulvide <raph@hat-owl.cc>
+ * @author Raphaël Schmutz <raph@hat-owl.cc>
  */        
 YUI.add('wegas-cards-resizable', function(Y) {
     Y.Wegas.CardsResizable = Y.Base.create("wegas-cards-resizable", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], { 
