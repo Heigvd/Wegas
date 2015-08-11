@@ -10,21 +10,20 @@
  */        
 
 YUI.add('wegas-card-bloc', function(Y) {  
-    var BLOC_SIZE = 65;
     Y.Wegas.CardBloc = Y.Base.create("wegas-card-bloc", Y.Widget, [Y.Wegas.Widget, Y.Wegas.Editable, Y.WidgetParent, Y.WidgetChild], { 
-        CONTENT_TEMPLATE:  "<div class='card__blocs'></div>",
+        BOUNDING_TEMPLATE: "<div class='card__blocs'></div>",
+        CONTENT_TEMPLATE:  null,
         TITLE_TEMPLATE: "<span class='title' />",
         renderUI: function(){
-            this.get("contentBox")
-                .addClass("card__blocs--" + this.get("position"))
-                .setStyle("width", (this.get("items").length * BLOC_SIZE) + 2);
-            (!this._hasTitle()) ? this.get("contentBox").addClass("card__blocs--untitled") : this.get("contentBox").append(this.TITLE_TEMPLATE);
+            this.get("boundingBox")
+                .addClass("card__blocs--" + this.get("type"));
+            (!this._hasTitle()) ? this.get("boundingBox").addClass("card__blocs--untitled") : this.get("boundingBox").append(this.TITLE_TEMPLATE);
         },
         syncUI: function(){
             var context = this;
-            (this._hasTitle()) ? this.get("contentBox").one(".title").setContent(this.get("title")) : null;
+            (this._hasTitle()) ? this.get("boundingBox").one(".title").setContent(this.get("title")) : null;
             this.get("items").forEach(function(item){
-                context.add(new Y.Wegas["CardBloc" + item.type.charAt(0).toUpperCase() + item.type.slice(1)](item));
+                context.add(new Y.Wegas["CardBloc" + context.get("type").charAt(0).toUpperCase() + context.get("type").slice(1)](item));
             });
         },
         _hasTitle : function(){
@@ -35,9 +34,7 @@ YUI.add('wegas-card-bloc', function(Y) {
             title: {
                 value: null
             },
-            position:{
-                value: "right"
-            },
+            type: {},
             items: {
                 value: []
             }
@@ -45,20 +42,21 @@ YUI.add('wegas-card-bloc', function(Y) {
     });
     
     Y.Wegas.CardBlocAction = Y.Base.create("wegas-bloc-action", Y.Widget, [Y.Wegas.Widget, Y.Wegas.Editable, Y.WidgetChild], { 
-        CONTENT_TEMPLATE: "<a href='#' class='bloc bloc--icon'></a>",
+        BOUNDING_TEMPLATE: "<a href='#' class='bloc bloc--action bloc--icon'></a>",
+        CONTENT_TEMPLATE: null,
         renderUI: function(){
-            this.get("contentBox").addClass("bloc--"+ this.get("icon"));
+            this.get("boundingBox").addClass("bloc--"+ this.get("icon"));
         },
         bindUI: function(){
-            this.get("contentBox").on("click", function(event){
+            this.get("boundingBox").on("click", function(event){
                 event.preventDefault();
                 event.stopPropagation();
                 this.get("do")();
             }, this);
         },
         syncUI: function(){
-            this.get("contentBox").setAttribute("title", this.get("label"));
-            this.get("contentBox").setContent(this.get("label"));
+            this.get("boundingBox").setAttribute("title", this.get("label"));
+            this.get("boundingBox").setContent(this.get("label"));
         }
     },{
         "ATTRS":{
@@ -69,10 +67,21 @@ YUI.add('wegas-card-bloc', function(Y) {
     });
     
     Y.Wegas.CardBlocMonitoring = Y.Base.create("wegas-bloc-monitoring", Y.Widget, [Y.Wegas.Widget, Y.Wegas.Editable, Y.WidgetChild], { 
-        CONTENT_TEMPLATE: "<div class='bloc'></div>"
+        BOUNDING_TEMPLATE: "<div class='bloc bloc--monitoring'></div>",
+        CONTENT_TEMPLATE: "<span class='bloc__value' />",
+        renderUI: function(){
+            this.get("boundingBox").prepend(Y.Node.create("<span class='bloc__label' />"));
+            this.get("formatter") !== null ? this.get("formatter")(this.get("boundingBox"), this.get("value")) : null;
+        },
+        syncUI: function(){
+            this.get("contentBox").setContent(this.get("value"));
+            this.get("boundingBox").one(".bloc__label").setContent(this.get("label"));
+        }
     },{
         "ATTRS":{
-            
+            "label": {},
+            "value" : {}, 
+            "formatter": {}
         }
     });
 });     

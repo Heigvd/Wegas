@@ -12,6 +12,7 @@
 YUI.add('wegas-teams-dashboard', function(Y) {
     "use strict";
     Y.Wegas.TeamsDashboard = Y.Base.create("wegas-teams-dashboard", Y.Wegas.Dashboard, [], {
+        BOUNDING_TEMPLATE: "<div class='dashboard dashboard--teams' />",
         initializer: function(){
             var game = Y.Wegas.Facade.Game.cache.getCurrentGame(), cardsData = [],
                 icon = game.get("properties.freeForAll") ? "user": "group",
@@ -19,46 +20,54 @@ YUI.add('wegas-teams-dashboard', function(Y) {
             if(game && game.get("teams").length > 0){
                 game.get("teams").forEach(function(team){
                     if(team.get("@class") !== "DebugTeam" && team.get("players").length > 0){
-                        cardsData.push({
+                        var data = {
+                            id: team.get("id"),
                             title : game.get("properties.freeForAll") ? team.get("players")[0].get("name") : team.get("name"),
                             icon: icon,
                             blocs:context._getBlocs(team)
-                        });
+                        };
+                        cardsData.push(data);
                     }
                 });
                 this.set("cardsData", cardsData);
             }
         },
+        _getBlocs: function(team){
+            var blocs = [];
+            this._addActionsBlocs(blocs, team);
+            this._addInfosBlocs(blocs, team);
+            return blocs;
+        },
         _addInfosBlocs: function(blocs, team){
-            var game = Y.Wegas.Facade.Game.cache.getCurrentGame();
-            blocs.push({
-                title: "Infos",
-                position:"right",
-                items:[{
+            var game = Y.Wegas.Facade.Game.cache.getCurrentGame(),
+                bloc = {
+                    "title": "Infos",
                     "type": "action",
-                    "icon": "info-details",
-                    "label": game.get("properties.freeForAll") ? "Notes" : "Notes and Players infos",
-                    "do": function(){
-                        new Y.Wegas.DetailsTeamModal({
-                            team: team
-                        }).render();
-                    }
-                },{
-                    "type": "action",
-                    "icon": "info-view",
-                    "label": "View playing session",
-                    "do": function(){
-                        window.open("game-lock.html?id=" + team.get("players")[0].get("id"));
-                    }
-                }]
-            });
+                    "items":[{
+                        "icon": "info-details",
+                        "label": game.get("properties.freeForAll") ? "Notes" : "Notes and Players infos",
+                        "do": function(){
+                            new Y.Wegas.DetailsTeamModal({
+                                team: team
+                            }).render();
+                        }
+                    },{
+                        "icon": "info-view",
+                        "label": "View playing session",
+                        "do": function(){
+                            window.open("game-lock.html?id=" + team.get("players")[0].get("id"));
+                        }
+                    }]
+                };
+            
+            blocs.push(bloc);
+            this._addOriginalBloc(team.get("id"), bloc);                        
         },
         _addActionsBlocs: function(blocs, team){
-            blocs.push({
-                title: "Actions",
-                position:"right",
-                items:[{
-                    "type": "action",
+            var bloc = {
+                "title": "Actions",
+                "type": "action",
+                "items":[{
                     "icon": "action-impacts",
                     "label": "Impacts",
                     "do": function(){
@@ -67,7 +76,6 @@ YUI.add('wegas-teams-dashboard', function(Y) {
                         }).render();
                     }
                 },{
-                    "type": "action",
                     "icon": "action-email",
                     "label": "Send real E-Mail",
                     "do": function(){
@@ -81,13 +89,10 @@ YUI.add('wegas-teams-dashboard', function(Y) {
                         }).render();
                     }
                 }]
-            });
-        },
-        _getBlocs: function(team){
-            var blocs = [];
-            this._addActionsBlocs(blocs, team);
-            this._addInfosBlocs(blocs, team);
-            return blocs;
+            };
+            blocs.push(bloc);
+            this._addOriginalBloc(team.get("id"), bloc);                        
+
         }
     });
     
@@ -122,8 +127,6 @@ YUI.add('wegas-teams-dashboard', function(Y) {
                     team: team
                 }));
                 this.set("actions", actions);
-            }else{
-                
             }
         }
     },{

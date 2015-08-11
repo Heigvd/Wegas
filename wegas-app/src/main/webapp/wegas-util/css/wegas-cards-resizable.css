@@ -1,0 +1,68 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
+.resizable .card .card__title{
+    width:calc(100% - 80px);
+}
+
+.resizable.resizable--large .card .card__blocs.card__blocs--monitoring .bloc{
+    width:65px;
+}
+
+.resizable.resizable--medium .card .card__blocs.card__blocs--monitoring{
+    border:none;
+    border-top:solid 2px #d4d4d4;
+    width:100%;
+}
+
+.resizable.resizable--small .card .card__icon{
+    width:25%;
+    height:56px;
+    line-height:56px;
+}
+.resizable.resizable--small .card .card__icon i{
+    height:56px;
+    line-height:56px;
+}
+.resizable.resizable--small .card .card__title{
+    width:75%;
+    height:56px;
+    line-height:56px;
+}
+
+.resizable.resizable--small .card .card__blocs{
+    border:none;
+    border-top:solid 2px #d4d4d4;
+    width:100%;
+}
+
+.resizable.resizable--small .card .card__blocs .title{
+    display:none;
+}
+
+.resizable.resizable--small .card .card__blocs .bloc{
+    width:25%;
+    height:56px;
+    border-top: solid 1px #d4d4d4;
+}
+
+
+.resizable.resizable--small .card .card__blocs.card__blocs--action{
+    width:50%;
+    float:left;
+}
+
+.resizable.resizable--small .card .card__blocs.card__blocs--action{
+    width:50%;
+    float:left;
+}
+
+.resizable.resizable--small .card .card__blocs.card__blocs--action .bloc{
+    width:50%;
+    height:56px;
+    border-top: solid 1px #d4d4d4;
+}
