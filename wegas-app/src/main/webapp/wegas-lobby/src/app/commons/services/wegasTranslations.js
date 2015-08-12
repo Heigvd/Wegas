@@ -697,9 +697,13 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"Archives count",
                                 'fr':"Nombre d'archives"
                             },
-                            'PRIVATE-WS-TITLE':{
-                                'en':"{{workspace}} " + keywords.workspace.singular.en,
-                                'fr':startSentence(keywords.workspace.singular.fr) + " - {{workspace}}"
+                            'PRIVATE-WS-TITLE-LABEL':{
+                                'en':startSentence(keywords.workspace.singular.en) +" for ",
+                                'fr':startSentence(keywords.workspace.singular.fr) +" pour "
+                            },
+                            'PRIVATE-WS-TITLE-NAME':{
+                                'en':"{{workspace}}",
+                                'fr':"{{workspace}}"
                             },
                             'PRIVATE-WS-PLAYER-BTN':{
                                 'en':startSentence(keywords.player.singular.en),
