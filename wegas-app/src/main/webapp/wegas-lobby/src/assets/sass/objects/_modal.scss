@@ -106,12 +106,15 @@
 
 		.modal__title{
 			float:left;
-			width:auto;
+			width:calc(100% - 130px);
 			height:64px;
 			box-sizing: border-box;
 			padding:20px;
 			font-size:24px;
-			font-weight:200px;
+			font-weight:300;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
 			margin:0px;
 		}
 
@@ -139,6 +142,9 @@
 			cursor:pointer;
 			border-bottom:solid 0px $secondary-color;
 			transition:.2s;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
 			&:hover{
 				border-bottom:solid 2px $secondary-color;
 			}
@@ -402,9 +408,12 @@
 			.advanced {
 				@include make-xs-column(12);
 				h3 {
-					color: $danger-color;
-					font-weight: bold;
-					font-size: 1.5em;
+                                    color: $warning-color;
+                                    font-weight: 500;
+                                    font-size: 18px;
+                                    i{
+                                        color: $warning-color;
+                                    }
 				}
 			}
 			.infos--main {

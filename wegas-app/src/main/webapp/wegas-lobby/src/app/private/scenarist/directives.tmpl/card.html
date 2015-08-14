@@ -2,8 +2,8 @@
 <div class="card__description"
       ng-class="{true:'card__description--two-lines', false:'card__description--three-lines'}[scenario.comments == null || scenario.comments == '']" >
   <div class="line">{{scenario.createdTime | date:"dd.MM.yyyy"}}</div>
-  <div class="line line--primary">{{scenario.name | limitTo: MAX_DISPLAYED_CHARS}}<span ng-if="scenario.name.length > MAX_DISPLAYED_CHARS">...</span></div>
-  <div ng-if="!((scenario.comments == null) || (scenario.comments == ''))" class="line line--optional">{{scenario.comments | limitTo: MAX_DISPLAYED_CHARS}}<span ng-if="scenario.comments.length > MAX_DISPLAYED_CHARS">...</span></div>
+  <div class="line line--primary">{{scenario.name}}</div>
+  <div ng-if="!((scenario.comments == null) || (scenario.comments == ''))" class="line line--optional">{{scenario.comments}}</div>
 </div>
 <div class="card__actions">
   <a class="button button--medium button--round button--default-reverse button--label-off button--settings" title="{{'SCENARIST-CARD-SETTINGS-BTN' | translate}}" ui-sref=".settings({scenarioId: scenario.id})">

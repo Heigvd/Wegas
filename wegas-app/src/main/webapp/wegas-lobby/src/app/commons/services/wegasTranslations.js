@@ -1011,17 +1011,13 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"No current " + keywords.session.singular.en + " with the name ",
                                 'fr':"Aucune "+ keywords.session.singular.fr+ " en cours avec le nom "
                             },
-                            'TRAINER-CARD-ACCESS-TITLE':{
-                                'en':"Access to new " + keywords.player.plural.en,
-                                'fr':"Accès pour nouveaux " + keywords.player.plural.fr
-                            },
                             'TRAINER-CARD-ACCESS-CLOSE':{
-                                'en':"No other "+ keywords.player.singular.en +" can join",
-                                'fr':keywords.token.singular.fr +" désactivée"
+                                'en':"Close to new "+ keywords.player.plural.en,
+                                'fr':"Fermé aux nouveaux " + keywords.player.plural.fr
                             },
                             'TRAINER-CARD-ACCESS-OPEN':{
-                                'en':keywords.player.plural.en + " can join with key :",
-                                'fr':"Accessible avec la clé :"
+                                'en':"Open to new " + keywords.player.plural.en,
+                                'fr':"Ouvert aux nouveaux " + keywords.player.plural.fr
                             },
                             'TRAINER-CARD-SETTINGS-BTN':{
                                 'en':"Settings",
@@ -1203,7 +1199,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
                             'SCENARIST-MODALE-USERS-CREATE-CHECKBOX':{
                                 'en':"Create "+ keywords.session.singular.en +" from " + keywords.scenario.singular.en,
-                                'fr':"Créer une "+ keywords.session.singular.fr +" à partire du " + keywords.scenario.singular.fr
+                                'fr':"Créer une "+ keywords.session.singular.fr +" depuis le " + keywords.scenario.singular.fr
                             },
                             'SCENARIST-MODALE-USERS-REMOVE-BTN':{
                                 'en':"Remove access for this user",

@@ -14,11 +14,10 @@ $card-margin-size: 8px;
     transition:.3s;
     clear:both;
     @include material-shadow(1);
-
+    
     &:hover{
         @include material-shadow(2);
     }
-
 
     .card__description{
         float:left;
@@ -29,15 +28,24 @@ $card-margin-size: 8px;
             margin:0px;
             padding:$card-margin-size/2 0px; 
             color:#555555;
+            box-sizing:border-box;
+            width:100%;
+            overflow:hidden;
+            text-overflow:ellipsis;
+            white-space:nowrap;
+            
             &.line--primary{
                 font-weight:500;
             }
+            
             &.line--optionnal{
-                font-style: italic;
+                font-style:italic;
             }
+            
             &:first-child{
                 padding-top:0px;
             }
+            
             &:last-child{
                 padding-bottom:0px;
             }
@@ -54,23 +62,36 @@ $card-margin-size: 8px;
         .card__actions__access{
             float:left;
             width:210px;
+
             .line{
                 font-size:14px;
                 padding:2px 2px 4px 2px;
-            }
+            }            
             .choice{
                 float:left;
             }
             .key-label{
-                margin:0px 4px;
                 float:left;
-            }
-            .key{
-                font-weight:500;
-                text-align:right;
-                margin-right:12px;
-            }
+            
+                .key{
+                    display:block;
+                    float:left;
+                    width:162px;
+                    font-weight:500;
 
+                    .key__popup{
+                        display:block;
+                        position:absolute;
+                        top:0px;
+                        left:0px;
+                    }
+                }
+                &.key-label--close{
+                    .key{
+                        display:none;
+                    }
+                }
+            }
         }
         .button{
             display: block;
@@ -150,17 +171,18 @@ $card-margin-size: 8px;
         &.ng-leave {
           animation: bounceOut 1s;
         }
-        .card__illustration {
-            @include make-xs-column(2);
-        }
         .card__description {
-            @include make-xs-column(4);
+            width:calc(100% - 464px);
         }
         .card__detailled-actions {
-            @include make-xs-column(4);
-        }
-        .card__actions {
-            @include make-xs-column(2);
+            width: 260px;
+            padding:18px 16px;
+            float:left;
+            ul {
+                padding: 0px;
+                margin: 0px;
+                list-style-type: none;
+            }
         }
     }
     
@@ -211,18 +233,12 @@ $card-margin-size: 8px;
             }
         }
     }
+
     
     &.card--trainer-session{
         .card__description{
             width:calc(100% - 612px);
             box-sizing:border-box;
-            .line{
-                width:100%;
-                box-sizing:border-box;
-                overflow:hidden;
-                white-space: nowrap;
-                text-overflow: ellipsis;
-            }
         }
         
         @media screen and (max-width: 800px) {
@@ -230,5 +246,40 @@ $card-margin-size: 8px;
                 width: calc(100% - 96px);
             }
 	}
+    }
+    &.card--scenarist-scenario{
+        .card__description{
+            width:calc(100% - 460px);
+            box-sizing:border-box;
+        }
+        @media screen and (max-width: 659px) {
+            .card__description{
+                width:calc(100% - 96px);
+            }
+            .card__actions{
+                float:right;
+                clear:both;
+                border-top:solid 1px $border;
+                width:100%;
+                .button{
+                    margin-bottom:4px;
+                    &.button--info{
+                        float:right;
+                    }
+                }
+                
+            }
+        }
+        @media screen and (max-width: 460px) {
+            .card__actions{
+                .button{
+                    &.button--info{
+                        float:left;
+                    }
+                }
+            }
+        }
+        
+
     }
 }
