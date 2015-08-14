@@ -8,7 +8,8 @@
 </div>
 <div class="card__actions">
     <div class="card__actions__access">
-      <div class="line">{{'TRAINER-CARD-ACCESS-TITLE' | translate}}</div>
+      <div ng-if="!open" class="line">{{'TRAINER-CARD-ACCESS-CLOSE' | translate}}</div>
+      <div ng-if="open" class="line">{{'TRAINER-CARD-ACCESS-OPEN' | translate}}</div>      
       <label 
           class="choice choice--toogle">
           <div class="choice__box">
@@ -16,8 +17,7 @@
               <div class="choice__box__display"></div>
           </div>
       </label>
-      <div ng-if="!open" class="key-label">{{'TRAINER-CARD-ACCESS-CLOSE' | translate}}</div>
-      <div ng-if="open" class="key-label">{{'TRAINER-CARD-ACCESS-OPEN' | translate}}</div><div ng-if="open" class="key">{{session.token}}</div>
+      <div class="key-label" ng-class="{true:'key-label--open', false:'key-label--close'}[open]"><a clip-title="Click to copy access key : {{session.token}}" clip-click-fallback="fallback(session.token)" clip-copy="session.token" class="key" session-access-key>{{session.token}}</a></div>
     </div>
     <a class="button button--medium button--round button--default-reverse button--label-off button--settings" title="{{'TRAINER-CARD-SETTINGS-BTN' | translate}}" ui-sref=".settings({id: session.id})">
       <span class="button__label">{{'TRAINER-CARD-SETTINGS-BTN' | translate}}</span>

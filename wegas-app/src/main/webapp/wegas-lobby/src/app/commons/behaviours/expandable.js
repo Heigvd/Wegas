@@ -28,4 +28,4 @@ angular.module('wegas.behaviours.expandable', [])
             scope.$emit('collapse');
         });
     };
-});        
+});

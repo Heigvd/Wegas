@@ -1,6 +1,10 @@
 angular.module('private.trainer.directives', [
-    'wegas.behaviours.repeat.autoload'
+    'wegas.behaviours.repeat.autoload',
+    'ngClipboard'
 ])
+    .config(['ngClipProvider', function(ngClipProvider) {
+        ngClipProvider.setPath("wegas-lobby/bower_components/zeroclipboard/dist/ZeroClipboard.swf");
+    }])
     .directive('trainerSessionsIndex', function() {
         return {
             templateUrl: 'app/private/trainer/directives.tmpl/index.html',
@@ -154,7 +158,7 @@ angular.module('private.trainer.directives', [
             }
         };
     })
-    .directive('trainerSession', function(Flash) {
+    .directive('trainerSession', function(ngClip, Flash) {
         return {
             templateUrl: 'app/private/trainer/directives.tmpl/card.html',
             scope: {
@@ -163,12 +167,35 @@ angular.module('private.trainer.directives', [
                 editAccess: "="
             },
             link: function(scope, element, attrs) {
-                // Public parameters
+                scope.fallback = function(copy) {
+                    window.prompt('Press cmd+c to copy the text below.', copy);
+                };
+                
+                scope.setTitleAfterCopy = function(){
+                    console.log(attrs);
+                };
                 scope.open = true;
+                console.log(scope.session.access);
                 if (scope.session.access !== "OPEN") {
                     scope.open = false;
                 }
                 scope.ServiceURL = ServiceURL;
             }
-        }
+        };
+    })
+    .directive('sessionAccessKey', function() {
+        return function(scope, element, attrs) {
+            var popup;
+            $(element).on("click", function(e){
+                popup.text("Copied");
+            });
+            $(element).on("mouseover", function(e){
+                popup = $("<div>").addClass("key__popup");
+                popup.text(attrs.clipTitle);
+                $(element).append(popup);
+            });
+            $(element).on("mouseout", function(e){
+                popup.remove();
+            });
+        };
     });
