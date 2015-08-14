@@ -485,7 +485,6 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en': "No " + keywords.scenario.singular.en + " to update",
                                 'fr': "Pas de " + keywords.scenario.singular.fr + " à mettre à jour"
                             },
-
                             'COMMONS-SCENARIOS-VERSIONS-FIND-FLASH-SUCCESS': {
                                 'en': "Versions loaded",
                                 'fr': "Versions chargées"
