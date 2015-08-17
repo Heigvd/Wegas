@@ -192,7 +192,7 @@ angular.module('private.trainer.directives', [
             $(element).on("mouseover", function(e){
                 popup = $("<div>").addClass("key__popup");
                 popup.text(attrs.clipTitle);
-                $(element).append(popup);
+                $(element).parent().append(popup);
             });
             $(element).on("mouseout", function(e){
                 popup.remove();

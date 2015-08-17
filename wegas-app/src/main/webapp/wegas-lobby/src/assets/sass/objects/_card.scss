@@ -60,8 +60,11 @@ $card-margin-size: 8px;
     .card__actions{
         float:right;
         .card__actions__access{
+            display:block;
+            position:relative;
             float:left;
-            width:200px;
+            width:190px;
+            height:100%;
 
             .line{
                 font-size:14px;
@@ -71,22 +74,48 @@ $card-margin-size: 8px;
                 float:left;
             }
             .key-label{
+                width:142px; 
+                height:24px;
+                padding-left:8px;
+                box-sizing: border-box;
                 float:left;
-            
+                
+                &:before{
+                    display: block;
+                    position: relative;
+                    float: left;
+                    font-size: 18px;
+                    width: 24px;
+                    height: 24px;
+                    content: "d";
+                    color:#828282;
+                    font-family: "wegas-icons-font";
+                }
+                .key__popup{
+                    display:block;
+                    position:absolute;
+                    width:128px;
+                    height:48px;
+                    background:#666;
+                    color:white;
+                    top:0px;
+                    z-index:99;
+                    right:-132px;
+                    
+                }
                 .key{
                     display:block;
-                    float:left;
-                    width:152px;
+                    width: calc(100% - 24px);
+                    text-overflow:ellipsis;
+                    overflow:hidden;
+                    white-space: nowrap;
                     font-weight:500;
-
-                    .key__popup{
-                        display:block;
-                        position:absolute;
-                        top:0px;
-                        left:0px;
-                    }
                 }
+                
                 &.key-label--close{
+                    &:before{
+                        color:#a9a9a9;
+                    }
                     .key{
                         display:none;
                     }
@@ -237,7 +266,7 @@ $card-margin-size: 8px;
     
     &.card--trainer-session{
         .card__description{
-            width:calc(100% - 612px);
+            width:calc(100% - 592px);
             box-sizing:border-box;
         }
         
