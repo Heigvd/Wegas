@@ -5,6 +5,8 @@
  * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
+/* global Chartist */
+
 /**
  * @fileoverview
  * @author Maxence Laurent (maxence.laurent gmail.com)
@@ -30,6 +32,7 @@ YUI.add("wegas-review-widgets", function(Y) {
         CONTENT_TEMPLATE: "<div>" +
             "<div class=\"buttons\"></div>" +
             "<div class=\"summary\"></div>" +
+            "<div class=\"charts\"></div>" +
             "</div>",
         initializer: function() {
             this.handlers = [];
@@ -60,6 +63,11 @@ YUI.add("wegas-review-widgets", function(Y) {
                 visible: true
                     //}).render(this.get(CONTENTBOX));
             }).render(this.get(CONTENTBOX).one(".buttons"));
+            this.refreshButton = new Y.Button({
+                label: "refresh",
+                visible: true
+                    //}).render(this.get(CONTENTBOX));
+            }).render(this.get(CONTENTBOX).one(".buttons"));
         },
         /**
          * @function
@@ -71,6 +79,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             this.dispatchButton.on("click", this.onDispatch, this);
             this.notifyButton.on("click", this.onNotify, this);
             this.closeButton.on("click", this.onClose, this);
+            this.refreshButton.on("click", this.syncUI, this);
         },
         /**
          * @function
@@ -82,7 +91,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             Wegas.Facade.Variable.script.remoteEval("ReviewHelper.summarize('" + prd.get("name") + "');", {
                 on: {
                     success: Y.bind(function(e) {
-                        this.syncSummary(e.response.entity.get("val").summary);
+                        this.syncSummary(e.response.entity.get("val"));
                     }, this),
                     failure: Y.bind(function() {
                     }, this)
@@ -94,9 +103,26 @@ YUI.add("wegas-review-widgets", function(Y) {
             table.push(content);
             table.push("</" + td + ">");
         },
-        syncSummary: function(summary) {
+        getInfoFromSummary: function(summary) {
+            if (summary.type === "GradeSummary") {
+                return  [summary.mean, summary.median, summary.sd];
+            }
+            else if (summary.type === "TextSummary") {
+                return [summary.averageNumberOfWords, summary.averageNumberOfCharacters];
+            } else {
+                return ["n/a"];
+            }
+            return ["n/a"];
+        },
+        syncSummary: function(data) {
             // TODO make something modern....
-            var output, key, line;
+            var i, j, info, output, key, line,
+                summary = data.summary,
+                evalSummary = data.evaluations,
+                evals,
+                node, ev, descriptor,
+                prd = this.get("variable.evaluated");
+
             output = ["<h1>Summary</h1>", "<table>"];
 
             this.addCell(output, "#", "th");
@@ -111,12 +137,158 @@ YUI.add("wegas-review-widgets", function(Y) {
                 this.addCell(output, line.status);
                 this.addCell(output, line.done);
                 this.addCell(output, line.commented);
+
+                for (i in line.review) {
+                    info = this.getInfoFromSummary(line.review[i].summary.get("val"))
+                    for (j = 0; j < info.length; j += 1) {
+                        this.addCell(output, info[j]);
+                    }
+                }
+
+                for (i in line.comments) {
+                    info = this.getInfoFromSummary(line.comments[i].summary.get("val"))
+                    for (j = 0; j < info.length; j += 1) {
+                        this.addCell(output, info[j]);
+                    }
+                }
+
                 output.push("</tr>");
             }
             output.push("</table>");
             Y.log(summary);
 
             this.get(CONTENTBOX).one(".summary").setContent(output.join(""));
+
+            node = this.get(CONTENTBOX).one(".charts");
+            node.setContent("");
+            node.append("<h1>Charts</h1>");
+            node.append("<div class=\"feedback\"></div>")
+            node.append("<div class=\"comments\"></div>")
+
+            this.buildCharts(prd.get("feedback").get("evaluations"), node.one(".feedback"), evalSummary);
+            this.buildCharts(prd.get("fbComments").get("evaluations"), node.one(".comments"), evalSummary);
+        },
+        createGradeChart: function(klass, summary, descriptor) {
+            var min, max, data, options, i, bar;
+            min = summary.min;
+            max = summary.max;
+
+            data = {
+                labels: [],
+                series: [{
+                        "name": descriptor.get("name"),
+                        data: []
+                    }]
+            };
+
+            options = {
+                width: 400,
+                height: 250
+            };
+
+            for (i in summary.histogram) {
+                bar = summary.histogram[i];
+                data.labels.push("[" + bar.min.toFixed(2) + "," + bar.max.toFixed(2) + "[");
+                data.series[0].data.push(bar.count);
+            }
+            this.chart = new Chartist.Bar(klass, data, options);
+
+            
+        },
+        createCategoryChart: function(klass, summary, descriptor) {
+            var min, max, data, options, key;
+            min = summary.min;
+            max = summary.max;
+
+            data = {
+                labels: [],
+                series: [{
+                        "name": descriptor.get("name"),
+                        data: []
+                    }]
+            };
+
+            options = {
+                width: 400,
+                height: 250
+            };
+
+            for (key in summary.histogram) {
+                data.labels.push(key);
+                data.series[0].data.push(summary.histogram[key]);
+            }
+            this.chart = new Chartist.Bar(klass, data, options);
+        },
+        buildCharts: function(evals, node, summary) {
+            var i, evD, klass, data, math;
+            for (i in evals) {
+                evD = evals[i];
+                klass = "eval-" + evD.get("id");
+                node.append("<div class=\"evaluation " + klass + "\">" +
+                    "<div class=\"title\"></div>" +
+                    "<div class=\"ct-chart chart\"></div>" +
+                    "<div class=\"legend\"></div>" +
+                    "</div>");
+                data = summary[evD.get("id")].get("val");
+                if (evD.get("@class") === "GradeDescriptor") {
+                    if (Y.Lang.isNumber(data.sd)) {
+/*
+math = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">" + 
+  "<mrow>" +
+    "<mstyle displaystyle=\"true\" scriptlevel=\"0\"> " +
+      "<mrow> " +
+        "<mrow> " +
+          "<mover> " +
+            "<mi>x</mi> " +
+            "<mo stretchy=\"false\">¯<!-- ¯ --></mo> " +
+          "</mover> " +
+        "</mrow> " +
+      "<mo>=</mo>" +
+      "<mn>"  + data.mean.toFixed(2) + "</mn>" +
+      "<mo>;</mo>" +        
+      "</mrow> " +
+      "<mrow>"+
+        "<mrow>"+
+          "<mover> " +
+            "<mi>x</mi> " +
+            "<mo stretchy=\"false\">~<!-- ~ --></mo> " +
+          "</mover> " +
+        "</mrow> " +
+      "</mrow> " +
+      "<mo>=</mo>" +
+      "<mn>"  + data.median.toFixed(2) + "</mn>" +
+      "<mo>;</mo>" +
+      "<mrow> " +
+        "<mi>σ<!-- σ --></mi> " +
+      "</mrow> " +
+      "<mo>=</mo>" +
+      "<mn>"  + data.sd.toFixed(2) + "</mn>" +
+      "<mo>;</mo>" +
+    "</mstyle> " +
+  "</mrow> " +
+"</math>";*/
+                        this.createGradeChart("." + klass + " .chart", data, evD);
+                        node.one("." + klass + " .title").setContent("<h3>" + evD.get("name") + "</h3>");
+                        //node.one("." + klass + " .legend").append(math);
+                        node.one("." + klass + " .legend").append("<p>" +
+                        "avg: " + data.mean.toFixed(2) +
+                        "; med: " + data.median.toFixed(2) + 
+                        "; &sigma;: " + data.sd.toFixed(2) + 
+                        "; bounds: [" + data.min.toFixed(2) + "," + data.min.toFixed(2) + "]" +
+                        " </p>");
+                        node.one("." + klass + " .legend").append("<p>based on " + data.numberOfValues + "/" + summary.maxNumberOfValue + " values</p>");
+                    }
+                } else if (evD.get("@class") === "CategorizedEvaluationDescriptor") {
+                    this.createCategoryChart("." + klass + " .chart", summary[evD.get("id")].get("val"), evD);
+                    node.one("." + klass + " .title").setContent("<h3>" + evD.get("name") + "</h3>");
+                    node.one("." + klass + " .legend").append("<p>based on " + data.numberOfValues + "/" + summary.maxNumberOfValue + " values</p>");
+                } else if (evD.get("@class") === "TextEvaluationDescriptor") {
+                    node.one("." + klass + " .title").setContent("<h3>" + evD.get("name") + "</h3>");
+                    node.one("." + klass + " .chart").append("<p> Average number of words: " + data.averageNumberOfWords.toFixed(2) + "</p>");
+                    node.one("." + klass + " .chart").append("<p>Average number of characters: " + data.averageNumberOfCharacters.toFixed(2) + "</p>");
+                    node.one("." + klass + " .legend").append("<p>based on " + data.numberOfValues + "/" + summary.maxNumberOfValue + " values</p>");
+                }
+            }
         },
         /**
          * @function

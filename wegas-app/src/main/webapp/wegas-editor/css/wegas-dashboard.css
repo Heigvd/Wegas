@@ -910,11 +910,11 @@
 }
 
 .yui3-skin-sam .wegas-form .wegas-sendmail-content .mce-panel iframe{
-    height:160px !important;
+    height:100% !important;
 }
 
 .yui3-skin-sam .wegas-form .modal--content-basics .mce-panel iframe{
-    height:120px !important; 
+    height:100% !important; 
 }
 
 .yui3-skin-sam div.inputEx-RadioField-choice{
