@@ -468,6 +468,41 @@ var PMGHelper = (function() {
         return lookupBean("IterationFacade").find(id);
     }
 
+    function sendManual() {
+        var phaseNumber = PMGHelper.getCurrentPhaseNumber(),
+            auto = PMGHelper.automatedReservation(),
+            lang = I18n.lang(),
+            file, autoSuf = (auto ? "aut" : "man");
+
+        lang = "fr"; // TODO remove when english manuals will be available
+
+        switch (phaseNumber) {
+            case 1:
+                file = "AvantProjet_" + lang + ".pdf";
+                break;
+            case 2:
+                file = "Planification_" + autoSuf + "_" + lang + ".pdf";
+                break;
+            case 3:
+                file = "Realisation_" + autoSuf + "_" + lang + ".pdf";
+                break;
+            default:
+                file = null;
+                break;
+        }
+
+        if (file) {
+            Variable.findByName(gameModel, "news").sendDatedMessage(self, I18n.t("messages.manual.from"),
+                getCurrentPeriodFullName(), I18n.t("messages.manual.subject", {
+                phase: getCurrentPhaseName()
+            }), I18n.t("messages.manual.content", {
+                phase: getCurrentPhaseName(),
+                href: "http://www.albasim.ch/wp-content/uploads/" + file
+            }), []);
+        }
+    }
+
+
     return {
         automatedReservation: function() {
             return automatedReservation();
@@ -566,6 +601,9 @@ var PMGHelper = (function() {
         },
         findIteration: function(iterationId){
             return findIteration(iterationId);
+        },
+        sendManual: function() {
+            return sendManual();
         }
     };
 

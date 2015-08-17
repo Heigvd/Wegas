@@ -1118,7 +1118,6 @@
                         "children": [
                             {
                                 "type": "Chart",
-                                "chartType": "combo",
                                 "variables": [
                                     {
                                         "name": "managementApproval"
@@ -1127,17 +1126,13 @@
                                         "name": "userApproval"
                                     }
                                 ],
-                                "hStart": 0,
-                                "hStep": 1,
-                                "hMinEnd": {
+                                "low": 0,
+                                "high": 200,
+                                "width": "100%",
+                                "xMinMax": {
                                     "name": "executionPeriods"
                                 },
-                                "minValue": 0,
-                                "maxValue": 200,
-                                "vStepValue": 25,
-                                "legendPosition": "bottom",
-                                "horizontalGridlines": true,
-                                "verticalGridlines": true
+                                "showXLabels": false
                             }
                         ]
                     },
@@ -1150,7 +1145,6 @@
                         "children": [
                             {
                                 "type": "Chart",
-                                "chartType": "combo",
                                 "variables": [
                                     {
                                         "name": "costs",
@@ -1158,24 +1152,19 @@
                                     },
                                     {
                                         "name": "delay",
-                                        "label": "Shedule"
+                                        "label": "Schedule"
                                     },
                                     {
                                         "name": "quality",
                                         "label": "Quality"
                                     }
                                 ],
-                                "hStart": 0,
-                                "hStep": 1,
-                                "hMinEnd": {
+                                "low": 0,
+                                "high": 200,
+                                "width": "100%",
+                                "xMinMax": {
                                     "name": "executionPeriods"
-                                },
-                                "minValue": 0,
-                                "maxValue": 200,
-                                "vStepValue": 25,
-                                "legendPosition": "bottom",
-                                "horizontalGridlines": true,
-                                "verticalGridlines": true
+                                }
                             }
                         ]
                     }
@@ -1505,14 +1494,7 @@
                         "type": "Chart",
                         "width": "90%",
                         "height": "400px",
-                        "chartType": "combo",
-                        "horizontalGridlines": true,
-                        "legendPosition": "bottom",
-                        "verticalGridlines": true,
-                        "hMinEnd": {
-                            "name": "executionPeriods"
-                        },
-                        "minValue": 0,
+                        "low": 0,
                         "variables": [
                             {
                                 "name": "planedValue",
