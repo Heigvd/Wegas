@@ -530,72 +530,63 @@ tbody .past .activity {
     display: block;
     float: left;
     text-align: center
-;
+        ;
 }
 
 
 /* Iteration Chart */
-.ct-line {
-  stroke: red;
-  stroke-width: 2px;
-  /* Create a dashed line with a pattern */
-}
-
-.ct-point {
-  stroke-width: 5px;
-}
 
 /* Initial Planning, not started*/
-.iteration-not-started .ct-series-a .ct-line{
+.wegas-app-default .iteration-chart .iteration-not-started .ct-series-a .ct-line{
     stroke : #68ccc5;
 }
-.iteration-not-started .ct-series-a .ct-point{
+.wegas-app-default .iteration-chart .iteration-not-started .ct-series-a .ct-point{
     stroke: #68ccc5;
 }
-.iteration-not-started .ct-series-a .ct-area{
+.wegas-app-default .iteration-chart .iteration-not-started .ct-series-a .ct-area{
     fill : #68ccc5;
     fill-opacity: .3;
 }
 
 /* Planning: started, completed*/
-.ct-series-a .ct-point,
-.ct-series-a .ct-line{
+.wegas-app-default .iteration-chart .ct-series-a .ct-point,
+.wegas-app-default .iteration-chart .ct-series-a .ct-line{
     stroke : #878787;
 }
-.ct-series-a .ct-area{
+.wegas-app-default .iteration-chart .ct-series-a .ct-area{
     fill : #878787;
     fill-opacity: .3;
 }
 
 
 /* Done */
-.ct-series-b .ct-point,
-.ct-series-b .ct-line {
+.wegas-app-default .iteration-chart .ct-series-b .ct-point,
+.wegas-app-default .iteration-chart .ct-series-b .ct-line {
     stroke : #53a29d;
 }
-.ct-series-b .ct-area{
+.wegas-app-default .iteration-chart .ct-series-b .ct-area{
     fill : #53a29d;
     fill-opacity: .6;
 }
 
 
 /* Projection */
-.ct-series-c .ct-point,
-.ct-series-c .ct-line {
+.wegas-app-default .iteration-chart .ct-series-c .ct-point,
+.wegas-app-default .iteration-chart .ct-series-c .ct-line {
     stroke : #68ccc5;
 }
-.ct-series-c .ct-area {
+.wegas-app-default .iteration-chart .ct-series-c .ct-area {
     fill : #68ccc5;
     fill-opacity: .3;
 }
 
 
 /* Projection */
-.ct-series-d .ct-point,
-.ct-series-d .ct-line {
-    /* stroke: rgb(221, 84, 0); */
+.wegas-app-default .iteration-chart .ct-series-d .ct-point,
+.wegas-app-default .iteration-chart .ct-series-d .ct-line {
+    stroke: rgb(221, 84, 0);
 }
-.ct-series-d .ct-area{
+.wegas-app-default .iteration-chart .ct-series-d .ct-area{
     /*fill: #68ccc5;
     fill-opacity: 0;*/
 }
