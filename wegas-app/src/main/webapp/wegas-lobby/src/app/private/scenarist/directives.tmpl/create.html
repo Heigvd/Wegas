@@ -1,4 +1,7 @@
 <h3>{{'SCENARIST-INDEX-ADD-TITLE' | translate}}</h3>
+<a title="{{'VIEW-CLOSE' | translate}}" class="view__button-collapse button button--medium button--round button--default-reverse button--label-off button--close" collapser>
+    <span class="button__label">{{'VIEW-CLOSE' | translate}}</span>
+</a>
 <form class="form form__create-scenario" ng-submit="createScenario()">
   <div class="form__row">
     <input class="form__row__entry input input--small" type="text" id="session-token" ng-model="newScenario.name" placeholder="{{'SCENARIST-INDEX-ADD-NAME-INPUT' | translate}}" autocomplete="off">

@@ -21,6 +21,7 @@ angular.module('Wegas', [
     'wegas.service.auth',
     'wegas.service.wegasTranslations',
     'wegas.directives.illustrations',
+    'wegas.behaviours.expandable',
     'wegas.behaviours.confirm',
     'wegas.behaviours.modals',
     'wegas.behaviours.tools',

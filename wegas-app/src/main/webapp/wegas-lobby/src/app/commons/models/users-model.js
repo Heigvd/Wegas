@@ -224,7 +224,9 @@ angular.module('wegas.models.users', [])
 
             var deferred = $q.defer();
 
-            if (user.password !== user.password2) {
+            console.log(user.password != user.password2);
+            if (user.password !== user.password2 && user.password !== null 
+                    && user.password !== undefined && user.password2 !== null && user.password2 !== undefined) {
                 $translate('COMMONS-USERS-UPDATE-PASSWORD-FLASH-ERROR').then(function (message) {
                     deferred.resolve(Responses.danger(message, false));
                 });

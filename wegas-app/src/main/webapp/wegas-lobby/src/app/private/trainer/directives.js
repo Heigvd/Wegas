@@ -163,12 +163,13 @@ angular.module('private.trainer.directives', [
                 editAccess: "="
             },
             link: function(scope, element, attrs) {
-                // Public parameters
                 scope.open = true;
+                console.log(scope.session.access);
                 if (scope.session.access !== "OPEN") {
                     scope.open = false;
                 }
                 scope.ServiceURL = ServiceURL;
             }
-        }
-    });
+        };
+    })
+    ;
