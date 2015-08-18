@@ -24,6 +24,7 @@ YUI.add("wegas-inputex-rte", function(Y) {
      */
     RTEField = function(options) {
         RTEField.superclass.constructor.call(this, options);
+        
     };
 
     Y.extend(RTEField, inputEx.Textarea, {
@@ -109,6 +110,10 @@ YUI.add("wegas-inputex-rte", function(Y) {
 
                 //this.editor.on('change', Y.bind(this.sendUpdatedEvt, this));    // Update on editor update
                 this.editor.render();
+                
+                Y.one(this.wrapEl).delegate("click", function(e){
+                    Y.one(this.wrapEl).one(".mce-tinymce").toggleClass("mce--more");
+                },".mce-btn[aria-label='More options']", this);
 
                 //tinymce.createEditor(this.el.id, {});
                 //tinymce.execCommand('mceAddEditor', false, this.el.id);

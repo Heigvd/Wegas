@@ -91,6 +91,11 @@ i18nTable.fr = {
             from: "Suivi de projet",
             subject: "Fin de la tâche \"%task%\"",
             content: "Bonjour, <br /> <br /> Nous vous informons que la tâche \"%task%\" a été terminée %step%. <br /><br />Salutations"
+        },
+        manual: {
+            from: "Suivi de projet",
+            subject: "Manuel pour la phase \"%phase%\"",
+            content: "Vous trouverez <a target=\"_blank\" href=\"%href%\">ici</a> le manuel pour la phase \"%phase%\""
         }
     },
     date: {
