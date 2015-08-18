@@ -154,29 +154,34 @@
             @include make-md-column(6);
             box-sizing:border-box;
             padding:0px;
+            i{
+                padding-right:8px;
+            }
             
             @media screen and (max-width: $screen-md) {
                 width:auto;
                 float:left;
             }
-            @media screen and (max-width: $screen-xs) {
-                font-size:25px;            
+           
+            @media screen and (max-width: 819px) {
+                i + span{
+                    display:none;
+                }
             }
         }
 
         .view__tools{
-            @include make-xs-column(12);
-            @include make-md-column(6);
-            margin-top:28px;
+            margin: 28px 0 8px 0;
             padding:0px;
+            float:right;
+            width:50%;
+            max-width:320px;
             
-            @media screen and (max-width: $screen-md) {
-                clear:both;
-            }
-
-            @media screen and (max-width: 991px) {
-                max-width:480px;
-                margin:0 0 8px 0;
+            @media screen and (max-width: 519px) {
+                clear: both;
+                width: 100%;
+                float: left;
+                margin: 4px 0 12px 0px;
             }
         }
         .view__list{
@@ -486,7 +491,7 @@
         }
     }
     
-     &.view--menu{
+    &.view--menu{
         .view__headding-workspace{
              @media screen and (max-width: $screen-xs) {
                 width: calc(100% - 198px);
@@ -548,10 +553,13 @@
         display:none;
     }
     .view__button-expand{
-        @media screen and (max-width: $screen-md) {
-            display:block;
-            margin: 20px 0px 0px 12px;
-            float:left;
+        &.button{
+            @media screen and (max-width: $screen-md) {
+                display:block;
+                margin: 24px 12px 0px 12px;
+                padding:16px;
+                float:left;
+            }
         }
     }
     .view__button-collapse{

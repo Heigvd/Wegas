@@ -41,7 +41,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             'admin': { singular:{ en:"administrator", fr:"administrateur"}, plural:{ en:"administrators", fr:"administrateurs"}},
                             'team': { singular:{ en:"team", fr:"équipe"}, plural:{ en:"teams", fr:"équipes"}},
                             'session': { singular:{ en:"session", fr:"partie"}, plural:{ en:"sessions", fr:"parties"}},
-                            'scenario': { singular:{ en:"scenario", fr:"scenario"}, plural:{ en:"scenarios", fr:"scenarios"}},
+                            'scenario': { singular:{ en:"scenario", fr:"scénario"}, plural:{ en:"scenarios", fr:"scénarios"}},
                             'token': { singular:{ en:"access key", fr:"clé d'accès"}, plural:{ en:"access keys", fr:"clés d'accès"}},
                             'workspace': { singular:{ en:"workspace", fr:"espace de travail"}, plural:{ en:"workspaces", fr:"espaces de travail"}}
                         },
@@ -579,6 +579,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'COMMONS-USERS-UPDATE-FLASH-SUCCESS': {
                                 'en': "User updated",
                                 'fr': "Données utilisateur mises à jour"
+                            },
+                            "COMMONS-USERS-UPDATE-PASSWORD-FLASH-ERROR":{
+                                'en': "Error while updating user password",
+                                'fr': "Une erreur est survenue durant la mise à jour du mot de passe de l'utilisateur"
                             },
                             'COMMONS-USERS-UPDATE-FLASH-ERROR': {
                                 'en': "Error while updating user",

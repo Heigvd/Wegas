@@ -59,69 +59,6 @@ $card-margin-size: 8px;
 
     .card__actions{
         float:right;
-        .card__actions__access{
-            display:block;
-            position:relative;
-            float:left;
-            width:190px;
-            height:100%;
-
-            .line{
-                font-size:14px;
-                padding:2px 2px 4px 2px;
-            }            
-            .choice{
-                float:left;
-            }
-            .key-label{
-                width:142px; 
-                height:24px;
-                padding-left:8px;
-                box-sizing: border-box;
-                float:left;
-                
-                &:before{
-                    display: block;
-                    position: relative;
-                    float: left;
-                    font-size: 18px;
-                    width: 24px;
-                    height: 24px;
-                    content: "d";
-                    color:#828282;
-                    font-family: "wegas-icons-font";
-                }
-                .key__popup{
-                    display:block;
-                    position:absolute;
-                    width:128px;
-                    height:48px;
-                    background:#666;
-                    color:white;
-                    top:0px;
-                    z-index:99;
-                    right:-132px;
-                    
-                }
-                .key{
-                    display:block;
-                    width: calc(100% - 24px);
-                    text-overflow:ellipsis;
-                    overflow:hidden;
-                    white-space: nowrap;
-                    font-weight:500;
-                }
-                
-                &.key-label--close{
-                    &:before{
-                        color:#a9a9a9;
-                    }
-                    .key{
-                        display:none;
-                    }
-                }
-            }
-        }
         .button{
             display: block;
             float: left;
@@ -263,11 +200,142 @@ $card-margin-size: 8px;
         }
     }
 
+    &.card--player-session{
+        .card__description{
+            width:calc(100% - 326px);
+            box-sizing:border-box;
+        }
+        
+        @media screen and (max-width: 579px) {
+            .card__description{
+                width: calc(100% - 96px);
+            }
+            .card__actions{
+                width:100%;
+                border-top:solid 1px $border;
+                box-sizing:border-box;
+                .button--info{
+                    float:right;
+                }
+            }
+	}
+    }
     
     &.card--trainer-session{
         .card__description{
             width:calc(100% - 592px);
             box-sizing:border-box;
+        }
+       
+        .card__actions{
+            .card__actions__access{
+                display:block;
+                position:relative;
+                float:left;
+                width:190px;
+                height:100%;
+
+                .line{
+                    font-size:14px;
+                    padding:2px 2px 4px 2px;
+                    
+                    &.line--title-open{
+                        display:none;
+                    }
+                    
+                    &.line--title-close{
+                        display:none;
+                    }
+                }  
+                
+                .choice{
+                    float:left;
+                }
+                .key-label{
+                    width:142px; 
+                    height:24px;
+                    padding-left:8px;
+                    box-sizing: border-box;
+                    float:left;
+
+                    &:before{
+                        display: block;
+                        position: relative;
+                        float: left;
+                        font-size: 18px;
+                        width: 24px;
+                        height: 24px;
+                        content: "d";
+                        color:#828282;
+                        font-family: "wegas-icons-font";
+                    }
+                    .key{
+                        display:block;
+                        width: calc(100% - 24px);
+                        text-overflow:ellipsis;
+                        overflow:hidden;
+                        white-space: nowrap;
+                        font-weight:500;
+                    }
+                }
+                &.card__actions__access--close{
+                    .line--title-close{
+                        display:block;
+                    }
+                    .key-label{
+                        &:before{
+                            color:#a9a9a9;
+                        }
+                        .key{
+                            display:none;
+                        }
+                    }
+                }
+
+                &.card__actions__access--open{
+                    .line--title-open{
+                        display:block;
+                    }
+                }
+            }
+        }
+        
+        @media screen and (max-width: 1116px) {
+            .card__description{
+                width: calc(100% - 492px);
+            }
+            .card__actions{
+                .card__actions__access{
+                    width:100px;
+                    transition: padding .2s;
+
+                    &.card__actions__access--close{
+                        padding-top:18px;
+                        .line--title-close{
+                            display:none;
+                        }
+                    }
+
+                    &.card__actions__access--open{
+                        padding-top:8px;
+                        .line--title-open{
+                            display:none;
+                        }
+                    }
+
+                    .key-label{
+                        float:none;
+                        width:auto;
+                        &:before{
+                            padding-left:4px;
+                        }
+                        .key{
+                            width:100%;
+                            margin:0px;
+                        }
+                    }
+                }
+            }
         }
         
         @media screen and (max-width: 800px) {
@@ -276,6 +344,7 @@ $card-margin-size: 8px;
             }
 	}
     }
+    
     &.card--scenarist-scenario{
         .card__description{
             width:calc(100% - 460px);
