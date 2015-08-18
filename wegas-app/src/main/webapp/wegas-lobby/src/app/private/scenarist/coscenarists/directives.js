@@ -20,7 +20,6 @@ angular
                             response.flash();
                         } else {
                             ctrl.scenario = response.data;
-
                             // Loading permissions
                             PermissionsModel.getScenarioPermissions($stateParams.scenarioId).then(function(response) {
                                 if (response.isErroneous()) {

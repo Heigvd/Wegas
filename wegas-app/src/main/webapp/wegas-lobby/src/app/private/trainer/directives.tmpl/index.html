@@ -1,9 +1,15 @@
-<div class="view view--new-session view--bottom">
+<div class="view view--new-session view--bottom" expandable>
 	<h3>{{'TRAINER-INDEX-ADD-TITLE' | translate}}</h3>
+        <a title="{{'VIEW-CLOSE' | translate}}" class="view__button-collapse button button--medium button--round button--default-reverse button--label-off button--close" collapser>
+            <span class="button__label">{{'VIEW-CLOSE' | translate}}</span>
+        </a>
 	<trainer-sessions-add></trainer-sessions-add>
 </div>
 <div class="view view--sessions-list view--middle">
-	<h3>{{'TRAINER-INDEX-LIST-TITLE' | translate}}</h3>
+    <h3><i class="fa fa-dashboard"></i><span>{{'TRAINER-INDEX-LIST-TITLE' | translate}}</span></h3>
+        <a class="view__button-expand button button--small button--info-reverse" expander>
+            <span class="button__label">{{'TRAINER-INDEX-ADD-TITLE' | translate}}</span>
+        </a>
 	<div class="view__tools">
 		<div class="tool tool--search tool--open">
 			<a class="tool__link"></a>

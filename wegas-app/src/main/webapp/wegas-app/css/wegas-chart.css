@@ -30,68 +30,6 @@
     margin: 5px;
 }
 
-
-.wegas-chart .legend .color.ct-series-a {
-    background-color: #d70206
-}
-
-.wegas-chart .legend .color.ct-series-b {
-    background-color: #f05b4f
-}
-
-.wegas-chart .legend .color.ct-series-c {
-    background-color: #f4c63d
-}
-
-.wegas-chart .legend .color.ct-series-d {
-    background-color: #d17905
-}
-
-.wegas-chart .legend .color.ct-series-e {
-    background-color: #453d3f
-}
-
-.wegas-chart .legend .color.ct-series-f {
-    background-color: #59922b
-}
-
-.wegas-chart .legend .color.ct-series-g {
-    background-color: #0544d3
-}
-
-.wegas-chart .legend .color.ct-series-h {
-    background-color: #6b0392
-}
-
-.wegas-chart .legend .color.ct-series-i {
-    background-color: #f05b4f
-}
-
-.wegas-chart .legend .color.ct-series-j {
-    background-color: #dda458
-}
-
-.wegas-chart .legend .color.ct-series-k {
-    background-color: #eacf7d
-}
-
-.wegas-chart .legend .color.ct-series-l {
-    background-color: #86797d
-}
-
-.wegas-chart .legend .color.ct-series-m {
-    background-color: #b2c326
-}
-
-.wegas-chart .legend .color.ct-series-n {
-    background-color: #6188e2
-}
-
-.wegas-chart .legend .color.ct-series-o {
-    background-color: #a748ca
-}
-
-
 .ct-chart .tooltip {
     position: fixed;
     display: inline-block;
