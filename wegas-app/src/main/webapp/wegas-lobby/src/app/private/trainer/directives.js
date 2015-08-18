@@ -1,10 +1,6 @@
 angular.module('private.trainer.directives', [
-    'wegas.behaviours.repeat.autoload',
-    'ngClipboard'
+    'wegas.behaviours.repeat.autoload'
 ])
-    .config(['ngClipProvider', function(ngClipProvider) {
-        ngClipProvider.setPath("wegas-lobby/bower_components/zeroclipboard/dist/ZeroClipboard.swf");
-    }])
     .directive('trainerSessionsIndex', function() {
         return {
             templateUrl: 'app/private/trainer/directives.tmpl/index.html',
@@ -158,7 +154,7 @@ angular.module('private.trainer.directives', [
             }
         };
     })
-    .directive('trainerSession', function(ngClip, Flash) {
+    .directive('trainerSession', function(Flash) {
         return {
             templateUrl: 'app/private/trainer/directives.tmpl/card.html',
             scope: {
@@ -167,13 +163,6 @@ angular.module('private.trainer.directives', [
                 editAccess: "="
             },
             link: function(scope, element, attrs) {
-                scope.fallback = function(copy) {
-                    window.prompt('Press cmd+c to copy the text below.', copy);
-                };
-                
-                scope.setTitleAfterCopy = function(){
-                    console.log(attrs);
-                };
                 scope.open = true;
                 console.log(scope.session.access);
                 if (scope.session.access !== "OPEN") {
@@ -183,19 +172,4 @@ angular.module('private.trainer.directives', [
             }
         };
     })
-    .directive('sessionAccessKey', function() {
-        return function(scope, element, attrs) {
-            var popup;
-            $(element).on("click", function(e){
-                popup.text("Copied");
-            });
-            $(element).on("mouseover", function(e){
-                popup = $("<div>").addClass("key__popup");
-                popup.text(attrs.clipTitle);
-                $(element).parent().append(popup);
-            });
-            $(element).on("mouseout", function(e){
-                popup.remove();
-            });
-        };
-    });
+    ;

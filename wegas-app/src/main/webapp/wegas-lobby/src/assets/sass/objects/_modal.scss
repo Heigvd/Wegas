@@ -351,6 +351,15 @@
 		}
 	}
 
+        &.modal--profile {
+                .modal__tools {
+			padding:8px 16px;
+			.modal__tools__button{
+				float:right;
+				margin-left:8px;
+			}
+		}
+        }
 	&.modal--settings{
 		.modal__content{
         	@include make-row(0px);
