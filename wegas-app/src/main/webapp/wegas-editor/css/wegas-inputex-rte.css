@@ -15,6 +15,7 @@ html{
     box-sizing:border-box;
     padding: 5px !important;
     margin: 0 !important;
+    overflow-y:auto !important;
 }
 p {
     margin: 0;

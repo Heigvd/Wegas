@@ -22,20 +22,20 @@ angular
                         ctrl.versions = response.data;
                     }
                 });
-            }
+            };
             ctrl.createFork = function (name) {
                 ScenariosModel.restoreVersionHistory(ctrl.scenarioId, name).then(function (response) {
                     response.flash();
                     if (!response.isErroneous()) {
-                        $rootScope.$emit('scenarios', true);
+                        $rootScope.$emit('changeLimit', true);
                     }
                 });
-            }
+            };
             ctrl.copyScenario = function () {
                 ScenariosModel.copyScenario(ctrl.scenarioId).then(function (response) {
                     if (!response.isErroneous()) {
                         response.flash();
-                        $rootScope.$emit('scenarios', true);
+                        $rootScope.$emit('changeLimit', true);
                     }
                 });
             };
@@ -47,7 +47,7 @@ angular
                         ctrl.updateVersions();
                     }
                 });
-            }
+            };
             ScenariosModel.getScenario("LIVE", ctrl.scenarioId).then(function (response) {
                 ctrl.scenario = response.data;
                 ctrl.updateVersions();

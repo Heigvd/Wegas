@@ -113,7 +113,7 @@ public class IntegrationTest {
 
         HttpResponse loginResponse = client.execute(post);
 
-        Assert.assertEquals(HttpStatus.SC_NO_CONTENT, loginResponse.getStatusLine().getStatusCode());
+        Assert.assertEquals(HttpStatus.SC_OK, loginResponse.getStatusLine().getStatusCode());
 
         Header[] headers = loginResponse.getHeaders("Set-Cookie");
         if (headers.length > 0) {

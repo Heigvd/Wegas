@@ -14,7 +14,7 @@
  *
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
-/*global Variable, gameModel, print, Java, javax, com*/
+/*global Variable, gameModel, Java, javax, com, Infinity, StatisticHelper*/
 var ReviewHelper = (function() {
     "use strict";
 
@@ -29,15 +29,127 @@ var ReviewHelper = (function() {
         return ctx.lookup('java:module/' + name);
     }
 
+
+    /*
+     * { 
+     *  "type" : "GradeSummary",
+     *  name: "name1", 
+     *  min: a
+     *  max: b
+     *  mean: _x
+     *  median: ~x
+     *  sd: sd,
+     *  histogram: [{
+     *      min: a,
+     *      max: b,
+     *      nb: count
+     *  },{
+     *  }, ... ,{
+     *  }
+     *  ]
+     * }
+     */
+    function getGradeSummary(values, descriptor) {
+        var stats = StatisticHelper.getNumericStatistics(values, descriptor.getMinValue(), descriptor.getMaxValue());
+
+        stats.type = "GradeSummary";
+        stats.name = descriptor.getName();
+
+        return stats;
+    }
+
+
+    /* 
+     * {
+     *  type" : "CategorizationSummary",
+     *  name: "name2",
+     *  histogram: {
+     *      "CategoryA" : count
+     *      "CategoryB" : count
+     *  }
+     * }
+     */
+    function getCategorizationSummary(values, descriptor) {
+        var cats, i, histogram = {},
+            numberOfValues = values.length;
+        cats = Java.from(descriptor.getCategories());
+
+        for (i = 0; i < cats.length; i += 1) {
+            histogram[cats[i]] = 0;
+        }
+
+        for (i in values) {
+            if (values[i]) {
+                histogram[values[i]] += 1;
+            } else {
+                numberOfValues -= 1;
+            }
+        }
+
+        return {
+            type: "CategorizationSummary",
+            name: descriptor.getName(),
+            numberOfValues: numberOfValues,
+            histogram: histogram
+        };
+    }
+
+    /* {
+     *  type" : "TextSummary",
+     *  name: "name3",
+     *  averageNumberOfWords: ~x
+     *  averageNumberOfCharacters: ~y
+     * }
+     */
+    function getTextSummary(values, descriptor) {
+        var i, wc = 0, cc = 0, r;
+        for (i = 0; i < values.length; i += 1) {
+            r = StatisticHelper.getTextStatistics(values[i]);
+            wc += r.wc;
+            cc += r.cc;
+        }
+        wc /= values.length;
+        cc /= values.length;
+
+        return {
+            type: "TextSummary",
+            name: descriptor.getName(),
+            numberOfValues: values.length,
+            averageNumberOfWords: wc,
+            averageNumberOfCharacters: cc
+        };
+    }
+
+
+    function getEvSummary(values, evDescriptor) {
+        if (values.length === 0) {
+            return {type: "Empty"};
+        } else if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.TextEvaluationDescriptor) {
+            return getTextSummary(values, evDescriptor);
+        } else if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.GradeDescriptor) {
+            return getGradeSummary(values, evDescriptor);
+        } else if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.CategorizedEvaluationDescriptor) {
+            return getCategorizationSummary(values, evDescriptor);
+        } else {
+            return {type: "Error"};
+        }
+    }
+
     function summarize(peerReviewDescriptorName) {
         var prd = Variable.findByName(gameModel, peerReviewDescriptorName),
             pris, pri, reviews, review, evs, ev, evK, i, j, k,
             key, entry, nbRDone, nbRTot, nbRCom, nbRComTotal,
-            result = {},
+            evaluations, evaluationsValues = {}, evDescriptor,
+            evDescriptors = {},
+            result = {}, extra = {},
+            maxNumberOfValue = 0,
             instanceFacade = lookupBean("VariableInstanceFacade");
 
+        evaluations = Java.from(prd.getFeedback().getEvaluations()).concat(Java.from(prd.getFbComments().getEvaluations()));
 
-        print("SUMMARY:");
+        for (i = 0; i < evaluations.length; i += 1) {
+            evaluationsValues[evaluations[i].getId()] = [];
+        }
 
         pris = Java.from(prd.getScope().getVariableInstances().values());
 
@@ -45,7 +157,6 @@ var ReviewHelper = (function() {
             if (pris.hasOwnProperty(i)) {
                 key = i;
                 pri = pris[i];
-                print("I: " + i);
                 if (pris.length > 1 && instanceFacade.findAPlayer(pri).getTeam() instanceof  com.wegas.core.persistence.game.DebugTeam) {
                     // Skip Debug Team
                     continue;
@@ -54,6 +165,7 @@ var ReviewHelper = (function() {
                 entry = {};
 
                 reviews = Java.from(pri.getToReview());
+                maxNumberOfValue += reviews.length;
 
                 nbRDone = nbRTot = reviews.length;
                 entry.comments = {};
@@ -62,16 +174,20 @@ var ReviewHelper = (function() {
                         review = reviews[j];
                         switch (review.getReviewState().toString()) {
                             case "DISPATCHED":
-                                nbRDone--;
+                                nbRDone -= 1;
                                 break;
+                            case "CLOSED":
                             case "COMPLETED":
+                                // Comments about reviews
                                 evs = Java.from(review.getComments());
                                 for (k in evs) {
                                     if (evs.hasOwnProperty(k)) {
                                         ev = evs[k];
-                                        evK = ev.getDescriptor().getName();
-                                        entry.comments[evK] = entry.comments[evK] || [];
-                                        entry.comments[evK].push(ev.getValue());
+                                        evK = ev.getDescriptor().getId();
+                                        evDescriptors[evK] = ev.getDescriptor();
+                                        entry.comments[evK] = entry.comments[evK] || {summary: {}, values: []};
+                                        entry.comments[evK].values.push(ev.getValue());
+                                        evaluationsValues[evK].push(ev.getValue());
                                     }
                                 }
                                 break;
@@ -81,6 +197,9 @@ var ReviewHelper = (function() {
                     }
                 }
                 entry.done = nbRDone + " / " + nbRTot;
+                for (evK in entry.comments) {
+                    entry.comments[evK].summary = getEvSummary(entry.comments[evK].values, evDescriptors[evK]);
+                }
 
                 reviews = Java.from(pri.getReviewed());
                 nbRCom = nbRComTotal = 0;
@@ -93,16 +212,18 @@ var ReviewHelper = (function() {
                         switch (review.getReviewState().toString()) {
                             case "COMPLETED":
                             case "CLOSED":
-                                nbRCom++;
+                                nbRCom += 1;
                                 /*falls through*/
                             case "NOTIFIED":
-                                nbRComTotal++;
+                                nbRComTotal += 1;
                                 for (k in evs) {
                                     if (evs.hasOwnProperty(k)) {
                                         ev = evs[k];
-                                        evK = ev.getDescriptor().getName();
-                                        entry.review[evK] = entry.review[evK] || [];
-                                        entry.review[evK].push(ev.getValue());
+                                        evK = ev.getDescriptor().getId();
+                                        evDescriptors[evK] = ev.getDescriptor();
+                                        entry.review[evK] = entry.review[evK] || {summary: {}, values: []};
+                                        entry.review[evK].values.push(ev.getValue());
+                                        evaluationsValues[evK].push(ev.getValue());
                                     }
                                 }
                                 break;
@@ -112,6 +233,9 @@ var ReviewHelper = (function() {
                     }
                 }
                 entry.commented = nbRCom + " / " + nbRComTotal;
+                for (evK in entry.review) {
+                    entry.review[evK].summary = getEvSummary(entry.review[evK].values, evDescriptors[evK]);
+                }
 
                 if (nbRComTotal > 0) {
                     if (nbRComTotal === nbRCom) {
@@ -136,8 +260,16 @@ var ReviewHelper = (function() {
                 result[key] = entry;
             }
         }
-        return {summary: result};
+
+        for (i = 0; i < evaluations.length; i += 1) {
+            evDescriptor = evaluations[i];
+            extra[evDescriptor.getId()] = getEvSummary(evaluationsValues[evDescriptor.getId()], evDescriptor);
+        }
+        extra.maxNumberOfValue = maxNumberOfValue;
+
+        return {summary: result, evaluations: extra};
     }
+
 
     return {
         summarize: function(peerReviewDescriptorName) {

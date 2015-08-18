@@ -174,9 +174,12 @@ YUI().use(function(Y) {
                 requires: ["inputex-textarea", "button"],
                 ws_provides: "Chat"
             },
+            "wegas-chart-css": {
+                type: CSS
+            },
             "wegas-chart": {
                 path: "js/widget/wegas-chart-min.js",
-                requires: ["charts", "charts-legend"],
+                requires: ["chartist", "wegas-chart-css"],
                 ws_provides: "Chart"
             },
             "wegas-langselector": {
@@ -344,6 +347,9 @@ YUI().use(function(Y) {
                 ws_provides: ["EntityChooser"]
             },
             "wegas-entitychoosercss": {
+                type: CSS
+            },
+            "wegas-chartistcss": {
                 type: CSS
             }
         }
@@ -760,6 +766,7 @@ YUI().use(function(Y) {
                 requires: ["wegas-review-css",
                     "wegas-reviewing-entities",
                     "slider",
+                    "chartist",
                     "wegas-text-input",
                     "wegas-tabview"],
                 ws_provides: ["ReviewVariableEditor",
@@ -892,7 +899,7 @@ YUI().use(function(Y) {
             },
             "chartist": {
                 fullpath: "//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js",
-                requires: ["chartistcss"]
+                requires: ["wegas-chartistcss", "chartistcss"]
             },
             chartistcss: {
                 fullpath: "//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css"
