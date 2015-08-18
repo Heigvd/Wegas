@@ -18,7 +18,7 @@ $buttons-icon : (
     (player, $fa-var-gamepad),
     (trainer, $fa-var-tachometer),
     (scenarist, $fa-var-magic),
-    (add, $fa-var-plus-circle),
+    (add, $fa-var-plus),
     (remove, $fa-var-minus-circle),
     (download, $fa-var-download),
     (eye, $fa-var-eye),
@@ -36,9 +36,9 @@ $buttons-icon : (
 
 %button--with-icon{
     $btn-default-size: nth(nth($sizes, 1),2);
-    padding:$btn-default-size/3 $btn-default-size/2 $btn-default-size/3 ($btn-default-size + $btn-default-size/8);
+    padding:$btn-default-size/3 $btn-default-size/2 $btn-default-size/3 ($btn-default-size);
     &:focus{
-        padding:$btn-default-size/3 $btn-default-size/2 $btn-default-size/3 ($btn-default-size + $btn-default-size/8);
+        padding:$btn-default-size/3 $btn-default-size/2 $btn-default-size/3 ($btn-default-size);
     }
     &:before{
         content:"A";
@@ -61,9 +61,9 @@ $buttons-icon : (
         $size-name:nth($size, 1);
         $size-pixel:nth($size, 2);
         &.button--#{$size-name}{
-            padding:$size-pixel/3 $size-pixel/2 $size-pixel/3 ($size-pixel + $size-pixel/8);
+            padding:$size-pixel/3 $size-pixel/2 $size-pixel/3 ($size-pixel);
             &:focus{
-                padding:$size-pixel/3 $size-pixel/2 $size-pixel/3 ($size-pixel + $size-pixel/8);
+                padding:$size-pixel/3 $size-pixel/2 $size-pixel/3 ($size-pixel);
             }
             &:before{
                 padding:$size-pixel/4.5 0px;
