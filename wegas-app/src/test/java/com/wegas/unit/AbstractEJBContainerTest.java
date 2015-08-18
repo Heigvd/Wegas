@@ -45,8 +45,11 @@ public abstract class AbstractEJBContainerTest extends AbstractTest {
 
         // Init shiro
         SecurityUtils.setSecurityManager(new IniSecurityManagerFactory("classpath:shiro.ini").getInstance());
-        Logger.getLogger("javax.enterprise.system.tools.deployment").setLevel(Level.OFF);
-        Logger.getLogger("javax.enterprise.system").setLevel(Level.OFF);
+
+        /* Log Levels */
+        Logger.getLogger("javax.enterprise.system.tools.deployment").setLevel(Level.SEVERE);
+        Logger.getLogger("javax.enterprise.system").setLevel(Level.SEVERE);
+        org.glassfish.ejb.LogFacade.getLogger().setLevel(Level.SEVERE);
 
         container = EJBContainer.createEJBContainer(properties);
         Helper.lookupBy(container.getContext(), UserFacade.class, UserFacade.class).guestLogin(); //login as guest

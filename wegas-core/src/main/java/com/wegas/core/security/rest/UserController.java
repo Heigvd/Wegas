@@ -245,12 +245,13 @@ public class UserController {
      * @param authInfo
      * @param request
      * @param response
+     * @return User the current user, WegasErrorMessage when authInfo values are incorrect
      * @throws javax.servlet.ServletException
      * @throws java.io.IOException
      */
     @POST
     @Path("Authenticate")
-    public void login(AuthenticationInformation authInfo,
+    public User login(AuthenticationInformation authInfo,
             @Context HttpServletRequest request,
             @Context HttpServletResponse response) throws ServletException, IOException {
 
@@ -260,7 +261,8 @@ public class UserController {
         UsernamePasswordToken token = new UsernamePasswordToken(authInfo.getLogin(), authInfo.getPassword());
         token.setRememberMe(authInfo.isRemember());
         try {
-            subject.login(token);                                               // try to log in.
+            subject.login(token);   
+            return userFacade.getCurrentUser();
         } catch (AuthenticationException aex) {
             throw WegasErrorMessage.error("Email/password combination not found");
         }

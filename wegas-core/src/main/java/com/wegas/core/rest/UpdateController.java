@@ -79,13 +79,12 @@ public class UpdateController {
     @GET
     public String index() {
         StringBuilder ret = new StringBuilder();
-        Long nbOrphans = this.countOrphans();
-        List<Game> noDebugTeamGames = this.findNoDebugTeamGames();
+        //Long nbOrphans = this.countOrphans();
+        //List<Game> noDebugTeamGames = this.findNoDebugTeamGames();
 
-        ret.append("<a href=\"Update/KillOrphans\">Kill Ulvide and 3000 Orphans (" + nbOrphans + " orphans)</a> <br />");
-        ret.append("<a href=\"Update/RestoreDebugTeams\">Restore 25 Debug Teams and Kill Ulvide (" + noDebugTeamGames.size() + " games)</a> <br />");
-
-        // ret.append("<a href=\"Update/PMG_UPGRADE\">PMG upgrade</a> <br />");
+        //ret.append("<a href=\"Update/KillOrphans\">Kill Ulvide and 3000 Orphans (" + nbOrphans + " orphans)</a> <br />");
+        //ret.append("<a href=\"Update/RestoreDebugTeams\">Restore 25 Debug Teams and Kill Ulvide (" + noDebugTeamGames.size() + " games)</a> <br />");
+        ret.append("<a href=\"Update/PMG_UPGRADE\">PMG upgrade</a> <br />");
         // for (GameModel gm : gameModelFacade.findAll()) {
         //    ret.append("<a href=\"Encode/").append(gm.getId()).append("\">Update variable names ").append(gm.getId()).append("</a> | ");
         //    ret.append("<a href=\"UpdateScript/").append(gm.getId()).append("\">Update script ").append(gm.getId()).append("</a><br />");
@@ -168,7 +167,12 @@ public class UpdateController {
 
         Root e = query.from(GameModel.class);
         query.select(e)
-                .where(criteriaBuilder.like(e.get("properties").get("clientScriptUri"), "wegas-pmg/js/wegas-pmg-loader.js%"));
+                .where(
+                        criteriaBuilder.and(
+                                criteriaBuilder.equal(e.get("template"), true),
+                                criteriaBuilder.like(e.get("properties").get("clientScriptUri"), "wegas-pmg/js/wegas-pmg-loader.js%")
+                        )
+                );
 
         return em.createQuery(query).getResultList();
     }
@@ -225,17 +229,10 @@ public class UpdateController {
             ret.append(pmg.getName());
             ret.append("/");
             ret.append(pmg.getId());
-
-            // Add phase names variables
-            status = addVariable(pmg, "{\"@class\":\"ListDescriptor\",\"label\":\"Phase Names\",\"title\":null,\"name\":\"phaseNames\",\"items\":[{\"@class\":\"StringDescriptor\",\"label\":\"phase1Name\",\"title\":null,\"name\":\"phase1Name\",\"validationPattern\":null,\"comments\":\"\",\"defaultInstance\":{\"@class\":\"StringInstance\",\"value\":\"Initiation\"},\"scope\":{\"@class\":\"TeamScope\",\"broadcastScope\":\"TeamScope\"}},{\"@class\":\"StringDescriptor\",\"label\":\"phase2Name\",\"title\":null,\"name\":\"phase2Name\",\"validationPattern\":null,\"comments\":\"\",\"defaultInstance\":{\"@class\":\"StringInstance\",\"value\":\"Planning\"},\"scope\":{\"@class\":\"TeamScope\",\"broadcastScope\":\"TeamScope\"}},{\"@class\":\"StringDescriptor\",\"label\":\"phase3Name\",\"title\":null,\"name\":\"phase3Name\",\"validationPattern\":null,\"comments\":\"\",\"defaultInstance\":{\"@class\":\"StringInstance\",\"value\":\"Execution\"},\"scope\":{\"@class\":\"TeamScope\",\"broadcastScope\":\"TeamScope\"}},{\"@class\":\"StringDescriptor\",\"label\":\"phase4Name\",\"title\":null,\"name\":\"phase4Name\",\"validationPattern\":null,\"comments\":\"\",\"defaultInstance\":{\"@class\":\"StringInstance\",\"value\":\"Closing\"},\"scope\":{\"@class\":\"TeamScope\",\"broadcastScope\":\"TeamScope\"}}],\"comments\":\"\",\"defaultInstance\":{\"@class\":\"ListInstance\"},\"scope\":{\"@class\":\"TeamScope\",\"broadcastScope\":\"TeamScope\"}}", "phaseNames", "properties");
+            status = addVariable(pmg, "{\"@class\":\"FSMDescriptor\",\"comments\":\"\",\"defaultInstance\":{\"@class\":\"FSMInstance\",\"currentStateId\":1,\"enabled\":true,\"transitionHistory\":[],\"currentState\":{\"@class\":\"State\",\"editorPosition\":{\"@class\":\"Coordinate\",\"x\":79,\"y\":344},\"label\":null,\"onEnterEvent\":null,\"transitions\":[{\"@class\":\"Transition\",\"index\":0,\"nextStateId\":2,\"preStateImpact\":{\"@class\":\"Script\",\"content\":\"\",\"language\":\"JavaScript\"},\"triggerCondition\":{\"@class\":\"Script\",\"content\":\"\",\"language\":\"JavaScript\"}}]}},\"label\":\"rtfm\",\"scope\":{\"@class\":\"TeamScope\",\"broadcastScope\":\"PlayerScope\"},\"title\":null,\"name\":\"rtfm\",\"states\":{\"5\":{\"@class\":\"State\",\"editorPosition\":{\"@class\":\"Coordinate\",\"x\":652,\"y\":83},\"label\":\"noAuto\",\"onEnterEvent\":{\"@class\":\"Script\",\"content\":\"PMGHelper.sendManual();\",\"language\":\"JavaScript\"},\"transitions\":[{\"@class\":\"Transition\",\"index\":0,\"nextStateId\":5,\"preStateImpact\":{\"@class\":\"Script\",\"content\":\"\",\"language\":\"JavaScript\"},\"triggerCondition\":{\"@class\":\"Script\",\"content\":\"Event.fired(\\\"nextPhase\\\")\",\"language\":\"JavaScript\"}},{\"@class\":\"Transition\",\"index\":0,\"nextStateId\":4,\"preStateImpact\":{\"@class\":\"Script\",\"content\":\"\",\"language\":\"JavaScript\"},\"triggerCondition\":{\"@class\":\"Script\",\"content\":\"Variable.find(gameModel, \\\"autoReservation\\\").getValue(self);\",\"language\":\"JavaScript\"}}]},\"4\":{\"@class\":\"State\",\"editorPosition\":{\"@class\":\"Coordinate\",\"x\":661,\"y\":480},\"label\":\"auto\",\"onEnterEvent\":{\"@class\":\"Script\",\"content\":\"PMGHelper.sendManual();\",\"language\":\"JavaScript\"},\"transitions\":[{\"@class\":\"Transition\",\"index\":0,\"nextStateId\":4,\"preStateImpact\":{\"@class\":\"Script\",\"content\":\"\",\"language\":\"JavaScript\"},\"triggerCondition\":{\"@class\":\"Script\",\"content\":\"Event.fired(\\\"nextPhase\\\")\",\"language\":\"JavaScript\"}},{\"@class\":\"Transition\",\"index\":0,\"nextStateId\":5,\"preStateImpact\":{\"@class\":\"Script\",\"content\":\"\",\"language\":\"JavaScript\"},\"triggerCondition\":{\"@class\":\"Script\",\"content\":\"!Variable.find(gameModel, \\\"autoReservation\\\").getValue(self);\",\"language\":\"JavaScript\"}}]},\"2\":{\"@class\":\"State\",\"editorPosition\":{\"@class\":\"Coordinate\",\"x\":275,\"y\":226},\"label\":\"sendStage1\",\"onEnterEvent\":{\"@class\":\"Script\",\"content\":\"PMGHelper.sendManual();\",\"language\":\"JavaScript\"},\"transitions\":[{\"@class\":\"Transition\",\"index\":0,\"nextStateId\":5,\"preStateImpact\":{\"@class\":\"Script\",\"content\":\"\",\"language\":\"JavaScript\"},\"triggerCondition\":{\"@class\":\"Script\",\"content\":\"Event.fired(\\\"nextPhase\\\")&& ! Variable.find(gameModel, \\\"autoReservation\\\").getValue(self);\",\"language\":\"JavaScript\"}},{\"@class\":\"Transition\",\"index\":0,\"nextStateId\":4,\"preStateImpact\":{\"@class\":\"Script\",\"content\":\"\",\"language\":\"JavaScript\"},\"triggerCondition\":{\"@class\":\"Script\",\"content\":\"Event.fired(\\\"nextPhase\\\") && Variable.find(gameModel, \\\"autoReservation\\\").getValue(self) === true;\",\"language\":\"JavaScript\"}}]},\"1\":{\"@class\":\"State\",\"editorPosition\":{\"@class\":\"Coordinate\",\"x\":79,\"y\":344},\"label\":null,\"onEnterEvent\":null,\"transitions\":[{\"@class\":\"Transition\",\"index\":0,\"nextStateId\":2,\"preStateImpact\":{\"@class\":\"Script\",\"content\":\"\",\"language\":\"JavaScript\"},\"triggerCondition\":{\"@class\":\"Script\",\"content\":\"\",\"language\":\"JavaScript\"}}]}}}", "rtfm", "pageUtilities");
             ret.append(" names: ");
             ret.append(status);
 
-            // Add initialBudget variable
-            status = addVariable(pmg, "{\"@class\":\"NumberDescriptor\",\"label\":\"Initial Budget\",\"title\":null,\"name\":\"initialBudget\",\"minValue\":0,\"maxValue\":null,\"defaultValue\":0.0,\"comments\":\"\",\"defaultInstance\":{\"@class\":\"NumberInstance\",\"value\":0.0,\"history\":[]},\"scope\":{\"@class\":\"TeamScope\",\"broadcastScope\":\"TeamScope\"}}", "initialBudget", "pageUtilities");
-
-            ret.append(" budget: ");
-            ret.append(status);
             ret.append("</li>");
         }
         ret.append("</ul>");

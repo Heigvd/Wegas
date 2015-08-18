@@ -509,36 +509,6 @@
     "2": {
         "type": "AbsoluteLayout",
         "children": [{
-                "type": "TextTemplate",
-                "plugins": [{
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "relative",
-                                "zIndex": "10",
-                                "top": "0px",
-                                "left": "0px",
-                                "bottom": "",
-                                "right": ""
-                            }
-                        }
-                    }, {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "width": "500px",
-                                "height": ""
-                            }
-                        }
-                    }],
-                "variable": {
-                    "@class": "Script",
-                    "content": "Variable.find(gameModel, \"textReviseur\");\n"
-                },
-                "data": {
-                    "label": ""
-                }
-            }, {
                 "type": "TextInput",
                 "cssClass": "law-avis-input",
                 "plugins": [{
@@ -795,9 +765,43 @@
         "@name": "Orchestrator"
     },
     "11": {
-        "type": "AbsoluteLayout",
+        "type": "List",
         "cssClass": "centered-content",
+        "direction": "vertical",
         "children": [{
+                "type": "TextTemplate",
+                "plugins": [{
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "relative",
+                                "zIndex": "10",
+                                "top": "0px",
+                                "left": "0px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    }, {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "500px",
+                                "height": ""
+                            }
+                        }
+                    }],
+                "variable": {
+                    "@class": "Script",
+                    "content": "Variable.find(gameModel, \"texteReviseur\");\n"
+                },
+                "data": {
+                    "label": ""
+                }
+            }, {
+                "type": "Text",
+                "content": "<br /><br /><p><strong>Votre avis :</strong></p>"
+            }, {
                 "type": "ReviewVariableEditor",
                 "plugins": [{
                         "fn": "CSSPosition",
@@ -816,7 +820,7 @@
                         "cfg": {
                             "styles": {
                                 "width": "557px",
-                                "height": "646px"
+                                "height": ""
                             }
                         }
                     }],

@@ -347,6 +347,9 @@ YUI().use(function(Y) {
             },
             "wegas-entitychoosercss": {
                 type: CSS
+            },
+            "wegas-chartistcss": {
+                type: CSS
             }
         }
     });
@@ -800,6 +803,7 @@ YUI().use(function(Y) {
                 requires: ["wegas-review-css",
                     "wegas-reviewing-entities",
                     "slider",
+                    "chartist",
                     "wegas-text-input",
                     "wegas-tabview"],
                 ws_provides: ["ReviewVariableEditor",
@@ -932,7 +936,7 @@ YUI().use(function(Y) {
             },
             "chartist": {
                 fullpath: "//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js",
-                requires: ["chartistcss"]
+                requires: ["wegas-chartistcss", "chartistcss"]
             },
             chartistcss: {
                 fullpath: "//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css"

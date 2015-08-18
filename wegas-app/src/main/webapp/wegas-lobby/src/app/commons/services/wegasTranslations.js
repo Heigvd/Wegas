@@ -41,7 +41,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             'admin': { singular:{ en:"administrator", fr:"administrateur"}, plural:{ en:"administrators", fr:"administrateurs"}},
                             'team': { singular:{ en:"team", fr:"équipe"}, plural:{ en:"teams", fr:"équipes"}},
                             'session': { singular:{ en:"session", fr:"partie"}, plural:{ en:"sessions", fr:"parties"}},
-                            'scenario': { singular:{ en:"scenario", fr:"scenario"}, plural:{ en:"scenarios", fr:"scenarios"}},
+                            'scenario': { singular:{ en:"scenario", fr:"scénario"}, plural:{ en:"scenarios", fr:"scénarios"}},
                             'token': { singular:{ en:"access key", fr:"clé d'accès"}, plural:{ en:"access keys", fr:"clés d'accès"}},
                             'workspace': { singular:{ en:"workspace", fr:"espace de travail"}, plural:{ en:"workspaces", fr:"espaces de travail"}}
                         },
@@ -485,7 +485,6 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en': "No " + keywords.scenario.singular.en + " to update",
                                 'fr': "Pas de " + keywords.scenario.singular.fr + " à mettre à jour"
                             },
-
                             'COMMONS-SCENARIOS-VERSIONS-FIND-FLASH-SUCCESS': {
                                 'en': "Versions loaded",
                                 'fr': "Versions chargées"
@@ -580,6 +579,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'COMMONS-USERS-UPDATE-FLASH-SUCCESS': {
                                 'en': "User updated",
                                 'fr': "Données utilisateur mises à jour"
+                            },
+                            "COMMONS-USERS-UPDATE-PASSWORD-FLASH-ERROR":{
+                                'en': "Error while updating user password",
+                                'fr': "Une erreur est survenue durant la mise à jour du mot de passe de l'utilisateur"
                             },
                             'COMMONS-USERS-UPDATE-FLASH-ERROR': {
                                 'en': "Error while updating user",
@@ -697,9 +700,13 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"Archives count",
                                 'fr':"Nombre d'archives"
                             },
-                            'PRIVATE-WS-TITLE':{
-                                'en':"{{workspace}} " + keywords.workspace.singular.en,
-                                'fr':startSentence(keywords.workspace.singular.fr) + " - {{workspace}}"
+                            'PRIVATE-WS-TITLE-LABEL':{
+                                'en':startSentence(keywords.workspace.singular.en) +" for ",
+                                'fr':startSentence(keywords.workspace.singular.fr) +" pour "
+                            },
+                            'PRIVATE-WS-TITLE-NAME':{
+                                'en':"{{workspace}}",
+                                'fr':"{{workspace}}"
                             },
                             'PRIVATE-WS-PLAYER-BTN':{
                                 'en':startSentence(keywords.player.singular.en),
@@ -1007,17 +1014,13 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"No current " + keywords.session.singular.en + " with the name ",
                                 'fr':"Aucune "+ keywords.session.singular.fr+ " en cours avec le nom "
                             },
-                            'TRAINER-CARD-ACCESS-TITLE':{
-                                'en':"Access to new " + keywords.player.plural.en,
-                                'fr':"Accès pour nouveaux " + keywords.player.plural.fr
-                            },
                             'TRAINER-CARD-ACCESS-CLOSE':{
-                                'en':"No other "+ keywords.player.singular.en +" can join",
-                                'fr':keywords.token.singular.fr +" désactivée"
+                                'en':"Close to new "+ keywords.player.plural.en,
+                                'fr':"Fermé aux nouveaux " + keywords.player.plural.fr
                             },
                             'TRAINER-CARD-ACCESS-OPEN':{
-                                'en':keywords.player.plural.en + " can join with key :",
-                                'fr':"Accessible avec la clé :"
+                                'en':"Open to new " + keywords.player.plural.en,
+                                'fr':"Ouvert aux nouveaux " + keywords.player.plural.fr
                             },
                             'TRAINER-CARD-SETTINGS-BTN':{
                                 'en':"Settings",
@@ -1199,7 +1202,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
                             'SCENARIST-MODALE-USERS-CREATE-CHECKBOX':{
                                 'en':"Create "+ keywords.session.singular.en +" from " + keywords.scenario.singular.en,
-                                'fr':"Créer une "+ keywords.session.singular.fr +" à partire du " + keywords.scenario.singular.fr
+                                'fr':"Créer une "+ keywords.session.singular.fr +" depuis le " + keywords.scenario.singular.fr
                             },
                             'SCENARIST-MODALE-USERS-REMOVE-BTN':{
                                 'en':"Remove access for this user",
