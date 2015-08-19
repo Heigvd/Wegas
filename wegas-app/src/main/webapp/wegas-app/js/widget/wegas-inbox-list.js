@@ -40,10 +40,12 @@ YUI.add('wegas-inbox-list', function(Y) {
         TEMPLATES: {
             "default": Micro.compile("<div class='msg msg-toggled'><div class='msg-header'>"
                 + "<div class='msg-subject'><%=this.get('subject')%></div>"
+                + "<% if (this.get('date')) { %><div class='msg-date'><%= this.get('date') %></div><% } %>"
+                + "<div style=\"clear: both;\"></div>"
                 + "<% if (this.get('from')) { %><div class='msg-from'><%= this.get('from') %></div><% } %>"
                 + "<% if (this.get('attachements') && this.get('attachements').length) {%>"
                 + "<div class='msg-attachement'><% Y.Array.each(this.get('attachements'), function(a){ %><a href='<%= a %>' data-file='<%= a %>' target='_blank'><%= a.split('/').pop() %></a>;<% }); %></div>"
-                + "<% } %></div>"
+                + "<% } %><div style=\"clear: both;\"></div></div>"
                 + "<div class='msg-body'><div class='msg-body-content'><%== this.get('body') %></div></div>"
                 + "<a href='#' class='msg-showmore'>More...</a>"
                 + "</div>")
