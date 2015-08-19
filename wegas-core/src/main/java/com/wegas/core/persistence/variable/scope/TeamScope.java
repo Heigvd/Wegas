@@ -70,12 +70,14 @@ public class TeamScope extends AbstractScope {
         Map<Long, VariableInstance> ret = new HashMap<>();
         Player cPlayer = RequestFacade.lookup().getPlayer();
 
-        if (this.getBroadcastScope().equals(GameScope.class.getSimpleName())) {
-            for (Team t : cPlayer.getGame().getTeams()) {
-                ret.put(t.getId(), this.teamVariableInstances.get(t.getId()));
+        if (cPlayer != null) {
+            if (this.getBroadcastScope().equals(GameScope.class.getSimpleName())) {
+                for (Team t : cPlayer.getGame().getTeams()) {
+                    ret.put(t.getId(), this.teamVariableInstances.get(t.getId()));
+                }
+            } else {
+                ret.put(cPlayer.getTeam().getId(), this.getVariableInstance(cPlayer));
             }
-        } else {
-            ret.put(cPlayer.getTeam().getId(), this.getVariableInstance(cPlayer));
         }
         return ret;
     }

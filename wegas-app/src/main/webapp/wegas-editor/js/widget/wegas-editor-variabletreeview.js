@@ -169,7 +169,8 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             this.treeView.sortable.on("sort", function(e) { // On sort event,
                 var entity = e.dragWidget.get("data.entity"),
                     dropEntity = e.dropWidget.get("data.entity");
-                if (dropEntity instanceof Y.Wegas.persistence.ChoiceDescriptor &&
+                if (Y.Wegas.persistence.ChoiceDescriptor && 
+                    dropEntity instanceof Y.Wegas.persistence.ChoiceDescriptor &&
                     entity instanceof Y.Wegas.persistence.Result) {
                     var oldIndex = Y.Array.indexOf(dropEntity.get("results"), entity);
                     Wegas.Facade.Variable.cache.getWithView(dropEntity, "EditorExtended", {

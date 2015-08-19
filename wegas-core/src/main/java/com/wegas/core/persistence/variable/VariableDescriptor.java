@@ -82,7 +82,9 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "ObjectDescriptor", value = ObjectDescriptor.class),
     @JsonSubTypes.Type(name = "PeerReviewDescriptor", value = PeerReviewDescriptor.class)
 })
-abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity implements Searchable, LabelledEntity /*, Broadcastable */ {
+abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity implements Searchable, LabelledEntity, Broadcastable {
+
+    static final private org.slf4j.Logger logger = LoggerFactory.getLogger(VariableDescriptor.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -420,15 +422,16 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         }
     }
 
-    /*
-     @Override
-     public Map<String, List<AbstractEntity>> getEntities() {
-     Map<String, List<AbstractEntity>> map = new HashMap<>();
-     ArrayList<AbstractEntity> entities = new ArrayList<>();
-     entities.add(this);
-     map.put(this.getAudienceToken(this.getGameModel()), entities);
-     return map;
-     }*/
+    @Override
+    public Map<String, List<AbstractEntity>> getEntities() {
+        Map<String, List<AbstractEntity>> map = new HashMap<>();
+        ArrayList<AbstractEntity> entities = new ArrayList<>();
+        entities.add(this);
+        logger.error("CHANNEL TOKEN: " + this.getAudienceToken(this.getGameModel()));
+        map.put(this.getAudienceToken(this.getGameModel()), entities);
+        return map;
+    }
+
     /**
      *
      * @param criterias

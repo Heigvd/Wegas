@@ -11,10 +11,11 @@ import com.pusher.rest.Pusher;
 import com.pusher.rest.data.PresenceUser;
 import com.pusher.rest.data.Result;
 import com.wegas.core.Helper;
+import com.wegas.core.event.client.ClientEvent;
+import com.wegas.core.event.client.EntityDestroyedEvent;
 import com.wegas.core.event.client.EntityUpdatedEvent;
 import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import java.io.ByteArrayOutputStream;
@@ -123,30 +124,47 @@ public class WebsocketFacade {
     /**
      * fire and forget pusher events
      *
+     * @param dispatchedEntities
+     * @param destroyedEntities
+     * @throws com.wegas.core.exception.internal.NoPlayerException
      */
     @Asynchronous
-    public void onRequestCommit(final Map<String, List<AbstractEntity>> updatedEntities) throws NoPlayerException {
-        this.onRequestCommit(updatedEntities, null);
+    public void onRequestCommit(final Map<String, List<AbstractEntity>> dispatchedEntities,
+            final Map<String, List<AbstractEntity>> destroyedEntities) throws NoPlayerException {
+        this.onRequestCommit(dispatchedEntities, destroyedEntities, null);
     }
 
     /**
      * fire and forget pusher events
      *
-     * @param updatedEntities entity to propagate mapped by audience
-     * @param socketId        Client's socket id. Prevent that specific client
-     *                        to receive this particular message
+     * @param dispatchedEntities
+     * @param destroyedEntities
+     * @param socketId           Client's socket id. Prevent that specific
+     *                           client to receive this particular message
      * @throws com.wegas.core.exception.internal.NoPlayerException
      */
     @Asynchronous
-    public void onRequestCommit(final Map<String, List<AbstractEntity>> updatedEntities, final String socketId) throws NoPlayerException {
+    public void onRequestCommit(final Map<String, List<AbstractEntity>> dispatchedEntities,
+            final Map<String, List<AbstractEntity>> destroyedEntities,
+            final String socketId) throws NoPlayerException {
         if (this.pusher == null) {
             return;
         }
-        VariableInstance v;
 
-        for (String audience : updatedEntities.keySet()) {
-            List<AbstractEntity> toPropagate = updatedEntities.get(audience);
-            propagate(toPropagate, audience, socketId);
+        logger.error("EntityUpdatedEvent.channels: " + dispatchedEntities.keySet().size());
+        for (String audience : dispatchedEntities.keySet()) {
+            List<AbstractEntity> toPropagate = dispatchedEntities.get(audience);
+            logger.error("EntityUpdatedEvent.entities: " + audience + ": " + toPropagate.size());
+            EntityUpdatedEvent event = new EntityUpdatedEvent(toPropagate);
+            propagate(event, "EntityUpdatedEvent.gz", audience, socketId);
+        }
+
+        logger.error("EntityDestroyedEvent.channels: " + destroyedEntities.keySet().size());
+        for (String audience : destroyedEntities.keySet()) {
+            List<AbstractEntity> toPropagate = destroyedEntities.get(audience);
+            logger.error("EntityDestroyedEvent.entities: " + audience + ": " + toPropagate.size());
+            ClientEvent event = new EntityDestroyedEvent(toPropagate);
+            propagate(event, "EntityDestroyedEvent.gz", audience, socketId);
         }
     }
 
@@ -172,17 +190,18 @@ public class WebsocketFacade {
         return sb.toString();
     }
 
-    private void propagate(List<AbstractEntity> entities, String audience, final String socketId) {
+    private void propagate(ClientEvent clientEvent, String eventName, String audience, final String socketId) {
         try {
-            logger.error("EntityUpdatedEvent.entites: " + audience + ": " + entities.size());
-
-            EntityUpdatedEvent event = new EntityUpdatedEvent(entities);
-
-            String gzippedJson = gzip(event.toJson());
-
-            Result result = pusher.trigger(audience, "EntityUpdatedEvent.gz", gzippedJson, socketId);
+            String content;
+            if (eventName.matches(".*\\.gz$")) {
+                content = gzip(clientEvent.toJson());
+            } else {
+                content = clientEvent.toJson();
+            }
+            Result result = pusher.trigger(audience, eventName, content, socketId);
 
             logger.error("PUSHER RESULT" + result.getMessage() + " : " + result.getStatus() + " : " + result.getHttpStatus());
+
             if (result.getHttpStatus() == 403) {
                 // Pusher Message Quota Reached...
             } else if (result.getHttpStatus() == 413) {

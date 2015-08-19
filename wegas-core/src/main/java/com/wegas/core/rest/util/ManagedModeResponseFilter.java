@@ -55,7 +55,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
 
         logger.info("Request [" + id + "] Processed in " + duration
                 + " [ms] => " + response.getStatusInfo());
-        if (response.getStatusInfo().getStatusCode() >= 400){
+        if (response.getStatusInfo().getStatusCode() >= 400) {
             logger.warn("Problem : " + response.getEntity());
         }
 
@@ -114,10 +114,11 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                 response.setStatus(HttpStatus.SC_OK);
             }
 
-            if (!rollbacked && !rmf.getRequestManager().getUpdatedEntites().isEmpty()) {
-                List<AbstractEntity> updatedEntities = rmf.getUpdatedEntities();
-                Map<String, List<AbstractEntity>> dispatchedEntities = rmf.getDispatchedEntities();
-                
+            List<AbstractEntity> updatedEntities = rmf.getUpdatedEntities();
+            Map<String, List<AbstractEntity>> destroyedEntities = rmf.getDestroyedEntities();
+
+            if (!rollbacked && !(updatedEntities.isEmpty() && destroyedEntities.isEmpty())) {
+
                 /*
                  * Merge updatedInstance within ManagedResponse entities
                  */
@@ -133,9 +134,9 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                 try {
                     WebsocketFacade websocketFacade = Helper.lookupBy(WebsocketFacade.class, WebsocketFacade.class);
                     if (managedMode.matches("^[\\d\\.]+$")) { //Socket id
-                        websocketFacade.onRequestCommit(dispatchedEntities, managedMode);
+                        websocketFacade.onRequestCommit(rmf.getDispatchedEntities(), rmf.getDestroyedEntities(), managedMode);
                     } else {
-                        websocketFacade.onRequestCommit(dispatchedEntities);
+                        websocketFacade.onRequestCommit(rmf.getDispatchedEntities(), rmf.getDestroyedEntities());
                     }
                 } catch (NamingException | NoPlayerException ex) {
                     java.util.logging.Logger.getLogger(ManagedModeResponseFilter.class.getName()).log(Level.SEVERE, null, ex);

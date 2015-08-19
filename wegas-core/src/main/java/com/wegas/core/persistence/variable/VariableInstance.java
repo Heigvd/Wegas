@@ -183,11 +183,17 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
 
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
-        Map<String, List<AbstractEntity>> map = new HashMap<>();
-        ArrayList<AbstractEntity> entities = new ArrayList<>();
-        entities.add(this);
-        map.put(this.getAudience(), entities);
-        return map;
+        String audience = this.getAudience();
+        if (audience != null) {
+            Map<String, List<AbstractEntity>> map = new HashMap<>();
+            ArrayList<AbstractEntity> entities = new ArrayList<>();
+            entities.add(this);
+            map.put(this.getAudience(), entities);
+            return map;
+        } else {
+            // Default instance -> Propagate descriptor
+            return this.getDefaultDescriptor().getEntities();
+        }
     }
 
     /**

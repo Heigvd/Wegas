@@ -17,19 +17,22 @@ YUI.add('wegas-websocketlistener', function(Y) {
                 var dataSource = Y.Wegas.Facade[this.get("dataSource")];
                 if (dataSource) {
                     this._hdl = [];
-                    this._hdl.push(dataSource.on("EntityUpdatedEvent", this.onVariableInstanceUpdate, this));
-                    this._hdl.push(dataSource.on("CustomEvent", this.onVariableInstanceUpdate, this));
+                    this._hdl.push(dataSource.on("EntityUpdatedEvent", this.onEntityUpdatedEvent, this));
+                    this._hdl.push(dataSource.on("EntityDestroyedEvent", this.onEntityDeletion, this));
+                    this._hdl.push(dataSource.on("CustomEvent", this.onCustomEvent, this));
                     this._hdl.push(dataSource.on("LifeCycleEvent", this.onLifeCycleEvent, this));
                 }
             });
         },
         onLifeCycleEvent: function(data) {
             var payload = Y.JSON.parse(data),
-                cache = this.get("host").cache,
                 node = Y.Widget.getByNode(".wegas-login-page") ||
-                (Y.Widget.getByNode("#centerTabView") &&
-                    Y.Widget.getByNode("#centerTabView").get("selection")) ||
+                Y.Widget.getByNode(".wegas-editview") ||
+                Y.Widget.getByNode(".wegas-trainer--app") ||
                 Y.Widget.getByNode(".wegas-playerview");
+                /*(Y.Widget.getByNode("#centerTabView") &&
+                    Y.Widget.getByNode("#centerTabView").get("selection")) ||
+                ;*/
 
             if (payload.status === "DOWN") {
                 node.showOverlay("maintenance");
@@ -42,14 +45,41 @@ YUI.add('wegas-websocketlistener', function(Y) {
                 node.showOverlay("error");
             }
         },
-        onVariableInstanceUpdate: function(data) {
+        onEntityDeletion: function(data) {
+            var datasource, entities, entity, i;
+            entities = Y.JSON.parse(data).deletedEntities;
+            for (i = 0; i < entities.length; i += 1) {
+                entity = Y.Wegas.Editable.revive(entities[i]);
+                datasource = this.getDatasourceFromEntity(entity);
+                datasource.cache.updateCache("DELETE", entity, false);
+            }
+        },
+        onCustomEvent: function(data) {
+            
+        },
+        onEntityUpdatedEvent: function(data) {
+            var i, event = Y.JSON.parse(data), entity,
+                datasource;
             Y.log("Websocket event received.", "info", "Wegas.WebsocketListener");
-            this.get("host").cache.onResponseRevived({
-                serverResponse: Y.Wegas.Editable.revive({
-                    "@class": "ManagedResponse",
-                    events: [Y.JSON.parse(data)]
-                })
-            });
+
+            for (i = 0; i < event.updatedEntities.length; i += 1) {
+                // TODO FETCH CORRECT CACHE
+                entity = Y.Wegas.Editable.revive(event.updatedEntities[i]);
+                datasource = this.getDatasourceFromEntity(entity);
+                if (datasource){
+                    datasource.cache.fire("EntityUpdatedEvent", {
+                        "@class": "EntityUpdatedEvent",
+                        updatedEntities: [entity]
+                    })
+                }
+            }
+        },
+        getDatasourceFromEntity : function(entity){
+            if (entity instanceof Y.Wegas.persistence.VariableInstance || entity instanceof Y.Wegas.persistence.VariableDescriptor){
+                return Y.Wegas.Facade.Variable;
+            }  else {
+                return null;
+            }
         },
         destructor: function() {
             var i;

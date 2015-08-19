@@ -9,6 +9,11 @@ package com.wegas.core.persistence;
 
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.RequestManager;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -35,22 +40,11 @@ public class EntityListener {
 
     @PostPersist
     void onPostPersist(Object o) {
-        logger.error("POST PERSIST: " + o);
+        //logger.error("POST PERSIST: " + o);
     }
 
     @PostUpdate
     void onPostUpdate(Object o) {
-
-        Class<?> myClass;
-        try {
-            myClass = Class.forName("org.eclipse.persistence.Version");
-            Method myMethod = myClass.getMethod("getVersion");
-            String version = myMethod.invoke(null).toString();
-            logger.error("ECLIPSE LINK: " + version);
-        } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            logger.error("EXCEPTION");
-        }
-        logger.error("PostUpdate: " + o);
         if (o instanceof Broadcastable && o instanceof AbstractEntity) {
             Broadcastable b = (Broadcastable) o;
             Map<String, List<AbstractEntity>> entities = b.getEntities();
@@ -60,6 +54,15 @@ public class EntityListener {
 
     @PreRemove
     void onPreRemove(Object o) {
-        logger.error("PreRemove: " + o);
+        if (o instanceof Broadcastable && (o instanceof VariableDescriptor
+                || o instanceof GameModel
+                || o instanceof Game
+                || o instanceof Team
+                || o instanceof Player)) {
+            Broadcastable b = (Broadcastable) o;
+            Map<String, List<AbstractEntity>> entities = b.getEntities();
+            logger.error(("Entities: " + entities.size()));
+            requestManager.destroyEntities(entities);
+        }
     }
 }
