@@ -69,7 +69,7 @@ public class WebsocketFacade {
     private UserFacade userFacade;
 
     /**
-     * 
+     *
      * @param channel
      * @param status
      * @param socketId
@@ -83,8 +83,9 @@ public class WebsocketFacade {
 
     /**
      * Send LifeCycle event to every connected user
+     *
      * @param status
-     * @param socketId 
+     * @param socketId
      */
     public void sendLifeCycleEvent(WegasStatus status, final String socketId) {
         sendLifeCycleEvent(GLOBAL_CHANNEL, status, socketId);
@@ -168,7 +169,6 @@ public class WebsocketFacade {
 //        }
         for (int i = 0; i < variableInstances.size(); i++) {
             v = variableInstances.get(i);
-            logger.error("Entity: " + v);
             if (v.getScope() instanceof GameModelScope /*
                      * ||
                      * v.getScope().getBroadcastScope().equals(GameModelScope.class.getSimpleName())
@@ -177,15 +177,12 @@ public class WebsocketFacade {
             } else if (v.getScope() instanceof GameScope
                     || v.getScope().getBroadcastScope().equals(GameScope.class.getSimpleName())) {
                 putInstance(games, variableInstanceFacade.findGame(v).getId(), v);
-                logger.error("GameScope Entity: " + v);
             } else if (v.getScope() instanceof TeamScope
                     || v.getScope().getBroadcastScope().equals(TeamScope.class.getSimpleName())) {
                 putInstance(teams, variableInstanceFacade.findTeam(v).getId(), v);
-                logger.error("TeamScope Entity: " + v);
             } else if (v.getScope() instanceof PlayerScope
                     || v.getScope().getBroadcastScope().equals(PlayerScope.class.getSimpleName())) {
                 putInstance(players, variableInstanceFacade.findAPlayer(v).getId(), v);
-                logger.error("PlayerScope Entity: " + v);
             }
         }
 
