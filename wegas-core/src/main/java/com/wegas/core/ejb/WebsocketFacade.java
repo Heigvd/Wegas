@@ -69,15 +69,25 @@ public class WebsocketFacade {
     private UserFacade userFacade;
 
     /**
-     *
+     * 
+     * @param channel
      * @param status
      * @param socketId
      */
-    public void sendLifeCycleEvent(WegasStatus status, final String socketId) {
+    public void sendLifeCycleEvent(String channel, WegasStatus status, final String socketId) {
         if (this.pusher != null) {
-            pusher.trigger(GLOBAL_CHANNEL, "LifeCycleEvent",
+            pusher.trigger(channel, "LifeCycleEvent",
                     "{\"@class\": \"LifeCycleEvent\", \"status\": \"" + status.toString() + "\"}", socketId);
         }
+    }
+
+    /**
+     * Send LifeCycle event to every connected user
+     * @param status
+     * @param socketId 
+     */
+    public void sendLifeCycleEvent(WegasStatus status, final String socketId) {
+        sendLifeCycleEvent(GLOBAL_CHANNEL, status, socketId);
     }
 
     public void sendPopup(String channel, String message, final String socketId) {
@@ -138,8 +148,8 @@ public class WebsocketFacade {
      * fire and forget pusher events
      *
      * @param variableInstances variable instance to propagate
-     * @param socketId Client's socket id. Prevent that specific client to
-     *                 receive this particular message
+     * @param socketId          Client's socket id. Prevent that specific client
+     *                          to receive this particular message
      * @throws com.wegas.core.exception.internal.NoPlayerException
      */
     @Asynchronous
@@ -209,18 +219,19 @@ public class WebsocketFacade {
     private void propagate(Map<Long, EntityUpdatedEvent> map, String prefix, final String socketId) {
         for (Entry<Long, EntityUpdatedEvent> entry : map.entrySet()) {
             try {
-                logger.error("EntityUpdatedEvent.entites: " + prefix + entry.getKey() + ": " + entry.getValue().getUpdatedEntities().size());
+                String channel = prefix + entry.getKey();
+                logger.info("EntityUpdatedEvent.entites: " + channel + ": " + entry.getValue().getUpdatedEntities().size());
 
                 String gzippedJson = gzip(entry.getValue().toJson());
 
-                Result result = pusher.trigger(prefix + entry.getKey(), "EntityUpdatedEvent.gz", gzippedJson, socketId);
+                Result result = pusher.trigger(channel, "EntityUpdatedEvent.gz", gzippedJson, socketId);
 
-                logger.error("PUSHER RESULT" + result.getMessage() + " : " + result.getStatus() + " : " + result.getHttpStatus());
+                logger.info("PUSHER RESULT" + result.getMessage() + " : " + result.getStatus() + " : " + result.getHttpStatus());
                 if (result.getHttpStatus() == 403) {
                     // Pusher Message Quota Reached...
                 } else if (result.getHttpStatus() == 413) {
                     // wooops pusher error (too big ?)
-                    this.sendLifeCycleEvent(WegasStatus.OUTDATED, socketId);
+                    this.sendLifeCycleEvent(channel, WegasStatus.OUTDATED, socketId);
                 }
             } catch (IOException ex) {
                 logger.error("     IOEX <----------------------", ex);
