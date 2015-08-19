@@ -28,22 +28,30 @@ YUI.add('wegas-dashboard', function(Y) {
             }
         },
         syncUI:function(){
-            console.log("SYNC! BAM!");
+            _createCards();
+        },
+        _createCards: function(){
             var context = this;
-            context._getMonitoredData().then(function(monitoredBlocs){
-                context.removeAll();
-                context.get("cardsData").forEach(function(data){
-                    context.add(new Y.Wegas.Card({
-                        "title": data.title,
-                        "icon": data.icon || null,
-                        "blocs": context._combineBlocs(data, monitoredBlocs)
-                    }));
+            return new Y.Promise(function(resolve, reject) {
+                context._getMonitoredData().then(function(monitoredBlocs){
+                    context.removeAll();                
+                    context.get("cardsData").forEach(function(data){
+                        var card = {
+                            "id": data.id,
+                            "title": data.title,
+                            "icon": data.icon || null,
+                            "blocs": context._combineBlocs(data, monitoredBlocs)
+                        };
+                        context.add(new Y.Wegas.Card(card));
+                    });
+                    if(context.get("resize")){
+                        context.plug(Y.Wegas.CardsResizable);
+                        context.CardsResizable.resetClassSize();
+                        context.CardsResizable.resize();
+                    }
+                    resolve(true);
                 });
-                if(context.get("resize")){
-                    context.plug(Y.Wegas.CardsResizable);
-                    context.CardsResizable.resetClassSize();
-                    context.CardsResizable.resize();
-                }
+                
             });
         },
         _addOriginalBloc: function(idCard, originalBloc){
@@ -63,7 +71,6 @@ YUI.add('wegas-dashboard', function(Y) {
         _combineBlocs: function(data, monitoredBlocs){ 
             var blocs, newBlocs, newBloc;
             this._resetToInitialBlocs(data);
-            console.log(data.blocs);
             blocs = data.blocs;
             if(monitoredBlocs !== null && monitoredBlocs.data && monitoredBlocs.data[data.id]){
                 monitoredBlocs.structure.forEach(function(blocsToAdd){
@@ -114,7 +121,6 @@ YUI.add('wegas-dashboard', function(Y) {
             }
         },
         initializer: function(){
-            console.log("INIT DASH");
             var context = this;
             context.get("cardsData").forEach(function(data){
                 if(data.blocs && data.blocs.length > 0){
@@ -134,6 +140,9 @@ YUI.add('wegas-dashboard', function(Y) {
             },
             "resize":{
                 value: true
+            },
+            "quickAccess":{
+                value: null
             }
         }
     }); 

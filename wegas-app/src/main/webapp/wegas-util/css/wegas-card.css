@@ -6,13 +6,201 @@
  * Licensed under the MIT License
  */
 
+.wrapper--card{
+    width:calc(100% - 64px);
+    padding:12px 32px;
+}
+.wrapper__quick-access{
+    display: block;
+    position: relative;
+    width: 80px;
+    color: white;
+    padding: 4px 0px;
+    box-sizing: border-box;
+    background-color: #d4d4d4;
+    height: 24px;
+    box-shadow: 0px 1px 1px rgba(0,0,0,0.24);
+    transition:.3s;
+    margin:0px;
+    padding:0px;
+}
+
+.wrapper__quick-access.quick-access--open{
+    width:50%;
+    height:200px;
+}
+
+.wrapper__quick-access.quick-access--close .quick-access__link--open{
+    display:block;
+    position:relative;
+    width:100%;
+    height:100%;
+    color:white;
+    text-align: center;
+    font-size:12px;
+    line-height:24px;
+    text-transform:uppercase;
+    text-decoration:none;
+}
+
+.wrapper__quick-access.quick-access--close .quick-access__link--open i.fa{
+    font-size:16px;
+}
+
+.wrapper__quick-access.quick-access--open .quick-access__link--close{
+    display:block;
+    position:absolute;
+    bottom:0px;
+    right:0px;
+    margin:4px;
+    width:16px;
+    height:16px;
+    color:white;
+    font-size:16px;
+    text-align:center;
+    line-height:16px;
+}
+
+.wrapper__quick-access.quick-access--open .quick-access__notes{
+    display:block;
+    position:relative;
+    width:calc(50% - 12px);
+    height:100%;
+    float:left;
+}
+
+.quick-access__notes textarea{
+    display:block;
+    position:relative;
+    width:100%;
+    height:100%;
+    box-sizing: border-box;
+    border:none;
+    border-top:solid 1px #d4d4d4;
+    padding:8px;
+}
+
+.quick-access__notes .mce-tinymce{
+    height:100%;
+    box-sizing:border-box;
+    border:none;
+    border:solid 1px #d4d4d4;
+}
+
+.quick-access__notes .mce-tinymce{
+    height:100%;
+    box-sizing:border-box;
+    border:none;
+    border:solid 1px #d4d4d4;
+}
+
+.quick-access__notes .mce-tinymce > .mce-container-body{
+    height:100%;
+}
+
+.quick-access__notes .mce-tinymce > .mce-container-body .mce-edit-area{
+    height:calc(100% - 34px);
+}
+
+.mce-widget.mce-tooltip {
+    display: none !important;
+}
+
+.wrapper__quick-access.quick-access--open .quick-access__players{
+    display:block;
+    position:relative;
+    width:calc(50% - 12px);
+    height:100%;
+    float:left;
+}
+.quick-access__players h3{
+    display:block;
+    position:relative;
+    width:100%;
+    height:34px;
+    font-size:16px;
+    font-weight:300;
+    line-height:34px;
+    box-sizing:border-box;
+    padding:0px 12px 0px 48px;
+    margin:0px;
+    background-color:red;
+}
+
+.quick-access__players .quick-access__players__list{
+    display:block;
+    position:relative;
+    width:100%;
+    height:calc(100% - 34px);
+    margin:0px;
+    padding:12px 0px;
+    box-sizing:border-box;
+    background-color:blue;
+    overflow:auto;
+}
+
+.quick-access__players__list .quick-access__player{
+    display:block;
+    position:relative;
+    width:100%;
+    height:20px;
+    line-height:20px;
+    margin:0px;
+    padding:0px 12px 0px 48px;
+    box-sizing:border-box;
+    text-overflow: ellipsis;
+    overflow:auto;
+    white-space: nowrap;
+}
+
+.wrapper__quick-access.quick-access--open .quick-access__link--open,
+.wrapper__quick-access.quick-access--close .quick-access__link--close,
+.wrapper__quick-access.quick-access--close .quick-access__notes,
+.wrapper__quick-access.quick-access--close .quick-access__players{
+    display:none;
+}
+
+@media screen and (max-width: 1310px) {
+    .wrapper__quick-access.quick-access--open{
+        width:75%;
+    }
+}
+
+@media screen and (max-width: 960px) {
+    .wrapper__quick-access{
+        width:25%;
+    }
+    .wrapper__quick-access.quick-access--open{
+        width:100%;
+    } 
+}
+@media screen and (max-width: 690px) {
+    .wrapper__quick-access.quick-access--open{
+        height:400px;
+        
+    }
+    .wrapper__quick-access.quick-access--open .quick-access__notes{
+        float:none;
+        clear:both;
+        width:100%;
+        height:200px;
+
+    }
+    .wrapper__quick-access.quick-access--open .quick-access__players{
+        float:none;
+        width:100%;
+        height:150px;
+    }
+
+}
+
 .card{
     display: block;
     position: relative;
-    width:calc(100%- 64px);
+    width:100%;
     height:auto;
     min-height:80px;
-    margin:12px 32px;
+    margin:0px;
     background:white;
     padding: 0px;
     border-radius: 2px;
