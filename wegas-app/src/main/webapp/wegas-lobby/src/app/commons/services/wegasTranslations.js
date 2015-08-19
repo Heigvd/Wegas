@@ -762,11 +762,11 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
                             'PRIVATE-MODALE-TABS-ADVANCED-WARNING':{
                                 'en':"Warning! Update this values only if you know what you do",
-                                'fr':"Attention! Modifiez les paramètres avancés seulement si vous connaissez leur impact"
+                                'fr':"Attention! Ne modifier les paramètres avancés qu'en connaissance de cause"
                             },
                             'PRIVATE-MODALE-SETTINGS-NOT-SAVED-WARNING':{
                                 'en':"Some changes aren't saved",
-                                'fr':"Des changements n'ont pas été sauvé"
+                                'fr':"Des changements n'ont pas été sauvés"
                             },
                             'PRIVATE-MODALE-SETTINGS-CANCEL-BTN':{
                                 'en':"Cancel",
@@ -950,7 +950,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
                             'PLAYER-MODALE-JOIN-TEAM-JOIN-BTN':{
                                 'en':"Join " + keywords.team.singular.en,
-                                'fr':"Rejoindre la "+ keywords.team.singular.fr
+                                'fr':"Rejoindre l'"+ keywords.team.singular.fr
                             },
                             'PLAYER-MODALE-JOIN-TEAM-PLAYERS-LIST':{
                                 'en':startSentence(keywords.player.plural.en) +" from "+ keywords.team.singular.en,
