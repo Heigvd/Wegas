@@ -7,10 +7,6 @@
  */
 package com.wegas.core.event.client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wegas.core.rest.util.JacksonMapperProvider;
-import java.io.IOException;
-
 /**
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -36,15 +32,6 @@ public class CustomEvent extends ClientEvent {
     public CustomEvent(String type, Object payload) {
         this.type = type;
         this.payload = payload;
-    }
-
-    /**
-     *
-     * @return @throws IOException
-     */
-    public String toJson() throws IOException {
-        ObjectMapper mapper = JacksonMapperProvider.getMapper();
-        return mapper.writeValueAsString(this);
     }
 
     /**

@@ -12,8 +12,11 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -48,21 +51,22 @@ public interface Broadcastable {
 
     @JsonIgnore
     default public String getAudienceToken(GameModel gameModel) {
-        return this.getAudienceTokenForGame(gameModel.getId());
+        return this.getAudienceTokenForGameModel(gameModel.getId());
     }
 
     @JsonIgnore
     default public String getAudienceToken(Team team) {
-        return this.getAudienceTokenForGame(team.getId());
+        return this.getAudienceTokenForTeam(team.getId());
     }
 
     @JsonIgnore
     default public String getAudienceToken(Player player) {
-        return this.getAudienceTokenForGame(player.getId());
+        return this.getAudienceTokenForPlayer(player.getId());
     }
 
     /**
-     * key identifier may be: GameModel-<ID>, Game-<ID>, Team-<ID> or Player-<ID>
+     * key identifier may be: GameModel-<ID>, Game-<ID>, Team-<ID> or
+     * Player-<ID>
      *
      * @return
      */

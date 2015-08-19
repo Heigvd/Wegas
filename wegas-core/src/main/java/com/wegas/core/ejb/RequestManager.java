@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -39,6 +41,8 @@ import java.util.ResourceBundle;
 @Named("RequestManager")
 @RequestScoped
 public class RequestManager {
+
+    private static Logger logger = LoggerFactory.getLogger(RequestManager.class);
 
     @Inject
     private Event<NumberUpdate> updatedNumber;
@@ -54,11 +58,17 @@ public class RequestManager {
     private Player currentPlayer;
 
     /**
-     *
+     * Contains all updated entities
      */
     private List<AbstractEntity> updatedEntities = new ArrayList<>();
 
+    /**
+     * Just like updatedEntites, but entities are despatched according to their
+     * own audience
+     */
     private Map<String, List<AbstractEntity>> dispatchedEntities = new HashMap<>();
+
+    private Map<String, List<AbstractEntity>> destroyedEntities = new HashMap<>();
 
     /**
      *
@@ -100,6 +110,33 @@ public class RequestManager {
 
         if (!updatedEntities.contains(updated)) {
             this.updatedEntities.add(updated);
+        }
+    }
+
+    public void destroyEntities(Map<String, List<AbstractEntity>> entities) {
+        logger.error("DESTROY MAP: " + entities);
+        if (entities != null) {
+            for (String audience : entities.keySet()) {
+                this.destroyEntities(audience, entities.get(audience));
+            }
+        }
+    }
+
+    public void destroyEntities(String audience, List<AbstractEntity> destroyed) {
+        logger.error("DESTROY LIST FOR " + audience + " :: " + destroyed);
+        for (AbstractEntity entity : destroyed) {
+            this.destroyEntity(audience, entity);
+        }
+    }
+
+    public void destroyEntity(String audience, AbstractEntity entity) {
+        logger.error("Register Destroyed Entity: " + entity);
+        if (!destroyedEntities.containsKey(audience)) {
+            destroyedEntities.put(audience, new ArrayList<>());
+        }
+        List<AbstractEntity> entities = destroyedEntities.get(audience);
+        if (!entities.contains(entity)) {
+            entities.add(entity);
         }
     }
 
@@ -176,6 +213,17 @@ public class RequestManager {
 
     public Map<String, List<AbstractEntity>> getDispatchedEntities() {
         return dispatchedEntities;
+    }
+
+    /**
+     *
+     */
+    public void clearDestroyedEntities() {
+        this.destroyedEntities.clear();
+    }
+
+    public Map<String, List<AbstractEntity>> getDestroyedEntities() {
+        return destroyedEntities;
     }
 
     /**

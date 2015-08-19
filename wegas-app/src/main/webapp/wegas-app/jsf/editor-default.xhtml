@@ -35,7 +35,7 @@
 
             <script type="text/javascript">
                 YUI().use("wegas-app", "wegas-scripteval", "wegas-websocketlistener", function(Y) {
-                    Y.namespace("Wegas.Config").ExtraTabs=[/*Tab(s) cfg {label:"label", children:[]}*/]
+                    Y.namespace("Wegas.Config").ExtraTabs = [/*Tab(s) cfg {label:"label", children:[]}*/]
 
                     var app = new Y.Wegas.App({
                         dataSources: {
@@ -47,12 +47,12 @@
                                         fn: "VariableDescriptorCache"
                                     }, {
                                         fn: "ScriptEval"
-                                    }, {
-                                        fn: "WebSocketListener",
-                                        cfg: {
-                                            dataSource: "Pusher"
-                                        }
-                                    }, {
+                                    }, {/*
+                                     fn: "WebSocketListener",
+                                     cfg: {
+                                     dataSource: "Pusher"
+                                     }
+                                     }, { */
                                         fn: "ServerLog"
                                     }]
                             },
@@ -123,7 +123,13 @@
                                 type: "PusherDataSource",
                                 source: "rest/Pusher/",
                                 //   applicationKey: "#{editorGameController.currentGameModel.properties.websocket}"
-                                applicationKey: "#{editorGameController.getWegasProperty('pusher.key')}"
+                                applicationKey: "#{editorGameController.getWegasProperty('pusher.key')}",
+                                plugins: [{
+                                        fn: "WebSocketListener",
+                                        cfg: {
+                                            dataSource: "Pusher"
+                                        }
+                                    }]
                             },
                             File: {
                                 source: "rest/GameModel/#{editorGameController.currentGameModel.id}/File/",
@@ -145,28 +151,28 @@
 
                     app.once("render", function() {                               // When the page is rendered
                         var gm = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel(),
-                                loadedPlayers = [Y.Wegas.Facade.Game.cache.getCurrentPlayer().get("id")];
+                            loadedPlayers = [Y.Wegas.Facade.Game.cache.getCurrentPlayer().get("id")];
                         Y.all(".wegas-title").setContent(gm.get("name"));       // Update the title
                         // Handle player change event
                         Y.Wegas.Facade.Game.cache.after('currentPlayerIdChange', function(e) {// Whenever the current player id changes
                             var player = Y.Wegas.Facade.Game.cache.getCurrentPlayer(),
-                                    preview = Y.Widget.getByNode(".editor-preview");
+                                preview = Y.Widget.getByNode(".editor-preview");
 
                             this.set('currentTeamId', player.get("teamId"));        // Update current teamid
 
                             preview.showOverlay();                                  // Show a loading overlay in the Preview tab during the request
-                            if(Y.Array.indexOf(loadedPlayers, e.newVal)>-1) {
+                            if (Y.Array.indexOf(loadedPlayers, e.newVal) > -1) {
                                 Y.later(10, this, function() {                          // Version 1: All data are loaded, only need to change trigger udate
                                     Y.Wegas.Facade.Variable.fire("update");
                                     preview.hideOverlay();
                                 });
-                            }else {
-                                Y.Wegas.Facade.Variable.set("source",                 // Version 2: Only current player data are loaded, need to update the datasource
-                                        //this.get("base") + "rest/EditorPrivate/" + player.get("id")
-                                        Y.Wegas.app.get("base") + "rest/Private/" + player.get("id")
-                                        + "/GameModel/" + Y.Wegas.Facade.GameModel.get("currentGameModelId")
-                                        + "/VariableDescriptor");                         // Retrieve variable instances for the new player
-                                Y.Wegas.Facade.Variable.once("response", function(){
+                            } else {
+                                Y.Wegas.Facade.Variable.set("source", // Version 2: Only current player data are loaded, need to update the datasource
+                                    //this.get("base") + "rest/EditorPrivate/" + player.get("id")
+                                    Y.Wegas.app.get("base") + "rest/Private/" + player.get("id")
+                                    + "/GameModel/" + Y.Wegas.Facade.GameModel.get("currentGameModelId")
+                                    + "/VariableDescriptor");                         // Retrieve variable instances for the new player
+                                Y.Wegas.Facade.Variable.once("response", function() {
                                     loadedPlayers.push(e.newVal);
                                     this.hideOverlay();
                                 }, preview);
@@ -179,8 +185,8 @@
                             Y.log("Error running client scripts.", "error");
                         }
                     });
-                    try{
-                        #{editorGameController.staticClientScripts};
+                    try {
+                #{editorGameController.staticClientScripts};
                     } catch (e) {
                         Y.log("Error running client scripts.", "error");
                     }

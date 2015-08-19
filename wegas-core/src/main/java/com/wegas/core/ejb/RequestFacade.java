@@ -212,4 +212,12 @@ public class RequestFacade {
     public Map<String, List<AbstractEntity>> getDispatchedEntities() {
         return requestManager.getDispatchedEntities();
     }
+
+    /*
+     *
+     * @return
+     */
+    public Map<String, List<AbstractEntity>> getDestroyedEntities() {
+        return requestManager.getDestroyedEntities();
+    }
 }
