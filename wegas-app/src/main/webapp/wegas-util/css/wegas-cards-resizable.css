@@ -52,17 +52,12 @@
 
 
 .resizable.resizable--small .card .card__blocs.card__blocs--action{
-    width:50%;
-    float:left;
-}
-
-.resizable.resizable--small .card .card__blocs.card__blocs--action{
-    width:50%;
+    width:100%;
     float:left;
 }
 
 .resizable.resizable--small .card .card__blocs.card__blocs--action .bloc{
-    width:50%;
+    width:25%;
     height:56px;
     border-top: solid 1px #d4d4d4;
 }
