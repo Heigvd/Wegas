@@ -12,8 +12,12 @@
  */
 
 /*global Variable, gameModel, self */
-var i18nOrdinate = (function(module) { return module; }(i18nOrdinate || {})),
-    i18nTable = (function(module) { return module; }(i18nTable || {})),
+var i18nOrdinate = (function(module) {
+    return module;
+}(i18nOrdinate || {})),
+    i18nTable = (function(module) {
+        return module;
+    }(i18nTable || {})),
     I18n = (function() {
         "use strict";
 
@@ -56,8 +60,9 @@ var i18nOrdinate = (function(module) { return module; }(i18nOrdinate || {})),
             if (value) {
                 res = key.split(".");
                 for (i = 0; i < res.length; i += 1) {
-                    value = value[res[i]];
-                    if (!value) {
+                    if (value.hasOwnProperty(res[i])) {
+                        value = value[res[i]];
+                    } else {
                         return "[I18N] MISSING " + locale + " translation for \"" + key + "\"";
                     }
                 }
@@ -79,6 +84,9 @@ var i18nOrdinate = (function(module) { return module; }(i18nOrdinate || {})),
         }
 
         return {
+            lang: function() {
+                return currentLocale();
+            },
             t: function(key, args) {
                 return translate(key, args);
             },
