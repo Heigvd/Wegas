@@ -736,6 +736,10 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"Logout",
                                 'fr':"Déconnexion"
                             },
+                            'PRIVATE-MODALE-SESSION-SETTINGS-BASED-ON':{
+                                'en':startSentence(keywords.scenario.singular.en) + " : ",
+                                'fr':startSentence(keywords.scenario.singular.fr) + " : "
+                            },
                             'PRIVATE-MODALE-TABS-INFOS':{
                                 'en':"Infos",
                                 'fr':"Infos"
@@ -755,10 +759,6 @@ angular.module('wegas.service.wegasTranslations', [])
                             'PRIVATE-MODALE-TABS-INFOS-ACCESS-LINK-SELECT-TITLE':{
                                 'en':"select the link",
                                 'fr':"sélectionner le lien"
-                            },
-                            'PRIVATE-MODALE-TABS-INFOS-BASED-ON':{
-                                'en':"Session based on "+keywords.scenario.singular.en+" : ",
-                                'fr':"Partie basée sur le "+keywords.scenario.singular.fr+" : "
                             },
                             'PRIVATE-MODALE-TABS-ADVANCED-WARNING':{
                                 'en':"Warning! Update this values only if you know what you do",
