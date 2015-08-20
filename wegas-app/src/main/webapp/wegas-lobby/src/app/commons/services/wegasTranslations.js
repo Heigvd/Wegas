@@ -995,8 +995,8 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'fr':"Basé sur le " + keywords.scenario.singular.fr
                             },
                             'TRAINER-INDEX-ADD-BTN':{
-                                'en':"Create " + keywords.session.singular.en,
-                                'fr':"Créer la " + keywords.session.singular.fr
+                                'en':"Create",
+                                'fr':"Créer"
                             },
                             'TRAINER-INDEX-ARCHIVE-BTN':{
                                 'en':"Archived " + keywords.session.singular.en,
