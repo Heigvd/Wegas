@@ -926,7 +926,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
                             'PLAYER-CARD-LEAVE-CONFIRM':{
                                 'en':"Are you sure you want to leave the "+ keywords.session.singular.en +" ? This action is irreversible.",
-                                'fr':"Êtes-vous sûre de vouloir quitter cette "+ keywords.session.singular.fr +" ? Cette action est irreversible."
+                                'fr':"Êtes-vous sûr de vouloir quitter cette "+ keywords.session.singular.fr +" ? Cette action est irreversible."
                             },
                             'PLAYER-CARD-PLAY-BTN':{
                                 'en':"Play " + keywords.session.singular.en,
@@ -1064,7 +1064,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
                             'TRAINER-MODALE-USERS-REMOVE-PLAYER-CONFIRM':{
                                 'en':"Are you sure you want to remove this "+ keywords.player.singular.en +" from the "+ keywords.session.singular.en +" ? This action is irreversible.",
-                                'fr':"Êtes vous sûre de vouloir supprimer le "+ keywords.player.singular.fr +" de la "+ keywords.session.singular.fr +" ? Cette action est irréversible."
+                                'fr':"Êtes vous sûr de vouloir supprimer le "+ keywords.player.singular.fr +" de la "+ keywords.session.singular.fr +" ? Cette action est irréversible."
                             },
                             'TRAINER-MODALE-USERS-REMOVE-TEAM-BTN':{
                                 'en':"Remove " + keywords.team.singular.en,
@@ -1072,7 +1072,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
                             'TRAINER-MODALE-USERS-REMOVE-TEAM-CONFIRM':{
                                 'en':"Are you sure you want to remove this "+ keywords.team.singular.en +" from the "+ keywords.session.singular.en +" ? This action is irreversible.",
-                                'fr':"Êtes vous sûre de vouloir supprimer l'"+ keywords.team.singular.fr +" de la "+ keywords.session.singular.fr +" ? Cette action est irréversible."
+                                'fr':"Êtes vous sûr de vouloir supprimer l'"+ keywords.team.singular.fr +" de la "+ keywords.session.singular.fr +" ? Cette action est irréversible."
                             },
                             'TRAINER-MODALE-ARCHIVE-TITLE':{
                                 'en':"Archived "+ keywords.session.plural.en,
@@ -1100,7 +1100,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
                             'TRAINER-MODALE-ARCHIVE-DELETE-CONFIRM':{
                                 'en':"Are you sure you want to delete this archived " + keywords.session.singular.en + " ? This action is irreversible.",
-                                'fr':"Êtes-vous sûre de vouloir supprimer cette " + keywords.session.singular.fr + " archivée ? Cette action est irréversible."
+                                'fr':"Êtes-vous sûr de vouloir supprimer cette " + keywords.session.singular.fr + " ? Cette action est irréversible."
                             },
                             'TRAINER-MODALE-ARCHIVE-NO-SESSION':{
                                 'en':"No archived " + keywords.session.singular.en + " with the name ",
@@ -1158,7 +1158,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
                             'SCENARIST-MODALE-ARCHIVE-DELETE-CONFIRM':{
                                 'en':"Are you sure you want to delete this archived " + keywords.scenario.singular.en + " ? This action is irreversible.",
-                                'fr':"Êtes-vous sûre de vouloir supprimer ce " + keywords.scenario.singular.fr + " archivé ? Cette action est irréversible."
+                                'fr':"Êtes-vous sûr de vouloir supprimer ce " + keywords.scenario.singular.fr + " ? Cette action est irréversible."
                             },
                             'SCENARIST-MODALE-ARCHIVE-NO-SCENARIO':{
                                 'en':"No archived " + keywords.scenario.singular.en + " with the name ",
@@ -1290,7 +1290,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
                             'ADMIN-USERS-CARD-DELETE-CONFIRM':{
                                 'en':"Are you sure you want to delete this user ? This action is irreversible.",
-                                'fr':"Êtes-vous sûre de vouloir supprimer cet utilisateur ? Cette action est irréversible."
+                                'fr':"Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible."
                             },
                             'ADMIN-USERS-MODALE-EDIT-TITLE':{
                                 'en':"Edit profile",
@@ -1334,7 +1334,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
                             'ADMIN-GROUPS-CARD-DELETE-CONFIRM':{
                                 'en':"Are you sure you want to delete this group ? This action is irreversible.",
-                                'fr':"Êtes-vous sûre de vouloir supprimer ce groupe ? Cette action est irréversible."
+                                'fr':"Êtes-vous sûr de vouloir supprimer ce groupe ? Cette action est irréversible."
                             },
                             'ADMIN-GROUPS-MODALE-NAME-TITLE':{
                                 'en':"Edit name",
@@ -1362,7 +1362,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
                             'ADMIN-MODALE-PERMISSION-SAVE-CONFIRM':{
                                 'en':"Are you sure you want to save your changes ? This action is irreversible.",
-                                'fr':"Êtes-vous sûre de vouloir sauver vos changements ? Cette action est irréversible."
+                                'fr':"Êtes-vous sûr de vouloir sauver vos changements ? Cette action est irréversible."
                             },
                             'ADMIN-MODALE-PERMISSION-INPUT':{
                                 'en':"Permission chain",
