@@ -1,7 +1,7 @@
 angular.module('private.scenarist.directives', [
     'wegas.behaviours.repeat.autoload'
 ])
-    .controller('ScenaristIndexController', function ScenaristIndexController($scope, $rootScope, ScenariosModel) {
+    .controller('ScenaristIndexController', function ScenaristIndexController($q, $scope, $rootScope, ScenariosModel) {
         var ctrl = this,
             initMaxScenariosDisplayed = function() {
                 if (ctrl.scenarios.length > 12) {
@@ -27,6 +27,7 @@ angular.module('private.scenarist.directives', [
             }
         };
         ctrl.updateScenarios = function(updateDisplay) {
+            
             if(!updateDisplay){
                 ScenariosModel.countArchivedScenarios().then(function(response) {
                     ctrl.nbArchives = response.data;
@@ -48,14 +49,19 @@ angular.module('private.scenarist.directives', [
                 }
             });
         };
-        ctrl.createScenario = function(name, templateId) {
+        ctrl.createScenario = function(name, templateId) { 
+            var deferred = $q.defer();
             ScenariosModel.createScenario(name, templateId).then(function(response) {
                 if (!response.isErroneous()) {
                     ctrl.updateScenarios(true);
+                    deferred.resolve(true);
+
                 } else {
                     response.flash();
+                    deferred.resolve(true);
                 }
             });
+            return deferred.promise;
         };
         $rootScope.$on('changeLimit', function(e, hasNewData) {
             if (hasNewData) {
@@ -87,7 +93,7 @@ angular.module('private.scenarist.directives', [
                 scenarios: '=',
                 create: '='
             },
-            link: function(scope) {
+            link: function(scope, element, attrs) {
                 var resetNewScenario = function() {
                     scope.newScenario = {
                         name: '',
@@ -95,10 +101,17 @@ angular.module('private.scenarist.directives', [
                     };
                 };
                 scope.createScenario = function() {
+                    var button = $(element).find(".form__submit");
+
                     if (scope.newScenario.name !== '') {
                         if (scope.newScenario.templateId !== 0) {
-                            scope.create(scope.newScenario.name, scope.newScenario.templateId);
-                            resetNewScenario();
+                            if(!button.hasClass("button--disable")){
+                                button.addClass("button--disable button--spinner button--rotate");
+                                scope.create(scope.newScenario.name, scope.newScenario.templateId).then(function(){
+                                    button.removeClass("button--disable button--spinner button--rotate");
+                                    resetNewScenario();
+                                });
+                            }
                         } else {
                             $translate('COMMONS-SCENARIOS-NO-TEMPLATE-FLASH-ERROR').then(function (message) {
                                 Flash.danger(message);
