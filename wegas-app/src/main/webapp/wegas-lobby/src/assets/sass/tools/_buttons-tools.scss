@@ -31,7 +31,8 @@ $buttons-icon : (
     (refresh, $fa-var-refresh),
     (repeat, $fa-var-repeat),
     (duplicate, $fa-var-files-o),
-    (language, $fa-var-globe)
+    (language, $fa-var-globe),
+    (spinner, $fa-var-spinner)
 );
 
 %button--with-icon{
