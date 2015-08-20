@@ -31,10 +31,15 @@ import com.fasterxml.jackson.annotation.JsonView;
  */
 @Entity
 @Cacheable(true)
+/*
+Those indexes must partial index (ie. with a WHERE clause).
+Tests will failed if not
+This is not possible with JPA, but with eclipselink
+
 @Table(indexes = {
     @Index(columnList = "username", unique = true),
     @Index(columnList = "email", unique = true)
-})
+})*/
 @NamedQueries({
     @NamedQuery(name = "findUserPermissions", query = "SELECT DISTINCT accounts FROM AbstractAccount accounts JOIN accounts.permissions p WHERE p.value LIKE :instance"),
     @NamedQuery(name = "AbstractAccount.findByUsername", query = "SELECT a FROM AbstractAccount a WHERE a.username = :username")
