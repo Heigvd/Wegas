@@ -660,11 +660,11 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en': "This user is already a " + keywords.trainer.singular.en + " for this " + keywords.session.singular.en,
                                 'fr': "Cet utilisateur est déjà un " + keywords.trainer.singular.fr + " pour cette " + keywords.session.singular.fr
                             },
-                            'COMMONS-PERMISSIONS-SESSIONS--DELETE-FLASH-SUCCESS': {
+                            'COMMONS-PERMISSIONS-SESSIONS-DELETE-FLASH-SUCCESS': {
                                 'en': startSentence(keywords.trainer.singular.en) + " removed",
                                 'fr': "Droits de l'" + keywords.trainer.singular.fr + " enlevé"
                             },
-                            'COMMONS-PERMISSIONS-SESSIONS--DELETE-FLASH-ERROR': {
+                            'COMMONS-PERMISSIONS-SESSIONS-DELETE-FLASH-ERROR': {
                                 'en': "Error while removiong " + keywords.trainer.singular.en,
                                 'fr': "Une erreur est survenue durant la suppression des droits de l'" + keywords.trainer.singular.fr
                             },
