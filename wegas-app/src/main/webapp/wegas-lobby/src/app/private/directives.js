@@ -66,23 +66,13 @@ angular.module('private.directives', [])
                         case "wegas.private.admin.users":
                             profileState = "wegas.private.profile.admin.users";
                             break;
+                        case "wegas.private.admin.groups":
+                            profileState = "wegas.private.profile.admin.groups";
+                            break;
                         default:
                             profileState = "wegas.private.profile";
                          
                     };
-                    if ($state.current.name == "wegas.private.scenarist") {
-                        profileState = "wegas.private.profile.scenarist";
-                    } else if ($state.current.name == "wegas.private.trainer") {
-                        profileState = "wegas.private.profile.trainer";
-                    } else if ($state.current.name == "wegas.private.player") {
-                        profileState = "wegas.private.profile.player";
-                    } else if ($state.current.name == "wegas.private.admin") {
-                        profileState = "wegas.private.profile.admin";
-                    } else if ($state.current.name == "wegas.private.admin.users") {
-                        profileState = "wegas.private.profile.admin.users";
-                    } else {
-                        profileState = "wegas.private.profile";
-                    }
                     $state.go(profileState);
                 };
                 

@@ -1,4 +1,4 @@
-<div class="card card--big card--archive" ng-repeat="scenario in scenarios | filter : { name: search }"">
+<div class="card card--big card--archive" ng-repeat="scenario in scenarios | orderBy: 'createdTime':true | filter : { name: search }"">
     <div class="card__illustration illustration illustration--big illustration--icon" illustration="{{scenario.properties.iconUri}}"></div>
     <div 
         class="card__description" 

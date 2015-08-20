@@ -73,7 +73,6 @@
                         margin-top: 0;
                         margin-bottom: 0;
 		}
-
 	}
 
 	&.modal--users, &.modal--player-team {
@@ -116,6 +115,30 @@
                         text-overflow: ellipsis;
                         white-space: nowrap;
 			margin:0px;
+                        
+                        &.modal__title--has-subtitle{
+                            padding:0px 20px;
+                            .modal__title__line{
+                                display:block;
+                                position:relative;
+                                width:100%;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                                white-space: nowrap;
+                                
+                                &.modal__title__line--primary{
+                                    height:40px;
+                                    font-size:21px;
+                                    line-height:40px;
+                                }
+                                
+                                &.modal__title__line--secondary{
+                                    height:24px;
+                                    line-height:14px;
+                                    font-size:14px;
+                                }
+                            }
+                        }
 		}
 
 		.modal__close{

@@ -123,8 +123,13 @@
             &.button--disable{
                 cursor:default;
                 opacity:.5;
+                
                 &:hover{
                     background-color:$type-color;
+                }
+                
+                .button__label{
+                    cursor:default;
                 }
             }
         }
@@ -212,6 +217,13 @@
             @extend %button--with-icon;
             &:before{
                 content: $icon-content;
+            }
+            
+            &.button--rotate{
+                &:before{
+                    -webkit-animation: fa-spin 2s infinite linear;
+                            animation: fa-spin 2s infinite linear;
+                }
             }
         }
     }

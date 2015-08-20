@@ -25,9 +25,9 @@ import javax.persistence.*;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@Table(uniqueConstraints = {
+/*@Table(uniqueConstraints = {
         @UniqueConstraint(columnNames = "email")
-})
+})*/
 @JsonSubTypes(value = {
         @JsonSubTypes.Type(name = "GameAccount", value = com.wegas.core.security.jparealm.GameAccount.class)
 })
