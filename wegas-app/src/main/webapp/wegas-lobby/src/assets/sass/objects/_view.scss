@@ -527,20 +527,24 @@
                         top:50px;
                         right:50px;
                         width: 120px;
-                        padding: 8px 16px 4px 16px;
+                        padding: 0px;
+                        padding-top:4px;
                         background: white;
                         @include material-shadow(1);
+                        
                         .subaction{
                             width:100%;
-                            padding-bottom:4px;
-                            a{
-                                color:$primary-color;
-                                text-decoration:none;
-                                &:hover{
-                                    color:lighten($primary-color, 10%);
-                                    text-decoration:none;
-                                    cursor:pointer;
-                                }
+                            padding:0px;
+                            margin:0px;
+                            
+                            .button{
+                                width:100%;
+                                height:32px;
+                                line-height:32px;
+                                padding:0px 12px; 
+                                text-overflow:ellipsis;
+                                overflow:hidden;
+                                white-space:nowrap;
                             }
                         }
                     }
@@ -548,7 +552,6 @@
             }
         }
     }
-    
     .view__button-collapse, .view__button-expand{
         display:none;
     }
