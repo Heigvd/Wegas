@@ -61,3 +61,85 @@
     height:56px;
     border-top: solid 1px #d4d4d4;
 }
+
+.resizable.resizable--medium .wrapper__bloc-details{
+    display:block;
+    position:absolute;
+    top:92px;
+    left:32px;
+    width:calc(100% - 64px);
+    height:0px;
+    box-shadow:none;
+}
+
+.resizable.resizable--medium .card .card__icon, .resizable.resizable--medium .card .card__title, .resizable.resizable--medium .card .card__actions{
+    margin-bottom:0px;
+    transition:margin .3s;
+}
+
+.resizable.resizable--medium .card.card__detailed .card__icon, .resizable.resizable--medium .card.card__detailed .card__title, .resizable.resizable--medium .card.card__detailed .card__actions{
+    margin-bottom:200px;
+    transition:margin .3s;
+}
+
+.resizable.resizable--medium .wrapper__bloc-details.bloc-details--open{
+    height:200px;
+}
+
+.resizable.resizable--medium .wrapper__bloc-details.bloc-details--team.bloc-details--open .bloc-details__players{
+    width:36%;
+}
+
+.resizable.resizable--medium .wrapper__bloc-details.bloc-details--team.bloc-details--open .bloc-details__notes{
+    width:64%;
+}
+
+.resizable.resizable--small .wrapper__bloc-details.bloc-details--team.bloc-details--open .bloc-details__players,
+.resizable.resizable--small .wrapper__bloc-details.bloc-details--team.bloc-details--open .bloc-details__notes{
+    width:100%;
+    height:150px;
+    float:none;
+    clear:both;
+}
+
+.resizable.resizable--small .card .card__title.card__title--detailed .card__title__content,
+.resizable.resizable--small .card .card__title.card__title--detailed .card__title__link{
+    padding-top:0px;
+    line-height:28px;
+    height:28px;
+}
+.resizable.resizable--small .wrapper__bloc-details{
+    display:block;
+    position:absolute;
+    top:68px;
+    left:32px;
+    width:calc(100% - 64px);
+    height:0px;
+    box-shadow:none;
+}
+
+.resizable.small .card .card__icon, .resizable.resizable--small .card .card__title, .resizable.resizable--small .card .card__actions{
+    margin-bottom:0px;
+    transition:margin .3s;
+}
+
+.resizable.resizable--small .card.card__detailed .card__icon, .resizable.resizable--small .card.card__detailed .card__title{
+    margin-bottom:150px;
+    transition:margin .3s;
+}
+
+
+.resizable.resizable--small .wrapper__bloc-details.bloc-details--open{
+    height:150px;
+}
+
+.resizable.resizable--small .card.card__detailed.card--team .card__icon, .resizable.resizable--small .card.card__detailed.card--team .card__title{
+    margin-bottom:300px;
+}
+
+.resizable.resizable--small .wrapper__bloc-details.bloc-details--team.bloc-details--open{
+    height:300px;
+}
+
+
+
