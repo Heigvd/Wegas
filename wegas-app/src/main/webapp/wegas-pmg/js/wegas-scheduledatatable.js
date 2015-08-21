@@ -57,7 +57,8 @@ YUI.add('wegas-scheduledatatable', function(Y) {
                     table.addColumn({
                         key: (newval - diff + 1).toString(),
                         time: (newval - diff + 1),
-                        className: "schedulecolumn " + this.getClass(newval - diff + 1),
+                        className: "schedulecolumn ",
+                        //className: "schedulecolumn " + this.getClass(newval - diff + 1),
                         formatter: formatter
                     });
                     diff -= 1;
