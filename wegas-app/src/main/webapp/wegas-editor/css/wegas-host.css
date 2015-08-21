@@ -589,9 +589,12 @@
 }
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft .yui3-widget-buttons{
     display:block;
-    position:relative;
+    position:absolute;
     width:100%;
     height:100%;
+    box-sizing: border-box;
+    top: 0px;
+    left:0px;
     text-align:left;
 }
 
