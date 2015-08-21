@@ -38,7 +38,7 @@
             }).render(".wegas-layout-hd");
 
             editButton.on("click", function() {
-                window.location.replace(window.location.toString().replace("host.", "edit."));
+                window.open(window.location.toString().replace("host.", "edit."),'_blank');
             }, this);
         });
 
