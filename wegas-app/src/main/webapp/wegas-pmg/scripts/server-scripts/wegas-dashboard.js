@@ -7,7 +7,7 @@
  */
 
 /*global Variable, gameModel, self, Y, PMGSimulation, debug, com, java, Java */
-var PMGDashboard = (function() {
+var PMGDashboards = (function() {
     "use strict";
     var Long = Java.type("java.lang.Long");
 
@@ -47,7 +47,8 @@ var PMGDashboard = (function() {
         return Variable.find(gameModel, name).getLabel();
     }
 
-    function dashboard() {
+    function overview() {
+        // Find all values
         var teams = self.getGame().getTeams(),
             currentPhase = getInstances("currentPhase"),
             currentPeriod = getInstances("currentPeriod"),
@@ -60,13 +61,40 @@ var PMGDashboard = (function() {
             phaseName = ['Initiation', 'Planning', 'Executing', 'Closing'],
             managementLabel = getLabel("managementApproval"),
             userLabel = getLabel("userApproval"),
-            obj;
+            
+            // Formatter function
+            formatter = function(bloc, value){
+                bloc.one(".bloc__value")
+                    .setStyle("background-color", (value < 75 ? "#ff4a03" : (value > 125 ? "#4caf50" : "#ffa709")))
+                    .setStyle("color", "white")
+                    .setStyle("font-weight", "bold")
+                    .setStyle("border-radius", "2px");
+            },
+            
+            // Columns & data object structure
+            monitoring = {
+                "structure":[{
+                    title: "Monitoring",
+                    items:[    
+                        { "label":"Phase", "formatter":null },
+                        { "label":"Period", "formatter":null },
+                        { "label":"Questions", "formatter":null },
+                        { "label":"Quality", "formatter":formatter },
+                        { "label":"Costs", "formatter":formatter },
+                        { "label":"Schedule", "formatter":formatter },
+                        { "label":managementLabel, "formatter":formatter },
+                        { "label":userLabel, "formatter":formatter }
+                    ]
+                }
+                ],
+                "data":{}
+            };
+            
+        // Find data by team
         for (t = 0; t < teams.size(); t++) {
             teamId = new Long(teams.get(t).getId());
-            currentPeriod = Variable.find(gameModel, 'currentPeriod').item(currentPhase[teamId].getValue() -
-                                                                           1).getScope().getVariableInstances()[teamId].getValue();
-            obj = {
-                "id": teamId,
+            currentPeriod = Variable.find(gameModel, 'currentPeriod').item(currentPhase[teamId].getValue() - 1).getScope().getVariableInstances()[teamId].getValue();
+            monitoring.data[teamId] = {
                 "Phase": phaseName[currentPhase[teamId].getValue() - 1],
                 "Period": currentPeriod,
                 "Questions": questionAnswered(teamId, currentPhase[teamId].getValue(), currentPeriod),
@@ -74,14 +102,20 @@ var PMGDashboard = (function() {
                 "Costs": cost[teamId].getValue(),
                 "Schedule": schedule[teamId].getValue()
             };
-            obj[managementLabel] = management[teamId].getValue();
-            obj[userLabel] = user[teamId].getValue();
-            arr.push(obj);
+            monitoring.data[teamId][managementLabel] = management[teamId].getValue();
+            monitoring.data[teamId][userLabel] = user[teamId].getValue();
         }
-        return JSON.stringify(arr);
+        
+        // Stringify formatter functions
+        monitoring.structure.forEach(function(groupItems){
+            groupItems.items.forEach(function(item){
+                item.formatter =  item.formatter + "";
+            });
+        });
+        // Return stringified object
+        return JSON.stringify(monitoring);
     }
-
     return {
-        dashboard: dashboard
+        overview: overview
     };
 })();

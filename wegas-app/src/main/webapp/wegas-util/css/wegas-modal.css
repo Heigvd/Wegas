@@ -1,0 +1,167 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
+.shadow{
+    display:block;
+    position:fixed;
+    width:100%;
+    height:100%;
+    top:0px;
+    left:0px;
+    background:rgba(0,0,0, .5);
+    z-index:9998;
+}
+
+.modal{
+    display:block;
+    position:fixed;
+    top:50%;
+    left:50%;
+    margin:-280px 0 0 -400px;
+    width:800px;
+    height:580px;
+    background-color:white;
+    border-radius:8px;
+    z-index:9999;
+    overflow:hidden;
+}
+
+.modal .modal__header{
+    width:100%;
+    height:65px;
+    border-bottom:solid 1px #c1c1c1;
+    box-sizing:border-box;
+}
+
+.modal .modal__header .title{
+    display: block;
+    position: relative;
+    width:calc(100% - 64px);
+    height: 64px;
+    padding: 0 16px;
+    color: #666;
+    font-weight: lighter;
+    line-height: 64px;
+    box-sizing: border-box;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 16px;
+    float:left;
+}
+
+.modal .modal__header .button.button--close{
+    display:block;
+    position:relative;
+    float:left;
+    width:64px;
+    height:64px;
+    font-size:24px;
+    line-height:64px;
+    text-align:center;
+    color:#666;
+}
+
+.modal .modal__header.modal__header--illustred .icon{
+    display:block;
+    position:relative;
+    width:64px;
+    height:64px;
+    background-color:#666;
+    color:white;
+    font-size:32px;
+    line-height:64px;
+    text-align:center;
+    float:left;
+}
+
+.modal .modal__header.modal__header--illustred .title{
+    width:calc(100% - 128px);
+}
+
+.modal .modal__content{
+    display:block;
+    position:relative;
+    width:100%;
+    height:calc(100% - 65px);
+    padding:0px;
+    margin:0px;
+    overflow:auto;
+}
+.modal .modal__content.modal__content--able-footer{
+    height:calc(100% - 130px);
+}
+
+.modal .modal__footer{
+    width:100%;
+    height:65px;
+    box-sizing:border-box;
+    border-top:solid 1px #c1c1c1;
+}
+.modal .modal__footer .button{
+    display:block;
+    position:relative;
+    float:right;
+    margin:8px 8px 8px 0px;
+    padding:0px 16px;
+    height:48px;
+    line-height:48px;
+    font-size:12px;
+    color:white;
+    text-transform: uppercase;
+    text-decoration: none;
+    background-color:#666666;
+    transition:.3s;
+}
+.modal .modal__footer .button:hover{
+    background-color:#555555;
+}
+
+.modal .modal__footer .button.button--primary{
+    background-color:#4caf50;
+}
+.modal .modal__footer .button.button--primary:hover{
+    background-color:#4fd054;
+}
+
+.wegas-advancedmode .modal .modal__footer .button.button--secondary{
+    background-color:#999999;
+    float:left;
+    margin-left:8px;
+}
+
+.wegas-advancedmode .modal .modal__footer .button.button--secondary:hover{
+    background-color:#888888;
+}
+
+.wegas-stdmode .modal .modal__footer .button.button--advanced{
+    display:none;
+}
+
+.wegas-advancedmode .modal .modal__footer .button.button--advanced{
+    display:block;
+}
+
+@media screen and (max-width: 800px) {
+    .modal{
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+        left: 0;
+        border-radius:0px;
+    }
+}
+
+@media screen and (max-height: 580px) {
+    .modal{
+        height: 100%;
+        top: 0;
+        margin-top: 0;
+        margin-bottom: 0;
+        border-radius:0px;
+    }
+}
