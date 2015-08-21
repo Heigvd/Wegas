@@ -582,7 +582,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
                             "COMMONS-USERS-UPDATE-PASSWORD-FLASH-ERROR":{
                                 'en': "Error while updating user password",
-                                'fr': "Une erreur est survenue durant la mise à jour du mot de passe de l'utilisateur"
+                                'fr': "La confirmation du mot de passe n'est pas identique au mot de passe"
                             },
                             'COMMONS-USERS-UPDATE-FLASH-ERROR': {
                                 'en': "Error while updating user",
@@ -851,8 +851,8 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'fr':"Mot de passe"
                             },
                             'PRIVATE-PROFILE-INPUT-LABEL-PASSWORD-AGAIN':{
-                                'en':"Password",
-                                'fr':"Mot de passe"
+                                'en':"Password again",
+                                'fr':"Confirmer le mot de passe"
                             },
                             'PRIVATE-PROFILE-INPUT-LABEL-USERNAME': {
                                 'en':"Username",
