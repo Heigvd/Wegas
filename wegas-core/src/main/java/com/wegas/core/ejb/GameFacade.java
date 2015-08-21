@@ -111,6 +111,7 @@ public class GameFacade extends BaseFacade<Game> {
     public void publishAndCreate(final Long gameModelId, final Game game) throws IOException {
         GameModel gm = gameModelFacade.duplicate(gameModelId);
         gm.setName(gameModelFacade.find(gameModelId).getName());// @HACK Set name back to the original
+        gm.setComments(""); // Clear comments
         gm.setTemplate(false);
         this.create(gm, game);
     }
