@@ -320,35 +320,35 @@
 }
 
 .card__blocs .bloc.bloc--info-details{
-    background-image:url("/Wegas/wegas-editor/css/../../wegas-app/images/icon_infos.png");
+    background-image:url("../../wegas-app/images/icon_infos.png");
 }
 
 .card__blocs .bloc.bloc--info-details:hover{
-    background-image:url("/Wegas/wegas-editor/css/../../wegas-app/images/icon_infos_hover.png");
+    background-image:url("../../wegas-app/images/icon_infos_hover.png");
 }
 
 .card__blocs .bloc.bloc--info-view{
-    background-image:url("/Wegas/wegas-editor/css/../../wegas-app/images/icon_vision.png");
+    background-image:url("../../wegas-app/images/icon_vision.png");
 }
 
 .card__blocs .bloc.bloc--info-view:hover{
-    background-image:url("/Wegas/wegas-editor/css/../../wegas-app/images/icon_vision_hover.png");
+    background-image:url("../../wegas-app/images/icon_vision_hover.png");
 }
 
 .card__blocs .bloc.bloc--action-impacts{
-    background-image:url("/Wegas/wegas-editor/css/../../wegas-app/images/icon_impact.png");
+    background-image:url("../../wegas-app/images/icon_impact.png");
 }
 
 .card__blocs .bloc.bloc--action-impacts:hover{
-    background-image:url("/Wegas/wegas-editor/css/../../wegas-app/images/icon_impact_hover.png");
+    background-image:url("../../wegas-app/images/icon_impact_hover.png");
 }
 
 .card__blocs .bloc.bloc--action-email{
-    background-image:url("/Wegas/wegas-editor/css/../../wegas-app/images/icon_mail.png");
+    background-image:url("../../wegas-app/images/icon_mail.png");
 }
 
 .card__blocs .bloc.bloc--action-email:hover{
-    background-image:url("/Wegas/wegas-editor/css/../../wegas-app/images/icon_mail_hover.png");
+    background-image:url("../../wegas-app/images/icon_mail_hover.png");
 }
 
 .bloc .bloc__label, .bloc .bloc__value{
