@@ -181,10 +181,12 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                         });
                         dt.plug(Y.Plugin.PMGLineFilter, {
                             filterFn: function(data, node) {
-                                var instance = data.get("instance"),
-                                    assignments = instance.assignments && instance.assignments.length > 0,
+                                var instance, assignments, currentPeriod, occupations;
+                                    instance = data.get("instance");
+                                    instance = Y.Wegas.Facade.Variable.cache.findById(instance.descriptorId).getInstance().getAttrs();
+                                    assignments = instance.assignments && instance.assignments.length > 0;
                                     currentPeriod = Y.Wegas.Facade.Variable.cache.find("name",
-                                        "periodPhase3").getValue(),
+                                        "periodPhase3").getValue();
                                     occupations = Y.Array.some(instance.occupations, function(i) {
                                         return i.get("editable") && currentPeriod < i.get("time") + 1;
                                     });
