@@ -29,16 +29,8 @@ YUI.add('wegas-sendmail', function(Y) {
                         {
                             name: "from",
                             label: "From",
-                            type: "radio",
-                            value: "currentUser",
-                            choices: [{
-                                    label: "Me",
-                                    value: "currentUser"
-                                }, {
-                                    label: "Anonymous",
-                                    value: "anonymous"
-                                }
-                            ]
+                            type: "uneditable",
+                            value: Y.Wegas.Facade.User.get("currentUser").get("accounts")[0].get("email")
                         },
                         {
                             name: "to",

@@ -43,7 +43,7 @@ public class EMailFacade {
      * @param mimetype
      * @throws javax.mail.MessagingException when something went wrong
      */
-    public void send(String to, String from,
+    public void send(String to, String from, String replyTo,
             String subject, String body, RecipientType toType, String mimetype) throws MessagingException {
 
         Properties props = new Properties();
@@ -72,6 +72,9 @@ public class EMailFacade {
 
         javax.mail.Message msg = new MimeMessage(session);
 
+        if (replyTo != null){
+            msg.setHeader("Reply-To", replyTo);
+        }
         msg.setFrom(new InternetAddress(from));
         msg.setRecipients(toType, InternetAddress.parse(to, false));
         msg.setSubject(subject);
@@ -89,7 +92,7 @@ public class EMailFacade {
      * @param body
      */
     public void send(Player p, String from, String subject, String body) throws MessagingException {
-        this.send(p.getUser().getName(), from, subject, body, RecipientType.TO, "text/plain");
+        this.send(p.getUser().getName(), from, null, subject, body, RecipientType.TO, "text/plain");
     }
 
     /**
