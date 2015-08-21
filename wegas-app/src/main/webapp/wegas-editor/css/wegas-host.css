@@ -293,21 +293,32 @@
     background-repeat:no-repeat;
 }
 .yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-login{
-    padding-left: 40px;
-    background-size: auto 32px;
-    margin-left: 16px;
-    max-width:260px;
-    overflow:hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    background-repeat: no-repeat;
-    background-position: left center;
-    background-image: url(../../wegas-editor/images/user.png);
+    width: 48px;
+    height: 48px;
+    overflow: hidden;
+    text-indent: -1000px;
+    padding: 0px;
+    margin: 0px;
+    background:none;
 }
-
-.yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-login:hover{
-    color:#5bc4ec;
-    background-image: url(../../wegas-editor/images/user_hover.png);
+.yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-login:before{
+    display:block;
+    position:absolute;
+    top:0px;
+    left:0px;
+    width:48px;
+    height:48px;
+    content:"\f08b";
+    font-family: "FontAwesome";
+    font-size: 24px;
+    line-height: 48px;
+    text-indent: 0;
+    cursor:pointer;
+    background: none !important;
+}
+.yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-login:hover:before{
+    background:none;
+    color:#82c3ec;
 }
 
 @media screen and (max-width: 799px) {
