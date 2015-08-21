@@ -6,79 +6,98 @@
  * Licensed under the MIT License
  */
 /**
- * @fileoverview
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * Wegas Dashboard - V2
+ * @author Raphaël Schmutz <raph@hat-owl.cc>
  */
 YUI.add('wegas-dashboard', function(Y) {
     "use strict";
-    /**
-     * @name Y.Wegas.Dashboard
-     * @extends Y.Widget
-     * @augments Y.WidgetChild
-     * @augments Y.Wegas.Widget
-     * @class class for join a team
-     * @constructor
-     */
-    var CONTENTBOX = "contentBox", NAME = "name", Wegas = Y.Wegas, Dashboard, inSync = false,
-        Promise = Y.Promise,
-        teamTemplate = (new Y.Template()).compile(
-            "<span class='wegas-icon wegas-icon-team'></span>" +
-            "<span class='wegas-team-name'><%= this.get('name') %></span>"+
-            "<div class='wegas-details-wrapper wegas-team-details'>"+
-                "<span class='wegas-icon wegas-icon-details'>Details</span>" +
-                "<div class='wegas-details'>"+
-                    "<div class='wegas-players'>"+
-                        "<ul><% Y.Array.each(this.get('players'), function(p){ %>" +
-                            "<li><span class='wegas-icon wegas-icon-player'></span><span class='wegas-player-name'><%= p.get('name') %></span></li>" +
-                        "<%});%></ul>"+
-                    "</div>"+
-                    "<div class='wegas-notes'>"+
-                        "<textarea class='disabled' placeholder='Personnal trainer notes' readonly='true'><%= this.get('notes') %></textarea>" +
-                    "</div>"+
-                "</div>"+
-            "</div>"
-        ),
-        playerTemplate = (new Y.Template()).compile(
-            "<span class='wegas-icon wegas-icon-player'></span>" +
-            "<span class='wegas-player-name'><%= this.get('players')[0].get('name') %></span>"+
-            "<div class='wegas-details-wrapper wegas-player-details'>"+
-                "<span class='wegas-icon wegas-icon-details'>Notes</span>" +
-                "<div class='wegas-details'>"+
-                    "<div class='wegas-notes'>"+
-                        "<textarea class='disabled' placeholder='Personnal trainer notes' readonly='true'><%= this.get('notes') %></textarea>" +
-                    "</div>"+
-                "</div>"+
-            "</div>"
-        ),
-        setTableData = function(table, data) {
-            var result;
-            while (data.length) {
-                result = data.shift();
-                if (table.getRecord(result.id)) {
-                    table.getRecord(result.id).setAttrs(result);
-                }
+    Y.Wegas.Dashboard = Y.Base.create("wegas-dashboard", Y.Widget, [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+        CONTENT_TEMPLATE: "<div class='dashboard'></div>",
+        ORIGINAL_BLOCS: [],
+        renderUI: function(){
+            if(this.toolbar) {
+                this.toolbar.removeAll();
+                this.toolbar.add(new Y.Wegas.Button({
+                    label: '<span class="wegas-icon wegas-icon-refresh"></span> Refresh',
+                    on: {
+                        click: Y.bind(function() {
+                            this.syncUI();
+                        }, this)
+                    }
+                }));
             }
         },
-        getTeams = function() {
-            return new Promise(function(resolve, reject) {
-                Y.Wegas.Facade.Game.cache.sendRequest({
-                    request: "/" + Wegas.Facade.Game.cache.getCurrentGame().get("id") + "/Team",
-                    on: {
-                        success: function(e) {
-                            resolve(e.response.entities);
-                        },
-                        failure: function(e) {
-                            reject(e);
-                        }
+        syncUI:function(){
+            _createCards();
+        },
+        _createCards: function(){
+            var context = this;
+            return new Y.Promise(function(resolve, reject) {
+                context._getMonitoredData().then(function(monitoredBlocs){
+                    context.removeAll();                
+                    context.get("cardsData").forEach(function(data){
+                        var card = {
+                            "id": data.id,
+                            "title": data.title,
+                            "icon": data.icon || null,
+                            "blocs": context._combineBlocs(data, monitoredBlocs)
+                        };
+                        context.add(new Y.Wegas.Card(card));
+                    });
+                    if(context.get("resize")){
+                        context.plug(Y.Wegas.CardsResizable);
+                        context.CardsResizable.resetClassSize();
+                        context.CardsResizable.resize();
                     }
+                    resolve(true);
                 });
+                
             });
         },
-        getData = function(script) {
-            // var script = this.get("remoteScript");
-            if (script) {
-                return new Promise(function(resolve, reject) {
+        _addOriginalBloc: function(idCard, originalBloc){
+            if(!this.ORIGINAL_BLOCS[idCard]){
+                this.ORIGINAL_BLOCS[idCard] = [];
+            }
+            this.ORIGINAL_BLOCS[idCard].push(originalBloc);                        
+        },
+        _resetToInitialBlocs: function(data){
+            data.blocs = [];
+            if(this.ORIGINAL_BLOCS[data.id]){
+                this.ORIGINAL_BLOCS[data.id].forEach(function(bloc){
+                    data.blocs.push(bloc);
+                });
+            }
+        },
+        _combineBlocs: function(data, monitoredBlocs){ 
+            var blocs, newBlocs, newBloc;
+            this._resetToInitialBlocs(data);
+            blocs = data.blocs;
+            if(monitoredBlocs !== null && monitoredBlocs.data && monitoredBlocs.data[data.id]){
+                monitoredBlocs.structure.forEach(function(blocsToAdd){
+                    newBlocs = {
+                        "position": "left",
+                        "type": "monitoring",
+                        "items": []
+                    };
+                    blocsToAdd.title ? newBlocs.title = blocsToAdd.title : null;
+                    blocsToAdd.items.forEach(function(bloc){
+                       newBloc = {
+                           label: bloc.label,
+                           value: monitoredBlocs.data[data.id][bloc.label],
+                           formatter : eval("("+ bloc.formatter + ")")
+                       };
+                       newBlocs.items.push(newBloc);
+                   });
+                   blocs.push(newBlocs);
+                });
+            }
+            return blocs;
+        },
+        _getMonitoredData: function(){
+            var dashboards = Y.namespace("Wegas.Config.Dashboards"), script;
+            if(dashboards && this.get("name") && dashboards[this.get("name")]){
+                script = dashboards[this.get("name")];
+                return new Y.Promise(function(resolve, reject) {
                     Y.Wegas.Facade.Variable.sendRequest({
                         request: "/Script/Run/" + Y.Wegas.Facade.Game.cache.getCurrentPlayer().get("id"),
                         cfg: {
@@ -98,334 +117,33 @@ YUI.add('wegas-dashboard', function(Y) {
                     });
                 });
             } else {
-                return Promise.resolve([]);
+                return Y.Promise.resolve(null);
             }
-        };
-
-    Dashboard = Y.Base.create("wegas-dashboard", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
-        // *** Private fields *** //
-        /**
-         * @function
-         * @private
-         * @description All button and fields are created.
-         * For creating the field inputEx library is used
-         */
-        renderUI: function() {
-            var cfg = this.get("tableCfg");
-            if (this.get("remoteScript") && this.toolbar) {
-                this.toolbar.add(new Y.Wegas.Button({
-                    label: '<span class="wegas-icon wegas-icon-refresh"></span>Refresh',
-                    on: {
-                        click: Y.bind(function() {
-                            if (inSync) {
-                                return;
-                            }
-                            inSync = true;
-                            var bgenData = Y.bind(this.genData, this, this.table);
-                            Promise.all([
-                                getTeams()
-                                    .then(function(teams) {
-                                        return bgenData(teams);
-                                    }),
-                                getData(this.get("remoteScript"))
-                            ])
-                                .then(function(res) {
-                                    setTableData(res[0], res[1]);
-                                    inSync = false;
-                                    return true;
-                                })
-                                .catch(function(error) {
-                                    Y.log(error, "error", "Y.Wegas.Dashboard");
-                                    inSync = false;
-                                });
-                        }, this)
-                    }
-                }));
-            }
-            this.get(CONTENTBOX).addClass("yui3-skin-wegas");
-            if (!Y.Array.find(cfg.columns, function(i) {
-                    return i.key === NAME;
-                })) {
-                cfg.columns.splice(0, 0, {
-                    key: NAME,
-                    label: " "
-                });
-            }
-            cfg.columns = Y.Array.map(cfg.columns, function(c) {                // Add some default properties to columns
-                return Y.mix(c, {
-                    allowHTML: true,
-                    sortable: false,
-                    key: c.label,
-                    emptyCellValue: "-"
-                });
-            });
-            cfg = Y.mix(cfg, {
-                sortBy: {name: "asc"}
-            });
-            //cfg = Y.mix(cfg, {//                                                // Add cfg default values
-            //    width: "100%"
-            //});
-            this.table = new Y.DataTable(cfg)                                   // Render data table
-                .render(this.get(CONTENTBOX))
-                .set('strings.emptyMessage', "<em><center><br /><br />No players</center></em>");
-            this.table.addColumn({
-                key: "menu",
-                label: " ",
-                cellTemplate:   "<td class='{className}'>" +
-                                    "<button class='yui3-button dashboard-open-team' title='View'></button>" +
-                                    "<button class='yui3-button dashboard-impact-team' title='Impact'></button>" +
-                                    "<button class='yui3-button dashboard-mail-team' title='Send Mail'></button>" +
-                                "</td>"
-            });
         },
-        /**
-         * @function
-         * @private
-         */
-        bindUI: function() {
-            //            this.updateHandler =
-            //                Wegas.Facade.Variable.after("update", this.syncUI, this);       // Listen updates on the
-            // target datasource
-            this.get("boundingBox").delegate("click", function(e) {
-                var team = Wegas.Facade.Game.cache.getTeamById(this.table.getRecord(e.currentTarget).get("id")), header, statusNode = Y.Node.create("<span></span>");
-                if (team && team.get("players").length) {
-                    if(!Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties.freeForAll")){
-                        header = "<span class='wegas-modal-title wegas-modal-title-group'>Impact team \"" + team.get("name") + "\"</span>";
-                    }else{
-                        header = "<span class='wegas-modal-title wegas-modal-title-player'>Impact player \"" + team.get("players")[0].get("name") + "\"</span>";
-                    }
-                    new Y.Wegas.Panel({
-                        modal: true,
-                        children: [{
-                            type: "CustomConsole",
-                            player: team.get("players")[0],
-                            statusNode: statusNode
-                        }],
-                        headerContent: header,
-                        footerContent: statusNode,
-                        width: 600,
-                        /*height: 600,*/
-                        zIndex: 5000,
-                        buttons: {                
-                            header: [
-                                {
-                                    name: 'proceed',
-                                    classNames: "modal--header-close",
-                                    label: 'Close',
-                                    action: "exit"
-                                }
-                            ],
-                            footer: [
-                                {
-                                    name: "src",
-                                    label: "View src",
-                                    classNames: "modal--footer-left wegas-advanced-feature modal--footer-secondary",
-                                    action: function() {
-                                        this.item(0).viewSrc();
-                                    }
-                                },
-                                {
-                                    name: "run",
-                                    label: "Apply impact",
-                                    classNames: "modal--footer-right modal--footer-valid",
-                                    action: function() {
-                                            this.item(0).run(this);
-                                    }
-                                },{
-                                    name: 'proceed',
-                                    label: 'Cancel',
-                                    classNames: "modal--footer-right",
-                                    action: "exit"
-                                }
-                            ]
-                        }
-                    }).render().get("boundingBox").addClass("dashboard-impact-panel").addClass("dashboard-panel");
-                } else {
-                    this.showMessage("info", "Could not find a player");
-                }
-
-            }, ".yui3-datatable-col-menu .dashboard-impact-team", this);
-
-            this.get("boundingBox").delegate("click", function(e) { 
-                e.currentTarget.ancestors("tr").toggleClass("card-show-details");
-            },  ".yui3-datatable-col-name .wegas-icon-details", this);
-            
-            this.get("boundingBox").delegate("click", function(e) {
-                var team = Wegas.Facade.Game.cache.getTeamById(this.table.getRecord(e.currentTarget).get("id")),
-                    i, header, statusNode = Y.Node.create("<span></span>");
-                if (team && team.get("players").length) {
-                    if(!Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties.freeForAll")){
-                        header = "<span class='wegas-modal-title wegas-modal-title-group'>Send real E-Mail to players of team \"" + team.get("name") + "\"</span>";
-                    }else{
-                        header = "<span class='wegas-modal-title wegas-modal-title-player'>Send real E-Mail to player \"" + team.get("players")[0].get("name") + "\"</span>";
-                    }
-                    var modalEmail = new Y.Wegas.Panel({
-                        cssClass: "wegas-form-panel",
-                        modal: true,
-                        children: [{
-                            type: "SendMail",
-                            players: team.get("players"),
-                            statusNode: statusNode
-                        }],
-                        headerContent: header,
-                        footerContent: statusNode,
-                        width: 600,
-                        zIndex: 5000,
-                        buttons: {
-                            header: [
-                                {
-                                    name: 'cancel',
-                                    classNames: "modal--header-close",
-                                    label: 'Cancel',
-                                    action: "exit"
-                                }
-                            ],
-                            footer: [{
-                                name: "send",
-                                label: "Send",
-                                classNames: "modal--footer-right modal--footer-valid",
-                                action: function() {
-                                    this.item(0).send();
-                                }
-                            },{
-                                name: 'cancel',
-                                label: 'Cancel',
-                                classNames: "modal--footer-right",
-                                action: "exit"
-                            }]
-                        },
-                        on: {
-                            "email:sent": function() {
-                                this.exit();
-                            }
-                        }
-                    }).render().get("boundingBox");
-                    modalEmail.addClass("dashboard-mail-panel").addClass("dashboard-panel");
-                    modalEmail.delegate("keyup", function(e){
-                        if(this.get("value").length > 0){
-                            if(!this.hasClass("selected")){
-                                this.addClass("selected"); 
-                            }
-                        }else{
-                            if(this.hasClass("selected")){
-                                this.removeClass("selected"); 
-                            }
-                        }
-                    }, "input[type='text']");
-                } else {
-                    this.showMessage("info", "Could not find a player");
-                }
-
-            }, ".yui3-datatable-col-menu .dashboard-mail-team", this);
-
-            this.get("boundingBox").delegate("click", function(e) {
-                var team = Wegas.Facade.Game.cache.getTeamById(this.table.getRecord(e.currentTarget).get("id"));
-                if (team && team.get("players").length) {
-                    window.open("game-lock.html?id=" + team.get("players")[0].get("id"));
-                } else {
-                    this.showMessage("info", "Could not find a player");
-                }
-            }, ".yui3-datatable-col-menu .dashboard-open-team", this);
-            this.bindTextarea();
-        },
-        bindTextarea: function() {
-            this.get("boundingBox").delegate("focus", function(e) {
-                e.currentTarget.removeClass("disabled").addClass("enabled").removeAttribute("readonly");
-            }, ".wegas-notes textarea.disabled");
-            this.get("boundingBox").delegate("blur", function(e) {
-                var team = Wegas.Facade.Game.cache.getTeamById(this.table.getRecord(e.currentTarget).get("id")), value = e.currentTarget.get("value");
-                e.currentTarget.removeClass("enabled").addClass("disabled").setAttribute("readonly", true);
-                if (team.get("notes") !== value) {
-                    team.set("notes", value);
-                    Y.Wegas.Facade.Game.cache.put(team.toObject("players"), {});
-                }
-            }, ".wegas-notes textarea.enabled", this);
-        },
-        /**
-         * @function
-         * @private
-         */
-        syncUI: function() {
-            var table = this.table;
-            Y.log("sync()", "info", "Wegas.LobbyDataTable");
-            inSync = true;
-            this.genData(table, Wegas.Facade.Game.cache.getCurrentGame().get("teams"));
-            getData(this.get("remoteScript"))
-                .then(function(res) {
-                    inSync = false;
-                    return setTableData(table, res);
-                });
-        },
-        destructor: function() {
-            this.table.destroy();
-            this.updateHandler.detach();
-        },
-        // *** Private Methods *** //
-        /**
-         * @function
-         * @private
-         */
-        genData: function(table, teams) {
-            var gameModel = Wegas.Facade.GameModel.cache.getCurrentGameModel(),
-                columnsCfg = this.get("tableCfg.columns"), ret = [], result, template;
-            
-            teams.forEach(function(t){
-                if(t.get("players").length > 0){
-                    ret.push({
-                        name: gameModel.get("properties.freeForAll") ? playerTemplate(t) : teamTemplate(t),
-                        team: t,
-                        player: t.get("players").length > 0 ? t.get("players")[0] : null,
-                        id: t.get("id"),
-                        menu: t.get("notes")
+        initializer: function(){
+            var context = this;
+            context.get("cardsData").forEach(function(data){
+                if(data.blocs && data.blocs.length > 0){
+                    context.get("cardsData").blocs.forEach(function(bloc){
+                        context._addOriginalBloc(data.id, bloc);
                     });
                 }
             });
-            
-            ret = Y.Array.filter(ret, function(i) {                             // Filter debug team (for game edition)
-                return !(i.team instanceof Wegas.persistence.DebugTeam);
-            });
-            table.set("data", ret);
-
-            return table;
         }
-    }, {
-        ATTRS: {
-            tableCfg: {
-                value: {
-                    columns: []
-                },
-                getter: function(v) {
-                    var clone = Y.clone(v), dashboard = Y.namespace("Wegas.Config.Dashboard"),
-                        cols = Y.Lang.isFunction(dashboard) ? dashboard().columns : dashboard.columns;
-                    clone.columns = clone.columns.concat(cols);
-                    return clone;
-                }
+    },{
+        "ATTRS":{
+            "name":{
+                value: null
             },
-            /**
-             * server script to get table data.
-             * format: [{id:TEAMID[, TABLE_KEY:VALUE]*}*]
-             * or a function which should return this array
-             */
-            remoteScript: {
-                value: "",
-                getter: function() {
-                    var dashboard = Y.namespace("Wegas.Config.Dashboard");
-                    return Y.Lang.isFunction(dashboard) ?
-                        dashboard().remoteScript :
-                        dashboard.remoteScript;
-                }
+            "cardsData":{
+                value : []  
+            },
+            "resize":{
+                value: true
+            },
+            "quickAccess":{
+                value: null
             }
         }
-    });
-    Wegas.Dashboard = Dashboard;
-
-    Y.DataTable.BodyView.Formatters.colored = function(col) {
-        col.className = 'wegas-dashboard-colored';
-        return function(o) {
-            var color = o.value < 75 ? "#ff4a03" : (o.value > 125 ? "#4caf50" : "#ffa709");
-            //var color = o.value < 95 ? "rgba(255, 0, 0, 0.5)" : (o.value > 105 ? "rgba(255, 204, 0, 0.5)" : "rgba(97,
-            // 186, 9, 0.5)");
-            return "<span style='background-color: " + color + "'>" + (o.value || "-") + "</span>";
-        };
-    };
+    }); 
 });
