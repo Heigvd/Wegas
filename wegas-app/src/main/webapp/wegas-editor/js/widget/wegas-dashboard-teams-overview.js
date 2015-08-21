@@ -162,45 +162,6 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
     }); 
     Y.Wegas.TeamCardDetails.NS = "TeamCardDetails";
     
-    Y.Wegas.DetailsTeamModal = Y.Base.create("wegas-details-team-modal", Y.Wegas.Modal, [],{
-        initializer: function(){
-            var game = Y.Wegas.Facade.Game.cache.getCurrentGame(),
-                team = this.get("team"),
-                actions;
-            if(game && team){
-                actions = [{
-                    "types": ["primary"],
-                    "label": "Save", 
-                    "do": function(){
-                        if (team.get("notes") !== this.item(0).getNote()) {
-                            team.set("notes", this.item(0).getNote());
-                            Y.Wegas.Facade.Game.cache.put(team.toObject("players"), {});
-                        }
-                    }
-                },{
-                    "label": "Cancel", 
-                    "do": function(){
-                        this.close();
-                    }
-                }];
-                this.set("title",   game.get("properties.freeForAll") 
-                                    ? "Infos - Player \"" + team.get("players")[0].get("name") + "\"" 
-                                    : "Infos - Team \"" + team.get("name") + "\"");
-                this.set("icon",    game.get("properties.freeForAll") ? "user" : "group");
-                this.add(new Y.Wegas.TeamDetails({
-                    team: team
-                }));
-                this.set("actions", actions);
-            }
-        }
-    },{
-        "ATTRS":{
-            "team": {}
-        }   
-    });
-    
-   
-    
     Y.Wegas.ImpactsTeamModal = Y.Base.create("wegas-impacts-team-modal", Y.Wegas.Modal, [],{
         initializer: function(){
             var game = Y.Wegas.Facade.Game.cache.getCurrentGame(),
@@ -275,39 +236,6 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
     },{
         "ATTRS":{
             "team": {}
-        }
-    });
-    
-    Y.Wegas.TeamDetails = Y.Base.create("wegas-team-details", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-        CONTENT_TEMPLATE:"<div class='wegas-dashboard-infos'><textarea class='infos-comments' placeholder='Enter a comment here'></textarea></div>",
-        renderUI: function() {},
-        bindUI: function() {},
-        syncUI: function() {
-            var infos = this;
-            tinyMCE.init({
-                "width": "100%",
-                "height": "100%",
-                "menubar":false,
-                "statusbar": false,
-                "toolbar": "bold italic | alignleft aligncenter alignright alignjustify | bullist numlist",
-                "selector":'.infos-comments',
-                "setup": function (mce) {
-                    mce.on('init', function(args) {
-                        infos.set("editor", args.target);
-                        if(infos.get("team").get("notes")){
-                            infos.get("editor").setContent(infos.get("team").get("notes"));
-                        }else{
-                            infos.get("editor").setContent("You can write notes here");
-                        }
-                    });
-                }
-            });
-        },
-        initializer: function(config) {
-            this.set("team", config.team);
-        },
-        getNote: function(){
-            return this.get("editor").getContent();
         }
     });
 });
