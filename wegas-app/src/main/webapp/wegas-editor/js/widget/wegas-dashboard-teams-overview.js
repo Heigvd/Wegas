@@ -36,11 +36,7 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
         _getBlocs: function(team){
             var blocs = [];
             this._addActionsBlocs(blocs, team);
-            this._addInfos(blocs, team);
             return blocs;
-        },
-        _addInfos: function(blocs, team){
-            //this._addOriginalBloc(team.get("id"), bloc);                        
         },
         _addActionsBlocs: function(blocs, team){
             var bloc = {
@@ -81,19 +77,25 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
     });
     
     Y.Wegas.TeamCardDetails = Y.Base.create("wegas-team-card-details", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], { 
-        BASE_TEMPLATE:  "<div class='wrapper__quick-access quick-access--close'>"+
-                            "<a href='#' class='quick-access__link quick-access__link--open'>Details <i class='fa fa-expand fa-rotate-90'></i></a>"+
-                            "<a href='#'  class='quick-access__link quick-access__link--close'><i class='fa fa-compress fa-rotate-90'></i></a>"+
-                            "<div class='quick-access__notes'><textarea class='infos-comments' placeholder='Enter a comment here'></textarea></div>"+
+        TITLE_TEMPLATE: "<span class='card__title__content'></span>",
+        LINK_TEMPLATE:  "<a href='#' class='card__title__link card__title__link--close'>Details</a>",
+        BASE_TEMPLATE:  "<div class='wrapper__bloc-details bloc-details--close'>"+
+                            "<div class='bloc-details__notes'><textarea class='infos-comments' placeholder='Enter a comment here'></textarea></div>"+
                         "</div>",
-        TEAM_LIST_TEMPLATE: "<div class='quick-access__players'>"+
+        TEAM_LIST_TEMPLATE: "<div class='bloc-details__players'>"+
                                 "<h3>Players</h3>"+
-                                "<ul class='quick-access__players__list'></ul>"+
+                                "<ul class='bloc-details__players__list'></ul>"+
                             "</div>",      
-        PLAYER_TEMPLATE: "<li class='quick-access__player'></li>",
+        PLAYER_TEMPLATE: "<li class='bloc-details__player'></li>",
+        _saveNotes: function(context){
+            context.get("team").set("notes", context.get("editor").getContent());
+            Y.Wegas.Facade.Game.cache.put(context.get("team").toObject("players"), {});  
+        },
         initializer: function(){
             var context = this,
-                base, teamList, game;
+                base, title, titleContent, 
+                teamList, game, detailLink;
+        
             this.afterHostEvent("render", function(event){
                 game = Y.Wegas.Facade.Game.cache.getCurrentGame();
                 game.get("teams").forEach(function(team){
@@ -101,16 +103,25 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                        context.set("team", team);
                     }
                 });
-                base = Y.Node.create(this.BASE_TEMPLATE);
-                context.get("host").get("boundingBox").append(base);
+                base = Y.Node.create(context.BASE_TEMPLATE);
+                title = context.get("host").get("contentBox").one(".card__title").addClass("card__title--detailed");
+                titleContent = title.getContent();
+                title.empty();
+                title.append(Y.Node.create(context.TITLE_TEMPLATE).setContent(titleContent));
+                detailLink = Y.Node.create(context.LINK_TEMPLATE);
+                title.append(detailLink);
+                
+                context.get("host").get("boundingBox").append(base);                
+                
                 if(!game.get("properties.freeForAll")){
-                    base.addClass("quick-access--team");
-                    teamList = Y.Node.create(this.TEAM_LIST_TEMPLATE);
+                    base.addClass("bloc-details--team");
+                    context.get("host").get("contentBox").addClass("card--team");
+                    teamList = Y.Node.create(context.TEAM_LIST_TEMPLATE);
                     context.get("team").get("players").forEach(function(player){
                         var player = Y.Node.create(context.PLAYER_TEMPLATE).append(player.get("name"));
-                        teamList.one(".quick-access__players__list").append(player);
+                        teamList.one(".bloc-details__players__list").append(player);
                     });
-                    base.append(teamList);
+                    base.prepend(teamList);
                 }
                 
                 tinyMCE.init({
@@ -121,6 +132,7 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                     "toolbar": "bold italic | alignleft aligncenter alignright alignjustify | bullist numlist",
                     "selector":'.infos-comments',
                     "setup": function (mce) {
+                        var saveTimer;
                         mce.on('init', function(args) {
                             context.set("editor", args.target);
                             if(context.get("team").get("notes")){
@@ -129,25 +141,22 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                                 context.get("editor").setContent("You can write notes here");
                             }
                         });
-                        mce.on('change', function(e) {
-                            console.log('change event', e);
+                        mce.on('keyup', function(e) {
+                            clearTimeout(saveTimer);
+                            saveTimer = setTimeout(context._saveNotes, 500, context);                            
                         });
                     }
                 });
                 
-                base.delegate("click", function(event){
+                detailLink.on("click", function(event){
                     event.preventDefault();
                     event.stopPropagation();
-                    base.addClass("quick-access--open");
-                    base.removeClass("quick-access--close");
-                }, ".quick-access__link--open", this);
-                
-                base.delegate("click", function(event){
-                    event.preventDefault();
-                    event.stopPropagation();
-                    base.removeClass("quick-access--open");
-                    base.addClass("quick-access--close");
-                }, ".quick-access__link--close", this);
+                    context.get("host").get("contentBox").toggleClass("card__detailed");
+                    detailLink.toggleClass("card__title__link--close");
+                    detailLink.toggleClass("card__title__link--open");
+                    base.toggleClass("bloc-details--open");
+                    base.toggleClass("bloc-details--close");
+                });
             });
         }
     }); 
