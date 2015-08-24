@@ -12,7 +12,7 @@
         </a>
         <div class="view__tools" data-search-tool="trainerIndexCtrl.search" ></div>
 	<div 
-		ng-if="!trainerIndexCtrl.loading.all"
+		ng-if="!trainerIndexCtrl.loading"
 		ng-class="{true:'view__list--with-archive', false:''}[trainerIndexCtrl.nbArchives > 0]"
 		class="view__list" 
 		sessions="trainerIndexCtrl.sessions" 
@@ -23,14 +23,14 @@
 		trainer-sessions-list 
 		repeat-auto-load >
 	</div>
-	<div ng-if="(!trainerIndexCtrl.loading.all) && (trainerIndexCtrl.nbArchives > 0)" class="view__archives">
+	<div ng-if="(!trainerIndexCtrl.loading) && (trainerIndexCtrl.nbArchives > 0)" class="view__archives">
 		<a class="button button--small button--default button--archive" ui-sref=".archives">
 			<span ng-if="trainerIndexCtrl.nbArchives == 1" class="button__label">{{trainerIndexCtrl.nbArchives}} {{'TRAINER-INDEX-ARCHIVE-BTN' | translate}}</span>
                         <span ng-if="trainerIndexCtrl.nbArchives > 1" class="button__label">{{trainerIndexCtrl.nbArchives}} {{'TRAINER-INDEX-ARCHIVES-BTN' | translate}}</span>
 		</a>
 	</div>
 	<div 
-		ng-if="trainerIndexCtrl.loading.all"
+		ng-if="trainerIndexCtrl.loading"
 		class="view__list">
 		{{'LOADING' | translate}}
 	</div>
