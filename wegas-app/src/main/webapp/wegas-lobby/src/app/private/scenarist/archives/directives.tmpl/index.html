@@ -5,13 +5,10 @@
    		<span class="button__label">{{'MODALE-CLOSE' | translate}}</span>
 	</a>
 </div>
-<div    class="modal__content modal__content--nav-off"
+<div    class="modal__content modal__content--nav-tools-off"
 	scenarios="scenaristArchivesIndexCtrl.archives"
 	unarchive="scenaristArchivesIndexCtrl.unarchiveScenario"
 	delete="scenaristArchivesIndexCtrl.deleteArchivedScenario"
 	search="scenaristArchivesIndexCtrl.search"
 	scenarist-scenarios-archives-list>
-</div>
-<div class="modal__tools">
-	<input ng-model="scenaristArchivesIndexCtrl.search" type="text" class="input input--small" placeholder="{{'SCENARIST-MODALE-ARCHIVE-SEARCH-INPUT' | translate}}" />
 </div>

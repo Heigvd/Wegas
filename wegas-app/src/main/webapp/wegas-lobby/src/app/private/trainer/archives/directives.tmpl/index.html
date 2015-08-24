@@ -5,7 +5,7 @@
                 <span class="button__label">{{'MODALE-CLOSE' | translate}}</span>
 	</a>
 </div>
-<div    class="modal__content modal__content--nav-off"
+<div    class="modal__content modal__content--nav-tools-off"
 	sessions="trainerArchivesIndexController.archives"
 	delete="trainerArchivesIndexController.deleteArchivedSession"
 	details="trainerArchivesIndexController.showSettings"
@@ -14,6 +14,3 @@
 	search="trainerArchivesIndexController.search"
 	trainer-sessions-archives-list
 ></div>
-<div class="modal__tools">
-	<input ng-model="trainerArchivesIndexController.search" type="text" class="input input--small" placeholder="{{'TRAINER-MODALE-ARCHIVE-SEARCH-INPUT' | translate}}" />
-</div>
