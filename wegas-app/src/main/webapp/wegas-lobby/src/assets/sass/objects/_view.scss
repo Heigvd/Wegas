@@ -361,13 +361,10 @@
     .view__first-subtitle{
         display:block;
         position:relative;
-        @include make-sm-column(8);
-        @include make-sm-column-offset(2);
-        @include make-md-column(6);
-        @include make-md-column-offset(3);
-        @include make-lg-column(4);
-        @include make-lg-column-offset(4);
-        padding:8px 20px;
+        width:100%;
+        margin:auto;
+        max-width:380px;
+        padding:8px 20px 0px 20px;
         font-size:16px;
         color:$albasim-color;
 
@@ -390,14 +387,11 @@
     }
 
     .view__login-form{
-        @include make-sm-column(8);
-        @include make-sm-column-offset(2);
-        @include make-md-column(6);
-        @include make-md-column-offset(3);
-        @include make-lg-column(4);
-        @include make-lg-column-offset(4);
+        margin:auto;
+        width:100%;
+        max-width:380px;
         border-radius:6px;
-        padding:24px 32px;
+        padding:12px 32px;
     }
     .view__password-form.form{
         padding:16px;
@@ -488,6 +482,7 @@
             padding:64px 0 0 0;
             width:240px;
             float:right;
+            text-align:center;
         }
     }
     
