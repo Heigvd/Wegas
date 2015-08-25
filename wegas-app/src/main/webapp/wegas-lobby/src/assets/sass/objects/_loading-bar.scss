@@ -1,7 +1,30 @@
 div#loading-bar .bar {
-  background: $primary-color;
   height: 5px;
   z-index:10003 !important;
+}
+
+.player{
+    div#loading-bar .bar {
+        background: $player-color;
+    }
+}
+
+.trainer{
+    div#loading-bar .bar {
+        background: $trainer-color;
+    }
+}
+
+.scenarist{
+    div#loading-bar .bar {
+        background: $scenarist-color;
+    }
+}
+
+.admin{
+    div#loading-bar .bar {
+        background: $admin-color;
+    }
 }
 
 // Needs to be improved
