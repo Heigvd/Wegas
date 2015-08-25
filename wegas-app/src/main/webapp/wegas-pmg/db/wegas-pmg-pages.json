@@ -1192,7 +1192,7 @@
                         "label": "Estimated</br>duration",
                         "width": "54px",
                         "name": "Estimatedduration",
-                        "key": "instance%properties%duration",
+                        "key": "instance£properties£duration",
                         "className": "right",
                         "sortable": false,
                         "allowHTML": true
@@ -1200,7 +1200,7 @@
                     {
                         "label": "Fixed costs",
                         "name": "Fixedcosts",
-                        "key": "instance%properties%fixedCosts",
+                        "key": "instance£properties£fixedCosts",
                         "className": "right",
                         "formatter": "rounded",
                         "sortable": false,

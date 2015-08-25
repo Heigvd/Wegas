@@ -96,10 +96,42 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
             Wegas.Parent],
         {
             renderUI: function() {
-                var resourceFolder = Wegas.Facade.Variable.cache.find("name", "employees"),
+                var columns, dt, resourceFolder = Wegas.Facade.Variable.cache.find("name", "employees"),
                     autoDesc = Wegas.Facade.Variable.cache.find("name", "autoReservation"),
                     autoReserve = autoDesc && autoDesc.getInstance().get("value"); // Ensure variable exists
                 //currentPhase = Wegas.Facade.Variable.cache.find("name", "currentPhase").getValue();
+
+                columns = [{
+                        key: "label",
+                        label: "Name",
+                        sortable: false
+                    }, {
+                        label: "Grade",
+                        formatter: "skillLevel",
+                        key: "instance.properties.level",
+                        sortable: false,
+                        allowHTML: true
+                    }, {
+                        label: "Monthly wages",
+                        key: "instance.properties.wage",
+                        sortable: false
+                    }, {
+                        label: "Rate",
+                        key: "instance.properties.activityRate",
+                        sortable: false
+                    }, {
+                        label: "Motiv.",
+                        key: "instance.properties.motivation",
+                        sortable: false
+                    }];
+
+                if (autoReserve) {
+                    columns.push({
+                        label: "Mode",
+                        key: "instance.properties.automaticMode",
+                        sortable: false
+                    });
+                }
 
                 this.panels = Y.Array.map(resourceFolder.get("items"), function(vd) {
                     var panel = new Wegas.PmgSlidePanel({
@@ -119,7 +151,7 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                                             taskList: {
                                                 name: "tasks"
                                             },
-                                            columnPosition: 5
+                                            columnPosition: (autoReserve ? 6 : 5)
                                         }
                                     }, {
                                         fn: "OccupationColor",
@@ -133,43 +165,22 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                                 variable: {
                                     name: vd.get("name")
                                 },
-                                columnsCfg: [{
-                                        key: "label",
-                                        label: "Name",
-                                        sortable: false
-                                    }, {
-                                        label: "Grade",
-                                        formatter: "skillLevel",
-                                        key: "instance.properties.level",
-                                        sortable: false,
-                                        allowHTML: true
-                                    }, {
-                                        label: "Monthly wages",
-                                        key: "instance.properties.wage",
-                                        sortable: false
-                                    }, {
-                                        label: "Rate",
-                                        key: "instance.properties.activityRate",
-                                        sortable: false
-                                    }, {
-                                        label: "Motiv.",
-                                        key: "instance.properties.motivation",
-                                        sortable: false
-                                    }],
+                                columnsCfg: columns,
                                 defaultSort: null
                             }, {
                                 type: "Text",
-                                content: "<div class=\"pmg-legend\">\n<div><div class=\"worked\">&nbsp;</div>\nWorked</div>\n<div><div class=\"booked\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"unavailable\">&nbsp;</div>\nNot Available</div>\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nToo late to change</div>\n</div>"
+                                content: "<div class=\"pmg-legend\">\n<div><div class=\"worked\">&nbsp;</div>\nWorked</div>\n<div><div class=\"booked\">&nbsp;</div>\nWill work</div>\n" + (autoReserve ? "<div><div class=\"maybe\">&nbsp;</div>\nMay work</div>\n" : "") + "<div>\n<div class=\"unavailable\">&nbsp;</div>\nNot Available</div>\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nToo late to change</div>\n</div>"
                             }]
                     }).render(this.get(CONTENTBOX));
-                    if (!autoReserve) {
-                        var dt = panel.item(0);
-                        //panel.item(0).plug(Y.Plugin.AutoReservationColor, {
-                        //    taskList: {
-                        //        name: "tasks"
-                        //    }
-                        //});
-                        //} else {
+                    if (autoReserve) {
+                        dt = panel.item(0);
+                        panel.item(0).plug(Y.Plugin.AutoReservationColor, {
+                            taskList: {
+                                name: "tasks"
+                            }
+                        });
+                    } else {
+                        dt = panel.item(0);
                         dt.plug(Y.Plugin.Reservation); // Player can click cell to reserve
                         dt.plug(Y.Plugin.EngagmentDelay);
                         dt.after("filtered", function() {
@@ -182,14 +193,14 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                         dt.plug(Y.Plugin.PMGLineFilter, {
                             filterFn: function(data, node) {
                                 var instance, assignments, currentPeriod, occupations;
-                                    instance = data.get("instance");
-                                    instance = Y.Wegas.Facade.Variable.cache.findById(instance.descriptorId).getInstance().getAttrs();
-                                    assignments = instance.assignments && instance.assignments.length > 0;
-                                    currentPeriod = Y.Wegas.Facade.Variable.cache.find("name",
-                                        "periodPhase3").getValue();
-                                    occupations = Y.Array.some(instance.occupations, function(i) {
-                                        return i.get("editable") && currentPeriod < i.get("time") + 1;
-                                    });
+                                instance = data.get("instance");
+                                instance = Y.Wegas.Facade.Variable.cache.findById(instance.descriptorId).getInstance().getAttrs();
+                                assignments = instance.assignments && instance.assignments.length > 0;
+                                currentPeriod = Y.Wegas.Facade.Variable.cache.find("name",
+                                    "periodPhase3").getValue();
+                                occupations = Y.Array.some(instance.occupations, function(i) {
+                                    return i.get("editable") && currentPeriod < i.get("time") + 1;
+                                });
                                 node.toggleClass("resourcepanel-warn", occupations !== assignments);
                             }
                         });
@@ -200,6 +211,9 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                 }, this);
             },
             destructor: function() {
+                Y.Array.each(this.handlers, function(h) {
+                    h.detach();
+                });
                 Y.Array.each(this.panels, function(p) {
                     p.destroy();
                 });

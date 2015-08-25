@@ -8,6 +8,7 @@
 
 /* Occupation & activity plugin css */
 
+.yui3-datatable-table .maybe,
 .yui3-datatable-table .booked,
 .yui3-datatable-table .baseline,
 .yui3-datatable-table .worked,
@@ -72,6 +73,14 @@
     background-color: #68ccc5;
 }
 
+.pmg-legend .maybe, 
+.yui3-datatable-table .maybe{
+    background-color: #B6F1EC;
+}
+
+.yui3-datatable-col-instance£properties£automaticMode {
+    cursor: pointer;
+}
 
 .yui3-datatable-table .fill100 {
 }

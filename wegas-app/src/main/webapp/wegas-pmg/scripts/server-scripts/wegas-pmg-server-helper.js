@@ -20,6 +20,154 @@ var PMGHelper = (function() {
 
     var defaultPhaseNames = ["Initiation", "Planning", "Execution", "Closing"];
 
+    function getPlannedPeriods(taskInstance) {
+        return Y.Array.unique(taskInstance.getPlannification());
+    }
+
+    function getFirstPlannedPeriod(taskInstance) {
+        return Math.max(0, Math.min.apply(Math, getPlannedPeriods(taskInstance)));
+    }
+
+    function getRemainingTime(taskInstance) {
+        var plannedPeriods = getPlannedPeriods(taskInstance);
+
+        if (plannedPeriods.length > 0) {
+            return (1 - (taskInstance.getPropertyD("completeness") / 100) * plannedPeriods.length);
+        } else {
+            return (1 - (taskInstance.getPropertyD("completeness") / 100) * taskInstance.getPropertyD("duration"));
+        }
+    }
+
+    function computePert() {
+        var tasks, taskId, taskDesc,
+            predecessors, i, minBeginAt, delta,
+            allPredDefined, predecessorId, stillMissing,
+            deltaMissing, queue = [],
+            lastPlanned, max,
+            taskInstance, stillPlanned,
+            taskTable = {}, entry,
+            currentPeriod, currentPhase;
+
+        currentPhase = PMGHelper.getCurrentPhaseNumber();
+        currentPeriod = PMGHelper.getCurrentPeriodNumber();
+
+        tasks = Variable.find(gameModel, "tasks").items;
+
+        // Build TaskTable
+        for (i = 0; i < tasks.length; i += 1) {
+            taskDesc = tasks[i];
+            taskId = taskDesc.getId();
+            taskInstance = taskDesc.getInstance(self);
+            if (taskInstance.getPropertyD("completeness") < 100) {
+                taskTable[taskId] = {
+                    timeSolde: getRemainingTime(taskInstance),
+                    firstPlannedPeriod: getFirstPlannedPeriod(taskInstance),
+                    descriptor: taskDesc,
+                    instance: taskInstance
+                };
+            }
+        }
+
+        if (currentPhase < 3) {
+            for (taskId in taskTable) {
+                entry = taskTable[taskId];
+                taskInstance = entry.instance;
+                entry.planned = getPlannedPeriods(taskInstance).sort(Y.Array.numericSort);
+                entry.beginAt = 0;
+                entry.endAt = 0;
+                if (entry.planned.length > 0) {
+                    entry.beginAt = entry.planned[0];
+                    entry.endAt = entry.planned[entry.planned.length - 1];
+                }
+            }
+        } else {
+            queue = [];
+
+            for (taskId in taskTable) {
+                queue.push(taskId);
+            }
+
+            while (taskId = queue.shift()) {
+                minBeginAt = currentPeriod;
+                allPredDefined = true;
+                predecessors = Java.from(taskTable[taskId].descriptor.getPredecessors());
+
+                for (i = 0; i < predecessors.length; i += 1) {
+                    entry = predecessors[i].getId();
+                    if (taskTable[predecessorId]) {
+                        if (taskTable[predecessorId].endAt) {
+                            if (minBeginAt < taskTable[predecessorId].endAt) {
+                                minBeginAt < taskTable[predecessorId].endAt;
+                            }
+                        } else {
+                            allPredDefined = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (allPredDefined) {
+                    entry = taskTable[taskId];
+                    taskInstance = entry.instance;
+
+                    stillPlanned = getPlannedPeriods(taskInstance).filter(function(n) {
+                        return n >= minBeginAt;
+                    }, this).sort(Y.Array.numericSort);
+
+                    delta = minBeginAt - parseInt(minBeginAt, 10);
+                    stillMissing = getRemainingTime(taskInstance);
+
+                    // postpone task that could start in the second part of period
+                    if (minBeginAt - parseInt(minBeginAt, 10) > 0.50) {
+                        minBeginAt = parseInt(minBeginAt, 10) + 1;
+                    } else {
+                        minBeginAt = parseInt(minBeginAt, 10);
+                        stillMissing += delta;
+                    }
+                    if (stillPlanned.length > 0 && stillPlanned[0] > minBeginAt) {
+                        minBeginAt = stillPlanned[0];
+                        stillMissing -= delta;
+                    }
+                    entry.beginAt = minBeginAt;
+
+                    if (stillMissing === 0) {
+                        entry.endAt = minBeginAt;
+                        entry.planned = [];
+                    } else if (stillPlanned.length >= stillMissing) {
+                        // enough or too many planned period
+                        deltaMissing = stillMissing - parseInt(stillMissing, 10);
+                        if (deltaMissing === 0) {
+                            entry.planned = stillPlanned.slice(0, parseInt(stillMissing, 10));
+                            entry.endAt = entry.planned[entry.planned.length - 1] + 1;
+                        } else {
+                            entry.planned = stillPlanned.slice(0, Math.ceil(stillMissing));
+                            entry.endAt = entry.planned[entry.planned.length - 1] || entry.beginAt;
+                            entry.endAt += deltaMissing;
+                        }
+                    } else {
+                        // not enough planned period
+                        entry.planned = stillPlanned.slice();
+                        if (stillPlanned.length === 0) {
+                            lastPlanned = minBeginAt - 1;
+                            // nothing planned -> stack
+                            entry.endAt = minBeginAt + stillMissing;
+                        } else {
+                            lastPlanned = stillPlanned[stillPlanned.length - 1];
+                            entry.endAt = lastPlanned + stillMissing - stillPlanned.length + 1;
+                        }
+                        max = Math.ceil(stillMissing) - stillPlanned.length;
+                        for (i = 0; i < max; i += 1) {
+                            entry.planned.push(lastPlanned + i + 1);
+                        }
+                    }
+                } else {
+                    queue.push(taskId);
+                }
+            }
+        }
+        return taskTable;
+    }
+
     /**
      * Return the automatic planning setting 
      * Such a setting is given by the "autoReservation" bln variable
@@ -100,13 +248,14 @@ var PMGHelper = (function() {
      *  
      * @param {RessourceDescriptor} rd
      * @param {Number} period (optional) the period number or the current period (default)
+     * @param {Gantt} gantt computePert() (optional)
      * @returns {Boolean} is reserved
      */
-    function isReservedToWork(rd, period) {
-        var employeeInst = rd.getInstance(self);
+    function isReservedToWork(rd, period, gantt) {
+        var resourceInst = rd.getInstance(self);
 
         // Inactive resource never work, such as those with 0% activity rate
-        if (!employeeInst.getActive() || employeeInst.getPropertyD("activityRate") < 1.0) {
+        if (!resourceInst.getActive() || resourceInst.getPropertyD("activityRate") < 1.0) {
             return false;
         }
 
@@ -133,7 +282,7 @@ var PMGHelper = (function() {
              * the resource must be reserved.
              * it means that an "editable" occupation must exists for the current time
              */
-            return (Y.Array.find(employeeInst.occupations, function(o) {
+            return (Y.Array.find(resourceInst.occupations, function(o) {
                 debug(" o.editable ? time: " + o.time + " period: " + period + " editable:  " + o.editable);
                 return o.time === period
                     && o.editable;
@@ -143,11 +292,30 @@ var PMGHelper = (function() {
              * The resource is always reserved unless
              * it has an "uneditable" occupation for the current period
              */
-            return !Y.Array.find(employeeInst.occupations, function(o) {
+            if (Y.Array.find(resourceInst.occupations, function(o) {
                 debug(" !o.editable ? time: " + o.time + " period: " + period + " editable:  " + o.editable);
                 return o.time === period
                     && !o.editable; // Illness, etc. occupations are not editable
-            });
+            })) {
+                return false;
+            }
+
+            if (resourceInst.getProperty("automaticMode") === "GANTT") {
+                gantt = gantt || computePert();
+                if (Y.Array.find(resourceInst.assignments, function(a) {
+                    var entry = gantt[a.getTaskDescriptorId()];
+                    if (entry) {
+                        return Y.Array.find(gantt[a.getTaskDescriptorId()].planned, function(p) {
+                            return p === period;
+                        }, this);
+                    }
+                    return false;
+                }, this)) {
+                    return true; // Assigned to a task planned for the targeted period 
+                }
+                return false; // No match
+            }
+            return true;
         }
     }
 
@@ -304,6 +472,14 @@ var PMGHelper = (function() {
         }
     }
 
+    function toogleAutomaticMode(resourceInstance) {
+        var mode = resourceInstance.getProperty("automaticMode");
+        if (mode === "GANTT") {
+            resourceInstance.setProperty("automaticMode", "ASAP");
+        } else {
+            resourceInstance.setProperty("automaticMode", "GANTT");
+        }
+    }
 
     return {
         automatedReservation: function() {
@@ -370,6 +546,12 @@ var PMGHelper = (function() {
         },
         sendManual: function() {
             return sendManual();
+        },
+        toogleAutomaticMode: function(resourceName) {
+            return toogleAutomaticMode(Variable.findByName(gameModel, resourceName).getInstance(self));
+        },
+        computePert: function() {
+            return computePert();
         }
     };
 
