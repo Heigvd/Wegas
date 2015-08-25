@@ -18,6 +18,7 @@ angular.module('private.player', [
 })
 .controller('PlayerCtrl', function PlayerCtrl($rootScope, $state, Auth, WegasTranslations, $translate) {
     Auth.getAuthenticatedUser().then(function(user){
+        $("body").removeClass("admin scenarist trainer").addClass("player");
         $rootScope.translationWorkspace = {workspace: WegasTranslations.workspaces['PLAYER'][$translate.use()]};
     });
 });
