@@ -23,6 +23,7 @@ angular.module('private.trainer', [
             if(!user.isAdmin && !user.isScenarist && !user.isTrainer){
                 $state.go("wegas.private.player");
             }
+            $("body").removeClass("player scenarist admin").addClass("trainer");
             $rootScope.translationWorkspace = {workspace: WegasTranslations.workspaces['TRAINER'][$translate.use()]};
         }
     });
