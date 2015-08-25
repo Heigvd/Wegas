@@ -327,7 +327,7 @@
     }
 
     .view--separate-primary {
-        border-top: solid 5px $primary-color;
+        border-top: solid 5px #666;
     }
 
     @each $position in $positions {
@@ -569,4 +569,40 @@
         }
     }
     
+}
+ 
+.player{
+    .view{
+        &.view--menu{
+            border-color:$player-color;
+            transition: .3s;
+        }
+    }
+}
+
+.trainer{
+    .view{
+        &.view--menu{
+            border-color:$trainer-color;
+            transition: .3s;
+        }
+    }
+}
+
+.scenarist{
+    .view{
+        &.view--menu{
+            border-color:$scenarist-color;
+            transition: .3s;
+        }
+    }
+}
+
+.admin{
+    .view{
+        &.view--menu{
+            border-color:$admin-color;
+            transition: .3s;
+        }
+    }
 }
