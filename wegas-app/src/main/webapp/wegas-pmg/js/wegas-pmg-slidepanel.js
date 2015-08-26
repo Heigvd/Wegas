@@ -85,6 +85,15 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
     });
     Wegas.PmgSlidePanel = SlidePanel;
 
+
+    function autoModeFormatter(o) {
+        return "<label class=\"choice choice--toogle " + o.value + "\">" + 
+            "<div class=\"choice__box\">" +
+                "<div class=\"choice__box__display\"></div> " +
+            "</div>" +
+        "</label><p>" + o.value + "</p>";
+    }
+
     /**
      * Shortcut to create a slidepanel for each resource folders available.
      */
@@ -127,9 +136,10 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
 
                 if (autoReserve) {
                     columns.push({
-                        label: "Mode",
+                        label: "Will work",
                         key: "instance.properties.automaticMode",
-                        sortable: false
+                        sortable: false,
+                        formatter: autoModeFormatter
                     });
                 }
 

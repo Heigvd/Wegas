@@ -300,7 +300,7 @@ var PMGHelper = (function() {
                 return false;
             }
 
-            if (resourceInst.getProperty("automaticMode") === "GANTT") {
+            if (resourceInst.getProperty("automaticMode") === "Gantt") {
                 gantt = gantt || computePert();
                 if (Y.Array.find(resourceInst.assignments, function(a) {
                     var entry = gantt[a.getTaskDescriptorId()];
@@ -474,10 +474,10 @@ var PMGHelper = (function() {
 
     function toogleAutomaticMode(resourceInstance) {
         var mode = resourceInstance.getProperty("automaticMode");
-        if (mode === "GANTT") {
+        if (mode === "Gantt") {
             resourceInstance.setProperty("automaticMode", "ASAP");
         } else {
-            resourceInstance.setProperty("automaticMode", "GANTT");
+            resourceInstance.setProperty("automaticMode", "Gantt");
         }
     }
 

@@ -50,7 +50,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                     };
                 }
             }
-
+            
             this.datatable = new Y.DataTable({//Using simple database
                 //bodyView: Wegas.PMGBodyView,
                 columns: ct,

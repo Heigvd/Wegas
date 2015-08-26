@@ -548,23 +548,7 @@ app.once("render",
                     }, {
                         name: "automaticMode",
                         type: "hidden",
-                        value: "GANTT"/*,
-                         //_cssClass: "wegas-advanced-feature",
-                         label: "Automatic Behaviour",
-                         description: "",
-                         className: "short-input",
-                         type: SELECT,
-                         value: "GANTT",
-                         choices: [
-                         {
-                         value: "GANTT",
-                         label: "GANTT"
-                         },
-                         {
-                         value: "ASAP",
-                         label: "ASAP"
-                         }]
-                         */
+                        value: "Gantt"
                     }]
             };
 
@@ -719,9 +703,9 @@ app.once("render",
                             }
                         }
 
-                        // 2) it have to work according to GANTT projection
-                        if (instance.get("properties.automaticMode") === "GANTT") {
-                            // FOLLOW GANTT
+                        // 2) it have to work according to Gantt projection
+                        if (instance.get("properties.automaticMode") === "Gantt") {
+                            // FOLLOW Gantt
                             gantt = gantt || Y.Wegas.PMGHelper.computePert();
                             assignments = instance.get("assignments");
                             for (i = 0; i < assignments.length; i += 1) {

@@ -1022,7 +1022,7 @@ var PMGSimulation = (function() {
                 if (itemType === 'QuestionDescriptor') {
                     items.push(item);
                 } else if (i === currentPeriod - 1 && itemType === 'ListDescriptor') {
-                    items = items.concat(item.flatten());
+                    items = items.concat(Java.from(item.flatten()));
                 }
             }
         }
