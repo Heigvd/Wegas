@@ -30,7 +30,6 @@ YUI().use(function(Y) {
         YUI_config.Wegas = {};
     }
     YUI_config.Wegas.modulesByType = {};
-
     /**
      *
      */
@@ -674,7 +673,7 @@ YUI().use(function(Y) {
                     "event-focus",
                     "wegas-console-custom",
                     "wegas-sendmail",
-                    "font-awesome",
+                                "font-awesome",
                     "promise"],
                 ws_provides: "Dashboard"
             },
@@ -902,7 +901,8 @@ YUI().use(function(Y) {
                 requires: ["wegas-chartistcss", "chartistcss"]
             },
             chartistcss: {
-                fullpath: "//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css"
+                fullpath: "//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css",
+                requires: ["wegas-chart-css"]
             }
         }
     };

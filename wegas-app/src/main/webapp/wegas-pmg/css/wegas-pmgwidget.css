@@ -496,6 +496,22 @@ tbody .past .activity {
     width: 30px;
 }
 
+.wegas-pmg-iteration-widget-content .iteration-planning {
+    float: left;
+}
+
+.wegas-pmg-iteration-widget-content .planning-tools {
+    float: left;
+    /* margin: 3px 0 0 5px; */
+}
+.wegas-pmg-iteration-widget-content .planning-tools .add-planning-input {
+    margin: 4px 0 0 5px;
+}
+
+.wegas-pmg-iteration-widget-content .planning-tools .add-replanning-input {
+    margin: 24px 0 0 5px;
+}
+
 .wegas-pmg-iteration-widget-content .iteration-planning .planning-initial input:first-child,
 .wegas-pmg-iteration-widget-content .iteration-planning .planning-initial span:first-child {
     margin-left: 50px;
@@ -547,6 +563,10 @@ tbody .past .activity {
     fill : #68ccc5;
     fill-opacity: .3;
 }
+.wegas-app-default .iteration-chart .iteration-not-started  .legend .color.ct-series-a {
+    background-color: #68ccc5;
+}
+
 
 /* Planning: started, completed*/
 .wegas-app-default .iteration-chart .ct-series-a .ct-point,
@@ -557,6 +577,11 @@ tbody .past .activity {
     fill : #878787;
     fill-opacity: .3;
 }
+.wegas-app-default .iteration-chart .legend .color.ct-series-a {
+    background-color: #878787;
+}
+
+
 
 
 /* Done */
@@ -567,6 +592,9 @@ tbody .past .activity {
 .wegas-app-default .iteration-chart .ct-series-b .ct-area{
     fill : #53a29d;
     fill-opacity: .6;
+}
+.wegas-app-default .iteration-chart .legend .color.ct-series-b {
+    background-color: #9BBDAF;
 }
 
 
@@ -579,6 +607,9 @@ tbody .past .activity {
     fill : #68ccc5;
     fill-opacity: .3;
 }
+.wegas-app-default .iteration-chart .legend .color.ct-series-c {
+    background-color: #68ccc5;
+}
 
 
 /* Projection */
@@ -589,4 +620,7 @@ tbody .past .activity {
 .wegas-app-default .iteration-chart .ct-series-d .ct-area{
     /*fill: #68ccc5;
     fill-opacity: 0;*/
+}
+.wegas-app-default .iteration-chart .legend .color.ct-series-d {
+    background-color: rgb(221, 84, 0);
 }

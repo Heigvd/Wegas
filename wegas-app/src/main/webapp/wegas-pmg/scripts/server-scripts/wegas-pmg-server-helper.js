@@ -312,10 +312,8 @@ var PMGHelper = (function() {
         for (i = 0; i < reqs.length; i += 1) {
             req = reqs[i];
             sum += (100 - req.getCompleteness()) / 100 * req.getQuantity();
-            printMessage("SUM : " + sum);
         }
         sum *= taskInstance.getPropertyD("duration");
-        printMessage("FINALSUM : " + sum);
         return sum;
     }
 
@@ -340,9 +338,7 @@ var PMGHelper = (function() {
 
         for (i = 0; i < tasks.length; i += 1) {
             taskD = tasks[i];
-            printMessage("TaskD: " + taskD);
             completeness = taskD.getNumberInstanceProperty(self, "completeness");
-            printMessage("Completeness: " + completeness);
             if (completeness < 100) {
                 itStatus.remainingWorkload += getRemainingTaskWorkload(taskD.getInstance(self));
                 completed = false;
@@ -350,7 +346,6 @@ var PMGHelper = (function() {
             if (completeness > 0) {
                 started = true;
             }
-            printMessage("Remaining: " + itStatus.remainingWorkload);
         }
 
         if (completed) {
