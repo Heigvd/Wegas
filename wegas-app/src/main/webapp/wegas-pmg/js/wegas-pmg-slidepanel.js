@@ -169,7 +169,7 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                                 defaultSort: null
                             }, {
                                 type: "Text",
-                                content: "<div class=\"pmg-legend\">\n<div><div class=\"worked\">&nbsp;</div>\nWorked</div>\n<div><div class=\"booked\">&nbsp;</div>\nWill work</div>\n" + (autoReserve ? "<div><div class=\"maybe\">&nbsp;</div>\nMay work</div>\n" : "") + "<div>\n<div class=\"unavailable\">&nbsp;</div>\nNot Available</div>\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nToo late to change</div>\n</div>"
+                                content: "<div class=\"pmg-legend\">\n<div><div class=\"worked\">&nbsp;</div>\nWorked</div>\n<div><div class=\"booked\">&nbsp;</div>\nWill work</div>\n" + (autoReserve ? "<div><div class=\"maybe\">&nbsp;</div>\nMay work</div>\n" : "") + "<div>\n<div class=\"unavailable\">&nbsp;</div>\nNot Available</div>\n" + (!autoReserve ? "<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nToo late to change</div>\n</div>" : "")
                             }]
                     }).render(this.get(CONTENTBOX));
                     if (autoReserve) {
