@@ -70,7 +70,7 @@ app.once("render",
 
                 taskTable = taskTable || Y.Wegas.PMGHelper.getTaskTable();
                 currentStage = currentStage || Y.Wegas.PMGHelper.getCurrentPhaseNumber();
-                currentPeriod = currentPeriod || Y.Wegas.PMGHelper.getCurrentPhaseNumber();
+                currentPeriod = currentPeriod || Y.Wegas.PMGHelper.getCurrentPeriodNumber();
 
                 if (currentStage < 3) {
                     // do not compute pert before stage3 but return the planning planned by players
@@ -194,7 +194,7 @@ app.once("render",
             },
             getCurrentPeriodNumber: function() {
                 return Y.Wegas.Facade.VariableDescriptor.cache.find("name", "currentPeriod").item(
-                    Y.Wegas.PMGHelper.getCurrentPhaseNumber()).get("value");
+                    Y.Wegas.PMGHelper.getCurrentPhaseNumber() - 1).get("value");
             },
             getBACTotal: function() {
                 var i, bacs = 0, tasks = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "tasks"), task;
