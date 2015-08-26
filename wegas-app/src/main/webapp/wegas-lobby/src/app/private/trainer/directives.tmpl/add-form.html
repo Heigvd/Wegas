@@ -1,4 +1,4 @@
-<form class="form" ng-submit="addSession()">
+<form class="form">
 	<div class="form__row">
 		<input class="input input--small" type="text" id="scenario-name" ng-model="newSession.name" placeholder="{{'TRAINER-INDEX-ADD-NAME-INPUT' | translate}}" autocomplete="off">
     </div>
@@ -9,6 +9,8 @@
         </select>
     </div>
     <div class="form__row form__row--right">
-    	<input class="form__row__btn button button--default" type="submit" value="{{'TRAINER-INDEX-ADD-BTN' | translate}}" />
-	</div>
+        <a ng-click="addSession()" class="form__row__btn form__submit button button--default">
+            <span class="button__label">{{'TRAINER-INDEX-ADD-BTN' | translate}}</span>
+        </a>
+    </div>
 </form>

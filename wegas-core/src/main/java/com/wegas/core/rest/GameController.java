@@ -94,8 +94,8 @@ public class GameController {
     public Collection<Game> index(@PathParam("gameModelId") String gameModelId) {
         final Collection<Game> retGames = new ArrayList<>();
         final Collection<Game> games = (!gameModelId.isEmpty())
-            ? gameFacade.findByGameModelId(Long.parseLong(gameModelId), "createdTime ASC")
-            : gameFacade.findAll(Game.Status.LIVE);
+                ? gameFacade.findByGameModelId(Long.parseLong(gameModelId), "createdTime ASC")
+                : gameFacade.findAll(Game.Status.LIVE);
 
         for (Game g : games) {
             if (SecurityHelper.isPermitted(g, "Edit")) {
@@ -117,7 +117,7 @@ public class GameController {
 
         gameFacade.publishAndCreate(gameModelId, entity);
         //gameFacade.create(gameModelId, entity);
-        return entity;
+        return getGameWithoutDebugTeam(entity);
     }
 
     /**
@@ -132,7 +132,7 @@ public class GameController {
         SecurityUtils.getSubject().checkPermission("GameModel:Instantiate:gm" + gameModelId);
 
         gameFacade.create(gameModelId, entity);
-        return entity;
+        return getGameWithoutDebugTeam(entity);
     }
 
     /**
@@ -189,15 +189,7 @@ public class GameController {
         final Collection<Game> games = gameFacade.findAll(status);
         for (Game g : games) {
             if (SecurityHelper.isPermitted(g, "Edit")) {
-                List<Team> withoutDebugTeam = new ArrayList<>();
-                for (Team teamToCheck : g.getTeams()) {
-                    if (!(teamToCheck instanceof DebugTeam)) {
-                        withoutDebugTeam.add(teamToCheck);
-                    }
-                }
-                em.detach(g);
-                g.setTeams(withoutDebugTeam);
-                retGames.add(g);
+                retGames.add(getGameWithoutDebugTeam(g));
             }
         }
         return retGames;
@@ -279,6 +271,20 @@ public class GameController {
         return r;
     }
 
+    private Game getGameWithoutDebugTeam(Game game) {
+        if (game != null) {
+            em.detach(game);
+            List<Team> withoutDebugTeam = new ArrayList<>();
+            for (Team teamToCheck : game.getTeams()) {
+                if (!(teamToCheck instanceof DebugTeam)) {
+                    withoutDebugTeam.add(teamToCheck);
+                }
+            }
+            game.setTeams(withoutDebugTeam);
+        }
+        return game;
+    }
+
     /**
      * @param token
      * @return
@@ -286,20 +292,8 @@ public class GameController {
     @GET
     @Path("/FindByToken/{token : .*}/")
     public Game findByToken(@PathParam("token") String token) {
-        Game gameToReturn = gameFacade.findByToken(token);
+        return getGameWithoutDebugTeam(gameFacade.findByToken(token));
 
-        if (gameToReturn != null) {
-            em.detach(gameToReturn);
-            List<Team> withoutDebugTeam = new ArrayList<>();
-            for (Team teamToCheck : gameToReturn.getTeams()) {
-                if (!(teamToCheck instanceof DebugTeam)) {
-                    withoutDebugTeam.add(teamToCheck);
-                }
-            }
-            gameToReturn.setTeams(withoutDebugTeam);
-            //r = Response.ok().entity(gameToReturn).build();
-        }
-        return gameToReturn;
     }
 
     /**

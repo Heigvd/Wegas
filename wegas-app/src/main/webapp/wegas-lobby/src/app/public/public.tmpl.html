@@ -1,15 +1,12 @@
 <div class="view view--public-index view--middle">
-	<div class="container">
-		<div class="row view--albasim">
-			<div class="view__logo-albasim"></div>
-			<h2 class="view__first-subtitle">{{ 'WEGAS-SLOGAN' | translate }}</h2>
-		</div>
-		<div ui-view="form"></div>
-		<p class="view__first-subtitle subtitle--account">{{ 'CREATE-ACCOUNT-LABEL' | translate }} <a class="link link--simple-primary" ui-sref="wegas.public.signup">{{'CREATE-ACCOUNT-BTN' | translate}}</a></p>
-		
-                <div class="view__first-subtitle subtitle--language">
-                    <a ng-repeat="language in publicCtrl.languages" class="link link--simple-primary link--language" ng-class="{'link--active': language.key == publicCtrl.currentLanguage}" ng-click="publicCtrl.changeLanguage(language.key)">{{language.name}}</a>
-                </div>
+    <div class="container">
+        <div class="row view--albasim">
+            <div class="view__logo-albasim"></div>
+            <h2 class="view__first-subtitle">{{ 'WEGAS-SLOGAN' | translate }}</h2>
         </div>
+        <div ui-view="form"></div>
+        <p class="view__first-subtitle subtitle--center subtitle--account">{{'CREATE-ACCOUNT-LABEL' | translate }} <a class="link link--simple-primary" ui-sref="wegas.public.signup">{{'CREATE-ACCOUNT-BTN' | translate}}</a></p>
+        <div class="view__tool-language" language-tool></div>
+    </div>
 </div>
 <div class="view view--modal" ui-view="modal"></div>

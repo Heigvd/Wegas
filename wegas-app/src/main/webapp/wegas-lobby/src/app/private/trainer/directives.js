@@ -121,18 +121,23 @@ angular.module('private.trainer.directives', [
                     scenarioId: 0
                 };
                 scope.addSession = function() {
+                    var button = $(element).find(".form__submit");
                     if (scope.newSession.scenarioId != 0) {
-                        SessionsModel.createSession(scope.newSession.name, scope.newSession.scenarioId).then(function(response) {
-                            if (!response.isErroneous()) {
-                                scope.newSession = {
-                                    name: "",
-                                    scenarioId: 0
-                                };
-                                parentCtrl.updateSessions(true);
-                            } else {
-                                response.flash();
-                            }
-                        });
+                        if(!button.hasClass("button--disable")){
+                            button.addClass("button--disable button--spinner button--rotate");
+                            SessionsModel.createSession(scope.newSession.name, scope.newSession.scenarioId).then(function(response) {
+                                if (!response.isErroneous()) {
+                                    scope.newSession = {
+                                        name: "",
+                                        scenarioId: 0
+                                    };
+                                    parentCtrl.updateSessions(true);
+                                    button.removeClass("button--disable button--spinner button--rotate");
+                                } else {
+                                    response.flash();
+                                }
+                            });
+                        }
                     } else {
                         $translate('COMMONS-SCENARIOS-NO-SCENARIO-FLASH-ERROR').then(function (message) {
                             Flash.warning(message);
@@ -163,12 +168,12 @@ angular.module('private.trainer.directives', [
                 editAccess: "="
             },
             link: function(scope, element, attrs) {
-                // Public parameters
                 scope.open = true;
                 if (scope.session.access !== "OPEN") {
                     scope.open = false;
                 }
                 scope.ServiceURL = ServiceURL;
             }
-        }
-    });
+        };
+    })
+    ;

@@ -120,4 +120,28 @@ $color-btn-menu: #000;
     hr {
       margin: 0;
     }
+    
+    .button--player{
+        &:before{
+            color:$player-color;
+        }
+    }
+    
+    .button--trainer{
+        &:before{
+            color:$trainer-color;
+        }
+    }
+    
+    .button--scenarist{
+        &:before{
+            color:$scenarist-color;
+        }
+    }
+    
+    .button--admin{
+        &:before{
+            color:$admin-color;
+        }
+    }
 }

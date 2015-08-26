@@ -41,7 +41,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             'admin': { singular:{ en:"administrator", fr:"administrateur"}, plural:{ en:"administrators", fr:"administrateurs"}},
                             'team': { singular:{ en:"team", fr:"équipe"}, plural:{ en:"teams", fr:"équipes"}},
                             'session': { singular:{ en:"session", fr:"partie"}, plural:{ en:"sessions", fr:"parties"}},
-                            'scenario': { singular:{ en:"scenario", fr:"scenario"}, plural:{ en:"scenarios", fr:"scenarios"}},
+                            'scenario': { singular:{ en:"scenario", fr:"scénario"}, plural:{ en:"scenarios", fr:"scénarios"}},
                             'token': { singular:{ en:"access key", fr:"clé d'accès"}, plural:{ en:"access keys", fr:"clés d'accès"}},
                             'workspace': { singular:{ en:"workspace", fr:"espace de travail"}, plural:{ en:"workspaces", fr:"espaces de travail"}}
                         },
@@ -81,6 +81,10 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"The \"learning by doing\" solution from AlbaSim",
                                 'fr':"La solution \"learning by doing\" développée par AlbaSim"
                             },
+                            'CHOOSE-LANGUAGE-BTN': {
+                                'en':"Change language",
+                                'fr':"Changer de langue"
+                            },
                             'LOGIN-BTN': {
                                 'en':"Login",
                                 'fr':"Connexion"
@@ -97,7 +101,7 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"username/password cannot be empty",
                                 'fr':"Veuillez renseigner l'email et le mot de passe"
                             },
-                            'CREATE-ACCOUNT-LABEL':{
+                            'CREATE-ACCOUNT-LABEL': {
                                 'en':"Haven't yet a Wegas account ?",
                                 'fr':"Pas encore de compte Wegas ?"
                             },
@@ -105,11 +109,11 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"Create account",
                                 'fr':"Créer un compte"
                             },
-                            'CREATE-ACCOUNT-TITLE':{
+                            'CREATE-ACCOUNT-TITLE': {
                                 'en':"Create account",
                                 'fr':"Créer un compte"
                             },
-                            'CREATE-ACCOUNT-INPUT-EMAIL':{
+                            'CREATE-ACCOUNT-INPUT-EMAIL': {
                                 'en':"email",
                                 'fr':"email"
                             },
@@ -117,7 +121,7 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"password",
                                 'fr':"mot de passe"
                             },
-                            'CREATE-ACCOUNT-INPUT-PASSWORD-AGAIN':{
+                            'CREATE-ACCOUNT-INPUT-PASSWORD-AGAIN': {
                                 'en':"password again",
                                 'fr':"mot de passe à nouveau"
                             },
@@ -485,7 +489,6 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en': "No " + keywords.scenario.singular.en + " to update",
                                 'fr': "Pas de " + keywords.scenario.singular.fr + " à mettre à jour"
                             },
-
                             'COMMONS-SCENARIOS-VERSIONS-FIND-FLASH-SUCCESS': {
                                 'en': "Versions loaded",
                                 'fr': "Versions chargées"
@@ -581,6 +584,10 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en': "User updated",
                                 'fr': "Données utilisateur mises à jour"
                             },
+                            "COMMONS-USERS-UPDATE-PASSWORD-FLASH-ERROR":{
+                                'en': "Error while updating user password",
+                                'fr': "La confirmation du mot de passe n'est pas identique au mot de passe"
+                            },
                             'COMMONS-USERS-UPDATE-FLASH-ERROR': {
                                 'en': "Error while updating user",
                                 'fr': "Une erreur est survenue durant la mise à jour des données de l'utilisateur"
@@ -657,11 +664,11 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en': "This user is already a " + keywords.trainer.singular.en + " for this " + keywords.session.singular.en,
                                 'fr': "Cet utilisateur est déjà un " + keywords.trainer.singular.fr + " pour cette " + keywords.session.singular.fr
                             },
-                            'COMMONS-PERMISSIONS-SESSIONS--DELETE-FLASH-SUCCESS': {
+                            'COMMONS-PERMISSIONS-SESSIONS-DELETE-FLASH-SUCCESS': {
                                 'en': startSentence(keywords.trainer.singular.en) + " removed",
                                 'fr': "Droits de l'" + keywords.trainer.singular.fr + " enlevé"
                             },
-                            'COMMONS-PERMISSIONS-SESSIONS--DELETE-FLASH-ERROR': {
+                            'COMMONS-PERMISSIONS-SESSIONS-DELETE-FLASH-ERROR': {
                                 'en': "Error while removiong " + keywords.trainer.singular.en,
                                 'fr': "Une erreur est survenue durant la suppression des droits de l'" + keywords.trainer.singular.fr
                             },
@@ -697,9 +704,13 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"Archives count",
                                 'fr':"Nombre d'archives"
                             },
-                            'PRIVATE-WS-TITLE':{
-                                'en':"{{workspace}} " + keywords.workspace.singular.en,
-                                'fr':startSentence(keywords.workspace.singular.fr) + " - {{workspace}}"
+                            'PRIVATE-WS-TITLE-LABEL':{
+                                'en':startSentence(keywords.workspace.singular.en) +" for ",
+                                'fr':startSentence(keywords.workspace.singular.fr) +" pour "
+                            },
+                            'PRIVATE-WS-TITLE-NAME':{
+                                'en':"{{workspace}}",
+                                'fr':"{{workspace}}"
                             },
                             'PRIVATE-WS-PLAYER-BTN':{
                                 'en':startSentence(keywords.player.singular.en),
@@ -729,6 +740,10 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"Logout",
                                 'fr':"Déconnexion"
                             },
+                            'PRIVATE-MODALE-SESSION-SETTINGS-BASED-ON':{
+                                'en':startSentence(keywords.scenario.singular.en) + " : ",
+                                'fr':startSentence(keywords.scenario.singular.fr) + " : "
+                            },
                             'PRIVATE-MODALE-TABS-INFOS':{
                                 'en':"Infos",
                                 'fr':"Infos"
@@ -749,17 +764,13 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"select the link",
                                 'fr':"sélectionner le lien"
                             },
-                            'PRIVATE-MODALE-TABS-INFOS-BASED-ON':{
-                                'en':"Session based on "+keywords.scenario.singular.en+" : ",
-                                'fr':"Partie basée sur le "+keywords.scenario.singular.fr+" : "
-                            },
                             'PRIVATE-MODALE-TABS-ADVANCED-WARNING':{
                                 'en':"Warning! Update this values only if you know what you do",
-                                'fr':"Attention! Modifiez les paramètres avancés seulement si vous connaissez leur impact"
+                                'fr':"Attention! Ne modifier les paramètres avancés qu'en connaissance de cause"
                             },
                             'PRIVATE-MODALE-SETTINGS-NOT-SAVED-WARNING':{
                                 'en':"Some changes aren't saved",
-                                'fr':"Des changements n'ont pas été sauvé"
+                                'fr':"Des changements n'ont pas été sauvés"
                             },
                             'PRIVATE-MODALE-SETTINGS-CANCEL-BTN':{
                                 'en':"Cancel",
@@ -844,8 +855,8 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'fr':"Mot de passe"
                             },
                             'PRIVATE-PROFILE-INPUT-LABEL-PASSWORD-AGAIN':{
-                                'en':"Password",
-                                'fr':"Mot de passe"
+                                'en':"Password again",
+                                'fr':"Confirmer le mot de passe"
                             },
                             'PRIVATE-PROFILE-INPUT-LABEL-USERNAME': {
                                 'en':"Username",
@@ -919,7 +930,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
                             'PLAYER-CARD-LEAVE-CONFIRM':{
                                 'en':"Are you sure you want to leave the "+ keywords.session.singular.en +" ? This action is irreversible.",
-                                'fr':"Êtes-vous sûre de vouloir quitter cette "+ keywords.session.singular.fr +" ? Cette action est irreversible."
+                                'fr':"Êtes-vous sûr de vouloir quitter cette "+ keywords.session.singular.fr +" ? Cette action est irreversible."
                             },
                             'PLAYER-CARD-PLAY-BTN':{
                                 'en':"Play " + keywords.session.singular.en,
@@ -943,7 +954,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
                             'PLAYER-MODALE-JOIN-TEAM-JOIN-BTN':{
                                 'en':"Join " + keywords.team.singular.en,
-                                'fr':"Rejoindre la "+ keywords.team.singular.fr
+                                'fr':"Rejoindre l'"+ keywords.team.singular.fr
                             },
                             'PLAYER-MODALE-JOIN-TEAM-PLAYERS-LIST':{
                                 'en':startSentence(keywords.player.plural.en) +" from "+ keywords.team.singular.en,
@@ -988,8 +999,8 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'fr':"Basé sur le " + keywords.scenario.singular.fr
                             },
                             'TRAINER-INDEX-ADD-BTN':{
-                                'en':"Create " + keywords.session.singular.en,
-                                'fr':"Créer la " + keywords.session.singular.fr
+                                'en':"Create",
+                                'fr':"Créer"
                             },
                             'TRAINER-INDEX-ARCHIVE-BTN':{
                                 'en':"Archived " + keywords.session.singular.en,
@@ -1007,17 +1018,13 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"No current " + keywords.session.singular.en + " with the name ",
                                 'fr':"Aucune "+ keywords.session.singular.fr+ " en cours avec le nom "
                             },
-                            'TRAINER-CARD-ACCESS-TITLE':{
-                                'en':"Access to new " + keywords.player.plural.en,
-                                'fr':"Accès pour nouveaux " + keywords.player.plural.fr
-                            },
                             'TRAINER-CARD-ACCESS-CLOSE':{
-                                'en':"No other "+ keywords.player.singular.en +" can join",
-                                'fr':keywords.token.singular.fr +" désactivée"
+                                'en':"Close to new "+ keywords.player.plural.en,
+                                'fr':"Fermé aux nouveaux " + keywords.player.plural.fr
                             },
                             'TRAINER-CARD-ACCESS-OPEN':{
-                                'en':keywords.player.plural.en + " can join with key :",
-                                'fr':"Accessible avec la clé :"
+                                'en':"Open to new " + keywords.player.plural.en,
+                                'fr':"Ouvert aux nouveaux " + keywords.player.plural.fr
                             },
                             'TRAINER-CARD-SETTINGS-BTN':{
                                 'en':"Settings",
@@ -1061,7 +1068,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
                             'TRAINER-MODALE-USERS-REMOVE-PLAYER-CONFIRM':{
                                 'en':"Are you sure you want to remove this "+ keywords.player.singular.en +" from the "+ keywords.session.singular.en +" ? This action is irreversible.",
-                                'fr':"Êtes vous sûre de vouloir supprimer le "+ keywords.player.singular.fr +" de la "+ keywords.session.singular.fr +" ? Cette action est irréversible."
+                                'fr':"Êtes vous sûr de vouloir supprimer le "+ keywords.player.singular.fr +" de la "+ keywords.session.singular.fr +" ? Cette action est irréversible."
                             },
                             'TRAINER-MODALE-USERS-REMOVE-TEAM-BTN':{
                                 'en':"Remove " + keywords.team.singular.en,
@@ -1069,7 +1076,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
                             'TRAINER-MODALE-USERS-REMOVE-TEAM-CONFIRM':{
                                 'en':"Are you sure you want to remove this "+ keywords.team.singular.en +" from the "+ keywords.session.singular.en +" ? This action is irreversible.",
-                                'fr':"Êtes vous sûre de vouloir supprimer l'"+ keywords.team.singular.fr +" de la "+ keywords.session.singular.fr +" ? Cette action est irréversible."
+                                'fr':"Êtes vous sûr de vouloir supprimer l'"+ keywords.team.singular.fr +" de la "+ keywords.session.singular.fr +" ? Cette action est irréversible."
                             },
                             'TRAINER-MODALE-ARCHIVE-TITLE':{
                                 'en':"Archived "+ keywords.session.plural.en,
@@ -1097,7 +1104,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
                             'TRAINER-MODALE-ARCHIVE-DELETE-CONFIRM':{
                                 'en':"Are you sure you want to delete this archived " + keywords.session.singular.en + " ? This action is irreversible.",
-                                'fr':"Êtes-vous sûre de vouloir supprimer cette " + keywords.session.singular.fr + " archivée ? Cette action est irréversible."
+                                'fr':"Êtes-vous sûr de vouloir supprimer cette " + keywords.session.singular.fr + " ? Cette action est irréversible."
                             },
                             'TRAINER-MODALE-ARCHIVE-NO-SESSION':{
                                 'en':"No archived " + keywords.session.singular.en + " with the name ",
@@ -1155,7 +1162,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
                             'SCENARIST-MODALE-ARCHIVE-DELETE-CONFIRM':{
                                 'en':"Are you sure you want to delete this archived " + keywords.scenario.singular.en + " ? This action is irreversible.",
-                                'fr':"Êtes-vous sûre de vouloir supprimer ce " + keywords.scenario.singular.fr + " archivé ? Cette action est irréversible."
+                                'fr':"Êtes-vous sûr de vouloir supprimer ce " + keywords.scenario.singular.fr + " ? Cette action est irréversible."
                             },
                             'SCENARIST-MODALE-ARCHIVE-NO-SCENARIO':{
                                 'en':"No archived " + keywords.scenario.singular.en + " with the name ",
@@ -1199,7 +1206,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
                             'SCENARIST-MODALE-USERS-CREATE-CHECKBOX':{
                                 'en':"Create "+ keywords.session.singular.en +" from " + keywords.scenario.singular.en,
-                                'fr':"Créer une "+ keywords.session.singular.fr +" à partire du " + keywords.scenario.singular.fr
+                                'fr':"Créer une "+ keywords.session.singular.fr +" depuis le " + keywords.scenario.singular.fr
                             },
                             'SCENARIST-MODALE-USERS-REMOVE-BTN':{
                                 'en':"Remove access for this user",
@@ -1287,7 +1294,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
                             'ADMIN-USERS-CARD-DELETE-CONFIRM':{
                                 'en':"Are you sure you want to delete this user ? This action is irreversible.",
-                                'fr':"Êtes-vous sûre de vouloir supprimer cet utilisateur ? Cette action est irréversible."
+                                'fr':"Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible."
                             },
                             'ADMIN-USERS-MODALE-EDIT-TITLE':{
                                 'en':"Edit profile",
@@ -1331,7 +1338,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
                             'ADMIN-GROUPS-CARD-DELETE-CONFIRM':{
                                 'en':"Are you sure you want to delete this group ? This action is irreversible.",
-                                'fr':"Êtes-vous sûre de vouloir supprimer ce groupe ? Cette action est irréversible."
+                                'fr':"Êtes-vous sûr de vouloir supprimer ce groupe ? Cette action est irréversible."
                             },
                             'ADMIN-GROUPS-MODALE-NAME-TITLE':{
                                 'en':"Edit name",
@@ -1359,7 +1366,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
                             'ADMIN-MODALE-PERMISSION-SAVE-CONFIRM':{
                                 'en':"Are you sure you want to save your changes ? This action is irreversible.",
-                                'fr':"Êtes-vous sûre de vouloir sauver vos changements ? Cette action est irréversible."
+                                'fr':"Êtes-vous sûr de vouloir sauver vos changements ? Cette action est irréversible."
                             },
                             'ADMIN-MODALE-PERMISSION-INPUT':{
                                 'en':"Permission chain",

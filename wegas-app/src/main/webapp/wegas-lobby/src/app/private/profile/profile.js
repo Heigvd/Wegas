@@ -45,7 +45,7 @@ angular
                 views: {
                     'workspace@wegas.private': {
                         controller: 'AdminCtrl as adminCtrl',
-                        templateUrl: 'app/private/admin/directives.tmpl/index.html',
+                        templateUrl: 'app/private/admin/admin.tmpl.html',
                     }
                 }
             })
@@ -54,6 +54,14 @@ angular
                     'admin-container@wegas.private.profile.admin': {
                         controller: 'AdminUsersCtrl as adminUsersCtrl',
                         templateUrl: 'app/private/admin/users/users.tmpl.html'
+                    }
+                }
+            })
+            .state('wegas.private.profile.admin.groups', {
+                views: {
+                    'admin-container@wegas.private.profile.groups': {
+                        controller: 'AdminGroupsCtrl as adminGroupsCtrl',
+                        templateUrl: 'app/private/admin/groups/groups.tmpl.html'
                     }
                 }
             });

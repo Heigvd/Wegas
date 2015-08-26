@@ -1,6 +1,9 @@
 <div class="modal__header">
 	<div class="modal__illustration illustration illustration--medium illustration--icon" illustration="ICON_{{settingsIndexCtrl.infos.color}}_{{settingsIndexCtrl.infos.icon.key}}_{{settingsIndexCtrl.infos.icon.library}}"></div>
-	<h5 class="modal__title">{{settingsIndexCtrl.session.name | limitTo: settingsIndexCtrl.MAX_DISPLAYED_CHARS}}<span ng-if="settingsIndexCtrl.session.name.length > settingsIndexCtrl.MAX_DISPLAYED_CHARS">...</span></h5>
+	<h5 class="modal__title modal__title--has-subtitle">
+                <span class="modal__title__line modal__title__line--primary">{{settingsIndexCtrl.session.name}}</span>
+                <span class="modal__title__line modal__title__line--secondary">{{'PRIVATE-MODALE-SESSION-SETTINGS-BASED-ON' | translate}} {{settingsIndexCtrl.session.gameModel.name}}</span>
+        </h5>
 	<a class="modal__close button button--medium button--label-off button--default-reverse button--close" ng-click="close()">
    		<span class="button__label">{{'MODALE-CLOSE' | translate}}</span>
 	</a>

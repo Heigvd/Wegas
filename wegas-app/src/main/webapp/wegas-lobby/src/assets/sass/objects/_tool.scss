@@ -1,24 +1,70 @@
 .tool{
-	$size-search:44px; 
+        &.tool--language{
+            width: 100%;
+            max-width: 180px;
+            margin: auto;
+            .tool__button{
+                margin: auto;
+                display:block;
+            }
+            .tool__subactions{
+                display: block;
+                visibility:hidden;
+                opacity:0;
+                height:1px;
+                overflow:hidden;
+                margin-top: -12px;
+                background-color:white;
+                padding:8px 0px;
+                transition:.3s;
+                
+                .button{
+                    width:100%;
+                    height:32px;
+                    line-height:32px;
+                    padding:0px 12px; 
+                    text-overflow:ellipsis;
+                    overflow:hidden;
+                    white-space:nowrap;
+                }
+            }
+            &.tool--open{
+                .tool__button{
+                    background-color:white;
+                    padding-bottom:8px;
+                    border-bottom-left-radius: 0px;
+                    border-bottom-right-radius: 0px;
+                }
+                .tool__subactions{
+                    display:block;
+                    height:auto;
+                    visibility:visible;
+                    opacity:1;
+                }
+            }
+        }
+	$size-search:36px; 
 	&.tool--search{
-		display:block;
-		position:relative;
-		width:$size-search;
-		height:$size-search;
-		background-color:$white;
-		border-radius:$size-search/2;
-		transition:.3s;
-		overflow:hidden;
+		display: block;
+		position: relative;
+		width: $size-search;
+		height: $size-search;
+		background-color: $white;
+		border-radius: $size-search/2;
+		transition: .3s;
+		overflow: hidden;
+                @include material-shadow();
+                
 		.tool__link{
-			display:block;
-			position:relative;
-			width:$size-search;
-			height:$size-search;
-			float:left;
+			display: block;
+			position: relative;
+			width: $size-search;
+			height: $size-search;
+			float: left;
 			&:before{
-				content:$fa-var-search;
-				color:$default-color;
-				display:block;
+				content: $fa-var-search;
+				color: $default-color;
+				display: block;
 				position:absolute;
 				top:0px;
 				left:0px;
@@ -51,7 +97,7 @@
 		}
 
 		&.tool--open{
-			width:100%;
+                    width:100%;
 		}               
 	}
 	$size-new-session:64px; 

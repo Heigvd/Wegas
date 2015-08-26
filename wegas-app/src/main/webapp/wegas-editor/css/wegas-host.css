@@ -5,17 +5,26 @@
  * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
 */
-/**
- * @author Raphaël Schmutz <raph@hat-owl.cc>
- */
 .uv-icon{
     display:none !important;
 }
-
-.wegas-hastoolbar>.wegas-toolbar{
-    display:block;
+.wegas-hastoolbar>.wegas-toolbar {
+    display: block;
+    height: 62px;
     background: #f1f1f1;
-    padding:24px 28px 8px 28px;
+    padding: 24px 28px 8px;
+    box-sizing: border-box;
+}
+
+.wegas-hastoolbar>.wegas-toolbar-sibling {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding:62px 0 0 0;
+    overflow: auto;
+    height: 100% !important;
+    width:100%;
+    box-sizing:border-box;
 }
 
 .wegas-hastoolbar>.wegas-toolbar .yui3-button {
@@ -284,21 +293,32 @@
     background-repeat:no-repeat;
 }
 .yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-login{
-    padding-left: 40px;
-    background-size: auto 32px;
-    margin-left: 16px;
-    max-width:260px;
-    overflow:hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    background-repeat: no-repeat;
-    background-position: left center;
-    background-image: url(../../wegas-editor/images/user.png);
+    width: 48px;
+    height: 48px;
+    overflow: hidden;
+    text-indent: -1000px;
+    padding: 0px;
+    margin: 0px;
+    background:none;
 }
-
-.yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-login:hover{
-    color:#5bc4ec;
-    background-image: url(../../wegas-editor/images/user_hover.png);
+.yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-login:before{
+    display:block;
+    position:absolute;
+    top:0px;
+    left:0px;
+    width:48px;
+    height:48px;
+    content:"\f08b";
+    font-family: "FontAwesome";
+    font-size: 24px;
+    line-height: 48px;
+    text-indent: 0;
+    cursor:pointer;
+    background: none !important;
+}
+.yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-login:hover:before{
+    background:none;
+    color:#82c3ec;
 }
 
 @media screen and (max-width: 799px) {
@@ -569,9 +589,12 @@
 }
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft .yui3-widget-buttons{
     display:block;
-    position:relative;
+    position:absolute;
     width:100%;
     height:100%;
+    box-sizing: border-box;
+    top: 0px;
+    left:0px;
     text-align:left;
 }
 
@@ -595,7 +618,7 @@
 }
 
 
-.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-status-bar{
+.yui3-skin-sam.wegas-hostmode .wegas-status-bar{
     display:block;
     position:absolute;
     visibility:visible;
@@ -609,17 +632,17 @@
     transition:.2s;
 }
 
-.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-status-bar.wegas-status-bar-hidden{
+.yui3-skin-sam.wegas-hostmode .wegas-status-bar.wegas-status-bar-hidden{
     visibility:hidden;
     opacity:0;
 }
 
-.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-status-bar .results{
+.yui3-skin-sam.wegas-hostmode .wegas-status-bar .results{
     display:none;
 }
 
 
-.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-status-bar .status{
+.yui3-skin-sam.wegas-hostmode .wegas-status-bar .status{
     display:block;
     position:absolute;
     opacity:1;
@@ -631,17 +654,17 @@
     box-sizing:border-box;
     margin:-60px 0 0 -60px;
 }
-.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-status-bar.wegas-status-bar-hidden .status{
+.yui3-skin-sam.wegas-hostmode .wegas-status-bar.wegas-status-bar-hidden .status{
     opacity:0;
     visibility:hidden;
 }
-.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-status-bar.wegas-status-bar-transition .status{
+.yui3-skin-sam.wegas-hostmode .wegas-status-bar.wegas-status-bar-transition .status{
     opacity:0;
     visibility:hidden;
     transition:.2s;
 }
 
-.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-status-bar .status.status--running{
+.yui3-skin-sam.wegas-hostmode .wegas-status-bar .status.status--running{
     -webkit-animation: rotation .6s infinite linear;
     -moz-animation: rotation .6s infinite linear;
     -o-animation: rotation .6s infinite linear;
@@ -657,7 +680,7 @@
     margin:-30px 0 0 -30px;
 }
 
-.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-status-bar .status.status--success:before{
+.yui3-skin-sam.wegas-hostmode .wegas-status-bar .status.status--success:before{
     content:"\f00c";
     font-family:"FontAwesome";
     top:0px;
@@ -666,6 +689,7 @@
     display:block;
     width:88px;
     height:88px;
+    text-align:center;
     margin:16px;
     font-size:32px;
     line-height:88px;
@@ -682,7 +706,7 @@
     animation: success .3s ease;
     animation-fill-mode:forwards;
 }
-.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-status-bar .status.status--error{
+.yui3-skin-sam.wegas-hostmode .wegas-status-bar .status.status--error{
     padding-top:100px;
     width:140px;
     -webkit-animation: error .3s ease;
@@ -694,9 +718,10 @@
     animation: error .3s ease;
     animation-fill-mode:forwards;
 }
-.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-status-bar .status.status--error:before{
+.yui3-skin-sam.wegas-hostmode .wegas-status-bar .status.status--error:before{
     content:"\f12a";
     font-family:"FontAwesome";
+    text-align:center;
     top:0px;
     left:0px;
     position:absolute;
@@ -714,7 +739,7 @@
 
 
 
-.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft span:first-child, .wegas-sendmail-content .status{
+.yui3-skin-sam.wegas-hostmode .yui3-widget-ft span:first-child, .wegas-sendmail-content .status{
     display:block;
     position:absolute;
     width:auto;
@@ -749,31 +774,6 @@
 
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft .yui3-button.modal--footer-secondary{
     background-color:#b3b3b3;
-}
-
-
-@media screen and (max-width: 800px) {
-    .yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-panel-content{
-        width: 100% !important;
-        margin-left: 0;
-        margin-right: 0;
-        left: 0 !important;
-        border-radius:0px;
-    }
-}
-
-@media screen and (max-height: 580px) {
-    .yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-panel-content{
-        height: 100%;
-        top: 0 !important;
-        margin-top: 0;
-        margin-bottom: 0;
-        border-radius:0px;
-    }
-    
-    .yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .wegas-panel-content .yui3-widget-bd{
-        height:calc(100% - 130px);
-    }
 }
 
 @-webkit-keyframes rotation {

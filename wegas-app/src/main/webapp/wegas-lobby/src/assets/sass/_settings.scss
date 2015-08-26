@@ -1,7 +1,5 @@
 @import url(http://fonts.googleapis.com/css?family=Lato:100,300,400,700,900);
 
-
-
 // Fonts 
 $font-family: "Lato", "Helvetica", "Arial", sans-serif;
 $font-weight-default: 300;
@@ -155,8 +153,9 @@ $illustration-colors : (
 	('grey', #AEAAB2),
 	('dark-grey', darken(#AEAAB2, 10%)), 
 	('black-grey', darken(#AEAAB2, 20%))
+);
 
-
-); 
-
-
+$player-color:#fb8160;
+$trainer-color:#b4d66b;
+$scenarist-color:#68caf6;
+$admin-color:#B39DDB;

@@ -21,7 +21,7 @@
             </ul>
         </div>
     </div>
-    <h2 class="view__headding-workspace">{{'PRIVATE-WS-TITLE' | translate: translationWorkspace}}</h2>
+    <h2 class="view__headding-workspace">{{'PRIVATE-WS-TITLE-NAME' | translate: translationWorkspace}}</h2>
     <ul class="view__sub-menu">
         <li class="action">
             <a ng-click="logout()" class="button button--default-reverse button--label-off button--sign-out" title="{{'PRIVATE-WS-LOGOUT-BTN' | translate}}"><span class="button__label">{{'PRIVATE-WS-LOGOUT-BTN' | translate}}</span></a>
@@ -29,7 +29,7 @@
         <li class="action action--language" ng-if="languages.length > 1">
             <a class="button button--default-reverse button--label-off button--language" title="Change language"><span class="button__label">Change language</span></a>
             <ul class="subactions">
-                <li class="subaction "ng-repeat="language in languages"><a class="subaction__link" ng-click="changeLanguage(language.key)">{{language.name}}</a></li>
+                <li class="subaction" ng-repeat="language in languages"><a class="button button--default-reverse" ng-class="{'button--active': language.key == currentLanguage}" ng-click="changeLanguage(language.key)">{{language.name}}</a></li>
             </ul>
         </li>
         <li class="action">

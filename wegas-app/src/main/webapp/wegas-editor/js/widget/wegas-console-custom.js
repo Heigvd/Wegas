@@ -199,7 +199,7 @@ YUI.add('wegas-console-custom', function(Y) {
                                                                                      "</div>");
                                         if(modale){
                                             Y.later(1000, window, function(){
-                                                modale.exit();
+                                                modale.close();
                                             }, [], false);
                                         }
                                     }, [], false);
