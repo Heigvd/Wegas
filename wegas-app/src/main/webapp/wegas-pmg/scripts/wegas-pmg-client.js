@@ -758,33 +758,8 @@ app.once("render",
     var varLabel = function(name) {
         return Y.Wegas.Facade.Variable.cache.find("name", name).get("label");
     };
-    Y.namespace("Wegas.Config").Dashboard = function() {
-
-        return {
-            columns: [{
-                "label": "Phase"
-            }, {
-                "label": "Period"
-            }, {
-                "label": "Questions"
-            }, {
-                "label": varLabel("managementApproval"),
-                "formatter": "colored"
-            }, {
-                "label": varLabel("userApproval"),
-                "formatter": "colored"
-            }, {
-                "label": "Quality",
-                "formatter": "colored"
-            }, {
-                "label": "Costs",
-                "formatter": "colored"
-            }, {
-                "label": "Schedule",
-                "formatter": "colored"
-            }],
-            remoteScript: "PMGDashboard.dashboard()"
-        };
+    Y.namespace("Wegas.Config").Dashboards = {
+        overview : "PMGDashboards.overview()"
     };
 
     Y.namespace("Wegas.Config").CustomImpacts = function() {

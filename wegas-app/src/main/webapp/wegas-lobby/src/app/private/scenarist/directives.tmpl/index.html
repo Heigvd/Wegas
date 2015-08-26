@@ -1,23 +1,17 @@
-<div class="view view--new-session view--bottom"
-	 scenarios="scenaristIndexCtrl.scenarios"
-	 create="scenaristIndexCtrl.createScenario"
-	 scenarist-scenario-create
->
+<div    class="view view--new-session view--bottom"
+        scenarios="scenaristIndexCtrl.scenarios"
+        create="scenaristIndexCtrl.createScenario"
+        scenarist-scenario-create
+        expandable>
 </div>
 <div class="view view--sessions-list view--middle">
-	<h3>{{'SCENARIST-INDEX-LIST-TITLE' | translate}}</h3>
-	<div class="view__tools">
-		<div class="tool tool--search tool--open">
-			<a class="tool__link"></a>
-			<input 
-				class="tool__input" 
-				ng-model="scenaristIndexCtrl.search" 
-				type="text" 
-			/>
-		</div>
-	</div>
+        <h3><i class="fa fa-magic"></i><span>{{'SCENARIST-INDEX-LIST-TITLE' | translate}}</span></h3>
+        <a title="{{'SCENARIST-INDEX-ADD-TITLE' | translate}}" class="view__button-expand button button--small button--info-reverse" expander>
+            <span class="button__label">{{'SCENARIST-INDEX-ADD-TITLE' | translate}}</span>
+        </a>
+	<div class="view__tools" data-search-tool="scenaristIndexCtrl.search" ></div>
 	<div 
-		ng-if="scenaristIndexCtrl.scenarios.length"
+		ng-if="(!scenaristIndexCtrl.loading && scenaristIndexCtrl.scenarios.length)"
 		ng-class="{true:'view__list--with-archive', false:''}[scenaristIndexCtrl.nbArchives > 0]"
 		class="view__list" 
 		scenarios="scenaristIndexCtrl.scenarios"
@@ -28,11 +22,14 @@
 		repeat-auto-load
 		>
 	</div>
-	<div ng-if="scenaristIndexCtrl.nbArchives > 0" class="view__archives">
+	<div ng-if="(!scenaristIndexCtrl.loading) && (scenaristIndexCtrl.nbArchives > 0)" class="view__archives">
 		<a class="button button--small button--default button--archive" ui-sref=".archives">
 			<span ng-if="scenaristIndexCtrl.nbArchives == 1" class="button__label">{{scenaristIndexCtrl.nbArchives}} {{'SCENARIST-INDEX-ARCHIVE-BTN' | translate}}</span>
 			<span ng-if="scenaristIndexCtrl.nbArchives > 1" class="button__label">{{scenaristIndexCtrl.nbArchives}} {{'SCENARIST-INDEX-ARCHIVES-BTN' | translate}}</span>
                 </a>
 	</div>
-
+        <div    ng-if="scenaristIndexCtrl.loading"
+		class="view__list">
+		{{'LOADING' | translate}}
+	</div>
 </div>

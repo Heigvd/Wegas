@@ -469,8 +469,6 @@ var PMGHelper = (function() {
             lang = I18n.lang(),
             file, autoSuf = (auto ? "aut" : "man");
 
-        lang = "fr"; // TODO remove when english manuals will be available
-
         switch (phaseNumber) {
             case 1:
                 file = "AvantProjet_" + lang + ".pdf";

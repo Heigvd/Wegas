@@ -22,6 +22,9 @@ YUI.add('wegas-pmg-linefilter', function(Y) {
          */
         initializer: function() {
             this.handlers = [];
+            this.handlers.push(this.afterHostEvent("softsync", function() {
+                this.sync();
+            }));
             this.handlers.push(this.onceAfterHostEvent("render", function() {
                 this.sync();
                 this.afterHostMethod("syncUI", this.sync);

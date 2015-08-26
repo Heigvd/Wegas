@@ -35,7 +35,7 @@
         }
     }
 
-    // Cache le label
+    // Cache le label 
     &.button--label-off{
         padding:$btn-default-size/3 $btn-default-size/2;
         .button__label{
@@ -123,8 +123,13 @@
             &.button--disable{
                 cursor:default;
                 opacity:.5;
+                
                 &:hover{
                     background-color:$type-color;
+                }
+                
+                .button__label{
+                    cursor:default;
                 }
             }
         }
@@ -140,7 +145,7 @@
                 color:$type-color;
             }
             &:hover{
-                background-color:lighten($type-color, 60%);
+                background-color:lighten($type-color, 56%);
                 text-decoration: none;
             }
 
@@ -174,6 +179,7 @@
             padding:$size-pixel/3 $size-pixel/2;
             font-size: $size-pixel/4;
             &.button--label-off{
+                width:$size-pixel;
                 padding:$size-pixel/3 $size-pixel/2;
             }
             &.button--label-hover-left, &.button--label-hover-right{
@@ -212,6 +218,13 @@
             @extend %button--with-icon;
             &:before{
                 content: $icon-content;
+            }
+            
+            &.button--rotate{
+                &:before{
+                    -webkit-animation: fa-spin 2s infinite linear;
+                            animation: fa-spin 2s infinite linear;
+                }
             }
         }
     }

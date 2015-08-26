@@ -34,6 +34,9 @@ YUI.add('wegas-pmg-reservation', function(Y) {
                 host.get("contentBox").addClass("wegas-pmg-reservation");
             });
         },
+        sync: function(){
+            this.get("host").fire("softsync");
+        },
         onClick: function(e) {
             var dt = this.get("host").datatable,
                 cell = dt.getCell(e.currentTarget),
@@ -52,7 +55,7 @@ YUI.add('wegas-pmg-reservation', function(Y) {
             }
 
             if (occupation) {
-                Wegas.Panel.confirmPlayerAction(function() {
+                Wegas.Panel.confirmPlayerAction(Y.bind(function() {
                     Wegas.Facade.Variable.sendRequest({
                         request: "/ResourceDescriptor/AbstractRemove/" + occupation.get("id") + "/occupations",
                         cfg: {
@@ -60,14 +63,15 @@ YUI.add('wegas-pmg-reservation', function(Y) {
                             updateEvent: false
                         },
                         on: {
-                            success: function() {
+                            success: Y.bind(function() {
                                 cell.setContent("");
-                            }
+                                this.sync();
+                            }, this)
                         }
                     });
-                });
+                }, this));
             } else {
-                Wegas.Panel.confirmPlayerAction(function() {
+                Wegas.Panel.confirmPlayerAction(Y.bind(function() {
                     Wegas.Facade.Variable.sendRequest({
                         request: "/ResourceDescriptor/AbstractAssign/" + resource.get("id"),
                         cfg: {
@@ -79,12 +83,13 @@ YUI.add('wegas-pmg-reservation', function(Y) {
                                 time: time
                             }},
                         on: {
-                            success: function() {
+                            success: Y.bind(function() {
                                 cell.append('<span class="booked"></span>');
-                            }
+                                this.sync();
+                            }, this)
                         }
                     });
-                });
+                }, this));
             }
         }
     }, {
