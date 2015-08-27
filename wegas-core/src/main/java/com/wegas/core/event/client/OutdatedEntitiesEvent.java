@@ -7,10 +7,7 @@
  */
 package com.wegas.core.event.client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.rest.util.JacksonMapperProvider;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,14 +74,5 @@ public class OutdatedEntitiesEvent extends ClientEvent {
      */
     public void addEntity(AbstractEntity entity) {
         this.outdated.add(new OutdatedEntity(entity));
-    }
-
-    /**
-     *
-     * @return @throws IOException
-     */
-    public String toJson() throws IOException {
-        ObjectMapper mapper = JacksonMapperProvider.getMapper();
-        return mapper.writeValueAsString(this);
     }
 }
