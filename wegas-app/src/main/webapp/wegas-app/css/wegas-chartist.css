@@ -11,16 +11,16 @@
 .wegas-app-default .ct-series-a .ct-line,
 .wegas-app-default .ct-series-a .ct-point,
 .wegas-app-default .ct-series-a .ct-slice-donut {
-    stroke: #FA6942;
+    stroke: #6188e2
 }
 
 .wegas-app-default .ct-series-a .ct-area,
 .wegas-app-default .ct-series-a .ct-slice-pie {
-    fill: #FA6942;
+    fill: #6188e2
 }
 
 .wegas-chart .legend .color.ct-series-a {
-    background-color: #FA6942;
+    background-color: #6188e2
 }
 
 .wegas-app-default .ct-series-b .ct-bar,
@@ -219,16 +219,16 @@
 .wegas-app-default .ct-series-n .ct-line,
 .wegas-app-default .ct-series-n .ct-point,
 .wegas-app-default .ct-series-n .ct-slice-donut {
-    stroke: #6188e2
+    stroke: #FA6942;
 }
 
 .wegas-app-default .ct-series-n .ct-area,
 .wegas-app-default .ct-series-n .ct-slice-pie {
-    fill: #6188e2
+    fill: #FA6942;
 }
 
 .wegas-chart .legend .color.ct-series-n {
-    background-color: #6188e2
+    background-color: #FA6942;
 }
 
 .wegas-app-default .ct-series-o .ct-bar,

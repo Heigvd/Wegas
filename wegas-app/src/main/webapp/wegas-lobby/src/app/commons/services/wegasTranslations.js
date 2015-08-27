@@ -289,6 +289,10 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':startSentence(keywords.team.singular.en) + " created",
                                 'fr':startSentence(keywords.team.singular.fr) + " créée"
                             },
+                            'COMMONS-TEAMS-CREATE-EXISTING-TEAM-FLASH-INFO': {
+                                'en':"Existing " + keywords.team.singular.en + "name",
+                                'fr':"Ce nom de " + keywords.team.singular.fr + " est déjà utilisé"
+                            },
                             'COMMONS-TEAMS-CREATE-FLASH-ERROR': {
                                 'en':"Error while creating "+ keywords.team.singular.en,
                                 'fr':"Erreur durant la création de l'"+ keywords.team.singular.fr

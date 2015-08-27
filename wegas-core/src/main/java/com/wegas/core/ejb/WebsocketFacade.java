@@ -11,8 +11,10 @@ import com.pusher.rest.Pusher;
 import com.pusher.rest.data.PresenceUser;
 import com.pusher.rest.data.Result;
 import com.wegas.core.Helper;
+import com.wegas.core.event.client.OutdatedEntitiesEvent;
 import com.wegas.core.event.client.EntityUpdatedEvent;
 import com.wegas.core.exception.internal.NoPlayerException;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.GameScope;
@@ -35,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.MissingResourceException;
+import java.util.logging.Level;
 import java.util.zip.GZIPOutputStream;
 
 /**
@@ -228,12 +231,34 @@ public class WebsocketFacade {
                     // Pusher Message Quota Reached...
                 } else if (result.getHttpStatus() == 413) {
                     // wooops pusher error (too big ?)
-                    this.sendLifeCycleEvent(channel, WegasStatus.OUTDATED, socketId);
+                    this.outdateEntities(channel, entry.getValue(), socketId);
                 }
             } catch (IOException ex) {
                 logger.error("     IOEX <----------------------", ex);
                 //
             }
+        }
+    }
+
+    private void outdateEntities(String channel, EntityUpdatedEvent event, String socketId) {
+        try {
+            OutdatedEntitiesEvent outdate = new OutdatedEntitiesEvent();
+
+            for (AbstractEntity entity : event.getUpdatedEntities()) {
+                outdate.addEntity(entity);
+            }
+
+            String gzippedJson = gzip(outdate.toJson());
+            Result result = pusher.trigger(channel, "OutdatedEntitiesEvent.gz", gzippedJson, socketId);
+
+            if (result.getHttpStatus() == 403) {
+                // Pusher Message Quota Reached...
+            } else if (result.getHttpStatus() == 413) {
+                // wooops pusher error (too big ?)
+                this.sendLifeCycleEvent(channel, WegasStatus.OUTDATED, socketId);
+            }
+        } catch (IOException ex) {
+            logger.error("     IOEX <----------------------", ex);
         }
     }
 
