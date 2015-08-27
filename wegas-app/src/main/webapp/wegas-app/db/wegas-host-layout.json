@@ -29,10 +29,8 @@
                         "label": "Overview",
                         "children": [
                             {
-                                "type": "Dashboard",
-                                "tableCfg": {
-                                    "columns": []
-                                },
+                                "name": "overview",
+                                "type": "TeamsOverviewDashboard",
                                 "remoteScript": "",
                                 "plugins": [
                                     {
@@ -43,15 +41,9 @@
                         ]
                     }
                 ],
-                "plugins": [{
-                        "fn": "ExtraTabs"
-                    },
-                    {
-                        "fn": "PopupListener"
-                    },
-                    {
-                        "fn": "ServerPopupListener"
-                    }
+                "plugins": [{"fn": "ExtraTabs"}, 
+                    {"fn": "PopupListener"},
+                    {"fn": "ServerPopupListener"}
                 ]
             }
         ]

@@ -7,6 +7,7 @@
  */
 package com.wegas.core.security.rest;
 
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
@@ -245,7 +246,8 @@ public class UserController {
      * @param authInfo
      * @param request
      * @param response
-     * @return User the current user, WegasErrorMessage when authInfo values are incorrect
+     * @return User the current user, WegasErrorMessage when authInfo values are
+     *         incorrect
      * @throws javax.servlet.ServletException
      * @throws java.io.IOException
      */
@@ -261,7 +263,7 @@ public class UserController {
         UsernamePasswordToken token = new UsernamePasswordToken(authInfo.getLogin(), authInfo.getPassword());
         token.setRememberMe(authInfo.isRemember());
         try {
-            subject.login(token);   
+            subject.login(token);
             return userFacade.getCurrentUser();
         } catch (AuthenticationException aex) {
             throw WegasErrorMessage.error("Email/password combination not found");
@@ -396,16 +398,21 @@ public class UserController {
     @POST
     @Path("SendMail")
     public void sendMail(Email email) {
-        if ("currentUser".matches(email.getFrom())) {
-            AbstractAccount mainAccount = userFacade.getCurrentUser().getMainAccount();
-            if (mainAccount instanceof JpaAccount) {
-                email.setFrom(((JpaAccount) mainAccount).getEmail());
-            } else {
-                email.setFrom(mainAccount.getUsername());
-            }
-        } else {
-            email.setFrom("nobody");
+        AbstractAccount mainAccount = userFacade.getCurrentUser().getMainAccount();
+        String name = mainAccount.getName();
+        if (name.length() == 0) {
+            name = "anonymous";
         }
+
+        if (mainAccount instanceof JpaAccount) {
+            email.setReplyTo(((JpaAccount) mainAccount).getEmail());
+        }
+
+        String body = email.getBody();
+        body += "<br /><br /><hr /><i> Sent by " + name + " from " + "albasim.ch</i>";
+        email.setBody(body);
+
+        email.setFrom(name + " via Wegas <nobody@" + Helper.getWegasProperty("mail.default_domain") + ">");
 
         try {
             userFacade.sendEmail(email);
