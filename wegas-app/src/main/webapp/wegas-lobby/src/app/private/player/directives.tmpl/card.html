@@ -1,4 +1,4 @@
-<div class="card__illustration illustration illustration--big illustration--icon" illustration="{{team.gameIcon}}"></div>
+<div class="card__illustration illustration illustration--medium illustration--icon" illustration="{{team.gameIcon}}"></div>
 <div 
 	class="card__description"
 	ng-class="{true:'card__description--one-line', false:'card__description--two-lines'}[team.gameFreeForAll]" >
@@ -6,17 +6,17 @@
     <div ng-if="!team.gameFreeForAll" class="line line--secondary">{{'PLAYER-CARD-TEAM-TITLE' | translate}} "{{team.name}}"</div>
 </div>
 <div class="card__actions">
-    <a ng-if="!team.gameFreeForAll" class="button button--medium button--round button--default-reverse button--label-off button--team" title="{{'PLAYER-CARD-TEAM-BTN' | translate}}" ui-sref="wegas.private.player.team({id: team.id})">
+    <a ng-if="!team.gameFreeForAll" class="button button--small button--round button--default-reverse button--label-off button--team" title="{{'PLAYER-CARD-TEAM-BTN' | translate}}" ui-sref="wegas.private.player.team({id: team.id})">
       <span class="button__label">{{'PLAYER-CARD-TEAM-BTN' | translate}}</span>
     </a> 
     <a 
-      class="button button--medium button--round button--danger-reverse button--label-off button--sign-out" 
+      class="button button--small button--round button--danger-reverse button--label-off button--sign-out" 
       title="{{'PLAYER-CARD-LEAVE-BTN' | translate}}" 
       confirmed-click="leave(team.id)" 
       ng-confirm-click="{{'PLAYER-CARD-LEAVE-CONFIRM' | translate}}">
       <span class="button__label">{{'PLAYER-CARD-LEAVE-BTN' | translate}}</span>
     </a>  
-    <a class="button button--medium button--round button--info button--label-off button--play" title="{{'PLAYER-CARD-PLAY-BTN' | translate}}" href="{{ServiceURL}}game-play.html?gameId={{team.gameId}}" target="_blank">
+    <a class="button button--small button--round button--info button--label-off button--play" title="{{'PLAYER-CARD-PLAY-BTN' | translate}}" href="{{ServiceURL}}game-play.html?gameId={{team.gameId}}" target="_blank">
       <span class="button__label">{{'PLAYER-CARD-PLAY-BTN' | translate}}</span>
     </a>
 </div>
