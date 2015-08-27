@@ -455,6 +455,8 @@
     position:relative;
     width:100%;
     height:100%;
+    box-sizing:border-box;
+    top:0px;
 }
 
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content .yui3-widget-ft .yui3-button{

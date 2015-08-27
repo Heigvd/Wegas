@@ -8,6 +8,7 @@
 
 /* Occupation & activity plugin css */
 
+.yui3-datatable-table .maybe,
 .yui3-datatable-table .booked,
 .yui3-datatable-table .baseline,
 .yui3-datatable-table .worked,
@@ -72,6 +73,14 @@
     background-color: #68ccc5;
 }
 
+.pmg-legend .maybe, 
+.yui3-datatable-table .maybe{
+    background-color: #B6F1EC;
+}
+
+.yui3-datatable-col-instanceÃƒâ€šÃ‚Â£propertiesÃƒâ€šÃ‚Â£automaticMode {
+    cursor: pointer;
+}
 
 .yui3-datatable-table .fill100 {
 }
@@ -451,4 +460,69 @@ tbody .past .activity {
 
 .indicators-management .yui3-numericaxis + .yui3-numericaxis {
     display: none;
+}
+
+
+label.choice.choice--toogle{
+    width: 22px;
+}
+
+label.choice {
+    display: block;
+    position: relative;
+    clear: both;
+    height: 12px;
+    width: 100%;
+    cursor: pointer;
+    box-sizing: border-box
+}
+
+label.choice.choice--toogle .choice__box {
+    width: 18px;
+    height: 10px;
+    border: solid 1px #d7d7d7;
+    border-radius: 12px;
+    overflow: hidden
+}
+
+
+label.choice .choice__box {
+    display: block;
+    position: relative;
+    width: 24px;
+    height: 24px;
+    float: left;
+    overflow: hidden
+}
+
+.yui3-datatable-col-instance£properties£automaticMode {
+    cursor: pointer;
+}
+.yui3-datatable-col-instance£properties£automaticMode > * {
+    float: left;
+    font-size: 0.8em;
+    display: block; 
+}
+
+label.choice.choice--toogle.Gantt .choice__box .choice__box__display {
+    left: 0px;
+}
+
+label.choice.choice--toogle.ASAP .choice__box .choice__box__display {
+    left: 8px;
+}
+
+label.choice.choice--toogle .choice__box .choice__box__display {
+    display: block;
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    padding: 0;
+    margin: 0;
+    top: 0;
+    border: none;
+    border-radius: 5px;
+    box-sizing: border-box;
+    transition: .3s;
+    background: #68CCC5;
 }
