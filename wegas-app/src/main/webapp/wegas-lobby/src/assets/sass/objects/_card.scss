@@ -1,4 +1,4 @@
-$card-text-size : 14px;
+$card-text-size : 13px;
 $card-margin-size: 8px;
 .card{
     position:relative;
@@ -23,18 +23,21 @@ $card-margin-size: 8px;
         float:left;
 
         .line{
-            line-height:$card-text-size; 
-            font-size:$card-text-size; 
-            margin:0px;
-            padding:$card-margin-size/2 0px; 
-            color:#555555;
-            box-sizing:border-box;
-            width:100%;
-            overflow:hidden;
-            text-overflow:ellipsis;
-            white-space:nowrap;
+            line-height: $card-text-size; 
+            font-size: $card-text-size; 
+            margin: 0px;
+            padding: (($card-margin-size/2) - 2) 0px; 
+            color: #555555;
+            box-sizing: border-box;
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
             
             &.line--primary{
+                font-size:$card-text-size + 1;
+                line-height: $card-text-size + 1;
+                padding-top: 0px;
                 font-weight:500;
             }
             
@@ -142,7 +145,7 @@ $card-margin-size: 8px;
         }
         .card__detailled-actions {
             width: 260px;
-            padding:18px 16px;
+            padding:3px 16px 4px 16px;
             float:left;
             ul {
                 padding: 0px;
@@ -150,6 +153,24 @@ $card-margin-size: 8px;
                 list-style-type: none;
             }
         }
+        
+        @media screen and (max-width: 620px) {
+            .card__description{
+                width: calc(100% - 64px);
+            }
+            
+            .card__detailled-actions{
+                width: calc(100% - 82px);
+                border-top:solid 1px $border;
+                box-sizing:border-box;
+            }
+            
+            .card__actions{
+                width:82px;
+                border-top:solid 1px $border;
+                box-sizing:border-box;
+            }
+	}
     }
     
     @each $size in $sizes{
@@ -183,14 +204,13 @@ $card-margin-size: 8px;
             
             .card__description{
                 &.card__description--one-line{
-                    padding:($size-value - $card-text-size - ($card-margin-size/2))/2 16px; 
+                    padding:(($size-value - $card-text-size - ($card-margin-size/2))/2)+2 16px; 
                 }
                 &.card__description--two-lines{
-                    padding:($size-value - (2*$card-text-size) - (2*$card-margin-size))/2 16px; 
-                        
+                    padding:(($size-value - (2*$card-text-size) - ($card-margin-size))/2)+2 16px; 
                 }
                 &.card__description--three-lines{
-                    padding:($size-value - (3*$card-text-size) - (3*$card-margin-size))/2 16px; 
+                    padding:(($size-value - (3*$card-text-size) - (2*$card-margin-size))/2)+2 16px; 
                 }
             }
 
@@ -202,13 +222,13 @@ $card-margin-size: 8px;
 
     &.card--player-session{
         .card__description{
-            width:calc(100% - 326px);
+            width:calc(100% - 246px);
             box-sizing:border-box;
         }
         
         @media screen and (max-width: 579px) {
             .card__description{
-                width: calc(100% - 96px);
+                width: calc(100% - 64px);
             }
             .card__actions{
                 width:100%;
@@ -223,7 +243,7 @@ $card-margin-size: 8px;
     
     &.card--trainer-session{
         .card__description{
-            width:calc(100% - 592px);
+            width:calc(100% - 486px);
             box-sizing:border-box;
         }
        
@@ -236,8 +256,8 @@ $card-margin-size: 8px;
                 height:100%;
 
                 .line{
-                    font-size:14px;
-                    padding:2px 2px 4px 2px;
+                    font-size:13px;
+                    padding:2px;
                     
                     &.line--title-open{
                         display:none;
@@ -302,7 +322,7 @@ $card-margin-size: 8px;
         
         @media screen and (max-width: 1116px) {
             .card__description{
-                width: calc(100% - 492px);
+                width: calc(100% - 396px);
             }
             .card__actions{
                 .card__actions__access{
@@ -340,7 +360,7 @@ $card-margin-size: 8px;
         
         @media screen and (max-width: 700px) {
             .card__description{
-                width: calc(100% - 96px);
+                width: calc(100% - 64px);
             }
             .card__actions{
                 width:100%;
@@ -351,12 +371,12 @@ $card-margin-size: 8px;
     
     &.card--scenarist-scenario{
         .card__description{
-            width:calc(100% - 460px);
+            width:calc(100% - 346px);
             box-sizing:border-box;
         }
         @media screen and (max-width: 659px) {
             .card__description{
-                width:calc(100% - 96px);
+                width:calc(100% - 64px);
             }
             .card__actions{
                 float:right;
@@ -381,7 +401,36 @@ $card-margin-size: 8px;
                 }
             }
         }
-        
-
+    }
+    
+    &.card--archive-trainer{
+        .card__description{
+            width:calc(100% - 296px);
+            box-sizing:border-box;
+        }
+        @media screen and (max-width: 500px) {
+            .card__description{
+                width:calc(100% - 64px);
+            }
+            .card__actions{
+                width:100%;
+                border-top:solid 1px $border;
+            }
+        }
+    }
+    &.card--archive-scenarist{
+        .card__description{
+            width:calc(100% - 196px);
+            box-sizing:border-box;
+        }
+        @media screen and (max-width: 420px) {
+            .card__description{
+                width:calc(100% - 64px);
+            }
+            .card__actions{
+                width:100%;
+                border-top:solid 1px $border;
+            }
+        }
     }
 }

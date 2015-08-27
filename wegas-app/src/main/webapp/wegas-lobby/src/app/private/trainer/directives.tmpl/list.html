@@ -1,5 +1,5 @@
 <div
-	class="card card--big card--trainer-session"
+	class="card card--medium card--trainer-session"
 	ng-repeat="session in sessions | orderBy: 'createdTime':true | filter: {name: search, gameModel:{canView: true}}  | limitTo: maximum"
 	session="session"
 	archive="archive"
