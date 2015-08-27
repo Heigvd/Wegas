@@ -119,8 +119,8 @@ angular.module('private.trainer.users.directives', [
                 trainers: '='
             },
             link: function(scope, element, attrs, parentCtrl) {
-                scope.remove = function(trainerId) {
-                    parentCtrl.removeTrainer(trainerId);
+                scope.remove = function(trainer) {
+                    parentCtrl.removeTrainer(trainer);
                 };
             }
         }

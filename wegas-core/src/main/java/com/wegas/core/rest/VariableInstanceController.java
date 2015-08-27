@@ -26,7 +26,7 @@ import org.apache.shiro.authz.UnauthorizedException;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-@Path("GameModel/{gameModelId : [1-9][0-9]*}{sep: /?}VariableDescriptor/{variableDescriptorId : [1-9][0-9]*}/VariableInstance/")
+@Path("GameModel/{gameModelId: ([1-9][0-9]*)?}{sep: /?}VariableDescriptor/{variableDescriptorId : ([1-9][0-9]*)?}/VariableInstance/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class VariableInstanceController {
@@ -98,7 +98,7 @@ public class VariableInstanceController {
     public VariableInstance get(@PathParam("variableDescriptorId") Long variableDescriptorId, @PathParam("variableInstanceId") Long variableInstanceId) {
         VariableInstance vi = variableInstanceFacade.find(variableInstanceId);
         SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + vi.getDescriptor().getGameModelId());
-        if (!vi.getDescriptorId().equals(variableDescriptorId)) {
+        if (variableDescriptorId != null && !vi.getDescriptorId().equals(variableDescriptorId)) {
             return null;
         }
 

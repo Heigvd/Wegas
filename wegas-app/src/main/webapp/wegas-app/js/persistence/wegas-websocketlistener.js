@@ -18,6 +18,7 @@ YUI.add('wegas-websocketlistener', function(Y) {
                 if (dataSource) {
                     this._hdl = [];
                     this._hdl.push(dataSource.on("EntityUpdatedEvent", this.onEntityUpdatedEvent, this));
+                    this._hdl.push(dataSource.on("OutdatedEntitiesEvent", this.forceEntityUpdate, this));
                     this._hdl.push(dataSource.on("EntityDestroyedEvent", this.onEntityDeletion, this));
                     this._hdl.push(dataSource.on("CustomEvent", this.onCustomEvent, this));
                     this._hdl.push(dataSource.on("LifeCycleEvent", this.onLifeCycleEvent, this));
@@ -30,9 +31,9 @@ YUI.add('wegas-websocketlistener', function(Y) {
                 Y.Widget.getByNode(".wegas-editview") ||
                 Y.Widget.getByNode(".wegas-trainer--app") ||
                 Y.Widget.getByNode(".wegas-playerview");
-                /*(Y.Widget.getByNode("#centerTabView") &&
-                    Y.Widget.getByNode("#centerTabView").get("selection")) ||
-                ;*/
+            /*(Y.Widget.getByNode("#centerTabView") &&
+             Y.Widget.getByNode("#centerTabView").get("selection")) ||
+             ;*/
 
             if (payload.status === "DOWN") {
                 node.showOverlay("maintenance");
@@ -55,7 +56,25 @@ YUI.add('wegas-websocketlistener', function(Y) {
             }
         },
         onCustomEvent: function(data) {
-            
+
+        },
+        forceEntityUpdate: function(data) {
+            var parsed = Y.JSON.parse(data), i, entity, request = null;
+            for (i = 0; i < parsed.updatedEntities.length; i += 1) {
+                entity = Y.Wegas.Editable.revive(parsed.updatedEntities[i]);
+
+                if (entity instanceof Y.Wegas.persistence.VariableInstance) {
+                    request = "//VariableInstance/" + entity.get("id");
+                } else if (entity instanceof Y.Wegas.persistence.VariableDescriptor) {
+                    request = "/" + entity.get("id");
+                }
+
+                if (request) {
+                    this.get("host").sendRequest({
+                        request: request
+                    });
+                }
+            }
         },
         onEntityUpdatedEvent: function(data) {
             var i, event = Y.JSON.parse(data), entity,
@@ -66,7 +85,7 @@ YUI.add('wegas-websocketlistener', function(Y) {
                 // TODO FETCH CORRECT CACHE
                 entity = Y.Wegas.Editable.revive(event.updatedEntities[i]);
                 datasource = this.getDatasourceFromEntity(entity);
-                if (datasource){
+                if (datasource) {
                     datasource.cache.fire("EntityUpdatedEvent", {
                         "@class": "EntityUpdatedEvent",
                         updatedEntities: [entity]
@@ -74,10 +93,10 @@ YUI.add('wegas-websocketlistener', function(Y) {
                 }
             }
         },
-        getDatasourceFromEntity : function(entity){
-            if (entity instanceof Y.Wegas.persistence.VariableInstance || entity instanceof Y.Wegas.persistence.VariableDescriptor){
+        getDatasourceFromEntity: function(entity) {
+            if (entity instanceof Y.Wegas.persistence.VariableInstance || entity instanceof Y.Wegas.persistence.VariableDescriptor) {
                 return Y.Wegas.Facade.Variable;
-            }  else {
+            } else {
                 return null;
             }
         },

@@ -38,8 +38,6 @@ YUI.add("wegas-accounting-balance", function(Y) {
             + "</div>",
         initializer: function() {
         },
-        renderUI: function() {
-        },
         isValidField: function(value) {
             return /^[+-]?\d+$/.test(value);
         },
@@ -61,6 +59,16 @@ YUI.add("wegas-accounting-balance", function(Y) {
             }, ".wegas-balance-input", this);
         },
         syncUI: function() {
+            var root = this.get("variable.evaluated"),
+                balance;
+            if (root && root.get("@class") === "ListDescriptor") {
+                if (root.size() >= 2) {
+                    balance = this.generateBalance(root.item(0), root.item(1));
+                    this.syncBalance(balance);
+                }
+            }
+        },
+        renderUI: function() {
             var root = this.get("variable.evaluated"),
                 balance;
             if (root && root.get("@class") === "ListDescriptor") {
@@ -117,6 +125,30 @@ YUI.add("wegas-accounting-balance", function(Y) {
             html += "</div>";
             return html;
         },
+        syncCategory: function(container, category) {
+            var i, input = container.one("input[name='" + category.name + "']");
+            if (input) {
+                if (Math.abs(input.get("value") - category.amount) > 0.0001) {
+                    input.setValue(category.amount);
+                }
+            }
+
+            if (category.children.length > 0) {
+                for (i = 0; i < category.children.length; i += 1) {
+                    this.syncCategory(container, category.children[i]);
+                }
+            }
+        },
+        syncColumn: function(category, aKlass) {
+            var i;
+            var contentDiv = Y.one(".wegas-balance-contents " + aKlass),
+                sumDiv = Y.one(".wegas-balance-sums " + aKlass);
+
+            for (i = 0; i < category.children.length; i += 1) {
+                this.syncCategory(contentDiv, category.children[i]);
+            }
+            sumDiv.setContent("<div class=\"wegas-balance-amount\"><span>" + category.amount + "</span></div>");
+        },
         renderColumn: function(category, aKlass) {
             var i;
             var titleDiv = Y.one(".wegas-balance-titles " + aKlass),
@@ -129,6 +161,13 @@ YUI.add("wegas-accounting-balance", function(Y) {
                 contentDiv.append(this.renderCategory(category.children[i]));
             }
             sumDiv.setContent("<div class=\"wegas-balance-amount\"><span>" + category.amount + "</span></div>");
+        },
+        syncBalance: function(balance) {
+            var aKlass, lKlass;
+            aKlass = ".wegas-balance-assets";
+            lKlass = ".wegas-balance-liabilities";
+            this.syncColumn(balance.assets, aKlass);
+            this.syncColumn(balance.liabilities, lKlass);
         },
         renderBalance: function(balance) {
             var aKlass, lKlass;

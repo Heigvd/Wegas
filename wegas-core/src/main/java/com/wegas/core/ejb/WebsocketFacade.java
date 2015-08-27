@@ -16,6 +16,7 @@ import com.wegas.core.event.client.EntityDestroyedEvent;
 import com.wegas.core.event.client.EntityUpdatedEvent;
 import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.event.client.OutdatedEntitiesEvent;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import java.io.ByteArrayOutputStream;
@@ -67,14 +68,25 @@ public class WebsocketFacade {
 
     /**
      *
+     * @param channel
+     * @param status
+     * @param socketId
+     */
+    public void sendLifeCycleEvent(String channel, WegasStatus status, final String socketId) {
+        if (this.pusher != null) {
+            pusher.trigger(channel, "LifeCycleEvent",
+                    "{\"@class\": \"LifeCycleEvent\", \"status\": \"" + status.toString() + "\"}", socketId);
+        }
+    }
+
+    /**
+     * Send LifeCycle event to every connected user
+     *
      * @param status
      * @param socketId
      */
     public void sendLifeCycleEvent(WegasStatus status, final String socketId) {
-        if (this.pusher != null) {
-            pusher.trigger(GLOBAL_CHANNEL, "LifeCycleEvent",
-                    "{\"@class\": \"LifeCycleEvent\", \"status\": \"" + status.toString() + "\"}", socketId);
-        }
+        sendLifeCycleEvent(GLOBAL_CHANNEL, status, socketId);
     }
 
     public void sendPopup(String channel, String message, final String socketId) {
@@ -206,12 +218,37 @@ public class WebsocketFacade {
                 // Pusher Message Quota Reached...
             } else if (result.getHttpStatus() == 413) {
                 // wooops pusher error (too big ?)
-                this.sendLifeCycleEvent(WegasStatus.OUTDATED, socketId);
+                if (clientEvent instanceof EntityUpdatedEvent) {
+                    this.outdateEntities(audience, ((EntityUpdatedEvent) clientEvent), socketId);
+                } else {
+                    this.sendLifeCycleEvent(audience, WegasStatus.OUTDATED, socketId);
+                }
             }
         } catch (IOException ex) {
             logger.error("     IOEX <----------------------", ex);
         }
+    }
 
+    private void outdateEntities(String audience, EntityUpdatedEvent event, String socketId) {
+        try {
+            OutdatedEntitiesEvent outdate = new OutdatedEntitiesEvent();
+
+            for (AbstractEntity entity : event.getUpdatedEntities()) {
+                outdate.addEntity(entity);
+            }
+
+            String gzippedJson = gzip(outdate.toJson());
+            Result result = pusher.trigger(audience, "OutdatedEntitiesEvent.gz", gzippedJson, socketId);
+
+            if (result.getHttpStatus() == 403) {
+                // Pusher Message Quota Reached...
+            } else if (result.getHttpStatus() == 413) {
+                // wooops pusher error (still too big ?)
+                this.sendLifeCycleEvent(audience, WegasStatus.OUTDATED, socketId);
+            }
+        } catch (IOException ex) {
+            logger.error("     IOEX <----------------------", ex);
+        }
     }
 
     public String pusherAuth(final String socketId, final String channel) {

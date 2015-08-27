@@ -229,7 +229,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     }]
             },
             separator1: {
-                label : "\u2501\u2501\u2501\u2501"
+                label: "\u2501\u2501\u2501\u2501"
             },
             getConfidence: {
                 label: "Get confidence",
@@ -314,7 +314,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     }]
             },
             separator2: {
-                label : "\u2501\u2501\u2501\u2501"
+                label: "\u2501\u2501\u2501\u2501"
             },
             addOccupation: {
                 label: "Add occupation",
@@ -653,7 +653,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     }]
             },
             separator1: {
-                label : "\u2501\u2501\u2501\u2501"
+                label: "\u2501\u2501\u2501\u2501"
             },
             getActive: {
                 label: "Is active",

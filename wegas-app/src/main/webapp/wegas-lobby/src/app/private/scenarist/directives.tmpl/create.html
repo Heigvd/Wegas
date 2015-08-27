@@ -2,7 +2,7 @@
 <a title="{{'VIEW-CLOSE' | translate}}" class="view__button-collapse button button--medium button--round button--default-reverse button--label-off button--close" collapser>
     <span class="button__label">{{'VIEW-CLOSE' | translate}}</span>
 </a>
-<form class="form form__create-scenario" ng-submit="createScenario()">
+<form class="form form__create-scenario">
   <div class="form__row">
     <input class="form__row__entry input input--small" type="text" id="session-token" ng-model="newScenario.name" placeholder="{{'SCENARIST-INDEX-ADD-NAME-INPUT' | translate}}" autocomplete="off">
   </div>
@@ -13,6 +13,8 @@
     </select>
   </div>
   <div class="form__row form__row--right">
-    <input class="form__row__btn button button--default" type="submit" value="{{'SCENARIST-INDEX-ADD-BTN' | translate}}" />
+    <a ng-click="createScenario()" class="form__row__btn form__submit button button--default">
+        <span class="button__label">{{'SCENARIST-INDEX-ADD-BTN' | translate}}</span>
+    </a>
   </div>
 </form>
