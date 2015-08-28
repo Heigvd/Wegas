@@ -18,6 +18,7 @@ YUI.add('wegas-websocketlistener', function(Y) {
                 if (dataSource) {
                     this._hdl = [];
                     this._hdl.push(dataSource.on("EntityUpdatedEvent", this.onVariableInstanceUpdate, this));
+                    this._hdl.push(dataSource.on("OutdatedEntitiesEvent", this.forceEntityUpdate, this));
                     this._hdl.push(dataSource.on("CustomEvent", this.onVariableInstanceUpdate, this));
                     this._hdl.push(dataSource.on("LifeCycleEvent", this.onLifeCycleEvent, this));
                 }
@@ -40,6 +41,24 @@ YUI.add('wegas-websocketlistener', function(Y) {
             } else {
                 node.showMessage("warn", "Unexcpected Error: Please refresh the page");
                 node.showOverlay("error");
+            }
+        },
+        forceEntityUpdate: function(data) {
+            var parsed = Y.JSON.parse(data), i, entity, request = null;
+            for (i = 0; i < parsed.updatedEntities.length; i += 1) {
+                entity = Y.Wegas.Editable.revive(parsed.updatedEntities[i]);
+
+                if (entity instanceof Y.Wegas.persistence.VariableInstance) {
+                    request = "//VariableInstance/" + entity.get("id");
+                } else if (entity instanceof Y.Wegas.persistence.VariableDescriptor) {
+                    request = "/" + entity.get("id");
+                }
+
+                if (request) {
+                    this.get("host").sendRequest({
+                        request: request
+                    });
+                }
             }
         },
         onVariableInstanceUpdate: function(data) {

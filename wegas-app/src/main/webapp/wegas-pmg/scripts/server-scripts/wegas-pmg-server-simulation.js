@@ -24,6 +24,7 @@ var PMGSimulation = (function() {
     var taskTable, resourceTable, iterationTable, // To store various variables throughout the steps
         CURRENT_PERIOD_NUMBER,
         CURRENT_PHASE_NUMBER,
+        GANTT = null,
         AUTOMATED_RESERVATION = false,
         STEPS = 10,
         MIN_TASK_DURATION = 0.1,
@@ -37,9 +38,13 @@ var PMGSimulation = (function() {
     function runSimulation() {
         var i, activeTasks = getActiveTasks(), iterations = getIterations(), iteration;
         AUTOMATED_RESERVATION = PMGHelper.automatedReservation();
-        debug("runSimulation(current period number: " + CURRENT_PERIOD_NUMBER + ")");
 
         // Init tables
+        currentPeriodNumber = PMGHelper.getCurrentPeriodNumber();
+        if (AUTOMATED_RESERVATION) {
+            GANTT = PMGHelper.computePert();
+        }
+        debug("runSimulation(currentPeriodNumber: " + currentPeriodNumber + ")");
         resourceTable = {};
         iterationTable = {};
         taskTable = {};
@@ -318,7 +323,7 @@ var PMGSimulation = (function() {
         var activity = null,
             resourceInstance = resourceDescriptor.getInstance(self),
             currentAssignment, taskDesc, req, i, allAssignments, justCompletedTasks;
-        if (PMGHelper.isReservedToWork(resourceDescriptor, CURRENT_PERIOD_NUMBER)) {
+        if (PMGHelper.isReservedToWork(resourceDescriptor, CURRENT_PERIOD_NUMBER, GANTT)) {
             debug("   Is Reserved");
             allAssignments = resourceInstance.assignments;
             justCompletedTasks = [];
@@ -1158,7 +1163,7 @@ var PMGSimulation = (function() {
                 if (itemType === 'QuestionDescriptor') {
                     items.push(item);
                 } else if (i === CURRENT_PERIOD_NUMBER - 1 && itemType === 'ListDescriptor') {
-                    items = items.concat(item.flatten());
+                    items = items.concat(Java.from(item.flatten()));
                 }
             }
         }

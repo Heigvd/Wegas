@@ -20,7 +20,7 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
      *  @extends Y.Plugin.AbstractPert
      *  @constructor
      */
-    PlannificationProgressColor = Y.Base.create("wegas-pmg-plannificationprogresscolor", Y.Plugin.AbstractPert, [], {
+    PlannificationProgressColor = Y.Base.create("wegas-pmg-plannificationprogresscolor", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         /** @lends Y.Plugin.PlannificationProgressColor */
         initializer: function() {
             this.onceAfterHostEvent("render", function() {
@@ -32,7 +32,7 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
         sync: function() {
             this.taskTable = {};
             this.fillTaskTable();
-            this.computePert(this.taskTable, this.get("host").schedule.currentPeriod(), this.get("host").schedule.currentPhase());
+            Y.Wegas.PMGHelper.computePert(this.taskTable, this.get("host").schedule.currentPeriod(), this.get("host").schedule.currentPhase());
             this.renderCells();
         },
         fillTaskTable: function() {
@@ -44,8 +44,8 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
                 taskInst = taskDesc.getInstance();
                 properties = taskInst.get("properties");
                 if (parseInt(properties.completeness, 10) < 100) {
-                    taskDesc.timeSolde = this.timeSolde(taskDesc);
-                    taskDesc.startPlannif = this.startPlannif(taskDesc);
+                    taskDesc.timeSolde = taskInst.getRemainingTime();
+                    taskDesc.startPlannif = taskInst.getFirstPlannedPeriod();
 
                     this.taskTable[taskDesc.get("id")] = taskDesc;
                 }

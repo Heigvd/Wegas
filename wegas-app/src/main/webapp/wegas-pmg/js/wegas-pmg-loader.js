@@ -42,13 +42,13 @@ YUI.addGroup("wegas-pmg", {
             path: 'js/plugin/wegas-pmg-reservation-min.js',
             ws_provides: 'Reservation'
         },
-        "wegas-pmg-abstractpert": {
+        /*"wegas-pmg-abstractpert": {
             path: 'js/plugin/wegas-pmg-abstractpert-min.js',
             ws_provides: 'AbstractPert'
-        },
+        },*/
         "wegas-pmg-autoreservation-color": {
             path: 'js/plugin/wegas-pmg-autoreservation-color-min.js',
-            requires: ['wegas-pmgwidget-css', 'wegas-pmg-abstractpert'],
+            requires: ['wegas-pmgwidget-css'],
             ws_provides: 'AutoReservationColor'
         },
         "wegas-pmg-occupationcolor": {
@@ -87,7 +87,7 @@ YUI.addGroup("wegas-pmg", {
         },
         "wegas-pmg-plannificationprogresscolor": {
             path: 'js/plugin/wegas-pmg-plannificationprogresscolor-min.js',
-            requires: ['wegas-pmgwidget-css', 'wegas-pmg-abstractpert'],
+            requires: ['wegas-pmgwidget-css'],
             ws_provides: 'PlannificationProgressColor'
         },
         "wegas-pmg-bac": {
