@@ -1002,6 +1002,10 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"Based on " + keywords.scenario.singular.en,
                                 'fr':"Basé sur le " + keywords.scenario.singular.fr
                             },
+                            'TRAINER-INDEX-ADD-SCENARIO-LOADING':{
+                                'en':"Loading " + keywords.scenario.plural.en,
+                                'fr':"Chargement des " + keywords.scenario.plural.fr
+                            },
                             'TRAINER-INDEX-ADD-BTN':{
                                 'en':"Create",
                                 'fr':"Créer"
