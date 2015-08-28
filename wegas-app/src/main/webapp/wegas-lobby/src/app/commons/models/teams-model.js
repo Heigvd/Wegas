@@ -23,7 +23,7 @@ angular.module('wegas.models.teams', [])
                         waitTeams = $interval(function() {
                             if (!teams.cache.loading) {
                                 teams.stopWaiting(waitTeams);
-                                deferred.resolve(true)
+                                deferred.resolve(true);
                             }
                         }, 500);
                     return deferred.promise;
@@ -57,7 +57,7 @@ angular.module('wegas.models.teams', [])
             /* Uncache a team in the cached teams */
             uncacheTeam = function(team) {
                 if (team) {
-                	teamToRemove = teams.findTeam(team.id);
+                	var teamToRemove = teams.findTeam(team.id);
                 	if(teamToRemove){
 	                    teams.cache.data = _.without(teams.cache.data, teamToRemove);
                 	}
@@ -234,11 +234,14 @@ angular.module('wegas.models.teams', [])
             Auth.getAuthenticatedUser().then(function(u) {
                 if (u != null) {
                     if (session.access == "OPEN") {
-                        var cachedTeam = _.find(teams.cache.data, function(t) {
-                            return t.name == teamName;
+                        var existingTeam = false;
+                        session.teams.forEach(function(team){
+                            if(team.name == teamName){
+                                existingTeam = true;
+                            }
                         });
-                        if (cachedTeam) {
-                            $translate('COMMONS-TEAMS-ALREADY-JOIN-FLASH-INFO').then(function (message) {
+                        if (existingTeam) {
+                            $translate('COMMONS-TEAMS-CREATE-EXISTING-TEAM-FLASH-INFO').then(function (message) {
                                 deferred.resolve(Responses.info(message, false));
                             });
                         } else {
