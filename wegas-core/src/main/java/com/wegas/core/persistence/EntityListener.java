@@ -7,23 +7,18 @@
  */
 package com.wegas.core.persistence;
 
-import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import javax.inject.Inject;
 import javax.persistence.PostPersist;
 import javax.persistence.PostUpdate;
 import javax.persistence.PreRemove;
-import org.eclipse.persistence.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,15 +35,19 @@ public class EntityListener {
 
     @PostPersist
     void onPostPersist(Object o) {
-        //logger.error("POST PERSIST: " + o);
+    //logger.error("POST PERSIST: " + o);
     }
 
     @PostUpdate
     void onPostUpdate(Object o) {
-        if (o instanceof Broadcastable && o instanceof AbstractEntity) {
+        if (o instanceof Broadcastable) {
             Broadcastable b = (Broadcastable) o;
-            Map<String, List<AbstractEntity>> entities = b.getEntities();
-            requestManager.addUpdatedEntities(entities);
+            if (b instanceof GameModel) {
+                requestManager.addOutofdateEntities(b.getEntities());
+            } else if (b instanceof AbstractEntity) {
+                Map<String, List<AbstractEntity>> entities = b.getEntities();
+                requestManager.addUpdatedEntities(entities);
+            }
         }
     }
 
@@ -62,7 +61,7 @@ public class EntityListener {
             Broadcastable b = (Broadcastable) o;
             Map<String, List<AbstractEntity>> entities = b.getEntities();
             logger.error(("Entities: " + entities.size()));
-            requestManager.destroyEntities(entities);
+            requestManager.addDestroyedEntities(entities);
         }
     }
 }

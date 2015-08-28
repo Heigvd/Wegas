@@ -9,12 +9,12 @@ package com.wegas.core.rest.util;
 
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.RequestFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.WebsocketFacade;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasWrappedException;
 import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.VariableInstance;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
@@ -28,6 +28,7 @@ import javax.ws.rs.ext.Provider;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 
 /**
@@ -114,30 +115,26 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                 response.setStatus(HttpStatus.SC_OK);
             }
 
-            List<AbstractEntity> updatedEntities = rmf.getUpdatedEntities();
+            Map<String, List<AbstractEntity>> updatedEntities = rmf.getUpdatedEntities();
             Map<String, List<AbstractEntity>> destroyedEntities = rmf.getDestroyedEntities();
+            Map<String, List<AbstractEntity>> outdatedEntities = rmf.getOutdatedEntities();
 
-            if (!rollbacked && !(updatedEntities.isEmpty() && destroyedEntities.isEmpty())) {
-
+            if (!rollbacked && !(updatedEntities.isEmpty() && destroyedEntities.isEmpty() && outdatedEntities.isEmpty())) {
                 /*
                  * Merge updatedInstance within ManagedResponse entities
                  */
-                for (AbstractEntity ae : updatedEntities) {
-                    if (!entities.contains(ae)) {
-                        entities.add(ae);
+                for (Entry<String, List<AbstractEntity>> entry : updatedEntities.entrySet()) {
+                    for (AbstractEntity ae : entry.getValue()) {
+                        if (!entities.contains(ae)) {
+                            entities.add(ae);
+                        }
                     }
                 }
-                /*
-                 * EntityUpdatedEvent propagates changes through websocket
-                 */
-                //serverResponse.getEvents().add(e);
                 try {
                     WebsocketFacade websocketFacade = Helper.lookupBy(WebsocketFacade.class, WebsocketFacade.class);
-                    if (managedMode.matches("^[\\d\\.]+$")) { //Socket id
-                        websocketFacade.onRequestCommit(rmf.getDispatchedEntities(), rmf.getDestroyedEntities(), managedMode);
-                    } else {
-                        websocketFacade.onRequestCommit(rmf.getDispatchedEntities(), rmf.getDestroyedEntities());
-                    }
+
+                    websocketFacade.onRequestCommit(updatedEntities, destroyedEntities, outdatedEntities,
+                            (managedMode.matches("^[\\d\\.]+$") ? managedMode : null));
                 } catch (NamingException | NoPlayerException ex) {
                     java.util.logging.Logger.getLogger(ManagedModeResponseFilter.class.getName()).log(Level.SEVERE, null, ex);
                 }

@@ -190,9 +190,11 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
             entities.add(this);
             map.put(this.getAudience(), entities);
             return map;
-        } else {
+        } else if (this.getDefaultDescriptor() != null){
             // Default instance -> Propagate descriptor
             return this.getDefaultDescriptor().getEntities();
+        } else {
+            return null;
         }
     }
 

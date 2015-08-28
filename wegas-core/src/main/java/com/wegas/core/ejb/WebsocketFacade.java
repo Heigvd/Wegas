@@ -29,6 +29,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -138,12 +139,14 @@ public class WebsocketFacade {
      *
      * @param dispatchedEntities
      * @param destroyedEntities
+     * @param outdatedEntities
      * @throws com.wegas.core.exception.internal.NoPlayerException
      */
     @Asynchronous
     public void onRequestCommit(final Map<String, List<AbstractEntity>> dispatchedEntities,
-            final Map<String, List<AbstractEntity>> destroyedEntities) throws NoPlayerException {
-        this.onRequestCommit(dispatchedEntities, destroyedEntities, null);
+            final Map<String, List<AbstractEntity>> destroyedEntities,
+            final Map<String, List<AbstractEntity>> outdatedEntities) throws NoPlayerException {
+        this.onRequestCommit(dispatchedEntities, destroyedEntities, outdatedEntities, null);
     }
 
     /**
@@ -151,6 +154,7 @@ public class WebsocketFacade {
      *
      * @param dispatchedEntities
      * @param destroyedEntities
+     * @param outdatedEntities
      * @param socketId           Client's socket id. Prevent that specific
      *                           client to receive this particular message
      * @throws com.wegas.core.exception.internal.NoPlayerException
@@ -158,25 +162,29 @@ public class WebsocketFacade {
     @Asynchronous
     public void onRequestCommit(final Map<String, List<AbstractEntity>> dispatchedEntities,
             final Map<String, List<AbstractEntity>> destroyedEntities,
+            final Map<String, List<AbstractEntity>> outdatedEntities,
             final String socketId) throws NoPlayerException {
         if (this.pusher == null) {
             return;
         }
 
-        logger.error("EntityUpdatedEvent.channels: " + dispatchedEntities.keySet().size());
-        for (String audience : dispatchedEntities.keySet()) {
-            List<AbstractEntity> toPropagate = dispatchedEntities.get(audience);
-            logger.error("EntityUpdatedEvent.entities: " + audience + ": " + toPropagate.size());
-            EntityUpdatedEvent event = new EntityUpdatedEvent(toPropagate);
-            propagate(event, "EntityUpdatedEvent.gz", audience, socketId);
-        }
+        propagate(dispatchedEntities, socketId, EntityUpdatedEvent.class);
+        propagate(destroyedEntities, socketId, EntityDestroyedEvent.class);
+        propagate(outdatedEntities, socketId, OutdatedEntitiesEvent.class);
+    }
 
-        logger.error("EntityDestroyedEvent.channels: " + destroyedEntities.keySet().size());
-        for (String audience : destroyedEntities.keySet()) {
-            List<AbstractEntity> toPropagate = destroyedEntities.get(audience);
-            logger.error("EntityDestroyedEvent.entities: " + audience + ": " + toPropagate.size());
-            ClientEvent event = new EntityDestroyedEvent(toPropagate);
-            propagate(event, "EntityDestroyedEvent.gz", audience, socketId);
+    private <T extends ClientEvent> void propagate(Map<String, List<AbstractEntity>> container, String socketId, Class<T> eventClass) {
+        try {
+            for (String audience : container.keySet()) {
+                List<AbstractEntity> toPropagate = container.get(audience);
+                logger.error(eventClass.getSimpleName() + " entities: " + audience + ": " + toPropagate.size());
+                ClientEvent event = eventClass.getDeclaredConstructor(List.class).newInstance(toPropagate);
+                propagate(event, audience, socketId);
+            }
+        } catch (NoSuchMethodException | SecurityException |
+                InstantiationException | IllegalAccessException |
+                IllegalArgumentException | InvocationTargetException ex) {
+            logger.error("EVENT INSTANTIATION FAILS");
         }
     }
 
@@ -202,14 +210,14 @@ public class WebsocketFacade {
         return sb.toString();
     }
 
-    private void propagate(ClientEvent clientEvent, String eventName, String audience, final String socketId) {
+    private void propagate(ClientEvent clientEvent, String audience, final String socketId) {
         try {
-            String content;
-            if (eventName.matches(".*\\.gz$")) {
-                content = gzip(clientEvent.toJson());
-            } else {
-                content = clientEvent.toJson();
-            }
+            String eventName = clientEvent.getClass().getSimpleName() + ".gz";
+            //if (eventName.matches(".*\\.gz$")) {
+            String content = gzip(clientEvent.toJson());
+            //} else {
+            //    content = clientEvent.toJson();
+            //}
             Result result = pusher.trigger(audience, eventName, content, socketId);
 
             logger.error("PUSHER RESULT" + result.getMessage() + " : " + result.getStatus() + " : " + result.getHttpStatus());
@@ -219,32 +227,12 @@ public class WebsocketFacade {
             } else if (result.getHttpStatus() == 413) {
                 // wooops pusher error (too big ?)
                 if (clientEvent instanceof EntityUpdatedEvent) {
-                    this.outdateEntities(audience, ((EntityUpdatedEvent) clientEvent), socketId);
+                    this.propagate(new OutdatedEntitiesEvent(((EntityUpdatedEvent) clientEvent).getUpdatedEntities()),
+                            audience, socketId);
+                    //this.outdateEntities(audience, ((EntityUpdatedEvent) clientEvent), socketId);
                 } else {
                     this.sendLifeCycleEvent(audience, WegasStatus.OUTDATED, socketId);
                 }
-            }
-        } catch (IOException ex) {
-            logger.error("     IOEX <----------------------", ex);
-        }
-    }
-
-    private void outdateEntities(String audience, EntityUpdatedEvent event, String socketId) {
-        try {
-            OutdatedEntitiesEvent outdate = new OutdatedEntitiesEvent();
-
-            for (AbstractEntity entity : event.getUpdatedEntities()) {
-                outdate.addEntity(entity);
-            }
-
-            String gzippedJson = gzip(outdate.toJson());
-            Result result = pusher.trigger(audience, "OutdatedEntitiesEvent.gz", gzippedJson, socketId);
-
-            if (result.getHttpStatus() == 403) {
-                // Pusher Message Quota Reached...
-            } else if (result.getHttpStatus() == 413) {
-                // wooops pusher error (still too big ?)
-                this.sendLifeCycleEvent(audience, WegasStatus.OUTDATED, socketId);
             }
         } catch (IOException ex) {
             logger.error("     IOEX <----------------------", ex);

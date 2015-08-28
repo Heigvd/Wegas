@@ -13,7 +13,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import java.io.IOException;
 import java.io.Serializable;
-//import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -24,6 +23,8 @@ import java.io.Serializable;
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(value = CustomEvent.class),
     @JsonSubTypes.Type(value = EntityUpdatedEvent.class),
+    @JsonSubTypes.Type(value = EntityDestroyedEvent.class),
+    @JsonSubTypes.Type(value = OutdatedEntitiesEvent.class),
     @JsonSubTypes.Type(value = ExceptionEvent.class),
     @JsonSubTypes.Type(value = WarningEvent.class)
 })

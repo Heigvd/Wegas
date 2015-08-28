@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -87,9 +88,14 @@ public class StateMachineFacade {
         logger.debug("Received PlayerAction event");
         Player player = playerAction.getPlayer();
         if (player == null) {
-            for (AbstractEntity entity : requestManager.getUpdatedEntites()) {
-                if (entity instanceof VariableInstance) {
-                    player = variableInstanceFacade.findAPlayer((VariableInstance) entity);
+            for (Entry<String, List<AbstractEntity>> entry : requestManager.getUpdatedEntities().entrySet()) {
+                for (AbstractEntity entity : entry.getValue()) {
+                    if (entity instanceof VariableInstance) {
+                        player = variableInstanceFacade.findAPlayer((VariableInstance) entity);
+                        break;
+                    }
+                }
+                if (player != null) {
                     break;
                 }
             }
