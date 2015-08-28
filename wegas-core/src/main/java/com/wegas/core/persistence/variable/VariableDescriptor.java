@@ -427,7 +427,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         Map<String, List<AbstractEntity>> map = new HashMap<>();
         ArrayList<AbstractEntity> entities = new ArrayList<>();
         entities.add(this);
-        logger.error("CHANNEL TOKEN: " + this.getAudienceToken(this.getGameModel()));
+        //logger.error("CHANNEL TOKEN: " + this.getAudienceToken(this.getGameModel()));
         map.put(this.getAudienceToken(this.getGameModel()), entities);
         return map;
     }

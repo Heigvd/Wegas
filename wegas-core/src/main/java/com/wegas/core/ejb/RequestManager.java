@@ -60,13 +60,9 @@ public class RequestManager {
     /**
      * Contains all updated entities
      */
-    private List<AbstractEntity> updatedEntities = new ArrayList<>();
+    private Map<String, List<AbstractEntity>> updatedEntities = new HashMap<>();
 
-    /**
-     * Just like updatedEntites, but entities are despatched according to their
-     * own audience
-     */
-    private Map<String, List<AbstractEntity>> dispatchedEntities = new HashMap<>();
+    private Map<String, List<AbstractEntity>> outdatedEntities = new HashMap<>();
 
     private Map<String, List<AbstractEntity>> destroyedEntities = new HashMap<>();
 
@@ -86,57 +82,38 @@ public class RequestManager {
     private ScriptEngine currentEngine = null;
 
     public void addUpdatedEntities(Map<String, List<AbstractEntity>> entities) {
+        this.addEntities(entities, updatedEntities);
+    }
+
+    public void addOutofdateEntities(Map<String, List<AbstractEntity>> entities) {
+        this.addEntities(entities, outdatedEntities);
+    }
+
+    public void addDestroyedEntities(Map<String, List<AbstractEntity>> entities) {
+        this.addEntities(entities, destroyedEntities);
+    }
+
+    public void addEntities(Map<String, List<AbstractEntity>> entities, Map<String, List<AbstractEntity>> container) {
         if (entities != null) {
             for (String audience : entities.keySet()) {
-                this.addUpdatedEntity(audience, entities.get(audience));
+                this.addEntity(audience, entities.get(audience), container);
             }
         }
     }
 
-    public void addUpdatedEntity(String audience, List<AbstractEntity> updated) {
+    public void addEntity(String audience, List<AbstractEntity> updated, Map<String, List<AbstractEntity>> container) {
         for (AbstractEntity entity : updated) {
-            this.addUpdatedEntity(audience, entity);
+            this.addEntity(audience, entity, container);
         }
     }
 
-    public void addUpdatedEntity(String audience, AbstractEntity updated) {
-        if (!dispatchedEntities.containsKey(audience)) {
-            dispatchedEntities.put(audience, new ArrayList<>());
+    public void addEntity(String audience, AbstractEntity updated, Map<String, List<AbstractEntity>> container) {
+        if (!container.containsKey(audience)) {
+            container.put(audience, new ArrayList<>());
         }
-        List<AbstractEntity> entities = dispatchedEntities.get(audience);
+        List<AbstractEntity> entities = container.get(audience);
         if (!entities.contains(updated)) {
             entities.add(updated);
-        }
-
-        if (!updatedEntities.contains(updated)) {
-            this.updatedEntities.add(updated);
-        }
-    }
-
-    public void destroyEntities(Map<String, List<AbstractEntity>> entities) {
-        logger.error("DESTROY MAP: " + entities);
-        if (entities != null) {
-            for (String audience : entities.keySet()) {
-                this.destroyEntities(audience, entities.get(audience));
-            }
-        }
-    }
-
-    public void destroyEntities(String audience, List<AbstractEntity> destroyed) {
-        logger.error("DESTROY LIST FOR " + audience + " :: " + destroyed);
-        for (AbstractEntity entity : destroyed) {
-            this.destroyEntity(audience, entity);
-        }
-    }
-
-    public void destroyEntity(String audience, AbstractEntity entity) {
-        logger.error("Register Destroyed Entity: " + entity);
-        if (!destroyedEntities.containsKey(audience)) {
-            destroyedEntities.put(audience, new ArrayList<>());
-        }
-        List<AbstractEntity> entities = destroyedEntities.get(audience);
-        if (!entities.contains(entity)) {
-            entities.add(entity);
         }
     }
 
@@ -189,30 +166,18 @@ public class RequestManager {
     }
 
     /**
-     * @return the updatedInstances
-     */
-    public List<AbstractEntity> getUpdatedEntites() {
-        return updatedEntities;
-    }
-
-    /**
-     *
-     * @param updatedEntities
-     */
-    public void setUpdatedEntities(List<AbstractEntity> updatedEntities) {
-        this.updatedEntities = updatedEntities;
-    }
-
-    /**
      *
      */
     public void clearUpdatedEntities() {
         this.updatedEntities.clear();
-        this.dispatchedEntities.clear();
     }
 
-    public Map<String, List<AbstractEntity>> getDispatchedEntities() {
-        return dispatchedEntities;
+    /**
+     *
+     * @return
+     */
+    public Map<String, List<AbstractEntity>> getUpdatedEntities() {
+        return updatedEntities;
     }
 
     /**
@@ -224,6 +189,14 @@ public class RequestManager {
 
     public Map<String, List<AbstractEntity>> getDestroyedEntities() {
         return destroyedEntities;
+    }
+
+    public void clearOutdatedEntities() {
+        this.outdatedEntities.clear();
+    }
+
+    public Map<String, List<AbstractEntity>> getOutdatedEntities() {
+        return outdatedEntities;
     }
 
     /**

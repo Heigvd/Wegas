@@ -12,7 +12,6 @@ import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.event.internal.PlayerAction;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -132,7 +131,7 @@ public class RequestFacade {
      */
     public void commit(Player player) {
         em.flush();
-        if (this.getUpdatedEntities().size() > 0 || scriptEvent.isEventFired()) {
+        if (requestManager.getUpdatedEntities().size() > 0 || scriptEvent.isEventFired()) {
             playerActionEvent.fire(new PlayerAction(player));
             /*   if (this.getPlayer() != null) {
              // RequestManager.PlayerAction action = new RequestManager.PlayerAction();
@@ -201,16 +200,16 @@ public class RequestFacade {
      *
      * @return
      */
-    public List<AbstractEntity> getUpdatedEntities() {
-        return requestManager.getUpdatedEntites();
+    public Map<String, List<AbstractEntity>> getUpdatedEntities() {
+        return requestManager.getUpdatedEntities();
     }
 
     /**
      *
      * @return
      */
-    public Map<String, List<AbstractEntity>> getDispatchedEntities() {
-        return requestManager.getDispatchedEntities();
+    public Map<String, List<AbstractEntity>> getOutdatedEntities() {
+        return requestManager.getOutdatedEntities();
     }
 
     /*

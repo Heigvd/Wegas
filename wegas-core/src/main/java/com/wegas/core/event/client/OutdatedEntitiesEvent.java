@@ -54,6 +54,12 @@ public class OutdatedEntitiesEvent extends ClientEvent {
     public OutdatedEntitiesEvent() {
     }
 
+    public OutdatedEntitiesEvent(List<AbstractEntity> entities) {
+        for (AbstractEntity entity : entities) {
+            this.outdated.add(new OutdatedEntity(entity));
+        }
+    }
+
     /**
      * @return the updatedEntities
      */
