@@ -1,10 +1,11 @@
 <form class="form">
-	<div class="form__row">
-		<input class="input input--small" type="text" id="scenario-name" ng-model="newSession.name" placeholder="{{'TRAINER-INDEX-ADD-NAME-INPUT' | translate}}" autocomplete="off">
+    <div class="form__row">
+        <input class="input input--small" type="text" id="scenario-name" ng-model="newSession.name" placeholder="{{'TRAINER-INDEX-ADD-NAME-INPUT' | translate}}" autocomplete="off">
     </div>
     <div class="form__row fade" ng-if="newSession.name != ''">
-        <select class="input input--small" id="scenario-template" ng-model="newSession.scenarioId">
-            <option value="0">{{'TRAINER-INDEX-ADD-SCENARIO-INPUT' | translate}}</option>
+        <select ng-disabled="loadingScenarios" class="input input--small" id="scenario-template" ng-model="newSession.scenarioId">
+            <option ng-if="!loadingScenarios" value="0">{{'TRAINER-INDEX-ADD-SCENARIO-INPUT' | translate}}</option>
+            <option ng-if="loadingScenarios" value="0">{{'TRAINER-INDEX-ADD-SCENARIO-LOADING' | translate}}</option>
             <option ng-repeat="scenario in scenarios | filter: { canInstantiate: true }" value="{{scenario.id}}">{{scenario.name}}</option>
         </select>
     </div>
