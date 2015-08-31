@@ -37,6 +37,7 @@ $buttons-icon : (
 
 %button--with-icon{
     $btn-default-size: nth(nth($sizes, 1),2);
+    $btn-icon-size: nth(nth($sizes, 1),4);
     padding:$btn-default-size/3 $btn-default-size/2 $btn-default-size/3 ($btn-default-size);
     &:focus{
         padding:$btn-default-size/3 $btn-default-size/2 $btn-default-size/3 ($btn-default-size);
@@ -48,9 +49,10 @@ $buttons-icon : (
         top:0px;
         left:0px;
         text-align:center;
-        padding:$btn-default-size/4.5 0px;
+        padding:($btn-default-size - $btn-icon-size)/2 0px;
         margin:0px;
-        font-size:$btn-default-size/2.5;
+        font-size:$btn-icon-size;
+        line-height:$btn-icon-size;
         width:$btn-default-size;
         height:$btn-default-size;
         background:none;
@@ -61,14 +63,16 @@ $buttons-icon : (
     @each $size in $sizes{
         $size-name:nth($size, 1);
         $size-pixel:nth($size, 2);
+        $size-icon:nth($size, 4);
+
         &.button--#{$size-name}{
             padding:$size-pixel/3 $size-pixel/2 $size-pixel/3 ($size-pixel);
             &:focus{
                 padding:$size-pixel/3 $size-pixel/2 $size-pixel/3 ($size-pixel);
             }
             &:before{
-                padding:$size-pixel/4.5 0px;
-                font-size:$size-pixel/2.5;
+                padding:($size-pixel - $size-icon)/2 0px;
+                font-size:$size-icon;
                 width:$size-pixel;
                 height:$size-pixel;
             }

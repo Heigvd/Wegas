@@ -22,6 +22,7 @@ var PMGSimulation = (function() {
 
     var taskTable, resourceTable,
         currentPeriodNumber,
+        GANTT = null,
         AUTOMATED_RESERVATION = false,
         STEPS = 10,
         MIN_TASK_DURATION = 0.1,
@@ -36,6 +37,9 @@ var PMGSimulation = (function() {
         var i, activeTasks = getActiveTasks();
         AUTOMATED_RESERVATION = PMGHelper.automatedReservation();
         currentPeriodNumber = PMGHelper.getCurrentPeriodNumber();
+        if (AUTOMATED_RESERVATION) {
+            GANTT = PMGHelper.computePert();
+        }
         debug("runSimulation(currentPeriodNumber: " + currentPeriodNumber + ")");
         resourceTable = {};
         // Init task table
@@ -198,7 +202,7 @@ var PMGSimulation = (function() {
         var activity = null,
             resourceInstance = resourceDescriptor.getInstance(self),
             currentAssignment, taskDesc, req, t;
-        if (PMGHelper.isReservedToWork(resourceDescriptor, currentPeriodNumber)) {
+        if (PMGHelper.isReservedToWork(resourceDescriptor, currentPeriodNumber, GANTT)) {
             debug("   Is Reserved");
             var i, allAssignments = resourceInstance.assignments,
                 justCompletedTasks = [];
@@ -1018,7 +1022,7 @@ var PMGSimulation = (function() {
                 if (itemType === 'QuestionDescriptor') {
                     items.push(item);
                 } else if (i === currentPeriod - 1 && itemType === 'ListDescriptor') {
-                    items = items.concat(item.flatten());
+                    items = items.concat(Java.from(item.flatten()));
                 }
             }
         }
@@ -1051,11 +1055,14 @@ var PMGSimulation = (function() {
             initialMaximum = Variable.find(gameModel, "executionPeriods").getValue(self),
             len = Math.max(currentPeriod, initialMaximum),
             pv = Variable.find(gameModel, "planedValue"),
+            pvs, sum = 0,
             history = pv.getInstance(self).getHistory();
 
         history.clear();
+        pvs = computePlannedValues(len);
         for (var i = 0; i < len; i += 1) {
-            history.add(calculatePlannedValue(i));
+            sum += pvs[i];
+            history.add(sum);
         }
         if (history.size() > 0) {
             pv.setValue(self, history.get(history.size() - 1));
@@ -1066,22 +1073,29 @@ var PMGSimulation = (function() {
 
     /**
      * This function calculate the planned value for a given time
-     * @param {Number} period
-     * @returns {Number} Planned value
+     * @param {Number} maxPeriod max period number
+     * @returns {Array} value consumption for each periods (do not forget to sum !)
      */
-    function calculatePlannedValue(period) {
-        return Y.Array.sum(getActiveTasks(), function(t) {
-            if (t.plannification.size() === 0) {                                    // If the user did not provide a planfication
-                return 0;
-            } else {                                                                // Otherwise
-                return Y.Array.sum(t.plannification, function(p) {                  // return a ratio of the bac and the already passed periods in plannification
-                    if (parseInt(p) <= period) {
-                        return t.getPropertyD('bac') / t.plannification.size();
-                    } else
-                        return 0;
-                });
+    function computePlannedValues(maxPeriod) {
+        var pvs = [], i, j, tasks, task, bac, l, val;
+
+        for (i = 0; i <= maxPeriod; i += 1) {
+            pvs.push(0);
+        }
+
+        tasks = getActiveTasks();
+        for (i = 0; i < tasks.length; i += 1) {
+            task = tasks[i];
+            bac = task.getPropertyD("bac");
+            l = task.plannification.size();
+            if (bac > 0) {
+                val = bac / l;
+                for (j = 0; j < l; j += 1) {
+                    pvs[parseInt(task.plannification[j])] += val;
+                }
             }
-        });
+        }
+        return pvs;
     }
 
 
@@ -1125,7 +1139,7 @@ var PMGSimulation = (function() {
             completeness,
             currentPeriod3 = Variable.findByName(gameModel, 'periodPhase3').getValue(self),
             lastPlannedPeriod = getLastPlannedPeriodNumber(),
-            pv = calculatePlannedValue(currentPeriod3);
+            pv = computePlannedValues(currentPeriod3);
 
         for (i = 0; i < tasks.length; i += 1) {
             task = tasks[i];

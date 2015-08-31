@@ -46,7 +46,7 @@ YUI.add('wegas-pmg-planification', function(Y) {
             }, this));
         },
         request: function(taskInstanceId, time, method, cell) {
-            Wegas.Facade.Variable.sendRequest({
+            Wegas.Facade.Variable.sendQueuedRequest({
                 request: "/ResourceDescriptor/Player/" + Wegas.Facade.Game.get('currentPlayerId') + "/Plan/" + taskInstanceId + "/" + time,
                 cfg: {
                     method: method,

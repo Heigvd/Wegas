@@ -30,6 +30,152 @@ app.once("render",
         });
 
         Y.Wegas.PMGHelper = {
+            getTaskTable: function() {
+                var taskTable = {}, tasks,
+                    i, taskDesc, taskInst, properties;
+
+                tasks = Y.Wegas.Facade.Variable.cache.find("name", "tasks");
+
+                for (i = 0; i < tasks.size(); i += 1) {
+                    taskDesc = tasks.item(i);
+                    taskInst = taskDesc.getInstance();
+                    properties = taskInst.get("properties");
+                    if (parseInt(properties.completeness, 10) < 100) {
+                        taskDesc.timeSolde = taskInst.getRemainingTime();
+                        taskDesc.startPlannif = taskInst.getFirstPlannedPeriod();
+
+                        taskTable[taskDesc.get("id")] = taskDesc;
+                    }
+                }
+                return taskTable;
+            },
+            /**
+             * 
+             * fill each task table entry with:
+             *   - planned : periods numbers the task is planned on   (e.g. [3, 5, 6]
+             *   - beginAt : "real" time the work on task will start (e.g 3.25)
+             *   - endAt : "real" time the work on task will start (e.g 6.18)
+             *
+             * @param {type} taskTable
+             * @param {type} currentPeriod
+             * @returns {undefined}
+             */
+            computePert: function(taskTable, currentPeriod, currentStage) {
+                var taskId, taskDesc, initialPlanning,
+                    predecessors, i, minBeginAt, delta,
+                    allPredDefine, predecessorId, stillMissing,
+                    deltaMissing, queue = [],
+                    lastPlanned, max,
+                    taskInstance, stillPlanned;
+
+                taskTable = taskTable || Y.Wegas.PMGHelper.getTaskTable();
+                currentStage = currentStage || Y.Wegas.PMGHelper.getCurrentPhaseNumber();
+                currentPeriod = currentPeriod || Y.Wegas.PMGHelper.getCurrentPeriodNumber();
+
+                if (currentStage < 3) {
+                    // do not compute pert before stage3 but return the planning planned by players
+                    for (taskId in taskTable) {
+                        taskDesc = taskTable[taskId];
+                        initialPlanning = taskDesc.getInstance().getPlannedPeriods().sort(Y.Array.numericSort);
+                        taskDesc.planned = initialPlanning;
+                        taskDesc.beginAt = 0;
+                        taskDesc.endAt = 0;
+
+                        if (initialPlanning.length > 0) {
+                            taskDesc.beginAt = initialPlanning[0];
+                            taskDesc.endAt = initialPlanning[initialPlanning.length - 1];
+                        }
+                    }
+                } else {
+                    queue = [];
+
+                    for (taskId in taskTable) {
+                        queue.push(taskId);
+                    }
+                    while (taskId = queue.shift()) {
+                        taskDesc = taskTable[taskId];
+
+                        minBeginAt = currentPeriod;
+                        allPredDefine = true;
+                        predecessors = taskDesc.get("predecessors");
+
+                        // Check predecessors
+                        for (i = 0; i < predecessors.length; i += 1) {
+                            predecessorId = predecessors[i].get("id");
+                            if (taskTable[predecessorId]) {
+                                if (taskTable[predecessorId].endAt) {
+                                    if (minBeginAt < taskTable[predecessorId].endAt) {
+                                        minBeginAt = taskTable[predecessorId].endAt;
+                                    }
+                                } else {
+                                    // At least one precedecessor has not been processed
+                                    allPredDefine = false;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (allPredDefine) {
+                            // all require data are available, let's compute pert for the task
+                            taskInstance = taskDesc.getInstance();
+                            stillPlanned = taskInstance.getPlannedPeriods().filter(function(n) {
+                                return n >= minBeginAt;
+                            }, this).sort(Y.Array.numericSort);
+
+                            delta = minBeginAt - parseInt(minBeginAt, 10);
+                            stillMissing = taskInstance.getRemainingTime();
+
+
+                            // postpone task that could start in the second part of period
+                            if (minBeginAt - parseInt(minBeginAt, 10) > 0.50) {
+                                minBeginAt = parseInt(minBeginAt, 10) + 1;
+                            } else {
+                                minBeginAt = parseInt(minBeginAt, 10);
+                                stillMissing += delta;
+                            }
+                            if (stillPlanned.length > 0 && stillPlanned[0] > minBeginAt) {
+                                minBeginAt = stillPlanned[0];
+                                stillMissing -= delta;
+                            }
+                            taskDesc.beginAt = minBeginAt;
+
+                            if (stillMissing === 0) {
+                                taskDesc.endAt = minBeginAt;
+                                taskDesc.planned = [];
+                            } else if (stillPlanned.length >= stillMissing) {
+                                // enough or too many planned period
+                                deltaMissing = stillMissing - parseInt(stillMissing, 10);
+                                if (deltaMissing === 0) {
+                                    taskDesc.planned = stillPlanned.slice(0, parseInt(stillMissing, 10));
+                                    taskDesc.endAt = taskDesc.planned[taskDesc.planned.length - 1] + 1;
+                                } else {
+                                    taskDesc.planned = stillPlanned.slice(0, Math.ceil(stillMissing));
+                                    taskDesc.endAt = taskDesc.planned[taskDesc.planned.length - 1] || taskDesc.beginAt;
+                                    taskDesc.endAt += deltaMissing;
+                                }
+                            } else {
+                                // not enough planned period
+                                taskDesc.planned = stillPlanned.slice();
+                                if (stillPlanned.length === 0) {
+                                    lastPlanned = minBeginAt - 1;
+                                    // nothing planned -> stack
+                                    taskDesc.endAt = minBeginAt + stillMissing;
+                                } else {
+                                    lastPlanned = stillPlanned[stillPlanned.length - 1];
+                                    taskDesc.endAt = lastPlanned + stillMissing - stillPlanned.length + 1;
+                                }
+                                max = Math.ceil(stillMissing) - stillPlanned.length;
+                                for (i = 0; i < max; i += 1) {
+                                    taskDesc.planned.push(lastPlanned + i + 1);
+                                }
+                            }
+                        } else {
+                            queue.push(taskId);
+                        }
+                    }
+                }
+                return taskTable;
+            },
             defaultPhaseNames: ["Initiation", "Planning", "Execution", "Closing"],
             getPhaseName: function(phaseNumber) {
                 var names = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "phaseNames");
@@ -40,8 +186,15 @@ app.once("render",
                 }
             },
             getCurrentPhaseName: function() {
-                return Y.Wegas.PMGHelper.getPhaseName(Y.Wegas.Facade.VariableDescriptor.cache.find("name",
-                    "currentPhase").get("value"));
+                return Y.Wegas.PMGHelper.getPhaseName(Y.Wegas.PMGHelper.getCurrentPhaseNumner());
+            },
+            getCurrentPhaseNumber: function() {
+                return Y.Wegas.Facade.VariableDescriptor.cache.find("name",
+                    "currentPhase").get("value");
+            },
+            getCurrentPeriodNumber: function() {
+                return Y.Wegas.Facade.VariableDescriptor.cache.find("name", "currentPeriod").item(
+                    Y.Wegas.PMGHelper.getCurrentPhaseNumber() - 1).get("value");
             },
             getBACTotal: function() {
                 var i, bacs = 0, tasks = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "tasks"), task;
@@ -86,106 +239,106 @@ app.once("render",
                 type: GROUP,
                 index: 2,
                 fields: [{
-                    name: "takeInHandDuration",
-                    label: "Take-in-hand duration",
-                    type: NUMBER,
-                    value: 0,
-                    description: "[% of period]"
-                }, {
-                    name: "competenceRatioInf",
-                    label: "Competence coeff. inf.",
-                    type: NUMBER,
-                    value: 1,
-                    description: "[0..3]"
-                }, {
-                    name: "competenceRatioSup",
-                    label: "Competence coeff. sup.",
-                    type: NUMBER,
-                    value: 1,
-                    description: "[0..3]"
-                }, {
-                    name: "coordinationRatioInf",
-                    type: NUMBER,
-                    label: "Coordination coeff. inf.",
-                    value: 1,
-                    description: "[0..2]"
-                }, {
-                    name: "coordinationRatioSup",
-                    label: "Coordination coeff. sup.",
-                    type: NUMBER,
-                    value: 1,
-                    description: "[0..2]"
-                }, {
-                    name: "progressionOfNeeds",
-                    type: HIDDEN,
-                    value: 1,
-                }]
+                        name: "takeInHandDuration",
+                        label: "Take-in-hand duration",
+                        type: NUMBER,
+                        value: 0,
+                        description: "[% of period]"
+                    }, {
+                        name: "competenceRatioInf",
+                        label: "Competence coeff. inf.",
+                        type: NUMBER,
+                        value: 1,
+                        description: "[0..3]"
+                    }, {
+                        name: "competenceRatioSup",
+                        label: "Competence coeff. sup.",
+                        type: NUMBER,
+                        value: 1,
+                        description: "[0..3]"
+                    }, {
+                        name: "coordinationRatioInf",
+                        type: NUMBER,
+                        label: "Coordination coeff. inf.",
+                        value: 1,
+                        description: "[0..2]"
+                    }, {
+                        name: "coordinationRatioSup",
+                        label: "Coordination coeff. sup.",
+                        type: NUMBER,
+                        value: 1,
+                        description: "[0..2]"
+                    }, {
+                        name: "progressionOfNeeds",
+                        type: HIDDEN,
+                        value: 1,
+                    }]
             };
 
             persistence.TaskDescriptor.ATTRS.defaultInstance.properties.properties._inputex = {
                 type: GROUP,
                 index: 10,
                 fields: [{
-                    name: "fixedCosts",
-                    label: "Fixed costs",
-                    type: NUMBER,
-                    value: 0,
-                    description: "[$]"
-                }, {
-                    name: "duration",
-                    label: "Duration",
-                    type: NUMBER,
-                    value: 1,
-                    description: "[period]"
-                }, {
-                    name: "randomDurationInf",
-                    label: "Random duration delta inf.",
-                    type: NUMBER,
-                    value: 0,
-                    description: "[0..4 period]"
-                }, {
-                    name: "randomDurationSup",
-                    label: "Random duration delta sup.",
-                    type: NUMBER,
-                    value: 0,
-                    description: "[0..4 period]"
-                }, {
-                    name: "predecessorsDependances",
-                    label: "Predecessors dependency",
-                    type: NUMBER,
-                    value: 1,
-                    description: "[0..1000]"
-                }, {
-                    name: "bonusRatio",
-                    label: "Bonus coeff.",
-                    type: NUMBER,
-                    value: 1,
-                    description: "[0..1..4]"
-                }, {
-                    name: "unworkedHoursCosts",
-                    type: HIDDEN,
-                    value: 0
-                }, {
-                    name: "wages",
-                    type: HIDDEN,
-                    value: 0
-                }, {
-                    name: "bac",
-                    type: HIDDEN,
-                    value: 0
-                }, {
-                    name: "completeness",
-                    value: 0,
-                    type: HIDDEN
-                }, {
-                    name: "quality",
-                    type: HIDDEN,
-                    value: 0
-                }, {
-                    name: "computedQuality",
-                    type: HIDDEN,
-                    value: 0
-                }
+                        name: "fixedCosts",
+                        label: "Fixed costs",
+                        type: NUMBER,
+                        value: 0,
+                        description: "[$]"
+                    }, {
+                        name: "duration",
+                        label: "Duration",
+                        type: NUMBER,
+                        value: 1,
+                        description: "[period]"
+                    }, {
+                        name: "randomDurationInf",
+                        label: "Random duration delta inf.",
+                        type: NUMBER,
+                        value: 0,
+                        description: "[0..4 period]"
+                    }, {
+                        name: "randomDurationSup",
+                        label: "Random duration delta sup.",
+                        type: NUMBER,
+                        value: 0,
+                        description: "[0..4 period]"
+                    }, {
+                        name: "predecessorsDependances",
+                        label: "Predecessors dependency",
+                        type: NUMBER,
+                        value: 1,
+                        description: "[0..1000]"
+                    }, {
+                        name: "bonusRatio",
+                        label: "Bonus coeff.",
+                        type: NUMBER,
+                        value: 1,
+                        description: "[0..1..4]"
+                    }, {
+                        name: "unworkedHoursCosts",
+                        type: HIDDEN,
+                        value: 0
+                    }, {
+                        name: "wages",
+                        type: HIDDEN,
+                        value: 0
+                    }, {
+                        name: "bac",
+                        type: HIDDEN,
+                        value: 0
+                    }, {
+                        name: "completeness",
+                        value: 0,
+                        type: HIDDEN
+                    }, {
+                        name: "quality",
+                        type: HIDDEN,
+                        value: 0
+                    }, {
+                        name: "computedQuality",
+                        type: HIDDEN,
+                        value: 0
+                    }
                 ]
             };
             Y.mix(persistence.TaskDescriptor.METHODS, {
@@ -193,140 +346,140 @@ app.once("render",
                     label: "Get property",
                     returns: NUMBER,
                     arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        scriptType: STRING,
-                        type: SELECT,
-                        choices: [{
-                            value: "duration"
+                            type: HIDDEN,
+                            value: SELF
                         }, {
-                            value: "fixedCosts"
-                        }, {
-                            /*
-                             value: "quality"
-                             }, {*/
-                            value: "completeness"
+                            scriptType: STRING,
+                            type: SELECT,
+                            choices: [{
+                                    value: "duration"
+                                }, {
+                                    value: "fixedCosts"
+                                }, {
+                                    /*
+                                     value: "quality"
+                                     }, {*/
+                                    value: "completeness"
+                                }]
                         }]
-                    }]
                 },
                 addNumberAtInstanceProperty: {
                     label: "Add to property",
                     arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: SELECT,
-                        scriptType: STRING,
-                        choices: [{
-                            value: "duration"
+                            type: HIDDEN,
+                            value: SELF
                         }, {
-                            value: "fixedCosts"
+                            type: SELECT,
+                            scriptType: STRING,
+                            choices: [{
+                                    value: "duration"
+                                }, {
+                                    value: "fixedCosts"
+                                }, {
+                                    value: "quality"
+                                }, {
+                                    value: "predecessorsDependances"
+                                }, {
+                                    value: "randomDurationSup"
+                                }, {
+                                    value: "randomDurationInf"
+                                }, {
+                                    value: "bonusRatio"
+                                }]
                         }, {
-                            value: "quality"
-                        }, {
-                            value: "predecessorsDependances"
-                        }, {
-                            value: "randomDurationSup"
-                        }, {
-                            value: "randomDurationInf"
-                        }, {
-                            value: "bonusRatio"
+                            type: STRING,
+                            typeInvite: VALUE,
+                            scriptType: STRING
                         }]
-                    }, {
-                        type: STRING,
-                        typeInvite: VALUE,
-                        scriptType: STRING
-                    }]
                 },
                 setInstanceProperty: {
                     label: "Set property",
                     arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        scriptType: STRING,
-                        type: SELECT,
-                        choices: [{
-                            value: "duration"
+                            type: HIDDEN,
+                            value: SELF
                         }, {
-                            value: "fixedCosts"
+                            scriptType: STRING,
+                            type: SELECT,
+                            choices: [{
+                                    value: "duration"
+                                }, {
+                                    value: "fixedCosts"
+                                }, {
+                                    value: "quality"
+                                }, {
+                                    value: "predecessorsDependances"
+                                }, {
+                                    value: "randomDurationSup"
+                                }, {
+                                    value: "randomDurationInf"
+                                }, {
+                                    value: "bonusRatio"
+                                }]
                         }, {
-                            value: "quality"
-                        }, {
-                            value: "predecessorsDependances"
-                        }, {
-                            value: "randomDurationSup"
-                        }, {
-                            value: "randomDurationInf"
-                        }, {
-                            value: "bonusRatio"
+                            type: STRING,
+                            typeInvite: VALUE,
+                            scriptType: STRING
                         }]
-                    }, {
-                        type: STRING,
-                        typeInvite: VALUE,
-                        scriptType: STRING
-                    }]
                 },
                 addAtRequirementVariable: {
                     label: "Add to requirements",
                     arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: "entityarrayfieldselect",
-                        returnAttr: "name",
-                        scriptType: STRING,
-                        scope: "instance",
-                        field: "requirements",
-                        name: {
-                            values: ["quantity", "work", "level"],
-                            separator: " - "
-                        }
-                    }, {
-                        scriptType: STRING,
-                        type: SELECT,
-                        choices: [{
-                            value: "quantity"
+                            type: HIDDEN,
+                            value: SELF
                         }, {
-                            label: "grade",
-                            value: "level"
+                            type: "entityarrayfieldselect",
+                            returnAttr: "name",
+                            scriptType: STRING,
+                            scope: "instance",
+                            field: "requirements",
+                            name: {
+                                values: ["quantity", "work", "level"],
+                                separator: " - "
+                            }
+                        }, {
+                            scriptType: STRING,
+                            type: SELECT,
+                            choices: [{
+                                    value: "quantity"
+                                }, {
+                                    label: "grade",
+                                    value: "level"
+                                }]
+                        }, {
+                            type: STRING,
+                            typeInvite: VALUE,
+                            scriptType: STRING
                         }]
-                    }, {
-                        type: STRING,
-                        typeInvite: VALUE,
-                        scriptType: STRING
-                    }]
                 },
                 setRequirementVariable: {
                     label: "Set requirements",
                     arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: "entityarrayfieldselect",
-                        returnAttr: "name",
-                        scriptType: STRING,
-                        scope: "instance",
-                        field: "requirements",
-                        name: {
-                            values: ["quantity", "work", "level"],
-                            separator: " - "
-                        }
-                    }, {
-                        scriptType: STRING,
-                        type: SELECT,
-                        choices: [{
-                            value: "quantity"
+                            type: HIDDEN,
+                            value: SELF
                         }, {
-                            value: "level",
-                            label: "grade"
+                            type: "entityarrayfieldselect",
+                            returnAttr: "name",
+                            scriptType: STRING,
+                            scope: "instance",
+                            field: "requirements",
+                            name: {
+                                values: ["quantity", "work", "level"],
+                                separator: " - "
+                            }
+                        }, {
+                            scriptType: STRING,
+                            type: SELECT,
+                            choices: [{
+                                    value: "quantity"
+                                }, {
+                                    value: "level",
+                                    label: "grade"
+                                }]
+                        }, {
+                            type: STRING,
+                            typeInvite: VALUE,
+                            scriptType: STRING
                         }]
-                    }, {
-                        type: STRING,
-                        typeInvite: VALUE,
-                        scriptType: STRING
-                    }]
                 }
             }, true);
 
@@ -336,63 +489,67 @@ app.once("render",
             persistence.ResourceDescriptor.ATTRS.properties._inputex = {
                 type: GROUP,
                 fields: [{
-                    label: "Activity rate coeff.",
-                    name: "coef_activity",
-                    value: 1,
-                    description: "[0..1..2]",
-                    className: "short-input"
-                }, {
-                    label: "Motivation coeff.",
-                    name: "coef_moral",
-                    value: 1,
-                    description: "[0..1..2]",
-                    className: "short-input"
-                }, {
-                    label: "Maximum % of billed unworked hours",
-                    name: "maxBilledUnworkedHours",
-                    value: 10,
-                    description: "[0..100]",
-                    className: "short-input"
-                }, {
-                    label: "Engagement delay",
-                    name: "engagementDelay",
-                    value: 0,
-                    description: "[period]",
-                    className: "short-input"
-                }]
+                        label: "Activity rate coeff.",
+                        name: "coef_activity",
+                        value: 1,
+                        description: "[0..1..2]",
+                        className: "short-input"
+                    }, {
+                        label: "Motivation coeff.",
+                        name: "coef_moral",
+                        value: 1,
+                        description: "[0..1..2]",
+                        className: "short-input"
+                    }, {
+                        label: "Maximum % of billed unworked hours",
+                        name: "maxBilledUnworkedHours",
+                        value: 10,
+                        description: "[0..100]",
+                        className: "short-input"
+                    }, {
+                        label: "Engagement delay",
+                        name: "engagementDelay",
+                        value: 0,
+                        description: "[period]",
+                        className: "short-input"
+                    }]
             };
 
             persistence.ResourceDescriptor.ATTRS.defaultInstance.properties.properties._inputex = {
                 type: GROUP,
                 fields: [{
-                    name: "activityRate",
-                    label: "Activity rate",
-                    type: NUMBER,
-                    value: 100,
-                    description: "[0..100]",
-                    className: "short-input"
+                        name: "activityRate",
+                        label: "Activity rate",
+                        type: NUMBER,
+                        value: 100,
+                        description: "[0..100]",
+                        className: "short-input"
 
-                }, {
-                    name: "level",
-                    label: "Grade",
-                    type: "select",
-                    choices: persistence.Resources.STR_LEVELS,
-                    className: "short-input"
-                }, {
-                    name: "motivation",
-                    label: "Motivation",
-                    type: NUMBER,
-                    value: 7,
-                    description: "[0..7..12]",
-                    className: "short-input"
-                }, {
-                    name: "wage",
-                    label: "Monthly wages (100%)",
-                    type: NUMBER,
-                    value: 1000,
-                    description: "[$]",
-                    className: "short-input"
-                }]
+                    }, {
+                        name: "level",
+                        label: "Grade",
+                        type: "select",
+                        choices: persistence.Resources.STR_LEVELS,
+                        className: "short-input"
+                    }, {
+                        name: "motivation",
+                        label: "Motivation",
+                        type: NUMBER,
+                        value: 7,
+                        description: "[0..7..12]",
+                        className: "short-input"
+                    }, {
+                        name: "wage",
+                        label: "Monthly wages (100%)",
+                        type: NUMBER,
+                        value: 1000,
+                        description: "[$]",
+                        className: "short-input"
+                    }, {
+                        name: "automaticMode",
+                        type: "hidden",
+                        value: "Gantt"
+                    }]
             };
 
             persistence.ResourceDescriptor.ATTRS.defaultInstance.properties.confidence = {
@@ -412,83 +569,102 @@ app.once("render",
             persistence.ResourceDescriptor.METHODS = Y.Object.filter(persistence.ResourceDescriptor.METHODS,
                 function(m, k) {
                     return !(k.match(/confidence/i)
-                             || k.match(/salary/i)
-                             || k.match(/experience/i)
-                             || k.match(/leadership/i));
+                        || k.match(/salary/i)
+                        || k.match(/experience/i)
+                        || k.match(/leadership/i));
                 });
             Y.mix(persistence.ResourceDescriptor.METHODS, {
                 getNumberInstanceProperty: {
                     label: "Get property",
                     returns: NUMBER,
                     arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        scriptType: STRING,
-                        type: SELECT,
-                        choices: [{
-                            value: "activityRate"
+                            type: HIDDEN,
+                            value: SELF
                         }, {
-                            value: "level",
-                            label: "grade"
-                        }, {
-                            value: "motivation"
-                        }, {
-                            value: "wage"
+                            scriptType: STRING,
+                            type: SELECT,
+                            choices: [{
+                                    value: "activityRate"
+                                }, {
+                                    value: "level",
+                                    label: "grade"
+                                }, {
+                                    value: "motivation"
+                                }, {
+                                    value: "wage"
+                                }]
                         }]
-                    }]
                 },
                 addNumberAtInstanceProperty: {
                     label: "Add to property",
                     arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        scriptType: STRING,
-                        type: SELECT,
-                        choices: [{
-                            value: "activityRate"
+                            type: HIDDEN,
+                            value: SELF
                         }, {
-                            value: "level",
-                            label: "grade"
+                            scriptType: STRING,
+                            type: SELECT,
+                            choices: [{
+                                    value: "activityRate"
+                                }, {
+                                    value: "level",
+                                    label: "grade"
+                                }, {
+                                    value: "motivation"
+                                }, {
+                                    value: "wage"
+                                }]
                         }, {
-                            value: "motivation"
-                        }, {
-                            value: "wage"
+                            type: STRING,
+                            typeInvite: VALUE,
+                            scriptType: STRING
                         }]
-                    }, {
-                        type: STRING,
-                        typeInvite: VALUE,
-                        scriptType: STRING
-                    }]
                 },
                 setInstanceProperty: {
                     label: "Set property",
                     arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        scriptType: STRING,
-                        type: SELECT,
-                        choices: [{
-                            value: "activityRate"
+                            type: HIDDEN,
+                            value: SELF
                         }, {
-                            value: "level",
-                            label: "grade"
+                            scriptType: STRING,
+                            type: SELECT,
+                            choices: [{
+                                    value: "activityRate"
+                                }, {
+                                    value: "level",
+                                    label: "grade"
+                                }, {
+                                    value: "motivation"
+                                }, {
+                                    value: "wage"
+                                }]
                         }, {
-                            value: "motivation"
-                        }, {
-                            value: "wage"
+                            type: STRING,
+                            typeInvite: VALUE,
+                            scriptType: STRING
                         }]
-                    }, {
-                        type: STRING,
-                        typeInvite: VALUE,
-                        scriptType: STRING
-                    }]
                 }
             }, true);
 
             Y.mix(persistence.TaskInstance.prototype, {
+                getPlannedPeriods: function() {
+                    return Y.Array.unique(this.get("plannification"));
+                },
+                getFirstPlannedPeriod: function() {
+                    return Math.max(0, Math.min.apply(Math, this.getPlannedPeriods()));
+                },
+                getRemainingTime: function() {
+                    var properties = this.get("properties"), timeSolde,
+                        //plannedPeriods = this._plannedPeriods(taskInst);
+                        plannedPeriods = this.getPlannedPeriods();
+
+                    if (plannedPeriods.length > 0) {
+                        timeSolde = (1 - parseInt(properties.completeness, 10) / 100) * plannedPeriods.length;
+                    } else {
+                        timeSolde = (1 - parseInt(properties.completeness, 10) / 100) * properties.duration;
+                    }
+                    return timeSolde;
+
+                },
                 isRequirementCompleted: function(req) {
 
                 },
@@ -507,23 +683,42 @@ app.once("render",
                     var assignments = this.getInstance().get("assignments");
 
                     return assignments.length > 0 &&
-                           assignments[0].get('taskDescriptorId') === taskDescriptor.get("id");
+                        assignments[0].get('taskDescriptorId') === taskDescriptor.get("id");
                 },
-                isReservedToWork: function() {
+                isReservedToWork: function(gantt) {
                     var autoReserve = Y.Wegas.Facade.Variable.cache.find("name", "autoReservation").get("value"),
+                        instance = this.getInstance(),
                         currentPeriod = Y.Wegas.Facade.Variable.cache.find("name",
                             "periodPhase3").getInstance().get("value"),
-                        occupations = this.getInstance().get("occupations"),
+                        occupations = instance.get("occupations"),
+                        assignment, assignments, i,
                         oi;
 
                     if (autoReserve) {
-                        // Auto Reservation : resource is always reserved unless
-                        // an uneditable occupation exist
+                        // Auto Reservation : resource is always reserved unless:
+                        // 1) an uneditable occupation exists
                         for (oi = 0; oi < occupations.length; oi++) {
                             if (occupations[oi].get("time") === currentPeriod && !occupations[oi].get("editable")) {
                                 return false;
                             }
                         }
+
+                        // 2) it have to work according to Gantt projection
+                        if (instance.get("properties.automaticMode") === "Gantt") {
+                            // FOLLOW Gantt
+                            gantt = gantt || Y.Wegas.PMGHelper.computePert();
+                            assignments = instance.get("assignments");
+                            for (i = 0; i < assignments.length; i += 1) {
+                                assignment = assignments[i];
+                                if (Y.Array.find(gantt[assignment.get("taskDescriptorId")].planned, function(periodNumber) {
+                                    return currentPeriod === periodNumber;
+                                })) {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        }
+
                         return true;
                     } else {
                         // Manual Reservation: never reserved unless
@@ -536,8 +731,11 @@ app.once("render",
                         return false;
                     }
                 },
-                isPlannedForCurrentPeriod: function(taskDescriptor) {
-                    return this.isFirstPriority(taskDescriptor) && this.isReservedToWork();
+                isPlannedForCurrentPeriod: function(taskDescriptor, gantt) {
+                    return this.isFirstPriority(taskDescriptor) && this.isReservedToWork(gantt);
+                },
+                getAutomaticBehaviour: function() {
+                    this.get("instance.properties.automaticBehaviour");
                 }
             });
 
@@ -581,130 +779,130 @@ app.once("render",
                 "PMGHelper.addImpactDuration": {
                     label: "[PMG] Delayed Task impact",
                     "arguments": [{
-                        type: "flatvariableselect",
-                        typeInvite: "Object",
-                        scriptType: "string",
-                        classFilter: ["TaskDescriptor"],
-                        required: true
-                    }, {
-                        type: "uneditable",
-                        typeInvite: "method",
-                        scriptType: "string",
-                        visu: {
-                            visuType: 'func',
-                            func: function(value) {
-                                return "add to";
-                            }
-                        },
-                        //    choices: Y.Object.keys(Y.Wegas.persistence.TaskDescriptor.METHODS),
-                        value: "addNumberAtInstanceProperty",
-                        required: true
-                    }, {
-                        type: "combine",
-                        typeInvite: "",
-                        scriptType: "array",
-                        fields: [{
-                            type: "select",
-                            choices: [{
-                                value: "bonusRatio",
-                                label: "bonus ratio"
-                            }]
-                        },
-                            {
-                                type: "number",
-                                typeInvite: "value",
-                                required: true
-                            }],
-                        required: true
-                    }, {
-                        type: "number",
-                        typeInvite: "in period",
-                        scriptType: "number",
-                        required: true
-                    }]
+                            type: "flatvariableselect",
+                            typeInvite: "Object",
+                            scriptType: "string",
+                            classFilter: ["TaskDescriptor"],
+                            required: true
+                        }, {
+                            type: "uneditable",
+                            typeInvite: "method",
+                            scriptType: "string",
+                            visu: {
+                                visuType: 'func',
+                                func: function(value) {
+                                    return "add to";
+                                }
+                            },
+                            //    choices: Y.Object.keys(Y.Wegas.persistence.TaskDescriptor.METHODS),
+                            value: "addNumberAtInstanceProperty",
+                            required: true
+                        }, {
+                            type: "combine",
+                            typeInvite: "",
+                            scriptType: "array",
+                            fields: [{
+                                    type: "select",
+                                    choices: [{
+                                            value: "bonusRatio",
+                                            label: "bonus ratio"
+                                        }]
+                                },
+                                {
+                                    type: "number",
+                                    typeInvite: "value",
+                                    required: true
+                                }],
+                            required: true
+                        }, {
+                            type: "number",
+                            typeInvite: "in period",
+                            scriptType: "number",
+                            required: true
+                        }]
                 },
                 "PMGHelper.addNumberImpactDuration": {
                     label: "[PMG] Delayed Number impact",
                     "arguments": [{
-                        type: "flatvariableselect",
-                        typeInvite: "Object",
-                        scriptType: "string",
-                        classFilter: ["NumberDescriptor"],
-                        required: true
-                    }, {
-                        type: "uneditable",
-                        typeInvite: "method",
-                        scriptType: "string",
-                        value: "add",
-                        required: true
-                    }, {
-                        type: "combine",
-                        typeInvite: "",
-                        scriptType: "array",
-                        fields: [{
-                            type: "number",
-                            typeInvite: "value",
+                            type: "flatvariableselect",
+                            typeInvite: "Object",
+                            scriptType: "string",
+                            classFilter: ["NumberDescriptor"],
                             required: true
-                        }],
-                        required: true
-                    }, {
-                        type: "number",
-                        typeInvite: "in period",
-                        scriptType: "number",
-                        required: true
-                    }]
+                        }, {
+                            type: "uneditable",
+                            typeInvite: "method",
+                            scriptType: "string",
+                            value: "add",
+                            required: true
+                        }, {
+                            type: "combine",
+                            typeInvite: "",
+                            scriptType: "array",
+                            fields: [{
+                                    type: "number",
+                                    typeInvite: "value",
+                                    required: true
+                                }],
+                            required: true
+                        }, {
+                            type: "number",
+                            typeInvite: "in period",
+                            scriptType: "number",
+                            required: true
+                        }]
                 },
                 "PMGHelper.addResourceImpactDuration": {
                     label: "[PMG] Delayed resource impact",
                     "arguments": [{
-                        type: "flatvariableselect",
-                        typeInvite: "Object",
-                        scriptType: "string",
-                        classFilter: ["ResourceDescriptor"],
-                        required: true
-                    }, {
-                        type: "uneditable",
-                        typeInvite: "method",
-                        scriptType: "string",
-                        visu: {
-                            visuType: 'func',
-                            func: function(value) {
-                                return "add to";
-                            }
-                        },
-                        //    choices: Y.Object.keys(Y.Wegas.persistence.ResourceDescriptor.METHODS),
-                        value: "addNumberAtInstanceProperty",
-                        required: true
-                    }, {
-                        type: "combine",
-                        typeInvite: "",
-                        scriptType: "array",
-                        fields: [{
-                            type: "select",
-                            choices: [{
-                                value: "activityRate",
-                                label: "activity rate"
-                            }, {
-                                value: "level",
-                                label: "grade"
-                            }, {
-                                value: "motivation",
-                                label: "motivation"
-                            }
-                            ]
-                        },
-                            {
-                                type: "number",
-                                typeInvite: "value",
-                                required: true
-                            }],
-                        required: true
-                    }, {
-                        type: "number",
-                        typeInvite: "in period",
-                        scriptType: "number",
-                        required: true
-                    }
+                            type: "flatvariableselect",
+                            typeInvite: "Object",
+                            scriptType: "string",
+                            classFilter: ["ResourceDescriptor"],
+                            required: true
+                        }, {
+                            type: "uneditable",
+                            typeInvite: "method",
+                            scriptType: "string",
+                            visu: {
+                                visuType: 'func',
+                                func: function(value) {
+                                    return "add to";
+                                }
+                            },
+                            //    choices: Y.Object.keys(Y.Wegas.persistence.ResourceDescriptor.METHODS),
+                            value: "addNumberAtInstanceProperty",
+                            required: true
+                        }, {
+                            type: "combine",
+                            typeInvite: "",
+                            scriptType: "array",
+                            fields: [{
+                                    type: "select",
+                                    choices: [{
+                                            value: "activityRate",
+                                            label: "activity rate"
+                                        }, {
+                                            value: "level",
+                                            label: "grade"
+                                        }, {
+                                            value: "motivation",
+                                            label: "motivation"
+                                        }
+                                    ]
+                                },
+                                {
+                                    type: "number",
+                                    typeInvite: "value",
+                                    required: true
+                                }],
+                            required: true
+                        }, {
+                            type: "number",
+                            typeInvite: "in period",
+                            scriptType: "number",
+                            required: true
+                        }
 
                     ]
                 }
@@ -714,22 +912,22 @@ app.once("render",
                 "PMGHelper.workOnProjectByName": {
                     label: "[PMG] resource work on project ?",
                     "arguments": [{
-                        type: "flatvariableselect",
-                        typeInvite: "Object",
-                        scriptType: "string",
-                        classFilter: ["ResourceDescriptor"],
-                        required: true
-                    }]
+                            type: "flatvariableselect",
+                            typeInvite: "Object",
+                            scriptType: "string",
+                            classFilter: ["ResourceDescriptor"],
+                            required: true
+                        }]
                 },
                 "PMGHelper.willWorkOnProjectByName": {
                     label: "[PMG] resource will work on project ?",
                     "arguments": [{
-                        type: "flatvariableselect",
-                        typeInvite: "Object",
-                        scriptType: "string",
-                        classFilter: ["ResourceDescriptor"],
-                        required: true
-                    }]
+                            type: "flatvariableselect",
+                            typeInvite: "Object",
+                            scriptType: "string",
+                            classFilter: ["ResourceDescriptor"],
+                            required: true
+                        }]
                 }
             });
         });
@@ -740,8 +938,8 @@ app.once("render",
         Y.Wegas.Facade.Variable.on("WegasOutOfBoundException", function(e) {
             if (e.variableName === "Time cards") {
                 var node = (Y.Widget.getByNode("#centerTabView") &&
-                            Y.Widget.getByNode("#centerTabView").get("selection")) ||
-                           Y.Widget.getByNode(".wegas-playerview");
+                    Y.Widget.getByNode("#centerTabView").get("selection")) ||
+                    Y.Widget.getByNode(".wegas-playerview");
                 node.showMessage("warn", "You don't have enough time");
                 e.halt();
             }
@@ -753,7 +951,7 @@ app.once("render",
         return Y.Wegas.Facade.Variable.cache.find("name", name).get("label");
     };
     Y.namespace("Wegas.Config").Dashboards = {
-        overview : "PMGDashboards.overview()"
+        overview: "PMGDashboards.overview()"
     };
 
     Y.namespace("Wegas.Config").CustomImpacts = function() {
@@ -762,7 +960,7 @@ app.once("render",
                 'PMGHelper.sendMessage(${"type":"string", "label":"From"}, ${"type":"string", "label":"Subject"}, ${"type":"html", "label":"Body", "required":true}, []);'],
             ["Add to project variables",
                 'Variable.find(gameModel, "managementApproval").add(self, ${"type":"number", "label":"' +
-                varLabel("managementApproval") + '"});'],
+                    varLabel("managementApproval") + '"});'],
             'Variable.find(gameModel, "userApproval").add(self, ${"type":"number", "label": "' + varLabel("userApproval") + '"});',
             'Variable.find(gameModel, "qualityImpacts").add(self, ${"type":"number", "label": "Quality"});',
             'Variable.find(gameModel, "timeCards").add(self, ${"type":"number", "label": "Time cards"});',
@@ -771,19 +969,19 @@ app.once("render",
         ];
     };
     Y.namespace("Wegas.Config").ExtraTabs = [{
-        label: "Properties",
-        children: [{
-            type: "PageLoader",
-            pageLoaderId: "properties",
-            defaultPageId: 16
-        }]
-    }, {
-        label: "Statistics",
-        children: [{
-            type: "PageLoader",
-            pageLoaderId: "properties",
-            defaultPageId: 18
-        }]
-    }];
+            label: "Properties",
+            children: [{
+                    type: "PageLoader",
+                    pageLoaderId: "properties",
+                    defaultPageId: 16
+                }]
+        }, {
+            label: "Statistics",
+            children: [{
+                    type: "PageLoader",
+                    pageLoaderId: "properties",
+                    defaultPageId: 18
+                }]
+        }];
 })();
 

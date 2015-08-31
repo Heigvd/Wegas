@@ -65,7 +65,7 @@ var PMGDashboards = (function() {
             // Formatter function
             formatter = function(bloc, value){
                 bloc.one(".bloc__value")
-                    .setStyle("background-color", (value < 75 ? "#ff4a03" : (value > 125 ? "#4caf50" : "#ffa709")))
+                    .setStyle("background-color", (value < 90 ? "#ff4a03" : (value > 110 ? "#4caf50" : "#ffa709")))
                     .setStyle("color", "white")
                     .setStyle("font-weight", "bold")
                     .setStyle("border-radius", "2px");

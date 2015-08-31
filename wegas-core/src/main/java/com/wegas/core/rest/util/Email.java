@@ -19,6 +19,7 @@ public class Email {
 
     private String subject;
     private String from;
+    private String replyTo;
     private String body;
     private Player[] to;
 
@@ -39,6 +40,14 @@ public class Email {
 
     public void setFrom(String from) {
         this.from = from;
+    }
+
+    public String getReplyTo() {
+        return replyTo;
+    }
+
+    public void setReplyTo(String replyTo) {
+        this.replyTo = replyTo;
     }
 
     public String getBody() {

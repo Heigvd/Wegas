@@ -7,12 +7,14 @@
  */
 package com.wegas.core.rest;
 
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.WebsocketFacade;
 import java.io.IOException;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -36,6 +38,13 @@ public class WebsocketController {
      */
     @EJB
     private WebsocketFacade websocketFacade;
+
+    @GET
+    @Path("ApplicationKey")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getApplicationKey() {
+        return Helper.getWegasProperty("pusher.key");
+    }
 
     /**
      *

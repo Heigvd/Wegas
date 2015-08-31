@@ -1214,6 +1214,7 @@ YUI.add('wegas-datasource', function(Y) {
                 page;
             if (Y.Lang.isObject(object)) {
                 delete object['@name'];
+                delete object['@index'];
                 if (Y.JSON.stringify(object) !== old) {
                     this.get(HOST).data["" + pageId] = object;
                     page = Y.clone(object);

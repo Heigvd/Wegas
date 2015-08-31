@@ -1,0 +1,605 @@
+
+
+/***** Body *****/
+
+body {
+    background-color: #fff;
+}
+
+/*****  HEADER   *****/
+
+
+.header {
+    background-color: #3a3a3a;
+    position: absolute;
+    width: 1024px;
+    height: 65px;
+    border-bottom: solid 2px #3a3a3a;
+}
+
+
+
+/*****  NAVIGATION   *****/
+
+.navigation {
+    color: #6c6a6a;
+    background-color: #fff;
+    width: 100px;
+    height: 100px;
+}
+
+
+.navigation:hover {
+    width: 100px;
+    height: 100px;
+    background: #fff;
+}
+
+
+.navigation i {
+    font-size: 3em;
+}
+
+.navigationBg {
+    width: 100px;
+    height: 100%;
+    background-color: #fff;
+}
+
+.yui3-skin-sam .yui3-button-primary, .yui3-skin-sam .yui3-button-selected{
+    color: #2c3e50;
+    background-color: #e9e8e8;
+    
+    -webkit-box-shadow: 2px 2px 10px -2px rgba(0,0,0,0.5);
+    -moz-box-shadow: 2px 2px 10px -2px rgba(0,0,0,0.5);
+    box-shadow: 2px 2px 10px -2px rgba(0,0,0,0.5);
+    
+}
+/***** CONVERTER CONTENT *****/
+.convert-input {
+    margin-top: 5px;
+    border: solid 2px #2c3e50;
+    font-weight: 600;
+    width: 300px;
+    height: 30px;
+    padding: 5px;
+}
+
+.convert-result {
+    margin-top: 5px;
+    margin-bottom: 30px;
+    background: #C1C1C1;
+    border: solid 2px #C1C1C1;
+    color: #3a3a3a;
+    font-weight: 600;
+    width: 300px;
+    height: 30px;
+    padding: 15px 5px 0px 5px;
+    vertical-align: middle;
+    
+}
+
+.hide-input{
+    display: none;
+}
+
+/***** TIMING CONTENT *****/
+
+#timing-display{
+    color: #fff;
+    font-weight: 800;
+    font-size: 1.5em;
+    letter-spacing: 0.2em;
+}
+
+.timing-red{
+    color: red !important;
+    font-weight: 800;
+    font-size: 1.5em;
+    letter-spacing: 0.2em;
+}
+
+/***** RULES CONTENT *****/
+
+.rules-content{
+    padding: 10px;
+}
+
+/*****  PHONE *****/
+
+.play-button{
+    width:25%;
+    border-radius: 50%;
+    border:2px solid #2c3e50;
+    font-size: 1.2em;
+    font-weight:800;
+}
+
+.play-button:hover {
+    background:#30588e;
+    color: #fff;
+}
+.play-button a {
+    display:block;
+    float:left;
+    width:100%;
+    padding-top:50%;
+    padding-bottom:50%;
+    line-height:1em;
+    margin-top:-0.5em;
+    text-align:center;
+    color:#e2eaf3;
+    font-family:Open Sans;
+    font-size:1.5em;
+    font-weight:800;
+    text-decoration:none;
+}
+.phone-player{
+    margin-bottom: 30px;
+}
+
+
+/*****  MAIN DISPLAY AREA   *****/
+
+.mainDisplayArea{
+    margin-top: 67px;
+    margin-left: 100px;
+    width: 924px;
+    height: 100%;
+    padding: 0px;
+    background-color: #f7f7f7;
+    background-image: url("../../wegas-escapegamev1/images/light_toast.png");
+}
+
+.contentDescription{
+    border-bottom: solid 2px #2c3e50;
+    width: 924px;
+}
+
+.contentDescription h1{
+    font-weight: 700;
+    font-size: 1.8em;
+    margin: 5px 0px 10px 0px;
+    color: #222;
+    padding: 0px 20px 0px 20px;
+}
+.contentDescription p{
+    font-size: 1.2em;
+    font-weight: 200;
+    color: #222;
+    line-height: 1.5em;
+    padding: 0px 20px 0px 20px;
+    
+}
+
+.contentDescription ul, li{
+    line-height: 1.2em;
+}
+.contentDescription li{
+    font-size: 1.2em;
+    font-weight: 400;
+    color: #222;
+    line-height: 1.5em;
+    margin-top: 10px;
+}
+.contentDescription ul>li:last-child{
+    margin-bottom: 20px;
+}
+.contentDescription ul>li:first-child{
+    margin-top: 20px;
+}
+
+.contentDescription p:last-child{
+    margin-bottom: 15px;
+}
+
+.main-button{
+    font-size: 1.6em;
+    color: #2c3e50;
+    background-color: #fff;
+    border: solid 2px #2c3e50;
+    float: right;
+  margin-top: 10px;
+}
+.main-button:hover{
+    font-size: 1.6em;
+    color: #2c3e50;
+    background-color: #fff;
+    background: #fff;
+    border: solid 2px #2c3e50;
+    cursor: pointer;
+}
+
+.main-button:disabled{
+    font-size: 1.6em;
+    color: #888;
+    background-color: #fff;
+    background: #fff;
+    border: solid 2px #bbb;
+}
+
+
+/***** MCQT *****/
+
+.mcqt{
+    
+    
+}
+//Width questions MCQT
+.yui3-skin-sam .horizontal-tabview .yui3-tabview-content > .yui3-tabview-list {
+    display: inline-block;
+    float: left;
+    border: none;
+    width: 25%;
+    margin: 0;
+}
+.yui3-skin-sam .horizontal-tabview > .yui3-tabview-content > .yui3-tabview-panel {
+    display: inline-block;
+    width: 75%;
+    float: left;
+    background: #fff;
+    height: 100%;
+}
+// Boder botom answers
+.wegas-mcqtabview .mcq-choice {
+    margin: 0 10px 6px 10px;
+    border-bottom: solid 2px #343434 !important;
+}
+
+.yui3-skin-sam .horizontal-tabview .yui3-tab a.yui3-tab-label{
+    padding: 15px 0px;
+    margin-bottom: 2px;
+    border-left: solid 4px #2c3e50;
+    border-bottom: none;
+    border-top: none;
+    background-color: #fff;
+}
+
+.wegas-mcqtabview .mcq-question-title {
+    font-size: 1em;
+    border-bottom: 0px;
+    margin-top: 5px;
+}
+
+.yui3-tabview-panel{
+    padding: 5px;
+    background-color: #fff;
+}
+.yui3-tab-label{
+    background-color: #fff;
+    border: none;
+}
+
+.yui3-skin-sam .horizontal-tabview .yui3-tab-panel {
+    border: none;
+}
+//Result MCQT
+.wegas-mcqtabview .mcq-replies-title {
+    font-weight: bold;
+    font-size: 13px;
+    margin-bottom: 6px;
+    border-bottom: none;
+}
+
+.yui3-skin-sam .horizontal-tabview > .yui3-tabview-content > .yui3-tabview-panel {
+    display: inline-block;
+    width: 60%;
+    float: left;
+    background: #fff; 
+    height: 100%;
+}
+
+/***** SMS *****/
+
+.sms-button{
+    border-left: solid 4px #2c3e50;
+    background-color: #fff;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+
+
+.sms-content h1{
+    font-size: 1.2em;
+    color: #454545;
+    padding: 5px;
+}
+.sms-content h2{
+    font-size: 0.8em;
+    font-weight: 300;
+    color: #bbb;
+    padding: 0px 5px;
+    margin-bottom: 5px;
+    font-style: italic;
+}
+.sms-content p{
+    padding: 10px;
+    background-color: #fff;  
+}
+
+.sms-content {
+    width: 270px;
+    height: auto;
+}
+
+.sms-body{
+    width: 600px;
+    height: 500px;
+   overflow: scroll;
+}
+
+.sms-me {
+   // margin-left: 283px;
+}
+
+/***** SCROLL VIEW *****/
+#additional-content {
+    display:none;
+}
+
+.yui3-scrollview {
+    border:0;
+    margin:0;
+    width:100%;
+    float:none;
+}
+
+/***** FONTS *****/
+h1, h2, h3, h4, p, ul, li {
+    font-family: 'Open Sans', helvetica, arifont-familyal;
+}
+
+
+
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 700;
+    src: local('Open Sans Bold'), local('OpenSans-Bold'), url(http://themes.googleusercontent.com/static/fonts/opensans/v6/k3k702ZOKiLJc3WVjuplzHhCUOGz7vYGh680lGh-uXM.woff) format('woff');
+}
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 300;
+    src: local('Open Sans Light'), local('OpenSans-Light'), url(http://themes.googleusercontent.com/static/fonts/opensans/v6/DXI1ORHCpsQm3Vp6mXoaTXhCUOGz7vYGh680lGh-uXM.woff) format('woff');
+}
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 800;
+    src: local('Open Sans Extrabold'), local('OpenSans-Extrabold'), url(http://themes.googleusercontent.com/static/fonts/opensans/v6/EInbV5DfGHOiMmvb1Xr-hnhCUOGz7vYGh680lGh-uXM.woff) format('woff');
+}
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 600;
+    src: local('Open Sans Semibold'), local('OpenSans-Semibold'), url(http://themes.googleusercontent.com/static/fonts/opensans/v6/MTP_ySUJH_bn48VBG8sNSnhCUOGz7vYGh680lGh-uXM.woff) format('woff');
+}
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Open Sans'), local('OpenSans'), url(http://themes.googleusercontent.com/static/fonts/opensans/v6/cJZKeOuBrn4kERxqtaUH3T8E0i7KZn-EPnyo3HZu7kw.woff) format('woff');
+}
+
+@font-face {
+	font-family: 'icomoon';
+	src:url('../../wegas-escapegamev1/fonts/icomoon.eot?rto32g');
+	src:url('../../wegas-escapegamev1/fonts/icomoon.eot?#iefixrto32g') format('embedded-opentype'),
+		url('../../wegas-escapegamev1/fonts/icomoon.ttf?rto32g') format('truetype'),
+		url('../../wegas-escapegamev1/fonts/icomoon.woff?rto32g') format('woff'),
+		url('../../wegas-escapegamev1/fonts/icomoon.svg?rto32g#icomoon') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+	font-family: 'icomoon';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.icon-calculator:before {
+	content: "\e600";
+}
+.icon-converter:before {
+	content: "\e601";
+        font-size: 1.8em;
+}
+.icon-final:before {
+	content: "\e602";
+}
+.icon-home:before {
+	content: "\e603";
+}
+.icon-info:before {
+	content: "\e604";
+}
+.icon-mail:before {
+	content: "\e605";
+}
+.icon-message:before {
+	content: "\e606";
+}
+.icon-phone:before {
+	content: "\e607";
+}
+
+/*** FINAL SOLUTIONS ***/
+
+#final-solution {
+    background-color: red;
+}
+.input-solution {
+    float: right;
+    margin-left: 30px;
+    border: solid 2px #2c3e50;
+    font-weight: 600;
+    height: 30px;
+    padding: 5px;
+}
+
+#final-solution > input{
+    border:solid 2px red;
+}
+
+.solution-true{
+    border: solid 2px green !important; 
+}
+
+.solution-false{
+    border: solid 2px red;
+}
+.solution-name{
+     font-weight: 700;
+    font-size: 1.4em;
+    margin: 5px 0px 10px 0px;
+    color: #222;
+    padding: 0px 20px 0px 20px;
+}
+
+.solution-button > .main-button{
+    margin-left: auto;
+    margin-right: auto;
+    
+}
+
+
+
+
+/*** CALCULATOR ***/
+/* Using box shadows to create 3D effects */
+//Sources: http://thecodeplayer.com/walkthrough/javascript-css3-calculator
+#calculator-display {
+    width: 325px;
+    height: auto;
+    
+    margin: 100px auto;
+    padding: 20px 20px 9px;
+    
+    background: #9dd2ea;
+    background: linear-gradient(#9dd2ea, #8bceec);
+    border-radius: 3px;
+    box-shadow: 0px 4px #009de4, 0px 10px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Top portion */
+.top span.clear {
+    float: left;
+}
+
+/* Inset shadow on the screen to create indent */
+.top .screen {
+    height: 40px;
+    width: 212px;
+    
+    float: right;
+    
+    padding: 0 10px;
+    
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+    box-shadow: inset 0px 4px rgba(0, 0, 0, 0.2);
+    
+    /* Typography */
+    font-size: 17px;
+    line-height: 40px;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    text-align: right;
+    letter-spacing: 1px;
+}
+
+/* Clear floats */
+.keys, .top {overflow: hidden;}
+
+/* Applying same to the keys */
+.keys span, .top span.clear {
+    float: left;
+    position: relative;
+    top: 0;
+    
+    cursor: pointer;
+    
+    width: 66px;
+    height: 36px;
+    
+    background: white;
+    border-radius: 3px;
+    box-shadow: 0px 4px rgba(0, 0, 0, 0.2);
+    
+    margin: 0 7px 11px 0;
+    
+    color: #888;
+    line-height: 36px;
+    text-align: center;
+    
+    /* prevent selection of text inside keys */
+    user-select: none;
+    
+    /* Smoothing out hover and active states using css3 transitions */
+    transition: all 0.2s ease;
+}
+
+/* Remove right margins from operator keys */
+/* style different type of keys (operators/evaluate/clear) differently */
+.keys span.operator {
+    background: #FFF0F5;
+    margin-right: 0;
+}
+
+.keys span.eval {
+    background: #f1ff92;
+    box-shadow: 0px 4px #9da853;
+    color: #888e5f;
+}
+
+.top span.clear {
+    background: #ff9fa8;
+    box-shadow: 0px 4px #ff7c87;
+    color: white;
+}
+
+/* Some hover effects */
+.keys span:hover {
+    background: #9c89f6;
+    box-shadow: 0px 4px #6b54d3;
+    color: white;
+}
+
+.keys span.eval:hover {
+    background: #abb850;
+    box-shadow: 0px 4px #717a33;
+    color: #ffffff;
+}
+
+.top span.clear:hover {
+    background: #f68991;
+    box-shadow: 0px 4px #d3545d;
+    color: white;
+}
+
+/* Simulating "pressed" effect on active state of the keys by removing the box-shadow and moving the keys down a bit */
+.keys span:active {
+    box-shadow: 0px 0px #6b54d3;
+    top: 4px;
+}
+
+.keys span.eval:active {
+    box-shadow: 0px 0px #717a33;
+    top: 4px;
+}
+
+.top span.clear:active {
+    top: 4px;
+    box-shadow: 0px 0px #d3545d;
+}

@@ -476,6 +476,19 @@
     max-width: none; 
 }
 
+.wegas-form div.inputEx-uneditableField div.inputEx-Field{
+    height:42px;
+    padding: 10px 12px;
+    border-radius: 6px;  
+    background:none;
+    font-size:12px;
+    transition:.3s;
+    line-height: 22px;
+    box-sizing:border-box;
+    font-style: italic;
+    color: gray;
+}
+
 .wegas-form div.inputEx-StringField-wrapper input[type="text"]{
     height:42px;
     padding: 10px 12px;
