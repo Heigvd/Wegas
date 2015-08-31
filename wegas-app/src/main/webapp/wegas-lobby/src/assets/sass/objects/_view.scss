@@ -187,7 +187,7 @@
         .view__list{
             @include make-xs-column(12);
             height:calc(100% - 100px);
-            padding:8px 0px 32px 0px;
+            padding:8px 0px 0px 0px;
             box-sizing: border-box;
             overflow-x:hidden;
             overflow-y:auto;
@@ -286,7 +286,7 @@
     }
     
     &.view__users-individual{
-        padding:0px 16px;
+        padding:0px;
     }
 
     &.view__users-teams{

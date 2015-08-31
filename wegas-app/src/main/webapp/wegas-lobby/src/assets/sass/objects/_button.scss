@@ -216,7 +216,7 @@
 
         &.button--#{$icon-name}{
             @extend %button--with-icon;
-            &:before{
+            &:before, &:hover:before, &:active:before, &:visited:before{
                 content: $icon-content;
             }
             
