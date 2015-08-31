@@ -10,6 +10,7 @@ angular.module('private.scenarist.directives', [
                     ctrl.maxScenariosDisplayed = ctrl.scenarios.length;
                 }
             };
+        ctrl.loading = true;
         ctrl.scenarios = [];
         ctrl.nbArchives = [];
         ctrl.search = '';
@@ -27,13 +28,14 @@ angular.module('private.scenarist.directives', [
             }
         };
         ctrl.updateScenarios = function(updateDisplay) {
-            
+            ctrl.loading = true;
             if(!updateDisplay){
                 ScenariosModel.countArchivedScenarios().then(function(response) {
                     ctrl.nbArchives = response.data;
                 });
             }
             ScenariosModel.getScenarios('LIVE').then(function(response) {
+                ctrl.loading = false;
                 ctrl.scenarios = response.data || [];
                 if (updateDisplay) {
                     updateDisplayScenarios();

@@ -1,4 +1,4 @@
-<div class="card__illustration illustration illustration--medium illustration--icon" illustration="ICON_grey_users"></div>
+<div class="card__illustration illustration illustration--icon" illustration="ICON_grey_users"></div>
 <div class="card__description card__description--one-line">
     <div class="line line--primary">
     	<span>{{team.name | limitTo : MAX_DISPLAYED_CHARS}}</span>
@@ -11,8 +11,8 @@
     <a ng-if="team.players.length > 0" class="button button--small button--default-reverse button--eye" ng-class="{true: 'button--eye-slash', false:'button--eye'}[showPlayers]" ng-click="tooglePlayersVisibility()">
       <span class="button__label">{{'PLAYER-MODALE-JOIN-TEAM-HIDE-TOGGLE' | translate: hideToggle}}</span>
     </a> 
-    <a  class="button button--small button--info button--user-plus" 
-        confirmed-click="joinTeam(team.id)" 
+    <a  class="button button--small button--join-team button--info" 
+        confirmed-click="join(team.id)" 
         ng-confirm-click="{{'PLAYER-MODALE-JOIN-TEAM-JOIN-BTN' | translate}} {{team.name}} ?">
       <span class="button__label">{{'PLAYER-MODALE-JOIN-TEAM-JOIN-BTN' | translate}}</span>
     </a>   

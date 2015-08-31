@@ -187,7 +187,7 @@
         .view__list{
             @include make-xs-column(12);
             height:calc(100% - 100px);
-            padding:8px 0px 32px 0px;
+            padding:8px 0px 0px 0px;
             box-sizing: border-box;
             overflow-x:hidden;
             overflow-y:auto;
@@ -286,7 +286,7 @@
     }
     
     &.view__users-individual{
-        padding:0px 16px;
+        padding:0px;
     }
 
     &.view__users-teams{
@@ -327,7 +327,7 @@
     }
 
     .view--separate-primary {
-        border-top: solid 5px $primary-color;
+        border-top: solid 5px #666;
     }
 
     @each $position in $positions {
@@ -361,13 +361,10 @@
     .view__first-subtitle{
         display:block;
         position:relative;
-        @include make-sm-column(8);
-        @include make-sm-column-offset(2);
-        @include make-md-column(6);
-        @include make-md-column-offset(3);
-        @include make-lg-column(4);
-        @include make-lg-column-offset(4);
-        padding:8px 20px;
+        width:100%;
+        margin:auto;
+        max-width:380px;
+        padding:8px 20px 0px 20px;
         font-size:16px;
         color:$albasim-color;
 
@@ -390,14 +387,11 @@
     }
 
     .view__login-form{
-        @include make-sm-column(8);
-        @include make-sm-column-offset(2);
-        @include make-md-column(6);
-        @include make-md-column-offset(3);
-        @include make-lg-column(4);
-        @include make-lg-column-offset(4);
+        margin:auto;
+        width:100%;
+        max-width:380px;
         border-radius:6px;
-        padding:24px 32px;
+        padding:12px 32px;
     }
     .view__password-form.form{
         padding:16px;
@@ -488,6 +482,7 @@
             padding:64px 0 0 0;
             width:240px;
             float:right;
+            text-align:center;
         }
     }
     
@@ -574,4 +569,40 @@
         }
     }
     
+}
+ 
+.player{
+    .view{
+        &.view--menu{
+            border-color:$player-color;
+            transition: .3s;
+        }
+    }
+}
+
+.trainer{
+    .view{
+        &.view--menu{
+            border-color:$trainer-color;
+            transition: .3s;
+        }
+    }
+}
+
+.scenarist{
+    .view{
+        &.view--menu{
+            border-color:$scenarist-color;
+            transition: .3s;
+        }
+    }
+}
+
+.admin{
+    .view{
+        &.view--menu{
+            border-color:$admin-color;
+            transition: .3s;
+        }
+    }
 }

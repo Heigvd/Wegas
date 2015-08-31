@@ -81,6 +81,10 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"The \"learning by doing\" solution from AlbaSim",
                                 'fr':"La solution \"learning by doing\" développée par AlbaSim"
                             },
+                            'CHOOSE-LANGUAGE-BTN': {
+                                'en':"Change language",
+                                'fr':"Changer de langue"
+                            },
                             'LOGIN-BTN': {
                                 'en':"Login",
                                 'fr':"Connexion"
@@ -97,7 +101,7 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"username/password cannot be empty",
                                 'fr':"Veuillez renseigner l'email et le mot de passe"
                             },
-                            'CREATE-ACCOUNT-LABEL':{
+                            'CREATE-ACCOUNT-LABEL': {
                                 'en':"Haven't yet a Wegas account ?",
                                 'fr':"Pas encore de compte Wegas ?"
                             },
@@ -105,11 +109,11 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"Create account",
                                 'fr':"Créer un compte"
                             },
-                            'CREATE-ACCOUNT-TITLE':{
+                            'CREATE-ACCOUNT-TITLE': {
                                 'en':"Create account",
                                 'fr':"Créer un compte"
                             },
-                            'CREATE-ACCOUNT-INPUT-EMAIL':{
+                            'CREATE-ACCOUNT-INPUT-EMAIL': {
                                 'en':"email",
                                 'fr':"email"
                             },
@@ -117,7 +121,7 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"password",
                                 'fr':"mot de passe"
                             },
-                            'CREATE-ACCOUNT-INPUT-PASSWORD-AGAIN':{
+                            'CREATE-ACCOUNT-INPUT-PASSWORD-AGAIN': {
                                 'en':"password again",
                                 'fr':"mot de passe à nouveau"
                             },
@@ -284,6 +288,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'COMMONS-TEAMS-CREATE-FLASH-SUCCESS': {
                                 'en':startSentence(keywords.team.singular.en) + " created",
                                 'fr':startSentence(keywords.team.singular.fr) + " créée"
+                            },
+                            'COMMONS-TEAMS-CREATE-EXISTING-TEAM-FLASH-INFO': {
+                                'en':"Existing " + keywords.team.singular.en + "name",
+                                'fr':"Ce nom de " + keywords.team.singular.fr + " est déjà utilisé"
                             },
                             'COMMONS-TEAMS-CREATE-FLASH-ERROR': {
                                 'en':"Error while creating "+ keywords.team.singular.en,
@@ -993,6 +1001,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'TRAINER-INDEX-ADD-SCENARIO-INPUT':{
                                 'en':"Based on " + keywords.scenario.singular.en,
                                 'fr':"Basé sur le " + keywords.scenario.singular.fr
+                            },
+                            'TRAINER-INDEX-ADD-SCENARIO-LOADING':{
+                                'en':"Loading " + keywords.scenario.plural.en,
+                                'fr':"Chargement des " + keywords.scenario.plural.fr
                             },
                             'TRAINER-INDEX-ADD-BTN':{
                                 'en':"Create",
