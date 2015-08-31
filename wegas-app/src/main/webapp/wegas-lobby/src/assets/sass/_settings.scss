@@ -159,3 +159,14 @@ $player-color:#fb8160;
 $trainer-color:#b4d66b;
 $scenarist-color:#68caf6;
 $admin-color:#B39DDB;
+
+// Card settings
+$card-size: 80px;
+$card-text-size : 13px;
+$card-base-padding: 4px;
+
+$card-description : (
+    ('one-line', 33px, 34px), 
+    ('two-lines', 25px, 25px), 
+    ('three-lines', 16px, 17px)
+);
