@@ -1,7 +1,7 @@
 <div class="modal__content__search" data-search-tool="search" ></div>
 <div class="modal__content__list">
-<div class="card card--medium card--archive card--archive-scenarist" ng-repeat="scenario in scenarios | orderBy: 'createdTime':true | filter : { name: search }"">
-    <div class="card__illustration illustration illustration--medium illustration--icon" illustration="{{scenario.properties.iconUri}}"></div>
+<div class="card card--archive card--archive-scenarist" ng-repeat="scenario in scenarios | orderBy: 'createdTime':true | filter : { name: search }"">
+    <div class="card__illustration illustration illustration--icon" illustration="{{scenario.properties.iconUri}}"></div>
         <div 
             class="card__description" 
             ng-class="  {true:'card__description--two-lines', false:'card__description--three-lines'}[scenario.comments == null || scenario.comments == '']" >

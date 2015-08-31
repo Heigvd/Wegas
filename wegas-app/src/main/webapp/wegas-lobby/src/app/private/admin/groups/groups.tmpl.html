@@ -11,8 +11,8 @@
     </div>
 </div>
 <div class="clear"></div>
-<div class="card card--medium" ng-repeat="group in adminGroupsCtrl.groups">
-	<div class="card__illustration illustration illustration--medium illustration--icon" illustration="ICON_grey_users"></div>
+<div class="card" ng-repeat="group in adminGroupsCtrl.groups">
+	<div class="card__illustration illustration illustration--icon" illustration="ICON_grey_users"></div>
 	<div 
 	    class="card__description card__description--one-line">
 	    	<div class="line line--primary">{{group.name | limitTo: 36}}<span ng-if="group.name.length > 36">...</span></div>

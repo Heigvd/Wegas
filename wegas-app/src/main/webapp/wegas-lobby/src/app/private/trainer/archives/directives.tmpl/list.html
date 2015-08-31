@@ -1,7 +1,7 @@
 <div class="modal__content__search" search-tool="search"></div>
 <div ng-if="(sessions | filter:{name: search}).length > 0" class="modal__content__list">
-    <div class="card card--medium card--archive card--archive-trainer" ng-repeat="session in sessions | orderBy: 'createdTime':true | filter : { name: search }">
-        <div class="card__illustration illustration illustration--medium illustration--icon" illustration="{{session.properties.iconUri}}"></div>
+    <div class="card card--archive card--archive-trainer" ng-repeat="session in sessions | orderBy: 'createdTime':true | filter : { name: search }">
+        <div class="card__illustration illustration illustration--icon" illustration="{{session.properties.iconUri}}"></div>
         <div
             class="card__description"
             ng-class="{true:'card__description--two-lines', false:'card__description--three-lines'}[session.gameModel.comments == null || session.gameModel.comments == '']" >
