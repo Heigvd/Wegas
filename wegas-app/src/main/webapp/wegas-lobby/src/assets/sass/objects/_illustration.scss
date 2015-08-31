@@ -43,6 +43,17 @@
 			}
 		}
 	}
+        
+        &.card__illustration{
+            width:$card-size;
+            height:$card-size;
+            &.illustration--icon{
+                i{
+                    font-size:$card-size/2;
+                    line-height:$card-size;
+                }
+            }
+        }
 
 	
 	&.illustration--round{
