@@ -10,9 +10,9 @@
     </div>
 </div>
 <div class="view__list" repeat-auto-load>
-    <div class="card card--medium card--player-session" ng-repeat="user in adminUsersCtrl.users | filter: adminUsersCtrl.search | limitTo: adminUsersCtrl.maxUsersDisplayed" user="user" >
+    <div class="card card--player-session" ng-repeat="user in adminUsersCtrl.users | filter: adminUsersCtrl.search | limitTo: adminUsersCtrl.maxUsersDisplayed" user="user" >
 
-        <div class="card__illustration illustration illustration--medium illustration--icon" illustration="ICON_grey_user"></div>
+        <div class="card__illustration illustration illustration--icon" illustration="ICON_grey_user"></div>
         <div class="card__description card__description--two-lines">
             <div class="line line--primary">
                 {{'ADMIN-USERS-CARD-TITLE' | translate}}{{user.id}} - {{ user.account.email }}
