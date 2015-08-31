@@ -255,14 +255,6 @@
     transform:rotate(0deg);
     transition:transform .3s;
 }
-.card .card__title.card__title--detailed .card__title__link.card__title__link--close:hover:before{
-    transform:rotate(-65deg);
-    transition:transform .3s;
-}
-.card .card__title.card__title--detailed .card__title__link.card__title__link--open:hover:before{
-    transform:rotate(-25deg);
-    transition:transform .3s;
-}
 
 .card__blocs{
     display:block;
