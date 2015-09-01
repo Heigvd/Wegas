@@ -1,9 +1,9 @@
-<div class="card__illustration illustration illustration--big illustration--icon" illustration="{{session.properties.iconUri}}"></div>
+<div class="card__illustration illustration illustration--icon" illustration="{{session.properties.iconUri}}"></div>
 <div 
     class="card__description" 
     ng-class="{true:'card__description--two-lines', false:'card__description--three-lines'}[session.gameModel.comments == null || session.gameModel.comments == '']" >
-    <div class="line">{{session.createdTime | date:"dd.MM.yyyy"}}</div>
     <div class="line line--primary">{{session.name}}</div>
+    <div class="line">{{session.createdTime | date:"dd.MM.yyyy"}}</div>
     <div ng-if="!((session.gameModel.comments == null) || (session.gameModel.comments == ''))" class="line line--optionnal">{{session.gameModel.comments}}</div>
 </div>
 <div class="card__actions">
@@ -19,16 +19,16 @@
         </label>
         <div class="key-label"><span class="key">{{session.token}}</span></div>
     </div>
-    <a class="button button--medium button--round button--default-reverse button--label-off button--settings" title="{{'TRAINER-CARD-SETTINGS-BTN' | translate}}" ui-sref=".settings({id: session.id})">
+    <a class="button button--small button--round button--default-reverse button--label-off button--settings" title="{{'TRAINER-CARD-SETTINGS-BTN' | translate}}" ui-sref=".settings({id: session.id})">
       <span class="button__label">{{'TRAINER-CARD-SETTINGS-BTN' | translate}}</span>
     </a>
-    <a class="button button--medium button--round button--default-reverse button--label-off button--user" title="{{'TRAINER-CARD-USERS-BTN' | translate}}" ui-sref=".users({id: session.id})">
+    <a class="button button--small button--round button--default-reverse button--label-off button--user" title="{{'TRAINER-CARD-USERS-BTN' | translate}}" ui-sref=".users({id: session.id})">
       <span class="button__label">{{'TRAINER-CARD-USERS-BTN' | translate}}</span>
     </a>
-    <a class="button button--medium button--round button--default-reverse button--label-off button--archive" title="{{'TRAINER-CARD-MOVE-ARCHIVE-BTN' | translate}}" ng-click="archive(session)">
+    <a class="button button--small button--round button--default-reverse button--label-off button--archive" title="{{'TRAINER-CARD-MOVE-ARCHIVE-BTN' | translate}}" ng-click="archive(session)">
       <span class="button__label">{{'TRAINER-CARD-MOVE-ARCHIVE-BTN' | translate}}</span>
     </a>   
-    <a class="button button--medium button--round button--info button--label-off button--trainer" title="{{'TRAINER-CARD-MONITORING-BTN' | translate}}" href="{{ServiceURL}}host.html?gameId={{session.id}}" target="_blank">
+    <a class="button button--small button--round button--info button--label-off button--trainer" title="{{'TRAINER-CARD-MONITORING-BTN' | translate}}" href="{{ServiceURL}}host.html?gameId={{session.id}}" target="_blank">
       <span class="button__label">{{'TRAINER-CARD-MONITORING-BTN' | translate}}</span>
     </a>
 </div>

@@ -44,7 +44,7 @@ public class WebsocketController {
 
     @GET
     @Path("ApplicationKey")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
     public String getApplicationKey() {
         return Helper.getWegasProperty("pusher.key");
     }
