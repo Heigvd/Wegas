@@ -81,7 +81,6 @@ public class PlayerFacade extends BaseFacade<Player> {
         }
     }
 
-
     /**
      * @param gameId
      * @param userId
@@ -93,6 +92,22 @@ public class PlayerFacade extends BaseFacade<Player> {
             findByGameIdAndUserId.setParameter("gameId", gameId);
             findByGameIdAndUserId.setParameter("userId", userId);
             return findByGameIdAndUserId.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    /**
+     * @param gameId
+     * @param userId
+     * @return
+     */
+    public Player checkExistingPlayerInTeam(final Long teamId, final Long userId) {
+        try {
+            final TypedQuery<Player> find = getEntityManager().createNamedQuery("findPlayerByTeamIdAndUserId", Player.class);
+            find.setParameter("teamId", teamId);
+            find.setParameter("userId", userId);
+            return find.getSingleResult();
         } catch (NoResultException e) {
             return null;
         }
@@ -150,8 +165,8 @@ public class PlayerFacade extends BaseFacade<Player> {
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
     public Player findByGameId(Long gameId) throws WegasNoResultException {
-        Query getByGameId = getEntityManager().createQuery("SELECT player FROM Player player WHERE player.team.game.id = :gameId " +
-            "ORDER BY type(player.team) desc"); // Debug player comes last
+        Query getByGameId = getEntityManager().createQuery("SELECT player FROM Player player WHERE player.team.game.id = :gameId "
+                + "ORDER BY type(player.team) desc"); // Debug player comes last
         getByGameId.setParameter("gameId", gameId);
         try {
             return (Player) getByGameId.setMaxResults(1).getSingleResult();
@@ -230,7 +245,6 @@ public class PlayerFacade extends BaseFacade<Player> {
         // Send an reset event (for the state machine and other)
         resetEvent.fire(new ResetEvent(player));
     }
-
 
     /**
      * Reset a player

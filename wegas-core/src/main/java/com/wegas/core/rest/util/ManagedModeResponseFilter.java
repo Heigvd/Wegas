@@ -9,7 +9,6 @@ package com.wegas.core.rest.util;
 
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.RequestFacade;
-import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.WebsocketFacade;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasWrappedException;
@@ -120,18 +119,21 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
             Map<String, List<AbstractEntity>> outdatedEntities = rmf.getOutdatedEntities();
 
             if (!rollbacked && !(updatedEntities.isEmpty() && destroyedEntities.isEmpty() && outdatedEntities.isEmpty())) {
-                /*
-                 * Merge updatedInstance within ManagedResponse entities
-                 */
-                for (Entry<String, List<AbstractEntity>> entry : updatedEntities.entrySet()) {
-                    for (AbstractEntity ae : entry.getValue()) {
-                        if (!entities.contains(ae)) {
-                            entities.add(ae);
-                        }
-                    }
-                }
                 try {
                     WebsocketFacade websocketFacade = Helper.lookupBy(WebsocketFacade.class, WebsocketFacade.class);
+                    /*
+                     * Merge updatedInstance within ManagedResponse entities
+                     */
+                    for (Entry<String, List<AbstractEntity>> entry : updatedEntities.entrySet()) {
+                        String audience = entry.getKey();
+                        if (websocketFacade.hasPermission(audience, rmf.getPlayer())) {
+                            for (AbstractEntity ae : entry.getValue()) {
+                                if (!entities.contains(ae)) {
+                                    entities.add(ae);
+                                }
+                            }
+                        }
+                    }
 
                     websocketFacade.onRequestCommit(updatedEntities, destroyedEntities, outdatedEntities,
                             (managedMode.matches("^[\\d\\.]+$") ? managedMode : null));

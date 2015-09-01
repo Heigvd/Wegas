@@ -17,8 +17,13 @@ import com.wegas.core.event.client.EntityUpdatedEvent;
 import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.event.client.OutdatedEntitiesEvent;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.util.SecurityHelper;
 import java.io.ByteArrayOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,11 +35,13 @@ import javax.ejb.Stateless;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.zip.GZIPOutputStream;
+import org.apache.shiro.SecurityUtils;
 
 /**
  * @author Yannick Lagger <lagger.yannick@gmail.com>
@@ -61,11 +68,102 @@ public class WebsocketFacade {
     @EJB
     private VariableInstanceFacade variableInstanceFacade;
 
+    @EJB
+    GameFacade gameFacade;
+
+    @EJB
+    TeamFacade teamFacade;
+
     /**
      *
      */
     @EJB
     private UserFacade userFacade;
+
+    @EJB
+    private PlayerFacade playerFacade;
+
+    private boolean hasPermission(String type, Long id, Player currentPlayer) {
+        if ("GameModel".equals(type)) {
+            return SecurityUtils.getSubject().isPermitted("GameModel:View:gm" + id);
+        } else if ("Game".equals(type)) {
+            Game game = gameFacade.find(id);
+            return game != null && SecurityHelper.isPermitted(game, "View");
+        } else if ("Team".equals(type)) {
+            Team team = teamFacade.find(id);
+            User user = userFacade.getCurrentUser();
+
+            if (currentPlayer != null && currentPlayer.getUser().equals(user)) {
+                // Current logged User is the player itself
+                // the player MUST be a member of the team
+                return playerFacade.checkExistingPlayerInTeam(team.getId(), user.getId()) != null;
+            } else {
+                // Trainer of scenarist (player is not linked to user)
+                return SecurityHelper.isPermitted(team.getGame(), "Edit");
+            }
+        } else if ("Player".equals(type)) {
+            User user = userFacade.getCurrentUser();
+            Player player = playerFacade.find(id);
+
+            if (player != null) {
+                if (currentPlayer != null && currentPlayer.getUser().equals(user)) {
+                    return player == currentPlayer;
+                } else {
+                    // Trainer and scenarist 
+                    return SecurityHelper.isPermitted(player.getGame(), "Edit");
+                }
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    public boolean hasPermission(String channel, Player currentPlayer) {
+        logger.error("Check Permission: " + channel);
+        String[] split = channel.split("-");
+        if (split.length != 2) {
+            return false;
+        } else {
+            return hasPermission(split[0], Long.parseLong(split[1]), currentPlayer);
+        }
+    }
+
+    public List<String> getChannels(List<AbstractEntity> entities) {
+        List<String> channels = new ArrayList<>();
+        String channel = null;
+
+        for (AbstractEntity entity : entities) {
+            if (entity instanceof GameModel) {
+                if (SecurityUtils.getSubject().isPermitted("GameModel:View:gm" + entity.getId())) {
+                    channel = "GameModel";
+                }
+            } else if (entity instanceof Game) {
+                if (SecurityHelper.isPermitted((Game) entity, "View")) {
+                    channel = "Game";
+                }
+            } else if (entity instanceof Team) {
+                Team team = (Team) entity;
+                User user = userFacade.getCurrentUser();
+                if (SecurityHelper.isPermitted(team.getGame(), "Edit") // Trainer and scenarist 
+                        || playerFacade.checkExistingPlayerInTeam(team.getId(), user.getId()) != null) { // or member of team
+                    channel = "Team";
+                }
+            } else if (entity instanceof Player) {
+                Player player = (Player) entity;
+                User user = userFacade.getCurrentUser();
+                if (SecurityHelper.isPermitted(player.getGame(), "Edit") // Trainer and scenarist 
+                        || player.getUser() == user) { // is the player
+                    channel = "Player";
+                }
+            }
+
+            if (channel != null) {
+                channels.add(channel + "-" + entity.getId());
+            }
+        }
+        return channels;
+    }
 
     /**
      *
