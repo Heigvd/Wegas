@@ -11,8 +11,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.rest.util.Views;
 import com.wegas.reviewing.persistence.Review;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import javax.persistence.*;
 
@@ -35,7 +38,7 @@ import javax.persistence.*;
     @JsonSubTypes.Type(value = CategorizedEvaluationInstance.class),
     @JsonSubTypes.Type(value = GradeInstance.class)
 })
-public abstract class EvaluationInstance extends AbstractEntity {
+public abstract class EvaluationInstance extends AbstractEntity implements Broadcastable {
 
     private static final long serialVersionUID = 1L;
 
@@ -102,8 +105,8 @@ public abstract class EvaluationInstance extends AbstractEntity {
     @Override
     public void merge(AbstractEntity a) {
         //if (a instanceof EvaluationInstance) {
-            //EvaluationInstance o = (EvaluationInstance) a;
-            // Nothing to merge
+        //EvaluationInstance o = (EvaluationInstance) a;
+        // Nothing to merge
         //}
     }
 
@@ -187,5 +190,16 @@ public abstract class EvaluationInstance extends AbstractEntity {
      */
     public void setFeedbackReview(Review rd) {
         this.feedbackReview = rd;
+    }
+
+    @Override
+    public Map<String, List<AbstractEntity>> getEntities() {
+        if (feedbackReview != null) {
+            return feedbackReview.getEntities();
+        } else if (commentsReview != null) {
+            return commentsReview.getEntities();
+        } else {
+            return null;
+        }
     }
 }
