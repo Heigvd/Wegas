@@ -178,7 +178,7 @@ YUI().use(function(Y) {
             },
             "wegas-chart": {
                 path: "js/widget/wegas-chart-min.js",
-                requires: ["chartist", "wegas-chart-css"],
+                requires: ["promise", "chartist", "wegas-chart-css"],
                 ws_provides: "Chart"
             },
             "wegas-langselector": {

@@ -1,10 +1,8 @@
-$card-text-size : 14px;
-$card-margin-size: 8px;
 .card{
     position:relative;
     display:block;
     width:100%;
-    height:nth(nth($sizes,1), 2);
+    height:auto;
     padding:0px;
     margin:12px auto;
     border:none;
@@ -13,52 +11,94 @@ $card-margin-size: 8px;
     border-radius:2px;
     transition:.3s;
     clear:both;
+    height:auto;
+    overflow:auto;
     @include material-shadow(1);
     
     &:hover{
         @include material-shadow(2);
     }
-
-    .card__description{
-        float:left;
-
-        .line{
-            line-height:$card-text-size; 
-            font-size:$card-text-size; 
-            margin:0px;
-            padding:$card-margin-size/2 0px; 
-            color:#555555;
-            box-sizing:border-box;
-            width:100%;
-            overflow:hidden;
-            text-overflow:ellipsis;
-            white-space:nowrap;
-            
-            &.line--primary{
-                font-weight:500;
-            }
-            
-            &.line--optionnal{
-                font-style:italic;
-            }
-            
-            &:first-child{
-                padding-top:0px;
-            }
-            
-            &:last-child{
-                padding-bottom:0px;
-            }
-        }
-    }
-
+    
     .card__illustration{
         display:block;
         float:left;
     }
 
+    .card__description{
+        float:left;
+        padding:0px ($card-base-padding*3);
+        .line{
+            line-height: $card-text-size; 
+            font-size: $card-text-size; 
+            margin: 0px;
+            padding: 0px; 
+            padding-bottom:$card-base-padding;
+            color: #555555;
+            box-sizing: border-box;
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            
+            &.line--primary{
+                font-size:$card-text-size + 1;
+                line-height: $card-text-size + 1;
+                padding-bottom:$card-base-padding - 1;
+                padding-top: 0px;
+                font-weight:500;
+            }
+            
+            
+            &.line--optionnal{
+                font-style:italic;
+            }
+        }
+        @each $description in $card-description{
+            $description-type: nth($description, 1);
+            $description-padding-top: nth($description, 2);
+            $description-padding-bottom: nth($description, 3);
+
+            &.card__description--#{$description-type}{
+                .line{
+                    &:first-child{
+                        padding-top:$description-padding-top;
+                    }
+
+                    &:last-child{
+                        padding-bottom:$description-padding-bottom;
+                        &.line--primary{
+                            padding-bottom:$description-padding-bottom - 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    &.ng-enter, 
+    &.ng-leave
+    { 
+        transition: .6s;
+    } 
+
+    &.ng-enter.ng-enter-active, 
+    &.ng-leave {
+        visibility: visible;
+        opacity: 1;
+        height: $card-size;
+    }
+
+    &.ng-leave.ng-leave-active,
+    &.ng-enter {
+        visibility: hidden;
+        opacity: 0;
+        height: 1px;       
+    }
+
     .card__actions{
-        float:right;
+        float: right;
+        padding: 16px;
+        
         .button{
             display: block;
             float: left;
@@ -133,6 +173,7 @@ $card-margin-size: 8px;
             }
         }
     }
+    
     &.card--coscenarist-permission {
         &.ng-leave {
           animation: bounceOut 1s;
@@ -142,7 +183,7 @@ $card-margin-size: 8px;
         }
         .card__detailled-actions {
             width: 260px;
-            padding:18px 16px;
+            padding:11px 16px 12px 16px;
             float:left;
             ul {
                 padding: 0px;
@@ -150,65 +191,35 @@ $card-margin-size: 8px;
                 list-style-type: none;
             }
         }
-    }
-    
-    @each $size in $sizes{
-        $size-name: nth($size, 1);
-        $size-value: nth($size, 2);
-        $size-action-margin:nth($size, 3);
-        &.card--#{$size-name}{
-            width:100%;
-            height:auto;
-            overflow:auto;
-
-            &.ng-enter, 
-            &.ng-leave
-            { 
-                transition: .6s;
-            } 
-             
-            &.ng-enter.ng-enter-active, 
-            &.ng-leave {
-                visibility:visible;
-                opacity: 1;
-                height: $size-value;
-            }
-             
-            &.ng-leave.ng-leave-active,
-            &.ng-enter {
-                visibility:hidden;
-                opacity: 0;
-                height: 1px;       
+        
+        @media screen and (max-width: 620px) {
+            .card__description{
+                width: calc(100% - 80px);
             }
             
-            .card__description{
-                &.card__description--one-line{
-                    padding:($size-value - $card-text-size - ($card-margin-size/2))/2 16px; 
-                }
-                &.card__description--two-lines{
-                    padding:($size-value - (2*$card-text-size) - (2*$card-margin-size))/2 16px; 
-                        
-                }
-                &.card__description--three-lines{
-                    padding:($size-value - (3*$card-text-size) - (3*$card-margin-size))/2 16px; 
-                }
+            .card__detailled-actions{
+                width: calc(100% - 82px);
+                border-top:solid 1px $border;
+                box-sizing:border-box;
             }
-
+            
             .card__actions{
-                padding:$size-action-margin 16px;
+                width:82px;
+                border-top:solid 1px $border;
+                box-sizing:border-box;
             }
-        }
+	}
     }
 
     &.card--player-session{
         .card__description{
-            width:calc(100% - 326px);
+            width:calc(100% - 262px);
             box-sizing:border-box;
         }
         
         @media screen and (max-width: 579px) {
             .card__description{
-                width: calc(100% - 96px);
+                width: calc(100% - 80px);
             }
             .card__actions{
                 width:100%;
@@ -223,11 +234,12 @@ $card-margin-size: 8px;
     
     &.card--trainer-session{
         .card__description{
-            width:calc(100% - 592px);
+            width:calc(100% - 502px);
             box-sizing:border-box;
         }
        
         .card__actions{
+            user-select:none;
             .card__actions__access{
                 display:block;
                 position:relative;
@@ -236,8 +248,8 @@ $card-margin-size: 8px;
                 height:100%;
 
                 .line{
-                    font-size:14px;
-                    padding:2px 2px 4px 2px;
+                    font-size:13px;
+                    padding:2px;
                     
                     &.line--title-open{
                         display:none;
@@ -257,6 +269,7 @@ $card-margin-size: 8px;
                     padding-left:8px;
                     box-sizing: border-box;
                     float:left;
+                    user-select:none;
 
                     &:before{
                         display: block;
@@ -268,15 +281,24 @@ $card-margin-size: 8px;
                         content: "d";
                         color:#828282;
                         font-family: "wegas-icons-font";
+                        user-select:none;
                     }
                     .key{
                         display:block;
                         width: calc(100% - 24px);
                         text-overflow:ellipsis;
                         overflow:hidden;
+                        user-select:all;
                         white-space: nowrap;
                         font-weight:500;
                     }
+                    &:after{
+                        display:block;
+                        position:relative;
+                        content:"";
+                        user-select:none;
+                    }
+
                 }
                 &.card__actions__access--close{
                     .line--title-close{
@@ -302,7 +324,7 @@ $card-margin-size: 8px;
         
         @media screen and (max-width: 1116px) {
             .card__description{
-                width: calc(100% - 492px);
+                width: calc(100% - 412px);
             }
             .card__actions{
                 .card__actions__access{
@@ -310,14 +332,14 @@ $card-margin-size: 8px;
                     transition: padding .2s;
 
                     &.card__actions__access--close{
-                        padding-top:18px;
+                        padding-top:12px;
                         .line--title-close{
                             display:none;
                         }
                     }
 
                     &.card__actions__access--open{
-                        padding-top:8px;
+                        padding-top:4px;
                         .line--title-open{
                             display:none;
                         }
@@ -340,7 +362,7 @@ $card-margin-size: 8px;
         
         @media screen and (max-width: 700px) {
             .card__description{
-                width: calc(100% - 96px);
+                width: calc(100% - 80px);
             }
             .card__actions{
                 width:100%;
@@ -351,12 +373,12 @@ $card-margin-size: 8px;
     
     &.card--scenarist-scenario{
         .card__description{
-            width:calc(100% - 460px);
+            width:calc(100% - 362px);
             box-sizing:border-box;
         }
         @media screen and (max-width: 659px) {
             .card__description{
-                width:calc(100% - 96px);
+                width:calc(100% - 80px);
             }
             .card__actions{
                 float:right;
@@ -381,7 +403,36 @@ $card-margin-size: 8px;
                 }
             }
         }
-        
-
+    }
+    
+    &.card--archive-trainer{
+        .card__description{
+            width:calc(100% - 312px);
+            box-sizing:border-box;
+        }
+        @media screen and (max-width: 500px) {
+            .card__description{
+                width:calc(100% - 80px);
+            }
+            .card__actions{
+                width:100%;
+                border-top:solid 1px $border;
+            }
+        }
+    }
+    &.card--archive-scenarist{
+        .card__description{
+            width:calc(100% - 212px);
+            box-sizing:border-box;
+        }
+        @media screen and (max-width: 420px) {
+            .card__description{
+                width:calc(100% - 80px);
+            }
+            .card__actions{
+                width:100%;
+                border-top:solid 1px $border;
+            }
+        }
     }
 }

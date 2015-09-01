@@ -37,12 +37,12 @@ YUI.add('wegas-chart', function(Y) {
                  type: Chartist.AutoScaleAxis,
                  onlyInteger: true,
                  },*/
-                 axisX: {
-                    showLabel: this.get("showXLabels")      
-                 },
+                axisX: {
+                    showLabel: this.get("showXLabels")
+                },
                 axisY: {
                     type: Chartist.AutoScaleAxis,
-                   showLabel: this.get("showYLabels")
+                    showLabel: this.get("showYLabels")
                 }
             };
 
@@ -76,7 +76,8 @@ YUI.add('wegas-chart', function(Y) {
             this.chart;
         },
         syncUI: function() {
-            var vd, i, variables = this.get("variables"), history;
+            var vd, i, variables = this.get("variables"), history,
+                promises = [], ctx = this;
 
             this.data = {labels: [], series: []};
             this.counter = variables.length;
@@ -86,9 +87,16 @@ YUI.add('wegas-chart', function(Y) {
                     this.showMessage("error", "Variable " + variables[i].name + " not found");
                     return;
                 }
-
-                this.updateHistory(vd, i);
+                promises.push(this.updateHistory(vd, i));
             }
+
+            Y.Promise.all(promises).then(function(a) {
+                var v;
+                for (i = 0; i < a.length; i += 1) {
+                    v = a[i];
+                    ctx.updateSerie(v.serie, i, vd.get("label"));
+                }
+            });
         },
         updateSerie: function(serie, i, label) {
             var k, max, data = this.data;
@@ -157,20 +165,23 @@ YUI.add('wegas-chart', function(Y) {
             }
         },
         updateHistory: function(vd, i) {
-            Y.Wegas.Facade.Variable.cache.getWithView(vd.getInstance(), "Extended", {
-                on: {
-                    success: Y.bind(function(e) {
-                        var entity = e.response.entity,
-                            label;
-                        label = this.get("variables")[i].label || vd.get("label");
-                        this.updateSerie(entity.get("history").concat(entity.get("value")), i, label);
-                    }, this),
-                    failure: function(r) {
-                        Y.error("Error by loading history data");
-                        this.updateSerie([], i, vd.get("label"));
+            var ctx = this, promise = Y.Promise(function(resolve, reject) {
+                Y.Wegas.Facade.Variable.cache.getWithView(vd.getInstance(), "Extended", {
+                    on: {
+                        success: Y.bind(function(e) {
+                            var entity = e.response.entity;
+                            resolve({
+                                serie: entity.get("history").concat(entity.get("value")),
+                                label: this.get("variables")[i].label || vd.get("label")});
+                        }, ctx),
+                        failure: function(r) {
+                            Y.error("Error by loading history data");
+                            resolve({serie: [], label: vd.get("label")});
+                        }
                     }
-                }
-            }, this);
+                }, ctx);
+            });
+            return promise;
         }
     }, {
         EDITORNAME: "Chart",
@@ -230,7 +241,7 @@ YUI.add('wegas-chart', function(Y) {
                 type: "boolean",
                 value: true
             },
-             showYLabels: {
+            showYLabels: {
                 type: "boolean",
                 value: true
             }

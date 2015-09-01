@@ -4,7 +4,7 @@
 </a>
 <div class="view__list" ng-if="teams.length > 0">
   <div 
-    class="card card--big card--player-session" 
+    class="card card--player-session" 
     ng-repeat="team in teams | orderBy: 'createdTime':true" 
     team="team" 
     leave="leave" 
