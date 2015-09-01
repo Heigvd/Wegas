@@ -351,9 +351,13 @@
 
 		.modal__tools {
 			input{
-				width:50%;
-				margin:.6em 1em;
+                            width:50%;
+                            margin:8px 12px;
+                            float:left;
 			}
+                        .button{
+                            margin:8px 0px;
+                        }
 		}
 	}
 	&.modal--archives{

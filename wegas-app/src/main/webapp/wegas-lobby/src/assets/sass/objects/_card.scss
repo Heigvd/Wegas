@@ -12,7 +12,7 @@
     transition:.3s;
     clear:both;
     height:auto;
-    overflow:auto;
+    overflow:hidden;
     @include material-shadow(1);
     
     &:hover{
