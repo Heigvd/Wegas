@@ -124,6 +124,7 @@
                                 source: "rest/Pusher/",
                                 //   applicationKey: "#{editorGameController.currentGameModel.properties.websocket}"
                                 applicationKey: "#{editorGameController.getWegasProperty('pusher.key')}",
+                                mode: '<ui:insert name="pusherMode">FULL</ui:insert>',
                                 plugins: [{
                                         fn: "WebSocketListener",
                                         cfg: {
