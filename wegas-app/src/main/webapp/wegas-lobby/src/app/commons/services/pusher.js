@@ -3,11 +3,16 @@ angular.module('wegas.service.pusher', [])
         var service = this, pusher, channels = [];
         service.start = function(){
             var deferred = $q.defer();
-            $http.get(ServiceURL + "rest/Pusher/ApplicationKey").success(function(data) {
-                if(data){
-                    var client = new Pusher(data);
+            $http.get(ServiceURL + "rest/Pusher/ApplicationKey").success(function(key) {
+                if(key){
+                    var client = new Pusher(key);
                     pusher = $pusher(client);
-                    channels["presence-global"] = pusher.subscribe('presence-global');
+                    $http.post(ServiceURL + "rest/Pusher/auth", {
+                        "socket_id": client.connection.socket_id,
+                        "channel_name": 'presence-global'
+                    }).success(function(data) {
+                        channels["presence-global"] = pusher.subscribe('presence-global');
+                    });
                 }
                 deferred.resolve();
             });
