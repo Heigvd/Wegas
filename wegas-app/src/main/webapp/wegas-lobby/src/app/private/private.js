@@ -12,8 +12,7 @@ angular.module('private', [
     'private.scenarist',
     'private.admin',
     'private.logout',
-    'private.directives',
-    'pusher-angular'
+    'private.directives'
 ])
 .config(function ($stateProvider) {
     $stateProvider
