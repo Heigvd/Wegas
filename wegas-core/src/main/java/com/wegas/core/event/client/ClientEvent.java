@@ -10,7 +10,9 @@ package com.wegas.core.event.client;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.wegas.core.rest.util.JacksonMapperProvider;
+import com.wegas.core.rest.util.Views;
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -36,6 +38,7 @@ abstract public class ClientEvent implements Serializable {
      */
     public final String toJson() throws IOException {
         ObjectMapper mapper = JacksonMapperProvider.getMapper();
-        return mapper.writeValueAsString(this);
+        ObjectWriter writerWithView = mapper.writerWithView(Views.Editor.class);
+        return writerWithView.writeValueAsString(this);
     }
 }
