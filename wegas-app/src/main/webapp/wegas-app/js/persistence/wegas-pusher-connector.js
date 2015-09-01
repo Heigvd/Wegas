@@ -64,10 +64,13 @@ YUI.add('wegas-pusher-connector', function(Y) {
                 Wegas.Facade.GameModel.get("currentGameModelId")).bind_all(Y.bind(this.eventReceived, this));
             pusherInstance.subscribe('Game-' +
                 Wegas.Facade.Game.get("currentGameId")).bind_all(Y.bind(this.eventReceived, this));
-            pusherInstance.subscribe('Team-' +
-                Wegas.Facade.Game.get("currentTeamId")).bind_all(Y.bind(this.eventReceived, this));
-            pusherInstance.subscribe('Player-' +
-                Wegas.Facade.Game.get("currentPlayerId")).bind_all(Y.bind(this.eventReceived, this));
+
+            if (this.get("mode") === "FULL") {
+                pusherInstance.subscribe('Team-' +
+                    Wegas.Facade.Game.get("currentTeamId")).bind_all(Y.bind(this.eventReceived, this));
+                pusherInstance.subscribe('Player-' +
+                    Wegas.Facade.Game.get("currentPlayerId")).bind_all(Y.bind(this.eventReceived, this));
+            }
 
             pusherInstance.subscribe('presence-global').bind_all(Y.bind(this.eventReceived, this));
         },
@@ -213,6 +216,9 @@ YUI.add('wegas-pusher-connector', function(Y) {
             },
             status: {
                 readOnly: true
+            },
+            mode: {
+                value: "FULL"
             }
         }
     });
