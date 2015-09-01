@@ -5,13 +5,15 @@ angular.module('private', [
     'wegas.models.sessions',
     'wegas.models.scenarios',
     'wegas.models.teams',
+    'wegas.service.pusher',
     'private.player',
     'private.profile',
     'private.trainer',
     'private.scenarist',
     'private.admin',
     'private.logout',
-    'private.directives'
+    'private.directives',
+    'pusher-angular'
 ])
 .config(function ($stateProvider) {
     $stateProvider
@@ -27,7 +29,7 @@ angular.module('private', [
         })
     ;
 })
-.controller('PrivateCtrl', function PrivateCtrl($state, Auth, $translate, $scope) {
+.controller('PrivateCtrl', function PrivateCtrl($state, Auth, $translate, $scope, WegasPusher) {
     var privateCtrl = this;
     privateCtrl.loading = 0;
     $scope.$on('cfpLoadingBar:loading', function () {
@@ -51,6 +53,7 @@ angular.module('private', [
         if(user == null){
             $state.go("wegas.public");
         }
+        WegasPusher.start();
         privateCtrl.user = user;
         var config = localStorage.getObject("wegas-config");
         if(config.users[user.email]){
