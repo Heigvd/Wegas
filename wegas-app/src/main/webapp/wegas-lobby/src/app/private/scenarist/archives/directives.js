@@ -15,10 +15,8 @@ angular.module('private.scenarist.archives.directives', [])
 
         ctrl.updateScenarios = function() {
             ctrl.loading = true;
-            console.log(ctrl.loading);
             ScenariosModel.getScenarios("BIN").then(function(response) {
                 ctrl.loading = false;
-                console.log(ctrl.loading);
                 ctrl.archives = response.data || [];
                 if (ctrl.archives.length == 0) {
                     $scope.close();
