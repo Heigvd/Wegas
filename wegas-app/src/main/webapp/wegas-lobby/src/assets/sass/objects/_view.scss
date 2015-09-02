@@ -221,6 +221,9 @@
             &.view__list--no-content{
                 padding:8px 0px 32px 0px;
             }
+            &.view__list--loading{
+                @include loading-message();
+            }
             &.view__list--with-archive{
                 height:calc(100% - 162px);
                 
