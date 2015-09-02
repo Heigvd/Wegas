@@ -10,7 +10,9 @@ angular.module('private.player.directives', [])
 
             /* Method used to update sessions. */
             updateTeams = function() {
+                ctrl.loading = true;
                 TeamsModel.getTeams().then(function(response) {
+                    ctrl.loading = false;
                     if (!response.isErroneous()) {
                         ctrl.teams = response.data || [];
                     } else {
@@ -21,7 +23,7 @@ angular.module('private.player.directives', [])
 
         /* Container for datas. */
         ctrl.teams = []; 
-
+        ctrl.loading = true;
         /* Method used to check token for adding a session. */
         ctrl.checkToken = function(token) {
             SessionsModel.findSessionToJoin(token).then(function(findResponse) {
@@ -112,11 +114,12 @@ angular.module('private.player.directives', [])
             templateUrl: 'app/private/player/directives.tmpl/list.html',
             scope: {
                 teams: "=",
-                leave: "="
+                leave: "=",
+                loading: "="
             }
         };
     })
-    .directive('playerTeamCard', function(Auth) {
+    .directive('playerTeamCard', function() {
         return {
             templateUrl: 'app/private/player/directives.tmpl/card.html',
             scope: {
