@@ -4,7 +4,7 @@ angular.module('private.player.directives', [])
             templateUrl: 'app/private/player/directives.tmpl/index.html',
             controller: 'PlayerController as playerCtrl'
         };
-    }).controller("PlayerController", function PlayerController($rootScope, $state, $translate, TeamsModel, SessionsModel, Flash) {
+    }).controller("PlayerController", function PlayerController($rootScope, $scope, $state, $translate, TeamsModel, SessionsModel, Flash) {
         /* Assure access to ctrl. */
         var ctrl = this,
 
@@ -47,12 +47,14 @@ angular.module('private.player.directives', [])
                             if (findResponse.data.properties.freeForAll) {
                                 TeamsModel.joinIndividually(findResponse.data).then(function(joinResponse) {
                                     if (!joinResponse.isErroneous()) {
+                                        $scope.$emit('collapse');
                                         updateTeams();
                                     } else {
                                         joinResponse.flash();
                                     }
                                 });
                             } else {
+                                $scope.$emit('collapse');
                                 $state.go('wegas.private.player.join', {
                                     token: findResponse.data.token
                                 });
