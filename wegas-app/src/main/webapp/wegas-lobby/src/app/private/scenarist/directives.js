@@ -55,9 +55,9 @@ angular.module('private.scenarist.directives', [
             var deferred = $q.defer();
             ScenariosModel.createScenario(name, templateId).then(function(response) {
                 if (!response.isErroneous()) {
+                    $scope.$emit('collapse');
                     ctrl.updateScenarios(true);
                     deferred.resolve(true);
-
                 } else {
                     response.flash();
                     deferred.resolve(true);
