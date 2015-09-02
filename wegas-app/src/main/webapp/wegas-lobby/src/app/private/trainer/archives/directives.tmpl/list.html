@@ -1,5 +1,5 @@
 <div class="modal__content__search" search-tool="search"></div>
-<div ng-if="(sessions | filter:{name: search}).length > 0" class="modal__content__list">
+<div ng-if="!loading && (sessions | filter:{name: search}).length > 0" class="modal__content__list">
     <div class="card card--archive card--archive-trainer" ng-repeat="session in sessions | orderBy: 'createdTime':true | filter : { name: search }">
         <div class="card__illustration illustration illustration--icon" illustration="{{session.properties.iconUri}}"></div>
         <div
@@ -36,6 +36,7 @@
         </div>
     </div>
 </div>
-<div class="modal__content__empty" ng-if="(sessions | filter:{name: search}).length == 0">
+<div class="modal__content__empty" ng-if="!loading && (sessions | filter:{name: search}).length == 0">
     {{'TRAINER-MODALE-ARCHIVE-NO-SESSION' | translate}}"{{search}}"
 </div>
+<div class="modal__content__loading" ng-if="loading" content-loading="{{'COMMONS-SESSIONS-LOADING' | translate}}"></div>

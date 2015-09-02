@@ -5,15 +5,18 @@ angular.module('private.trainer.archives.directives', [])
                 close: "&"
             },
             templateUrl: 'app/private/trainer/archives/directives.tmpl/index.html',
-            controller: "TrainerArchivesIndexController as trainerArchivesIndexController"
+            controller: "TrainerArchivesIndexController as indexCtrl"
         };
     }).controller("TrainerArchivesIndexController", function TrainerArchivesIndexController($timeout, $translate, $rootScope, $scope, $state, SessionsModel, Flash) {
         var ctrl = this;
         ctrl.archives = [];
         ctrl.search = "";
+        ctrl.loading = true;
 
         ctrl.updateSessions = function() {
+            ctrl.loading = true;
             SessionsModel.getSessions("BIN").then(function(response) {
+                ctrl.loading = false;
                 ctrl.archives = response.data || {};
                 if (response.isErroneous()) {
                     response.flash();
@@ -101,7 +104,9 @@ angular.module('private.trainer.archives.directives', [])
                 unarchive: "=",
                 search: "=",
                 details: "=",
-                users: "="
+                users: "=",
+                loading:"="
+                
             },
             templateUrl: 'app/private/trainer/archives/directives.tmpl/list.html',
             link: function(scope, elem, attrs){
