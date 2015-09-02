@@ -299,6 +299,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
 
                             // Commons Sessions Model
+                            'COMMONS-SESSIONS-LOADING': {
+                                'en': "Loading " + keywords.session.plural.en,
+                                'fr': "Chargement des " + keywords.session.plural.fr
+                            }, 
                             'COMMONS-SESSIONS-CLOSE-FLASH-ERROR': {
                                 'en': "Closed " + keywords.session.singular.en,
                                 'fr': startSentence(keywords.session.singular.fr) + " fermée"
@@ -429,6 +433,11 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
 
                             // Commons Scenarios Model
+                            
+                            'COMMONS-SCENARIOS-LOADING': {
+                                'en': "Loading " + keywords.scenario.plural.en,
+                                'fr': "Chargement des " + keywords.scenario.plural.fr
+                            },    
                             'COMMONS-SCENARIOS-NO-SCENARIO-FLASH-ERROR': {
                                 'en': "No " + keywords.scenario.singular.en + "choosed",
                                 'fr': "Aucun " + keywords.scenario.singular.fr + " choisi"
