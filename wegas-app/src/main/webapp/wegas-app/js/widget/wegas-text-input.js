@@ -41,7 +41,7 @@ YUI.add("wegas-text-input", function(Y) {
             } else {
                 this.editor = new tinymce.Editor(this.get("contentBox").one(".wegas-text-input-editor").getDOMNode(), {
                     plugins: [
-                        "autolink autoresize link image lists code media table contextmenu paste advlist textcolor"
+                        "autolink link image lists code media table contextmenu paste advlist textcolor"
                             //textcolor wordcount autosave advlist charmap print preview hr anchor pagebreak spellchecker directionality
                     ],
                     external_plugins: {
