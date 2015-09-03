@@ -74,23 +74,25 @@ YUI.add('wegas-cards-resizable', function(Y) {
         _checkResize: function(cardsWidth, limitIndex){
             var context = this,
                 limits = ["BIG", "LARGE", "MEDIUM", "SMALL"];
-            if(limits[limitIndex]){
-                if(limits[limitIndex+1]){
-                    if(cardsWidth > context.LIMITS[limits[limitIndex+1]]){
+            if(cardsWidth > 0){
+                if(limits[limitIndex]){
+                    if(limits[limitIndex+1]){
+                        if(cardsWidth > context.LIMITS[limits[limitIndex+1]]){
+                            if(!context.get("host").get("contentBox").hasClass("resizable--" + limits[limitIndex].toLowerCase())){
+                                context.resetClassSize();
+                                context.get("host").get("contentBox").addClass("resizable--" + limits[limitIndex].toLowerCase());
+                                context._resizeElements(limits[limitIndex]);
+                            }
+                        }else{
+                            limitIndex++; 
+                            context._checkResize(cardsWidth, limitIndex);
+                        }
+                    }else{
                         if(!context.get("host").get("contentBox").hasClass("resizable--" + limits[limitIndex].toLowerCase())){
                             context.resetClassSize();
                             context.get("host").get("contentBox").addClass("resizable--" + limits[limitIndex].toLowerCase());
                             context._resizeElements(limits[limitIndex]);
                         }
-                    }else{
-                        limitIndex++; 
-                        context._checkResize(cardsWidth, limitIndex);
-                    }
-                }else{
-                    if(!context.get("host").get("contentBox").hasClass("resizable--" + limits[limitIndex].toLowerCase())){
-                        context.resetClassSize();
-                        context.get("host").get("contentBox").addClass("resizable--" + limits[limitIndex].toLowerCase());
-                        context._resizeElements(limits[limitIndex]);
                     }
                 }
             }
