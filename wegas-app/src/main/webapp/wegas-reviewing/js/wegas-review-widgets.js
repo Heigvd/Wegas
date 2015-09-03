@@ -193,7 +193,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             }
             this.chart = new Chartist.Bar(klass, data, options);
 
-            
+
         },
         createCategoryChart: function(klass, summary, descriptor) {
             var min, max, data, options, key;
@@ -232,50 +232,50 @@ YUI.add("wegas-review-widgets", function(Y) {
                 data = summary[evD.get("id")].get("val");
                 if (evD.get("@class") === "GradeDescriptor") {
                     if (Y.Lang.isNumber(data.sd)) {
-/*
-math = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">" + 
-  "<mrow>" +
-    "<mstyle displaystyle=\"true\" scriptlevel=\"0\"> " +
-      "<mrow> " +
-        "<mrow> " +
-          "<mover> " +
-            "<mi>x</mi> " +
-            "<mo stretchy=\"false\">¯<!-- ¯ --></mo> " +
-          "</mover> " +
-        "</mrow> " +
-      "<mo>=</mo>" +
-      "<mn>"  + data.mean.toFixed(2) + "</mn>" +
-      "<mo>;</mo>" +        
-      "</mrow> " +
-      "<mrow>"+
-        "<mrow>"+
-          "<mover> " +
-            "<mi>x</mi> " +
-            "<mo stretchy=\"false\">~<!-- ~ --></mo> " +
-          "</mover> " +
-        "</mrow> " +
-      "</mrow> " +
-      "<mo>=</mo>" +
-      "<mn>"  + data.median.toFixed(2) + "</mn>" +
-      "<mo>;</mo>" +
-      "<mrow> " +
-        "<mi>σ<!-- σ --></mi> " +
-      "</mrow> " +
-      "<mo>=</mo>" +
-      "<mn>"  + data.sd.toFixed(2) + "</mn>" +
-      "<mo>;</mo>" +
-    "</mstyle> " +
-  "</mrow> " +
-"</math>";*/
+                        /*
+                         math = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">" + 
+                         "<mrow>" +
+                         "<mstyle displaystyle=\"true\" scriptlevel=\"0\"> " +
+                         "<mrow> " +
+                         "<mrow> " +
+                         "<mover> " +
+                         "<mi>x</mi> " +
+                         "<mo stretchy=\"false\">¯<!-- ¯ --></mo> " +
+                         "</mover> " +
+                         "</mrow> " +
+                         "<mo>=</mo>" +
+                         "<mn>"  + data.mean.toFixed(2) + "</mn>" +
+                         "<mo>;</mo>" +        
+                         "</mrow> " +
+                         "<mrow>"+
+                         "<mrow>"+
+                         "<mover> " +
+                         "<mi>x</mi> " +
+                         "<mo stretchy=\"false\">~<!-- ~ --></mo> " +
+                         "</mover> " +
+                         "</mrow> " +
+                         "</mrow> " +
+                         "<mo>=</mo>" +
+                         "<mn>"  + data.median.toFixed(2) + "</mn>" +
+                         "<mo>;</mo>" +
+                         "<mrow> " +
+                         "<mi>σ<!-- σ --></mi> " +
+                         "</mrow> " +
+                         "<mo>=</mo>" +
+                         "<mn>"  + data.sd.toFixed(2) + "</mn>" +
+                         "<mo>;</mo>" +
+                         "</mstyle> " +
+                         "</mrow> " +
+                         "</math>";*/
                         this.createGradeChart("." + klass + " .chart", data, evD);
                         node.one("." + klass + " .title").setContent("<h3>" + evD.get("name") + "</h3>");
                         //node.one("." + klass + " .legend").append(math);
                         node.one("." + klass + " .legend").append("<p>" +
-                        "avg: " + data.mean.toFixed(2) +
-                        "; med: " + data.median.toFixed(2) + 
-                        "; &sigma;: " + data.sd.toFixed(2) + 
-                        "; bounds: [" + data.min.toFixed(2) + "," + data.min.toFixed(2) + "]" +
-                        " </p>");
+                            "avg: " + data.mean.toFixed(2) +
+                            "; med: " + data.median.toFixed(2) +
+                            "; &sigma;: " + data.sd.toFixed(2) +
+                            "; bounds: [" + data.min.toFixed(2) + "," + data.min.toFixed(2) + "]" +
+                            " </p>");
                         node.one("." + klass + " .legend").append("<p>based on " + data.numberOfValues + "/" + summary.maxNumberOfValue + " values</p>");
                     }
                 } else if (evD.get("@class") === "CategorizedEvaluationDescriptor") {
@@ -664,15 +664,41 @@ math = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">" +
          * @description Render the TabView widget in the content box.
          */
         renderUI: function() {
-            var cb = this.get(CONTENTBOX);
+            var cb = this.get(CONTENTBOX),
+                prd, pri;
+
             this.tabView.render(cb);
             this.tabView.get("boundingBox").addClass("horizontal-tabview");
             cb.append("<div style='clear:both'></div>");
+
+            prd = this.get("variable.evaluated");
+            pri = prd.getInstance();
+
+            if (pri.get("reviewState") !== "DISPATCHED") {
+                this.status = "EMPTY";
+                this.tabView.add(new Y.Tab({
+                    label: "",
+                    content: "<center><i><br /><br /><br />No review available yet.</i></center>"
+                }));
+                this.tabView.selectChild(0);
+            }/* else {
+             this.status = "BUILT";
+             this.addReviews(pri);
+             }*/
+
         },
         bindUI: function() {
-
             this.tabView.after("selectionChange", this.onTabSelected, this);
-            this.handlers.push(this.dataSource.after("update", this.syncUI, this));
+            //this.handlers.push(this.dataSource.after("update", this.syncUI, this));
+            this.handlers.push(this.dataSource.after("updatedInstance", this.syncEntity, this));
+        },
+        syncEntity: function(payload) {
+            var prd = this.get("variable.evaluated"),
+                pri = prd.getInstance(),
+                entity = payload.entity;
+            if (entity.get("@class") === pri.get("@class") && entity.get("id") === pri.get("id")) {
+                this.syncUI();
+            }
         },
         /**
          * @function
@@ -682,46 +708,82 @@ math = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">" +
          */
         syncUI: function() {
             var prd = this.get("variable.evaluated"),
-                pri = prd.getInstance(),
-                selectedTab = this.tabView.get('selection'),
-                lastSelection = (selectedTab) ? selectedTab.get('index') : 0;
+                pri = prd.getInstance();
+            //selectedTab = this.tabView.get('selection'),
+            //lastSelection = (selectedTab) ? selectedTab.get('index') : 0;
 
-            this.isRemovingTabs = true;
-            this.tabView.destroyAll();
-            this.isRemovingTabs = false;
+            //this.hideOverlay();
 
-            this.hideOverlay();
-
-            if (pri.get("reviewState") !== "DISPATCHED") {
-                this.tabView.add(new Y.Tab({
-                    label: "",
-                    content: "<center><i><br /><br /><br />No review available yet.</i></center>"
-                }));
-                this.tabView.selectChild(0);
-            } else {
+            if (this.status === "EMPTY" && pri.get("reviewState") === "DISPATCHED") {
+                this.status = "BUILT";
+                this.isRemovingTabs = true;
+                this.tabView.destroyAll();
+                this.isRemovingTabs = false;
                 this.addReviews(pri);
-                this.tabView.selectChild(lastSelection);
+            } else {
+                this.updateReviews(pri);
+            }
+        },
+        addReview: function(review, i, j) {
+            var tab;
+
+            if (i === 0 || review.get("reviewState") === "NOTIFIED" ||
+                review.get("reviewState") === "COMPLETED" ||
+                review.get("reviewState") === "CLOSED") {
+                tab = new Y.Tab({
+                    label: (i === 0 ? "To Review" : "Evaluation of your work") + " #" + (j + 1)
+                });
+                tab.loaded = false;
+                tab.review = review;
+                tab.reviewer = (i === 0);
+                this.tabView.add(tab);
+            }
+        },
+        updateReviews: function(pri) {
+            var i, j, k, types = ["toReview", "reviewed"],
+                reviews, review, tab,
+                selectedTab = this.tabView.get('selection'),
+                lastSelection = (selectedTab ? selectedTab.get('index') : 0);
+
+            for (i = 0; i < 2; i++) {
+                reviews = pri.get(types[i]);
+                for (j = 0; j < reviews.length; j++) {
+                    review = reviews[j];
+                    tab = null;
+                    for (k = 0; k < this.tabView.size(); k += 1) {
+                        if (this.tabView.item(k).review.get("id") === review.get("id")) {
+                            tab = this.tabView.item(k);
+                            break;
+                        }
+                    }
+                    if (tab) {
+                        if (tab.reviewWidget) {
+                            tab.review = reviews[j];
+                            if (review.get("reviewState") !== tab.reviewWidget._status) {
+                                // Build new
+                                this.renderTab(tab);
+                            } else {
+                                //if (tab === selectedTab) {
+                                //tab.reviewWidget.outdate();
+                                //} else {
+                                tab.reviewWidget.set("review", tab.review);
+                                tab.reviewWidget.syncUI();
+                                //}
+                            }
+                        }
+                    } else {
+                        this.addReview(reviews[j], i, j);
+                    }
+                }
             }
         },
         addReviews: function(pri) {
-            var i, j, tab, type, types = ["toReview", "reviewed"], reviews, review;
+            var i, j, types = ["toReview", "reviewed"], reviews;
 
             for (i = 0; i < 2; i++) {
-                type = types[i];
-                reviews = pri.get(type);
+                reviews = pri.get(types[i]);
                 for (j = 0; j < reviews.length; j++) {
-                    review = reviews[j];
-                    if (i === 0 || review.get("reviewState") === "NOTIFIED" ||
-                        review.get("reviewState") === "COMPLETED" ||
-                        review.get("reviewState") === "CLOSED") {
-                        tab = new Y.Tab({
-                            label: (i === 0 ? "To Review" : "Evaluation of your work") + " #" + (j + 1)
-                        });
-                        tab.loaded = false;
-                        tab.review = review;
-                        tab.reviewer = (type === types[0]);
-                        this.tabView.add(tab);
-                    }
+                    this.addReview(reviews[j], i, j);
                 }
             }
         },
@@ -733,13 +795,17 @@ math = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">" +
          */
         onTabSelected: function(e) {
             if (e.newVal && e.newVal.review
-                && !this.isRemovingTabs && !e.newVal.loaded) {
+                && (!this.isRemovingTabs && !e.newVal.loaded) ||
+                e.newVal.reviewWidget._status === "OUTDATED") {
                 e.newVal.loaded = true;
                 this.renderTab(e.newVal);
             }
         },
         renderTab: function(tab) {
-            var RewviewW = new Wegas.ReviewWidget({
+            if (tab.reviewWidget) {
+                tab.reviewWidget.destroy();
+            }
+            tab.reviewWidget = new Wegas.ReviewWidget({
                 title: tab.get("label"),
                 review: tab.review,
                 descriptor: this.get("variable.evaluated"),
@@ -843,7 +909,9 @@ math = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">" +
             + "  </div>"
             + "  <div class=\"submit\"></div>"
             + "</div>",
-        initialize: function() {
+        initializer: function() {
+            this._status = this.get("review").get("reviewState");
+            this.widgets = {};
         },
         /**
          * 
@@ -853,13 +921,14 @@ math = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">" +
          * @returns {undefined}
          */
         addEvaluation: function(ev, container, mode) {
+            var klass = ev.get("@class"),
+                widget, readonly = mode === "read", cfg = {
+                    evaluation: ev,
+                    readonly: readonly,
+                    showStatus: false
+                };
+
             if (mode === "write" || mode === "read") {
-                var klass = ev.get("@class"),
-                    widget, readonly = mode === "read", cfg = {
-                        evaluation: ev,
-                        readonly: readonly,
-                        showStatus: false
-                    };
                 switch (klass) {
                     case "GradeInstance":
                         widget = new Wegas.GradeInput(cfg).render(container);
@@ -872,9 +941,10 @@ math = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">" +
                         break;
                 }
             }
+            return widget;
         },
         renderUI: function() {
-            var review = this.get("review"),
+            var review = this.get("review"), widget,
                 i, evls,
                 reviewer = this.get("reviewer"),
                 desc = this.get("descriptor"),
@@ -985,15 +1055,30 @@ math = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">" +
 
             evls = review.get("feedback");
             for (i in evls) {
-                this.addEvaluation(evls[i], fbContainer, modeFb);
+                this.widgets[evls[i].get("id")] = this.addEvaluation(evls[i], fbContainer, modeFb);
             }
 
             evls = review.get("comments");
             for (i in evls) {
-                this.addEvaluation(evls[i], fbEContainer, modeFbEval);
+                this.widgets[evls[i].get("id")] = this.addEvaluation(evls[i], fbEContainer, modeFbEval);
             }
         },
         syncUI: function() {
+            var i, evl, evls, review = this.get("review"), w;
+
+            evls = review.get("feedback").concat(review.get("comments"));
+            for (i in evls) {
+                evl = evls[i];
+                w = this.widgets[evl.get("id")];
+                if (w) {
+                    w.set("evaluation", evl);
+                    w.syncUI();
+                }
+            }
+        },
+        outdate: function() {
+            this._status = "OUTDATED";
+            this.get("contentBox").one(".title").append("<p style='warn'>Outdated</p>");
         },
         bindUI: function() {
             if (this.submitButton) {
@@ -1004,6 +1089,7 @@ math = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">" +
             }
         },
         destructor: function() {
+            Y.log("DESTROY REVIEW WIDGET");
             if (this.submitButton) {
                 this.submitButton.destroy();
             }
@@ -1106,6 +1192,8 @@ math = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">" +
         initializer: function() {
             this.handlers = [];
             this.xSlider = null;
+            this._initialValue = undefined;
+            //this.get("evaluation").get("value");
         },
         renderUI: function() {
             var ev = this.get("evaluation"), desc = ev.get("descriptor"),
@@ -1114,7 +1202,7 @@ math = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">" +
             CB.one(".wegas-review-evaluation-desc").setContent(desc.get("description"));
 
             if (!this.get("readonly")) {
-                this.get(CONTENTBOX).one(".wegas-review-grade-instance-input").set("value", ev.get("value"));
+                //this.get(CONTENTBOX).one(".wegas-review-grade-instance-input").set("value", ev.get("value"));
                 if (Y.Lang.isNumber(desc.get("minValue")) && Y.Lang.isNumber(desc.get("maxValue"))) {
                     this.xSlider = new Y.Slider({
                         min: desc.get("minValue"),
@@ -1122,13 +1210,29 @@ math = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">" +
                         value: +ev.get("value")
                     }).render(this.get(CONTENTBOX).one(".wegas-review-grade-instance-slider"));
                 }
-            } else {
-                this.get(CONTENTBOX).one(".wegas-review-grade-instance-input-container").setContent('<p>' +
-                    ev.get("value") + '</p>');
+                //} else {
+                //    this.get(CONTENTBOX).one(".wegas-review-grade-instance-input-container").setContent('<p>' +
+                //        ev.get("value") + '</p>');
             }
 
         },
         syncUI: function() {
+            var evl, value;
+            evl = this.get("evaluation");
+            value = evl.get("value");
+            if (value != this._initialValue) {
+                this._initialValue = value;
+
+                if (!this.get("readonly")) {
+                    this.get(CONTENTBOX).one(".wegas-review-grade-instance-input").set("value", value);
+                    if (this.xSlider) {
+                        this.xSlider.set("value", value);
+                    }
+                } else {
+                    this.get(CONTENTBOX).one(".wegas-review-grade-instance-input-container").setContent('<p>' +
+                        value + '</p>');
+                }
+            }
         },
         bindUI: function() {
             var input = this.get(CONTENTBOX).one(".wegas-review-grade-instance-input");
@@ -1214,7 +1318,8 @@ math = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">" +
 
             CB.one(".wegas-review-evaluation-label").setContent(desc.get("name"));
             CB.one(".wegas-review-evaluation-desc").setContent(desc.get("description"));
-            return ev.get("value");
+            this._initialValue = ev.get("value");
+            return this._initialValue;
         },
         valueChanged: function(newValue) {
             this.save(newValue);
@@ -1222,6 +1327,21 @@ math = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">" +
         save: function(value) {
             this.get("evaluation").set("value", value);
             return true;
+        },
+        syncUI: function() {
+            var evl, value;
+            evl = this.get("evaluation");
+            value = evl.get("value");
+            if (value !== this._initialValue) {
+                Y.later(100, this, function() {
+                    this.editor.setContent(this.getInitialContent());
+                    /*var tmceI = tinyMCE.get(this.get("contentBox").one(".wegas-text-input-editor"));
+                     if (tmceI) {
+                     tmceI.setContent(this.getInitialContent());
+                     }*/
+
+                });
+            }
         }
     }, {
         EDITORNAME: "TextEvalInput",
@@ -1252,6 +1372,7 @@ math = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">" +
             "</div>",
         initializer: function() {
             this.handlers = [];
+            this._initialValue = undefined;
         },
         renderUI: function() {
             var ev = this.get("evaluation"), desc = ev.get("descriptor"), categs, i,
@@ -1259,9 +1380,7 @@ math = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">" +
             CB.one(".wegas-review-evaluation-label").setContent(desc.get("name") + ": ");
             CB.one(".wegas-review-evaluation-desc").setContent(desc.get("description"));
 
-            if (this.get("readonly")) {
-                CB.one(".wegas-review-categinput-content").setContent(ev.get("value"));
-            } else {
+            if (!this.get("readonly")) {
                 frag = ['<select>'];
                 categs = desc.get("categories");
                 for (i in categs) {
@@ -1276,8 +1395,34 @@ math = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">" +
                 CB.one(".wegas-review-categinput-content").setContent(frag.join(""));
             }
         },
+        getCurrentValue: function(){
+            var option = this.get("contentBox").one(".wegas-review-categinput-content select option[selected]");
+            if (option){
+                return option.getAttribute("value");
+            } else {
+                return undefined;
+            }
+        },
         syncUI: function() {
-            var ev = this.get("evaluation"), desc = ev.get("descriptor");
+            var evl, CB, value, select, option;
+            CB = this.get("contentBox");
+            evl = this.get("evaluation");
+            value = evl.get("value");
+            if (value !== this._initialValue) {
+                
+                this._initialValue = value;
+                if (this.get("readonly")) {
+                    CB.one(".wegas-review-categinput-content").setContent(value);
+                } else {
+                    select = CB.one(".wegas-review-categinput-content select");
+                    option = select.one("option[selected]");
+                    if (option) {
+                        option.removeAttribute("selected");
+                    }
+                    option = select.one("option[value='" + value + "']");
+                    option.setAttribute("selected");
+                }
+            }
         },
         bindUI: function() {
             var select;
