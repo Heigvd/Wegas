@@ -1,5 +1,4 @@
-var ServiceURL = "",
-    MAX_DISPLAYED_CHARS = 32;
+var ServiceURL = "";
     
 Storage.prototype.setObject = function(key, value) {
     this.setItem(key, JSON.stringify(value));
