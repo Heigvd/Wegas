@@ -142,7 +142,8 @@
     }
     
     &.view--admin-content,
-    &.view--sessions-list,
+    &.view--played-sessions-list,
+    &.view--managed-sessions-list,
     &.view--scenarios-list,
     &.view--history-list {
         @include make-xs-column(12, 96px);
@@ -186,15 +187,11 @@
         }
         .view__list{
             @include make-xs-column(12);
-            height:calc(100% - 100px);
+            height:calc(100% - 90px);
             padding:8px 0px 0px 0px;
             box-sizing: border-box;
             overflow-x:hidden;
             overflow-y:auto;
-            
-            @media screen and (max-width: 991px) {
-                height:calc(100% - 133px);
-            }
 
             &.ng-enter,
             &.ng-leave{
@@ -221,13 +218,11 @@
             &.view__list--no-content{
                 padding:8px 0px 32px 0px;
             }
+            &.view__list--loading{
+                @include loading-message();
+            }
             &.view__list--with-archive{
-                height:calc(100% - 162px);
-                
-                @media screen and (max-width: 991px) {
-                    height:calc(100% - 213px);
-                }
-                
+                height:calc(100% - 160px);
             }
         }
         .view__no-group{
@@ -249,8 +244,20 @@
                 float:right;
             }
         }
-
     }
+    
+    &.view--scenarios-list,
+    &.view--managed-sessions-list{
+        @media screen and (max-width: 519px) {
+            .view__list{
+                height: calc(100% - 132px);
+                &.view__list--with-archive{
+                    height:calc(100% - 212px);
+                }
+            }
+        }
+    }
+
 
     &.view--sessions-users-new{
         @include make-xs-column(12);

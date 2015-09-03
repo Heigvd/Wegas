@@ -138,6 +138,7 @@ angular.module('private.trainer.directives', [
                                         name: "",
                                         scenarioId: 0
                                     };
+                                    scope.$emit('collapse');
                                     parentCtrl.updateSessions(true);
                                     button.removeClass("button--disable button--spinner button--rotate");
                                 } else {

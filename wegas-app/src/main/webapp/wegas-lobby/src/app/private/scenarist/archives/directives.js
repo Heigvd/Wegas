@@ -11,9 +11,12 @@ angular.module('private.scenarist.archives.directives', [])
         var ctrl = this;
         ctrl.archives = [];
         ctrl.search = "";
+        ctrl.loading = true;
 
         ctrl.updateScenarios = function() {
-        	ScenariosModel.getScenarios("BIN").then(function(response) {
+            ctrl.loading = true;
+            ScenariosModel.getScenarios("BIN").then(function(response) {
+                ctrl.loading = false;
                 ctrl.archives = response.data || [];
                 if (ctrl.archives.length == 0) {
                     $scope.close();
@@ -68,11 +71,9 @@ angular.module('private.scenarist.archives.directives', [])
                 scenarios: "=",
                 unarchive: "=",
                 delete:"=",
-                search:"="
+                search:"=",
+                loading:"="
             },
-            templateUrl: 'app/private/scenarist/archives/directives.tmpl/list.html',
-            link:function(scope, elem, attrs){
-                scope.MAX_DISPLAYED_CHARS = MAX_DISPLAYED_CHARS;
-            }
+            templateUrl: 'app/private/scenarist/archives/directives.tmpl/list.html'
         };
     });

@@ -5,7 +5,7 @@
         </a>
 	<trainer-sessions-add></trainer-sessions-add>
 </div>
-<div class="view view--sessions-list view--middle">
+<div class="view view--managed-sessions-list view--middle">
     <h3><i class="fa fa-dashboard"></i><span>{{'TRAINER-INDEX-LIST-TITLE' | translate}}</span></h3>
         <a class="view__button-expand button button--small button--info-reverse" expander>
             <span class="button__label">{{'TRAINER-INDEX-ADD-TITLE' | translate}}</span>
@@ -29,9 +29,8 @@
                         <span ng-if="trainerIndexCtrl.nbArchives > 1" class="button__label">{{trainerIndexCtrl.nbArchives}} {{'TRAINER-INDEX-ARCHIVES-BTN' | translate}}</span>
 		</a>
 	</div>
-	<div 
-		ng-if="trainerIndexCtrl.loading"
-		class="view__list">
-		{{'LOADING' | translate}}
+	<div    ng-if="trainerIndexCtrl.loading"
+		class="view__list view__list--loading" 
+                content-loading="{{'COMMONS-SESSIONS-LOADING' | translate}}">
 	</div>
 </div>
