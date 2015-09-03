@@ -254,7 +254,7 @@ YUI.add('wegas-datasource', function(Y) {
                 }
             });
 
-            // Handle Websocket epdated entities
+            // Handle Websocket updated entities
             this.on("EntityUpdatedEvent", function(e) {
                 var i, entities = e.updatedEntities;
                 for (i = 0; i < entities.length; i += 1) { // Update the cache with the entities contained in the reply
