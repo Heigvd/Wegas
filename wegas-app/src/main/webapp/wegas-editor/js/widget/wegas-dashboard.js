@@ -28,7 +28,7 @@ YUI.add('wegas-dashboard', function(Y) {
             }
         },
         syncUI:function(){
-            _createCards();
+            this._createCards();
         },
         _createCards: function(){
             var context = this;
