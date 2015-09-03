@@ -466,4 +466,22 @@
             }
         }
     }
+    &.card--group{
+        .card__description{
+            width:calc(100% - 212px);
+            box-sizing:border-box;
+        }
+        @media screen and (max-width: 420px) {
+            .card__description{
+                width:calc(100% - 80px);
+            }
+            .card__actions{
+                width:100%;
+                border-top:solid 1px $border;
+                .button--trash{
+                    float:right;
+                }
+            }
+        }
+    }
 }
