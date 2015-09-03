@@ -135,6 +135,21 @@
             max-height: 1px;       
             transition: .4s;
         }
+        
+        .card__list__player{
+            &:after{
+                display:inline;
+                position:relative;
+                content:",";
+                margin-right:12px;
+            }  
+        }
+        .card__list__player:last-child{
+            &:after{
+                display:none;
+            }
+        }
+        
         @media screen and (max-width: 619px) {
             margin-left:24px;
         }
