@@ -93,7 +93,8 @@ public class WebsocketFacade {
             Team team = teamFacade.find(id);
             User user = userFacade.getCurrentUser();
 
-            if (currentPlayer != null && currentPlayer.getUser().equals(user)) {
+            if (currentPlayer != null && currentPlayer.getUser() != null
+                    && currentPlayer.getUser().equals(user)) {
                 // Current logged User is the player itself
                 // the player MUST be a member of the team
                 return playerFacade.checkExistingPlayerInTeam(team.getId(), user.getId()) != null;
@@ -106,7 +107,8 @@ public class WebsocketFacade {
             Player player = playerFacade.find(id);
 
             if (player != null) {
-                if (currentPlayer != null && currentPlayer.getUser().equals(user)) {
+                if (currentPlayer != null && currentPlayer.getUser() != null
+                        && currentPlayer.getUser().equals(user)) {
                     return player == currentPlayer;
                 } else {
                     // Trainer and scenarist 
