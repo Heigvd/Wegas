@@ -962,8 +962,8 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'fr':"L'"+keywords.team.singular.fr+" existe déjà"
                             },
                             'PLAYER-MODALE-JOIN-TEAM-NUMBER-PLAYER':{
-                                'en':keywords.player.singular.en + "(s)",
-                                'fr':keywords.player.singular.fr + "(s)"
+                                'en':keywords.player.singular.en,
+                                'fr':keywords.player.singular.fr
                             },
                             'PLAYER-MODALE-JOIN-TEAM-JOIN-BTN':{
                                 'en':"Join " + keywords.team.singular.en,

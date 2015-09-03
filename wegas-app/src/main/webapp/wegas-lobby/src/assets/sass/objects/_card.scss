@@ -107,7 +107,7 @@
 
     .card__list{
         clear:both;
-        margin-left:80px;
+        margin-left:92px;
         margin-bottom:8px;
         h4{
             font-weight:500;
@@ -135,18 +135,8 @@
             max-height: 1px;       
             transition: .4s;
         }
-        .card__list__player{
-            &:after{
-                display:inline;
-                position:relative;
-                content:",";
-                margin-right:12px;
-            }  
-        }
-        .card__list__player:last-child{
-            &:after{
-                display:none;
-            }
+        @media screen and (max-width: 619px) {
+            margin-left:24px;
         }
     }
     
@@ -208,7 +198,7 @@
                 border-top:solid 1px $border;
                 box-sizing:border-box;
             }
-	}
+	    }
     }
 
     &.card--player-session{
@@ -368,7 +358,7 @@
                 width:100%;
                 border-top:solid 1px $border;
             }
-	}
+        }
     }
     
     &.card--scenarist-scenario{
@@ -404,7 +394,33 @@
             }
         }
     }
-    
+    &.card--team-joinable{
+        .card__description{
+            width:calc(100% - 494px);
+        }
+        @media screen and (max-width: 619px) {
+            .card__description{
+                width:calc(100% - 80px);
+            }
+            .card__actions{
+                width:100%;
+                border-top:solid 1px $border;
+            }
+        }
+        @media screen and (max-width: 440px) {
+            .card__actions{
+                .button--eye, .button--eye-slash{
+                    padding-right:0px;
+                    .button__label{
+                        display:none;
+                    }
+                }
+                .button--info{
+                    float:right;
+                }
+            }
+        }
+    }
     &.card--archive-trainer{
         .card__description{
             width:calc(100% - 312px);

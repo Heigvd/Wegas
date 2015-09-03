@@ -9,24 +9,25 @@ angular.module('private.scenarist.directives', [
                 } else {
                     ctrl.maxScenariosDisplayed = ctrl.scenarios.length;
                 }
+            },
+            updateDisplayScenarios = function() {
+                if (ctrl.maxScenariosDisplayed === null) {
+                    initMaxScenariosDisplayed();
+                } else {
+                    if (ctrl.maxScenariosDisplayed >= ctrl.scenarios.length) {
+                        ctrl.maxScenariosDisplayed = ctrl.scenarios.length;
+                    } else {
+                        ctrl.maxScenariosDisplayed = ctrl.maxScenariosDisplayed + 5;
+                    }
+                }
             };
+
         ctrl.loading = true;
         ctrl.scenarios = [];
         ctrl.nbArchives = [];
         ctrl.search = '';
-
         ctrl.maxScenariosDisplayed = null;
-        var updateDisplayScenarios = function() {
-            if (ctrl.maxScenariosDisplayed === null) {
-                initMaxScenariosDisplayed();
-            } else {
-                if (ctrl.maxScenariosDisplayed >= ctrl.scenarios.length) {
-                    ctrl.maxScenariosDisplayed = ctrl.scenarios.length;
-                } else {
-                    ctrl.maxScenariosDisplayed = ctrl.maxScenariosDisplayed + 5;
-                }
-            }
-        };
+
         ctrl.updateScenarios = function(updateDisplay) {
             ctrl.loading = true;
             if(!updateDisplay){
@@ -42,6 +43,7 @@ angular.module('private.scenarist.directives', [
                 }
             });
         };
+
         ctrl.archiveScenario = function(scenario) {
             ScenariosModel.archiveScenario(scenario).then(function(response) {
                 if (response.isErroneous()) {
@@ -51,6 +53,7 @@ angular.module('private.scenarist.directives', [
                 }
             });
         };
+
         ctrl.createScenario = function(name, templateId) { 
             var deferred = $q.defer();
             ScenariosModel.createScenario(name, templateId).then(function(response) {
@@ -77,7 +80,9 @@ angular.module('private.scenarist.directives', [
                 ctrl.updateScenarios();
             }
         });
+
         ctrl.updateScenarios(true);
+        
         ScenariosModel.countArchivedScenarios().then(function(response) {
             ctrl.nbArchives = response.data;
         });
@@ -149,7 +154,6 @@ angular.module('private.scenarist.directives', [
             },
             link: function(scope) {
                 scope.ServiceURL = ServiceURL;
-                scope.MAX_DISPLAYED_CHARS = MAX_DISPLAYED_CHARS;
             }
         };
     });

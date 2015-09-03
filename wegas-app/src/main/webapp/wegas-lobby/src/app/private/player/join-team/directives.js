@@ -32,8 +32,6 @@ angular.module('private.player.join.directives', [])
                 }
             });
         };
-
-    ctrl.MAX_DISPLAYED_CHARS = MAX_DISPLAYED_CHARS;
     
     /* Container for datas */
     ctrl.sessionToJoin = null;
@@ -155,9 +153,7 @@ angular.module('private.player.join.directives', [])
             joinTeam: "="
         },
         link: function(scope, elem, attrs){
-            scope.showPlayers = false;
-            scope.MAX_DISPLAYED_CHARS = MAX_DISPLAYED_CHARS;
-            
+            scope.showPlayers = false;            
             scope.hideToggle = {toggle: WegasTranslations.hideToggle['SHOW'][$translate.use()]};
             scope.tooglePlayersVisibility = function(){
                 scope.showPlayers = !scope.showPlayers;

@@ -74,9 +74,6 @@ angular.module('private.scenarist.archives.directives', [])
                 search:"=",
                 loading:"="
             },
-            templateUrl: 'app/private/scenarist/archives/directives.tmpl/list.html',
-            link:function(scope, elem, attrs){
-                scope.MAX_DISPLAYED_CHARS = MAX_DISPLAYED_CHARS;
-            }
+            templateUrl: 'app/private/scenarist/archives/directives.tmpl/list.html'
         };
     });
