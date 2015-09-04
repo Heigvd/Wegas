@@ -1,32 +1,32 @@
 <div class="modal__content__search" search-tool="search"></div>
-<div ng-if="(sessions | filter:{name: search}).length > 0" class="modal__content__list">
-    <div class="card card--big card--archive" ng-repeat="session in sessions | orderBy: 'createdTime':true | filter : { name: search }">
-        <div class="card__illustration illustration illustration--big illustration--icon" illustration="{{session.properties.iconUri}}"></div>
+<div ng-if="!loading && (sessions | filter:{name: search}).length > 0" class="modal__content__list">
+    <div class="card card--archive card--archive-trainer" ng-repeat="session in sessions | orderBy: 'createdTime':true | filter : { name: search }">
+        <div class="card__illustration illustration illustration--icon" illustration="{{session.properties.iconUri}}"></div>
         <div
             class="card__description"
             ng-class="{true:'card__description--two-lines', false:'card__description--three-lines'}[session.gameModel.comments == null || session.gameModel.comments == '']" >
+            <div class="line line--primary">{{session.name}}</div>
             <div class="line">{{session.createdTime | date:"dd.MM.yyyy"}}</div>
-            <div class="line line--primary">{{session.name | limitTo: MAX_DISPLAYED_CHARS}}<span ng-if="session.gameModel.comments.length > MAX_DISPLAYED_CHARS">...</span></div>
-            <div ng-if="!((session.gameModel.comments == null) || (session.gameModel.comments == ''))" class="line line--optionnal">{{session.gameModel.comments | limitTo: 36}}<span ng-if="session.gameModel.comments.length > 36">...</span></div>
+            <div ng-if="!((session.gameModel.comments == null) || (session.gameModel.comments == ''))" class="line line--optionnal">{{session.gameModel.comments}}</div>
         </div>
         <div class="card__actions">
             <a
-                class="button button--medium button--round button--default-reverse button--label-off button--settings"
+                class="button button--small button--round button--default-reverse button--label-off button--settings"
                 title="{{'TRAINER-MODALE-ARCHIVE-SETTINGS-BTN' | translate}}"
                 ng-click="details(session)">
                 <span class="button__label">{{'TRAINER-MODALE-ARCHIVE-SETTINGS-BTN' | translate}}</span>
             </a>
             <a
-                class="button button--medium button--round button--default-reverse button--label-off button--user"
+                class="button button--small button--round button--default-reverse button--label-off button--user"
                 title="{{'TRAINER-MODALE-ARCHIVE-USERS-BTN' | translate}}"
                 ng-click="users(session)">
                 <span class="button__label">{{'TRAINER-MODALE-ARCHIVE-USERS-BTN' | translate}}</span>
             </a>
-            <a class="button button--medium button--round button--default-reverse button--label-off button--undo" title="{{'TRAINER-MODALE-ARCHIVE-MOVE-CURRENT-BTN' | translate}}" ng-click="unarchive(session)">
+            <a class="button button--small button--round button--default-reverse button--label-off button--undo" title="{{'TRAINER-MODALE-ARCHIVE-MOVE-CURRENT-BTN' | translate}}" ng-click="unarchive(session)">
                 <span class="button__label">{{'TRAINER-MODALE-ARCHIVE-MOVE-CURRENT-BTN' | translate}}</span>
             </a>
             <a
-                class="button button--medium button--round button--danger-reverse button--label-off button--trash"
+                class="button button--small button--round button--danger-reverse button--label-off button--trash"
                 title="{{'TRAINER-MODALE-ARCHIVE-DELETE-BTN' | translate}}"
                 confirmed-click="delete(session)"
                 ng-confirm-click="{{'TRAINER-MODALE-ARCHIVE-DELETE-CONFIRM' | translate}}">
@@ -36,6 +36,7 @@
         </div>
     </div>
 </div>
-<div class="modal__content__empty" ng-if="(sessions | filter:{name: search}).length == 0">
+<div class="modal__content__empty" ng-if="!loading && (sessions | filter:{name: search}).length == 0">
     {{'TRAINER-MODALE-ARCHIVE-NO-SESSION' | translate}}"{{search}}"
 </div>
+<div class="modal__content__loading" ng-if="loading" content-loading="{{'COMMONS-SESSIONS-LOADING' | translate}}"></div>

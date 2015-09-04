@@ -4,7 +4,7 @@
         scenarist-scenario-create
         expandable>
 </div>
-<div class="view view--sessions-list view--middle">
+<div class="view view--scenarios-list view--middle">
         <h3><i class="fa fa-magic"></i><span>{{'SCENARIST-INDEX-LIST-TITLE' | translate}}</span></h3>
         <a title="{{'SCENARIST-INDEX-ADD-TITLE' | translate}}" class="view__button-expand button button--small button--info-reverse" expander>
             <span class="button__label">{{'SCENARIST-INDEX-ADD-TITLE' | translate}}</span>
@@ -29,7 +29,7 @@
                 </a>
 	</div>
         <div    ng-if="scenaristIndexCtrl.loading"
-		class="view__list">
-		{{'LOADING' | translate}}
+		class="view__list view__list--loading" 
+                content-loading="{{'COMMONS-SCENARIOS-LOADING' | translate}}">
 	</div>
 </div>

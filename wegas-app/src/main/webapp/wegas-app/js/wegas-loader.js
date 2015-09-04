@@ -178,17 +178,20 @@ YUI().use(function(Y) {
             },
             "wegas-chart": {
                 path: "js/widget/wegas-chart-min.js",
-                requires: ["chartist", "wegas-chart-css"],
+                requires: ["promise", "chartist", "wegas-chart-css"],
                 ws_provides: "Chart"
             },
             "wegas-langselector": {
                 path: "js/widget/wegas-langselector-min.js",
                 ws_provides: "LangSelector"
             },
+            "wegas-text-inputcss": {
+                type: CSS
+            },
             "wegas-text-input": {
                 path: "js/widget/wegas-text-input-min.js",
                 ws_provides: "TextInput",
-                requires: ["wegas-widget", "tinymce", "wegas-panel-fileselect", "wegas-button"]
+                requires: ["wegas-text-inputcss", "wegas-widget", "tinymce", "wegas-panel-fileselect", "wegas-button"]
             },
             "wegas-number-input": {
                 path: "js/widget/wegas-number-input-min.js",

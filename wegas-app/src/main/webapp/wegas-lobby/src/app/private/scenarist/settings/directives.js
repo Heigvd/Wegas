@@ -17,7 +17,6 @@ angular.module('private.scenarist.settings.directives', [
                     display: false
                 };
             };
-        ctrl.MAX_DISPLAYED_CHARS = MAX_DISPLAYED_CHARS;
         ctrl.scenario = {};
         ctrl.hasChanges = {
             all: false,

@@ -13,7 +13,6 @@ YUI.add('wegas-dashboard', function(Y) {
     "use strict";
     Y.Wegas.Dashboard = Y.Base.create("wegas-dashboard", Y.Widget, [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         CONTENT_TEMPLATE: "<div class='dashboard'></div>",
-        ORIGINAL_BLOCS: [],
         renderUI: function(){
             if(this.toolbar) {
                 this.toolbar.removeAll();
@@ -28,7 +27,7 @@ YUI.add('wegas-dashboard', function(Y) {
             }
         },
         syncUI:function(){
-            _createCards();
+            this._createCards();
         },
         _createCards: function(){
             var context = this;
@@ -55,15 +54,18 @@ YUI.add('wegas-dashboard', function(Y) {
             });
         },
         _addOriginalBloc: function(idCard, originalBloc){
-            if(!this.ORIGINAL_BLOCS[idCard]){
-                this.ORIGINAL_BLOCS[idCard] = [];
+            var originalBlocs = this.get("originalBlocs");
+            if(!originalBlocs[idCard]){
+                originalBlocs[idCard] = [];
             }
-            this.ORIGINAL_BLOCS[idCard].push(originalBloc);                        
+            originalBlocs[idCard].push(originalBloc);  
+            this.set("originalBlocs", originalBlocs);
         },
         _resetToInitialBlocs: function(data){
+            var originalBlocs = this.get("originalBlocs");
             data.blocs = [];
-            if(this.ORIGINAL_BLOCS[data.id]){
-                this.ORIGINAL_BLOCS[data.id].forEach(function(bloc){
+            if(originalBlocs[data.id]){
+                originalBlocs[data.id].forEach(function(bloc){
                     data.blocs.push(bloc);
                 });
             }
@@ -122,6 +124,7 @@ YUI.add('wegas-dashboard', function(Y) {
         },
         initializer: function(){
             var context = this;
+            context.set("originalBlocs", {});
             context.get("cardsData").forEach(function(data){
                 if(data.blocs && data.blocs.length > 0){
                     context.get("cardsData").blocs.forEach(function(bloc){

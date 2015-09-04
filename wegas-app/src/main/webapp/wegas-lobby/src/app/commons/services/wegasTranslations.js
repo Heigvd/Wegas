@@ -299,6 +299,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
 
                             // Commons Sessions Model
+                            'COMMONS-SESSIONS-LOADING': {
+                                'en': "Loading " + keywords.session.plural.en,
+                                'fr': "Chargement des " + keywords.session.plural.fr
+                            }, 
                             'COMMONS-SESSIONS-CLOSE-FLASH-ERROR': {
                                 'en': "Closed " + keywords.session.singular.en,
                                 'fr': startSentence(keywords.session.singular.fr) + " fermée"
@@ -429,6 +433,11 @@ angular.module('wegas.service.wegasTranslations', [])
                             },
 
                             // Commons Scenarios Model
+                            
+                            'COMMONS-SCENARIOS-LOADING': {
+                                'en': "Loading " + keywords.scenario.plural.en,
+                                'fr': "Chargement des " + keywords.scenario.plural.fr
+                            },    
                             'COMMONS-SCENARIOS-NO-SCENARIO-FLASH-ERROR': {
                                 'en': "No " + keywords.scenario.singular.en + "choosed",
                                 'fr': "Aucun " + keywords.scenario.singular.fr + " choisi"
@@ -953,8 +962,8 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'fr':"L'"+keywords.team.singular.fr+" existe déjà"
                             },
                             'PLAYER-MODALE-JOIN-TEAM-NUMBER-PLAYER':{
-                                'en':keywords.player.singular.en + "(s)",
-                                'fr':keywords.player.singular.fr + "(s)"
+                                'en':keywords.player.singular.en,
+                                'fr':keywords.player.singular.fr
                             },
                             'PLAYER-MODALE-JOIN-TEAM-JOIN-BTN':{
                                 'en':"Join " + keywords.team.singular.en,
@@ -1001,6 +1010,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'TRAINER-INDEX-ADD-SCENARIO-INPUT':{
                                 'en':"Based on " + keywords.scenario.singular.en,
                                 'fr':"Basé sur le " + keywords.scenario.singular.fr
+                            },
+                            'TRAINER-INDEX-ADD-SCENARIO-LOADING':{
+                                'en':"Loading " + keywords.scenario.plural.en,
+                                'fr':"Chargement des " + keywords.scenario.plural.fr
                             },
                             'TRAINER-INDEX-ADD-BTN':{
                                 'en':"Create",

@@ -111,15 +111,22 @@ angular.module('private.trainer.directives', [
             scope: false,
             require: "^trainerSessionsIndex",
             link: function(scope, element, attrs, parentCtrl) {
-                ScenariosModel.getScenarios("LIVE").then(function(response) {
-                    if (!response.isErroneous()) {
-                        scope.scenarios = response.data;
-                    }
-                });
+                scope.scenarios = [];
+                scope.loadingScenarios = false;
+                var loadScenario = function(){
+                        scope.loadingScenarios = true;
+                        ScenariosModel.getScenarios("LIVE").then(function(response) {
+                            if (!response.isErroneous()) {
+                                scope.loadingScenarios = false;
+                                scope.scenarios = response.data;
+                            }
+                        });
+                    };
                 scope.newSession = {
                     name: "",
                     scenarioId: 0
                 };
+                
                 scope.addSession = function() {
                     var button = $(element).find(".form__submit");
                     if (scope.newSession.scenarioId != 0) {
@@ -131,6 +138,7 @@ angular.module('private.trainer.directives', [
                                         name: "",
                                         scenarioId: 0
                                     };
+                                    scope.$emit('collapse');
                                     parentCtrl.updateSessions(true);
                                     button.removeClass("button--disable button--spinner button--rotate");
                                 } else {
@@ -142,8 +150,18 @@ angular.module('private.trainer.directives', [
                         $translate('COMMONS-SCENARIOS-NO-SCENARIO-FLASH-ERROR').then(function (message) {
                             Flash.warning(message);
                         });
-                    }
+                    }                    
                 };
+                
+                scope.$watch(function() {
+                    return scope.newSession.name;
+                }, function(newValue) {
+                    if(newValue != "" && newValue != undefined && newValue != null){
+                        if(!scope.loadingScenarios && scope.scenarios.length == 0){
+                            loadScenario();
+                        }
+                    }
+                });
             }
         };
     })
