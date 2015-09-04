@@ -26,8 +26,11 @@
 			height:$size-value;
 			&.illustration--icon{
 				i{
-					font-size:(nth($size, 2))/2;
-					line-height:nth($size, 2);
+                                    font-size:(nth($size, 2))/2;
+                                    line-height:nth($size, 2);
+                                    &.wif{
+                                        line-height:nth($size, 2) * 1.2;
+                                    }
 				}
 			}
 		}
@@ -51,6 +54,9 @@
                 i{
                     font-size:$card-size/2;
                     line-height:$card-size;
+                    &.wif{
+                        line-height:$card-size * 1.2;
+                    }
                 }
             }
         }
