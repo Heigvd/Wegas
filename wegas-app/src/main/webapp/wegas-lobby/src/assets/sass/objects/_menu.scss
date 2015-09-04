@@ -122,25 +122,25 @@ $color-btn-menu: #000;
     }
     
     .button--player{
-        &:before{
+        &:before, &:hover:before, &:active:before, &:visited:before{
             color:$player-color;
         }
     }
     
     .button--trainer{
-        &:before{
+        &:before, &:hover:before, &:active:before, &:visited:before{
             color:$trainer-color;
         }
     }
     
     .button--scenarist{
-        &:before{
+        &:before, &:hover:before, &:active:before, &:visited:before{
             color:$scenarist-color;
         }
     }
     
     .button--admin{
-        &:before{
+        &:before, &:hover:before, &:active:before, &:visited:before{
             color:$admin-color;
         }
     }

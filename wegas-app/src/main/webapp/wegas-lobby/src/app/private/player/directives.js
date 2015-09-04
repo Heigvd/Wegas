@@ -4,13 +4,15 @@ angular.module('private.player.directives', [])
             templateUrl: 'app/private/player/directives.tmpl/index.html',
             controller: 'PlayerController as playerCtrl'
         };
-    }).controller("PlayerController", function PlayerController($rootScope, $state, $translate, TeamsModel, SessionsModel, Flash) {
+    }).controller("PlayerController", function PlayerController($rootScope, $scope, $state, $translate, TeamsModel, SessionsModel, Flash) {
         /* Assure access to ctrl. */
         var ctrl = this,
 
             /* Method used to update sessions. */
             updateTeams = function() {
+                ctrl.loading = true;
                 TeamsModel.getTeams().then(function(response) {
+                    ctrl.loading = false;
                     if (!response.isErroneous()) {
                         ctrl.teams = response.data || [];
                     } else {
@@ -21,7 +23,7 @@ angular.module('private.player.directives', [])
 
         /* Container for datas. */
         ctrl.teams = []; 
-
+        ctrl.loading = true;
         /* Method used to check token for adding a session. */
         ctrl.checkToken = function(token) {
             SessionsModel.findSessionToJoin(token).then(function(findResponse) {
@@ -45,12 +47,14 @@ angular.module('private.player.directives', [])
                             if (findResponse.data.properties.freeForAll) {
                                 TeamsModel.joinIndividually(findResponse.data).then(function(joinResponse) {
                                     if (!joinResponse.isErroneous()) {
+                                        $scope.$emit('collapse');
                                         updateTeams();
                                     } else {
                                         joinResponse.flash();
                                     }
                                 });
                             } else {
+                                $scope.$emit('collapse');
                                 $state.go('wegas.private.player.join', {
                                     token: findResponse.data.token
                                 });
@@ -112,11 +116,12 @@ angular.module('private.player.directives', [])
             templateUrl: 'app/private/player/directives.tmpl/list.html',
             scope: {
                 teams: "=",
-                leave: "="
+                leave: "=",
+                loading: "="
             }
         };
     })
-    .directive('playerTeamCard', function(Auth) {
+    .directive('playerTeamCard', function() {
         return {
             templateUrl: 'app/private/player/directives.tmpl/card.html',
             scope: {
@@ -125,7 +130,6 @@ angular.module('private.player.directives', [])
             },
             link: function(scope, element, attrs) {
                 scope.ServiceURL = ServiceURL;
-                scope.MAX_DISPLAYED_CHARS = MAX_DISPLAYED_CHARS;
             }
         };
     });

@@ -4,18 +4,17 @@
 	<div class="col-sm-4">
 	    <input class="input" type="text" ng-model="adminGroupsCtrl.newGroup.name" placeholder="{{'ADMIN-GROUPS-NEW-INPUT' | translate}}" autocomplete="off">
 	</div>
-	<div class="col-sm-2">
+	<div class="col-sm-8">
 		<a class="button button--small button--default" ng-click="adminGroupsCtrl.addGroup()">
 	      	<span class="button__label">{{'ADMIN-GROUPS-NEW-BTN' | translate}}</span>
 	    </a>
     </div>
 </div>
 <div class="clear"></div>
-<div class="card card--medium" ng-repeat="group in adminGroupsCtrl.groups">
-	<div class="card__illustration illustration illustration--medium illustration--icon" illustration="ICON_grey_users"></div>
-	<div 
-	    class="card__description card__description--one-line">
-	    	<div class="line line--primary">{{group.name | limitTo: 36}}<span ng-if="group.name.length > 36">...</span></div>
+<div class="card card--group" ng-repeat="group in adminGroupsCtrl.groups">
+	<div class="card__illustration illustration illustration--icon" illustration="ICON_grey_group_wif"></div>
+	<div class="card__description card__description--one-line">
+		<div class="line line--primary">{{group.name}}</div>
 	</div>
 	<div class="card__actions">
 	    <a class="button button--small button--round button--default-reverse button--label-off button--customize" title="{{'ADMIN-GROUPS-CARD-EDIT-BTN' | translate}}" ui-sref="wegas.private.admin.groups.edit({id: group.id})">

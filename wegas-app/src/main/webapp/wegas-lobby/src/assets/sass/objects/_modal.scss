@@ -14,7 +14,8 @@
 	overflow-x:hidden;
 	overflow-y:auto;
 	transition:.5s;
-
+	@include material-shadow(2);
+        
 	@media screen and (max-width: 800px) {
 		width: 100%;
 		margin-left: 0;
@@ -76,19 +77,18 @@
 	}
 
 	&.modal--users, &.modal--player-team {
-		.modal__tools {
-			a.button {
-				float: right;
-				margin-top: 8px;
-			}
-		}
+            .modal__tools {
+                a.button {
+                    float: right;
+                    margin-top: 8px;
+                }
+            }
 	}
-	@include material-shadow(2);
-
+        
 	&.modal--open{
-		visibility: visible;
-		opacity:1;
-		transition:.5s;
+            visibility: visible;
+            opacity:1;
+            transition:.5s;
 	}
 
 	.modal__header{
@@ -226,6 +226,9 @@
                     height:calc(100% - 65px);
 		}
 
+                .modal__content__loading{
+                    @include loading-message();
+                }
 		.modal__content__colors{
                     display:block;
                     position:relative;
@@ -351,9 +354,13 @@
 
 		.modal__tools {
 			input{
-				width:50%;
-				margin:.6em 1em;
+                            width:50%;
+                            margin:8px 12px;
+                            float:left;
 			}
+                        .button{
+                            margin:8px 0px;
+                        }
 		}
 	}
 	&.modal--archives{

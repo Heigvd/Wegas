@@ -27,7 +27,6 @@ angular.module('private.trainer.users.directives', [
 
         ctrl.session = {};
         ctrl.trainers = [];
-        ctrl.MAX_DISPLAYED_CHARS = MAX_DISPLAYED_CHARS;
         ctrl.restrictRoles = ["Trainer", "Administrator", "Scenarist"];
         ctrl.playersViewActived = true;
         ctrl.kindsOfSession = ($state.$current.name == "wegas.private.trainer.users") ? "LIVE" : "BIN";
