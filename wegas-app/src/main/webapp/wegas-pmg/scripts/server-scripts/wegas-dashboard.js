@@ -23,7 +23,7 @@ var PMGDashboards = (function() {
                 if (item instanceof com.wegas.mcq.persistence.QuestionDescriptor) {
                     items.add(item);
                 } else if (i === currentPeriod - 1 &&
-                           item instanceof com.wegas.core.persistence.variable.ListDescriptor) {
+                    item instanceof com.wegas.core.persistence.variable.ListDescriptor) {
                     items.addAll(item.flatten());
                 }
             }
@@ -61,35 +61,33 @@ var PMGDashboards = (function() {
             phaseName = ['Initiation', 'Planning', 'Executing', 'Closing'],
             managementLabel = getLabel("managementApproval"),
             userLabel = getLabel("userApproval"),
-            
             // Formatter function
-            formatter = function(bloc, value){
+            formatter = function(bloc, value) {
                 bloc.one(".bloc__value")
                     .setStyle("background-color", (value < 90 ? "#ff4a03" : (value > 110 ? "#4caf50" : "#ffa709")))
                     .setStyle("color", "white")
                     .setStyle("font-weight", "bold")
                     .setStyle("border-radius", "2px");
             },
-            
             // Columns & data object structure
             monitoring = {
-                "structure":[{
-                    title: "Monitoring",
-                    items:[    
-                        { "label":"Phase", "formatter":null },
-                        { "label":"Period", "formatter":null },
-                        { "label":"Questions", "formatter":null },
-                        { "label":"Quality", "formatter":formatter },
-                        { "label":"Costs", "formatter":formatter },
-                        { "label":"Schedule", "formatter":formatter },
-                        { "label":managementLabel, "formatter":formatter },
-                        { "label":userLabel, "formatter":formatter }
-                    ]
-                }
+                "structure": [{
+                        title: "Monitoring",
+                        items: [
+                            {"id": "Phase", "label": "Phase", "formatter": null},
+                            {"id": "Period", "label": "Period", "formatter": null},
+                            {"id": "Questions", "label": "Questions", "formatter": null},
+                            {"id": "Quality", "label": "Quality", "formatter": formatter},
+                            {"id": "Costs", "label": "Costs", "formatter": formatter},
+                            {"id": "Schedule", "label": "Schedule", "formatter": formatter},
+                            {"id": "indicator1", "label": managementLabel, "formatter": formatter},
+                            {"id": "indicator2", "label": userLabel, "formatter": formatter}
+                        ]
+                    }
                 ],
-                "data":{}
+                "data": {}
             };
-            
+
         // Find data by team
         for (t = 0; t < teams.size(); t++) {
             teamId = new Long(teams.get(t).getId());
@@ -100,16 +98,16 @@ var PMGDashboards = (function() {
                 "Questions": questionAnswered(teamId, currentPhase[teamId].getValue(), currentPeriod),
                 "Quality": quality[teamId].getValue(),
                 "Costs": cost[teamId].getValue(),
-                "Schedule": schedule[teamId].getValue()
+                "Schedule": schedule[teamId].getValue(),
+                "indicator1": management[teamId].getValue(),
+                "indicator2": user[teamId].getValue()
             };
-            monitoring.data[teamId][managementLabel] = management[teamId].getValue();
-            monitoring.data[teamId][userLabel] = user[teamId].getValue();
         }
-        
+
         // Stringify formatter functions
-        monitoring.structure.forEach(function(groupItems){
-            groupItems.items.forEach(function(item){
-                item.formatter =  item.formatter + "";
+        monitoring.structure.forEach(function(groupItems) {
+            groupItems.items.forEach(function(item) {
+                item.formatter = item.formatter + "";
             });
         });
         // Return stringified object
