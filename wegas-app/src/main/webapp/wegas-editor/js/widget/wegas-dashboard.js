@@ -27,12 +27,19 @@ YUI.add('wegas-dashboard', function(Y) {
             }
         },
         syncUI: function() {
-            this._createCards();
+            var context = this;
+            this._createCards().then(function() {
+                context.fire("synched");
+            });
+        },
+        getMonitoredData: function() {
+            return this._monitoredData || {};
         },
         _createCards: function() {
             var context = this;
             return new Y.Promise(function(resolve, reject) {
                 context._getMonitoredData().then(function(monitoredBlocs) {
+                    context._monitoredData = monitoredBlocs;
                     context.removeAll();
                     context.get("cardsData").forEach(function(data) {
                         var card = {
@@ -50,7 +57,6 @@ YUI.add('wegas-dashboard', function(Y) {
                     }
                     resolve(true);
                 });
-
             });
         },
         _addOriginalBloc: function(idCard, originalBloc) {
