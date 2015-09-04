@@ -806,6 +806,7 @@ YUI().use(function(Y) {
                 requires: ["wegas-review-css",
                     "wegas-reviewing-entities",
                     "slider",
+                    "wegas-teams-dashboard",
                     "chartist",
                     "wegas-text-input",
                     "wegas-tabview"],

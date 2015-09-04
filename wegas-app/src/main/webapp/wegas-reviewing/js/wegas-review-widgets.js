@@ -48,6 +48,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             return counters;
         },
         renderUI: function() {
+            var prd = this.get("variable.evaluated");
             this.dispatchButton = new Y.Button({
                 label: "dispatch",
                 visible: true
@@ -68,6 +69,14 @@ YUI.add("wegas-review-widgets", function(Y) {
                 visible: true
                     //}).render(this.get(CONTENTBOX));
             }).render(this.get(CONTENTBOX).one(".buttons"));
+
+
+            Y.namespace("Wegas.Config").Dashboards = Y.namespace("Wegas.Config").Dashboards || {};
+            Y.namespace("Wegas.Config").Dashboards["orchestrator-" + prd.get("name")] = "ReviewHelper.summarize('" + prd.get("name") + "');";
+
+            this.dashboard = new Y.Wegas.TeamsDashboard({
+                "name": "orchestrator-" + prd.get("name")
+            }).render(this.get(CONTENTBOX).one(".summary"));
         },
         /**
          * @function
@@ -75,27 +84,22 @@ YUI.add("wegas-review-widgets", function(Y) {
          * @description bind function to events.
          */
         bindUI: function() {
+
+            // TODO use updatedInstance
             this.handlers.push(Wegas.Facade.Variable.after("update", this.syncUI, this));
+
             this.dispatchButton.on("click", this.onDispatch, this);
             this.notifyButton.on("click", this.onNotify, this);
             this.closeButton.on("click", this.onClose, this);
             this.refreshButton.on("click", this.syncUI, this);
+            this.dashboard.after("synched", this.syncSummary, this);
         },
         /**
          * @function
          * @private
          */
         syncUI: function() {
-            var prd = this.get("variable.evaluated");
-
-            Wegas.Facade.Variable.script.remoteEval("ReviewHelper.summarize('" + prd.get("name") + "');", {
-                on: {
-                    success: Y.bind(function(e) {
-                        this.syncSummary(e.response.entity.get("val"));
-                    }, this),
-                    failure: Y.bind(function() {
-                    }, this)
-                }});
+            this.dashboard && this.dashboard.syncUI();
         },
         addCell: function(table, content, td) {
             td = td || "td";
@@ -114,56 +118,19 @@ YUI.add("wegas-review-widgets", function(Y) {
             }
             return ["n/a"];
         },
-        syncSummary: function(data) {
-            // TODO make something modern....
-            var i, j, info, output, key, line,
-                summary = data.summary,
-                evalSummary = data.evaluations,
-                evals,
-                node, ev, descriptor,
-                prd = this.get("variable.evaluated");
-
-            output = ["<h1>Summary</h1>", "<table>"];
-
-            this.addCell(output, "#", "th");
-            this.addCell(output, "Status", "th");
-            this.addCell(output, "Review done", "th");
-            this.addCell(output, "Review commented", "th");
-
-            for (key in summary) {
-                line = summary[key];
-                output.push("<tr>");
-                this.addCell(output, key);
-                this.addCell(output, line.status);
-                this.addCell(output, line.done);
-                this.addCell(output, line.commented);
-
-                for (i in line.review) {
-                    info = this.getInfoFromSummary(line.review[i].summary.get("val"))
-                    for (j = 0; j < info.length; j += 1) {
-                        this.addCell(output, info[j]);
-                    }
-                }
-
-                for (i in line.comments) {
-                    info = this.getInfoFromSummary(line.comments[i].summary.get("val"))
-                    for (j = 0; j < info.length; j += 1) {
-                        this.addCell(output, info[j]);
-                    }
-                }
-
-                output.push("</tr>");
-            }
-            output.push("</table>");
-            Y.log(summary);
-
-            this.get(CONTENTBOX).one(".summary").setContent(output.join(""));
+        syncSummary: function() {
+            var data = this.dashboard.getMonitoredData(),
+                evalSummary,
+                node, prd;
+                
+                prd = this.get("variable.evaluated")
+                evalSummary = data.extra;
 
             node = this.get(CONTENTBOX).one(".charts");
             node.setContent("");
             node.append("<h1>Charts</h1>");
-            node.append("<div class=\"feedback\"></div>")
-            node.append("<div class=\"comments\"></div>")
+            node.append("<div class=\"feedback\"></div>");
+            node.append("<div class=\"comments\"></div>");
 
             this.buildCharts(prd.get("feedback").get("evaluations"), node.one(".feedback"), evalSummary);
             this.buildCharts(prd.get("fbComments").get("evaluations"), node.one(".comments"), evalSummary);
@@ -1395,9 +1362,9 @@ YUI.add("wegas-review-widgets", function(Y) {
                 CB.one(".wegas-review-categinput-content").setContent(frag.join(""));
             }
         },
-        getCurrentValue: function(){
+        getCurrentValue: function() {
             var option = this.get("contentBox").one(".wegas-review-categinput-content select option[selected]");
-            if (option){
+            if (option) {
                 return option.getAttribute("value");
             } else {
                 return undefined;
@@ -1409,7 +1376,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             evl = this.get("evaluation");
             value = evl.get("value");
             if (value !== this._initialValue) {
-                
+
                 this._initialValue = value;
                 if (this.get("readonly")) {
                     CB.one(".wegas-review-categinput-content").setContent(value);
