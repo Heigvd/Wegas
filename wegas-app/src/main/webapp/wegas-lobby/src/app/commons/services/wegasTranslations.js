@@ -1269,6 +1269,14 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"Delete version",
                                 'fr':"Supprimer la version"
                             },
+                            'SCENARIST-CARD-VERSION-TITLE':{
+                                'en':"Version of {{dateVersion | date:'MM.dd.yyyy'}}",
+                                'fr':"Version du {{dateVersion | date:'dd.MM.yyyy'}}"
+                            },
+                             'SCENARIST-CARD-VERSION-AUTHOR':{
+                                'en':"Create by {{author}}",
+                                'fr':"Créer par {{author}}"
+                            },
                             'ADMIN-INDEX-TITLE':{
                                 'en':"Welcome to admin",
                                 'fr':"Bienvenue dans la console d'admin"
