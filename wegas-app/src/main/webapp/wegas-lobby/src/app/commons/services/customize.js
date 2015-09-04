@@ -384,7 +384,9 @@ angular.module('wegas.service.customize', [])
 			{name: "glasses", key:"glasses", library: "icon"},
 			{name: "chart", key:"chart", library: "icon"},
 			{name: "address-book", key:"address-book", library: "icon"},
-			{name: "key-1", key:"key-1", library: "icon"}
+			{name: "key-1", key:"key-1", library: "icon"},
+                        {name: "user", key:"user", library: "wif"},
+			{name: "team", key:"team", library: "wif"}
 		];
 	return {
 		colorsPalette: function(){

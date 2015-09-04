@@ -213,10 +213,15 @@
     @each $button-icon in $buttons-icon{
         $icon-name : nth($button-icon, 1);
         $icon-content : nth($button-icon, 2);
+        $icon-font : nth($button-icon, 3);
+        $icon-padding : nth($button-icon, 4);
 
         &.button--#{$icon-name}{
             @extend %button--with-icon;
             &:before, &:hover:before, &:active:before, &:visited:before{
+                margin-top:$icon-padding;
+                font-family: $icon-font;
+                text-transform: none;
                 content: $icon-content;
             }
             
