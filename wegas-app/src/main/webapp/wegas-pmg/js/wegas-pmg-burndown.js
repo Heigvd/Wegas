@@ -23,16 +23,16 @@ YUI.add("wegas-pmg-burndown", function(Y) {
         [Y.WidgetParent, Y.WidgetChild, Wegas.Editable, Wegas.Parent], {
         CONTENT_TEMPLATE: "<div class=\"wegas-chart\">" +
             "<div class=\"iteration-config\">" +
-            "<div class=\"iteration-tasks\">" +
-            "<div class=\"iteration-tasks-title\">Tasks:</div>" +
-            "<div class=\"iteration-tasks-list\"></div>" +
-            "<div class=\"iteration-tasks-toolbar\"></div>" +
-            "</div>" +
             "<div class=\"begin-at-container\">" +
             "<span class=\"begin-at-label\"></span>" +
             "<div class=\"begin-at-input-container\">" +
             "<input class=\"begin-at-input\" />" +
             "</div>" +
+            "</div>" +
+            "<div class=\"iteration-tasks\">" +
+            "<div class=\"iteration-tasks-title\">Tasks:</div>" +
+            "<div class=\"iteration-tasks-list\"></div>" +
+            "<div class=\"iteration-tasks-toolbar\"></div>" +
             "</div>" +
             "</div>" +
             "<div class=\"iteration-chart\">" +
@@ -167,7 +167,7 @@ YUI.add("wegas-pmg-burndown", function(Y) {
                 return e.get("val.periodNumber");
             })),
                 this.getMaxKey(replanning),
-                iteration.get("beginAt") + this.getMaxKey(planning)) + 1;
+                iteration.get("beginAt") + this.getMaxKey(planning), iteration.get("beginAt") + 4) + 1;
 
             // edit beginAt only available when iteration has not started yet
             if (status === "NOT_STARTED") {
@@ -648,14 +648,16 @@ YUI.add("wegas-pmg-burndown", function(Y) {
                 this.addIteration(it);
             }, this);
         },
-        addIteration: function(iteration) {
-            var panel = new Wegas.PmgSlidePanel({
+        addIteration: function(iteration, openTab) {
+            var panel;
+            panel = new Wegas.PmgSlidePanel({
                 title: iteration.get("name"),
                 children: [{
                         type: "PmgIterationWidget",
                         iterationId: iteration.get("id"),
                         burndownInstanceId: this.burndownInstance.get("id")
-                    }]
+                    }],
+                openByDefault : openTab
             }).render(this.get(CONTENTBOX).one(".iterations"));
             panel.on(["*:message", "*:showOverlay", "*:hideOverlay"], this.fire, this);
 
@@ -693,7 +695,7 @@ YUI.add("wegas-pmg-burndown", function(Y) {
                             },
                             on: {
                                 success: Y.bind(function(e) {
-                                    this.addIteration(e.response.entities[0]);
+                                    this.addIteration(e.response.entities[0], true);
                                     //this.syncUI();
                                     this.hideOverlay();
                                 }, this),
