@@ -40,11 +40,11 @@ var PMGSimulation = (function() {
         AUTOMATED_RESERVATION = PMGHelper.automatedReservation();
 
         // Init tables
-        currentPeriodNumber = PMGHelper.getCurrentPeriodNumber();
+        CURRENT_PERIOD_NUMBER = PMGHelper.getCurrentPeriodNumber();
         if (AUTOMATED_RESERVATION) {
             GANTT = PMGHelper.computePert();
         }
-        debug("runSimulation(currentPeriodNumber: " + currentPeriodNumber + ")");
+        debug("runSimulation(currentPeriodNumber: " + CURRENT_PERIOD_NUMBER + ")");
         resourceTable = {};
         iterationTable = {};
         taskTable = {};
