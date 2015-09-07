@@ -482,6 +482,10 @@ tbody .past .activity {
 
 
 /* Iteration Widget */
+.iteration-tasks-toolbar .add{
+    cursor: pointer;
+}
+
 .wegas-pmg-iteration-widget-content > div {
     display: block;
     margin: 16px;
