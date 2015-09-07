@@ -1209,11 +1209,11 @@ td.yui3-datatable-col-Realised:after {
     transition:.3s;
 }
 
-.slidepaneled-page .wegas-slidepanel-toggled .slidepanel-title{
+.slidepaneled-page .wegas-slidepanel-closed .slidepanel-title{
     background-color:white;
     transition:.3s;
 }
-.slidepaneled-page .wegas-slidepanel-toggled .slidepanel-title:hover{
+.slidepaneled-page .wegas-slidepanel-closed .slidepanel-title:hover{
     background-color:#f1f1f1;
 }
 
@@ -1225,11 +1225,11 @@ td.yui3-datatable-col-Realised:after {
     line-height:52px;
 }
 
-.slidepaneled-page .wegas-slidepanel-toggled .slidepanel-title h2{
+.slidepaneled-page .wegas-slidepanel-closed .slidepanel-title h2{
     color:#3e404c;
 }
 
-.slidepaneled-page .wegas-pmg-slidepanel.wegas-slidepanel-toggled{
+.slidepaneled-page .wegas-pmg-slidepanel.wegas-slidepanel-closed{
     border:solid 1px white;
     border-bottom:solid 1px #d8d9dd;
     max-height:48px;
@@ -1253,7 +1253,7 @@ td.yui3-datatable-col-Realised:after {
     transition:.3s;
 }
 
-.wegas-pmg-slidepanel.wegas-slidepanel-toggled .wegas-pmg-slidepanel-content{
+.wegas-pmg-slidepanel.wegas-slidepanel-closed .wegas-pmg-slidepanel-content{
     opacity:1;
     visibility:visible;
     transition:.3s;
@@ -1278,7 +1278,7 @@ td.yui3-datatable-col-Realised:after {
     color:#3e404c;
 }
 
-.slidepaneled-page .wegas-slidepanel-toggled .slidepanel-title:before{
+.slidepaneled-page .wegas-slidepanel-closed .slidepanel-title:before{
     transform:rotate(180deg);
     border:solid 1px #3e404c;
     color:#3e404c;
