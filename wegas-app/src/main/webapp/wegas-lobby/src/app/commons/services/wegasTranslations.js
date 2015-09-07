@@ -173,6 +173,11 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"Please, enter your email",
                                 'fr':"Merci d'entrer votre email"
                             },
+                            // Commons dates
+                            'COMMONS-DATE':{
+                                'en':"{{date | date:'MM/dd/yyyy'}}",
+                                'fr':"{{date | date:'dd.MM.yyyy'}}"
+                            },
 
                             // Commons Auth service
                             'COMMONS-AUTH-PASSWORD-FLASH-SUCCESS':{
@@ -1270,7 +1275,7 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'fr':"Supprimer la version"
                             },
                             'SCENARIST-CARD-VERSION-TITLE':{
-                                'en':"Version of {{dateVersion | date:'MM.dd.yyyy'}}",
+                                'en':"Version of {{dateVersion | date:'MM/dd/yyyy'}}",
                                 'fr':"Version du {{dateVersion | date:'dd.MM.yyyy'}}"
                             },
                              'SCENARIST-CARD-VERSION-AUTHOR':{
