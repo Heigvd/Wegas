@@ -215,7 +215,7 @@ YUI.add("wegas-pmg-burndown", function(Y) {
 
                 if (period >= iteration.get("beginAt")) {
                     wl = planning[period - iteration.get("beginAt")] || 0;
-                    wl.toFixed(2);
+                    wl.toFixed(1);
 
                     if (status === "NOT_STARTED" && (projectedWorkload > 0 || wl > 0)) {
                         // If there is something in the iteration and it still is editable 
@@ -268,7 +268,7 @@ YUI.add("wegas-pmg-burndown", function(Y) {
                     retroPlanning[period] = (retroPlanning[period] || 0) + wl;
 
                     x = period - (10 - workloads[i].get("val.lastWorkedStep")) / 10;
-                    wl = remainingWorkload.toFixed(2);
+                    wl = remainingWorkload.toFixed(1);
                     effectiveSerie.push({
                         x: x,
                         y: wl
@@ -308,7 +308,7 @@ YUI.add("wegas-pmg-burndown", function(Y) {
                 // Replanning
                 for (period = currentPeriod; period <= this.getMaxKey(replanning); period += 1) {
                     // Get replanned workload
-                    wl = (replanning[period] || 0).toFixed(2);
+                    wl = (replanning[period] || 0).toFixed(1);
 
                     if (status !== "NOT_STARTED" && (remainingWorkload > 0 || wl > 0)) {
                         //node.append("<input class=\"replanning\" period=\"" + period + "\" value=\"" + wl + " \"/>");
