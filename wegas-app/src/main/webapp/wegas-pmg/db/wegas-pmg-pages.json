@@ -1888,9 +1888,9 @@
                         ],
                         "data": {}
                     }, {
-                        "label": "<span class='checkbox'>Burndowns</span>",
+                        "label": "<span class='checkbox'>Burndowns (experimental)</span>",
                         "type": "Button",
-                        "cssClass": "pmg-properties-button",
+                        "cssClass": "pmg-properties-button wegas-advanced-feature",
                         "plugins": [
                             {
                                 "fn": "ExecuteScriptAction",
