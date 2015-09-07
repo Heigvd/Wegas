@@ -32,12 +32,18 @@ var PMGHelper = (function() {
         var plannedPeriods = getPlannedPeriods(taskInstance);
 
         if (plannedPeriods.length > 0) {
-            return (1 - (taskInstance.getPropertyD("completeness") / 100) * plannedPeriods.length);
+            return ((1 - (taskInstance.getPropertyD("completeness") / 100)) * plannedPeriods.length);
         } else {
-            return (1 - (taskInstance.getPropertyD("completeness") / 100) * taskInstance.getPropertyD("duration"));
+            return ((1 - (taskInstance.getPropertyD("completeness") / 100)) * taskInstance.getPropertyD("duration"));
         }
     }
 
+    /**
+     * entry{
+     * 
+     * }
+     * @returns {unresolved}
+     */
     function computePert() {
         var tasks, taskId, taskDesc,
             predecessors, i, minBeginAt, delta,
@@ -165,7 +171,26 @@ var PMGHelper = (function() {
                 }
             }
         }
+        //printGantt(taskTable);
         return taskTable;
+    }
+
+    function printGantt(gantt) {
+        var key, item, entry;
+        for (key in gantt) {
+            if (gantt.hasOwnProperty(key)) {
+                entry = gantt[key];
+                printMessage("");
+                printMessage("**************************");
+                printMessage(entry.descriptor.getLabel());
+                printMessage("**************************");
+                for (item in entry) {
+                    if (entry.hasOwnProperty(item)) {
+                        printMessage("\t" + item + ": " + entry[item]);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -305,7 +330,7 @@ var PMGHelper = (function() {
                 if (Y.Array.find(resourceInst.assignments, function(a) {
                     var entry = gantt[a.getTaskDescriptorId()];
                     if (entry) {
-                        return Y.Array.find(gantt[a.getTaskDescriptorId()].planned, function(p) {
+                        return Y.Array.find(entry.planned, function(p) {
                             return p === period;
                         }, this);
                     }
@@ -768,7 +793,7 @@ var PMGHelper = (function() {
         removeTaskFromIteration: function(taskDescriptorId, iterationId) {
             return removeTaskFromIteration(Variable.find(taskDescriptorId), findIteration(iterationId));
         },
-        findIteration: function(iterationId){
+        findIteration: function(iterationId) {
             return findIteration(iterationId);
         },
         sendManual: function() {
