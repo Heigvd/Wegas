@@ -173,6 +173,11 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"Please, enter your email",
                                 'fr':"Merci d'entrer votre email"
                             },
+                            // Commons dates
+                            'COMMONS-DATE':{
+                                'en':"{{date | date:'MM/dd/yyyy'}}",
+                                'fr':"{{date | date:'dd.MM.yyyy'}}"
+                            },
 
                             // Commons Auth service
                             'COMMONS-AUTH-PASSWORD-FLASH-SUCCESS':{
@@ -993,6 +998,10 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"Reload " + keywords.team.singular.en,
                                 'fr':"Recharger l'" + keywords.team.singular.fr
                             },
+                            'PLAYER-MODALE-TEAM-RELOAD-OK-BTN':{
+                                'en':keywords.team.singular.en + " reloaded",
+                                'fr':keywords.team.singular.fr + " mise à jour"
+                            },
                             'PLAYER-JOIN-TEAM-KEY-FLASH-ERROR': {
                                 'en':"This is not a valid " + keywords.token.singular.en,
                                 'fr':startSentence(keywords.token.singular.fr) + " invalide"
@@ -1070,6 +1079,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'TRAINER-MODALE-USERS-RELOAD-BTN':{
                                 'en':"Reload users",
                                 'fr':"Recharger les utilisateurs"
+                            },
+                            'TRAINER-MODALE-USERS-RELOAD-OK-BTN':{
+                                'en':"Users reloaded",
+                                'fr':"Utilisateurs rechargés"
                             },
                             'TRAINER-MODALE-USERS-REMOVE-TRAINER-BTN':{
                                 'en':"Remove access to " + keywords.trainer.singular.en,
@@ -1268,6 +1281,14 @@ angular.module('wegas.service.wegasTranslations', [])
                             'SCENARIST-MODALE-VERSIONS-DELETE-BTN':{
                                 'en':"Delete version",
                                 'fr':"Supprimer la version"
+                            },
+                            'SCENARIST-CARD-VERSION-TITLE':{
+                                'en':"Version of {{dateVersion | date:'MM/dd/yyyy'}}",
+                                'fr':"Version du {{dateVersion | date:'dd.MM.yyyy'}}"
+                            },
+                             'SCENARIST-CARD-VERSION-AUTHOR':{
+                                'en':"Create by {{author}}",
+                                'fr':"Créer par {{author}}"
                             },
                             'ADMIN-INDEX-TITLE':{
                                 'en':"Welcome to admin",

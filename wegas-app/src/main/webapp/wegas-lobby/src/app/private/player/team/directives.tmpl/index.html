@@ -5,15 +5,14 @@
    		<span class="button__label">{{'MODALE-CLOSE' | translate}}</span>
 	</a>
 </div>
-<div 
-	class="modal__content modal__content--nav-off" 
+<div    class="modal__content modal__content--nav-off" 
 	players="playerTeamCtrl.team.players"
 	player-team-players-list >
 </div>
 <div class="modal__tools">
-	<div class="col-xs-3 col-xs-push-9">
-		<a class="button button--label-off button--refresh" title="{{'PLAYER-MODALE-TEAM-RELOAD-BTN' | translate}}" ng-click="playerTeamCtrl.refreshTeam()">
-	    	<span class="button__label">{{'PLAYER-MODALE-TEAM-RELOAD-BTN' | translate}}</span>
-	    </a>
-	</div>
+    <a  class="button" 
+        ng-class="{'-1':'button--label-off button--default button--refresh', '0':'button--valid button--success', '1':'button--label-off button--refresh button--default button--rotate'}[playerTeamCtrl.refreshing]"
+        title="{{'PLAYER-MODALE-TEAM-RELOAD-BTN' | translate}}" ng-click="playerTeamCtrl.refreshTeam()">
+        <span class="button__label">{{'PLAYER-MODALE-TEAM-RELOAD-OK-BTN' | translate}}</span>
+    </a>
 </div>

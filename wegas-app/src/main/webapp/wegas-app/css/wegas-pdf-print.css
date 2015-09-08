@@ -9,9 +9,23 @@
  * Created on : Jul 3, 2014, 6:56:19 PM
     Author     : maxence
 */
-@page {
+@page{
     size: a4;
     margin: 10mm;
+}
+
+@media print {
+    body {
+        font-size: 10pt;
+        font-family: "DejaVu Sans" ;
+    }
+}
+
+@media screen {
+    body {   
+        font-size: 10pt;
+        font-family: "DejaVu Sans" ;
+    }
 }
 
 @page {
@@ -88,11 +102,6 @@
 
 .header .value {
 
-}
-
-.wegas-pdf-variable-container.wegas-pdf-QuestionDescriptor {
-    font-family: "DejaVu Sans" ;
-    font-size: 8pt;
 }
 
 div.wegas-pdf-text-container span.wegas-pdf-code{
@@ -218,7 +227,7 @@ div.wegas-pdf-text-container div{
 }
 
 span.wegas-pdf-variable-title {
-    font-size: 1.5em;
+    font-size: 1.2em;
     display : block;
     padding-bottom: 0px;
     font-weight: bolder;
@@ -256,7 +265,7 @@ div.wegas-pdf-property {
 }
 
 
-.mode_player Â .wegas-pdf-QuestionDescriptor span.wegas-pdf-property-key {
+.mode_player Ãƒâ€šÃ‚Â .wegas-pdf-QuestionDescriptor span.wegas-pdf-property-key {
     display : none;
 }
 
