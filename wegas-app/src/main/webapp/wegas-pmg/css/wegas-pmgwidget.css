@@ -207,6 +207,7 @@ tbody .past .activity {
     padding: 0px;
     margin-left: 4px;
     margin-top:-1px;
+    max-width: 100px;
 }
 
 .iteration-tasks-list .task,
@@ -253,12 +254,11 @@ tbody .past .activity {
     padding:0px;
     padding-top: 0px;
     margin-left: -12px;
-    z-index: 1;
     top: -18px!important;
     left: 50% !important;
     width: 24px;
     height:50px;
-    z-index:9;
+    z-index: 20;
 }
 
 .iteration-tasks-list .task .remove:before,
@@ -497,6 +497,7 @@ tbody .past .activity {
 }
 
 .wegas-pmg-iteration-widget-content .iteration-config > div {
+    margin: 18px 0px;
     display: flex;
 }
 
@@ -565,18 +566,22 @@ tbody .past .activity {
 
 /* Iteration Chart */
 
+.wegas-pmg-iteration-widget-content .wegas-chart .legend > div {
+    clear: both;   
+}
+
 /* Initial Planning, not started*/
-.wegas-app-default .iteration-chart .iteration-not-started .ct-series-a .ct-line{
+.wegas-app-default .iteration-not-started .iteration-chart .ct-series-a .ct-line{
     stroke : #68ccc5;
 }
-.wegas-app-default .iteration-chart .iteration-not-started .ct-series-a .ct-point{
+.wegas-app-default .iteration-not-started .iteration-chart .ct-series-a .ct-point{
     stroke: #68ccc5;
 }
-.wegas-app-default .iteration-chart .iteration-not-started .ct-series-a .ct-area{
+.wegas-app-default .iteration-not-started .iteration-chart .ct-series-a .ct-area{
     fill : #68ccc5;
     fill-opacity: .3;
 }
-.wegas-app-default .iteration-chart .iteration-not-started  .legend .color.ct-series-a {
+.wegas-app-default .iteration-not-started  .legend .color.ct-series-a {
     background-color: #68ccc5;
 }
 
@@ -590,7 +595,7 @@ tbody .past .activity {
     fill : #878787;
     fill-opacity: .3;
 }
-.wegas-app-default .iteration-chart .legend .color.ct-series-a {
+.wegas-app-default .legend .color.ct-series-a {
     background-color: #878787;
 }
 
@@ -606,7 +611,7 @@ tbody .past .activity {
     fill : #53a29d;
     fill-opacity: .6;
 }
-.wegas-app-default .iteration-chart .legend .color.ct-series-b {
+.wegas-app-default .legend .color.ct-series-b {
     background-color: #9BBDAF;
 }
 
@@ -620,7 +625,7 @@ tbody .past .activity {
     fill : #68ccc5;
     fill-opacity: .3;
 }
-.wegas-app-default .iteration-chart .legend .color.ct-series-c {
+.wegas-app-default .legend .color.ct-series-c {
     background-color: #68ccc5;
 }
 
@@ -631,10 +636,10 @@ tbody .past .activity {
     stroke: rgb(221, 84, 0);
 }
 .wegas-app-default .iteration-chart .ct-series-d .ct-area{
-    /*fill: #68ccc5;
-    fill-opacity: 0;*/
+    fill: #68ccc5;
+    fill-opacity: 0;
 }
-.wegas-app-default .iteration-chart .legend .color.ct-series-d {
+.wegas-app-default .legend .color.ct-series-d {
     background-color: rgb(221, 84, 0);
 }
 

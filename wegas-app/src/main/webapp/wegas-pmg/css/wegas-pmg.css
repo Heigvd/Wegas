@@ -1289,6 +1289,14 @@ td.yui3-datatable-col-Realised:after {
 
 
 /*-------------------- project-page, evm-page & iterations-page --------------------*/
+
+.pmg-iterations-page .iteration-config .rm-iteration {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    color: #BF3737;
+}
+    
 .pmg-iterations-page .rm-iteration, .pmg-iterations-page .toolbar .add-iteration {
     cursor: pointer;
     color: #656774;

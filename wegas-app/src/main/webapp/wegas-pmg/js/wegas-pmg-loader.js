@@ -25,7 +25,9 @@ YUI.addGroup("wegas-pmg", {
             ws_provides: "PmgBreadcrumb"
         },
         "wegas-pmg-burndown": {
-            requires: ['wegas-pmg-slidepanel', 'chartist'],
+            requires: ['wegas-pmg-slidepanel', 'chartist',
+                "chartist-axistitle"
+            ],
             ws_provides: ['PmgIterationsPanels', 'PmgIterationWidget']
         },
         "wegas-pmg-datatable": {
@@ -43,9 +45,9 @@ YUI.addGroup("wegas-pmg", {
             ws_provides: 'Reservation'
         },
         /*"wegas-pmg-abstractpert": {
-            path: 'js/plugin/wegas-pmg-abstractpert-min.js',
-            ws_provides: 'AbstractPert'
-        },*/
+         path: 'js/plugin/wegas-pmg-abstractpert-min.js',
+         ws_provides: 'AbstractPert'
+         },*/
         "wegas-pmg-autoreservation-color": {
             path: 'js/plugin/wegas-pmg-autoreservation-color-min.js',
             requires: ['wegas-pmgwidget-css'],

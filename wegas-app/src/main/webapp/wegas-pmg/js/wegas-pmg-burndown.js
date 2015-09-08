@@ -43,6 +43,8 @@ YUI.add("wegas-pmg-burndown", function(Y) {
             "<div class=\"planning-ongoing\" style=\"clear: both;\"></div>" +
             "</div>" +
             "<div class=\"planning-tools\"\"></div>" +
+            "</div>" +
+            "<div class=\"wegas-chart\">" +
             "<div class=\"legend\" style=\"clear: both;\">" +
             "</div>" +
             "</div>" +
@@ -102,16 +104,22 @@ YUI.add("wegas-pmg-burndown", function(Y) {
                 planningSerie = [],
                 effectiveSerie = [],
                 replanningSerie = [],
-                tasks = iteration.getTaskDescriptors(),
+                tasks,
                 taskD, i, node, wl,
                 x,
                 projectedWorkload, parentBB;
 
+
+            tasks = iteration.getTaskDescriptors().sort(function(a, b) {
+                return Y.ArraySort.naturalCompare(a.get("index"), b.get("index"));
+            });
+
             parentBB = this.get("parent").get("boundingBox");
+
             if (status === "NOT_STARTED") {
                 parentBB.addClass("iteration-not-started");
                 if (!CB.one(".iteration-config .rm-iteration")) {
-                    CB.one(".iteration-config").append("<i class=\"rm-iteration fa fa-minus-square-o fa-2x\"></i>");
+                    CB.one(".iteration-config").append("<i class=\"rm-iteration fa fa-times-circle fa-2x\"></i>");
                 }
                 CB.one(".legend").setContent("<div>" +
                     "<span class=\"color ct-series-a\"></span><span class=\"label\">Planned</span>" +
@@ -386,7 +394,30 @@ YUI.add("wegas-pmg-burndown", function(Y) {
                     low: 0,
                     type: Chartist.AutoScaleAxis,
                     onlyInteger: true
-                }
+                },
+                plugins: [
+                    Chartist.plugins.ctAxisTitle({
+                        axisX: {
+                            axisTitle: 'Periods',
+                            axisClass: 'ct-axis-title',
+                            offset: {
+                                x: 0,
+                                y: 30
+                            },
+                            textAnchor: 'middle'
+                        },
+                        axisY: {
+                            axisTitle: 'Workloads',
+                            axisClass: 'ct-axis-title',
+                            offset: {
+                                x: 0,
+                                y: 25
+                            },
+                            textAnchor: 'middle',
+                            flipTitle: true
+                        }
+                    })
+                ]
             });
         },
         addInput: function(node, klass, period, value) {
@@ -657,7 +688,7 @@ YUI.add("wegas-pmg-burndown", function(Y) {
                         iterationId: iteration.get("id"),
                         burndownInstanceId: this.burndownInstance.get("id")
                     }],
-                openByDefault : openTab
+                openByDefault: openTab
             }).render(this.get(CONTENTBOX).one(".iterations"));
             panel.on(["*:message", "*:showOverlay", "*:hideOverlay"], this.fire, this);
 
