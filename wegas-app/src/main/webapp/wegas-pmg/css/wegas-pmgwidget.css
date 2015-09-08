@@ -494,11 +494,11 @@ tbody .past .activity {
 
 .wegas-pmg-iteration-widget-content .iteration-config {
     height: 100%;
+    width: 200px;
 }
 
 .wegas-pmg-iteration-widget-content .iteration-config > div {
     margin: 18px 0px;
-    display: flex;
 }
 
 .wegas-pmg-iteration-widget-content .begin-at-container > * {
@@ -517,6 +517,15 @@ tbody .past .activity {
 .wegas-pmg-iteration-widget-content .planning-tools {
     float: left;
     /* margin: 3px 0 0 5px; */
+}
+.iteration-not-started .wegas-pmg-iteration-widget-content .planning-legend {
+    top: 222px;
+}
+.wegas-pmg-iteration-widget-content .planning-legend {
+    position: absolute;
+    top: 232px;
+    color: rgba(0,0,0,0.4);
+    left: 230px;
 }
 .wegas-pmg-iteration-widget-content .planning-tools .add-planning-input {
     margin: 4px 0 0 5px;
@@ -581,7 +590,7 @@ tbody .past .activity {
     fill : #68ccc5;
     fill-opacity: .3;
 }
-.wegas-app-default .iteration-not-started  .legend .color.ct-series-a {
+.wegas-app-default .iteration-not-started .wegas-pmg-iteration-widget-content .legend .color.ct-series-a {
     background-color: #68ccc5;
 }
 
@@ -595,7 +604,7 @@ tbody .past .activity {
     fill : #878787;
     fill-opacity: .3;
 }
-.wegas-app-default .legend .color.ct-series-a {
+.wegas-app-default .wegas-pmg-iteration-widget-content .legend .color.ct-series-a {
     background-color: #878787;
 }
 
@@ -611,7 +620,7 @@ tbody .past .activity {
     fill : #53a29d;
     fill-opacity: .6;
 }
-.wegas-app-default .legend .color.ct-series-b {
+.wegas-app-default .wegas-pmg-iteration-widget-content .legend .color.ct-series-b {
     background-color: #9BBDAF;
 }
 
@@ -625,7 +634,7 @@ tbody .past .activity {
     fill : #68ccc5;
     fill-opacity: .3;
 }
-.wegas-app-default .legend .color.ct-series-c {
+.wegas-app-default .wegas-pmg-iteration-widget-content .legend .color.ct-series-c {
     background-color: #68ccc5;
 }
 

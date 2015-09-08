@@ -956,7 +956,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 i, taskI, started, completed = tasks.length > 0,
                 completeness;
 
-            started = Y.Wegas.PMGHelper.getCurrentPhaseNumber() > 3 && Y.Wegas.PMGHelper.getCurrentPeriodNumber() > this.get("beginAt");
+            started = Y.Wegas.PMGHelper.getCurrentPhaseNumber() > 3 || (Y.Wegas.PMGHelper.getCurrentPhaseNumber() === 3 && Y.Wegas.PMGHelper.getCurrentPeriodNumber() > this.get("beginAt"));
 
             for (i = 0; i < tasks.length; i += 1) {
                 taskI = tasks[i].getInstance();

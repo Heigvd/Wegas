@@ -527,7 +527,7 @@ var PMGHelper = (function() {
         // one task tasks false either (empty iteration should never seen as completed)
         completed = tasks.length > 0;
         started = ((PMGHelper.getCurrentPhaseNumber() > 3) ||
-            (PMGHelper.getCurrentPhaseNumber() === 3 && PMGHelper.getCurrentPeriod() > iteration.getBeginAt()));
+            (PMGHelper.getCurrentPhaseNumber() === 3 && PMGHelper.getCurrentPeriodNumber() > iteration.getBeginAt()));
 
         for (i = 0; i < tasks.length; i += 1) {
             taskD = tasks[i];

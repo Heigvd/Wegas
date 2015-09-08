@@ -1293,8 +1293,8 @@ td.yui3-datatable-col-Realised:after {
 .pmg-iterations-page .iteration-config .rm-iteration {
     position: absolute;
     right: 8px;
-    top: 8px;
-    color: #BF3737;
+    bottom: 8px;
+    color: #d45951;
 }
     
 .pmg-iterations-page .rm-iteration, .pmg-iterations-page .toolbar .add-iteration {
