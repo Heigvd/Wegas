@@ -1267,7 +1267,7 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'fr':"JSON"
                             },
                             'SCENARIST-MODALE-VERSIONS-NO-VERSION':{
-                                'en':"There is no version actually.",
+                                'en':"No version available for this " + keywords.scenario.singular.en + ".",
                                 'fr':"Ce " + keywords.scenario.singular.fr + " n'a pas encore de version."
                             },
                             'SCENARIST-MODALE-VERSIONS-AVAILABLE-VERSIONS':{
