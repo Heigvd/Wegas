@@ -626,7 +626,7 @@ var PMGHelper = (function() {
     }
 
     function addIteration(beginAt) {
-        var burndownInstance = getBurndownInstance(),
+        var burndownInstance = getBurndownInstance(), iterations, number,
             iterationFacade = lookupBean("IterationFacade"),
             iteration;
 
@@ -636,7 +636,14 @@ var PMGHelper = (function() {
 
         iteration = new com.wegas.resourceManagement.persistence.Iteration();
 
-        iteration.setName("Iteration " + (burndownInstance.getIterations().length + 1));
+        iterations = burndownInstance.getIterations();
+        if (iterations.length > 0) {
+            number = +iterations.get(iterations.length - 1).getName().match(/Iteration (\d*)/)[1] + 1;
+        } else {
+            number = 1;
+        }
+
+        iteration.setName("Iteration " + number);
         iteration.setBeginAt(beginAt);
 
         iterationFacade.addIteration(burndownInstance, iteration);
