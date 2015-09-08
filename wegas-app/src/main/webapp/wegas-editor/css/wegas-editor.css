@@ -58,7 +58,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 
 /** Hide all advanced feature while in std mode */
 .wegas-stdmode .wegas-advanced-feature {
-    display: none;
+    display: none !important;
 }
 
 .wegas-advanced-feature {

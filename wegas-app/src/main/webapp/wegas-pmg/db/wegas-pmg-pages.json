@@ -52,7 +52,6 @@
                                     },
                                     {
                                         "type": "Template",
-                                        "cssClass": "pmg-title",
                                         "custom": "<% var gameModel = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel(), name; %> <p>Project Management Game<br /><b><% if(gameModel.get('properties.freeForAll')){ name = Y.Wegas.Facade.Game.cache.getCurrentPlayer().get('name'); }else{ name = Y.Wegas.Facade.Game.cache.getCurrentTeam().get('name'); } %><%= name %></b></p>"
                                     }
                                 ]
@@ -776,6 +775,31 @@
                                                                 }
                                                             }
                                                         ]
+                                                    }, {
+                                                        "label": "Iterations",
+                                                        "type": "Button",
+                                                        "plugins": [
+                                                            {
+                                                                "fn": "OpenPageAction",
+                                                                "cfg": {
+                                                                    "targetEvent": "click",
+                                                                    "subpageId": 20,
+                                                                    "targetPageLoaderId": "maindisplayarea"
+                                                                }
+                                                            },
+                                                            {
+                                                                "fn": "ConditionalDisable",
+                                                                "cfg": {
+                                                                    "condition": {
+                                                                        "@class": "Script",
+                                                                        "content": "Variable.find(gameModel, \"currentPhase\").getValue(self)<2 || !Variable.find(gameModel, \"burndownEnabled\").getValue(self)",
+                                                                        "language": "JavaScript"
+                                                                    },
+                                                                    "attribute": "cssClass",
+                                                                    "value": "hidden-button"
+                                                                }
+                                                            }
+                                                        ]
                                                     }
                                                 ]
                                             },
@@ -1291,7 +1315,7 @@
         "children": [
             {
                 "type": "PmgResourcesPanels",
-                "cssClass": "resources-page"
+                "cssClass": "resources-page slidepaneled-page"
             }
         ],
         "@name": "Resources"
@@ -1788,7 +1812,7 @@
                                     "targetEvent": "click",
                                     "onClick": {
                                         "@class": "Script",
-                                        "content": "if (Variable.find(gameModel, \"autoReservation\").getValue(self)){\n    Variable.find(gameModel, \"autoReservation\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"autoReservation\").setValue(self, true);\n}\n"
+                                        "content": "var blnDesc = Variable.find(gameModel, \"autoReservation\"); blnDesc.setValue(self, ! blnDesc.getValue(self));"
                                     }
                                 }
                             },
@@ -1817,7 +1841,7 @@
                                     "targetEvent": "click",
                                     "onClick": {
                                         "@class": "Script",
-                                        "content": "if (Variable.find(gameModel, \"forceQuestionReplies\").getValue(self)){\n    Variable.find(gameModel, \"forceQuestionReplies\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"forceQuestionReplies\").setValue(self, true);\n}\n"
+                                        "content": "var blnDesc = Variable.find(gameModel, \"forceQuestionReplies\"); blnDesc.setValue(self, ! blnDesc.getValue(self));"
                                     }
                                 }
                             },
@@ -1846,7 +1870,7 @@
                                     "targetEvent": "click",
                                     "onClick": {
                                         "@class": "Script",
-                                        "content": "if (Variable.find(gameModel, \"evm\").getValue(self)){\n    Variable.find(gameModel, \"evm\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"evm\").setValue(self, true);\n}\n"
+                                        "content": "var blnDesc = Variable.find(gameModel, \"evm\"); blnDesc.setValue(self, ! blnDesc.getValue(self));"
                                     }
                                 }
                             },
@@ -1856,6 +1880,34 @@
                                     "condition": {
                                         "@class": "Script",
                                         "content": "Variable.find(gameModel, \"evm\").getValue(self);\n"
+                                    },
+                                    "attribute": "cssClass",
+                                    "value": "selected"
+                                }
+                            }
+                        ],
+                        "data": {}
+                    }, {
+                        "label": "<span class='checkbox'>Burndowns (experimental)</span>",
+                        "type": "Button",
+                        "cssClass": "pmg-properties-button wegas-advanced-feature",
+                        "plugins": [
+                            {
+                                "fn": "ExecuteScriptAction",
+                                "cfg": {
+                                    "targetEvent": "click",
+                                    "onClick": {
+                                        "@class": "Script",
+                                        "content": "var blnDesc = Variable.find(gameModel, \"burndownEnabled\"); blnDesc.setValue(self, ! blnDesc.getValue(self));"
+                                    }
+                                }
+                            },
+                            {
+                                "fn": "ConditionalDisable",
+                                "cfg": {
+                                    "condition": {
+                                        "@class": "Script",
+                                        "content": "Variable.find(gameModel, \"burndownEnabled\").getValue(self);\n"
                                     },
                                     "attribute": "cssClass",
                                     "value": "selected"
@@ -1917,6 +1969,20 @@
                 ]
             }
         ]
+    },
+    "20": {
+        "cssClass": "pmg-iterations-page slidepaneled-page",
+        "type": "List",
+        "direction": "vertical",
+        "children": [{
+                "type": "Text",
+                "content": "<div class=\"pmg-title\">Iterations</div>"
+            }, {
+                "type": "PmgIterationsPanels",
+                "cssClass": "pmg-iterations-panels"
+            }
+        ],
+        "@name": "Burndowns"
     },
     "Team": {
         "type": "EditTeam"

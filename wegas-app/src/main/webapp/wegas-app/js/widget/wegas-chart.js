@@ -139,7 +139,7 @@ YUI.add('wegas-chart', function(Y) {
             // TODO hide 
             this.handlers.push(CB.delegate("mouseenter", function(e) {
                 var value, name;
-                name = e.target.getDOMNode().parentNode.getAttribute("ct:series-name")
+                name = e.target.getDOMNode().parentNode.getAttribute("ct:series-name");
                 value = e.target.getAttribute("ct:value");
                 tooltip.setContent(name + "<br />" + value);
                 tooltip.show();

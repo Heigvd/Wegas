@@ -12,16 +12,18 @@
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
- * 
+ *
  * @author Maxence Laurent <maxence.laurent@gmail.com>
  */
 
-/*global Java, Event, ErrorManager, PMGHelper, Variable, debug, self, gameModel, Y, I18n */
+/*global Java, Event, ErrorManager, PMGHelper, Variable, debug, self, gameModel, Y, I18n, lookupBean */
+
 var PMGSimulation = (function() {
     "use strict";
 
-    var taskTable, resourceTable,
-        currentPeriodNumber,
+    var taskTable, resourceTable, iterationTable, // To store various variables throughout the steps
+        CURRENT_PERIOD_NUMBER,
+        CURRENT_PHASE_NUMBER,
         GANTT = null,
         AUTOMATED_RESERVATION = false,
         STEPS = 10,
@@ -34,16 +36,19 @@ var PMGSimulation = (function() {
      * Call function step at each step.
      */
     function runSimulation() {
-        var i, activeTasks = getActiveTasks();
+        var i, activeTasks = getActiveTasks(), iterations = getIterations(), iteration;
         AUTOMATED_RESERVATION = PMGHelper.automatedReservation();
-        currentPeriodNumber = PMGHelper.getCurrentPeriodNumber();
+
+        // Init tables
+        CURRENT_PERIOD_NUMBER = PMGHelper.getCurrentPeriodNumber();
         if (AUTOMATED_RESERVATION) {
             GANTT = PMGHelper.computePert();
         }
-        debug("runSimulation(currentPeriodNumber: " + currentPeriodNumber + ")");
+        debug("runSimulation(currentPeriodNumber: " + CURRENT_PERIOD_NUMBER + ")");
         resourceTable = {};
-        // Init task table
+        iterationTable = {};
         taskTable = {};
+        debug("runSimulation::fillTaskTable");
         for (i = 0; i < activeTasks.length; i += 1) {
             taskTable[activeTasks[i].descriptor.name] = {
                 completeness: activeTasks[i].getPropertyD("completeness"),
@@ -51,6 +56,16 @@ var PMGSimulation = (function() {
             };
         }
 
+        // Init Iteration Status Table
+        debug("runSimulation::fillIterationTable");
+        for (i = 0; i < iterations.length; i += 1) {
+            iteration = iterations[i];
+            iterationTable[iteration.id] = PMGHelper.getIterationStatus(iteration);
+            iterationTable[iteration.id].spent = 0;
+            iterationTable[iteration.id].lastWorkedStep = 0;
+        }
+
+        // Calculus
         for (i = 0; i < STEPS; i += 1) {
             step(i);
         }
@@ -58,6 +73,111 @@ var PMGSimulation = (function() {
         debug("All Step Computed");
         closePeriod();
     }
+
+    function updateIterationPlanning(iteration) {
+        var remainingWL = iterationTable[iteration.id].final.remainingWorkload,
+            replannedWL = iteration.getReplannedWorkloads(),
+            remainingPlannedWL = 0, i, keys, diff, k, planned, nPlanned, toRemove = [];
+
+        keys = Y.Object.keys(replannedWL);
+        for (k in keys) {
+            k = keys[k];
+            if (k <= CURRENT_PERIOD_NUMBER) {
+                // destory the past
+                iteration.replan(k, 0);
+            } else {
+                remainingPlannedWL += replannedWL[k];
+            }
+        }
+
+        // too much planned, cut the planning
+        if (remainingPlannedWL > remainingWL) {
+            keys = Y.Object.keys(replannedWL).sort(function(a, b) {
+                return a > b;
+            });
+
+            diff = remainingWL - remainingPlannedWL;
+
+            for (i = 0; diff > 0; i += 1) {
+                debug("Diff: " + diff);
+                k = keys[i];
+                planned = replannedWL[k];
+                nPlanned = Math.min(planned, diff);
+                debug("planed: " + planned);
+                debug("nPlaned: " + nPlanned);
+                if (nPlanned > 0.0) {
+                    iteration.replan(k, nPlanned);
+                } else {
+                    debug("remove replanned for " + k);
+                    replannedWL.remove(k);
+                }
+                diff -= nPlanned;
+            }
+        }
+    }
+
+    function updateIterations() {
+        var i, iterations = getIterations(), iteration, finalStatus,
+            pwls, rpwls, k, workloads, spent;
+        for (i = 0; i < iterations.length; i += 1) {
+            iteration = iterations[i];
+            finalStatus = PMGHelper.getIterationStatus(iteration);
+            iterationTable[iteration.id].final = finalStatus;
+            spent = iterationTable[iteration.id].spent;
+            if (finalStatus.status === "NOT_STARTED") {
+                // CASE I NOT_STARTED
+            } else if (finalStatus.status === "STARTED") {
+                if (iterationTable[iteration.id].status === "NOT_STARTED") {
+                    // CASE II JUST STARTED
+                    iteration.setTotalWorkload(iterationTable[iteration.id].remainingWorkload);
+                    iteration.addWorkload(CURRENT_PERIOD_NUMBER, iteration.getTotalWorkload(), 0);
+                    rpwls = iteration.getReplannedWorkloads();
+                    pwls = iteration.getPlannedWorkloads();
+
+                    for (k in pwls) {
+                        debug("INITIALIZE replanning: " + k);
+                        // first planned period is the current period, lets ignore it
+                        if (k > 0) {
+                            iteration.replan(CURRENT_PERIOD_NUMBER + k, pwls[k]);
+                        }
+                    }
+                } else {
+                    // CASE III
+                    workloads = Java.from(iteration.getWorkloads());
+                    // Detect if iteration workload has changed due to player actions (impact on requirements, etc)
+                    if (Math.abs(iterationTable[iteration.id].remainingWorkload - workloads[workloads.length - 1].getWorkload()) > 0.00001) {
+                        iteration.addWorkload(CURRENT_PERIOD_NUMBER, iterationTable[iteration.id].remainingWorkload, 0);
+                    }
+                }
+
+                // CASE II, III
+                iteration.addWorkload(CURRENT_PERIOD_NUMBER + 1, iterationTable[iteration.id].final.remainingWorkload, spent);
+
+                updateIterationPlanning(iteration);
+            } else if (finalStatus.status === "COMPLETED") {
+                if (iterationTable[iteration.id].status !== "COMPLETED") {
+                    if (iterationTable[iteration.id].status === "NOT_STARTED") {
+                        // CASE (II + IV) in one time
+                        iteration.setTotalWorkload(iterationTable[iteration.id].remainingWorkload);
+                        iteration.addWorkload(CURRENT_PERIOD_NUMBER, iterationTable[iteration.id].remainingWorkload, 0);
+                    } else {
+                        // CASE IV: JUST COMPLETED
+                        workloads = Java.from(iteration.getWorkloads());
+                        // Detect if iteration workload has changed due to player actions (impact on requirements, etc)
+                        if (iterationTable[iteration.id].remainingWorkload !== workloads[workloads.length - 1].getWorkload()) {
+                            iteration.addWorkload(CURRENT_PERIOD_NUMBER, iterationTable[iteration.id].remainingWorkload, 0);
+                        }
+                    }
+
+                    iteration.addWorkload(CURRENT_PERIOD_NUMBER + 1, iterationTable[iteration.id].final.remainingWorkload,
+                        spent, iterationTable[iteration.id].lastWorkedStep);
+                    updateIterationPlanning(iteration);
+                }
+                // CASE V: COMPLETED
+            }
+        }
+    }
+
 
     function getResourceDescriptors() {
         return flattenList(Variable.findByName(gameModel, "employees"));
@@ -83,7 +203,7 @@ var PMGSimulation = (function() {
     function disableCurrentPhaseQuestions() {
         var i, qPhase, n, item;
 
-        qPhase = Variable.find(gameModel, "questions").item(PMGHelper.getCurrentPhaseNumber() - 1);
+        qPhase = Variable.find(gameModel, "questions").item(CURRENT_PHASE_NUMBER - 1);
         n = qPhase.getItems().size();
 
         for (i = 0; i < n; i += 1) {
@@ -99,6 +219,7 @@ var PMGSimulation = (function() {
 
         cleanAssignments(resources);
         billUnworkedHoursForUselessResources(resources);
+        updateIterations();
         updateVariables();
     }
 
@@ -106,9 +227,9 @@ var PMGSimulation = (function() {
         if (!AUTOMATED_RESERVATION) {
             Y.Array.each(resources,
                 function(resourceDescriptor) {
-                    if (PMGHelper.isReservedToWork(resourceDescriptor, currentPeriodNumber)) {
+                    if (PMGHelper.isReservedToWork(resourceDescriptor, CURRENT_PERIOD_NUMBER)) {
                         var resourceInstance = resourceDescriptor.getInstance(self);
-                        if (findActivitesByPeriod(resourceInstance, currentPeriodNumber).length === 0) {
+                        if (findActivitesByPeriod(resourceInstance, CURRENT_PERIOD_NUMBER).length === 0) {
                             // Useless resources -> reserved + noWork
                             addUnworkedHours(resourceInstance, 100); // for the whole period -> 100%
                             sendPlanningProblemEmail(resourceInstance);
@@ -145,7 +266,7 @@ var PMGSimulation = (function() {
         // Calculate progress for each requirement
         Y.Array.each(getDistinctRequirements(activities), function(r) {
             debug("step(): computeReq:" + r);
-            calculateRequirementProgress(r, activities);
+            calculateRequirementProgress(r, activities, currentStep);
         });
 
         // Consolidate requirments progress & quality into tasks
@@ -170,7 +291,7 @@ var PMGSimulation = (function() {
      * @returns {Array} an Array of Activity
      */
     function assignResources(currentStep) {
-        debug("AssignResources(currentStep: " + currentStep + ", currentPeriodNumber: " + currentPeriodNumber + ")");
+        debug("AssignResources(currentStep: " + currentStep + ", current period number: " + CURRENT_PERIOD_NUMBER + ")");
         var activities = [],
             i, resources = getResourceDescriptors();
         if (!resources) {
@@ -198,14 +319,14 @@ var PMGSimulation = (function() {
      */
     function assignResource(currentStep, resourceDescriptor) {
         debug("AssignResource(" + resourceDescriptor + ")\n***************************");
-        debug(" CurrentPeriodNumber: " + currentPeriodNumber);
+        debug(" CurrentPeriodNumber: " + CURRENT_PERIOD_NUMBER);
         var activity = null,
             resourceInstance = resourceDescriptor.getInstance(self),
-            currentAssignment, taskDesc, req, t;
-        if (PMGHelper.isReservedToWork(resourceDescriptor, currentPeriodNumber, GANTT)) {
+            currentAssignment, taskDesc, req, i, allAssignments, justCompletedTasks;
+        if (PMGHelper.isReservedToWork(resourceDescriptor, CURRENT_PERIOD_NUMBER, GANTT)) {
             debug("   Is Reserved");
-            var i, allAssignments = resourceInstance.assignments,
-                justCompletedTasks = [];
+            allAssignments = resourceInstance.assignments;
+            justCompletedTasks = [];
             // iterate through assigments until an activity exists
             for (i = 0; i < allAssignments.size() && !activity; i += 1) {
                 currentAssignment = allAssignments.get(i);
@@ -217,7 +338,7 @@ var PMGSimulation = (function() {
                         if (!req.completed) {
                             if (notBlockedByPredecessors(taskDesc)) {
                                 activity = getActivity(resourceInstance, taskDesc,
-                                    currentPeriodNumber + currentStep / STEPS, req.requirement);
+                                    CURRENT_PERIOD_NUMBER + currentStep / STEPS, req.requirement);
                                 debug("   -> Activity");
                             } else {
                                 debug("    -> BLOCKED BY PREDECESSORS");
@@ -255,7 +376,7 @@ var PMGSimulation = (function() {
 // No task just completed
                 if (activity) {
                     if (activity.getTime() < 0) { // Just created activity ? 
-                        if (!findActivityByTaskAndPeriod(resourceInstance, activity.taskDescriptor, currentPeriodNumber - 1)) {
+                        if (!findActivityByTaskAndPeriod(resourceInstance, activity.taskDescriptor, CURRENT_PERIOD_NUMBER - 1)) {
                             debug("New Activity: " + activity);
                             sendStartWorkingOnTaskMail(resourceInstance, activity.taskDescriptor);
                         } else {
@@ -278,7 +399,7 @@ var PMGSimulation = (function() {
         }
         removeAssignmentsFromCompleteTasks(resourceInstance);
         if (activity) {
-            activity.setTime(currentPeriodNumber + currentStep / STEPS);
+            activity.setTime(CURRENT_PERIOD_NUMBER + currentStep / STEPS);
         }
         debug("**************");
         return activity;
@@ -326,7 +447,7 @@ var PMGSimulation = (function() {
         }
 
         var i, pastPeriods = 0;
-        for (i = 0; i < taskInst.plannification.size() && i <= currentPeriodNumber; i += 1) {
+        for (i = 0; i < taskInst.plannification.size() && i <= CURRENT_PERIOD_NUMBER; i += 1) {
             if (parseInt(taskInst.plannification.get(i), 10) > -1) {
                 pastPeriods += 1;
             }
@@ -348,6 +469,14 @@ var PMGSimulation = (function() {
 
     /**
      * 
+     * @returns {Array} List of iterations
+     */
+    function getIterations() {
+        return Java.from(Variable.findByName(gameModel, "burndown").getInstance().getIterations());
+    }
+
+    /**
+     *  Simply retrieve the list of active tasks.
      */
     function getActiveTasks() {
         return Java.from(Variable.findByName(gameModel, "tasks").items).map(function(t) {
@@ -587,7 +716,7 @@ var PMGSimulation = (function() {
     function haveCorrespondingActivityInPast(employeeInst, taskDesc) {
         return Y.Array.find(employeeInst.activities, function(activity) {
             return activity.taskDescriptor === taskDesc && //if the task of activity match with the given task (same task and same employee == same activity)
-                currentPeriodNumber > activity.time;
+                CURRENT_PERIOD_NUMBER > activity.time;
         });
     }
 
@@ -695,7 +824,7 @@ var PMGSimulation = (function() {
      * @param {Array} allActivities
      * @returns {Number} a number between 0 and 100
      */
-    function calculateRequirementProgress(requirement, allActivities) {
+    function calculateRequirementProgress(requirement, allActivities, stepNumber) {
         debug("calculateRequirementProgress(requirement: " + requirement + ", task: " + requirement.getTaskInstance() + ")");
         var i, employeeInst, activityRate, averageSkillsetQuality, correctedRessources,
             taskInst = requirement.getTaskInstance(),
@@ -715,7 +844,8 @@ var PMGSimulation = (function() {
             sameNeedActivities = getActivitiesFromRequirement(allActivities, requirement),
             effectiveTotalOfEmployees = sameNeedActivities.length,
             totalOfEmployees = sumRequierementsQuantities(taskInst.requirements),
-            grade;
+            grade,
+            iteration;
 
         debug("baseAdvance : " + stepAdvance + ", #sameNeedActivities: " + effectiveTotalOfEmployees);
         // Iterate through resources to sum various factor components
@@ -803,14 +933,23 @@ var PMGSimulation = (function() {
                 + skillFactor * (averageSkillsetQuality - requirement.level); //skillset (level) quality
         }
 
-// Compute new quality 
+        // Compute new quality 
         if (requirement.completeness + stepAdvance > 0) {
             stepQuality = (stepQuality / 2) * 100; //step Quality
             requirement.quality = (requirement.quality * requirement.completeness + stepQuality * stepAdvance) / (requirement.completeness + stepAdvance);
             debug("StepQuality: " + requirement.quality + ", sumSkillsetXActivityRate: " + sumSkillsetXActivityRate + ", sumMotivationXActivityRate: " + sumMotivationXActivityRate);
         }
 
-//set Wage (add 1/steps of the need's wage at task);
+        // sum spent workload
+
+        debug("iterationSpentWorkload");
+        iteration = PMGHelper.getIterationFromTask(taskDesc, Variable.find(gameModel, "burndown").getInstance(self));
+        if (iteration && iterationTable[iteration.id]) {
+            iterationTable[iteration.id].spent += sumActivityRate / (100 * STEPS);
+            iterationTable[iteration.id].lastWorkedStep = stepNumber;
+        }
+
+        //set Wage (add 1/steps of the need's wage at task);
         var oWages = taskInst.getPropertyD("wages"),
             wages = Y.Array.sum(sameNeedActivities, function(a) {
                 return getResourceStepWages(a.resourceInstance);
@@ -940,6 +1079,8 @@ var PMGSimulation = (function() {
      *  function completeRealizationPeriod) and check the end of the project (if true, pass to phase 4).
      */
     function nextPeriod() {
+        CURRENT_PERIOD_NUMBER = PMGHelper.getCurrentPeriodNumber();
+        CURRENT_PHASE_NUMBER = PMGHelper.getCurrentPhaseNumber();
         var currentPhase = PMGHelper.getCurrentPhase(),
             currentPeriod = PMGHelper.getCurrentPeriod();
 
@@ -952,13 +1093,16 @@ var PMGSimulation = (function() {
         if (currentPhase.getValue(self) === 3) {                                    // If current phase is the 'realisation' phase
             if (PMGHelper.checkEndOfProject()) {                                              // If the project is over
                 currentPhase.add(self, 1);
+                CURRENT_PHASE_NUMBER += 1;
                 Event.fire("nextPhase");
             } else {
                 runSimulation();
                 currentPeriod.add(self, 1);
+                CURRENT_PERIOD_NUMBER += 1;
             }
         } else if (currentPeriod.getValue(self) === currentPeriod.maxValueD) {      // If end of phase
             currentPhase.add(self, 1);
+            CURRENT_PHASE_NUMBER += 1;
             //currentPeriod.setValue(self, 1);                                      // Why?
             if (currentPhase.getValue(self) === 3) {                                // Execution period
                 Variable.findByName(gameModel, 'ganttPage').setValue(self, 11);
@@ -968,6 +1112,7 @@ var PMGSimulation = (function() {
 
         } else {                                                                    // Otherwise pass to next period
             currentPeriod.add(self, 1);
+            CURRENT_PERIOD_NUMBER += 1;
         }
 
         Event.fire("nextWeek");
@@ -987,7 +1132,7 @@ var PMGSimulation = (function() {
      */
     function assertAdvancementLimit() {
         var phaseLimit, periodLimit, executionPeriods,
-            advLimitDesc, currentPhase, currentPeriod;
+            advLimitDesc;
         try {
             advLimitDesc = Variable.find(gameModel, "advancementLimit");
         } catch (e) {
@@ -996,12 +1141,10 @@ var PMGSimulation = (function() {
             phaseLimit = Variable.find(gameModel, "phaseLimit").getValue(self);
             periodLimit = Variable.find(gameModel, "periodLimit").getValue(self);
             executionPeriods = Variable.find(gameModel, "executionPeriods").getValue(self);
-            currentPhase = PMGHelper.getCurrentPhaseNumber();
-            currentPeriod = PMGHelper.getCurrentPeriodNumber();
 
-            if (!(currentPhase < phaseLimit) &&
-                !(currentPeriod < periodLimit) &&
-                !(currentPhase === 3 && !PMGHelper.checkEndOfProject()
+            if (!(CURRENT_PHASE_NUMBER < phaseLimit) &&
+                !(CURRENT_PERIOD_NUMBER < periodLimit) &&
+                !(CURRENT_PHASE_NUMBER === 3 && !PMGHelper.checkEndOfProject()
                     && executionPeriods < periodLimit)) {
                 ErrorManager.throwInfo("Ask your course leader for permissions to continue.");
             }
@@ -1009,19 +1152,17 @@ var PMGSimulation = (function() {
     }
 
     function getCurrentQuestions() {
-        var currentPhase = PMGHelper.getCurrentPhaseNumber(),
-            currentPeriod = PMGHelper.getCurrentPeriodNumber(),
-            i, q,
+        var i, q,
             items = [], item, itemType;
 
-        q = Variable.find(gameModel, 'questions').item(currentPhase - 1);
+        q = Variable.find(gameModel, 'questions').item(CURRENT_PHASE_NUMBER - 1);
         if (q) {
             for (i in q.items) {
                 item = q.item(i);
                 itemType = item.getClass().getSimpleName();
                 if (itemType === 'QuestionDescriptor') {
                     items.push(item);
-                } else if (i === currentPeriod - 1 && itemType === 'ListDescriptor') {
+                } else if (i === CURRENT_PERIOD_NUMBER - 1 && itemType === 'ListDescriptor') {
                     items = items.concat(Java.from(item.flatten()));
                 }
             }
@@ -1490,8 +1631,6 @@ var PMGSimulation = (function() {
     function sendBlockedByPredecessorsMail(resourceInstance, taskDesc) {
         queueMail("blockedByPredecessors", resourceInstance, taskDesc, null);
     }
-
-
 
     return {
         plannedValueHistory: function() {
