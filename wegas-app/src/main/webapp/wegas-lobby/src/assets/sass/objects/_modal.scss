@@ -28,79 +28,8 @@
 		margin-top: 0;
 		margin-bottom: 0;
 	}
-
-	&.modal--public-password{
-		width:360px;
-		height:210px;
-                top:50%;
-                left:50%;
-		margin: -140px 0px 0px -180px;
-		@media screen and (max-width: 360px) {
-			width: 100%;
-			margin-left: 0;
-			margin-right: 0;
-			left: 0;
-		}
-                
-                @media screen and (max-height: 210px) {
-                        height: 100%;
-                        top: 0;
-                        margin-top: 0;
-                        margin-bottom: 0;
-                }
-
-	}
-	&.modal--public-signup{
-		width:400px;
-		height:540px;
-                top:50%;
-                left:50%;
-		margin: -270px 0px 0px -200px;
-		.form{
-			margin-top:8px;
-		}
-		.form__row{
-			margin:8px 4px;
-		}
-		@media screen and (max-width: 400px) {
-			width: 100%;
-			margin-left: 0;
-			margin-right: 0;
-			left: 0;
-		}
-                @media screen and (max-height: 540px) {
-			height: 100%;
-                        top: 0;
-                        margin-top: 0;
-                        margin-bottom: 0;
-		}
-	}
-
-	&.modal--users, &.modal--player-team {
-            .modal__tools {
-                .col-xs-6{
-                    margin:0px;
-                    padding:0px;
-                }
-                .input{
-                    width:80%;
-                }
-                
-                .button {
-                    float: right;
-                    margin-top: 8px;
-                    margin-right: 8px;
-                }
-            }
-	}
         
-	&.modal--open{
-            visibility: visible;
-            opacity:1;
-            transition:.5s;
-	}
-
-	.modal__header{
+        .modal__header{
 		display:block;
 		position:relative;
 		width:100%;
@@ -154,6 +83,89 @@
 			float:right;
 		}
 	}
+
+	&.modal--public-password{
+		width:360px;
+		height:210px;
+                top:50%;
+                left:50%;
+		margin: -140px 0px 0px -180px;
+                
+                .modal__title{
+                    width:calc(100% - 66px);
+                }
+                
+		@media screen and (max-width: 360px) {
+			width: 100%;
+			margin-left: 0;
+			margin-right: 0;
+			left: 0;
+		}
+                
+                @media screen and (max-height: 210px) {
+                        height: 100%;
+                        top: 0;
+                        margin-top: 0;
+                        margin-bottom: 0;
+                }
+
+	}
+	&.modal--public-signup{
+		width:400px;
+		height:540px;
+                top:50%;
+                left:50%;
+		margin: -270px 0px 0px -200px;
+                
+                .modal__title{
+                    width:calc(100% - 66px);
+                }
+		.form{
+			margin-top:8px;
+		}
+		.form__row{
+			margin:8px 4px;
+		}
+		@media screen and (max-width: 400px) {
+			width: 100%;
+			margin-left: 0;
+			margin-right: 0;
+			left: 0;
+		}
+                @media screen and (max-height: 540px) {
+			height: 100%;
+                        top: 0;
+                        margin-top: 0;
+                        margin-bottom: 0;
+		}
+                
+	}
+
+	&.modal--users, &.modal--player-team {
+            .modal__tools {
+                .col-xs-6{
+                    margin:0px;
+                    padding:0px;
+                }
+                .input{
+                    width:80%;
+                }
+                
+                .button {
+                    float: right;
+                    margin-top: 8px;
+                    margin-right: 8px;
+                }
+            }
+	}
+        
+	&.modal--open{
+            visibility: visible;
+            opacity:1;
+            transition:.5s;
+	}
+
+	
 	.modal__nav{
 		width:100%;
 		height:49px;
