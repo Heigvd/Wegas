@@ -15,7 +15,7 @@ angular.module('private.trainer.settings.directives', [
                 return {
                     infos: false,
                     advanced: false
-                }
+                };
             };
         ctrl.session = {};
         ctrl.hasChanges = {

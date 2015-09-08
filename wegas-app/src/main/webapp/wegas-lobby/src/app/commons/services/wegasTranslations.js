@@ -998,6 +998,10 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'en':"Reload " + keywords.team.singular.en,
                                 'fr':"Recharger l'" + keywords.team.singular.fr
                             },
+                            'PLAYER-MODALE-TEAM-RELOAD-OK-BTN':{
+                                'en':keywords.team.singular.en + " reloaded",
+                                'fr':keywords.team.singular.fr + " mise à jour"
+                            },
                             'PLAYER-JOIN-TEAM-KEY-FLASH-ERROR': {
                                 'en':"This is not a valid " + keywords.token.singular.en,
                                 'fr':startSentence(keywords.token.singular.fr) + " invalide"
@@ -1075,6 +1079,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'TRAINER-MODALE-USERS-RELOAD-BTN':{
                                 'en':"Reload users",
                                 'fr':"Recharger les utilisateurs"
+                            },
+                            'TRAINER-MODALE-USERS-RELOAD-OK-BTN':{
+                                'en':"Users reloaded",
+                                'fr':"Utilisateurs rechargés"
                             },
                             'TRAINER-MODALE-USERS-REMOVE-TRAINER-BTN':{
                                 'en':"Remove access to " + keywords.trainer.singular.en,

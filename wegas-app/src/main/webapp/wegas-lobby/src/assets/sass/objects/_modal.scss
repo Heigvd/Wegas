@@ -78,9 +78,18 @@
 
 	&.modal--users, &.modal--player-team {
             .modal__tools {
-                a.button {
+                .col-xs-6{
+                    margin:0px;
+                    padding:0px;
+                }
+                .input{
+                    width:80%;
+                }
+                
+                .button {
                     float: right;
                     margin-top: 8px;
+                    margin-right: 8px;
                 }
             }
 	}
