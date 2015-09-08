@@ -2,7 +2,7 @@
 <div class="card__description"
       ng-class="{true:'card__description--two-lines', false:'card__description--three-lines'}[scenario.comments == null || scenario.comments == '']" >
     <div class="line line--primary">{{scenario.name}}</div>
-    <div class="line">{{scenario.createdTime | date:"dd.MM.yyyy"}}</div>
+    <div class="line">{{'COMMONS-DATE' | translate: {date: scenario.createdTime} }}</div>
     <div ng-if="!((scenario.comments == null) || (scenario.comments == ''))" class="line line--optional">{{scenario.comments}}</div>
 </div>
 <div class="card__actions">
