@@ -13,6 +13,7 @@ angular.module('wegas.directives.language.tool', [])
                         config.commons.language = key;
                         scope.currentLanguage = key;
                         $translate.use(key);
+                        $(element).find(".tool").toggleClass("tool--open");
                         localStorage.setObject("wegas-config", config);
                     };
                     
