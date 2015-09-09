@@ -186,15 +186,14 @@ app.once("render",
                 }
             },
             getCurrentPhaseName: function() {
-                return Y.Wegas.PMGHelper.getPhaseName(Y.Wegas.PMGHelper.getCurrentPhaseNumner());
-            },
-            getCurrentPhaseNumber: function() {
-                return Y.Wegas.Facade.VariableDescriptor.cache.find("name",
-                    "currentPhase").get("value");
+                return Y.Wegas.PMGHelper.getPhaseName(Y.Wegas.PMGHelper.getCurrentPhaseNumber());
             },
             getCurrentPeriodNumber: function() {
                 return Y.Wegas.Facade.VariableDescriptor.cache.find("name", "currentPeriod").item(
                     Y.Wegas.PMGHelper.getCurrentPhaseNumber() - 1).get("value");
+            },
+            getCurrentPhaseNumber: function(){
+                return Y.Wegas.Facade.VariableDescriptor.cache.find("name", "currentPhase").get("value");
             },
             getBACTotal: function() {
                 var i, bacs = 0, tasks = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "tasks"), task;

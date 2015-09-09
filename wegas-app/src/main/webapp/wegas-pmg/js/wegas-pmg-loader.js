@@ -24,6 +24,12 @@ YUI.addGroup("wegas-pmg", {
         "wegas-pmg-breadcrumb": {
             ws_provides: "PmgBreadcrumb"
         },
+        "wegas-pmg-burndown": {
+            requires: ['wegas-pmg-slidepanel', 'chartist',
+                "chartist-axistitle"
+            ],
+            ws_provides: ['PmgIterationsPanels', 'PmgIterationWidget']
+        },
         "wegas-pmg-datatable": {
             requires: ['datatable', 'datatable-mutable', "template"],
             ws_provides: "PmgDatatable"
@@ -39,9 +45,9 @@ YUI.addGroup("wegas-pmg", {
             ws_provides: 'Reservation'
         },
         /*"wegas-pmg-abstractpert": {
-            path: 'js/plugin/wegas-pmg-abstractpert-min.js',
-            ws_provides: 'AbstractPert'
-        },*/
+         path: 'js/plugin/wegas-pmg-abstractpert-min.js',
+         ws_provides: 'AbstractPert'
+         },*/
         "wegas-pmg-autoreservation-color": {
             path: 'js/plugin/wegas-pmg-autoreservation-color-min.js',
             requires: ['wegas-pmgwidget-css'],
@@ -96,15 +102,15 @@ YUI.addGroup("wegas-pmg", {
             ws_provides: 'Tablepopup'
         },
         /*"wegas-pmg-tabletooltip": {
-            path: 'js/plugin/wegas-pmg-tabletooltip-min.js',
-            requires: ['overlay', 'wegas-pmgwidget-css'],
-            ws_provides: 'Tabletooltip'
-        },*/
+         path: 'js/plugin/wegas-pmg-tabletooltip-min.js',
+         requires: ['overlay', 'wegas-pmgwidget-css'],
+         ws_provides: 'Tabletooltip'
+         },*/
         /*"wegas-pmg-taskpopup": {
-            path: 'js/plugin/wegas-pmg-taskpopup-min.js',
-            requires: ['overlay', 'wegas-pmgwidget-css'],
-            ws_provides: 'Taskpopup'
-        },*/
+         path: 'js/plugin/wegas-pmg-taskpopup-min.js',
+         requires: ['overlay', 'wegas-pmgwidget-css'],
+         ws_provides: 'Taskpopup'
+         },*/
         "wegas-pmg-taskonclickpopup": {
             path: 'js/plugin/wegas-pmg-taskonclickpopup-min.js',
             requires: ['overlay', 'wegas-pmgwidget-css'],
