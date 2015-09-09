@@ -78,7 +78,7 @@
     background-color: #B6F1EC;
 }
 
-.yui3-datatable-col-instanceÃƒâ€šÃ‚Â£propertiesÃƒâ€šÃ‚Â£automaticMode {
+.yui3-datatable-col-instanceÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£propertiesÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£automaticMode {
     cursor: pointer;
 }
 
@@ -244,6 +244,10 @@ tbody .past .activity {
     float:left;
     z-index:10;
     border-radius: 3px;
+}
+
+.iteration-tasks-list .menu {
+    cursor: pointer;
 }
 
 .iteration-tasks-list .menu,
@@ -684,10 +688,10 @@ label.choice .choice__box {
     overflow: hidden
 }
 
-.yui3-datatable-col-instance£properties£automaticMode {
+.yui3-datatable-col-instanceÂ£propertiesÂ£automaticMode {
     cursor: pointer;
 }
-.yui3-datatable-col-instance£properties£automaticMode > * {
+.yui3-datatable-col-instanceÂ£propertiesÂ£automaticMode > * {
     float: left;
     font-size: 0.8em;
     display: block; 

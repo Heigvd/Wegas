@@ -160,7 +160,7 @@ YUI.add("wegas-pmg-burndown", function(Y) {
                 taskD = tasks[i];
                 node.append("<em class='task' taskId=" + taskD.get("id") + ">" +
                     "<span class='label'>" + taskD.get("index") + "</span>" +
-                    (status === "NOT_STARTED" ? "<div class='menu'><span class='remove'></span></div>" : "") +
+                    (status === "NOT_STARTED" ? "<div class='menu' taskId=" + taskD.get("id") + "><span class='remove'></span></div>" : "") +
                     "</em>");
             }
 
