@@ -122,9 +122,9 @@ YUI.add("wegas-review-widgets", function(Y) {
             var data = this.dashboard.getMonitoredData(),
                 evalSummary,
                 node, prd;
-                
-                prd = this.get("variable.evaluated")
-                evalSummary = data.extra;
+
+            prd = this.get("variable.evaluated")
+            evalSummary = data.extra;
 
             node = this.get(CONTENTBOX).one(".charts");
             node.setContent("");
@@ -1187,7 +1187,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             var evl, value;
             evl = this.get("evaluation");
             value = evl.get("value");
-            if (value != this._initialValue) {
+            if (value !== this._initialValue) {
                 this._initialValue = value;
 
                 if (!this.get("readonly")) {
@@ -1199,6 +1199,17 @@ YUI.add("wegas-review-widgets", function(Y) {
                     this.get(CONTENTBOX).one(".wegas-review-grade-instance-input-container").setContent('<p>' +
                         value + '</p>');
                 }
+            } else {
+                if (!this.get("readonly")) {
+                    evl.set("value", this.getCurrentValue());
+                }
+            }
+        },
+        getCurrentValue: function() {
+            if (this.get("readonly")){
+                return this.get(CONTENTBOX).one(".wegas-review-grade-instance-input-container p").getContent();
+            } else {
+                return +this.get(CONTENTBOX).one(".wegas-review-grade-instance-input").get("value");
             }
         },
         bindUI: function() {
@@ -1280,7 +1291,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             "</div>" +
             "</div>",
         getInitialContent: function() {
-            var ev = this.get("evaluation"), desc = ev.get("descriptor"), button,
+            var ev = this.get("evaluation"), desc = ev.get("descriptor"),
                 CB = this.get("contentBox");
 
             CB.one(".wegas-review-evaluation-label").setContent(desc.get("name"));
@@ -1308,6 +1319,10 @@ YUI.add("wegas-review-widgets", function(Y) {
                      }*/
 
                 });
+            } else {
+                if (!this.get("readonly")) {
+                    evl.set("value", this.editor.getContent());
+                }
             }
         }
     }, {
@@ -1363,11 +1378,16 @@ YUI.add("wegas-review-widgets", function(Y) {
             }
         },
         getCurrentValue: function() {
-            var option = this.get("contentBox").one(".wegas-review-categinput-content select option[selected]");
+            var option = this.get("contentBox").one(".wegas-review-categinput-content select");
             if (option) {
-                return option.getAttribute("value");
+                return option.get("options").item(option.get("selectedIndex")).getAttribute("value");
             } else {
-                return undefined;
+                option = this.get("contentBox").one(".wegas-review-categinput-content");
+                if (option) {
+                    return option.getContent();
+                } else {
+                    return undefined;
+                }
             }
         },
         syncUI: function() {
@@ -1376,19 +1396,18 @@ YUI.add("wegas-review-widgets", function(Y) {
             evl = this.get("evaluation");
             value = evl.get("value");
             if (value !== this._initialValue) {
-
                 this._initialValue = value;
                 if (this.get("readonly")) {
                     CB.one(".wegas-review-categinput-content").setContent(value);
                 } else {
                     select = CB.one(".wegas-review-categinput-content select");
-                    option = select.one("option[selected]");
-                    if (option) {
-                        option.removeAttribute("selected");
-                    }
                     option = select.one("option[value='" + value + "']");
+
                     option.setAttribute("selected");
                 }
+            } else {
+                // no-update case, fetch effective value from "select"
+                evl.set("value", this.getCurrentValue());
             }
         },
         bindUI: function() {
@@ -1405,7 +1424,6 @@ YUI.add("wegas-review-widgets", function(Y) {
         },
         updateValue: function(e) {
             var ev = this.get("evaluation"),
-                desc = ev.get("descriptor"),
                 value = e.target.get("value");
 
             ev.set("value", value);
