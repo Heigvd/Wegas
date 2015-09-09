@@ -1189,7 +1189,7 @@
                         }
                     },
                     {
-                        "fn": "Taskonclickpopup",
+                        "fn": "Taskontableclickpopup",
                         "cfg": {
                             "width": "250px",
                             "column": 1
@@ -1284,7 +1284,7 @@
                         "fn": "Plannificationcolor"
                     },
                     {
-                        "fn": "Taskonclickpopup"
+                        "fn": "Taskontableclickpopup"
                     }
                 ],
                 "variable": {
@@ -1541,7 +1541,7 @@
                         "fn": "PlannificationProgressColor"
                     },
                     {
-                        "fn": "Taskonclickpopup"
+                        "fn": "Taskontableclickpopup"
                     },
                     {
                         "fn": "PMGLineCompleteness"
@@ -1665,7 +1665,7 @@
                 ],
                 "plugins": [
                     {
-                        "fn": "Taskonclickpopup"
+                        "fn": "Taskontableclickpopup"
                     },
                     {
                         "fn": "PMGLineCompleteness"
@@ -1979,7 +1979,12 @@
                 "content": "<div class=\"pmg-title\">Iterations</div>"
             }, {
                 "type": "PmgIterationsPanels",
-                "cssClass": "pmg-iterations-panels"
+                "cssClass": "pmg-iterations-panels",
+                "plugins": [
+                    {
+                        "fn": "Taskoniterationclickpopup"
+                    }
+                ]
             }
         ],
         "@name": "Burndowns"

@@ -114,7 +114,7 @@ YUI.addGroup("wegas-pmg", {
         "wegas-pmg-taskonclickpopup": {
             path: 'js/plugin/wegas-pmg-taskonclickpopup-min.js',
             requires: ['overlay', 'wegas-pmgwidget-css'],
-            ws_provides: 'Taskonclickpopup'
+            ws_provides: ['Taskonclickpopup', 'Taskontableclickpopup', 'Taskoniterationclickpopup']
         },
         "wegas-pmg-advancementlimit": {
             path: 'js/wegas-pmg-advancementlimit-min.js',
