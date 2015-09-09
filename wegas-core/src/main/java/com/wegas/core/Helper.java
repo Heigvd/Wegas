@@ -41,6 +41,8 @@ public class Helper {
 
     private static final Logger logger = LoggerFactory.getLogger(Helper.class);
 
+    private static String WEGAS_ROOT_DIRECTORY;
+
     /**
      * @param <T>
      * @param context
@@ -601,4 +603,11 @@ public class Helper {
         }
     }
 
+    public static String getWegasRootDirectory() {
+        return WEGAS_ROOT_DIRECTORY;
+    }
+
+    public static void setWegasRootDirectory(String wegasRootDirectory) {
+        Helper.WEGAS_ROOT_DIRECTORY = wegasRootDirectory;
+    }
 }

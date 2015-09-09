@@ -100,7 +100,8 @@ YUI().use(function(Y) {
             },
             "wegas-resourcemanagement-entities": {
                 path: "js/persistence/wegas-resourcemanagement-entities-min.js",
-                ws_provides: ["ResourceDescriptor", "TaskDescriptor"]
+                requires: "arraysort",
+                ws_provides: ["ResourceDescriptor", "TaskDescriptor", "BurndownDescriptor"]
             },
             /**
              * Widgets
@@ -410,7 +411,7 @@ YUI().use(function(Y) {
                 type: CSS
             },
             "wegas-card-bloc": {
-                ws_provides: "CardBloc" 
+                ws_provides: "CardBloc"
             },
             "wegas-cards-resizablecss": {
                 type: CSS
@@ -424,7 +425,7 @@ YUI().use(function(Y) {
             },
             "wegas-card": {
                 ws_provides: "Card",
-                requires: ["wegas-cardcss", "wegas-modal", "wegas-card-bloc"] 
+                requires: ["wegas-cardcss", "wegas-modal", "wegas-card-bloc"]
             },
             "wegas-modal": {
                 ws_provides: "Modal",
@@ -695,22 +696,22 @@ YUI().use(function(Y) {
             "wegas-dashboard": {
                 path: "js/widget/wegas-dashboard-min.js",
                 requires:   [
-                                "promise",
-                                "font-awesome",
-                                "wegas-card",
-                                'wegas-cards-resizable',
-                                "wegas-modal",
-                                "wegas-dashboardcss"
-                            ],
+                    "promise",
+                    "font-awesome",
+                    "wegas-card",
+                    'wegas-cards-resizable',
+                    "wegas-modal",
+                    "wegas-dashboardcss"
+                ],
                 ws_provides: "Dashboard"
             },
             "wegas-teams-dashboard": {
                 path: "js/widget/wegas-dashboard-teams-min.js",
                 requires:   [
-                                "wegas-dashboard",
-                                "wegas-console-custom", 
-                                "wegas-sendmail"
-                            ],
+                    "wegas-dashboard",
+                    "wegas-console-custom",
+                    "wegas-sendmail"
+                ],
                 ws_provides: "TeamsDashboard"
             },
             "wegas-teams-overview-dashboard": {
@@ -938,12 +939,16 @@ YUI().use(function(Y) {
                 async: false,
                 fullpath: "//cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"
             },
+            "chartist-axistitle": {
+                path: "chartist/chartist-plugin-axistitle.min.js"
+            },
             "chartist": {
                 fullpath: "//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js",
                 requires: ["wegas-chartistcss", "chartistcss"]
             },
             chartistcss: {
-                fullpath: "//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css"
+                fullpath: "//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css",
+                requires: ["wegas-chart-css"]
             }
         }
     };

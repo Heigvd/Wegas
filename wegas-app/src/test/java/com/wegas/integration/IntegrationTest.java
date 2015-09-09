@@ -7,6 +7,7 @@
  */
 package com.wegas.integration;
 
+import com.wegas.core.Helper;
 import com.wegas.utils.TestHelper;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -76,6 +77,8 @@ public class IntegrationTest {
         Deployer deployer = glassfish.getDeployer();
         appName = deployer.deploy(war);
 
+        File appDirectory = new File("target/Wegas/");
+        Helper.setWegasRootDirectory(appDirectory.getAbsolutePath());
     }
 
     @AfterClass

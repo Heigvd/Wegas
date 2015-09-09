@@ -373,6 +373,7 @@ YUI.add('wegas-datasource', function(Y) {
                 if (toUpdate) { // No Update ? No-update...
                     if ((!e.cfg || e.cfg.updateEvent !== false) && (this.updated || (e.cfg && e.cfg.initialRequest))) {
                         this.get(HOST).fire("update", e);
+                        // ID
                         this.updated = false;
                     }
                 }
@@ -469,6 +470,7 @@ YUI.add('wegas-datasource', function(Y) {
             cache.length = 0;
             if (sendUpdateEvent) {
                 this.get(HOST).fire("update");
+                // ID
             }
         },
         /**

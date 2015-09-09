@@ -7,7 +7,6 @@ angular.module('private.player.directives', [])
     }).controller("PlayerController", function PlayerController($rootScope, $scope, $state, $translate, TeamsModel, SessionsModel, Flash) {
         /* Assure access to ctrl. */
         var ctrl = this,
-
             /* Method used to update sessions. */
             updateTeams = function() {
                 ctrl.loading = true;

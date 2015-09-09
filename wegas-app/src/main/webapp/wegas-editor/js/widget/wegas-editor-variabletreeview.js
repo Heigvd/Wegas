@@ -305,6 +305,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 case 'TaskDescriptor':
                 case 'ObjectDescriptor':
                 case 'ResourceDescriptor':
+                case 'BurndownDescriptor':
                 case 'DialogueDescriptor':
                     return {
                         type: 'TreeNode',
