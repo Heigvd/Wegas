@@ -16,6 +16,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -23,20 +24,18 @@ import java.sql.Statement;
  */
 public class TestHelper {
 
-    private static Connection connection = null;
+    static final private org.slf4j.Logger logger = LoggerFactory.getLogger(TestHelper.class);
 
     public static void resetTestDB() {
-        if (connection == null) {
-            try {
-                connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/wegas_test", "user", "1234");
-                try (Statement st = connection.createStatement()) {
-                    st.execute("DROP SCHEMA public CASCADE;");
-                    st.execute("CREATE SCHEMA public;");
-                }
-                connection.commit();
-            } catch (SQLException ex) {
-                System.out.println("Error creating database");
-            }
+        final String DB_CON = "jdbc:postgresql://localhost:5432/wegas_test";
+        final String USER = "user";
+        final String PASSWORD = "1234";
+        try (Connection connection = DriverManager.getConnection(DB_CON, USER, PASSWORD);
+                Statement st = connection.createStatement()) {
+            st.execute("DROP SCHEMA public CASCADE;");
+            st.execute("CREATE SCHEMA public;");
+        } catch (SQLException ex) {
+            logger.error("Error reseting DB: " + ex.getLocalizedMessage());
         }
     }
 

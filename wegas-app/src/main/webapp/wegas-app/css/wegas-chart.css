@@ -7,7 +7,8 @@
  */
 
 .wegas-chart .legend {
-    height: 150px;
+    /* height: 150px; */
+    margin: 30px 0 0 50px;
 }
 
 .wegas-chart .legend > div:first-child {
@@ -16,9 +17,10 @@
 
 .wegas-chart .legend > div {
     float: left;
-    margin: 5px;
+    margin: 0 0px;
     box-sizing: border-box;
-    padding: 0px 5px;
+    padding: 0px 0px;
+    min-width: 87px;
 }
 
 .wegas-chart .legend .label{

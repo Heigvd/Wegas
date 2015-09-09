@@ -8,7 +8,7 @@
 /**
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
-/*global YUI*/
+/*global YUI */
 YUI.add("wegas-pmg-slidepanel", function(Y) {
     "use strict";
 
@@ -36,8 +36,8 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                 }
                 this.handlers = {};
                 this.get("boundingBox").one(".slidepanel-title h2").setContent(title);
-                if (this.get("openByDefault")) {
-                    this.get("boundingBox").addClass("wegas-slidepanel-toggled");
+                if (!this.get("openByDefault")) {
+                    this.get("boundingBox").addClass("wegas-slidepanel-closed");
                 }
             },
             bindUI: function() {
@@ -45,7 +45,7 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                 if (this.get("animation")) {
                     this.get("boundingBox").one(".slidepanel-title").on('click', function(e) {
                         e.preventDefault();
-                        this.get("boundingBox").toggleClass("wegas-slidepanel-toggled");
+                        this.get("boundingBox").toggleClass("wegas-slidepanel-closed");
                     }, this);
                 }
             },
@@ -55,8 +55,7 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                     this.handlers[k].detach();
                 }
             }
-        },
-    {
+        }, {
         ATTRS: {
             title: {
                 type: "string",
@@ -76,7 +75,7 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
             },
             openByDefault: {
                 type: "boolean",
-                value: true,
+                value: false,
                 _inputex: {
                     label: "Open by default"
                 }

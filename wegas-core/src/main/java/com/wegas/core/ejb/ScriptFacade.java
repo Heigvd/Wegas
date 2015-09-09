@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.Helper;
 import com.wegas.core.event.internal.EngineInvocationEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.WegasErrorMessageManager;
@@ -130,8 +131,6 @@ public class ScriptFacade {
         }
     }
 
-    
-
     /**
      * Default customization of our engine: inject the script library, the root
      * variable instances and some libraries.
@@ -180,10 +179,18 @@ public class ScriptFacade {
     private void injectStaticScript(EngineInvocationEvent evt) throws WegasScriptException {
         String currentPath = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
         Integer index = currentPath.indexOf("WEB-INF");
-        if (index < 1) { // @ TODO find an other way to get web app root currently war packaging required.
-            return;
+        String root;
+        if (index < 1) {
+            // Seems we're not on a real deployed application
+            // smells like such an integration test
+            root = Helper.getWegasRootDirectory();
+            if (root == null) {
+                logger.error("Wegas Lost In The Sky...");
+                return;
+            }
+        } else {
+            root = currentPath.substring(0, index);
         }
-        String root = currentPath.substring(0, index);
 
         String[] files = new String[0];
         String scriptURI = evt.getPlayer().getGameModel().getProperties().getScriptUri();

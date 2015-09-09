@@ -318,13 +318,19 @@ angular.module('wegas.models.scenarios', [])
                             deferred.resolve(Responses.success(message, data.entities[0]));
                         });
                     } else {
-                        if (data.events !== undefined) {
+                        if(data.events[0] && data.events[0]["@class"] == "CustomEvent"){
+                            cacheScenario("LIVE", data.entities[0]);
+                            $translate('COMMONS-SCENARIOS-COPY-FLASH-SUCCESS').then(function (message) {
+                                deferred.resolve(Responses.success(message, data.entities[0]));
+                            });
+                        }else{
                             console.log("WEGAS LOBBY : Error while copying scenario");
                             console.log(data.events);
-                        } 
-                        $translate('COMMONS-SCENARIOS-COPY-FLASH-ERROR').then(function (message) {
-                            deferred.resolve(Responses.danger(message, false));
-                        });
+                            
+                            $translate('COMMONS-SCENARIOS-COPY-FLASH-ERROR').then(function (message) {
+                                deferred.resolve(Responses.danger(message, false));
+                            });
+                        }
                     }
                 }).error(function(data) {
                     if (data.events !== undefined) {

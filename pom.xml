@@ -40,7 +40,7 @@
 
     <scm>
         <connection>scm:git:git@github.com:Heigvd/Wegas.git</connection>
-        <url>scm:git:git@github.com:Heigvd/Wegas.git</url>
+        <url>https://github.com/Heigvd/Wegas</url>
         <developerConnection>scm:git:git@github.com:Heigvd/Wegas.git</developerConnection>
     </scm>
 
@@ -62,9 +62,13 @@
     </licenses>
 
     <distributionManagement>
-        <site>
+<!--        <site>
             <id>localhost</id>
             <url>file://./site</url>
+        </site>-->
+        <site>
+            <id>github</id>
+            <url>scm:git:https://github.com/Heigvd/Wegas.git</url>
         </site>
     </distributionManagement>
 
@@ -511,7 +515,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.12.2</version>
+                    <version>2.18.1</version>
                     <configuration>
                         <!-- There is an issue with cobertura and jdk7,
                         that forces us to run  in compatiblity mode.-->
@@ -527,11 +531,16 @@
                         </classpathDependencyExcludes>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.4</version>
+                </plugin>
 
-                <!--<plugin>
+<!--                <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>cobertura-maven-plugin</artifactId>
-                    <version>2.3</version>
+                    <version>2.7</version>
                     <executions>
                         <execution>
                             <goals>
@@ -576,7 +585,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>3.2</version>
                 <inherited>true</inherited>
                 <executions>
                     <execution>
@@ -625,14 +633,14 @@
                         <plugin>
                             <groupId>org.codehaus.mojo</groupId>
                             <artifactId>jdepend-maven-plugin</artifactId>
-                            <version>2.0-beta-2</version>
+                            <version>2.0</version>
                         </plugin>
 
 
                         <plugin>
                             <groupId>org.codehaus.mojo</groupId>
                             <artifactId>findbugs-maven-plugin</artifactId>
-                            <version>2.4.0</version>
+                            <version>3.0.2</version>
                             <configuration>
                                 <threshold>Normal</threshold>
                                 <effort>Min</effort>
@@ -642,7 +650,7 @@
                         <plugin>
                             <groupId>org.codehaus.mojo</groupId>
                             <artifactId>cobertura-maven-plugin</artifactId>
-                            <version>2.5.1</version>
+                            <version>2.7</version>
                         </plugin>
 
                         <plugin>
@@ -657,23 +665,23 @@
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-surefire-report-plugin</artifactId>
-                            <version>2.5</version>
+                            <version>2.18.1</version>
                         </plugin>
 
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-pmd-plugin</artifactId>
-                            <version>2.7.1</version>
+                            <version>3.5</version>
                             <configuration>
                                 <rulesets>http://pmd.sourceforge.net/rules/index.html
-                                    <ruleset>/rulesets/braces.xml</ruleset>
-                                    <ruleset>/rulesets/basic.xml</ruleset>
-                                    <ruleset>/rulesets/optimizations.xml</ruleset>
-                                    <ruleset>/rulesets/imports.xml</ruleset>
-                                    <ruleset>/rulesets/j2ee.xml</ruleset>
-                                    <ruleset>/rulesets/unusedcode.xml</ruleset>
-                                    <ruleset>/rulesets/codesize.xml</ruleset>
-                                    <ruleset>/rulesets/naming.xml</ruleset>
+                                    <ruleset>/rulesets/java/braces.xml</ruleset>
+                                    <ruleset>/rulesets/java/basic.xml</ruleset>
+                                    <ruleset>/rulesets/java/optimizations.xml</ruleset>
+                                    <ruleset>/rulesets/java/imports.xml</ruleset>
+                                    <ruleset>/rulesets/java/j2ee.xml</ruleset>
+                                    <ruleset>/rulesets/java/unusedcode.xml</ruleset>
+                                    <ruleset>/rulesets/java/codesize.xml</ruleset>
+                                    <ruleset>/rulesets/java/naming.xml</ruleset>
                                 </rulesets>
                                 <targetJdk>${jdk.version}</targetJdk>
                             </configuration>
@@ -704,16 +712,38 @@
                     </reportPlugins>
                 </configuration>
             </plugin>
-
-            <!-- Site deployment on github -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-scm-publish-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+                    <execution>
+                        <phase>none</phase>
+                        <goals>
+                            <goal>publish-scm</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <serverId>github</serverId>
+                   
+                    <!--<dryRun>true</dryRun>-->                    
+                    <!--<tryUpdate>true</tryUpdate>-->
+                    <content>${project.build.directory}/staging</content>
+                    <scmBranch>gh-pages</scmBranch>
+                </configuration>
+            </plugin>
+<!--             Site deployment on github 
             <plugin>
                 <groupId>com.github.github</groupId>
                 <artifactId>site-maven-plugin</artifactId>
-                <version>0.8</version>
+                <version>0.12</version>
                 <inherited>false</inherited>
                 <configuration>
                     <repositoryName>Wegas</repositoryName>
                     <repositoryOwner>Heigvd</repositoryOwner>
+                    <server>github</server>
+                    <dryRun>true</dryRun>
                     <outputDirectory>${project.build.directory}/staging</outputDirectory>
                     <message>${project.version} Site (${maven.build.timestamp})</message>
                 </configuration>
@@ -723,14 +753,14 @@
                         <goals>
                             <goal>site</goal>
                         </goals>
-                        <phase>none</phase>
+                        <phase>site-deploy</phase>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>wagon-maven-plugin</artifactId>
-                <version>1.0-beta-4</version>
+                <version>1.0</version>
                 <inherited>false</inherited>
                 <configuration>
                     <serverId>${wegas.deploy.server}</serverId>
@@ -754,7 +784,7 @@
             <extension>
                 <groupId>org.apache.maven.wagon</groupId>
                 <artifactId>wagon-ssh</artifactId>
-                <version>2.5</version>
+                <version>2.9</version>
             </extension>
         </extensions>
     </build>

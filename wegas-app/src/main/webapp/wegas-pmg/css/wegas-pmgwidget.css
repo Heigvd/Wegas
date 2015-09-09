@@ -78,7 +78,7 @@
     background-color: #B6F1EC;
 }
 
-.yui3-datatable-col-instanceÃƒâ€šÃ‚Â£propertiesÃƒâ€šÃ‚Â£automaticMode {
+.yui3-datatable-col-instanceÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£propertiesÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£automaticMode {
     cursor: pointer;
 }
 
@@ -158,6 +158,7 @@ tbody .past .activity {
     vertical-align: middle;
 }
 
+.iteration-tasks-toolbar,
 .yui3-datatable-col-assignments .assignment {
     display: block;
     float: left;
@@ -165,6 +166,7 @@ tbody .past .activity {
     text-align: center;
 }
 
+.iteration-tasks-toolbar span,
 .yui3-datatable-col-assignments .assignment span {
     display: block;
     position:relative;
@@ -174,6 +176,7 @@ tbody .past .activity {
     width: 16px;
 }
 
+.iteration-tasks-toolbar .add:before,
 .yui3-datatable-col-assignments .assignment .assign:before {
     content:"\f067";
     display:block;
@@ -195,6 +198,7 @@ tbody .past .activity {
     // background-image: url(../../wegas-pmg/images/add.png);
 }
 
+.iteration-tasks-list,
 .yui3-datatable-col-assignments .tasks {
     display: block;
     position: relative;
@@ -203,14 +207,17 @@ tbody .past .activity {
     padding: 0px;
     margin-left: 4px;
     margin-top:-1px;
+    max-width: 100px;
 }
 
+.iteration-tasks-list .task,
 .yui3-datatable-col-assignments .task {
     display: inline-block;
     position: relative;
     margin: 0 1px;
 }
 
+.iteration-tasks-list .task:hover .label,
 .yui3-datatable-col-assignments .task:hover .label {
     background: #585a66;
     color: white;
@@ -218,6 +225,10 @@ tbody .past .activity {
 
 .yui3-datatable-col-assignments .task .label {
     cursor: move;
+}
+
+.iteration-tasks-list .task .label,
+.yui3-datatable-col-assignments .task .label {
     padding: 2px 4px;
     display: block;
     font-style: normal;
@@ -235,6 +246,11 @@ tbody .past .activity {
     border-radius: 3px;
 }
 
+.iteration-tasks-list .menu {
+    cursor: pointer;
+}
+
+.iteration-tasks-list .menu,
 .tasks .task .menu {
     display: none;
     position: absolute;
@@ -242,19 +258,19 @@ tbody .past .activity {
     padding:0px;
     padding-top: 0px;
     margin-left: -12px;
-    z-index: 1;
     top: -18px!important;
     left: 50% !important;
     width: 24px;
     height:50px;
-    z-index:9;
+    z-index: 20;
 }
 
+.iteration-tasks-list .task .remove:before,
 .tasks .task .remove:before{
     content:"\f068";
     display:block;
     position:absolute;
-    top:0px;
+    top: 0px;
     left:0px;
     width:16px;
     height:16px;
@@ -269,11 +285,13 @@ tbody .past .activity {
     line-height:16px;
     font-style:normal;
 }
+.iteration-tasks-list .task .remove:hover:before,
 .tasks .task .remove:hover:before{
     color:#f4817a;
     border-color:#f4817a;
 }
 
+.iteration-tasks-list .task .remove,
 .tasks .task .remove,
 .tasks .task .dirleft,
 .tasks .task .dirright {
@@ -285,6 +303,8 @@ tbody .past .activity {
     display: block;
     position:absolute;
 }
+
+.iteration-tasks-list .task .remove,
 .tasks .task .remove {
     top: 0px;
     left:50%;
@@ -303,6 +323,8 @@ tbody .past .activity {
     margin-left:-2px;
 }
 
+.iteration-tasks-list .task:hover .menu,
+.iteration-tasks-list .task:hover .menu:hover,
 .tasks .task:hover .menu,
 .tasks .task:hover .menu:hover {
     display: block;
@@ -361,23 +383,23 @@ tbody .past .activity {
 }
 
 /* Line completeness plugin*/
-
+.iteration-completed .slidepanel-title,
 .task-execution-page .yui3-datatable-table .pmg-line-completeness-complete,
 .task-execution-page .yui3-datatable-table .pmg-line-completeness-complete:hover,
 .gantt-execution-page .yui3-datatable-table .pmg-line-completeness-complete .yui3-datatable-col-index,
 .gantt-execution-page .yui3-datatable-table .pmg-line-completeness-complete .yui3-datatable-col-label,
 .gantt-execution-page .yui3-datatable-table .pmg-line-completeness-complete .yui3-datatable-col-Realised{
-    background-color:#ddfae4;
+    background-color:#ddfae4 !important;
 }
 
-
+.iteration-started .slidepanel-title,
 .task-execution-page .yui3-datatable-table .pmg-line-completeness-started,
 .task-execution-page .yui3-datatable-table .pmg-line-completeness-started:hover,
 .gantt-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-index,
 .gantt-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-label,
 .gantt-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-Realised,
 .yui3-menu-content > button.pmg-line-completeness-started {
-    background-color:#fff1c2;
+    background-color:#fff1c2 !important;
 }
 
 .yui3-button.pmg-menu-invalid {
@@ -463,6 +485,177 @@ tbody .past .activity {
 }
 
 
+/* Iteration Widget */
+.iteration-tasks-toolbar .add{
+    cursor: pointer;
+}
+
+.wegas-pmg-iteration-widget-content > div {
+    display: block;
+    margin: 16px;
+    float: left;
+}
+
+.wegas-pmg-iteration-widget-content .iteration-config {
+    height: 100%;
+    width: 200px;
+}
+
+.wegas-pmg-iteration-widget-content .iteration-config > div {
+    margin: 18px 0px;
+}
+
+.wegas-pmg-iteration-widget-content .begin-at-container > * {
+    display: inline;
+}
+
+
+.wegas-pmg-iteration-widget-content .begin-at-container input {
+    width: 30px;
+}
+
+.wegas-pmg-iteration-widget-content .iteration-planning {
+    float: left;
+}
+
+.wegas-pmg-iteration-widget-content .planning-tools {
+    float: left;
+    /* margin: 3px 0 0 5px; */
+}
+.iteration-not-started .wegas-pmg-iteration-widget-content .planning-legend {
+    top: 222px;
+}
+.wegas-pmg-iteration-widget-content .planning-legend {
+    position: absolute;
+    top: 232px;
+    color: rgba(0,0,0,0.4);
+    left: 230px;
+}
+.wegas-pmg-iteration-widget-content .planning-tools .add-planning-input {
+    margin: 4px 0 0 5px;
+}
+
+.wegas-pmg-iteration-widget-content .planning-tools .add-replanning-input {
+    margin: 24px 0 0 5px;
+}
+
+.wegas-pmg-iteration-widget-content .iteration-planning .planning-initial input:first-child,
+.wegas-pmg-iteration-widget-content .iteration-planning .planning-initial span:first-child {
+    margin-left: 50px;
+}
+
+
+.wegas-pmg-iteration-widget-content .iteration-planning .planning-ongoing span {
+    color:white;
+}
+
+.wegas-pmg-iteration-widget-content .iteration-planning .planning-ongoing span:first-child {
+    margin-left: 50px;
+    clear: both;
+}
+
+.wegas-pmg-iteration-widget-content .iteration-planning .planning-ongoing input:first-of-type {
+    margin-left: 0px;
+}
+
+.wegas-pmg-iteration-widget-content .iteration-planning input,
+.wegas-pmg-iteration-widget-content .iteration-planning span {
+    width: 50px;
+    height: 21px;
+    /* background-color: pink; */
+    box-sizing: border-box;
+    /* border: 1px solid black; */
+}
+
+.wegas-pmg-iteration-widget-content .iteration-planning span,
+.wegas-pmg-iteration-widget-content .iteration-planning input {
+    margin-left: 0px;
+    display: block;
+    float: left;
+    text-align: center
+        ;
+}
+
+
+/* Iteration Chart */
+
+.wegas-pmg-iteration-widget-content .wegas-chart .legend > div {
+    clear: both;   
+}
+
+/* Initial Planning, not started*/
+.wegas-app-default .iteration-not-started .iteration-chart .ct-series-a .ct-line{
+    stroke : #68ccc5;
+}
+.wegas-app-default .iteration-not-started .iteration-chart .ct-series-a .ct-point{
+    stroke: #68ccc5;
+}
+.wegas-app-default .iteration-not-started .iteration-chart .ct-series-a .ct-area{
+    fill : #68ccc5;
+    fill-opacity: .3;
+}
+.wegas-app-default .iteration-not-started .wegas-pmg-iteration-widget-content .legend .color.ct-series-a {
+    background-color: #68ccc5;
+}
+
+
+/* Planning: started, completed*/
+.wegas-app-default .iteration-chart .ct-series-a .ct-point,
+.wegas-app-default .iteration-chart .ct-series-a .ct-line{
+    stroke : #878787;
+}
+.wegas-app-default .iteration-chart .ct-series-a .ct-area{
+    fill : #878787;
+    fill-opacity: .3;
+}
+.wegas-app-default .wegas-pmg-iteration-widget-content .legend .color.ct-series-a {
+    background-color: #878787;
+}
+
+
+
+
+/* Done */
+.wegas-app-default .iteration-chart .ct-series-b .ct-point,
+.wegas-app-default .iteration-chart .ct-series-b .ct-line {
+    stroke : #53a29d;
+}
+.wegas-app-default .iteration-chart .ct-series-b .ct-area{
+    fill : #53a29d;
+    fill-opacity: .6;
+}
+.wegas-app-default .wegas-pmg-iteration-widget-content .legend .color.ct-series-b {
+    background-color: #9BBDAF;
+}
+
+
+/* Projection */
+.wegas-app-default .iteration-chart .ct-series-c .ct-point,
+.wegas-app-default .iteration-chart .ct-series-c .ct-line {
+    stroke : #68ccc5;
+}
+.wegas-app-default .iteration-chart .ct-series-c .ct-area {
+    fill : #68ccc5;
+    fill-opacity: .3;
+}
+.wegas-app-default .wegas-pmg-iteration-widget-content .legend .color.ct-series-c {
+    background-color: #68ccc5;
+}
+
+
+/* Projection */
+.wegas-app-default .iteration-chart .ct-series-d .ct-point,
+.wegas-app-default .iteration-chart .ct-series-d .ct-line {
+    stroke: rgb(221, 84, 0);
+}
+.wegas-app-default .iteration-chart .ct-series-d .ct-area{
+    fill: #68ccc5;
+    fill-opacity: 0;
+}
+.wegas-app-default .legend .color.ct-series-d {
+    background-color: rgb(221, 84, 0);
+}
+
 label.choice.choice--toogle{
     width: 22px;
 }
@@ -495,10 +688,10 @@ label.choice .choice__box {
     overflow: hidden
 }
 
-.yui3-datatable-col-instance£properties£automaticMode {
+.yui3-datatable-col-instanceÂ£propertiesÂ£automaticMode {
     cursor: pointer;
 }
-.yui3-datatable-col-instance£properties£automaticMode > * {
+.yui3-datatable-col-instanceÂ£propertiesÂ£automaticMode > * {
     float: left;
     font-size: 0.8em;
     display: block; 

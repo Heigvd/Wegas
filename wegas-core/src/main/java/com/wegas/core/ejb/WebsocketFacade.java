@@ -212,7 +212,7 @@ public class WebsocketFacade {
             tmp = new Pusher(getProperty("pusher.appId"),
                     getProperty("pusher.key"), getProperty("pusher.secret"));
         } catch (Exception e) {
-            logger.error("Pusher init failed, please check your configuration");
+            logger.warn("Pusher init failed, please check your configuration");
             logger.debug("Pusher error details", e);
             tmp = null;
         }

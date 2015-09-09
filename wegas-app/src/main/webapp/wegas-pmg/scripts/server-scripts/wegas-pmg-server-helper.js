@@ -14,7 +14,7 @@
  * 
  * @author Maxence Laurent <maxence.laurent@gmail.com>
  */
-/*global Variable, gameModel, self, Y, PMGSimulation, debug, I18n */
+/*global Variable, gameModel, self, Y, PMGSimulation, debug, Java, lookupBean, com, ErrorManager */
 var PMGHelper = (function() {
     "use strict";
 
@@ -32,12 +32,18 @@ var PMGHelper = (function() {
         var plannedPeriods = getPlannedPeriods(taskInstance);
 
         if (plannedPeriods.length > 0) {
-            return (1 - (taskInstance.getPropertyD("completeness") / 100) * plannedPeriods.length);
+            return ((1 - (taskInstance.getPropertyD("completeness") / 100)) * plannedPeriods.length);
         } else {
-            return (1 - (taskInstance.getPropertyD("completeness") / 100) * taskInstance.getPropertyD("duration"));
+            return ((1 - (taskInstance.getPropertyD("completeness") / 100)) * taskInstance.getPropertyD("duration"));
         }
     }
 
+    /**
+     * entry{
+     * 
+     * }
+     * @returns {unresolved}
+     */
     function computePert() {
         var tasks, taskId, taskDesc,
             predecessors, i, minBeginAt, delta,
@@ -165,7 +171,26 @@ var PMGHelper = (function() {
                 }
             }
         }
+        //printGantt(taskTable);
         return taskTable;
+    }
+
+    function printGantt(gantt) {
+        var key, item, entry;
+        for (key in gantt) {
+            if (gantt.hasOwnProperty(key)) {
+                entry = gantt[key];
+                printMessage("");
+                printMessage("**************************");
+                printMessage(entry.descriptor.getLabel());
+                printMessage("**************************");
+                for (item in entry) {
+                    if (entry.hasOwnProperty(item)) {
+                        printMessage("\t" + item + ": " + entry[item]);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -305,7 +330,7 @@ var PMGHelper = (function() {
                 if (Y.Array.find(resourceInst.assignments, function(a) {
                     var entry = gantt[a.getTaskDescriptorId()];
                     if (entry) {
-                        return Y.Array.find(gantt[a.getTaskDescriptorId()].planned, function(p) {
+                        return Y.Array.find(entry.planned, function(p) {
                             return p === period;
                         }, this);
                     }
@@ -439,6 +464,204 @@ var PMGHelper = (function() {
         return isTaskInstanceCompleted(taskDescriptor.getInstance(self));
     }
 
+    /**
+     * verify if the taskdescriptor is part of any burndown iteration
+     * @param {type} taskDescriptor the task we look for
+     * @param {type} burndownInstance set of iteration to look in
+     * @returns {Boolean}
+     */
+    function isTaskInBurndown(taskDescriptor, burndownInstance) {
+        return getIterationFromTask(taskDescriptor, burndownInstance) !== null;
+    }
+
+    /**
+     * 
+     * @param {type} taskDescriptor
+     * @param {type} burndownInstance
+     * @returns {Iteration} the iteration or null
+     */
+    function getIterationFromTask(taskDescriptor, burndownInstance) {
+        var iterations,
+            i, it;
+        iterations = burndownInstance.getIterations();
+
+        for (i in iterations) {
+            it = iterations[i];
+            if (it.getTasks().contains(taskDescriptor)) {
+                return it;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Compute the workload needed to complete the task
+     * @param {type} taskInstance 
+     * @returns {Number} wokload [period*resource]
+     */
+    function getRemainingTaskWorkload(taskInstance) {
+        var reqs = Java.from(taskInstance.getRequirements()), req,
+            i, sum = 0;
+        for (i = 0; i < reqs.length; i += 1) {
+            req = reqs[i];
+            sum += (100 - req.getCompleteness()) / 100 * req.getQuantity();
+        }
+        sum *= taskInstance.getPropertyD("duration");
+        return sum;
+    }
+
+    /**
+     * compute iterations status (NOT_STARTED, STARTED or COMPLETED) and the remaining workload
+     * @param {type} iteration
+     * @returns {Oject} status + remainingWorkload
+     */
+    function getIterationStatus(iteration) {
+        var i, tasks = Java.from(iteration.getTasks()), taskD,
+            completed, started, completeness,
+            itStatus = {
+                status: null,
+                remainingWorkload: 0
+            };
+
+        // initial value is set to true if iteration contains at least 
+        // one task tasks false either (empty iteration should never seen as completed)
+        completed = tasks.length > 0;
+        started = ((PMGHelper.getCurrentPhaseNumber() > 3) ||
+            (PMGHelper.getCurrentPhaseNumber() === 3 && PMGHelper.getCurrentPeriodNumber() > iteration.getBeginAt()));
+
+        for (i = 0; i < tasks.length; i += 1) {
+            taskD = tasks[i];
+            completeness = taskD.getNumberInstanceProperty(self, "completeness");
+            if (completeness < 100) {
+                itStatus.remainingWorkload += getRemainingTaskWorkload(taskD.getInstance(self));
+                completed = false;
+            }
+            if (completeness > 0) {
+                started = true;
+            }
+        }
+
+        if (completed) {
+            itStatus.status = "COMPLETED";
+        } else if (started) {
+            itStatus.status = "STARTED";
+        } else {
+            itStatus.status = "NOT_STARTED";
+        }
+        return itStatus;
+    }
+
+    /**
+     * Determine whether or not an iteration has begun. Such an iteration has
+     * begun if at least one of its task has begun or if the planned start
+     * period is in the past
+     * 
+     * @param {type} iteration
+     * @returns {Boolean}
+     */
+    function hasIterationBegun(iteration) {
+        return getIterationStatus(iteration).status !== "NOT_STARTED";
+    }
+
+    /**
+     * Add a task to an iteration. If the given task is already part of another
+     * iteration, a WegasErrorMessage is thrown
+     *
+     * @param iteration
+     * @param taskDescriptor
+     * @return
+     * @throws WegasErrorMesssage if task is part of another iteration
+     */
+    function addTaskToIteration(taskDescriptor, iteration) {
+        if (PMGHelper.isTaskInBurndown(taskDescriptor, iteration.getBurndownInstance())) {
+            throw ErrorManager.throwError("This task is already part of an iteration !");
+        } else {
+            return iteration.addTask(taskDescriptor);
+        }
+    }
+
+    /**
+     * Remove a task from an iteration. It's not possible to remove a task from
+     * a started iteration
+     *
+     * @param {type} taskDescriptor the task to remove
+     * @param {type} iteration the iteration to remove the task from
+     * @returns {Boolean}
+     */
+    function removeTaskFromIteration(taskDescriptor, iteration) {
+        if (!PMGHelper.hasIterationBegun(iteration)) {
+            return iteration.getTasks().remove(taskDescriptor);
+        }
+        return false;
+    }
+
+    function planIteration(iteration, period, workload) {
+        var i;
+        if (PMGHelper.hasIterationBegun(iteration)) {
+            i = period;
+            iteration.replan(i, workload);
+        } else {
+            i = period - iteration.getBeginAt();
+            iteration.plan(i, workload);
+        }
+        return iteration;
+    }
+
+    function setIterationBeginAt(iteration, beginAt) {
+        if (PMGHelper.getCurrentPeriodNumber() > beginAt) {
+            throw ErrorManager.throwError("Invalid period number");
+        } else {
+            iteration.setBeginAt(beginAt);
+        }
+        return iteration;
+    }
+
+    function setIterationName(iteration, name) {
+        iteration.setName(name);
+        return iteration;
+    }
+
+    function getBurndownInstance() {
+        return Variable.findByName(gameModel, "burndown").getInstance(self);
+    }
+
+    function addIteration(beginAt) {
+        var burndownInstance = getBurndownInstance(), iterations, number,
+            iterationFacade = lookupBean("IterationFacade"),
+            iteration;
+
+        if (beginAt < 1 || (PMGHelper.getCurrentPhaseNumber() === 3 && PMGHelper.getCurrentPeriodNumber() > beginAt)) {
+            ErrorManager.throwError("Invalid Period Number");
+        }
+
+        iteration = new com.wegas.resourceManagement.persistence.Iteration();
+
+        iterations = burndownInstance.getIterations();
+        if (iterations.length > 0) {
+            number = +iterations.get(iterations.length - 1).getName().match(/Iteration (\d*)/)[1] + 1;
+        } else {
+            number = 1;
+        }
+
+        iteration.setName("Iteration " + number);
+        iteration.setBeginAt(beginAt);
+
+        iterationFacade.addIteration(burndownInstance, iteration);
+        return iteration;
+    }
+
+    function removeIteration(iterationId) {
+        var iterationFacade = lookupBean("IterationFacade");
+        if (!PMGHelper.hasIterationBegun(findIteration(iterationId))) {
+            iterationFacade.removeIteration(iterationId);
+        } else {
+            ErrorManager.throwWarn("You cannot remvove an ongoining or completed iteration");
+        }
+    }
+
+    function findIteration(id) {
+        return lookupBean("IterationFacade").find(id);
+    }
 
     function sendManual() {
         var phaseNumber = PMGHelper.getCurrentPhaseNumber(),
@@ -543,6 +766,42 @@ var PMGHelper = (function() {
         },
         isTaskInstanceCompleted: function(taskInstance) {
             return isTaskInstanceCompleted(taskInstance);
+        },
+        addIteration: function(beginAt) {
+            return addIteration(beginAt);
+        },
+        removeIteration: function(iterationId) {
+            return removeIteration(iterationId);
+        },
+        getIterationFromTask: function(taskDescriptor, burndownInstance) {
+            return getIterationFromTask(taskDescriptor, burndownInstance);
+        },
+        isTaskInBurndown: function(taskDescriptor, burndownInstance) {
+            return isTaskInBurndown(taskDescriptor, burndownInstance);
+        },
+        hasIterationBegun: function(iteration) {
+            return hasIterationBegun(iteration);
+        },
+        getIterationStatus: function(iteration) {
+            return getIterationStatus(iteration);
+        },
+        setIterationName: function(iterationId, name) {
+            return setIterationName(findIteration(iterationId), name);
+        },
+        setIterationBeginAt: function(iterationId, beginAt) {
+            return setIterationBeginAt(findIteration(iterationId), beginAt);
+        },
+        planIteration: function(iterationId, period, workload) {
+            return planIteration(findIteration(iterationId), period, workload);
+        },
+        addTaskToIteration: function(taskDescriptorId, iterationId) {
+            return addTaskToIteration(Variable.find(taskDescriptorId), findIteration(iterationId));
+        },
+        removeTaskFromIteration: function(taskDescriptorId, iterationId) {
+            return removeTaskFromIteration(Variable.find(taskDescriptorId), findIteration(iterationId));
+        },
+        findIteration: function(iterationId) {
+            return findIteration(iterationId);
         },
         sendManual: function() {
             return sendManual();
