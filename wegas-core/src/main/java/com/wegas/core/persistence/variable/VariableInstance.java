@@ -35,6 +35,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.resourceManagement.persistence.BurndownInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,7 +82,8 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "ResourceInstance", value = ResourceInstance.class),
     @JsonSubTypes.Type(name = "TaskInstance", value = TaskInstance.class),
     @JsonSubTypes.Type(name = "ObjectInstance", value = ObjectInstance.class),
-    @JsonSubTypes.Type(name = "PeerReviewInstance", value = PeerReviewInstance.class)
+    @JsonSubTypes.Type(name = "PeerReviewInstance", value = PeerReviewInstance.class),
+    @JsonSubTypes.Type(name = "BurndownInstance", value = BurndownInstance.class)
 })
 abstract public class VariableInstance extends AbstractEntity {
 

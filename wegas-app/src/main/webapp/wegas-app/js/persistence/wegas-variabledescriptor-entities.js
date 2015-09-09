@@ -790,7 +790,13 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                                     label: "Peer Review",
                                     targetClass: "PeerReviewDescriptor",
                                     cssClass: "wegas-advanced-feature"
-                                }]
+                                 }, {
+                                    type: "AddEntityChildButton",
+                                    label: "Burndown",
+                                    targetClass: "BurndownDescriptor",
+                                    cssClass: "wegas-advanced-feature"
+                                }
+                            ]
                         }
                     }]
             }, {

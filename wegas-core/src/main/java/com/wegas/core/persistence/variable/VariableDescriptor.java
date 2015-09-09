@@ -42,6 +42,7 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.GameScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
+import com.wegas.resourceManagement.persistence.BurndownDescriptor;
 import org.eclipse.persistence.annotations.JoinFetch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,7 +78,8 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "ChoiceDescriptor", value = ChoiceDescriptor.class),
     @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class),
     @JsonSubTypes.Type(name = "ObjectDescriptor", value = ObjectDescriptor.class),
-    @JsonSubTypes.Type(name = "PeerReviewDescriptor", value = PeerReviewDescriptor.class)
+    @JsonSubTypes.Type(name = "PeerReviewDescriptor", value = PeerReviewDescriptor.class),
+    @JsonSubTypes.Type(name = "BurndownDescriptor", value = BurndownDescriptor.class)
 })
 abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity implements Searchable, LabelledEntity {
 

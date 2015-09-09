@@ -40,6 +40,8 @@ public class Helper {
 
     private static final Logger logger = LoggerFactory.getLogger(Helper.class);
 
+    private static String WEGAS_ROOT_DIRECTORY;
+
     /**
      * @param <T>
      * @param context
@@ -189,7 +191,7 @@ public class Helper {
     }
 
     public static void setNameAndLabelForResult(Result r,
-                                                List<String> usedNames, List<String> usedLabels) {
+            List<String> usedNames, List<String> usedLabels) {
         boolean hasLabel = !isNullOrEmpty(r.getLabel());
         boolean hasName = !isNullOrEmpty(r.getName());
         if (hasLabel && !hasName) {
@@ -376,7 +378,7 @@ public class Helper {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < array.length; ++i) {
             sb.append(Integer.toHexString((array[i]
-                & 0xFF) | 0x100).substring(1, 3));
+                    & 0xFF) | 0x100).substring(1, 3));
         }
         return sb.toString();
     }
@@ -388,7 +390,7 @@ public class Helper {
     public static String md5Hex(String message) {
         try {
             MessageDigest md
-                = MessageDigest.getInstance("MD5");
+                    = MessageDigest.getInstance("MD5");
             return hex(md.digest(message.getBytes("CP1252")));
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
         }
@@ -428,74 +430,74 @@ public class Helper {
     }
     /*public static String old_unescape(String st) {
 
-        StringBuilder sb = new StringBuilder(st.length());
+     StringBuilder sb = new StringBuilder(st.length());
 
-        for (int i = 0; i < st.length(); i++) {
-            char ch = st.charAt(i);
-            if (ch == '\\') {
-                char nextChar = (i == st.length() - 1) ? '\\' : st
-                        .charAt(i + 1);
-                // Octal escape?
-                if (nextChar >= '0' && nextChar <= '7') {
-                    String code = "" + nextChar;
-                    i++;
-                    if ((i < st.length() - 1) && st.charAt(i + 1) >= '0'
-                            && st.charAt(i + 1) <= '7') {
-                        code += st.charAt(i + 1);
-                        i++;
-                        if ((i < st.length() - 1) && st.charAt(i + 1) >= '0'
-                                && st.charAt(i + 1) <= '7') {
-                            code += st.charAt(i + 1);
-                            i++;
-                        }
-                    }
-                    sb.append((char) Integer.parseInt(code, 8));
-                    continue;
-                }
-                switch (nextChar) {
-                    case '\\':
-                        ch = '\\';
-                        break;
-                    case 'b':
-                        ch = '\b';
-                        break;
-                    case 'f':
-                        ch = '\f';
-                        break;
-                    case 'n':
-                        ch = '\n';
-                        break;
-                    case 'r':
-                        ch = '\r';
-                        break;
-                    case 't':
-                        ch = '\t';
-                        break;
-                    case '\"':
-                        ch = '\"';
-                        break;
-                    case '\'':
-                        ch = '\'';
-                        break;
-// Hex Unicode: u????
-                    case 'u':
-                        if (i >= st.length() - 5) {
-                            ch = 'u';
-                            break;
-                        }
-                        int code = Integer.parseInt(
-                                "" + st.charAt(i + 2) + st.charAt(i + 3)
-                                + st.charAt(i + 4) + st.charAt(i + 5), 16);
-                        sb.append(Character.toChars(code));
-                        i += 5;
-                        continue;
-                }
-                i++;
-            }
-            sb.append(ch);
-        }
-        return sb.toString();
-    }*/
+     for (int i = 0; i < st.length(); i++) {
+     char ch = st.charAt(i);
+     if (ch == '\\') {
+     char nextChar = (i == st.length() - 1) ? '\\' : st
+     .charAt(i + 1);
+     // Octal escape?
+     if (nextChar >= '0' && nextChar <= '7') {
+     String code = "" + nextChar;
+     i++;
+     if ((i < st.length() - 1) && st.charAt(i + 1) >= '0'
+     && st.charAt(i + 1) <= '7') {
+     code += st.charAt(i + 1);
+     i++;
+     if ((i < st.length() - 1) && st.charAt(i + 1) >= '0'
+     && st.charAt(i + 1) <= '7') {
+     code += st.charAt(i + 1);
+     i++;
+     }
+     }
+     sb.append((char) Integer.parseInt(code, 8));
+     continue;
+     }
+     switch (nextChar) {
+     case '\\':
+     ch = '\\';
+     break;
+     case 'b':
+     ch = '\b';
+     break;
+     case 'f':
+     ch = '\f';
+     break;
+     case 'n':
+     ch = '\n';
+     break;
+     case 'r':
+     ch = '\r';
+     break;
+     case 't':
+     ch = '\t';
+     break;
+     case '\"':
+     ch = '\"';
+     break;
+     case '\'':
+     ch = '\'';
+     break;
+     // Hex Unicode: u????
+     case 'u':
+     if (i >= st.length() - 5) {
+     ch = 'u';
+     break;
+     }
+     int code = Integer.parseInt(
+     "" + st.charAt(i + 2) + st.charAt(i + 3)
+     + st.charAt(i + 4) + st.charAt(i + 5), 16);
+     sb.append(Character.toChars(code));
+     i += 5;
+     continue;
+     }
+     i++;
+     }
+     sb.append(ch);
+     }
+     return sb.toString();
+     }*/
 
     /**
      * print ENV variables to log
@@ -575,6 +577,7 @@ public class Helper {
 
     /**
      * Checked conversion from long to int
+     *
      * @param value value to convert
      * @return value as int
      */
@@ -585,4 +588,11 @@ public class Helper {
         return (int) value;
     }
 
+    public static String getWegasRootDirectory() {
+        return WEGAS_ROOT_DIRECTORY;
+    }
+
+    public static void setWegasRootDirectory(String wegasRootDirectory) {
+        Helper.WEGAS_ROOT_DIRECTORY = wegasRootDirectory;
+    }
 }

@@ -246,3 +246,7 @@
 .wegas-chart .legend .color.ct-series-o {
     background-color: #a748ca
 }
+
+.wegas-chart .ct-axis-title {
+    fill: rgba(0,0,0,0.4);
+}
