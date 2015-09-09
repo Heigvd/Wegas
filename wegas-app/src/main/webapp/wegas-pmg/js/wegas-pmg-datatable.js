@@ -179,9 +179,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
         },
         assignedRessources: function() {
             var gantt = Y.Wegas.PMGHelper.computePert();
-            Y.log("AssignedResources");
             return function(o) {
-                Y.log("AssignedResources -> Anonymous FCN");
                 var assignedResources = o.data.descriptor.findAssociatedRessources("assignments"),
                     data = TEMPLATES.assignedResource({
                         assignments: assignedResources,
