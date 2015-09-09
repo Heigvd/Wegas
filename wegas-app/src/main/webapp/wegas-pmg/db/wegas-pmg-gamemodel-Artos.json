@@ -4,7 +4,7 @@
     },
     "name": "PMG Artos",
     "description": "",
-    "comments": "!! Scénario public",
+    "comments": "Testing purpose ONLY",
     "createdTime": 1441719195916,
     "childVariableDescriptors": [{
             "@class": "ListDescriptor",
