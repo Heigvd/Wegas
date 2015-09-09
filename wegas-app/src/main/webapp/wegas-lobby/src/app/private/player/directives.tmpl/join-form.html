@@ -2,11 +2,11 @@
 <a title="{{'VIEW-CLOSE' | translate}}" class="view__button-collapse button button--medium button--round button--default-reverse button--label-off button--close" collapser>
     <span class="button__label">{{'VIEW-CLOSE' | translate}}</span>
 </a>
-<form class="form" ng-submit="joinSession()">
+<form class="form">
     <div class="form__row">
         <input class="input input--small" type="text" id="session-token" ng-model="sessionToJoin.token" placeholder="{{'PRIVATE-WS-ACCESS-KEY' | translate}}" autocomplete="off">
     </div>
     <div class="form__row form__row--right">
-        <input class="form__row__btn button button--default" type="submit" value="{{'PLAYER-INDEX-JOIN-BTN' | translate}}" />
+        <a ng-click="joinSession()" class="form__row__btn button button--small button--join-session button--default">{{'PLAYER-INDEX-JOIN-BTN' | translate}}</a>
     </div>
 </form>
