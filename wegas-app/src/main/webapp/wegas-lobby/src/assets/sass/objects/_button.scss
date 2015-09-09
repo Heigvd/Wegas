@@ -145,7 +145,7 @@
                 color:$type-color;
             }
             &:hover{
-                background-color:lighten($type-color, 56%);
+                background-color:lighten($default-color, 78%);
                 text-decoration: none;
             }
 
