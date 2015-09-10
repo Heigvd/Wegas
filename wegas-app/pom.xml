@@ -171,11 +171,16 @@
             <type>jar</type>
         </dependency>
 
-        <!-- TEST -->
+        <!-- TEST 
         <dependency>
             <groupId>org.glassfish.main.extras</groupId>
             <artifactId>glassfish-embedded-all</artifactId>
             <scope>provided</scope>
+        </dependency>-->
+        
+        <dependency>
+            <groupId>fish.payara.extras</groupId>
+            <artifactId>payara-embedded-all</artifactId>
         </dependency>
 
         <!-- Postgresql Driver -->
@@ -455,7 +460,9 @@
                         </goals>
                         <configuration>
                             <encoding>${project.build.sourceEncoding}</encoding>
-                            <excludes><exclude>**/*-min.js</exclude></excludes>
+                            <excludes>
+                                <exclude>**/*-min.js</exclude>
+                            </excludes>
                         </configuration>
                     </execution>
                 </executions>

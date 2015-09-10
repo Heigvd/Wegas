@@ -13,6 +13,9 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.persistence.Broadcastable;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -23,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Table(indexes = {
     @Index(columnList = "variableinstance_id")
 })
-public class Occupation extends AbstractAssignement {
+public class Occupation extends AbstractAssignement implements Broadcastable {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -93,11 +96,18 @@ public class Occupation extends AbstractAssignement {
         //this.setTaskDescriptor(other.getTaskDescriptor());
     }
 
-    @PostPersist
-    @PostUpdate
-    @PostRemove
-    private void onUpdate() {
-        this.getResourceInstance().onInstanceUpdate();
+    /*
+     @PostPersist
+     @PostUpdate
+     @PostRemove
+     private void onUpdate() {
+     this.getResourceInstance().onInstanceUpdate();
+     }
+     */
+
+    @Override
+    public Map<String, List<AbstractEntity>> getEntities() {
+        return this.getResourceInstance().getEntities();
     }
 
     @Override
@@ -147,16 +157,13 @@ public class Occupation extends AbstractAssignement {
      * @return the taskInstance
      *
      * @JsonIgnore public TaskDescriptor getTaskDescriptor() { return
-     * taskDescriptor;
-    }
+     * taskDescriptor; }
      */
     /**
      * @param taskDescriptor
      *
-     *                       public void setTaskDescriptor(TaskDescriptor
-     *                       taskDescriptor) { this.taskDescriptor =
-     *                       taskDescriptor;
-    }
+     * public void setTaskDescriptor(TaskDescriptor taskDescriptor) {
+     * this.taskDescriptor = taskDescriptor; }
      */
     /**
      * @return the editable

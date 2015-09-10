@@ -92,7 +92,8 @@
         <atmosphere.version>0.9-SNAPSHOT</atmosphere.version>
         <jersey.version>2.10</jersey.version>
         <jdk.version>1.8</jdk.version>
-        <glassfish.version>4.1</glassfish.version>
+        <!--<glassfish.version>4.1</glassfish.version>-->
+        <payara.version>4.1.152.1</payara.version>
         <junit.version>4.10</junit.version>
         <exec.plugin.version>1.2</exec.plugin.version>
         <jar.plugin.version>2.3.1</jar.plugin.version>
@@ -106,7 +107,7 @@
 
         <httpcomponents.version>4.3.4</httpcomponents.version>
         <liquibase.version>2.0.5</liquibase.version>
-        <eclipselink.version>2.5.2</eclipselink.version>
+        <eclipselink.version>2.6.0</eclipselink.version>
         <jcr.version>2.0</jcr.version>
         <jackrabbit.version>2.8.0</jackrabbit.version>
 
@@ -140,7 +141,11 @@
 
     <dependencyManagement>
         <dependencies>
-
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>eclipselink</artifactId>
+                <version>${eclipselink.version}</version>
+            </dependency>
             <!-- slf4j -->
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -386,15 +391,20 @@
                 <type>jar</type>
                 <version>2.2</version>
             </dependency>-->
+            <dependency>
+                   <groupId>fish.payara.extras</groupId>
+                   <artifactId>payara-embedded-all</artifactId>
+                    <version>${payara.version}</version>
+                    <scope>provided</scope>
+               </dependency>
 
-
-            <!-- Embedded glassfish -->
+            <!-- Embedded glassfish 
             <dependency>
                 <groupId>org.glassfish.main.extras</groupId>
                 <artifactId>glassfish-embedded-all</artifactId>
                 <version>${glassfish.version}</version>
                 <scope>provided</scope>
-            </dependency>
+            </dependency>-->
 
 
         </dependencies>

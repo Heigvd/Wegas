@@ -1,8 +1,13 @@
 {
     "type": "ResizableLayout",
-    "cssClass":"wegas-trainer--app",
+    "cssClass": "wegas-trainer--app",
+    "plugins": [
+        {
+            "fn": "PopupListener"
+        }
+    ],
     "top": {
-        "cssClass":"wegas-trainer-banner",
+        "cssClass": "wegas-trainer-banner",
         "height": 25,
         "children": [
             {

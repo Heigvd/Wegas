@@ -609,12 +609,14 @@ YUI.add("wegas-editor-entityaction", function(Y) {
 
                                     } else if (entity.get("@class") === "ListDescriptor") {
                                         for (i = 0; i < entity.get("items").length; i += 1) {
+                                            // Who cares about deeper levels ? TODO...
                                             if (EditEntityAction.currentEntity.get(ID) ===
                                                 entity.get("items")[i].get(ID)) {
                                                 EditEntityAction.hideRightTabs();
                                             }
                                         }
                                     } else if (entity.get("@class") === "FSMDescriptor") {
+                                        // Before closing the tabs, be sure the Transition/State belongs to the destroyed FSM
                                         if (EditEntityAction.currentEntity.get("@class") === "Transition" ||
                                             EditEntityAction.currentEntity.get("@class") === "State") {
                                             EditEntityAction.hideRightTabs();

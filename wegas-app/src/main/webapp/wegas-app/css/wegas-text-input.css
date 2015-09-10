@@ -5,8 +5,7 @@
  * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
-.wegas-text-input .mce-tinymce, .wegas-rewiew-evaluation-content .mce-tinymce{
+.wegas-text-input .mce-tinymce, .wegas-review-evaluation-content .mce-tinymce {
     padding-bottom:12px;
     resize:both;
     overflow:auto;
@@ -16,7 +15,7 @@
     height:calc(100% - 24px);
 }
 
-.wegas-text-input .wegas-text-input-content, .wegas-rewiew-evaluation-content .mce-tinymce{
+.wegas-text-input .wegas-text-input-content, .wegas-review-evaluation-content .mce-tinymce {
     height:100%;
 }
 
@@ -34,14 +33,14 @@
     padding:0px;
 }
 
-.wegas-text-input .mce-tinymce > .mce-container-body, .wegas-rewiew-evaluation-content .mce-tinymce > .mce-container-body{
+.wegas-text-input .mce-tinymce > .mce-container-body, .wegas-review-evaluation-content .mce-tinymce > .mce-container-body {
     height:100%;
     box-sizing:border-box;
     border-bottom:solid 1px #9e9e9e;
 }
-.wegas-text-input .mce-tinymce > .mce-container-body > .mce-edit-area, .wegas-rewiew-evaluation-content .mce-tinymce > .mce-container-body > .mce-edit-area{
+.wegas-text-input .mce-tinymce > .mce-container-body > .mce-edit-area, .wegas-review-evaluation-content .mce-tinymce > .mce-container-body > .mce-edit-area {
     height:calc(100% - 29px);
 }
-.wegas-text-input .mce-tinymce > .mce-container-body > .mce-edit-area iframe, .wegas-rewiew-evaluation-content .mce-tinymce > .mce-container-body > .mce-edit-area iframe{
+.wegas-text-input .mce-tinymce > .mce-container-body > .mce-edit-area iframe, .wegas-review-evaluation-content .mce-tinymce > .mce-container-body > .mce-edit-area iframe {
     height:100% !important;
 }

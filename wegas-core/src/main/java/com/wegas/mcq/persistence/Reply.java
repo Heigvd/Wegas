@@ -14,6 +14,9 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.wegas.core.persistence.Broadcastable;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -25,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @Table(name = "MCQReply", indexes = {
     @Index(columnList = "variableinstance_id")
 })
-public class Reply extends AbstractEntity {
+public class Reply extends AbstractEntity implements Broadcastable {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -69,12 +72,16 @@ public class Reply extends AbstractEntity {
 
     /**
      *
-     */
     @PostPersist
     @PostUpdate
     @PostRemove
     public void onUpdate() {
         this.getQuestionInstance().onInstanceUpdate();
+    } */
+
+    @Override
+    public Map<String, List<AbstractEntity>> getEntities() {
+        return this.getQuestionInstance().getEntities();
     }
 
     @Override

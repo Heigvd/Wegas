@@ -324,6 +324,11 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         return returnValue;
     }
 
+    /**
+     * @param values
+     * @return
+     * @deprecated
+     */
     public List<Map> findAccountsByEmailValues(List<String> values) {
         List<Map> returnValue = new ArrayList<>();
         List<String> notValidValue = new ArrayList<>();
@@ -346,6 +351,9 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         return returnValue;
     }
 
+    /**
+     * @deprecated
+     */
     public List<JpaAccount> findAccountsByName(List<String> values) {
         List<JpaAccount> returnValue = new ArrayList<>();
         List<String> notValidValue = new ArrayList<>();

@@ -14,9 +14,11 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.NoPlayerException;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.statemachine.*;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +33,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -85,7 +88,20 @@ public class StateMachineFacade {
         logger.debug("Received PlayerAction event");
         Player player = playerAction.getPlayer();
         if (player == null) {
-            player = variableInstanceFacade.findAPlayer(requestManager.getUpdatedInstances().get(0));
+            for (Entry<String, List<AbstractEntity>> entry : requestManager.getUpdatedEntities().entrySet()) {
+                for (AbstractEntity entity : entry.getValue()) {
+                    if (entity instanceof VariableInstance) {
+                        player = variableInstanceFacade.findAPlayer((VariableInstance) entity);
+                        break;
+                    }
+                }
+                if (player != null) {
+                    break;
+                }
+            }
+            if (player == null) {
+                throw new NoPlayerException("StateMachine Facade: NO PLAYER");
+            }
         }
         this.runForPlayer(player);
     }

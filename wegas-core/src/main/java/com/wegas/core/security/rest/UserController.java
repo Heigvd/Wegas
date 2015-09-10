@@ -163,6 +163,7 @@ public class UserController {
      * @return
      */
     @GET
+    @Deprecated
     @Path("FindAccountsByEmailValues")
     public List<Map> findAccountsByEmailValues(@QueryParam("values") List<String> values) {
         return accountFacade.findAccountsByEmailValues(values);
@@ -174,6 +175,7 @@ public class UserController {
      * @return
      */
     @GET
+    @Deprecated
     @Path("FindAccountsByName")
     public List<JpaAccount> findAccountsByName(@QueryParam("values") List<String> values) {
         if (!SecurityUtils.getSubject().isRemembered() && !SecurityUtils.getSubject().isAuthenticated()) {
