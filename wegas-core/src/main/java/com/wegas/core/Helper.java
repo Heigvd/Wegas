@@ -10,6 +10,10 @@ package com.wegas.core;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.NamedEntity;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
@@ -610,4 +614,37 @@ public class Helper {
     public static void setWegasRootDirectory(String wegasRootDirectory) {
         Helper.WEGAS_ROOT_DIRECTORY = wegasRootDirectory;
     }
+
+    public static String getAudienceTokenForGameModel(Long id) {
+        return "GameModel-" + id;
+    }
+
+    public static String getAudienceTokenForGame(Long id) {
+        return "Game-" + id;
+    }
+
+    public static String getAudienceTokenForTeam(Long id) {
+        return "Team-" + id;
+    }
+
+    public static String getAudienceTokenForPlayer(Long id) {
+        return "Player-" + id;
+    }
+
+    public static String getAudienceToken(Game game) {
+        return Helper.getAudienceTokenForGame(game.getId());
+    }
+
+    public static String getAudienceToken(GameModel gameModel) {
+        return Helper.getAudienceTokenForGameModel(gameModel.getId());
+    }
+
+    public static String getAudienceToken(Team team) {
+        return Helper.getAudienceTokenForTeam(team.getId());
+    }
+
+    public static String getAudienceToken(Player player) {
+        return Helper.getAudienceTokenForPlayer(player.getId());
+    }
+
 }

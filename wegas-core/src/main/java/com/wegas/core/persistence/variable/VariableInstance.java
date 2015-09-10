@@ -32,6 +32,7 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.Helper;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
@@ -170,13 +171,13 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     @JsonIgnore
     public String getAudience() {
         if (this.teamScopeKey != null) {
-            return this.getAudienceTokenForTeam(this.teamScopeKey);
+            return Helper.getAudienceTokenForTeam(this.teamScopeKey);
         } else if (this.playerScopeKey != null) {
-            return this.getAudienceTokenForPlayer(this.playerScopeKey);
+            return Helper.getAudienceTokenForPlayer(this.playerScopeKey);
         } else if (this.gameScopeKey != null) {
-            return this.getAudienceTokenForGame(this.gameScopeKey);
+            return Helper.getAudienceTokenForGame(this.gameScopeKey);
         } else if (this.gameModelScope != null) {
-            return this.getAudienceTokenForGameModel(this.getGameModelScope().getVariableDescriptor().getId());
+            return Helper.getAudienceTokenForGameModel(this.getGameModelScope().getVariableDescriptor().getId());
         } else {
             // Default instance
             return null;
