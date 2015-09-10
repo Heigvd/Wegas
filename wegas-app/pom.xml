@@ -125,13 +125,13 @@
             <artifactId>ehcache</artifactId>
         </dependency>
 
-        <!-- Jersey 
+        <!-- Jersey
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-json</artifactId>
             <scope>provided</scope>
         </dependency>
-        
+
         <dependency>
             <artifactId>jersey-multipart</artifactId>
             <groupId>com.sun.jersey.contribs</groupId>
@@ -148,7 +148,7 @@
             <artifactId>shiro-web</artifactId>
         </dependency>
 
-        <!-- cdi 
+        <!-- cdi
         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
@@ -277,7 +277,7 @@
             <plugin>
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
-                <version>0.0.20</version>
+                <version>0.0.25</version>
                 <configuration>
                     <!--<workingDirectory>${project.build.directory}</workingDirectory>-->
                 </configuration>
@@ -289,8 +289,8 @@
                         </goals>
                         <phase>generate-resources</phase>
                         <configuration>
-                            <nodeVersion>v0.12.0</nodeVersion>
-                            <npmVersion>2.5.1</npmVersion>
+                            <nodeVersion>v0.12.7</nodeVersion>
+                            <npmVersion>2.14.2</npmVersion>
                             <nodeDownloadRoot>https://nodejs.org/dist/</nodeDownloadRoot>
                         </configuration>
                     </execution>
@@ -430,21 +430,21 @@
                         <goals>
                             <goal>deploy</goal>
                         </goals>
-                    </execution>                   
+                    </execution>
                      <execution>
                         <id>glassfish-undeploy</id>
                         <phase>post-integration-test</phase>
                         <goals>
                             <goal>undeploy</goal>
                         </goals>
-                    </execution>            
+                    </execution>
                      <execution>
                         <id>stop-glassfish</id>
                         <phase>post-integration-test</phase>
                         <goals>
                             <goal>stop</goal>
                         </goals>
-                    </execution>           
+                    </execution>
                 </executions>
             </plugin>-->
 
