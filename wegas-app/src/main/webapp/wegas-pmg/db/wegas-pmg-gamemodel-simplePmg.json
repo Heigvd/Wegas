@@ -2414,7 +2414,7 @@
                 "broadcastScope": "PlayerScope"
             },
             "title": null,
-            "name": "Private",
+            "name": "pageUtilities",
             "items": [
                 {
                     "@class": "NumberDescriptor",
