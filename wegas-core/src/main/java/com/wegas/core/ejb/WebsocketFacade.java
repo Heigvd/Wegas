@@ -122,7 +122,6 @@ public class WebsocketFacade {
     }
 
     public boolean hasPermission(String channel, Player currentPlayer) {
-        logger.error("Check Permission: " + channel);
         String[] split = channel.split("-");
         if (split.length != 2) {
             return false;
@@ -277,7 +276,7 @@ public class WebsocketFacade {
         try {
             for (String audience : container.keySet()) {
                 List<AbstractEntity> toPropagate = container.get(audience);
-                logger.error(eventClass.getSimpleName() + " entities: " + audience + ": " + toPropagate.size());
+                //logger.error(eventClass.getSimpleName() + " entities: " + audience + ": " + toPropagate.size());
                 ClientEvent event = eventClass.getDeclaredConstructor(List.class).newInstance(toPropagate);
                 propagate(event, audience, socketId);
             }
@@ -320,17 +319,19 @@ public class WebsocketFacade {
             //}
             Result result = pusher.trigger(audience, eventName, content, socketId);
 
-            logger.error("PUSHER RESULT" + result.getMessage() + " : " + result.getStatus() + " : " + result.getHttpStatus());
 
             if (result.getHttpStatus() == 403) {
+                logger.error("403 QUOTA REACHED");
                 // Pusher Message Quota Reached...
             } else if (result.getHttpStatus() == 413) {
+                logger.error("413 MESSAGE TOO BIG");
                 // wooops pusher error (too big ?)
                 if (clientEvent instanceof EntityUpdatedEvent) {
                     this.propagate(new OutdatedEntitiesEvent(((EntityUpdatedEvent) clientEvent).getUpdatedEntities()),
                             audience, socketId);
                     //this.outdateEntities(audience, ((EntityUpdatedEvent) clientEvent), socketId);
                 } else {
+                    logger.error("  -> OUTDATE");
                     this.sendLifeCycleEvent(audience, WegasStatus.OUTDATED, socketId);
                 }
             }

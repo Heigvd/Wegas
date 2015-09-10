@@ -35,7 +35,7 @@ public class EntityListener {
 
     @PostPersist
     void onPostPersist(Object o) {
-    //logger.error("POST PERSIST: " + o);
+        //logger.error("POST PERSIST: " + o);
     }
 
     @PostUpdate
@@ -43,6 +43,8 @@ public class EntityListener {
         if (o instanceof Broadcastable) {
             Broadcastable b = (Broadcastable) o;
             if (b instanceof GameModel) {
+                /* Since a serialized gameModel differs according to whom request it...
+                 it's not possible to broadcast the new version -> Outdate it */
                 requestManager.addOutofdateEntities(b.getEntities());
             } else if (b instanceof AbstractEntity) {
                 Map<String, List<AbstractEntity>> entities = b.getEntities();
@@ -60,7 +62,7 @@ public class EntityListener {
                 || o instanceof Player)) {
             Broadcastable b = (Broadcastable) o;
             Map<String, List<AbstractEntity>> entities = b.getEntities();
-            logger.error(("Entities: " + entities.size()));
+            //logger.error(("Entities: " + entities.size()));
             requestManager.addDestroyedEntities(entities);
         }
     }
