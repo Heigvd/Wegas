@@ -24,6 +24,7 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
 /**
@@ -90,6 +91,7 @@ public class Review extends AbstractEntity implements Broadcastable {
      * 'reviewer' only)
      */
     @OneToMany(mappedBy = "feedbackReview", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id ASC")
     private List<EvaluationInstance> feedback = new ArrayList<>();
 
     /**
@@ -97,6 +99,7 @@ public class Review extends AbstractEntity implements Broadcastable {
      * (writable by 'author' only)
      */
     @OneToMany(mappedBy = "commentsReview", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id ASC")
     private List<EvaluationInstance> comments = new ArrayList<>();
 
     @Override

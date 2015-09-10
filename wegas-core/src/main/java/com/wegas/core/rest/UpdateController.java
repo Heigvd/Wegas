@@ -40,6 +40,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -161,18 +162,24 @@ public class UpdateController {
         script.setContent(s);
     }
 
-    private List<GameModel> findPMGs() {
+    private List<GameModel> findPMGs(boolean scenarioOnly) {
         final CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         final CriteriaQuery query = criteriaBuilder.createQuery();
 
         Root e = query.from(GameModel.class);
+        Predicate where;
+
+        if (scenarioOnly) {
+            where = criteriaBuilder.and(
+                    criteriaBuilder.equal(e.get("template"), true),
+                    criteriaBuilder.like(e.get("properties").get("clientScriptUri"), "wegas-pmg/js/wegas-pmg-loader.js%")
+            );
+        } else {
+            where = criteriaBuilder.like(e.get("properties").get("clientScriptUri"), "wegas-pmg/js/wegas-pmg-loader.js%");
+        }
+
         query.select(e)
-                .where(
-                        criteriaBuilder.and(
-                                criteriaBuilder.equal(e.get("template"), true),
-                                criteriaBuilder.like(e.get("properties").get("clientScriptUri"), "wegas-pmg/js/wegas-pmg-loader.js%")
-                        )
-                );
+                .where(where);
 
         return em.createQuery(query).getResultList();
     }
@@ -218,7 +225,7 @@ public class UpdateController {
     @GET
     @Path("PMG_UPGRADE")
     public String pmg_upgrade() {
-        List<GameModel> PMGs = this.findPMGs();
+        List<GameModel> PMGs = this.findPMGs(false);
         StringBuilder ret = new StringBuilder();
         String status;
 
