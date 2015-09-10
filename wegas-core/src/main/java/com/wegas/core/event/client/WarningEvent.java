@@ -7,14 +7,14 @@
  */
 package com.wegas.core.event.client;
 
-
 /**
- *
+ * @deprecated Useless and dirty
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
 public class WarningEvent extends CustomEvent {
 
     private static final long serialVersionUID = 1L;
+
     /**
      *
      */
