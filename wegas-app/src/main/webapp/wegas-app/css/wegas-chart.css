@@ -11,6 +11,10 @@
     margin: 30px 0 0 50px;
 }
 
+.wegas-chart .legend > div:first-child {
+    margin-left: 40px;
+}
+
 .wegas-chart .legend > div {
     float: left;
     margin: 0 0px;

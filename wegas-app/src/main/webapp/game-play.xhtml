@@ -40,12 +40,12 @@
                                         fn: "VariableDescriptorCache"
                                     }, {
                                         fn: "ScriptEval"
-                                    }, {
+                                    }/*, {
                                         fn: "WebSocketListener",
                                         cfg: {
                                             dataSource: "Pusher"
                                         }
-                                    }]
+                                    }*/]
                             },
                             Page: {
                                 /*
@@ -93,12 +93,17 @@
                                     }
                                 ]
                             },
-
                             Pusher: {
                                 type: "PusherDataSource",
                                 source: "rest/Pusher/",
 //                                applicationKey: "#{gameController.currentGameModel.properties.websocket}"
-                                applicationKey: "#{gameController.getWegasProperty('pusher.key')}"
+                                applicationKey: "#{gameController.getWegasProperty('pusher.key')}",
+                                plugins: [{
+                                        fn: "WebSocketListener",
+                                        cfg: {
+                                            dataSource: "Pusher"
+                                        }
+                                    }]
                             },
                             User: {
                                 source: "rest/Extended/User",
@@ -126,8 +131,8 @@
                             Y.log("Error running client scripts.", "error");
                         }
                     });
-                    try{
-                        #{gameController.staticClientScripts}
+                    try {
+                #{gameController.staticClientScripts}
                     } catch (e) {
                         Y.log("Error running client scripts.", "error");
                     }

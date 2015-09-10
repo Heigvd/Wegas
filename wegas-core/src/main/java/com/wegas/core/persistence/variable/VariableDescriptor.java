@@ -37,11 +37,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.GameScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
+import java.util.HashMap;
+import java.util.Map;
 import com.wegas.resourceManagement.persistence.BurndownDescriptor;
 import org.eclipse.persistence.annotations.JoinFetch;
 import org.slf4j.Logger;
@@ -81,7 +84,9 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "PeerReviewDescriptor", value = PeerReviewDescriptor.class),
     @JsonSubTypes.Type(name = "BurndownDescriptor", value = BurndownDescriptor.class)
 })
-abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity implements Searchable, LabelledEntity {
+abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity implements Searchable, LabelledEntity, Broadcastable {
+
+    static final private org.slf4j.Logger logger = LoggerFactory.getLogger(VariableDescriptor.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -417,6 +422,16 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
                 || (context instanceof Player && sFlag < 2)) { // p ctx -> skip gms, gs, ts
             scope.propagateDefaultInstance(context);
         }
+    }
+
+    @Override
+    public Map<String, List<AbstractEntity>> getEntities() {
+        Map<String, List<AbstractEntity>> map = new HashMap<>();
+        ArrayList<AbstractEntity> entities = new ArrayList<>();
+        entities.add(this);
+        //logger.error("CHANNEL TOKEN: " + Helper.getAudienceToken(this.getGameModel()));
+        map.put(Helper.getAudienceToken(this.getGameModel()), entities);
+        return map;
     }
 
     /**

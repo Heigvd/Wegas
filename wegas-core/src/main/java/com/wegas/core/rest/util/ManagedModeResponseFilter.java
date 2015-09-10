@@ -13,7 +13,7 @@ import com.wegas.core.ejb.WebsocketFacade;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasWrappedException;
 import com.wegas.core.exception.internal.NoPlayerException;
-import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.AbstractEntity;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
@@ -26,6 +26,8 @@ import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.ext.Provider;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 
 /**
@@ -53,7 +55,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
 
         logger.info("Request [" + id + "] Processed in " + duration
                 + " [ms] => " + response.getStatusInfo());
-        if (response.getStatusInfo().getStatusCode() >= 400){
+        if (response.getStatusInfo().getStatusCode() >= 400) {
             logger.warn("Problem : " + response.getEntity());
         }
 
@@ -112,27 +114,29 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                 response.setStatus(HttpStatus.SC_OK);
             }
 
-            if (!rollbacked && !rmf.getRequestManager().getUpdatedInstances().isEmpty()) {
-                List<VariableInstance> updatedInstances = rmf.getUpdatedInstances();
-                /*
-                 * Merge updatedInstance within ManagedResponse entities
-                 */
-                for (VariableInstance vi : updatedInstances) {
-                    if (!entities.contains(vi)) {
-                        entities.add(vi);
-                    }
-                }
-                /*
-                 * EntityUpdatedEvent propagates changes through websocket
-                 */
-                //serverResponse.getEvents().add(e);
+            Map<String, List<AbstractEntity>> updatedEntities = rmf.getUpdatedEntities();
+            Map<String, List<AbstractEntity>> destroyedEntities = rmf.getDestroyedEntities();
+            Map<String, List<AbstractEntity>> outdatedEntities = rmf.getOutdatedEntities();
+
+            if (!rollbacked && !(updatedEntities.isEmpty() && destroyedEntities.isEmpty() && outdatedEntities.isEmpty())) {
                 try {
                     WebsocketFacade websocketFacade = Helper.lookupBy(WebsocketFacade.class, WebsocketFacade.class);
-                    if (managedMode.matches("^[\\d\\.]+$")) { //Socket id
-                        websocketFacade.onRequestCommit(updatedInstances, managedMode);
-                    } else {
-                        websocketFacade.onRequestCommit(updatedInstances);
+                    /*
+                     * Merge updatedInstance within ManagedResponse entities
+                     */
+                    for (Entry<String, List<AbstractEntity>> entry : updatedEntities.entrySet()) {
+                        String audience = entry.getKey();
+                        if (websocketFacade.hasPermission(audience, rmf.getPlayer())) {
+                            for (AbstractEntity ae : entry.getValue()) {
+                                if (!entities.contains(ae)) {
+                                    entities.add(ae);
+                                }
+                            }
+                        }
                     }
+
+                    websocketFacade.onRequestCommit(updatedEntities, destroyedEntities, outdatedEntities,
+                            (managedMode.matches("^[\\d\\.]+$") ? managedMode : null));
                 } catch (NamingException | NoPlayerException ex) {
                     java.util.logging.Logger.getLogger(ManagedModeResponseFilter.class.getName()).log(Level.SEVERE, null, ex);
                 }

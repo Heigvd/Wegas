@@ -7,10 +7,7 @@
  */
 package com.wegas.core.event.client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.rest.util.JacksonMapperProvider;
-import java.io.IOException;
+import com.wegas.core.persistence.AbstractEntity;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +18,7 @@ import java.util.List;
 public class EntityUpdatedEvent extends ClientEvent {
 
     private static final long serialVersionUID = 1L;
-    private List<VariableInstance> updatedEntities = new ArrayList<>();
+    private List<AbstractEntity> updatedEntities = new ArrayList<>();
 
     /**
      *
@@ -33,21 +30,21 @@ public class EntityUpdatedEvent extends ClientEvent {
      *
      * @param updatedEntities
      */
-    public EntityUpdatedEvent(List<VariableInstance> updatedEntities) {
+    public EntityUpdatedEvent(List<AbstractEntity> updatedEntities) {
         this.updatedEntities = updatedEntities;
     }
 
     /**
      * @return the updatedEntities
      */
-    public List<VariableInstance> getUpdatedEntities() {
+    public List<AbstractEntity> getUpdatedEntities() {
         return updatedEntities;
     }
 
     /**
      * @param updatedEntities the updatedEntities to set
      */
-    public void setUpdatedEntities(List<VariableInstance> updatedEntities) {
+    public void setUpdatedEntities(List<AbstractEntity> updatedEntities) {
         this.updatedEntities = updatedEntities;
     }
 
@@ -55,16 +52,8 @@ public class EntityUpdatedEvent extends ClientEvent {
      *
      * @param vi
      */
-    public void addEntity(VariableInstance vi) {
+    public void addEntity(AbstractEntity vi) {
         this.updatedEntities.add(vi);
     }
 
-    /**
-     *
-     * @return @throws IOException
-     */
-    public String toJson() throws IOException {
-        ObjectMapper mapper = JacksonMapperProvider.getMapper();
-        return mapper.writeValueAsString(this);
-    }
 }

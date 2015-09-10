@@ -20,6 +20,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.persistence.Broadcastable;
+import java.util.Map;
 
 /**
  *
@@ -33,7 +35,7 @@ import com.fasterxml.jackson.annotation.JsonView;
     @Index(columnList = "inboxinstance_variableinstance_id")
 })
 
-public class Message extends NamedEntity {
+public class Message extends NamedEntity implements Broadcastable {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -54,13 +56,13 @@ public class Message extends NamedEntity {
     @JsonView(Views.ExtendedI.class)
     private String body;
     /**
-     * real world time for sorting purpose 
+     * real world time for sorting purpose
      */
     @Temporal(TemporalType.TIMESTAMP)
     private Date sentTime = new Date();
 
     /**
-     * Simulation date, for display purpose 
+     * Simulation date, for display purpose
      */
     private String date;
     /**
@@ -123,7 +125,6 @@ public class Message extends NamedEntity {
         this.attachements = attachements;
     }
 
-
     /**
      *
      * @param from
@@ -154,8 +155,6 @@ public class Message extends NamedEntity {
         this.attachements = attachements;
     }
 
-
-
     /**
      *
      * @param a
@@ -174,12 +173,12 @@ public class Message extends NamedEntity {
 
     /**
      *
+     * @PostPersist @PostUpdate @PostRemove public void onUpdate() {
+     * this.getInboxInstance().onInstanceUpdate(); }
      */
-    @PostPersist
-    @PostUpdate
-    @PostRemove
-    public void onUpdate() {
-        this.getInboxInstance().onInstanceUpdate();
+    @Override
+    public Map<String, List<AbstractEntity>> getEntities() {
+        return this.getInboxInstance().getEntities();
     }
 
     @Override
@@ -273,7 +272,8 @@ public class Message extends NamedEntity {
 
     /**
      * return the date
-     * @return 
+     *
+     * @return
      */
     public String getDate() {
         return date;
@@ -281,12 +281,13 @@ public class Message extends NamedEntity {
 
     /**
      * set the date
-     * @param date 
+     *
+     * @param date
      */
     public void setDate(String date) {
         this.date = date;
     }
-    
+
     /**
      * @return the startTime
      */

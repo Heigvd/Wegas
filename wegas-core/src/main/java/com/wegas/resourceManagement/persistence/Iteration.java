@@ -13,6 +13,7 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.persistence.Broadcastable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +30,7 @@ import java.util.Map;
 @Table(indexes = {
     @Index(columnList = "burndowninstance_variableinstance_id")
 })
-public class Iteration extends AbstractEntity {
+public class Iteration extends AbstractEntity implements Broadcastable {
 
     private static final long serialVersionUID = 1L;
 
@@ -297,10 +298,8 @@ public class Iteration extends AbstractEntity {
     /**
      * tie lifecycle events with burdownInstnace ones
      */
-    @PostPersist
-    @PostUpdate
-    @PostRemove
-    private void onUpdate() {
-        this.getBurndownInstance().onInstanceUpdate();
+    @Override
+    public Map<String, List<AbstractEntity>> getEntities() {
+        return this.getBurndownInstance().getEntities();
     }
 }

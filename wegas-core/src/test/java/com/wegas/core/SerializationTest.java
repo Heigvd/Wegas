@@ -17,6 +17,7 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -399,7 +400,7 @@ public class SerializationTest {
         exceptions.add(WegasErrorMessage.error("Error Message"));
         exceptions.add(new WegasScriptException("var a = truc;", 123, "OUPS"));
 
-        List<VariableInstance> instances = new ArrayList<>();
+        List<AbstractEntity> instances = new ArrayList<>();
         instances.add(new NumberInstance(1));
 
         EntityUpdatedEvent update = new EntityUpdatedEvent(instances);

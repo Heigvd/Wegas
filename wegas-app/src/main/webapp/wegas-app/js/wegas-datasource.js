@@ -231,8 +231,8 @@ YUI.add('wegas-datasource', function(Y) {
                                 max = (val.max !== null ? val.max : "∞");
                                 level = "error";
                                 msg = "\"" + val.variableName +
-                                      "\" is out of bound. <br />(" + val.value + " not in [" + min + ";" + max +
-                                      "])";
+                                    "\" is out of bound. <br />(" + val.value + " not in [" + min + ";" + max +
+                                    "])";
                                 break;
                             case "WegasScriptException":
                                 level = "error";
@@ -251,6 +251,19 @@ YUI.add('wegas-datasource', function(Y) {
                         this.__showMessage(level, msg);
                     }
                     this.get(HOST).fire("ExceptionEvent", e.serverEvent.get("val.exceptions")[0]);
+                }
+            });
+
+            // Handle Websocket updated entities
+            this.on("EntityUpdatedEvent", function(e) {
+                var i, entities = e.updatedEntities;
+                for (i = 0; i < entities.length; i += 1) { // Update the cache with the entities contained in the reply
+                    this.updated = this.updateCache(POST, entities[i]) || this.updated;
+                }
+
+                if (!(e.cfg && e.cfg.updateEvent === false) && this.updated) {
+                    this.get(HOST).fire("update", e);
+                    this.updated = false;
                 }
             });
         },
@@ -696,20 +709,7 @@ YUI.add('wegas-datasource', function(Y) {
             /**
              * Server event, triggered through the managed-mode response events.
              */
-            this.on("EntityUpdatedEvent", function(e) {
-                var i, entities = e.serverEvent.get("updatedEntities");
-                for (i = 0; i < entities.length; i += 1) { // Update the cache with the entities contained in the reply
-                    this.updated = this.updateCache(POST, entities[i]) || this.updated;
-                }
-
-                if (!(e.cfg && e.cfg.updateEvent === false) && this.updated) {
-                    this.get(HOST).fire("update", e);
-                    // ID 
-                    this.updated = false;
-                }
-            });
-
-            this.on("CustomEvent", function(e) {
+            this.on("CustomEvent", function(e) { // TODO MOVE SOMEWHERE...
                 this.get(HOST).fire(e.serverEvent.get("val.type"), e.serverEvent.get("val.payload"));
             });
         },

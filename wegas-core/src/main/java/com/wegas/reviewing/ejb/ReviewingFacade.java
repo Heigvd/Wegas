@@ -364,7 +364,7 @@ public class ReviewingFacade {
                 }
             }
             variableInstanceFacade.merge(pri);
-            requestManager.addUpdatedInstance(pri);
+            //requestManager.addUpdatedInstance(pri);
         }
     }
 
@@ -397,7 +397,7 @@ public class ReviewingFacade {
                 }
             }
             variableInstanceFacade.merge(pri);
-            requestManager.addUpdatedInstance(pri);
+            //requestManager.addUpdatedInstance(pri);
         }
     }
 

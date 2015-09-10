@@ -11,17 +11,19 @@ import com.pusher.rest.Pusher;
 import com.pusher.rest.data.PresenceUser;
 import com.pusher.rest.data.Result;
 import com.wegas.core.Helper;
-import com.wegas.core.event.client.OutdatedEntitiesEvent;
+import com.wegas.core.event.client.ClientEvent;
+import com.wegas.core.event.client.EntityDestroyedEvent;
 import com.wegas.core.event.client.EntityUpdatedEvent;
 import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.persistence.variable.scope.GameModelScope;
-import com.wegas.core.persistence.variable.scope.GameScope;
-import com.wegas.core.persistence.variable.scope.PlayerScope;
-import com.wegas.core.persistence.variable.scope.TeamScope;
+import com.wegas.core.event.client.OutdatedEntitiesEvent;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.util.SecurityHelper;
 import java.io.ByteArrayOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,13 +34,14 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.MissingResourceException;
-import java.util.logging.Level;
 import java.util.zip.GZIPOutputStream;
+import org.apache.shiro.SecurityUtils;
 
 /**
  * @author Yannick Lagger <lagger.yannick@gmail.com>
@@ -65,11 +68,103 @@ public class WebsocketFacade {
     @EJB
     private VariableInstanceFacade variableInstanceFacade;
 
+    @EJB
+    GameFacade gameFacade;
+
+    @EJB
+    TeamFacade teamFacade;
+
     /**
      *
      */
     @EJB
     private UserFacade userFacade;
+
+    @EJB
+    private PlayerFacade playerFacade;
+
+    private boolean hasPermission(String type, Long id, Player currentPlayer) {
+        if ("GameModel".equals(type)) {
+            return SecurityUtils.getSubject().isPermitted("GameModel:View:gm" + id);
+        } else if ("Game".equals(type)) {
+            Game game = gameFacade.find(id);
+            return game != null && SecurityHelper.isPermitted(game, "View");
+        } else if ("Team".equals(type)) {
+            Team team = teamFacade.find(id);
+            User user = userFacade.getCurrentUser();
+
+            if (currentPlayer != null && currentPlayer.getUser() != null
+                    && currentPlayer.getUser().equals(user)) {
+                // Current logged User is the player itself
+                // the player MUST be a member of the team
+                return playerFacade.checkExistingPlayerInTeam(team.getId(), user.getId()) != null;
+            } else {
+                // Trainer of scenarist (player is not linked to user)
+                return SecurityHelper.isPermitted(team.getGame(), "Edit");
+            }
+        } else if ("Player".equals(type)) {
+            User user = userFacade.getCurrentUser();
+            Player player = playerFacade.find(id);
+
+            if (player != null) {
+                if (currentPlayer != null && currentPlayer.getUser() != null
+                        && currentPlayer.getUser().equals(user)) {
+                    return player == currentPlayer;
+                } else {
+                    // Trainer and scenarist 
+                    return SecurityHelper.isPermitted(player.getGame(), "Edit");
+                }
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    public boolean hasPermission(String channel, Player currentPlayer) {
+        String[] split = channel.split("-");
+        if (split.length != 2) {
+            return false;
+        } else {
+            return hasPermission(split[0], Long.parseLong(split[1]), currentPlayer);
+        }
+    }
+
+    public List<String> getChannels(List<AbstractEntity> entities) {
+        List<String> channels = new ArrayList<>();
+        String channel = null;
+
+        for (AbstractEntity entity : entities) {
+            if (entity instanceof GameModel) {
+                if (SecurityUtils.getSubject().isPermitted("GameModel:View:gm" + entity.getId())) {
+                    channel = "GameModel";
+                }
+            } else if (entity instanceof Game) {
+                if (SecurityHelper.isPermitted((Game) entity, "View")) {
+                    channel = "Game";
+                }
+            } else if (entity instanceof Team) {
+                Team team = (Team) entity;
+                User user = userFacade.getCurrentUser();
+                if (SecurityHelper.isPermitted(team.getGame(), "Edit") // Trainer and scenarist 
+                        || playerFacade.checkExistingPlayerInTeam(team.getId(), user.getId()) != null) { // or member of team
+                    channel = "Team";
+                }
+            } else if (entity instanceof Player) {
+                Player player = (Player) entity;
+                User user = userFacade.getCurrentUser();
+                if (SecurityHelper.isPermitted(player.getGame(), "Edit") // Trainer and scenarist 
+                        || player.getUser() == user) { // is the player
+                    channel = "Player";
+                }
+            }
+
+            if (channel != null) {
+                channels.add(channel + "-" + entity.getId());
+            }
+        }
+        return channels;
+    }
 
     /**
      *
@@ -141,57 +236,55 @@ public class WebsocketFacade {
     /**
      * fire and forget pusher events
      *
-     * @param variableInstances instances to propagate
+     * @param dispatchedEntities
+     * @param destroyedEntities
+     * @param outdatedEntities
+     * @throws com.wegas.core.exception.internal.NoPlayerException
      */
     @Asynchronous
-    public void onRequestCommit(final List<VariableInstance> variableInstances) throws NoPlayerException {
-        this.onRequestCommit(variableInstances, null);
+    public void onRequestCommit(final Map<String, List<AbstractEntity>> dispatchedEntities,
+            final Map<String, List<AbstractEntity>> destroyedEntities,
+            final Map<String, List<AbstractEntity>> outdatedEntities) throws NoPlayerException {
+        this.onRequestCommit(dispatchedEntities, destroyedEntities, outdatedEntities, null);
     }
 
     /**
      * fire and forget pusher events
      *
-     * @param variableInstances variable instance to propagate
-     * @param socketId          Client's socket id. Prevent that specific client
-     *                          to receive this particular message
+     * @param dispatchedEntities
+     * @param destroyedEntities
+     * @param outdatedEntities
+     * @param socketId           Client's socket id. Prevent that specific
+     *                           client to receive this particular message
      * @throws com.wegas.core.exception.internal.NoPlayerException
      */
     @Asynchronous
-    public void onRequestCommit(final List<VariableInstance> variableInstances, final String socketId) throws NoPlayerException {
+    public void onRequestCommit(final Map<String, List<AbstractEntity>> dispatchedEntities,
+            final Map<String, List<AbstractEntity>> destroyedEntities,
+            final Map<String, List<AbstractEntity>> outdatedEntities,
+            final String socketId) throws NoPlayerException {
         if (this.pusher == null) {
             return;
         }
-        VariableInstance v;
 
-        final Map<Long, EntityUpdatedEvent> games = new HashMap<>();
-        final Map<Long, EntityUpdatedEvent> teams = new HashMap<>();
-        final Map<Long, EntityUpdatedEvent> players = new HashMap<>();
+        propagate(dispatchedEntities, socketId, EntityUpdatedEvent.class);
+        propagate(destroyedEntities, socketId, EntityDestroyedEvent.class);
+        propagate(outdatedEntities, socketId, OutdatedEntitiesEvent.class);
+    }
 
-//        if (!gameModel.getProperties().getWebsocket().equals("")) {
-//            return;
-//        }
-        for (int i = 0; i < variableInstances.size(); i++) {
-            v = variableInstances.get(i);
-            if (v.getScope() instanceof GameModelScope /*
-                     * ||
-                     * v.getScope().getBroadcastScope().equals(GameModelScope.class.getSimpleName())
-                     */) {
-                //Not supported yet
-            } else if (v.getScope() instanceof GameScope
-                    || v.getScope().getBroadcastScope().equals(GameScope.class.getSimpleName())) {
-                putInstance(games, variableInstanceFacade.findGame(v).getId(), v);
-            } else if (v.getScope() instanceof TeamScope
-                    || v.getScope().getBroadcastScope().equals(TeamScope.class.getSimpleName())) {
-                putInstance(teams, variableInstanceFacade.findTeam(v).getId(), v);
-            } else if (v.getScope() instanceof PlayerScope
-                    || v.getScope().getBroadcastScope().equals(PlayerScope.class.getSimpleName())) {
-                putInstance(players, variableInstanceFacade.findAPlayer(v).getId(), v);
+    private <T extends ClientEvent> void propagate(Map<String, List<AbstractEntity>> container, String socketId, Class<T> eventClass) {
+        try {
+            for (String audience : container.keySet()) {
+                List<AbstractEntity> toPropagate = container.get(audience);
+                //logger.error(eventClass.getSimpleName() + " entities: " + audience + ": " + toPropagate.size());
+                ClientEvent event = eventClass.getDeclaredConstructor(List.class).newInstance(toPropagate);
+                propagate(event, audience, socketId);
             }
+        } catch (NoSuchMethodException | SecurityException |
+                InstantiationException | IllegalAccessException |
+                IllegalArgumentException | InvocationTargetException ex) {
+            logger.error("EVENT INSTANTIATION FAILS");
         }
-
-        propagate(games, "Game-", socketId);
-        propagate(teams, "Team-", socketId);
-        propagate(players, "Player-", socketId);
     }
 
     private String gzip(String data) throws IOException {
@@ -216,61 +309,35 @@ public class WebsocketFacade {
         return sb.toString();
     }
 
-    private void propagate(Map<Long, EntityUpdatedEvent> map, String prefix, final String socketId) {
-        for (Entry<Long, EntityUpdatedEvent> entry : map.entrySet()) {
-            try {
-                String channel = prefix + entry.getKey();
-                logger.info("EntityUpdatedEvent.entites: " + channel + ": " + entry.getValue().getUpdatedEntities().size());
-
-                String gzippedJson = gzip(entry.getValue().toJson());
-
-                Result result = pusher.trigger(channel, "EntityUpdatedEvent.gz", gzippedJson, socketId);
-
-                logger.info("PUSHER RESULT" + result.getMessage() + " : " + result.getStatus() + " : " + result.getHttpStatus());
-                if (result.getHttpStatus() == 403) {
-                    // Pusher Message Quota Reached...
-                } else if (result.getHttpStatus() == 413) {
-                    // wooops pusher error (too big ?)
-                    this.outdateEntities(channel, entry.getValue(), socketId);
-                }
-            } catch (IOException ex) {
-                logger.error("     IOEX <----------------------", ex);
-                //
-            }
-        }
-    }
-
-    private void outdateEntities(String channel, EntityUpdatedEvent event, String socketId) {
+    private void propagate(ClientEvent clientEvent, String audience, final String socketId) {
         try {
-            OutdatedEntitiesEvent outdate = new OutdatedEntitiesEvent();
+            String eventName = clientEvent.getClass().getSimpleName() + ".gz";
+            //if (eventName.matches(".*\\.gz$")) {
+            String content = gzip(clientEvent.toJson());
+            //} else {
+            //    content = clientEvent.toJson();
+            //}
+            Result result = pusher.trigger(audience, eventName, content, socketId);
 
-            for (AbstractEntity entity : event.getUpdatedEntities()) {
-                outdate.addEntity(entity);
-            }
-
-            String gzippedJson = gzip(outdate.toJson());
-            Result result = pusher.trigger(channel, "OutdatedEntitiesEvent.gz", gzippedJson, socketId);
 
             if (result.getHttpStatus() == 403) {
+                logger.error("403 QUOTA REACHED");
                 // Pusher Message Quota Reached...
             } else if (result.getHttpStatus() == 413) {
+                logger.error("413 MESSAGE TOO BIG");
                 // wooops pusher error (too big ?)
-                this.sendLifeCycleEvent(channel, WegasStatus.OUTDATED, socketId);
+                if (clientEvent instanceof EntityUpdatedEvent) {
+                    this.propagate(new OutdatedEntitiesEvent(((EntityUpdatedEvent) clientEvent).getUpdatedEntities()),
+                            audience, socketId);
+                    //this.outdateEntities(audience, ((EntityUpdatedEvent) clientEvent), socketId);
+                } else {
+                    logger.error("  -> OUTDATE");
+                    this.sendLifeCycleEvent(audience, WegasStatus.OUTDATED, socketId);
+                }
             }
         } catch (IOException ex) {
             logger.error("     IOEX <----------------------", ex);
         }
-    }
-
-    private void putInstance(Map<Long, EntityUpdatedEvent> map, Long id, VariableInstance v) {
-        EntityUpdatedEvent tmp;
-        if (map.containsKey(id)) {
-            tmp = map.get(id);
-        } else {
-            tmp = new EntityUpdatedEvent();
-            map.put(id, tmp);
-        }
-        tmp.addEntity(v);
     }
 
     public String pusherAuth(final String socketId, final String channel) {
