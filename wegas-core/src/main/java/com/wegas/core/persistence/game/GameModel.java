@@ -638,7 +638,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         Map<String, List<AbstractEntity>> map = new HashMap<>();
         ArrayList<AbstractEntity> entities = new ArrayList<>();
         entities.add(this);
-        map.put(this.getAudienceToken(this), entities);
+        map.put(Helper.getAudienceToken(this), entities);
         return map;
     }*/
 
