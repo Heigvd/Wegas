@@ -286,7 +286,7 @@
                         <configuration>
                             <nodeVersion>v0.12.0</nodeVersion>
                             <npmVersion>2.5.1</npmVersion>
-                            <downloadRoot>https://nodejs.org/dist/</downloadRoot>
+                            <nodeDownloadRoot>https://nodejs.org/dist/</nodeDownloadRoot>
                         </configuration>
                     </execution>
                     <execution>
