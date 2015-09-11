@@ -1498,7 +1498,7 @@
                         "variables": [
                             {
                                 "name": "planedValue",
-                                "label": "PV (Planed Value)"
+                                "label": "PV (Planned Value)"
                             },
                             {
                                 "name": "earnedValue",
