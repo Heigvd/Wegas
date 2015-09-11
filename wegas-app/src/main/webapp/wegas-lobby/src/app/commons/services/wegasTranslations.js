@@ -1287,8 +1287,8 @@ angular.module('wegas.service.wegasTranslations', [])
                                 'fr':"Version du {{dateVersion | date:'dd.MM.yyyy'}}"
                             },
                              'SCENARIST-CARD-VERSION-AUTHOR':{
-                                'en':"Create by {{author}}",
-                                'fr':"Créer par {{author}}"
+                                'en':"Created by {{author}}",
+                                'fr':"Créée par {{author}}"
                             },
                             'ADMIN-INDEX-TITLE':{
                                 'en':"Welcome to admin",
