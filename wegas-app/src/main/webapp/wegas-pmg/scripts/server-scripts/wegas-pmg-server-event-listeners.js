@@ -13,7 +13,7 @@
 Event.on("replyValidate", function(e) {
     "use strict";
     var msg, type = e.choice.getDescriptor().getTitle(),
-        replies = e.question.getReplies(), i;
+        replies = e.question.getReplies(), i, result;
 
     //root = Variable.findParentList(e.question.getDescriptor());
     //root = Variable.findParentList(root);
@@ -32,9 +32,9 @@ Event.on("replyValidate", function(e) {
 
     // result(s)
     if (replies.size() > 1) {
-        msg += "<b>Results</b><br />";
+        msg += "<b>" + I18n.t("question.result") + "s</b><br />";
     } else {
-        msg += "<b>Result</b><br />";
+        msg += "<b>" + I18n.t("question.result") + "</b><br />";
     }
 
     msg += '<div class="replies">';

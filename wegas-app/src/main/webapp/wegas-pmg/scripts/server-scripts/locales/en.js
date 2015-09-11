@@ -131,7 +131,8 @@ i18nTable.en = {
     },
     question: {
         question: "Question",
-        action: "Action"
+        action: "Action",
+        result: "Result"
     }
 };
 

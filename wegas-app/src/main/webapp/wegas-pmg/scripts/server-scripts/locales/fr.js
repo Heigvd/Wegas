@@ -135,7 +135,8 @@ i18nTable.fr = {
     },
     question: {
         question: "Question",
-        action: "Action"
+        action: "Action",
+        result: "Résultat"
     }
 };
 i18nOrdinate.fr = function(number) {
