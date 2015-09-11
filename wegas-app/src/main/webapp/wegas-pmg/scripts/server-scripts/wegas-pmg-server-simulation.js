@@ -1210,7 +1210,11 @@ var PMGSimulation = (function() {
         }
     }
 
-
+    function getCurrentPlannedValue() {
+        return Y.Array.sum(computePlannedValues(Variable.find(gameModel, "periodPhase3").getValue(self)), function(pv) {
+            return pv;
+        }, this);
+    }
 
     /**
      * This function calculate the planned value for a given time
@@ -1218,7 +1222,7 @@ var PMGSimulation = (function() {
      * @returns {Array} value consumption for each periods (do not forget to sum !)
      */
     function computePlannedValues(maxPeriod) {
-        var pvs = [], i, j, tasks, task, bac, l, val;
+        var pvs = [], i, j, tasks, task, bac, l, val, period;
 
         for (i = 0; i <= maxPeriod; i += 1) {
             pvs.push(0);
@@ -1232,7 +1236,10 @@ var PMGSimulation = (function() {
             if (bac > 0) {
                 val = bac / l;
                 for (j = 0; j < l; j += 1) {
-                    pvs[parseInt(task.plannification[j])] += val;
+                    period = parseInt(task.plannification[j]);
+                    if (period <= maxPeriod) {
+                        pvs[parseInt(task.plannification[j])] += val;
+                    }
                 }
             }
         }
@@ -1280,7 +1287,7 @@ var PMGSimulation = (function() {
             completeness,
             currentPeriod3 = Variable.findByName(gameModel, 'periodPhase3').getValue(self),
             lastPlannedPeriod = getLastPlannedPeriodNumber(),
-            pv = computePlannedValues(currentPeriod3);
+            pv = getCurrentPlannedValue();
 
         for (i = 0; i < tasks.length; i += 1) {
             task = tasks[i];
@@ -1325,6 +1332,7 @@ var PMGSimulation = (function() {
 
 
         debug("updateVariables(): pv: " + pv + ", ac: " + ac + ", ev: " + ev);
+        printMessage("updateVariables(): pv: " + pv + ", ac: " + ac + ", ev: " + ev);
 
         // Costs
         if (ac > 0) {
@@ -1337,6 +1345,7 @@ var PMGSimulation = (function() {
             if (currentPeriod3 > lastPlannedPeriod) {
                 pv = pv + (pv / lastPlannedPeriod) * (currentPeriod3 - lastPlannedPeriod);
             }
+            printMessage("updateVariables(): pv: " + pv + ", ac: " + ac + ", ev: " + ev);
             spi = ev / pv * 100;
         }
         delayValue = Math.min(Math.max(Math.round(spi), delay.minValueD), delay.maxValueD);
@@ -1633,6 +1642,9 @@ var PMGSimulation = (function() {
     }
 
     return {
+        currentPlannedValue: function() {
+            return getCurrentPlannedValue();
+        },
         plannedValueHistory: function() {
             plannedValueHistory();
         },
