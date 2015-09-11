@@ -94,7 +94,7 @@ YUI.add('wegas-chart', function(Y) {
                 var v;
                 for (i = 0; i < a.length; i += 1) {
                     v = a[i];
-                    ctx.updateSerie(v.serie, i, vd.get("label"));
+                    ctx.updateSerie(v.serie, i, v.label);
                 }
             });
         },
