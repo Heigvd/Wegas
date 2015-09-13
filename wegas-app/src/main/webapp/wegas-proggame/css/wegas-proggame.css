@@ -59,7 +59,7 @@ html, .editor-preview {
 .proggame-button-shop, .proggame-button-shop:hover,
 .proggame-button-courses, .proggame-button-courses:hover,
 .proggame-button-account, .proggame-button-account:hover {
-    background: url(../../wegas-proggame/images/v2.png) no-repeat 7px 0;
+    background: url(../../wegas-proggame/images/proggame-icons.png) no-repeat 7px 0;
     padding-left: 31px;
     font-size: 1.2em;
     font-weight: bold;
@@ -108,7 +108,9 @@ html, .editor-preview {
     background-position: 7px -143px;
 }
 .wegas-unreadcount .value {
-    background-color: #ED2A07;
+    background-color: #FF9514;
+    /*        #ED2A07;*/
+    box-shadow: none;
     margin: 0 0px 0 2px;
     padding: 2px 5px 1px 5px;
     font-size: 0.8em;
@@ -178,7 +180,7 @@ html, .editor-preview {
     background: transparent;
     text-transform: uppercase;
     color: white;
-    font-size: 1.8em;
+    font-size: 1.9em;
     padding: 0;
     padding-top: 4px;
     line-height: 0.9;
@@ -190,6 +192,9 @@ html, .editor-preview {
     -o-border-image: url(../../wegas-proggame/images/dialog.png) 7 stretch;
     border-image: url(../../wegas-proggame/images/dialog.png) 7 stretch;
     opacity: 0.8;
+}
+.yui3-skin-sam .proggame-levelselection-button{
+    font-size: 1.2em !important;
 }
 .yui3-skin-sam .proggame-levelselection-button:hover,
 .yui3-skin-sam .proggame-button:hover,
@@ -226,7 +231,7 @@ html, .editor-preview {
 }
 /* Levels style */
 .wegas-proggame-level {
-    background: url(../../wegas-proggame/images/blackboard2Final3.png) no-repeat;
+    background: url(../../wegas-proggame/images/blackboardEntier.png) no-repeat;
     height: 708px;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -250,6 +255,8 @@ html, .editor-preview {
     line-height: 22px;
     padding-left: 35px;
     letter-spacing: 3px;
+    cursor: default;
+    
 }
 .proggame-title h1 {
     padding-top: 36px;
@@ -363,6 +370,7 @@ html, .editor-preview {
     opacity: 1;
     color: white;
     background: none;
+    cursor: default;
 }
 .wegas-proggame-level .yui3-tab-label:hover,
 .wegas-proggame-level .yui3-tab-label:focus  {
@@ -385,7 +393,7 @@ html, .editor-preview {
     position: absolute;
     top: 99px;
     left: 46px;
-    max-width: 180px;
+    width: 180px;
 } 
 .proggame-api .selected>div>.yui3-treeleaf-content-header,
 .proggame-api .selected>.yui3-treenode-content-header {
@@ -474,8 +482,9 @@ html, .editor-preview {
 .movable{
     position: absolute;
     top: 360px;
-    background: url(../../wegas-proggame/images/blackboardLow.png);
- }
+    /*    min-height: 360px;*/
+    /*    background: url(../../wegas-proggame/images/blackboard_Game.png);*/
+}
 .movable2{
     position: relative;
     height: 100%;
@@ -687,13 +696,16 @@ html, .editor-preview {
     background: url(../../wegas-proggame/images/proggame-levelend-win.png) 30px 0;
     width: 833px;
     height: 168px;
+    /*    width: 833px;
+        height: 168px;*/
     position: absolute;
-    top: 0;
+    top: -45px;
 }
 .wegas-proggame-level .proggame-levelend-star {
     background: url(../../wegas-proggame/images/proggame-levelend-star.png);
     width: 49px;
     height: 49px;
+    top: 150px;
     position: absolute;
 }
 .wegas-proggame-level .proggame-levelend-staractive {
@@ -718,8 +730,8 @@ html, .editor-preview {
     color: #faff46;
     text-shadow: 1px 2px 1px black;
     position: absolute;
-    top: 262px;
-    left: 405px;
+    top: 220px;
+    left: 385px;
 }
 .proggame-levelend-restart, 
 .proggame-levelend-nextlevel {
@@ -735,13 +747,13 @@ html, .editor-preview {
 .proggame-levelend-restart {
     background: url(../../wegas-proggame/images/proggame-levelend-restart.png) no-repeat top center;
     width: 75px;
-    top: 312px;
+    top: 255px;
     left: 304px;
 }
 .proggame-levelend-nextlevel {
     background: url(../../wegas-proggame/images/proggame-levelend-next.png) no-repeat top center;
     width: 87px;
-    top: 312px;
+    top: 255px;
     left: 514px;
 }
 .proggame-levelend-restart:hover, 
@@ -785,3 +797,11 @@ html, .editor-preview {
     left: 0px;
     z-index: 1002;
 }
+
+.questionMark {
+/*    pointer-events: none;*/
+    cursor: default;
+    text-decoration: none; 
+    float: right;
+}
+
