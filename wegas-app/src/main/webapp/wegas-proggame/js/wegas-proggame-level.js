@@ -27,6 +27,7 @@ YUI.add('wegas-proggame-level', function (Y) {
      */
 
     var showInfo = {}; //Is used to count how many times the player enters the same level 
+    var say = 0;
     ProgGameLevel = Y.Base.create("wegas-proggame-level", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         // *** Fields *** //
         CONTENT_TEMPLATE: '<div>'
@@ -76,8 +77,8 @@ YUI.add('wegas-proggame-level', function (Y) {
                 plugins: []                                                  // @fixme here proggamedipslay parameters should be in a separate attr               
             }, true)).render(cb.one(".terrain"));
             this.editorTabView = new Y.TabView().render(cb.one(".code")); // Render the tabview for scripts
-            this.mainEditorTab = this.addEditorTab("Main", this.get("defaultCode")); // Add the "Main" tabview, which containes the code that will be executed
-
+            this.mainEditorTab = this.addEditorTab("Code", this.get("defaultCode")); // Add the "Main" tabview, which containes the code that will be executed
+            console.log(this.mainEditorTab);
             if (ProgGameLevel.main) {
                 this.mainEditorTab.aceField.setValue(ProgGameLevel.main);
             }
@@ -94,15 +95,38 @@ YUI.add('wegas-proggame-level', function (Y) {
             this.renderDebugTabView(); // Render debug treeview
             this.renderApiTabView(); // Render api and files treeview
             this.resetUI(); // Reset the interface
-   
-                var resize = new Y.Resize({
-                    node: '.movable',
-                    handles: 't'
-                });
-                resize.on('resize:resize', function (event) {
-                    this.mainEditorTab.aceField.editor.resize();
-                }, this);
-        
+
+            var resize = new Y.Resize({
+                node: '.movable',
+                handles: 't'
+            });
+            resize.plug(Y.Plugin.ResizeConstrained, {
+                minHeight: 250,
+                maxHeight: 450,
+                maxWidth: 610,
+                minWidth: 610
+            });
+            resize.on('resize:resize', function (event) {
+                this.mainEditorTab.aceField.editor.resize();
+
+//                var element = this.mainEditorTab.aceField.fieldContainer;
+//                console.log(element.style);
+//                var style = window.getComputedStyle(element);
+//                var height = parseInt(style.getPropertyValue('height'));
+//                console.log(height);
+//                var maxHeight = 500;
+
+//                if (height > maxHeight) {
+//                    console.log("trop grand");
+//                    element.style.top = '300px';
+//                    event.preventDefault();
+//                }
+
+//                var minHeight = 300;
+//                if (height > minHeight) {
+//                    this.mainEditorTab.aceField.css("top", minHeight);
+//                }
+            }, this);
         },
         bindUI: function () {
             var cb = this.get(CONTENTBOX);
@@ -179,7 +203,6 @@ YUI.add('wegas-proggame-level', function (Y) {
             cb.delegate(CLICK, function () {                                     // End level screen: restart button
                 this.doNextLevel(function () {
                     this.resetUI();
-                    this.mainEditorTab.aceField.setValue(this.get("defaultCode"));
                     this.set(STATE, IDLE);
                 }, true);
             }, ".proggame-levelend-restart", this);
@@ -189,7 +212,7 @@ YUI.add('wegas-proggame-level', function (Y) {
                     this.fire("gameWon"); // trigger open page plugin
                 }, false);
             }, ".proggame-levelend-nextlevel", this);
-            //this.handlers.response = Wegas.Facade.Variable.after("update", this.syncUI, this); // If data changes, refresh
+//            this.handlers.response = Wegas.Facade.Variable.after("update", this.syncUI, this); // If data changes, refresh
         },
         syncUI: function () {
             this.display.syncUI(); // Sync the canvas
@@ -296,7 +319,7 @@ YUI.add('wegas-proggame-level', function (Y) {
             this.debugTabView.item(0).get("panelNode").setContent(""); // Empty log tab
 
             this.get(CONTENTBOX).one(".proggame-levelend").hide();
-            this.get(CONTENTBOX).one(".terrain").show;
+            this.get(CONTENTBOX).one(".terrain").show();
             this.syncFrontUI();
         },
         onServerReply: function (e) {
@@ -311,7 +334,8 @@ YUI.add('wegas-proggame-level', function (Y) {
         },
         doIdleAnimation: function () {
             var texts = this.get("invites");
-            if (texts.length === 0) {
+            if (texts.length === 0 && say === 0) {
+                say = 1;
                 texts = ["HELP! HELP!!! SOMEBODY HERE? PLEASE HELP ME!",
                     "PLEASE HELP ME!", "WHY ME? TELL ME WHY?", "WOULD ANYBODY BE KIND ENOUGH AS TO GET ME OUT OF HERE?"];
             }
@@ -529,9 +553,27 @@ YUI.add('wegas-proggame-level', function (Y) {
         renderApiTabView: function () {
             var node, packages = {};
             Y.Array.each(this.get("api"), function (i) {                         // Map api to a treeview structure
-                node = ProgGameLevel.API[i] || {
-                    label: i + "()"
-                };
+//                node = ProgGameLevel.API[i] || {
+//                    label: i + "()"
+//                };
+                if (!ProgGameLevel.API[i]) {
+                    node = {
+                        label: i + "()"
+                    };
+                } else {
+                    node = {
+                        label: "<p class='questionMark' title=\"" + ProgGameLevel.API[i].tooltip + "\">?<p>" + ProgGameLevel.API[i].label 
+                    };
+                }
+//                if (!ProgGameLevel.API[i]) {
+//                    node = {
+//                        label: i + "()"
+//                    };
+//                } else {
+//                    node = {
+//                        label: "<span class='span'>?</span>" + "<span class = 'label'>" + ProgGameLevel.API[i].label + "</span>"
+//                    };
+//                }
                 node.data = i;
                 if (node.pkg) {
                     if (!packages[node.pkg]) {
@@ -610,6 +652,19 @@ YUI.add('wegas-proggame-level', function (Y) {
                 }
             }, this);
         },
+//        hover: function (Y) {
+//            var hoverMe = Y.one('#hover-me');
+//
+//            hoverMe.on('mouseenter', function () {
+//                this.one('.label').on("click", function (e) {
+//                    alert('hello');
+//                });
+//            });
+//
+//            hoverMe.on('mouseleave', function () {
+//                this.one('.label').hide('.span');
+//            });
+//        },
         updateDebugTreeview: function (object) {
             var watches = {};
             Y.Array.each(this.watches, function (i) {                            // Set default value to undefined
@@ -1016,30 +1071,30 @@ YUI.add('wegas-proggame-level', function (Y) {
         API: {
             say: {
                 label: "say(text:String)",
-                tooltip: "say(text: String)\n\n"
+                tooltip: "say(text: String)\n"
                         + "Your avatar will loudly say the content of the text parameter.\n\n"
                         + "Parameters\ntext:String - The text you want to say out lout"
             },
             read: {
                 label: "read():Number",
-                tooltip: "read():Number\n\n"
+                tooltip: "read():Number\n"
                         + "Your avatar will read any panel on the same case as he is and return it.\n\n"
                         + "Returns\nNumber - The text on the panel"
             },
             move: {
                 label: "move()",
-                tooltip: "move()\n\n"
-                        + "Using this function, your avatar will move one tile  in the direction he is currently facing."
+                tooltip: "move()\n"
+                        + "Using this function, your avatar will move one tile\nin the direction he is currently facing."
             },
             left: {
                 label: "left()",
-                tooltip: "left()\n\n"
+                tooltip: "left()\n"
                         + "Your avatar turns to the left without moving."
             },
             right: {
                 label: "right()",
-                tooltip: "right()\n\n"
-                        + "Your avatar turns to the left without moving."
+                tooltip: "right()\n"
+                        + "Your avatar turns to the right without moving."
             },
             "Math.PI": {
                 pkg: "Math",
@@ -1049,7 +1104,7 @@ YUI.add('wegas-proggame-level', function (Y) {
             "Math.floor": {
                 label: "floor():Number",
                 pkg: "Math",
-                tooltip: "Math.floor():Number\n\n"
+                tooltip: "Math.floor():Number\n"
                         + "The floor() method rounds a number DOWNWARDS to the nearest integer, and returns the result.\n\n"
                         + "Parameters\nx:Number - The number you want to round\n"
                         + "Returns\nNumber - The nearest integer when rounding downwards"
@@ -1081,48 +1136,47 @@ YUI.add('wegas-proggame-level', function (Y) {
                 width: 460,
                 x: 402,
                 y: 390,
-                highlight: ".code",
+//                highlight: ".code",
                 bodyContent: "<div class='proggame-tuto-arrowbottom' style='float: left;'></div><div>L'éditeur de code vous permet de contrôler votre avatar.<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
             }, {
                 height: 110,
                 width: 460,
                 x: 462,
-                y: 550,
+                y: 570,
                 highlight: ".proggame-buttons",
                 bodyContent: "<div class='proggame-tuto-arrowright'></div><div>Pour exécuter votre code, cliquez sur la flèche verte.<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
             }, {
                 height: 105,
                 width: 460,
                 x: 550,
-                y: 320,
-//                highlight: ".yui3-resize-handle yui3-resize-handle-t",
+                y: 340,
                 bodyContent: "<div class='proggame-tuto-arrowbottom' style='float: left;'></div><div>L'éditeur de code peut être agrandi en tirant sur cette barre<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
             },
             {
-                height: 115,
+                height: 130,
                 width: 600,
                 x: 212,
                 y: 230,
                 highlight: ".proggame-lefttab",
                 bodyContent: "<div class='proggame-tuto-arrowleft'></div><div>Vous pouvez ajouter des instructions en cliquant directement dessus dans l'<b>API</b> (Application Programming Interface).<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
             }, {
-                height: 115,
+                height: 130,
                 width: 340,
                 x: 256,
                 y: 87,
                 highlight: ".proggame-help",
                 bodyContent: "<div class='proggame-tuto-arrowleft'></div><div>Pour revoir les objectifs du niveau, cliquez sur le bouton <b>Information</b>.<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
             }, {
-                height: 190,
+                height: 200,
                 width: 360,
-                x: 613,
+                x: 780,
                 y: 54,
                 highlight: ".proggame-button-courses",
                 bodyContent: "<div class='proggame-tuto-arrowtop'></div><div>Vous recevez la théorie nécessaire pour chaque niveau dans la partie théorie.<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
             }, {
-                height: 190,
+                height: 200,
                 width: 360,
-                x: 808,
+                x: 650,
                 y: 54,
                 highlight: ".proggame-button-shop",
                 bodyContent: "<div class='proggame-tuto-arrowtop'></div><div>Vous pouvez rejouer les anciens niveaux en cliquant sur la carte<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
