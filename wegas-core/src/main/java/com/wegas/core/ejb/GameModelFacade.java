@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
 import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.jcr.content.AbstractContentDescriptor;
@@ -19,6 +20,9 @@ import com.wegas.core.jcr.content.ContentConnectorFactory;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.FileController;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
@@ -42,10 +46,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.criteria.Predicate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -53,6 +57,8 @@ import javax.persistence.criteria.Predicate;
 @Stateless
 @LocalBean
 public class GameModelFacade extends BaseFacade<GameModel> {
+
+    private static final Logger logger = LoggerFactory.getLogger(GameModelFacade.class);
 
     /**
      *
@@ -95,6 +101,9 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     @EJB
     private FileController fileController;
 
+    @EJB
+    private PlayerFacade playerFacade;
+
     /**
      *
      */
@@ -126,6 +135,49 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     public void createWithDebugGame(final GameModel gm) {
         this.create(gm);
         this.addGame(gm, new DebugGame());
+    }
+
+    /**
+     *
+     * @param toUpdate GameModel to update
+     * @param source   GameModel to fetch instance from
+     * @param player   instances owner
+     * @return
+     */
+    public GameModel setDefaultInstancesFromPlayer(GameModel toUpdate, GameModel source, Player player) {
+        try {
+            toUpdate.propagateGameModel(); // Be sure to fetch all descriptor through gm.getVDs();
+            logger.error("to reinit: " + toUpdate.getVariableDescriptors().size());
+            for (VariableDescriptor vd : toUpdate.getVariableDescriptors()) {
+                VariableInstance find = variableDescriptorFacade.find(source, vd.getName()).getInstance(player);
+                logger.error("Re-Init " + vd + " to " + find);
+                vd.getDefaultInstance().merge(find);
+            }
+            return toUpdate;
+        } catch (WegasNoResultException ex) {
+            throw WegasErrorMessage.error("GameModels does not match");
+        }
+    }
+
+    public GameModel setDefaultInstancesFromPlayer(Long gameModelId, Long playerId) {
+        return setDefaultInstancesFromPlayer(this.find(gameModelId), this.find(gameModelId), playerFacade.find(playerId));
+    }
+
+    public GameModel createFromPlayer(Long gameModelId, Long playerId) {
+        try {
+            GameModel duplicata = this.duplicate(gameModelId);
+            this.getEntityManager().flush();
+
+            GameModel source = this.find(gameModelId);
+            Player player = playerFacade.findLive(playerId);
+            setDefaultInstancesFromPlayer(duplicata, source, player);
+
+            this.addGame(duplicata, new DebugGame());
+
+            return duplicata;
+        } catch (IOException ex) {
+            throw WegasErrorMessage.error("GameModels does not match");
+        }
     }
 
     /**
@@ -195,7 +247,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
             }
 
             return newGameModel;
-        }else {
+        } else {
             throw new WegasNotFoundException("GameModel not found");
         }
     }
@@ -289,10 +341,10 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
         Root e = query.from(entityClass);
         query.select(e)
-            .where(criteriaBuilder.and(
-                    criteriaBuilder.equal(e.get("status"), status),
-                    criteriaBuilder.isTrue(e.get("template"))))
-            .orderBy(criteriaBuilder.asc(e.get("name")));
+                .where(criteriaBuilder.and(
+                                criteriaBuilder.equal(e.get("status"), status),
+                                criteriaBuilder.isTrue(e.get("template"))))
+                .orderBy(criteriaBuilder.asc(e.get("name")));
         return getEntityManager().createQuery(query).getResultList();
     }
 

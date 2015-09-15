@@ -677,6 +677,11 @@ YUI().use(function(Y) {
             "wegas-fileexplorercss": {
                 type: CSS
             },
+            "wegas-gamemodel-extractor": {
+                path: "js/widget/wegas-gamemodel-extractor-min.js",
+                requires: ["wegas-modal", "wegas-plugin"],
+                ws_provides: ["GmExtractorAction"]
+            },
             "wegas-statemachineviewer": {
                 path: "js/widget/wegas-statemachineviewer-min.js",
                 requires: ["wegas-statemachineviewercss", "wegas-statemachine-entities",
@@ -695,7 +700,7 @@ YUI().use(function(Y) {
             },
             "wegas-dashboard": {
                 path: "js/widget/wegas-dashboard-min.js",
-                requires:   [
+                requires: [
                     "promise",
                     "font-awesome",
                     "wegas-card",
@@ -707,7 +712,7 @@ YUI().use(function(Y) {
             },
             "wegas-teams-dashboard": {
                 path: "js/widget/wegas-dashboard-teams-min.js",
-                requires:   [
+                requires: [
                     "wegas-dashboard",
                     "wegas-console-custom",
                     "wegas-sendmail"
@@ -716,7 +721,7 @@ YUI().use(function(Y) {
             },
             "wegas-teams-overview-dashboard": {
                 path: "js/widget/wegas-dashboard-teams-overview-min.js",
-                requires:   ["wegas-teams-dashboard"],
+                requires: ["wegas-teams-dashboard"],
                 ws_provides: "TeamsOverviewDashboard"
             },
             "wegas-resetter": {

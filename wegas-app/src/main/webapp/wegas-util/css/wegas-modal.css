@@ -83,6 +83,17 @@
     width:calc(100% - 128px);
 }
 
+.modal .modal__content .wegas-form .inputEx-Group{
+    display:block;
+    position:relative;
+    height:100%;
+    width:100%;
+    box-sizing:border-box;
+    padding:32px 120px;
+}
+
+
+
 .modal .modal__content{
     display:block;
     position:relative;
