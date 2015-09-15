@@ -55,7 +55,7 @@
     color:#666666;
     background:white;
     line-height:45px;
-    cursor:pointer;  
+    cursor:pointer;
     transition:.3s;
 }
 
@@ -186,7 +186,7 @@
     text-indent:-10px;
     box-sizing:border-box;
     transition:150ms;
-    
+
 }
 
 .modal--content-advanced .content-advanced-script-add:hover{
@@ -344,7 +344,7 @@
     width:20px;
     height:20px;
 }
-    
+
 .yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .wegas-inputex-variabledescriptorselect-group .wegas-movedownbutton .wegas-icon{
     display:block;
     position:relative;
@@ -393,23 +393,23 @@
   box-sizing: border-box;
 }
 
-.wegas-form > div > div > fieldset > div {
+.wegas-form.wegas-console-custom > div > div > fieldset > div {
   padding-left: 0px !important;
 }
 
-.yui3-skin-sam .wegas-form{
+.yui3-skin-sam .wegas-form.wegas-console-custom{
     width:100%;
     height:100%;
     box-sizing:border-box;
     padding:0px 0px;
 }
 
-.yui3-skin-sam .wegas-form fieldset{
+.yui3-skin-sam .wegas-form.wegas-console-custom fieldset{
     width:100%;
-    height:100%;    
+    height:100%;
 }
 
-.yui3-skin-sam .wegas-form .inputEx-fieldWrapper{
+.yui3-skin-sam .wegas-form.wegas-console-custom .inputEx-fieldWrapper{
     display:block;
     position:relative;
     width:100%;
@@ -420,7 +420,7 @@
     border:none;
 }
 
-.yui3-skin-sam .wegas-form .inputEx-label{
+.yui3-skin-sam .wegas-form.wegas-console-custom .inputEx-label{
     display:block;
     position:relative;
     width:112px !important;
@@ -433,7 +433,7 @@
     float: left;
 }
 
-.yui3-skin-sam .wegas-form .inputEx-label label{
+.yui3-skin-sam .wegas-form.wegas-console-custom .inputEx-label label{
     padding:0px;
     margin:0px;
     color:#9a9a9a;
@@ -441,12 +441,12 @@
     padding:2px 0px;
 }
 
-.yui3-skin-sam .wegas-form div.inputEx-invalid > div.inputEx-label label {
+.yui3-skin-sam .wegas-form.wegas-console-custom div.inputEx-invalid > div.inputEx-label label {
   color: #C00E0C;
   background:none;
 }
 
-.yui3-skin-sam .wegas-form div.inputEx-invalid > div.inputEx-label:before {
+.yui3-skin-sam .wegas-form.wegas-console-custom div.inputEx-invalid > div.inputEx-label:before {
   display:block;
   position:absolute;
   top:12px;
@@ -456,14 +456,14 @@
   font-size:16px;
 }
 
-.yui3-skin-sam .wegas-form div.inputEx-valid > div.inputEx-label label{
+.yui3-skin-sam .wegas-form.wegas-console-custom div.inputEx-valid > div.inputEx-label label{
     color:#9a9a9a;
 }
-.yui3-skin-sam .wegas-form div.inputEx-valid > div.inputEx-label:before {
+.yui3-skin-sam .wegas-form.wegas-console-custom div.inputEx-valid > div.inputEx-label:before {
   display:none;
 }
 
-.yui3-skin-sam .wegas-form .inputEx-Field{
+.yui3-skin-sam .wegas-form.wegas-console-custom .inputEx-Field{
     float:left;
     width:560px;
     margin:0px;
@@ -472,14 +472,14 @@
     box-sizing: border-box;
 }
 
-.yui3-skin-sam .wegas-form .inputEx-Field .inputEx-StringField-wrapper{
-    max-width: none; 
+.yui3-skin-sam .wegas-form.wegas-console-custom .inputEx-Field .inputEx-StringField-wrapper{
+    max-width: none;
 }
 
-.wegas-form div.inputEx-uneditableField div.inputEx-Field{
+.wegas-form.wegas-console-custom div.inputEx-uneditableField div.inputEx-Field{
     height:42px;
     padding: 10px 12px;
-    border-radius: 6px;  
+    border-radius: 6px;
     background:none;
     font-size:12px;
     transition:.3s;
@@ -489,91 +489,92 @@
     color: gray;
 }
 
-.wegas-form div.inputEx-StringField-wrapper input[type="text"]{
+.wegas-form.wegas-console-custom div.inputEx-StringField-wrapper input[type="text"]{
     height:42px;
     padding: 10px 12px;
-    border-radius: 6px;  
+    border-radius: 6px;
     background:none;
     font-size:12px;
     transition:.3s;
     box-sizing:border-box;
 }
-.wegas-form div.inputEx-StringField-wrapper input[type="text"].selected,
-.wegas-form div.inputEx-StringField-wrapper input[type="text"]:focus{
+.wegas-form.wegas-console-custom div.inputEx-StringField-wrapper input[type="text"].selected,
+.wegas-form.wegas-console-custom div.inputEx-StringField-wrapper input[type="text"]:focus{
     background:white;
 }
 
-.wegas-form .mce-tinymce.mce-panel {
+.wegas-form.wegas-console-custom .mce-tinymce.mce-panel {
     border-radius:6px;
     width: 100%;
 }
 
-.wegas-form .mce-toolbar-grp{
+.wegas-form.wegas-console-custom .mce-toolbar-grp{
     border-top-right-radius:6px;
     border-top-left-radius:6px;
 }
 
-.mce-edit-area, .mce-edit-area * {
+.wegas-form.wegas-console-custom .mce-edit-area,
+.wegas-form.wegas-console-custom  .mce-edit-area * {
     border-bottom-right-radius:6px;
     border-bottom-left-radius: 6px;
 }
 
-.yui3-skin-sam .wegas-form legend.inputEx-Group-legend {
+.yui3-skin-sam .wegas-form.wegas-console-custom legend.inputEx-Group-legend {
     margin:0px !important;
     padding: 20px 24px 24px 24px !important;
-    color: #515151 !important; 
-    width: 100% !important; 
+    color: #515151 !important;
+    width: 100% !important;
     box-sizing:border-box;
     text-align:left !important;
 }
 
-.yui3-skin-sam .wegas-form .inputEx-Group fieldset .inputEx-Group{
+.yui3-skin-sam .wegas-form.wegas-console-custom .inputEx-Group fieldset .inputEx-Group{
     width:50%;
     float:right;
 }
-.yui3-skin-sam .wegas-form .inputEx-Group fieldset .inputEx-Group:first-child{
+.yui3-skin-sam .wegas-form.wegas-console-custom .inputEx-Group fieldset .inputEx-Group:first-child{
     width:50%;
     float:left;
 }
-.yui3-skin-sam .wegas-form .inputEx-Group fieldset .inputEx-Group fieldset{
+.yui3-skin-sam .wegas-form.wegas-console-custom .inputEx-Group fieldset .inputEx-Group fieldset{
     height:auto;
     padding:0px;
     box-sizing:border-box;
 }
 
-.yui3-skin-sam .wegas-form .inputEx-Group fieldset .inputEx-Group fieldset .inputEx-fieldWrapper{
+.yui3-skin-sam .wegas-form.wegas-console-custom .inputEx-Group fieldset .inputEx-Group fieldset .inputEx-fieldWrapper{
     margin-bottom:8px;
     padding:0px 24px!important;
 }
 
-.yui3-skin-sam .wegas-form .inputEx-Group fieldset .inputEx-Group:first-child fieldset > .inputEx-fieldWrapper{
+.yui3-skin-sam .wegas-form.wegas-console-custom .inputEx-Group fieldset .inputEx-Group:first-child fieldset > .inputEx-fieldWrapper{
     margin-bottom:12px;
 }
 
-.yui3-skin-sam .wegas-form .inputEx-Group fieldset .inputEx-Group:first-child fieldset .inputEx-label{
-    width:92px !important;   
+.yui3-skin-sam .wegas-form.wegas-console-custom .inputEx-Group fieldset .inputEx-Group:first-child fieldset .inputEx-label{
+    width:92px !important;
 }
-.yui3-skin-sam .wegas-form .inputEx-Group fieldset .inputEx-Group:first-child fieldset .inputEx-fieldWrapper:last-child{
+.yui3-skin-sam .wegas-form.wegas-console-custom .inputEx-Group fieldset .inputEx-Group:first-child fieldset .inputEx-fieldWrapper:last-child{
     min-height:160px;
 }
 
-.yui3-skin-sam .wegas-form .inputEx-Group fieldset .inputEx-Group fieldset .inputEx-Field{
+.yui3-skin-sam .wegas-form.wegas-console-custom .inputEx-Group fieldset .inputEx-Group fieldset .inputEx-Field{
     width:240px;
     padding:0px;
 }
 
-.yui3-skin-sam .wegas-form .inputEx-Group fieldset .inputEx-Group:first-child fieldset .inputEx-Field{
+.yui3-skin-sam .wegas-form.wegas-console-custom .inputEx-Group fieldset .inputEx-Group:first-child fieldset .inputEx-Field{
     width:260px;
     padding:0px;
 }
 
-.yui3-skin-sam .wegas-form .wegas-sendmail-content{
+.yui3-skin-sam .wegas-form.wegas-console-custom .wegas-sendmail-content{
     display:block;
     position:relative;
     width:100%;
     height:100%;
 }
-.yui3-skin-sam .wegas-form .wegas-sendmail-content .inputEx-Group{
+.yui3-skin-sam .wegas-form.wegas-console-custom .wegas-sendmail-content .inputEx-Group{
     display:block;
     position:relative;
     height:100%;
@@ -582,38 +583,38 @@
     padding:32px 120px;
 }
 
-.yui3-skin-sam .wegas-form .wegas-sendmail-content .inputEx-fieldWrapper {
+.yui3-skin-sam .wegas-form.wegas-console-custom .wegas-sendmail-content .inputEx-fieldWrapper {
     padding:12px 0px !important;
 }
 
-.yui3-skin-sam .wegas-form .wegas-sendmail-content .inputEx-Field{
+.yui3-skin-sam .wegas-form.wegas-console-custom .wegas-sendmail-content .inputEx-Field{
     width:calc(100% - 112px);
 }
 
-.yui3-skin-sam .wegas-form .wegas-sendmail-content .mce-panel iframe{
+.yui3-skin-sam .wegas-form.wegas-console-custom .wegas-sendmail-content .mce-panel iframe{
     height:100% !important;
 }
 
-.yui3-skin-sam .wegas-form .modal--content-basics .mce-panel iframe{
-    height:100% !important; 
+.yui3-skin-sam .wegas-form.wegas-console-custom .modal--content-basics .mce-panel iframe{
+    height:100% !important;
 }
 
-.yui3-skin-sam div.inputEx-RadioField-choice{
+.yui3-skin-sam .wegas-form.wegas-console-custom div.inputEx-RadioField-choice{
     width:auto;
     height:16px;
     overflow:hidden;
     float: left !important;
     padding-top: 0.8em !important;
 }
-.yui3-skin-sam div.inputEx-RadioField-choice input{
+.yui3-skin-sam .wegas-form.wegas-console-custom div.inputEx-RadioField-choice input{
     display:block;
     position:absolute;
     top:-50px;
 }
-.yui3-skin-sam div.inputEx-RadioField-choice label{
+.yui3-skin-sam .wegas-form.wegas-console-custom div.inputEx-RadioField-choice label{
     padding-left:24px;
 }
-.yui3-skin-sam div.inputEx-RadioField-choice input + label:before{
+.yui3-skin-sam .wegas-form.wegas-console-custom div.inputEx-RadioField-choice input + label:before{
     content:"";
     display:block;
     position:absolute;
@@ -625,55 +626,55 @@
     background:none;
     transition:.2s;
 }
-.yui3-skin-sam div.inputEx-RadioField-choice input:checked + label:before{
+.yui3-skin-sam .wegas-form.wegas-console-custom div.inputEx-RadioField-choice input:checked + label:before{
     background-color:#9a9a9a;
 }
 
 @media screen and (max-width: 800px) {
-    .yui3-skin-sam .wegas-form .inputEx-Group fieldset .inputEx-Group:first-child fieldset .inputEx-fieldWrapper:last-child{
+    .yui3-skin-sam .wegas-form.wegas-console-custom .inputEx-Group fieldset .inputEx-Group:first-child fieldset .inputEx-fieldWrapper:last-child{
         min-height:0px;
     }
-    
-    .yui3-skin-sam .wegas-form .inputEx-Group fieldset .inputEx-Group{
+
+    .yui3-skin-sam .wegas-form.wegas-console-custom .inputEx-Group fieldset .inputEx-Group{
         float:none;
         clear:both;
         width:100%;
         box-sizing:border-box;
         padding:16px 80px 0px 80px!important;
     }
-    
-    .yui3-skin-sam .wegas-form .inputEx-Group fieldset .inputEx-Group:first-child{
+
+    .yui3-skin-sam .wegas-form.wegas-console-custom .inputEx-Group fieldset .inputEx-Group:first-child{
         float:none;
         clear:both;
         width:100%;
         box-sizing:border-box;
         padding:16px 80px !important;
     }
-    
-    .yui3-skin-sam .wegas-form .inputEx-Group fieldset .inputEx-Group fieldset .inputEx-fieldWrapper{
+
+    .yui3-skin-sam .wegas-form.wegas-console-custom .inputEx-Group fieldset .inputEx-Group fieldset .inputEx-fieldWrapper{
         padding:0px !important;
     }
-    
-    .yui3-skin-sam .wegas-form  .inputEx-Group fieldset .inputEx-Group:first-child .inputEx-fieldWrapper{
+
+    .yui3-skin-sam .wegas-form.wegas-console-custom  .inputEx-Group fieldset .inputEx-Group:first-child .inputEx-fieldWrapper{
         padding:8px 0px !important;
     }
 
-    .yui3-skin-sam .wegas-form legend.inputEx-Group-legend, .yui3-skin-sam .wegas-form  .inputEx-Group fieldset .inputEx-Group:first-child legend.inputEx-Group-legend {
+    .yui3-skin-sam .wegas-form.wegas-console-custom legend.inputEx-Group-legend, .yui3-skin-sam .wegas-form.wegas-console-custom  .inputEx-Group fieldset .inputEx-Group:first-child legend.inputEx-Group-legend {
         margin:8px 0px !important;
         padding:0px 0px !important;
     }
-    
-    .yui3-skin-sam .wegas-form .inputEx-Group fieldset .inputEx-Group:first-child fieldset .inputEx-Field{
+
+    .yui3-skin-sam .wegas-form.wegas-console-custom .inputEx-Group fieldset .inputEx-Group:first-child fieldset .inputEx-Field{
         width:calc(100% - 92px);
     }
-    .yui3-skin-sam .wegas-form .inputEx-Group fieldset .inputEx-Group fieldset .inputEx-Field{
+    .yui3-skin-sam .wegas-form.wegas-console-custom .inputEx-Group fieldset .inputEx-Group fieldset .inputEx-Field{
         width:calc(100% - 120px);
     }
-    
+
 }
 
 @media screen and (max-width: 610px) {
-    .yui3-skin-sam .wegas-form .wegas-sendmail-content .inputEx-Group{
+    .yui3-skin-sam .wegas-form.wegas-console-custom .wegas-sendmail-content .inputEx-Group{
         display:block;
         position:relative;
         height:100%;
@@ -684,7 +685,7 @@
 }
 
 @media screen and (max-width: 460px) {
-    .yui3-skin-sam .wegas-form .inputEx-Group fieldset .inputEx-Group, .yui3-skin-sam .wegas-form .inputEx-Group fieldset .inputEx-Group:first-child{
+    .yui3-skin-sam .wegas-form.wegas-console-custom .inputEx-Group fieldset .inputEx-Group, .yui3-skin-sam .wegas-form.wegas-console-custom .inputEx-Group fieldset .inputEx-Group:first-child{
         padding:16px 24px !important;
     }
 }
