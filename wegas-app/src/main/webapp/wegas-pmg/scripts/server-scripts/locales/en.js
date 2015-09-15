@@ -133,6 +133,9 @@ i18nTable.en = {
         question: "Question",
         action: "Action",
         result: "Result"
+    },
+    history: {
+        title: "Game History"
     }
 };
 

@@ -137,6 +137,9 @@ i18nTable.fr = {
         question: "Question",
         action: "Action",
         result: "Résultat"
+    },
+    history: {
+        title: "Historique de la partie"
     }
 };
 i18nOrdinate.fr = function(number) {

@@ -189,7 +189,7 @@ public class UIVariableDescriptor extends UIComponentBase {
         String type = vDesc.getClass().getSimpleName();
         String title;
 
-        UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER + " wegas-pdf-" + type);
+        UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER + " wegas-pdf-" + type + " wegas-variable-" + vDesc.getName());
         /**
          * Some entity have a specific label to be displayed for players (called
          * title) if any, use it rather than std label

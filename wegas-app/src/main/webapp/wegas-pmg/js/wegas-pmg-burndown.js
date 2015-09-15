@@ -7,7 +7,7 @@
  */
 /**
  * 
- * @fileOverview Widgets for PMG BurndownsA
+ * @fileOverview Widgets for PMG Burndowns
  * @author maxence.laurent gmail.com
  */
 /*global YUI, Chartist */

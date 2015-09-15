@@ -38,6 +38,12 @@ public class UIHelper {
     public static final String CSS_CLASS_MENU = CSS_CLASS_PREFIX + "menu";
 
     public static final String CSS_CLASS_MESSAGE_CONTAINER = CSS_CLASS_PREFIX + "message-container";
+    public static final String CSS_CLASS_MESSAGE_HEADER = CSS_CLASS_PREFIX + "message-header";
+    public static final String CSS_CLASS_MESSAGE_HEADER_FIRSTLINE = CSS_CLASS_PREFIX + "message-firstline";
+    public static final String CSS_CLASS_MESSAGE_FROM = CSS_CLASS_PREFIX + "message-from";
+    public static final String CSS_CLASS_MESSAGE_TO = CSS_CLASS_PREFIX + "message-to";
+    public static final String CSS_CLASS_MESSAGE_DATE = CSS_CLASS_PREFIX + "message-date";
+    public static final String CSS_CLASS_MESSAGE_SUBJECT = CSS_CLASS_PREFIX + "message-subject";
 
     public static final String CSS_CLASS_PICTURE = CSS_CLASS_PREFIX + "picture";
     public static final String CSS_CLASS_PICTURES = CSS_CLASS_PREFIX + "pictures-collection";
@@ -247,9 +253,9 @@ public class UIHelper {
      *
      * @param ctx
      * @param writer
-     * @param key the name
-     * @param value the text to print
-     * @param code add a css class if the text represents a source code
+     * @param key       the name
+     * @param value     the text to print
+     * @param code      add a css class if the text represents a source code
      * @param displayNA
      * @throws IOException
      */
@@ -278,7 +284,7 @@ public class UIHelper {
         //printText(ctx, writer, "IMPACT", CSS_CLASS_VARIABLE_TITLE);
         try {
             if (script == null) {
-                printPropertyScript(ctx, writer, key, (String)null);
+                printPropertyScript(ctx, writer, key, (String) null);
             } else {
                 UIHelper.startScript(ctx, writer, key);
                 ImpactPrinter ip = new ImpactPrinter(script.getContent());
@@ -516,20 +522,39 @@ public class UIHelper {
             List<String> attachements) throws IOException {
 
         UIHelper.startDiv(writer, CSS_CLASS_MESSAGE_CONTAINER);
+        UIHelper.startDiv(writer, CSS_CLASS_MESSAGE_HEADER);
+        UIHelper.startDiv(writer, CSS_CLASS_MESSAGE_HEADER_FIRSTLINE);
 
-        UIHelper.printProperty(context, writer, UIHelper.TEXT_FROM, unescapeAndTrimQuotes(from));
-        UIHelper.printProperty(context, writer, UIHelper.TEXT_DESTINATION, unescapeAndTrimQuotes(destination));
-        if (date != null  && !date.isEmpty()) {
-            UIHelper.printProperty(context, writer, UIHelper.TEXT_DATE, unescapeAndTrimQuotes(date));
+        UIHelper.startSpan(writer, CSS_CLASS_MESSAGE_SUBJECT);
+        printText(context, writer, unescapeAndTrimQuotes(subject), CSS_CLASS_PROPERTY_VALUE);
+        UIHelper.endSpan(writer);
+
+        if (destination != null && destination.length() > 0) {
+            UIHelper.startSpan(writer, CSS_CLASS_MESSAGE_TO);
+            UIHelper.printProperty(context, writer, UIHelper.TEXT_DESTINATION, unescapeAndTrimQuotes(destination));
+            UIHelper.endSpan(writer);
         }
-        UIHelper.printProperty(context, writer, UIHelper.TEXT_SUBJECT, unescapeAndTrimQuotes(subject));
 
-        if (attachements != null) {
+        if (date != null && !date.isEmpty()) {
+            UIHelper.startSpan(writer, CSS_CLASS_MESSAGE_DATE);
+            printText(context, writer, unescapeAndTrimQuotes(date), CSS_CLASS_PROPERTY_VALUE);
+            UIHelper.endSpan(writer);
+        }
+
+        UIHelper.endDiv(writer); // </div class="firstline">
+
+        UIHelper.startSpan(writer, CSS_CLASS_MESSAGE_FROM);
+        printText(context, writer, unescapeAndTrimQuotes(from), CSS_CLASS_PROPERTY_VALUE);
+        UIHelper.endSpan(writer);
+
+        UIHelper.endDiv(writer); // </div class="header">
+
+        if (attachements != null && attachements.size() > 0) {
             UIHelper.printProperty(context, writer, UIHelper.TEXT_ATTACHEMENTS, attachements.toString());
         }
 
-        UIHelper.printPropertyTextArea(context, writer, " ", unescapeAndTrimQuotes(body), false, true);// TODO do something else to not print PropertyTextArea Key than key = " "...
+        UIHelper.printPropertyTextArea(context, writer, " ", unescapeAndTrimQuotes(body), false, true);
 
-        UIHelper.endDiv(writer);
+        UIHelper.endDiv(writer); // </div class="container">
     }
 }

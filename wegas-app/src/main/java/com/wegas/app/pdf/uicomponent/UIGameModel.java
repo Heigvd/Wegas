@@ -80,7 +80,8 @@ public class UIGameModel extends UIComponentBase {
         String modeParam = (String) getAttributes().get("mode");
         String title = (String) getAttributes().get("title");
         String defVal = (String) getAttributes().get("defaultValues");
-        String[] roots = null;
+        Boolean displayPath = "true".equals((String) getAttributes().get("displayPath"));
+        String[] roots;
 
         // editor mode and default values only allowedif current user has edit permission on gamemodel
         defaultValues = "true".equals(defVal)
@@ -157,7 +158,7 @@ public class UIGameModel extends UIComponentBase {
                     vds.add(find);
                 }
 
-                if (roots.length == 1) {
+                if (roots.length == 1 && displayPath) {
                     // TODO extract common path
                     VariableDescriptor current = lookup.find(gm, root);
                     DescriptorListI parent;
