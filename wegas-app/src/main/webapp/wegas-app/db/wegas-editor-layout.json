@@ -113,8 +113,31 @@
                     }
                 ]
             }, {
+                "type": "Button",
+                "label": "Advanced",
+                "cssClass": "editor-scenarist-button wegas-advanced-feature",
+                "plugins": [
+                    {
+                        "fn": "WidgetMenu",
+                        "cfg": {
+                            "children": [
+                                {
+                                    "type": "Button",
+                                    "label": "Create new scenario from player",
+                                    "plugins": [
+                                        {
+                                            "fn": "GmExtractorAction"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }, {
                 "type": "OpenTabButton",
                 "label": "Help",
+                "cssClass": "editor-scenarist-button wegas-advanced-feature",
                 "wchildren": [
                     {
                         "type": "Text",
