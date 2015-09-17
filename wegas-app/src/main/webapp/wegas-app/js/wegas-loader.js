@@ -660,7 +660,7 @@ YUI().use(function(Y) {
             },
             "wegas-editor-pagetreeview": {
                 path: "js/widget/wegas-editor-pagetreeview-min.js",
-                ws_provides: "PageTreeview"
+                ws_provides: ["PageTreeview", "UneditablePageDisabler"]
             },
             "wegas-scriptlibrary": {
                 path: "js/widget/wegas-scriptlibrary-min.js",
