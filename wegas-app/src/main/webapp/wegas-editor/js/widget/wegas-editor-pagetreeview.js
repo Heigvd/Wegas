@@ -67,7 +67,7 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
             if (DATASOURCE.editable) {
                 this.treeView.sortable.on("sort", function(e) {
                     if (e.dragWidget.get("data.page")) {
-                        DATASOURCE.move(e.dragWidget.get("data.page"), e.index, Y.bind(function(){
+                        DATASOURCE.move(e.dragWidget.get("data.page"), e.index, Y.bind(function() {
                             this.getIndex();
                         }, this));
                     } else if (!e.dropWidget.get(BOUNDING_BOX).hasClass("container-node")) { //@TODO: find something better.
@@ -431,4 +431,12 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
     }, {
         NS: "contextmenu"
     });
+
+    Plugin.UneditablePageDisabler = Y.Base.create('wegas-pagetab-disabler', Plugin.Base, [], {
+        initializer: function() {
+            if (!DATASOURCE.editable) {
+                this.get("host").get(BOUNDING_BOX).addClass("wegas-advanced-feature");
+            }
+        }
+    }, {NS: "pagetabdisabler"});
 });
