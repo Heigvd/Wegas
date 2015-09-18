@@ -86,7 +86,6 @@ YUI.add('wegas-inbox', function(Y) {
         initializer: function() {
             this.dataSource = Wegas.Facade.Variable;
             this.handlers = {};
-            this.jsTranslator = new Wegas.Translator();
         },
         /**
          * @function
@@ -102,12 +101,12 @@ YUI.add('wegas-inbox', function(Y) {
             cb.append("<div style='clear:both'></div>");
             if (this.toolbar) {
                 delBtn = new Wegas.Button({
-                    label: "<span class='wegas-icon wegas-icon-cancel'></span>" + this.jsTranslator.getRB().Delete
+                    label: "<span class='wegas-icon wegas-icon-cancel'></span>" + Y.Wegas.I18n.t("global.delete")
                 });                                                             // Create delete mail button
                 delBtn.on("click", function() {                                 // On delete button click
                     var selection = this.tabView.get("selection");
                     if (selection && !selection.msg                             // If a valid mail tab is selected
-                        && confirm('The e-mail "' + selection.msg.get("subject") + '" will be deleted permanently. Continue?')) { // and user is sure
+                        && confirm(Y.Wegas.I18n.t("inbox.deleteEmailConfirmation", {subject: selection.msg.get("subject")}))) { // and user is sure
                         this.deleteEmail(selection.msg);                        // destroy the message
                     }
                 }, this);
@@ -142,7 +141,7 @@ YUI.add('wegas-inbox', function(Y) {
             if (!inboxDescriptor) {
                 this.tabView.add({
                     label: '',
-                    content: '<center>Unable to find inbox variable</center>'
+                    content: '<center>' + Y.Wegas.I18n.t('global.variableNotFound', {name: "inbox"}) + '</center>'
                 });
                 return;
             }
@@ -178,7 +177,7 @@ YUI.add('wegas-inbox', function(Y) {
             this.isDestroying = false;
             if (entities.length === 0) {
                 this.tabView.add(new Y.Tab({
-                    label: '<center><i>You have no messages</i></center>'
+                    label: '<center><i>' + Y.Wegas.I18n.t("inbox.noMessages") + '</i></center>'
                 }));
             }
             Y.Array.each(entities, function(entity) {
@@ -199,7 +198,7 @@ YUI.add('wegas-inbox', function(Y) {
                 } else {
                     this.tabView.get("panelNode").all(".wegas-inbox-invite").remove(true);
                     if (entities.length > 0) {
-                        this.tabView.get("panelNode").append("<div class=\"wegas-inbox-invite\">Select an item on the left</div>");
+                        this.tabView.get("panelNode").append("<div class=\"wegas-inbox-invite\">" + Y.Wegas.I18n.t("inbox.noMessageSelected") + "</div>");
                     }
                 }
             }

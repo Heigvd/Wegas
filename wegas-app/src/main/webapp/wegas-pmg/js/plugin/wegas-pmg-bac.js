@@ -33,7 +33,7 @@ YUI.add('wegas-pmg-bac', function(Y) {
             this.onceAfterHostEvent("render", function() {
                 this.get("host").datatable.addColumn({
                     key: 'bac',
-                    label: "BAC",
+                    label: Y.Wegas.I18n.t('pmg.project.bac_short'),
                     allowHTML: true,
                     formatter: function(o) {
                         return "<input class='bacField' value='" + o.data.instance.properties.bac + "'></input>";

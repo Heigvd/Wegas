@@ -250,7 +250,7 @@
     display:block;
     position:relative !important;
     color: white;
-    width:100px;
+    width: auto;
     height:30px;
     float:right;
     line-height:28px;
@@ -284,11 +284,11 @@
 }
 
 .pmg-nextweek:after {
-    content: "Next period";
+    /* content: "Next period"; */
 }
 
 .passPhase:after {
-    content: "Next phase";
+    /* content: "Next phase"; */
 }
 
 .pmg--taskbar__infos .pmg--infos__indicators{
@@ -1394,10 +1394,10 @@ td.yui3-datatable-col-Realised:after {
     display:block;
     position:relative;
     width:100%;
-    height:32px;
+    height: 32px;
     background-color:#7b818f;
     font-size:12px;
-    padding:8px;
+    padding: 6px;
     box-sizing:border-box;
     color:white;
 }

@@ -27,7 +27,7 @@ YUI.add('wegas-chart', function(Y) {
             this.handlers.push(Y.Wegas.Facade.Variable.after("update", this.syncUI, this));
         },
         renderUI: function() {
-            var variables, i, vd, legendNode;
+            var variables, i, vd, legendNode, label;
 
             this.options = {
                 width: this.get("width"),
@@ -70,8 +70,15 @@ YUI.add('wegas-chart', function(Y) {
             legendNode = this.get(CONTENTBOX).one(".legend");
             for (i = 0; i < variables.length; i += 1) {
                 vd = Y.Wegas.Facade.Variable.cache.find("name", variables[i].name);
+
+                if (this.get("variables")[i].label) {
+                    label = Y.Template.Micro.compile(this.get("variables")[i].label)();
+                } else {
+                    label = vd.get("label");
+                }
+
                 legendNode.append("<div><span class=\"color ct-series-" + String.fromCharCode(97 + i) + "\"></span>" +
-                    "<span class=\"label\">" + (this.get("variables")[i].label || vd.get("label")) + " </span></div>");
+                    "<span class=\"label\">" + label + " </span></div>");
             }
             this.chart;
         },
@@ -118,8 +125,6 @@ YUI.add('wegas-chart', function(Y) {
                 for (k = 0; k < max; k++) {
                     data.labels.push(k + 1);
                 }
-                Y.log("DATA: " + JSON.stringify(this.data));
-                Y.log("OPTIONS: " + JSON.stringify(this.options));
 
                 if (this.chart) {
                     this.chart.update(data);
@@ -169,10 +174,16 @@ YUI.add('wegas-chart', function(Y) {
                 Y.Wegas.Facade.Variable.cache.getWithView(vd.getInstance(), "Extended", {
                     on: {
                         success: Y.bind(function(e) {
-                            var entity = e.response.entity;
+                            var entity = e.response.entity,
+                                label;
+                            if (this.get("variables")[i].label) {
+                                label = Y.Template.Micro.compile(this.get("variables")[i].label)();
+                            } else {
+                                label = vd.get("label");
+                            }
                             resolve({
                                 serie: entity.get("history").concat(entity.get("value")),
-                                label: this.get("variables")[i].label || vd.get("label")});
+                                label: label});
                         }, ctx),
                         failure: function(r) {
                             Y.error("Error by loading history data");

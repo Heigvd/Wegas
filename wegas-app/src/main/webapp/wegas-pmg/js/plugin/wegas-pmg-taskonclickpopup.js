@@ -101,12 +101,12 @@ YUI.add('wegas-pmg-taskonclickpopup', function(Y) {
             var i, description = descriptor.get("description"),
                 requirements = descriptor.getInstance().get("requirements"),
                 dataToDisplay = '<div class="field" style="padding:5px 10px">'
-                + '<p class="subtitle">Description</p><p>' + description
+                + '<p class="subtitle">' + Y.Wegas.I18n.t('global.description').capitalize() + '</p><p>' + description
                 /*+ (description ?
                  description: "")*/
-                + '</p></div><div style="padding:5px 10px" class="duration"><p><span class="subtitle">Duration: </span><span>'
+                + '</p></div><div style="padding:5px 10px" class="duration"><p><span class="subtitle">' + Y.Wegas.I18n.t('pmg.tasks.duration').capitalize().colonize() +' </span><span>'
                 + descriptor.getInstance().get('properties').duration + ' </span></p></div>'
-                + '<div style="padding:5px 10px" class="requirements"><p class="subtitle">Requirements</p>';
+                + '<div style="padding:5px 10px" class="requirements"><p class="subtitle">' + Y.Wegas.I18n.t('pmg.tasks.requirements').capitalize() + '</p>';
 
             for (i = 0; i < requirements.length; i += 1) {
                 if (+requirements[i].get("quantity") > 0) {

@@ -22,7 +22,8 @@ YUI.addGroup("wegas-pmg", {
             type: 'css'
         },
         "wegas-pmg-breadcrumb": {
-            ws_provides: "PmgBreadcrumb"
+            ws_provides: "PmgBreadcrumb",
+            requires: ['wegas-i18n-pmg']
         },
         "wegas-pmg-burndown": {
             requires: ['wegas-pmg-slidepanel', 'chartist',
@@ -94,32 +95,35 @@ YUI.addGroup("wegas-pmg", {
         },
         "wegas-pmg-bac": {
             path: 'js/plugin/wegas-pmg-bac-min.js',
+            requires: ['wegas-i18n-pmg'],
             ws_provides: 'Bac'
         },
         "wegas-pmg-tablepopup": {
             path: 'js/plugin/wegas-pmg-tablepopup-min.js',
-            requires: 'wegas-widgetmenu',
+            requires: ['wegas-widgetmenu', 'wegas-i18n-pmg'],
             ws_provides: 'Tablepopup'
         },
-        /*"wegas-pmg-tabletooltip": {
-         path: 'js/plugin/wegas-pmg-tabletooltip-min.js',
-         requires: ['overlay', 'wegas-pmgwidget-css'],
-         ws_provides: 'Tabletooltip'
-         },*/
-        /*"wegas-pmg-taskpopup": {
-         path: 'js/plugin/wegas-pmg-taskpopup-min.js',
-         requires: ['overlay', 'wegas-pmgwidget-css'],
-         ws_provides: 'Taskpopup'
-         },*/
         "wegas-pmg-taskonclickpopup": {
             path: 'js/plugin/wegas-pmg-taskonclickpopup-min.js',
-            requires: ['overlay', 'wegas-pmgwidget-css'],
+            requires: ['overlay', 'wegas-pmgwidget-css', 'wegas-i18n-pmg'],
             ws_provides: ['Taskonclickpopup', 'Taskontableclickpopup', 'Taskoniterationclickpopup']
         },
         "wegas-pmg-advancementlimit": {
             path: 'js/wegas-pmg-advancementlimit-min.js',
             requires: ["wegas-template"],
             ws_provides: "AdvancementLimit"
+        },
+        "wegas-i18n-pmg-fr": {
+            path: 'js/i18n/i18n-pmg-fr.js',
+            requires: ['wegas-i18n-pmg']
+        },
+        "wegas-i18n-pmg-en": {
+            path: 'js/i18n/i18n-pmg-en.js',
+            requires: ['wegas-i18n-pmg']
+        },
+        "wegas-i18n-pmg": {
+            path: 'js/i18n/i18n-pmg.js',
+            requires: ['wegas-i18n', 'wegas-i18n-global']
         }
     }
 });

@@ -142,24 +142,12 @@
                                                         ]
                                                     },
                                                     {
-                                                        "label": "",
+                                                        "label": "<% var self = Y.Wegas.Facade.Game.cache.getCurrentPlayer(), phase = Y.Wegas.Facade.Variable.cache.find('name', 'currentPhase').getValue(self), period = Y.Wegas.Facade.Variable.cache.find('name', 'currentPeriod').item(phase - 1), label; if ((phase != 3 && period.getMaxValue() == period.getValue(self)) || (phase == 3 && Y.Wegas.Facade.Variable.cache.find('name', 'projectCompleteness').getValue(self) >= 100)){label = Y.Wegas.I18n.t('pmg.navigation.nextPhase')} else {  label = Y.Wegas.I18n.t('pmg.navigation.nextPeriod')}%> <%=label.capitalize()%>",
                                                         "type": "Button",
                                                         "cssClass": "pmg-nextweek",
                                                         "plugins": [
                                                             {
                                                                 "fn": "ConditionalDisable",
-                                                                "cfg": {
-                                                                    "condition": {
-                                                                        "@class": "Script",
-                                                                        "content": "var phase = Variable.find(gameModel, 'currentPhase').getValue(self), period = Variable.find(gameModel, 'currentPeriod').item(phase - 1);return  (phase != 3 && period.getMaxValue() == period.getValue(self)) || (phase == 3 && Variable.find(gameModel, 'projectCompleteness').getValue(self) >= 100);",
-                                                                        "language": "JavaScript"
-                                                                    },
-                                                                    "attribute": "cssClass",
-                                                                    "value": "passPhase"
-                                                                }
-                                                            },
-                                                            {
-                                                                "fn": "ConditionalDisable2",
                                                                 "cfg": {
                                                                     "condition": {
                                                                         "@class": "Script",
@@ -410,7 +398,7 @@
                                                             "@class": "Script",
                                                             "content": "Variable.find(gameModel, \"quality\");\n"
                                                         },
-                                                        "label": "Quality",
+                                                        "label": "<%= Y.Wegas.I18n.t('pmg.indicators.quality').capitalize() %>",
                                                         "minValue": "",
                                                         "maxValue": 200,
                                                         "cfg": {
@@ -465,7 +453,7 @@
                                                             "@class": "Script",
                                                             "content": "Variable.find(gameModel, \"costs\");\n"
                                                         },
-                                                        "label": "Costs",
+                                                        "label": "<%= Y.Wegas.I18n.t('pmg.indicators.costs').capitalize() %>",
                                                         "minValue": "",
                                                         "maxValue": 200,
                                                         "cfg": {
@@ -520,7 +508,7 @@
                                                             "@class": "Script",
                                                             "content": "Variable.find(gameModel, \"delay\");\n"
                                                         },
-                                                        "label": "Schedule",
+                                                        "label": "<%= Y.Wegas.I18n.t('pmg.indicators.schedule').capitalize() %>",
                                                         "minValue": "",
                                                         "maxValue": 200,
                                                         "cfg": {
@@ -579,7 +567,7 @@
                                                                         }
                                                                     }
                                                                 ],
-                                                                "content": "<p>Time budget</p>"
+                                                                "content": "<p><%= Y.Wegas.I18n.t('pmg.indicators.timebudget').capitalize() %></p>"
                                                             },
                                                             {
                                                                 "type": "NumberTemplate",
@@ -640,7 +628,7 @@
                                                 "name": "main-menu",
                                                 "children": [
                                                     {
-                                                        "label": "Home",
+                                                        "label": "<%= Y.Wegas.I18n.t(\"pmg.navigation.home\") %>",
                                                         "type": "Button",
                                                         "plugins": [
                                                             {
@@ -659,7 +647,7 @@
                                                         "data": {}
                                                     },
                                                     {
-                                                        "label": "Project",
+                                                        "label": "<%= Y.Wegas.I18n.t(\"pmg.navigation.project\") %>",
                                                         "type": "Button",
                                                         "plugins": [
                                                             {
@@ -673,7 +661,7 @@
                                                         ]
                                                     },
                                                     {
-                                                        "label": "Tasks",
+                                                        "label": "<%= Y.Wegas.I18n.t(\"pmg.navigation.tasks\") %>",
                                                         "type": "Button",
                                                         "plugins": [
                                                             {
@@ -699,7 +687,7 @@
                                                         ]
                                                     },
                                                     {
-                                                        "label": "Gantt",
+                                                        "label": "<%= Y.Wegas.I18n.t(\"pmg.navigation.gantt\") %>",
                                                         "type": "Button",
                                                         "plugins": [
                                                             {
@@ -725,7 +713,7 @@
                                                         ]
                                                     },
                                                     {
-                                                        "label": "Resources",
+                                                        "label": "<%= Y.Wegas.I18n.t(\"pmg.navigation.resources\") %>",
                                                         "type": "Button",
                                                         "plugins": [
                                                             {
@@ -751,7 +739,7 @@
                                                         ]
                                                     },
                                                     {
-                                                        "label": "EVM",
+                                                        "label": "<%= Y.Wegas.I18n.t(\"pmg.navigation.evm\") %>",
                                                         "type": "Button",
                                                         "plugins": [
                                                             {
@@ -776,7 +764,7 @@
                                                             }
                                                         ]
                                                     }, {
-                                                        "label": "Iterations",
+                                                        "label": "<%= Y.Wegas.I18n.t(\"pmg.navigation.iterations\") %>",
                                                         "type": "Button",
                                                         "plugins": [
                                                             {
@@ -818,13 +806,8 @@
                                                         "label": "",
                                                         "type": "Button",
                                                         "cssClass": "pmg--icon-action",
+                                                        "tooltip": "<%= Y.Wegas.I18n.t(\"pmg.navigation.actions\").capitalize() %>",
                                                         "plugins": [
-                                                            {
-                                                                "fn": "Tooltip",
-                                                                "cfg": {
-                                                                    "content": "<p>Actions</p>"
-                                                                }
-                                                            },
                                                             {
                                                                 "fn": "OpenPageAction",
                                                                 "cfg": {
@@ -843,14 +826,9 @@
                                                     {
                                                         "label": "",
                                                         "type": "Button",
+                                                        "tooltip": "<%= Y.Wegas.I18n.t(\"pmg.navigation.questions\").capitalize() %>",
                                                         "cssClass": "pmg--icon-question",
                                                         "plugins": [
-                                                            {
-                                                                "fn": "Tooltip",
-                                                                "cfg": {
-                                                                    "content": "Questions"
-                                                                }
-                                                            },
                                                             {
                                                                 "fn": "UnreadCount",
                                                                 "cfg": {
@@ -872,14 +850,9 @@
                                                     {
                                                         "label": "",
                                                         "type": "Button",
+                                                        "tooltip": "<%= Y.Wegas.I18n.t(\"pmg.navigation.mailbox\").capitalize() %>",
                                                         "cssClass": "pmg--icon-mail pmg--menu-btn-last",
                                                         "plugins": [
-                                                            {
-                                                                "fn": "Tooltip",
-                                                                "cfg": {
-                                                                    "content": "<p>Mailbox</p>"
-                                                                }
-                                                            },
                                                             {
                                                                 "fn": "UnreadCount",
                                                                 "cfg": {
@@ -908,14 +881,9 @@
                                                     {
                                                         "label": "",
                                                         "type": "Button",
+                                                        "tooltip": "<%= Y.Wegas.I18n.t(\"pmg.navigation.history\").capitalize() %>",
                                                         "cssClass": "pmg--icon-history",
                                                         "plugins": [
-                                                            {
-                                                                "fn": "Tooltip",
-                                                                "cfg": {
-                                                                    "content": "<p>History</p>"
-                                                                }
-                                                            },
                                                             {
                                                                 "fn": "OpenPageAction",
                                                                 "cfg": {
@@ -990,7 +958,7 @@
                             {
                                 "type": "Text",
                                 "cssClass": "pmg-overview-title",
-                                "content": "<h2>Project overview</h2>"
+                                "content": "<h2><%= Y.Wegas.I18n.t('pmg.project.overview').capitalize() %></h2>"
                             },
                             {
                                 "type": "List",
@@ -1001,7 +969,7 @@
                                     {
                                         "type": "Text",
                                         "cssClass": "label",
-                                        "content": "<p>Initial Budget</p>"
+                                        "content": "<%= Y.Wegas.I18n.t('pmg.project.initialBudget').capitalize() %></p>"
                                     },
                                     {
                                         "type": "NumberInput",
@@ -1024,10 +992,7 @@
                                     "@class": "Script",
                                     "content": "Variable.find(gameModel, \"tasks\");\n"
                                 },
-                                "data": {
-                                    "label": "Budgeted at completion (BAC)"
-                                },
-                                "custom": "<% \nvar bacs = Y.Wegas.PMGHelper.getBACTotal(),\nib = Y.Wegas.PMGHelper.getInitialBudget(),\novercost = (ib <= 0 ? \"\" : Math.round(parseInt((bacs * 10000 / ib), 10)/100)  + \"% of Initial Budget\")\n\n%>\n\n<div class='bacs'>\n    <span class='label'><%= this.label %></span>\n    <span class='variableValue'><%=  bacs %></span><span class='variablePercent'><%= overcost %></span>\n</div>"
+                                "custom": "<% var bacs = Y.Wegas.PMGHelper.getBACTotal(), ib = Y.Wegas.PMGHelper.getInitialBudget(), overcost = (ib <= 0 ? \"\" : Math.round(parseInt((bacs * 10000 / ib), 10)/100)) %> <div class='bacs'><span class='label'><%= Y.Wegas.I18n.t('pmg.project.bac').capitalize() %></span><span class='variableValue'><%=  bacs %></span><span class='variablePercent'><%= Y.Wegas.I18n.t('pmg.project.percentOfInitialBudget', {percent: overcost}).capitalize() %></span>\n</div>"
                             },
                             {
                                 "type": "Template",
@@ -1036,7 +1001,7 @@
                                     "@class": "Script",
                                     "content": "Variable.find(gameModel, \"tasks\");\n"
                                 },
-                                "custom": "<%  var fixedCosts=0, wages=0, total=0, taskTotal=0, projectFixedCost = Y.Wegas.Facade.Variable.cache.find('name', 'projectFixedCosts').getInstance().get('value'), projectUnworkedHours = Y.Wegas.Facade.Variable.cache.find('name', 'projectUnworkedHours').getInstance().get('value'), bacs = Y.Wegas.PMGHelper.getBACTotal(), overcost; for(var i=0; i<this.variable.get('items').length; i++) { var properties = this.variable.get('items')[i].getInstance().get('properties'); wages = wages + parseFloat(properties.wages); if (properties.completeness > 0) fixedCosts = fixedCosts + parseFloat(properties.fixedCosts); } taskTotal = wages + fixedCosts + projectUnworkedHours; total = taskTotal + projectFixedCost; overcost = (bacs <= 0 ? \"\" : Math.round(parseInt((total * 10000 / bacs), 10)/100) + \"% of BAC\"); %> <div class='projectTotalCost'><span class='label'>Actual Costs (AC)</span><span class='variableValue'><%= total %></span><span class='variablePercent'><%= overcost %></span></div>"
+                                "custom": "<%  var fixedCosts=0, wages=0, total=0, taskTotal=0, projectFixedCost = Y.Wegas.Facade.Variable.cache.find('name', 'projectFixedCosts').getInstance().get('value'), projectUnworkedHours = Y.Wegas.Facade.Variable.cache.find('name', 'projectUnworkedHours').getInstance().get('value'), bacs = Y.Wegas.PMGHelper.getBACTotal(), overcost; for(var i=0; i<this.variable.get('items').length; i++) { var properties = this.variable.get('items')[i].getInstance().get('properties'); wages = wages + parseFloat(properties.wages); if (properties.completeness > 0) fixedCosts = fixedCosts + parseFloat(properties.fixedCosts); } taskTotal = wages + fixedCosts + projectUnworkedHours; total = taskTotal + projectFixedCost; overcost = (bacs <= 0 ? \"\" : Math.round(parseInt((total * 10000 / bacs), 10)/100)); %> <div class='projectTotalCost'><span class='label'><%= Y.Wegas.I18n.t('pmg.evm.ac').capitalize() %></span><span class='variableValue'><%= total %></span><span class='variablePercent'><%= Y.Wegas.I18n.t('pmg.project.percentOfBac', {percent: overcost}).capitalize() %></span></div>"
                             }
                         ]
                     },
@@ -1049,7 +1014,7 @@
                             {
                                 "type": "Text",
                                 "cssClass": "pmg-overview-title",
-                                "content": "<h2>Project execution details</h2>"
+                                "content": "<h2><%= Y.Wegas.I18n.t('pmg.project.details').capitalize() %></h2>"
                             },
                             {
                                 "type": "Template",
@@ -1058,10 +1023,7 @@
                                     "@class": "Script",
                                     "content": "Variable.find(gameModel, \"currentPhase\");\n"
                                 },
-                                "data": {
-                                    "label": "Progress"
-                                },
-                                "custom": "<%  var projectCompleteness = Y.Wegas.Facade.Variable.cache.find('name', 'projectCompleteness').getInstance().get('value'), currentPhase = Y.Wegas.Facade.Variable.cache.find('name', 'currentPhase').getInstance().get('value'),currentPeriod = Y.Wegas.Facade.Variable.cache.find('name', 'currentPeriod').item(currentPhase -1).getInstance().get('value');%>\n\n<div class='projectCompleteness'><span class='label'>Progress</span><span class='variableValue'><%= parseInt(projectCompleteness) %>%</span></div>"
+                                "custom": "<%  var projectCompleteness = Y.Wegas.Facade.Variable.cache.find('name', 'projectCompleteness').getInstance().get('value'), currentPhase = Y.Wegas.Facade.Variable.cache.find('name', 'currentPhase').getInstance().get('value'),currentPeriod = Y.Wegas.Facade.Variable.cache.find('name', 'currentPeriod').item(currentPhase -1).getInstance().get('value');%>\n\n<div class='projectCompleteness'><span class='label'><%= Y.Wegas.I18n.t('pmg.project.progress').capitalize() %></span><span class='variableValue'><%= parseInt(projectCompleteness) %>%</span></div>"
                             },
                             {
                                 "type": "Template",
@@ -1070,7 +1032,7 @@
                                     "@class": "Script",
                                     "content": "Variable.find(gameModel, \"tasks\");\n"
                                 },
-                                "custom": "<% var projectFixedCost = Y.Wegas.Facade.Variable.cache.find('name', 'projectFixedCosts').getInstance().get('value'); %><div class='projectFixedCost'><span class='label'>Project Fixed Costs</span><span class='variableValue'><%= projectFixedCost %></span></div>"
+                                "custom": "<% var projectFixedCost = Y.Wegas.Facade.Variable.cache.find('name', 'projectFixedCosts').getInstance().get('value'); %><div class='projectFixedCost'><span class='label'> <%= Y.Wegas.I18n.t('pmg.project.fixedCosts').capitalize() %> </span><span class='variableValue'><%= projectFixedCost %></span></div>"
                             },
                             {
                                 "type": "Template",
@@ -1079,7 +1041,7 @@
                                     "@class": "Script",
                                     "content": "Variable.find(gameModel, \"tasks\");\n"
                                 },
-                                "custom": "<% var wages=0; for(var i=0; i<this.variable.get('items').length; i++) { var properties = this.variable.get('items')[i].getInstance().get('properties'); wages = wages + parseFloat(properties.wages); } %> <div class='wages'><span class='label'>Tasks Wages</span><span class='variableValue'><%= wages %></span></div>"
+                                "custom": "<% var wages=0; for(var i=0; i<this.variable.get('items').length; i++) { var properties = this.variable.get('items')[i].getInstance().get('properties'); wages = wages + parseFloat(properties.wages); } %> <div class='wages'><span class='label'><%= Y.Wegas.I18n.t('pmg.project.wages').capitalize() %>  </span><span class='variableValue'><%= wages %></span></div>"
                             },
                             {
                                 "type": "Template",
@@ -1088,7 +1050,7 @@
                                     "@class": "Script",
                                     "content": "Variable.find(gameModel, \"tasks\");\n"
                                 },
-                                "custom": "<% var fixedCosts=0; for(var i=0; i<this.variable.get('items').length; i++) { var properties = this.variable.get('items')[i].getInstance().get('properties'); if (properties.completeness > 0) fixedCosts = fixedCosts + parseFloat(properties.fixedCosts); } %><div class='fixedCosts'><span class='label'>Task Fixed Costs</span><span class='variableValue'><%= fixedCosts %></span></div>"
+                                "custom": "<% var fixedCosts=0; for(var i=0; i<this.variable.get('items').length; i++) { var properties = this.variable.get('items')[i].getInstance().get('properties'); if (properties.completeness > 0) fixedCosts = fixedCosts + parseFloat(properties.fixedCosts); } %><div class='fixedCosts'><span class='label'><%= Y.Wegas.I18n.t('pmg.project.tasksFixedCosts').capitalize() %></span><span class='variableValue'><%= fixedCosts %></span></div>"
                             },
                             {
                                 "type": "Template",
@@ -1097,7 +1059,7 @@
                                     "@class": "Script",
                                     "content": "Variable.find(gameModel, \"tasks\");\n"
                                 },
-                                "custom": "<% var projectUnworkedHours = Y.Wegas.Facade.Variable.cache.find('name', 'projectUnworkedHours').getInstance().get('value'); %><div class='unworkedHours'><span class='label'>Unworked Hours</span><span class='variableValue'><%= projectUnworkedHours %></span></div>"
+                                "custom": "<% var projectUnworkedHours = Y.Wegas.Facade.Variable.cache.find('name', 'projectUnworkedHours').getInstance().get('value'); %><div class='unworkedHours'><span class='label'><%= Y.Wegas.I18n.t('pmg.project.unworkedHours').capitalize() %></span><span class='variableValue'><%= projectUnworkedHours %></span></div>"
                             }
                         ]
                     }
@@ -1112,7 +1074,7 @@
                     {
                         "type": "PmgSlidePanel",
                         "cssClass": "indicators-management chart",
-                        "title": "Indicators History: %managementApproval% and %userApproval%",
+                        "title": "<%= Y.Wegas.I18n.t('pmg.project.history').capitalize() %> %managementApproval% <%= Y.Wegas.I18n.t('global.and') %> %userApproval%",
                         "animation": false,
                         "openByDefault": true,
                         "children": [
@@ -1139,24 +1101,23 @@
                     {
                         "type": "PmgSlidePanel",
                         "cssClass": "indicators-quality chart",
-                        "title": "Indicators History: Quality, Costs, and Shedule",
+                        "title": "<%= Y.Wegas.I18n.t('pmg.project.history').capitalize() %> <%= Y.Wegas.I18n.t('pmg.indicators.quality') %>, <%= Y.Wegas.I18n.t('pmg.indicators.costs') %> <%= Y.Wegas.I18n.t('global.and') %> <%= Y.Wegas.I18n.t('pmg.indicators.schedule') %>",
                         "animation": false,
                         "openByDefault": true,
                         "children": [
                             {
                                 "type": "Chart",
-                                "variables": [
+                                "variables": [{
+                                        "name": "quality",
+                                        "label": "<%= Y.Wegas.I18n.t('pmg.indicators.quality').capitalize() %>"
+                                    },
                                     {
                                         "name": "costs",
-                                        "label": "Costs"
+                                        "label": "<%= Y.Wegas.I18n.t('pmg.indicators.costs').capitalize() %>"
                                     },
                                     {
                                         "name": "delay",
-                                        "label": "Schedule"
-                                    },
-                                    {
-                                        "name": "quality",
-                                        "label": "Quality"
+                                        "label": "<%= Y.Wegas.I18n.t('pmg.indicators.schedule').capitalize() %>"
                                     }
                                 ],
                                 "low": 0,
@@ -1202,18 +1163,18 @@
                 "columnsCfg": [
                     {
                         "key": "index",
-                        "label": "No",
+                        "label": "<%= Y.Wegas.I18n.t('pmg.tasks.index').capitalize() %>",
                         "sortable": false,
                         "allowHTML": true
                     },
                     {
                         "key": "label",
-                        "label": "Name",
+                        "label": "<%= Y.Wegas.I18n.t('pmg.tasks.name').capitalize() %>",
                         "sortable": false,
                         "allowHTML": true
                     },
                     {
-                        "label": "Estimated</br>duration",
+                        "label": "<%= Y.Wegas.I18n.t('pmg.tasks.estimatedDuration').capitalize() %>",
                         "width": "54px",
                         "name": "Estimatedduration",
                         "key": "instance£properties£duration",
@@ -1223,6 +1184,7 @@
                     },
                     {
                         "label": "Fixed costs",
+                        "label": "<%= Y.Wegas.I18n.t('pmg.tasks.fixedCosts').capitalize() %>",
                         "name": "Fixedcosts",
                         "key": "instance£properties£fixedCosts",
                         "className": "right",
@@ -1232,14 +1194,14 @@
                     },
                     {
                         "key": "requirements",
-                        "label": "Ressources",
+                        "label": "<%= Y.Wegas.I18n.t('pmg.tasks.requirements').capitalize() %>",
                         "formatter": "requieredRessources",
                         "sortable": false,
                         "allowHTML": true
                     },
                     {
                         "allowHTML": true,
-                        "label": "Assigned resources",
+                        "label": "<%= Y.Wegas.I18n.t('pmg.tasks.assignees').capitalize() %>",
                         "name": "assignedResources",
                         "formatter": "assignedRessources",
                         "sortable": false
@@ -1256,7 +1218,7 @@
                 "data": {
                     "label": ""
                 },
-                "custom": "<b>Total BAC: <%= Y.Wegas.PMGHelper.getBACTotal() %></b>"
+                "custom": "<b><%= Y.Wegas.I18n.t('pmg.project.sumBac', {total: Y.Wegas.PMGHelper.getBACTotal()}).capitalize() %></b>"
             }
         ],
         "@name": "Tasks (Planning phase)"
@@ -1293,13 +1255,13 @@
                 "columnsCfg": [
                     {
                         "key": "index",
-                        "label": "No",
+                        "label": "<%= Y.Wegas.I18n.t('pmg.tasks.index').capitalize() %>",
                         "sortable": false,
                         "allowHTML": true
                     },
                     {
                         "key": "label",
-                        "label": "Name",
+                        "label": "<%= Y.Wegas.I18n.t('pmg.tasks.name').capitalize() %>",
                         "sortable": false,
                         "allowHTML": true
                     }
@@ -1329,7 +1291,7 @@
             {
                 "type": "Text",
                 "cssClass": "pmg-action-title",
-                "content": "<div class=\"title title-list\">\n<h2>Available actions during this phase</h2>\n</div>\n<div class=\"title title-message\">\n<h2>Description</h2>\n</div>"
+                "content": "<div class=\"title title-list\">\n<h2><%= Y.Wegas.I18n.t('pmg.mcq.actionsTitle') %></h2>\n</div>\n<div class=\"title title-message\">\n<h2><%= Y.Wegas.I18n.t('global.description').capitalize() %></h2>\n</div>"
             },
             {
                 "type": "MCQTabView",
@@ -1382,14 +1344,7 @@
             {
                 "type": "Template",
                 "cssClass": "pmg-question-title",
-                "variable": {
-                    "@class": "Script",
-                    "content": "Variable.find(gameModel, \"timeUnit\");\n"
-                },
-                "data": {
-                    "label": "week"
-                },
-                "custom": "<div class='title title-list'><h2>Questions to answer this <%= this.variable.getValue() %></h2></div><div class='title title-message'><h2>Details</h2></div>"
+                "custom": "<div class='title title-list'><h2><%= Y.Wegas.I18n.t('pmg.mcq.questionsTitle', {thisTime: Y.Wegas.I18n.t('pmg.navigation.this' + Y.Wegas.PMGHelper.getTimeUnit().capitalize())}) %></h2></div><div class='title title-message'><h2><%= Y.Wegas.I18n.t('global.description').capitalize() %></h2></div>"
             },
             {
                 "type": "MCQTabView",
@@ -1442,7 +1397,7 @@
             {
                 "type": "Text",
                 "cssClass": "pmg-mail-title",
-                "content": "<div class=\"title title-list\">\n<h2>Mailbox</h2>\n</div>\n<div class=\"title title-message\">\n<h2>Message</h2>\n</div>"
+                "content": "<div class=\"title title-list\">\n<h2><%= Y.Wegas.I18n.t('pmg.navigation.mailbox').capitalize() %></h2>\n</div>\n<div class=\"title title-message\">\n<h2><%= Y.Wegas.I18n.t('pmg.mailbox.message').capitalize() %></h2>\n</div>"
             },
             {
                 "type": "InboxDisplay",
@@ -1465,7 +1420,7 @@
             {
                 "type": "Text",
                 "cssClass": "pmg-action-title",
-                "content": "<div class=\"title title-list\">\n<h2>History</h2>\n</div>\n<div class=\"title title-message\">\n<h2>Details</h2>\n</div>"
+                "content": "<div class=\"title title-list\">\n<h2><%= Y.Wegas.I18n.t('pmg.navigation.history').capitalize() %></h2>\n</div>\n<div class=\"title title-message\">\n<h2><%= Y.Wegas.I18n.t('global.details').capitalize() %></h2>\n</div>"
             },
             {
                 "type": "InboxDisplay",
@@ -1493,7 +1448,7 @@
                                 "content": "return \"Game History\""
                             },
                             "outputType": "pdf",
-                            "displayPath" : "false"
+                            "displayPath": "false"
                         }
                     },
                     {
@@ -1531,15 +1486,15 @@
                         "variables": [
                             {
                                 "name": "planedValue",
-                                "label": "PV (Planned Value)"
+                                "label": "<%= Y.Wegas.I18n.t('pmg.evm.pv').capitalize() %>"
                             },
                             {
                                 "name": "earnedValue",
-                                "label": "EV (Earned Value)"
+                                "label": "<%= Y.Wegas.I18n.t('pmg.evm.ev').capitalize() %>"
                             },
                             {
                                 "name": "actualCost",
-                                "label": "AC (Actual Cost)"
+                                "label": "<%= Y.Wegas.I18n.t('pmg.evm.ac').capitalize() %>"
                             }
                         ]
                     }
@@ -1586,18 +1541,18 @@
                 "columnsCfg": [
                     {
                         "key": "index",
-                        "label": "No",
+                        "label": "<%= Y.Wegas.I18n.t('pmg.tasks.index').capitalize() %>",
                         "sortable": false,
                         "allowHTML": true
                     },
                     {
                         "key": "label",
-                        "label": "Name",
+                        "label": "<%= Y.Wegas.I18n.t('pmg.tasks.name').capitalize() %>",
                         "sortable": false,
                         "allowHTML": true
                     },
                     {
-                        "label": "Realised",
+                        "label": "<%= Y.Wegas.I18n.t('pmg.tasks.realized').capitalize() %>",
                         "name": "Realised",
                         "width": "7%",
                         "key": "instance.properties.completeness",
@@ -1610,7 +1565,7 @@
             },
             {
                 "type": "Text",
-                "content": "<div class=\"pmg-legend\">\n<div>\n<div class=\"baseline\">&nbsp;</div>\nBaseline</div>\n<div>\n<div class=\"worked\">&nbsp;</div>\nWorked</div>\n<div>\n<div class=\"fill100\">&nbsp;</div>\nProjection</div>\n</div>"
+                "content": "<div class=\"pmg-legend\">\n<div>\n<div class=\"baseline\">&nbsp;</div>\n<%= Y.Wegas.I18n.t('pmg.gantt.baseline') %></div>\n<div>\n<div class=\"worked\">&nbsp;</div>\n <%= Y.Wegas.I18n.t('pmg.gantt.effective') %>  </div>\n<div>\n<div class=\"fill100\">&nbsp;</div>\n<%= Y.Wegas.I18n.t('pmg.gantt.projection') %></div>\n</div>"
             }
         ],
         "@name": "Gantt (Execution phase)"
@@ -1629,16 +1584,16 @@
                 "columnsCfg": [
                     {
                         "key": "index",
-                        "label": "No",
+                        "label": "<%= Y.Wegas.I18n.t('pmg.tasks.index').capitalize() %>",
                         "sortable": false
                     },
                     {
                         "key": "label",
-                        "label": "Name",
+                        "label": "<%= Y.Wegas.I18n.t('pmg.tasks.name').capitalize() %>",
                         "sortable": false
                     },
                     {
-                        "label": "Estimated</br>duration",
+                        "label": "<%= Y.Wegas.I18n.t('pmg.tasks.estimatedDuration').capitalize() %>",
                         "width": "54px",
                         "name": "Estimatedduration",
                         "key": "instance.properties.duration",
@@ -1646,7 +1601,7 @@
                         "sortable": false
                     },
                     {
-                        "label": "Realised",
+                        "label": "<%= Y.Wegas.I18n.t('pmg.tasks.realized').capitalize() %>",
                         "name": "Realised",
                         "width": "7%",
                         "key": "instance.properties.completeness",
@@ -1655,21 +1610,21 @@
                     },
                     {
                         "name": "Quality",
-                        "label": "Quality",
+                        "label": "<%= Y.Wegas.I18n.t('pmg.indicators.quality').capitalize() %>",
                         "className": "right",
                         "key": "instance.properties.quality",
                         "formatter": "quality",
                         "sortable": false
                     },
                     {
-                        "label": "Wages",
+                        "label": "<%= Y.Wegas.I18n.t('pmg.project.wages').capitalize() %>",
                         "name": "Wages",
                         "className": "right",
                         "key": "instance.properties.wages",
                         "sortable": false
                     },
                     {
-                        "label": "Fixed costs",
+                        "label": "<%= Y.Wegas.I18n.t('pmg.tasks.fixedCosts').capitalize() %>",
                         "name": "Fixedcosts",
                         "formatter": "rounded",
                         "className": "right",
@@ -1677,7 +1632,7 @@
                         "sortable": false
                     },
                     {
-                        "label": "BAC",
+                        "label": "<%= Y.Wegas.I18n.t('pmg.project.bac_short').capitalize() %>",
                         "name": "bac",
                         "className": "right",
                         "key": "instance.properties.bac",
@@ -1685,12 +1640,12 @@
                     },
                     {
                         "key": "requirements",
-                        "label": "Resources",
+                        "label": "<%= Y.Wegas.I18n.t('pmg.tasks.requirements').capitalize() %>",
                         "formatter": "requieredRessources",
                         "sortable": false
                     },
                     {
-                        "label": "Assigned resources",
+                        "label": "<%= Y.Wegas.I18n.t('pmg.tasks.assignees').capitalize() %>",
                         "name": "assignedResources",
                         "formatter": "assignedRessources",
                         "sortable": false
@@ -1740,7 +1695,7 @@
             {
                 "type": "Text",
                 "cssClass": "pmg-news-header",
-                "content": "<div class='title'><h2>News</h2></div></div>"
+                "content": "<div class='title'><h2><%= Y.Wegas.I18n.t('pmg.navigation.news').capitalize() %></h2></div></div>"
             },
             {
                 "type": "InboxList",

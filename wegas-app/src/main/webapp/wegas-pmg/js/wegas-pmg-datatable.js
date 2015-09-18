@@ -13,7 +13,10 @@ YUI.add("wegas-pmg-datatable", function(Y) {
     "use strict";
 
     var CONTENTBOX = "contentBox", Datatable, micro = new Y.Template(),
-        APPRENTICE = "Apprentice", JUNIOR = "Junior", SENIOR = "Senior", EXPERT = "Expert",
+        APPRENTICE = Y.Wegas.I18n.t('pmg.grade.apprentice').capitalize(),
+        JUNIOR = Y.Wegas.I18n.t('pmg.grade.junior').capitalize(),
+        SENIOR = Y.Wegas.I18n.t('pmg.grade.senior').capitalize(),
+        EXPERT = Y.Wegas.I18n.t('pmg.grade.expert').capitalize(),
         Wegas = Y.Wegas,
         TEMPLATES = {
             template: micro.compile('<%= Y.Object.getValue(this, this._field.split(".")) %>'),
@@ -48,6 +51,9 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                             return +v || v;
                         }
                     };
+                }
+                if (ct[i].label){
+                    ct[i].label = Y.Template.Micro.compile(ct[i].label)();
                 }
             }
             

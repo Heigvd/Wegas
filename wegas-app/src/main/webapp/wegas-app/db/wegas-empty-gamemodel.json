@@ -1,0 +1,23 @@
+{
+    "@class": "GameModel",
+    "pages": {},
+    "name": "Empty GameModel",
+    "description": "",
+    "createdTime": 1409219464,
+    "template": true,
+    "childVariableDescriptors": [],
+    "scriptLibrary": {},
+    "cssLibrary": {},
+    "clientScriptLibrary": {},
+    "properties": {
+        "freeForAll": false,
+        "pagesUri": "",
+        "cssUri": "",
+        "websocket": "",
+        "clientScriptUri": "",
+        "scriptUri": "",
+        "imageUri": "",
+        "iconUri": ""
+    },
+    "createdByName": "Maxence Laurent"
+}

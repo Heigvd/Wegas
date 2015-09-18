@@ -34,6 +34,7 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                         title = title.replace(args[i], str);
                     }
                 }
+                title = Y.Template.Micro.compile(title)();
                 this.handlers = {};
                 this.get("boundingBox").one(".slidepanel-title h2").setContent(title);
                 if (!this.get("openByDefault")) {
@@ -111,31 +112,31 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
 
                 columns = [{
                         key: "label",
-                        label: "Name",
+                        label: "<%= Y.Wegas.I18n.t('pmg.resources.name').capitalize() %>",
                         sortable: false
                     }, {
-                        label: "Grade",
+                        label: "<%= Y.Wegas.I18n.t('pmg.resources.grade').capitalize() %>",
                         formatter: "skillLevel",
                         key: "instance.properties.level",
                         sortable: false,
                         allowHTML: true
                     }, {
-                        label: "Monthly wages",
+                        label: "<%= Y.Wegas.I18n.t('pmg.resources.wage').capitalize() %>",
                         key: "instance.properties.wage",
                         sortable: false
                     }, {
-                        label: "Rate",
+                        label: "<%= Y.Wegas.I18n.t('pmg.resources.rate').capitalize() %>",
                         key: "instance.properties.activityRate",
                         sortable: false
                     }, {
-                        label: "Motiv.",
+                        label: "<%= Y.Wegas.I18n.t('pmg.resources.motivation').capitalize() %>",
                         key: "instance.properties.motivation",
                         sortable: false
                     }];
 
                 if (autoReserve) {
                     columns.push({
-                        label: "Will work",
+                        label: "<%= Y.Wegas.I18n.t('pmg.resources.willWork').capitalize() %>",
                         key: "instance.properties.automaticMode",
                         sortable: false,
                         formatter: autoModeFormatter
@@ -178,7 +179,7 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                                 defaultSort: null
                             }, {
                                 type: "Text",
-                                content: "<div class=\"pmg-legend\">\n<div><div class=\"worked\">&nbsp;</div>\nWorked</div>\n<div><div class=\"booked\">&nbsp;</div>\nWill work</div>\n" + (autoReserve ? "<div><div class=\"maybe\">&nbsp;</div>\nMay work</div>\n" : "") + "<div>\n<div class=\"unavailable\">&nbsp;</div>\nNot Available</div>\n" + (!autoReserve ? "<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nToo late to change</div>\n</div>" : "")
+                                content: "<div class=\"pmg-legend\">\n<div><div class=\"worked\">&nbsp;</div>\n<%= Y.Wegas.I18n.t('pmg.gantt.worked') %></div>\n<div><div class=\"booked\">&nbsp;</div>\n <%= Y.Wegas.I18n.t('pmg.gantt.willWork') %> </div>\n" + (autoReserve ? "<div><div class=\"maybe\">&nbsp;</div>\n <%= Y.Wegas.I18n.t('pmg.gantt.mayWork') %>  </div>\n" : "") + "<div>\n<div class=\"unavailable\">&nbsp;</div>\ <%= Y.Wegas.I18n.t('pmg.gantt.unavailable') %>  </div>\n" + (!autoReserve ? "<div>\n<div class=\"engagementDelay\">&nbsp;</div>\n<%= Y.Wegas.I18n.t('pmg.gantt.delay') %> </div>\n</div>" : "")
                             }]
                     }).render(this.get(CONTENTBOX));
                     if (autoReserve) {

@@ -17,6 +17,10 @@ var i18nOrdinate = (function(module) {
     }(i18nTable || {}));
 
 i18nTable.en = {
+    errors: {
+        advancementLimit: "Ask your course leader for permissions to continue.",
+        allQuestions : "You have to answered all questions in order to continue."
+    },
     messages: {
         startOnTask: {
             from: "%employeeName%",

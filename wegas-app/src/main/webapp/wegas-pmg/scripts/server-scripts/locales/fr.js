@@ -21,6 +21,10 @@ var i18nOrdinate = (function(module) {
  * 
  */
 i18nTable.fr = {
+    errors: {
+        advancementLimit: "L'avancement a été bloqué par votre formateur.",
+        allQuestions : "You devez répondre à toutes les questions pour pouvoir continuer"
+    },
     messages: {
         startOnTask: {
             from: "%employeeName%",

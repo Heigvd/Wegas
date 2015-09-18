@@ -130,7 +130,7 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                 return;
             }
 
-            label = this.get("label") /*|| variableDescriptor.getLabel()*/;
+            label = Y.Template.Micro.compile(this.get("label"))() /*|| variableDescriptor.getLabel()*/;
             maxVal = this.defineMaxGaugeValue();
             minVal = this.get("minValue") || variableDescriptor.get("minValue") || 0;
             value = variableDescriptor.getInstance().get("value");
