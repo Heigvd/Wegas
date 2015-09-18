@@ -206,7 +206,7 @@ YUI().use(function(Y) {
             "wegas-number-input": {
                 path: "js/widget/wegas-number-input-min.js",
                 ws_provides: "NumberInput",
-                requires: ["wegas-widget", "wegas-button", "slider"]
+                requires: ["wegas-widget", "wegas-button", "slider", "wegas-i18n-global"]
             },
             "wegas-text": {
                 path: "js/widget/wegas-text-min.js",
