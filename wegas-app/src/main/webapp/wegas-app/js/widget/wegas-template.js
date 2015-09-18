@@ -44,7 +44,7 @@ YUI.add("wegas-template", function(Y) {
             return this.TEMPLATE;
         },
         computeData: function() {
-            var data = {}, desc = this.get("variable.evaluated");
+            var data = {}, initialData = Y.merge(this.get("data")), desc = this.get("variable.evaluated");
 
             if (desc) {
                 if (desc instanceof Y.Wegas.persistence.VariableInstance) {
@@ -57,6 +57,9 @@ YUI.add("wegas-template", function(Y) {
                 }
 
                 //  data.label = this.undefinedToEmpty(desc.getLabel());
+                if (initialData.label) {
+                    initialData.label = Y.Template.Micro.compile(initialData.label)();
+                }
                 data.value = data.value || this.undefinedToEmpty(desc.getInstance().get("value"));
                 data.maxValue = this.undefinedToEmpty(desc.get("maxValue"));
                 data.minValue = this.undefinedToEmpty(desc.get("minValue"));
@@ -64,7 +67,7 @@ YUI.add("wegas-template", function(Y) {
                 data.variable = desc;
             }
 
-            return Y.mix(Y.merge(this.get("data")), data, false, null, 0, true);
+            return Y.mix(initialData, data, false, null, 0, true);
         },
         getEditorLabel: function() {
             var variable;
