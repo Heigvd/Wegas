@@ -21,6 +21,13 @@ YUI.add("wegas-i18n-global-fr", function(Y) {
             variableNotFound: "Impossible de trouver la variable \"{{name}}\"",
             logout: "déconnexion"
         },
+        errors: {
+            notAPositiveInteger : "\"{{value}}\" n'est pas un entier positif",
+            nan: "\"{{value}}\" n'est pas un nombre",
+            outOfBounds: "{{value}} n'est pas compris dans [{{min}},{{max}}]",
+            lessThan: "{{value}} est plus petit que {{min}}",
+            greaterThan: "{{value}} est plus grand que {{max}}"
+        },
         inbox :{
             deleteEmailConfirmation: "Êtes-vous sûr de vouloir supprimer le message {{subject}} de manière définitive ?",
             noMessages: "Nous n'avez pas de messages",
