@@ -153,6 +153,7 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
         this.setAnswer(other.getAnswer());
         this.setImpact(other.getImpact());
         this.setFiles(other.getFiles());
+        this.setChoiceDescriptor(other.getChoiceDescriptor());
     }
 
 //    @PreRemove
