@@ -235,7 +235,8 @@
                     <packagingExcludes>
                         wegas-leaderway/images/employees sources/**,
                         wegas-leaderway/images/employees/**,
-                        haproxy/**
+                        haproxy/**,
+                        **/node_modules/
                     </packagingExcludes>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                     <warName>Wegas</warName>
