@@ -1,16 +1,17 @@
 import u from 'updeep';
 import { FETCH_GAMES_LOGID, FETCH_GAMES } from '../Actions/constants/ActionTypes';
-
+let logIdGames = [];
 function games(state = u({
-        cache: [],
+        cache: new Map(),
         available: []
     }, null), action) {
     switch (action.type) {
         case FETCH_GAMES_LOGID:
+            logIdGames = action.data;
             return u({
-                available: action.data.map(v => Object.assign({
+                available: logIdGames.map(v => Object.assign({
                         id: v
-                    }, state.cache.get(v)))
+                    }, state.cache.get(v))),
             }, state);
         case FETCH_GAMES:
             const cache = new Map();
@@ -20,9 +21,12 @@ function games(state = u({
                     gmName: obj.gameModelName
                 });
             });
-            return u({
+            return games(u({
                 cache: cache
-            }, state);
+            }, state), {
+                type: FETCH_GAMES_LOGID,
+                data: logIdGames
+            });
         default:
             return state;
     }

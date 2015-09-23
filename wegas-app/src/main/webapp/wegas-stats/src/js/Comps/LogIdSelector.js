@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import ReactSelect from 'react-select';
-import 'react-select/dist/default.css';
+import 'react-select/less/default.less';
 import { connect } from 'react-redux';
 
 // @connect(state => ({

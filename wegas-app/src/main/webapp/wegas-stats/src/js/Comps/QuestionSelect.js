@@ -8,7 +8,7 @@ class QuestionSelect extends React.Component {
         const opt = JSON.search(snapshot, '//*[@class="QuestionDescriptor"]').map((i) => {
             return {
                 value: i.name,
-                label: JSON.search(snapshot, `//*[id=${i.id}]/ancestor::*[@class="ListDescriptor"]`)
+                label: JSON.search(snapshot, `//*[name="${i.name}"]/ancestor::*[@class="ListDescriptor"]`)
                         .reduce((pre, cur) => {
                             return `${pre}${cur.label} \u2192 `;
                         }, '') + i.label

@@ -2,10 +2,10 @@ import React, { PropTypes } from 'react';
 import { computeData, computeDiffs } from './dataCompute';
 import Chartist from 'chartist';
 import 'chartist/dist/chartist.min.css';
-import 'chartist.css';
+import '../../css/chartist.css';
 
 const CHART_BAR_OPT = {
-    width: 800,
+    width: 600,
     height: 400,
     axisY: {
         labelInterpolationFnc: function(v) {
