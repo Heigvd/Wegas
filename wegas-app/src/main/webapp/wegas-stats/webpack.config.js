@@ -1,4 +1,3 @@
-
 const path = require('path');
 const npmPackage = /node_modules/;
 const buildPath = path.resolve(__dirname, 'build');
@@ -13,14 +12,10 @@ module.exports = {
             'updeep', 'chartist', 'tcomb-form'
         ]
     },
-    resolve: {
-        root: path.join(__dirname, '/src'),
-        modulesDirectories: ['node_modules', 'js', 'css']
-    },
     output: {
         path: buildPath,
         filename: '[name].bundle-min.js',
-        publicPath: '/static/'
+        publicPath: '/dev/'
     },
     externals: {
     },
@@ -29,6 +24,9 @@ module.exports = {
             {
                 test: /\.css$/,
                 loader: 'style!css?-singleton'
+            }, {
+                test: /\.less$/,
+                loader: 'style!css!less'
             }, {
                 test: /\.js$/,
                 loaders: [

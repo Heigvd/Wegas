@@ -4,9 +4,9 @@ import * as stores from './Store';
 import { bootstrapUser } from './Actions/userActions';
 import { fetchGames } from './Actions/gamesActions';
 import Axios from 'axios';
-/*global config*/
+
 Axios.interceptors.request.use(function(cfg) {
-    cfg.url = `${config ? config.contextPath : '/Wegas'}${cfg.url}`;
+    cfg.url = `${window.config ? window.config.contextPath : '/Wegas'}${cfg.url}`;
     return cfg;
 });
 

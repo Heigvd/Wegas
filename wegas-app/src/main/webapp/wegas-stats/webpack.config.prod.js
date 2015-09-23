@@ -1,11 +1,11 @@
-
 const webpack = require('webpack');
 const BASE = require('./webpack.config');
+const npmPackage = /node_modules/;
 
 module.exports = Object.assign({}, BASE, {
     devtool: 'source-map',
     plugins: [
-        new webpack.NoErrorsPlugin(),
+        //   new webpack.NoErrorsPlugin(),
         new webpack.optimize.CommonsChunkPlugin('vendor', 'vendor.bundle.js'),
         new webpack.DefinePlugin({
             'process.env': {
