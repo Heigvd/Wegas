@@ -1,4 +1,5 @@
 angular.module('public', [
+    'wegas.directives.language.tool',
     'public.login',
     'public.signup',
     'public.password'
@@ -9,7 +10,7 @@ angular.module('public', [
             url: 'public',
             views: {
                 'main@': {
-                    controller: 'PublicIndexCtrl',
+                    controller: 'PublicIndexCtrl as publicCtrl',
                     templateUrl: 'app/public/public.tmpl.html'
                 },
                 "form@wegas.public": {
@@ -20,20 +21,7 @@ angular.module('public', [
         })
     ;
 })
-.controller('PublicIndexCtrl', function PublicIndexCtrl($scope, $rootScope, $state, Auth) {
-
-    updateAlternativeActionsButton = function (state) {
-        $scope.destination = $state.href('wegas.public.signup');
-        $scope.destinationTitle = "Registration";
-        if (state.name == "wegas.public.signup") {
-            $scope.destination = $state.href('wegas.public.login');
-            $scope.destinationTitle = "Authentication";
-        }
-    };
-    updateAlternativeActionsButton($state.current);
-    $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
-        updateAlternativeActionsButton(toState);
-    });
+.controller('PublicIndexCtrl', function PublicIndexCtrl($state, Auth) {    
     Auth.getAuthenticatedUser().then(function(user){
         if(user != null){
             if(user.isScenarist){

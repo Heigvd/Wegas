@@ -119,10 +119,12 @@ public class UserFacade extends BaseFacade<User> {
         final Subject subject = SecurityUtils.getSubject();
 
         if (subject.isRemembered() || subject.isAuthenticated()) {
-            return accountFacade.find((Long) subject.getPrincipal()).getUser();
-        } else {
-            throw new WegasNotFoundException("Unable to find user");
+            AbstractAccount account = accountFacade.find((Long) subject.getPrincipal());
+            if (account != null) {
+                return account.getUser();
+            }
         }
+        throw new WegasNotFoundException("Unable to find user");
     }
 
     /**
@@ -471,7 +473,7 @@ public class UserFacade extends BaseFacade<User> {
             String body = "A new password for your wegas account has been successfully created: " + newPassword;
             String from = "noreply@" + Helper.getWegasProperty("mail.default_domain");
             if (acc != null) {
-                emailFacade.send(acc.getEmail(), from, subject, body, Message.RecipientType.TO, "text/plain");
+                emailFacade.send(acc.getEmail(), from, null, subject, body, Message.RecipientType.TO, "text/plain");
                 acc.setPassword(newPassword);
                 acc.setPasswordHex(null);                                           //force JPA update
             }
@@ -491,7 +493,7 @@ public class UserFacade extends BaseFacade<User> {
             }
         }
         EMailFacade emailFacade = new EMailFacade();
-        emailFacade.send(to.toString(), email.getFrom(), email.getSubject(), email.getBody(), Message.RecipientType.BCC, "text/html");
+        emailFacade.send(to.toString(), email.getFrom(), email.getReplyTo(), email.getSubject(), email.getBody(), Message.RecipientType.BCC, "text/html");
     }
 
     /**

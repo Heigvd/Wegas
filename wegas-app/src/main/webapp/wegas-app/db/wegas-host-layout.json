@@ -1,22 +1,16 @@
 {
     "type": "ResizableLayout",
+    "cssClass": "wegas-trainer--app",
+    "plugins": [
+        {
+            "fn": "PopupListener"
+        }
+    ],
     "top": {
+        "cssClass": "wegas-trainer-banner",
         "height": 25,
         "children": [
             {
-                "type": "Button",
-                "cssClass": "wegas-logo",
-                "tooltip": "Back to lobby",
-                "plugins": [
-                    {
-                        "fn": "OpenUrlAction",
-                        "cfg": {
-                            "url": "",
-                            "target": "_self"
-                        }
-                    }
-                ]
-            }, {
                 "type": "Text",
                 "cssClass": "wegas-title"
             }, {
@@ -35,10 +29,8 @@
                         "label": "Overview",
                         "children": [
                             {
-                                "type": "Dashboard",
-                                "tableCfg": {
-                                    "columns": []
-                                },
+                                "name": "overview",
+                                "type": "TeamsOverviewDashboard",
                                 "remoteScript": "",
                                 "plugins": [
                                     {
@@ -49,7 +41,10 @@
                         ]
                     }
                 ],
-                "plugins": [{"fn": "ExtraTabs"}]
+                "plugins": [{"fn": "ExtraTabs"}, 
+                    {"fn": "PopupListener"},
+                    {"fn": "ServerPopupListener"}
+                ]
             }
         ]
     }

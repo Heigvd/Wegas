@@ -14,7 +14,7 @@ angular.module('private.admin.users', [
                 }
             });
     })
-    .controller('AdminUsersCtrl', function AdminUsersCtrl($state, $rootScope, Auth, ViewInfos, UsersModel) {
+    .controller('AdminUsersCtrl', function AdminUsersCtrl($state, $rootScope, Auth, UsersModel) {
         var ctrl = this,
         initMaxUsersDisplayed = function() {
             if (ctrl.users.length > 12) {

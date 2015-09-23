@@ -7,48 +7,47 @@
  */
 package com.wegas.core;
 
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.NamedEntity;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.Result;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 public class Helper {
 
     private static final String DEFAULT_VARIABLE_NAME = "variable";
+
     private static final String DEFAULT_VARIABLE_LABEL = "Unnammed";
 
     private static final Logger logger = LoggerFactory.getLogger(Helper.class);
 
+    private static String WEGAS_ROOT_DIRECTORY;
+
     /**
-     *
      * @param <T>
      * @param context
      * @param type
@@ -78,7 +77,6 @@ public class Helper {
     }
 
     /**
-     *
      * @param <T>
      * @param context
      * @param type
@@ -90,7 +88,6 @@ public class Helper {
     }
 
     /**
-     *
      * @param <T>
      * @param type
      * @param service
@@ -102,7 +99,6 @@ public class Helper {
     }
 
     /**
-     *
      * @param <T>
      * @param type
      * @return
@@ -149,7 +145,6 @@ public class Helper {
     }
 
     /**
-     *
      * @param entity    entity to rename
      * @param usedNames
      */
@@ -158,7 +153,6 @@ public class Helper {
     }
 
     /**
-     *
      * @param entity      entity to rename
      * @param usedNames
      * @param defaultName name to use if entity one is unset
@@ -167,7 +161,7 @@ public class Helper {
     public static void setUniqueNameForEntity(final NamedEntity entity, List<String> usedNames, String defaultName, boolean encodeName) {
         if (isNullOrEmpty(entity.getName())) {
             entity.setName(defaultName);
-        } else if (encodeName){
+        } else if (encodeName) {
             entity.setName(encodeVariableName(entity.getName()));
         }
         String newName = findUniqueName(entity.getName(), usedNames);
@@ -289,7 +283,6 @@ public class Helper {
     }
 
     /**
-     *
      * @param name
      * @return the provided name stripped of its _# suffix.
      */
@@ -304,7 +297,6 @@ public class Helper {
     }
 
     /**
-     *
      * @param label
      * @return the provided name stripped of its (#) suffix.
      */
@@ -319,7 +311,6 @@ public class Helper {
     }
 
     /**
-     *
      * @param label
      * @return
      */
@@ -372,7 +363,6 @@ public class Helper {
     }
 
     /**
-     *
      * @param propertyName
      * @param defaultValue
      * @return
@@ -386,7 +376,6 @@ public class Helper {
     }
 
     /**
-     *
      * @param array
      * @return
      */
@@ -400,7 +389,6 @@ public class Helper {
     }
 
     /**
-     *
      * @param message
      * @return
      */
@@ -415,7 +403,6 @@ public class Helper {
     }
 
     /**
-     *
      * @param list
      * @return
      */
@@ -429,7 +416,6 @@ public class Helper {
     }
 
     /**
-     *
      * Unescapes a string that contains standard Java escape sequences.
      * <ul>
      * <li><strong>&#92;b &#92;f &#92;n &#92;r &#92;t &#92;" &#92;'</strong> :
@@ -449,74 +435,74 @@ public class Helper {
     }
     /*public static String old_unescape(String st) {
 
-        StringBuilder sb = new StringBuilder(st.length());
+     StringBuilder sb = new StringBuilder(st.length());
 
-        for (int i = 0; i < st.length(); i++) {
-            char ch = st.charAt(i);
-            if (ch == '\\') {
-                char nextChar = (i == st.length() - 1) ? '\\' : st
-                        .charAt(i + 1);
-                // Octal escape?
-                if (nextChar >= '0' && nextChar <= '7') {
-                    String code = "" + nextChar;
-                    i++;
-                    if ((i < st.length() - 1) && st.charAt(i + 1) >= '0'
-                            && st.charAt(i + 1) <= '7') {
-                        code += st.charAt(i + 1);
-                        i++;
-                        if ((i < st.length() - 1) && st.charAt(i + 1) >= '0'
-                                && st.charAt(i + 1) <= '7') {
-                            code += st.charAt(i + 1);
-                            i++;
-                        }
-                    }
-                    sb.append((char) Integer.parseInt(code, 8));
-                    continue;
-                }
-                switch (nextChar) {
-                    case '\\':
-                        ch = '\\';
-                        break;
-                    case 'b':
-                        ch = '\b';
-                        break;
-                    case 'f':
-                        ch = '\f';
-                        break;
-                    case 'n':
-                        ch = '\n';
-                        break;
-                    case 'r':
-                        ch = '\r';
-                        break;
-                    case 't':
-                        ch = '\t';
-                        break;
-                    case '\"':
-                        ch = '\"';
-                        break;
-                    case '\'':
-                        ch = '\'';
-                        break;
-// Hex Unicode: u????
-                    case 'u':
-                        if (i >= st.length() - 5) {
-                            ch = 'u';
-                            break;
-                        }
-                        int code = Integer.parseInt(
-                                "" + st.charAt(i + 2) + st.charAt(i + 3)
-                                + st.charAt(i + 4) + st.charAt(i + 5), 16);
-                        sb.append(Character.toChars(code));
-                        i += 5;
-                        continue;
-                }
-                i++;
-            }
-            sb.append(ch);
-        }
-        return sb.toString();
-    }*/
+     for (int i = 0; i < st.length(); i++) {
+     char ch = st.charAt(i);
+     if (ch == '\\') {
+     char nextChar = (i == st.length() - 1) ? '\\' : st
+     .charAt(i + 1);
+     // Octal escape?
+     if (nextChar >= '0' && nextChar <= '7') {
+     String code = "" + nextChar;
+     i++;
+     if ((i < st.length() - 1) && st.charAt(i + 1) >= '0'
+     && st.charAt(i + 1) <= '7') {
+     code += st.charAt(i + 1);
+     i++;
+     if ((i < st.length() - 1) && st.charAt(i + 1) >= '0'
+     && st.charAt(i + 1) <= '7') {
+     code += st.charAt(i + 1);
+     i++;
+     }
+     }
+     sb.append((char) Integer.parseInt(code, 8));
+     continue;
+     }
+     switch (nextChar) {
+     case '\\':
+     ch = '\\';
+     break;
+     case 'b':
+     ch = '\b';
+     break;
+     case 'f':
+     ch = '\f';
+     break;
+     case 'n':
+     ch = '\n';
+     break;
+     case 'r':
+     ch = '\r';
+     break;
+     case 't':
+     ch = '\t';
+     break;
+     case '\"':
+     ch = '\"';
+     break;
+     case '\'':
+     ch = '\'';
+     break;
+     // Hex Unicode: u????
+     case 'u':
+     if (i >= st.length() - 5) {
+     ch = 'u';
+     break;
+     }
+     int code = Integer.parseInt(
+     "" + st.charAt(i + 2) + st.charAt(i + 3)
+     + st.charAt(i + 4) + st.charAt(i + 5), 16);
+     sb.append(Character.toChars(code));
+     i += 5;
+     continue;
+     }
+     i++;
+     }
+     sb.append(ch);
+     }
+     return sb.toString();
+     }*/
 
     /**
      * print ENV variables to log
@@ -592,6 +578,73 @@ public class Helper {
             }
         }
         return true;
+    }
+
+    /**
+     * Checked conversion from long to int
+     *
+     * @param value value to convert
+     * @return value as int
+     */
+    public static int longToInt(long value) {
+        if (value > Integer.MAX_VALUE || value < Integer.MIN_VALUE) {
+            throw new IllegalArgumentException(value + " is out of Integer's bound");
+        }
+        return (int) value;
+    }
+
+    public static void merge(Map<String, List<AbstractEntity>> target, Map<String, List<AbstractEntity>> other) {
+        for (String key : other.keySet()) {
+            if (!target.containsKey(key)) {
+                target.put(key, new ArrayList<>());
+            }
+            List<AbstractEntity> tList = target.get(key);
+            for (AbstractEntity entity : other.get(key)) {
+                if (!tList.contains(entity)) {
+                    tList.add(entity);
+                }
+            }
+        }
+    }
+
+    public static String getWegasRootDirectory() {
+        return WEGAS_ROOT_DIRECTORY;
+    }
+
+    public static void setWegasRootDirectory(String wegasRootDirectory) {
+        Helper.WEGAS_ROOT_DIRECTORY = wegasRootDirectory;
+    }
+
+    public static String getAudienceTokenForGameModel(Long id) {
+        return "GameModel-" + id;
+    }
+
+    public static String getAudienceTokenForGame(Long id) {
+        return "Game-" + id;
+    }
+
+    public static String getAudienceTokenForTeam(Long id) {
+        return "Team-" + id;
+    }
+
+    public static String getAudienceTokenForPlayer(Long id) {
+        return "Player-" + id;
+    }
+
+    public static String getAudienceToken(Game game) {
+        return Helper.getAudienceTokenForGame(game.getId());
+    }
+
+    public static String getAudienceToken(GameModel gameModel) {
+        return Helper.getAudienceTokenForGameModel(gameModel.getId());
+    }
+
+    public static String getAudienceToken(Team team) {
+        return Helper.getAudienceTokenForTeam(team.getId());
+    }
+
+    public static String getAudienceToken(Player player) {
+        return Helper.getAudienceTokenForPlayer(player.getId());
     }
 
 }

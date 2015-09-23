@@ -1,0 +1,64 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
+
+.wegas-chart .legend {
+    /* height: 150px; */
+    margin: 30px 0 0 50px;
+}
+
+.wegas-chart .legend > div:first-child {
+    margin-left: 40px;
+}
+
+.wegas-chart .legend > div {
+    float: left;
+    margin: 0 0px;
+    box-sizing: border-box;
+    padding: 0px 0px;
+    min-width: 87px;
+}
+
+.wegas-chart .legend .label{
+    text-align :center;
+    vertical-align: sub;
+}
+
+.wegas-chart .legend .color {
+    displaY: block;
+    width: 16px;
+    height: 16px;
+    float: left;
+    margin: 5px;
+}
+
+.ct-chart .tooltip {
+    position: fixed;
+    display: inline-block;
+    min-width: 5em;
+    padding: .5em;
+    background: #525564;
+    color: white;
+    font-weight: 700;
+    text-align: center;
+    pointer-events: none;
+    z-index: 1; 
+}
+
+.ct-chart .ct-point {
+    stroke-width: 5px;
+}
+
+.ct-chart .ct-line {
+    stroke-width: 2px;
+}
+
+.ct-chart .ct-area {
+
+}
+
+

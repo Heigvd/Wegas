@@ -1,27 +1,26 @@
 <div class="infos--main">
-	<label class="infos__label">Name</label>
-	<input ng-readonly="isReadonly" ng-model="activeInfos.name" class="input input--small" type="text" placeholder="Name is required" />
-	<label class="infos__label">Comment</label>
-	<textarea ng-readonly="isReadonly" ng-model="activeInfos.comments" class="input input--small input--multi-lines" placeholder="Comment is optionnal"></textarea>
+	<label class="infos__label">{{'PRIVATE-SESSIONS-NAME-LABEL-INPUT' | translate}}</label>
+	<input ng-readonly="isReadonly" ng-model="activeInfos.name" class="input input--small" type="text" placeholder="{{'PRIVATE-SESSIONS-NAME-PLACEHOLDER-INPUT' | translate}}" />
+	<label class="infos__label">{{'PRIVATE-SCENARIOS-COMMENTS-LABEL-INPUT' | translate}}</label>
+	<textarea ng-readonly="isReadonly" ng-model="activeInfos.comments" class="input input--small input--multi-lines" placeholder="{{'PRIVATE-SCENARIOS-COMMENTS-PLACEHOLDER-INPUT' | translate}}"></textarea>
 </div>
 <div class="infos--secondary">
-	<label class="infos__label">Type</label>
+	<label class="infos__label">{{'PRIVATE-SCENARIOS-TYPE-LABEL-CHECKBOX' | translate}}</label>
 	<label class="choice">
 		<div class="choice__box">
 			<input ng-disabled="isReadonly" ng-model="activeInfos.individual" type="radio" ng-value="true" />
 			<div class="choice__box__display"></div>
 		</div>
-		<div class="choice__label">Individual</div>
+		<div class="choice__label">{{'PRIVATE-SCENARIOS-TYPE-INDIVIDUALLY-CHECKBOX' | translate}}</div>
  	</label>
  	<label class="choice">
 		<div class="choice__box">
 			<input ng-disabled="isReadonly" ng-model="activeInfos.individual" type="radio" ng-value="false" />
 			<div class="choice__box__display"></div>
 		</div>
-		<div class="choice__label">In team</div>
+		<div class="choice__label">{{'PRIVATE-SCENARIOS-TYPE-IN-TEAM-CHECKBOX' | translate}}</div>
  	</label>
-	<label class="infos__label">Access key</label>
-	<input ng-readonly="isReadonly" ng-model="activeInfos.token" class="input input--small" type="text" placeholder="Access key without space is required" />
-	<label class="infos__label">guests or registered players can access the session following the link below. <span class="link link--selector" title="select the link"><i class="fa fa-text-width"></i></span><span class="tool tool--selectable" text-selectable>http://wegas.albasim.ch/#/play/{{activeInfos.token}}</span></label>
- 	<label class="infos__label">Session based on scenario : {{activeInfos.scenario}}</label>
+	<label class="infos__label">{{'PRIVATE-SESSIONS-ACCESS-KEY-LABEL-INPUT' | translate}}</label>
+	<input ng-readonly="isReadonly" ng-model="activeInfos.token" class="input input--small" type="text" placeholder="{{'PRIVATE-SESSIONS-ACCESS-KEY-PLACEHOLDER-INPUT' | translate}}" />
+	<label class="infos__label">{{'PRIVATE-MODALE-TABS-INFOS-ACCESS-LINK' | translate}} <span class="link link--selector" title="{{'PRIVATE-MODALE-TABS-INFOS-ACCESS-LINK-SELECT-TITLE' | translate}}"><i class="fa fa-text-width"></i></span><span class="tool tool--selectable" text-selectable>http://wegas.albasim.ch/#/play/{{activeInfos.token}}</span></label>
 </div>

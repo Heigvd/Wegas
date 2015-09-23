@@ -85,7 +85,7 @@
         <displayName>Install Site</displayName>
         <recursive>false</recursive>
         <goals>
-            <goal>ghSite:site</goal>
+            <goal>scm-publish:publish-scm</goal>
         </goals>
     </action>
     <action>
@@ -95,8 +95,6 @@
             <goal>clean:clean</goal>
             <goal>install</goal>
             <goal>wagon:upload-single</goal>
-                
-                
         </goals>
         <activatedProfiles>
             <activatedProfile>release-profile</activatedProfile>

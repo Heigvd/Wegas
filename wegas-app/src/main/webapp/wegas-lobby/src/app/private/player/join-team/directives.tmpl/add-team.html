@@ -1,3 +1,7 @@
-	<input class="input input--small" type="text" ng-model="newTeam.name" placeholder="team name" />
-	<a class="button button--default" ng-click="createTeam()" ng-class="{true:'button--disable'}[newTeam.alreadyUsed || newTeam.name.length == 0]">Create</a>
-	<span ng-if="newTeam.alreadyUsed" class="modal__tools__info fade"><i class="fa fa-info-circle"></i>Existing team</i>
+<input class="input input--small" type="text" ng-model="newTeam.name" placeholder="{{'PLAYER-MODALE-JOIN-TEAM-CREATE-INPUT' | translate}}" />
+<a class="button button--create-team button--default" ng-click="create()" ng-class="{true:'button--disable'}[newTeam.alreadyUsed || newTeam.name.length == 0]">
+        {{'PLAYER-MODALE-JOIN-TEAM-CREATE-BTN' | translate}}
+</a>
+<span ng-if="newTeam.alreadyUsed" class="modal__tools__info fade">
+        <i class="fa fa-info-circle"></i>{{'PLAYER-MODALE-JOIN-TEAM-EXISTING-MESSAGE' | translate}}
+</span>

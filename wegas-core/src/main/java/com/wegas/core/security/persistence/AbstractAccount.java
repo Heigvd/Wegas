@@ -31,6 +31,15 @@ import com.fasterxml.jackson.annotation.JsonView;
  */
 @Entity
 @Cacheable(true)
+/*
+Those indexes must partial index (ie. with a WHERE clause).
+Tests will failed if not
+This is not possible with JPA, but with eclipselink
+
+@Table(indexes = {
+    @Index(columnList = "username", unique = true),
+    @Index(columnList = "email", unique = true)
+})*/
 @NamedQueries({
     @NamedQuery(name = "findUserPermissions", query = "SELECT DISTINCT accounts FROM AbstractAccount accounts JOIN accounts.permissions p WHERE p.value LIKE :instance"),
     @NamedQuery(name = "AbstractAccount.findByUsername", query = "SELECT a FROM AbstractAccount a WHERE a.username = :username")
@@ -90,6 +99,11 @@ public class AbstractAccount extends AbstractEntity {
      */
     @ManyToMany
     @JsonView(Views.ExtendedI.class)
+    @JoinTable(name = "abstractaccount_roles",
+            joinColumns = {
+                @JoinColumn(name = "abstractaccount_id", referencedColumnName = "id")},
+            inverseJoinColumns = {
+                @JoinColumn(name = "roles_id", referencedColumnName = "id")})
     private Set<Role> roles = new HashSet<>();
 
     /**
@@ -213,6 +227,15 @@ public class AbstractAccount extends AbstractEntity {
      */
     public void addRole(Role role) {
         this.roles.add(role);
+    }
+
+    /**
+     * strike out this account from the role
+     *
+     * @param role
+     */
+    public void removeRole(Role role) {
+        this.roles.remove(role);
     }
 
     /**

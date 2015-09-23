@@ -88,6 +88,30 @@ public class GameModelController {
         return duplicate;
     }
 
+    @PUT
+    @Path("{templateGameModelId : [1-9][0-9]*}/UpdateFromPlayer/{playerId: [1-9][0-9]*}")
+    public GameModel updateFromPlayer(@PathParam("templateGameModelId") Long templateGameModelId, 
+            @PathParam("playerId") Long playerId) throws IOException {
+
+        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + templateGameModelId);
+
+        GameModel gm = gameModelFacade.setDefaultInstancesFromPlayer(templateGameModelId, playerId);
+        gameModelFacade.reset(gm);
+
+        return gm;
+    }
+
+    @POST
+    @Path("{templateGameModelId : [1-9][0-9]*}/CreateFromPlayer/{playerId: [1-9][0-9]*}")
+    public GameModel createFromPlayer(@PathParam("templateGameModelId") Long templateGameModelId, 
+            @PathParam("playerId") Long playerId) throws IOException {
+
+        SecurityUtils.getSubject().checkPermission("GameModel:Duplicate:gm" + templateGameModelId);
+        GameModel duplicate = gameModelFacade.createFromPlayer(templateGameModelId, playerId);
+
+        return duplicate;
+    }
+
     /**
      *
      * @param file
@@ -184,36 +208,36 @@ public class GameModelController {
         }
         return games;
     }
-    
+
     @PUT
     @Path("{entityId: [1-9][0-9]*}/status/{status: [A-Z]*}")
     public GameModel changeStatus(@PathParam("entityId") Long entityId, @PathParam("status") final GameModel.Status status) {
         SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + entityId);
         GameModel gm = gameModelFacade.find(entityId);
         Subject s = SecurityUtils.getSubject();
-        switch(status){
+        switch (status) {
             case LIVE:
                 if (s.isPermitted("GameModel:View:gm" + gm.getId())
-                    || s.isPermitted("GameModel:Instantiate:gm" + gm.getId())
-                    || s.isPermitted("GameModel:Duplicate:gm" + gm.getId())) {
-                        gameModelFacade.live(gm);   
+                        || s.isPermitted("GameModel:Instantiate:gm" + gm.getId())
+                        || s.isPermitted("GameModel:Duplicate:gm" + gm.getId())) {
+                    gameModelFacade.live(gm);
                 }
                 break;
             case BIN:
-                if (s.isPermitted("GameModel:Delete:gm" + entityId)){
-                    gameModelFacade.bin(gm);   
+                if (s.isPermitted("GameModel:Delete:gm" + entityId)) {
+                    gameModelFacade.bin(gm);
                 }
                 break;
             case DELETE:
-                if (s.isPermitted("GameModel:Delete:gm" + entityId)){
-                    gameModelFacade.delete(gm);   
+                if (s.isPermitted("GameModel:Delete:gm" + entityId)) {
+                    gameModelFacade.delete(gm);
                 }
                 break;
 
         }
         return gm;
     }
-    
+
     @GET
     @Path("status/{status: [A-Z]*}")
     public Collection<GameModel> findByStatus(@PathParam("status") final GameModel.Status status) {
@@ -228,7 +252,7 @@ public class GameModelController {
         }
         return games;
     }
-    
+
     @GET
     @Path("status/{status: [A-Z]*}/count")
     public int countByStatus(@PathParam("status") final GameModel.Status status) {
@@ -243,8 +267,7 @@ public class GameModelController {
         }
         return games.size();
     }
-    
-    
+
     /**
      *
      * @param entityId
@@ -255,7 +278,7 @@ public class GameModelController {
     public GameModel delete(@PathParam("entityId") Long entityId) {
         SecurityUtils.getSubject().checkPermission("GameModel:Delete:gm" + entityId);
         GameModel entity = gameModelFacade.find(entityId);
-        switch(entity.getStatus()){
+        switch (entity.getStatus()) {
             case LIVE:
                 gameModelFacade.bin(entity);
                 break;
@@ -266,7 +289,7 @@ public class GameModelController {
         // gameModelFacade.asyncRemove(entityId);
         return entity;
     }
-    
+
     @DELETE
     public Collection<GameModel> deleteAll() {
         Collection<GameModel> games = new ArrayList<>();

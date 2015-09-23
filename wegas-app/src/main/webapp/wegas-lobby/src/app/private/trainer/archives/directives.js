@@ -5,15 +5,18 @@ angular.module('private.trainer.archives.directives', [])
                 close: "&"
             },
             templateUrl: 'app/private/trainer/archives/directives.tmpl/index.html',
-            controller: "TrainerArchivesIndexController as trainerArchivesIndexController"
+            controller: "TrainerArchivesIndexController as indexCtrl"
         };
-    }).controller("TrainerArchivesIndexController", function TrainerArchivesIndexController($timeout, $rootScope, $scope, $state, SessionsModel, Flash) {
+    }).controller("TrainerArchivesIndexController", function TrainerArchivesIndexController($timeout, $translate, $rootScope, $scope, $state, SessionsModel, Flash) {
         var ctrl = this;
         ctrl.archives = [];
         ctrl.search = "";
+        ctrl.loading = true;
 
         ctrl.updateSessions = function() {
+            ctrl.loading = true;
             SessionsModel.getSessions("BIN").then(function(response) {
+                ctrl.loading = false;
                 ctrl.archives = response.data || {};
                 if (response.isErroneous()) {
                     response.flash();
@@ -35,7 +38,9 @@ angular.module('private.trainer.archives.directives', [])
                     }
                 });
             } else {
-                Flash.danger("No scenario choosed");
+                $translate('COMMONS-SESSIONS-NO-SESSION-FLASH-ERROR').then(function (message) {
+                    Flash.danger(message);
+                });
             }
         };
 
@@ -50,7 +55,9 @@ angular.module('private.trainer.archives.directives', [])
                     }
                 });
             } else {
-                Flash.danger("No session choosed");
+                $translate('COMMONS-SESSIONS-NO-SESSION-FLASH-ERROR').then(function (message) {
+                    Flash.danger(message);
+                });
             }
         };
 
@@ -61,7 +68,9 @@ angular.module('private.trainer.archives.directives', [])
                     $state.go('wegas.private.trainer.archives.settings', {id: session.id});
                 }, 1500);
             } else {
-                Flash.danger("No session choosed");
+                $translate('COMMONS-SESSIONS-NO-SESSION-FLASH-ERROR').then(function (message) {
+                    Flash.danger(message);
+                });
             }
         };
 
@@ -72,7 +81,9 @@ angular.module('private.trainer.archives.directives', [])
                     $state.go('wegas.private.trainer.archives.users', {id: session.id});
                 }, 1500);
             } else {
-                Flash.danger("No session choosed");
+                $translate('COMMONS-SESSIONS-NO-SESSION-FLASH-ERROR').then(function (message) {
+                    Flash.danger(message);
+                });
             }
         };
 
@@ -93,11 +104,10 @@ angular.module('private.trainer.archives.directives', [])
                 unarchive: "=",
                 search: "=",
                 details: "=",
-                users: "="
+                users: "=",
+                loading:"="
+                
             },
-            templateUrl: 'app/private/trainer/archives/directives.tmpl/list.html',
-            link: function(scope, elem, attrs){
-                scope.MAX_DISPLAYED_CHARS = MAX_DISPLAYED_CHARS;
-            }
+            templateUrl: 'app/private/trainer/archives/directives.tmpl/list.html'
         };
     });

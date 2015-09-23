@@ -5,57 +5,184 @@
  * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
+
+.pmg-properties{
+    display:block;
+    position:relative;
+    width:100%;
+    height:100%;
+}
+
+.pmg-properties .pmg-properties-left{
+    display:block;
+    position:relative !important;
+    width:50%;
+    float:left;
+    margin:0px;
+    padding:0px;
+}
+
+.pmg-properties .pmg-properties-right{
+    display:block;
+    position:relative !important;
+    width:50%;
+    float:left;
+    margin:0px;
+    padding:0px;
+}
+
+.wegas-editmode .pmg-properties .pmg-properties-right, .wegas-editmode .pmg-properties .pmg-properties-left{
+    width:100%;
+    float:none;
+    clear:both;
+}
+
+@media screen and (max-width: 909px) {
+    .pmg-properties .pmg-properties-right, .pmg-properties .pmg-properties-left{
+        width:100%;
+        float:none;
+        clear:both;
+    }
+}
+
+
+.pmg-properties .pmg-properties-title{
+    display:block;
+    position: relative !important;
+    width: 100%;
+    height: 56px;
+    box-sizing:border-box;
+    padding:16px 32px 8px 32px;
+    margin-top:24px;
+}
+
+.pmg-properties .pmg-properties-title span{
+    display:block;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    color:#666666;
+    border-bottom:solid 1px #c1c1c1;
+    padding-bottom:8px;
+}
+
+.pmg-properties .pmg-properties-button,
+.pmg-properties .pmg-properties-button:hover,
+.pmg-properties .pmg-properties-button:focus
+{
+    display:block;
+    position:relative !important;
+    background: transparent;
+    border:none;
+    box-shadow: none;
+    margin:24px 32px;
+    color:#666666;
+}
+
 .pmg-properties .hidden {
     display: none;
 }
-.pmg-properties .pmg-properties-button,
-.pmg-properties .pmg-properties-button:hover {
-    background: transparent;
-}
+
 .pmg-properties .checkbox {
-    background: url(../../wegas-editor/images/checkbox.png) -9px -38px no-repeat;
+    background:none;
     padding-top: 3px;
     padding-bottom: 3px;
-    padding-left: 23px;
+    padding-left: 32px;
 }
+.pmg-properties .checkbox:before {
+    display:block;
+    position:absolute;
+    top:0px;
+    left:0px;
+    content:"";
+    width:24px;
+    height:24px;
+    background:none;
+    border:solid 1px #666666;
+    border-radius:4px;
+}
+
 .pmg-properties .selected .checkbox {
-    background: url(../../wegas-editor/images/checkbox.png) -9px -4px no-repeat;
+    background:none;
+}
+.pmg-properties .selected .checkbox:before {
+    background:#ec8e5b;
+
 }
 
 /****************************** advancementlimit ******************************/
 .wegas-pmg-advancementlimit {
+    display:block;
+    position:relative !important;
     width: 100%;
+    padding: 12px 32px;
+    box-sizing: border-box;
 }
+
+.wegas-pmg-advancementlimit .phase{
+    display:block;
+    position:relative;
+    width:100%;
+    padding:20px 0px;
+    clear:both;
+}
+
+.wegas-pmg-advancementlimit .phase p {
+    display: block;
+    padding:6px 0px;
+    color: #666666;
+    float: left;
+}
+
 .wegas-pmg-advancementlimit .wegas-template-valuebox-unit {
-    width: 22px;
-    height: 19px;
+    display:block;
+    float:left;
+    width: 28px;
+    height: 24px;
     text-align: center;
-    border-left: none;
-    line-height: 20px;
+    line-height: 24px;
+    font-size:12px;
+    color:#565656;
+    border: 1px solid #565656;
+    border-left:none; 
 }
 .wegas-pmg-advancementlimit .wegas-template-valuebox-unit:first-child{
-    border-left: 1px solid gray;
+    border-left: 1px solid #565656;
+    border-top-left-radius:4px;
+    border-bottom-left-radius:4px;
 }
-.wegas-pmg-advancementlimit .phase .wegas-template-valuebox,
-.wegas-pmg-advancementlimit .phase p{
-    display: inline-block;
+.wegas-pmg-advancementlimit .wegas-template-valuebox-unit:last-child{
+    border-top-right-radius:4px;
+    border-bottom-right-radius:4px;
 }
+
 .wegas-pmg-advancementlimit .phase p {
     width: 125px;
 }
+
 .wegas-pmg-advancementlimit .wegas-template-valuebox-unit{
-    background-color: white;
+    background-color: #caf2ba;
 }
+
+.wegas-pmg-advancementlimit .box-phase3 .wegas-template-valuebox-unit:nth-last-child(2) {
+    border-top-right-radius:4px;
+    border-bottom-right-radius:4px;
+}
+
 .wegas-pmg-advancementlimit .box-phase3 .wegas-template-valuebox-unit:last-child {
     margin-left: 4px;
-    border-left: 1px solid gray;
+    border-left: 1px solid #565656;
+    border-top-left-radius:4px;
+    border-bottom-left-radius:4px;
 }
+
 .wegas-pmg-advancementlimit .playerAdvancement{
-    background-color: #BBB;
+    background-color: #c2c2c2;
     cursor: default;
 }
 .wegas-pmg-advancementlimit .currentPlayerState{
     background-color: #707070;
+    color:white;
     cursor: pointer;
 }
 .wegas-pmg-advancementlimit .clickable{
@@ -65,7 +192,7 @@
     border-right: 3px solid black;
 }
 .wegas-pmg-advancementlimit .afterBlockPosition {
-    background-color: rgba(178, 0, 0, 0.5);
+    background-color: white;
 }
 /*.wegas-pmg-advancementlimit .afterBlockPosition:after {
     content: url(../../wegas-pmg/images/remove.png);
@@ -77,4 +204,623 @@
 /* Right panel forms */ 
 .editor-resources-skillset, .editor-resources-occupations {
     display: block !important;
+}
+
+/* ------ Dashboard ----- */
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-name {
+    width: calc(100% - 977px);
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details{
+    width: calc(100% + 436px);
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details .wegas-players{
+    width:calc(100% - 436px);
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details .wegas-notes{
+    width:436px;
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Directors,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Direction,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Equipe-projet,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Mendants,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Team,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Personnel,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule{
+    display:block;
+    position:relative;
+    width:auto;
+    height:64px;
+    margin:0px;
+    padding:6px 16px 12px 16px;
+    border:none;
+    border-left:solid 1px #d4d4d4;
+    float:left;
+    box-sizing:border-box;
+    text-align:center;
+    font-weight:600;
+    color:#666666;
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase{
+    border-left:solid 3px #d4d4d4;
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Directors span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Direction span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Personnel span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Equipe-projet span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Mendants span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Team span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs span,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule span{
+    padding:4px 9px;
+    color:white;
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Directors:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Direction:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Mendants:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Team:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Equipe-projet:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Personnel:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs:before,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule:before{
+    display:block;
+    position:relative;
+    font-size:15px;
+    color:#949494;
+    font-weight:300;
+    padding-top:3px;
+    padding-bottom:3px;
+    margin-bottom: 4px;
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase{
+    width:112px;
+}
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase:before{
+    content:"Phase";
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period{
+    width:80px;
+}
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period:before{
+    content:"Period";
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions{
+    width:112px;
+}
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions:before{
+    content:"Questions";
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Directors,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Direction,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management{
+    width:132px;
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Directors:before{
+    content:"Directors";
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Direction:before{
+    content:"Direction";
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management:before{
+    content:"Management";
+}
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Equipe-projet,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Personnel,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Mendants,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Team,
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User{
+    width:80px;
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Equipe-projet:before{
+    content:"Equipe projet";
+}
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Personnel:before{
+    content:"Personnel";
+}
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Mendants:before{
+    content:"Mendants";
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Team:before{
+    content:"Team";
+}
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User:before{
+    content:"User";
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality{
+    width:88px;
+}
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality:before{
+    content:"Quality";
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs{
+    width:80px;
+}
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs:before{
+    content:"Costs";
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule{
+    width:96px;
+}
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule:before{
+    content:"Shedule";
+}
+
+@media screen and (max-width: 1289px) {
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr{
+        min-height:128px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-name, .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-menu {
+        border-bottom:solid 1px #d4d4d4;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-menu{
+        width:392px;
+        height:64px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-name{
+        width:calc(100% - 392px);
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-open-team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-impact-team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-mail-team{
+        width:130px;
+        height:64px;
+        background-size:auto 100%;
+        background-position:center;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Direction,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Directors,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Personnel,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Equipe-projet,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Mendants,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule{
+        position:absolute;
+        top:64px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase:before,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period:before,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions:before,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Directors:before,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Direction:before,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management:before,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User:before,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Mendants:before,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Team:before,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Equipe-projet:before,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Personnel:before,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality:before,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs:before,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule:before{
+        font-size:13px;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details{
+        height:288px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details{
+        width:calc(100% + 392px);
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details .wegas-notes{
+        width:calc(100% - 390px);
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details .wegas-players{
+        width:390px;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Phase,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Period,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Questions,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Directors,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Direction,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Management,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-User,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Equipe-projet,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Personnel,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Mendants,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Quality,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Costs,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Schedule{
+        position:absolute;
+        top:224px;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details{
+        margin-bottom:12px;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase{
+        border-left:0px;
+        left:0px;
+        width:130px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period{
+        left:130px;
+        width:130px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions{
+        left:260px;
+        width:132px;
+        border-right:solid 2px #d4d4d4;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Directors,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Direction,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management{
+        left:392px;
+        width:calc(50% - 392px);
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Equipe-projet,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Personnel,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Mendants,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User{
+        right:392px;
+        width:calc(50% - 392px);
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality{
+        right:260px;
+        width:132px;
+        border-left:solid 3px #d4d4d4;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs{
+        right:130px;
+        width:130px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule{
+        right:0;
+        width:130px;
+    }
+}
+
+@media screen and (max-width: 1099px) {
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Directors,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Direction,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management{
+        left:auto;
+        right:517px;
+        width:125px;
+        border-left:solid 3px #d4d4d4;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Equipe-projet,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Personnel,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Mendants,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User{
+        right:392px;
+        width:125px;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase{
+        left:0px;
+        width:calc(33.3% - 214px);
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period{
+        left:calc(33.3% - 214px);
+        width:calc(33.3% - 214px);
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions{
+        left:calc(66.6% - 428px);
+        width:calc(33.3% - 214px);
+        border-right:0px;
+    }
+}
+
+@media screen and (max-width: 1007px) {
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase{
+        left:0px;
+        width:100px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period{
+        left:100px;
+        width:100px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions{
+        left:200px;
+        width:100px;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Directors,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Direction,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management{
+        left:300px;
+        right:auto;
+        width:125px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Equipe-projet,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Personnel,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Mendants,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User{
+        left:425px;
+        right:auto;
+        width:125px;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-menu{
+        width:calc(100% - 550px);
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-open-team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-impact-team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-mail-team{
+        width:calc(100% / 3);  
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality{
+        right:calc(66.6% - 366px);
+        width:calc(33.3% - 183px);
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs{
+        right:calc(33.3% - 183px);
+        width:calc(33.3% - 183px);
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule{
+        right:0;
+        width:calc(33.3% - 183px);
+    }
+    
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Quality,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Costs,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Schedule{
+        border-top:solid 1px #d4d4d4;
+    }
+
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-name{
+        width:550px;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details{
+        width:calc(100% + 3px);
+        border-right:solid 3px #d4d4d4;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details .wegas-players{
+        width:300px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details .wegas-notes{
+        width:calc(100% - 300px);
+        
+    }
+    
+}
+
+@media screen and (max-width: 867px) {
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-menu{
+        width:197px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-open-team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-impact-team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-mail-team{
+        width:65px;  
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details{
+        width:calc(100% + 197px);
+        border-right:none;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-name{
+        width:calc(100% - 197px);
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr{
+        height:192px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details{
+        height:352px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality{
+        border-left:0px;
+        right:66.6%;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs{
+        right:33.3%;
+    }
+
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule{
+        top:128px;
+        width:33.3%;
+        border-top:solid 1px #d4d4d4;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Quality,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Costs,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Schedule{
+        top:288px;
+        width:33.3%;
+        border-top:solid 1px #d4d4d4;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Direction,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Directors,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Personnel,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Mendants,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Equipe-projet,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User{
+        left:0px;
+        right:auto;
+        width:20%;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period{
+       left:20%;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions{
+       left:40%;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Directors,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Direction,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management{
+       left:60%;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Personnel,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Mendants,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Equipe-projet,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User{
+       left:80%;
+    } 
+}
+
+@media screen and (max-width: 659px) {
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Directors,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Direction,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Mendants,    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Personnel,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Equipe-projet,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-User{
+        top:128px;
+        width:50%;
+        left:50%;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Directors,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Direction,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Management,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Mendants,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Personnel,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Equipe-projet,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-User{
+        top:288px;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Directors,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Direction,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Management{
+       left:0%;
+       border-left:none;
+    } 
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr{
+        height:320px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details{
+        height:480px;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details{
+        width:100%;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details .wegas-players{
+        width:50%;
+        padding:0px;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details .wegas-details .wegas-notes{
+        width:50%;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-name{
+        width:100%;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-menu{
+        position:absolute;
+        top:64px;
+        border-left:0px;
+        width:100%;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-menu{
+        position:absolute;
+        top:224px;
+        border-left:0px;
+        width:100%;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-open-team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-impact-team,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr .yui3-datatable-col-menu .dashboard-mail-team{
+        width:calc(100% / 3);  
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Quality,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Costs,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Schedule{
+        top:192px;
+        border-bottom:solid 1px #d4d4d4;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Quality,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Costs,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Schedule{
+        top:352px;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Phase,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions{
+        top:256px;
+        left:0px;
+        right:auto;
+        width:33.3%;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Phase,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Period,
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr.card-show-details td.yui3-datatable-col-Questions{
+        top:416px;
+    }
+    
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Period{
+        left:33.3%;
+    }
+    .yui3-skin-sam .wegas-dashboard .yui3-datatable-data tr td.yui3-datatable-col-Questions{
+        left:66.6%;
+    }
+    
 }

@@ -311,7 +311,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                 }, this), function(i) {
                     return {
                         value: i.get("name"),
-                        label: i.getEditorLabel()
+                        label: i.getTreeEditorLabel()
                     };
                 }, this);
             }

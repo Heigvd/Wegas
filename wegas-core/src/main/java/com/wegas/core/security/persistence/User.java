@@ -35,7 +35,7 @@ public class User extends AbstractEntity implements Comparable<User> {
     /**
      *
      */
-    @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, orphanRemoval = true)
     @JsonManagedReference(value = "player-user")
     private List<Player> players = new ArrayList<>();
     /**

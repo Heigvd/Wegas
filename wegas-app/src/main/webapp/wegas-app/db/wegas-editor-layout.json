@@ -1,5 +1,11 @@
 {
     "type": "ResizableLayout",
+    "cssClass": "wegas-editview",
+    "plugins": [
+        {
+            "fn": "PopupListener"
+        }
+    ],
     "top": {
         "height": 25,
         "children": [
@@ -108,8 +114,31 @@
                     }
                 ]
             }, {
+                "type": "Button",
+                "label": "Advanced",
+                "cssClass": "editor-scenarist-button wegas-advanced-feature",
+                "plugins": [
+                    {
+                        "fn": "WidgetMenu",
+                        "cfg": {
+                            "children": [
+                                {
+                                    "type": "Button",
+                                    "label": "Create new scenario from player",
+                                    "plugins": [
+                                        {
+                                            "fn": "GmExtractorAction"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }, {
                 "type": "OpenTabButton",
                 "label": "Help",
+                "cssClass": "editor-scenarist-button wegas-advanced-feature",
                 "wchildren": [
                     {
                         "type": "Text",
@@ -159,6 +188,7 @@
                         "type": "Tab",
                         "label": "Pages",
                         "cssClass": "editor-pages",
+                        "plugins": [{"fn": "UneditablePageDisabler"}],
                         "children": [
                             {
                                 "type": "PageTreeview"
@@ -179,12 +209,16 @@
                     {
                         "type": "Tab",
                         "label": "Preview",
-                        "plugins": [{"fn": "TabDocker"}],
+                        "plugins": [
+                            {
+                                "fn": "TabDocker"
+                            }
+                        ],
                         "children": [
                             {
                                 "type": "PageLoader",
                                 "pageLoaderId": "previewPageLoader",
-                                "defaultPageId": 1,
+                                "defaultPageId": "default",
                                 "cssClass": "editor-preview wegas-playerview",
                                 "plugins": [
                                     {
@@ -219,7 +253,14 @@
                         ]
                     }
                 ],
-                "plugins": [{"fn": "ExtraTabs", "cfg": {"dock": true}}]
+                "plugins": [
+                    {
+                        "fn": "ExtraTabs",
+                        "cfg": {
+                            "dock": true
+                        }
+                    }
+                ]
             }
         ]
     },

@@ -8,6 +8,7 @@
 /**
  * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
+ * @deprecated 
  */
 YUI.add('wegas-pmg-tablepopup', function(Y) {
     "use strict";

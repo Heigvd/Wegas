@@ -26,7 +26,7 @@
     font-size: 1.3em;
 }
 .wegas-review-widget .description {
-    margin: 5px;
+    margin: 0px 5px;
 }
 
 .wegas-review-widget .subtitle {
@@ -56,6 +56,10 @@
     background-color: #666;
 }
 
+.wegas-review-widget .toReview .content {
+    margin: 0px 5px;
+}
+
 .wegas-review-widget .toReview .content,
 .wegas-review-evaluation-content {
     background-color: #999;
@@ -80,3 +84,36 @@
 .wegas-review-orchestrator .summary table td {
     text-align:center;
 }
+
+.wegas-review-orchestrator .charts .comments {
+    clear: both;
+}
+
+.wegas-review-orchestrator .charts .evaluation {
+    float: left;
+    
+    width: 400px;
+    /* height: 260px; */
+    margin: 20px;
+    position: relative;
+}
+
+.wegas-review-orchestrator .charts .evaluation .legend {
+    /* position: absolute; */
+    
+    bottom: 0px;
+    font-style: italic;
+    font-size: 0.8em;
+    color: rgb(145, 145, 145);
+}
+
+.wegas-review-orchestrator .ct-label.ct-horizontal {
+  transform-origin: 0% 50%;
+  transform: translateY(50px) rotate(-45deg);
+  font-size: 0.7em;
+}
+
+.wegas-review-orchestrator .ct-chart {
+  margin-bottom: 50px;
+}
+

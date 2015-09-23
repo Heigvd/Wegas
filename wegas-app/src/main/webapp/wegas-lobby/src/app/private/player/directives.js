@@ -4,15 +4,15 @@ angular.module('private.player.directives', [])
             templateUrl: 'app/private/player/directives.tmpl/index.html',
             controller: 'PlayerController as playerCtrl'
         };
-    }).controller("PlayerController", function PlayerController($rootScope, $state, TeamsModel, SessionsModel, Flash) {
+    }).controller("PlayerController", function PlayerController($q, $rootScope, $scope, $state, $translate, TeamsModel, SessionsModel, Flash) {
         /* Assure access to ctrl. */
         var ctrl = this,
-
             /* Method used to update sessions. */
             updateTeams = function() {
+                ctrl.loading = true;
                 TeamsModel.getTeams().then(function(response) {
+                    ctrl.loading = false;
                     if (!response.isErroneous()) {
-                        console.log(response.data);
                         ctrl.teams = response.data || [];
                     } else {
                         ctrl.teams = [];
@@ -22,12 +22,16 @@ angular.module('private.player.directives', [])
 
         /* Container for datas. */
         ctrl.teams = []; 
-
+        ctrl.loading = true;
         /* Method used to check token for adding a session. */
         ctrl.checkToken = function(token) {
+            var deferred = $q.defer();
             SessionsModel.findSessionToJoin(token).then(function(findResponse) {
                 if (findResponse.isErroneous()) {
-                    Flash.danger("This is not a valid access key");
+                    $translate('PLAYER-JOIN-TEAM-KEY-FLASH-ERROR').then(function (message) {
+                        Flash.danger(message);
+                        deferred.resolve();
+                    });
                 } else {
                     if (findResponse.data.access != "CLOSE") {
                         var alreadyJoin = false;
@@ -37,27 +41,38 @@ angular.module('private.player.directives', [])
                             }
                         });
                         if(alreadyJoin){
-                            Flash.info("You have already join this session");
+                            $translate('COMMONS-TEAMS-ALREADY-JOIN-FLASH-INFO').then(function (message) {
+                                Flash.info(message);
+                                deferred.resolve();
+                            });
                         }else{
                             if (findResponse.data.properties.freeForAll) {
                                 TeamsModel.joinIndividually(findResponse.data).then(function(joinResponse) {
                                     if (!joinResponse.isErroneous()) {
+                                        $scope.$emit('collapse');
                                         updateTeams();
                                     } else {
                                         joinResponse.flash();
                                     }
+                                    deferred.resolve();
                                 });
                             } else {
+                                $scope.$emit('collapse');
                                 $state.go('wegas.private.player.join', {
                                     token: findResponse.data.token
                                 });
+                                deferred.resolve();
                             }
                         }
                     } else {
-                        Flash.danger("Session closed");
+                        $translate('COMMONS-SESSIONS-CLOSE-FLASH-ERROR').then(function (message) {
+                            Flash.danger(message);
+                            deferred.resolve();
+                        });
                     }
                 }
             });
+            return deferred.promise;
         };
         /* Leave the team */
         ctrl.leaveTeam = function(teamId) {
@@ -91,13 +106,18 @@ angular.module('private.player.directives', [])
                 scope.sessionToJoin = {
                     token: ""
                 };
-
                 // Use checkToken from index to join a new session.
                 scope.joinSession = function() {
-                    scope.checkToken(scope.sessionToJoin.token);
-                    scope.sessionToJoin = {
-                        token: ""
-                    };
+                    var button = $(element).find(".button--join-session");
+                    if(!button.hasClass("button--disable")){
+                        button.addClass("button--disable button--spinner button--rotate");
+                        scope.checkToken(scope.sessionToJoin.token).then(function(){
+                            button.removeClass("button--disable button--spinner button--rotate");
+                            scope.sessionToJoin = {
+                                token: ""
+                            };
+                        });
+                    }                    
                 };
             }
         };
@@ -107,11 +127,12 @@ angular.module('private.player.directives', [])
             templateUrl: 'app/private/player/directives.tmpl/list.html',
             scope: {
                 teams: "=",
-                leave: "="
+                leave: "=",
+                loading: "="
             }
         };
     })
-    .directive('playerTeamCard', function(Auth) {
+    .directive('playerTeamCard', function() {
         return {
             templateUrl: 'app/private/player/directives.tmpl/card.html',
             scope: {
@@ -120,7 +141,6 @@ angular.module('private.player.directives', [])
             },
             link: function(scope, element, attrs) {
                 scope.ServiceURL = ServiceURL;
-                scope.MAX_DISPLAYED_CHARS = MAX_DISPLAYED_CHARS;
             }
         };
     });

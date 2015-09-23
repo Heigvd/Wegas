@@ -1,21 +1,18 @@
-<div class="view view--new-session view--bottom">
-	<h3>Add session</h3>
+<div class="view view--new-session view--bottom" expandable>
+	<h3>{{'TRAINER-INDEX-ADD-TITLE' | translate}}</h3>
+        <a title="{{'VIEW-CLOSE' | translate}}" class="view__button-collapse button button--medium button--round button--default-reverse button--label-off button--close" collapser>
+            <span class="button__label">{{'VIEW-CLOSE' | translate}}</span>
+        </a>
 	<trainer-sessions-add></trainer-sessions-add>
 </div>
-<div class="view view--sessions-list view--middle">
-	<h3>Current sessions</h3>
-	<div class="view__tools">
-		<div class="tool tool--search tool--open">
-			<a class="tool__link"></a>
-			<input 
-				class="tool__input" 
-				ng-model="trainerIndexCtrl.search" 
-				type="text" 
-			/>
-		</div>
-	</div>
+<div class="view view--managed-sessions-list view--middle">
+    <h3><i class="fa fa-dashboard"></i><span>{{'TRAINER-INDEX-LIST-TITLE' | translate}}</span></h3>
+        <a class="view__button-expand button button--small button--info-reverse" expander>
+            <span class="button__label">{{'TRAINER-INDEX-ADD-TITLE' | translate}}</span>
+        </a>
+        <div class="view__tools" data-search-tool="trainerIndexCtrl.search" ></div>
 	<div 
-		ng-if="!trainerIndexCtrl.loading.all"
+		ng-if="!trainerIndexCtrl.loading"
 		ng-class="{true:'view__list--with-archive', false:''}[trainerIndexCtrl.nbArchives > 0]"
 		class="view__list" 
 		sessions="trainerIndexCtrl.sessions" 
@@ -26,14 +23,14 @@
 		trainer-sessions-list 
 		repeat-auto-load >
 	</div>
-	<div ng-if="(!trainerIndexCtrl.loading.all) && (trainerIndexCtrl.nbArchives > 0)" class="view__archives">
+	<div ng-if="(!trainerIndexCtrl.loading) && (trainerIndexCtrl.nbArchives > 0)" class="view__archives">
 		<a class="button button--small button--default button--archive" ui-sref=".archives">
-			<span class="button__label">{{trainerIndexCtrl.nbArchives}} &nbsp; archives</span>
+			<span ng-if="trainerIndexCtrl.nbArchives == 1" class="button__label">{{trainerIndexCtrl.nbArchives}} {{'TRAINER-INDEX-ARCHIVE-BTN' | translate}}</span>
+                        <span ng-if="trainerIndexCtrl.nbArchives > 1" class="button__label">{{trainerIndexCtrl.nbArchives}} {{'TRAINER-INDEX-ARCHIVES-BTN' | translate}}</span>
 		</a>
 	</div>
-	<div 
-		ng-if="trainerIndexCtrl.loading.all"
-		class="view__list">
-		Loading
+	<div    ng-if="trainerIndexCtrl.loading"
+		class="view__list view__list--loading" 
+                content-loading="{{'COMMONS-SESSIONS-LOADING' | translate}}">
 	</div>
 </div>

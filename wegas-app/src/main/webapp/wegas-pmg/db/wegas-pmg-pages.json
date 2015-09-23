@@ -51,8 +51,8 @@
                                         "name": "logo PMG"
                                     },
                                     {
-                                        "type": "Text",
-                                        "content": "<p>Project Management Game</p>"
+                                        "type": "Template",
+                                        "custom": "<% var gameModel = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel(), name; %> <p>Project Management Game<br /><b><% if(gameModel.get('properties.freeForAll')){ name = Y.Wegas.Facade.Game.cache.getCurrentPlayer().get('name'); }else{ name = Y.Wegas.Facade.Game.cache.getCurrentTeam().get('name'); } %><%= name %></b></p>"
                                     }
                                 ]
                             },
@@ -62,12 +62,6 @@
                                 "direction": "vertical",
                                 "name": "taskbar",
                                 "children": [
-                                    {
-                                        "type": "LoginButton",
-                                        "cssClass": "menu-loginbutton",
-                                        "forcedLabel": "Leave session",
-                                        "targetPageLoader": "maindisplayarea"
-                                    },
                                     {
                                         "type": "List",
                                         "cssClass": "pmg--taskbar__infos",
@@ -143,7 +137,7 @@
                                                                 "data": {
                                                                     "label": ""
                                                                 },
-                                                                "custom": "<div class='wegas-template-valuebox'><% if(this.label){ %><label><%= this.label %></label><% } %><div class='wegas-template-valuebox-units'><% var maxVal, phase = this.value, currentPeriod = Y.Wegas.Facade.Variable.cache.find('name', 'currentPeriod').get('items')[phase -1]; if (phase != 3) {maxVal = currentPeriod.getMaxValue()} else { var exec = Y.Wegas.Facade.Variable.cache.find('name', 'executionPeriods').get('value'); if (currentPeriod.getValue() >= exec) { maxVal = currentPeriod.getValue(); maxVal++} else { maxVal = exec}} %><% for(var i=+currentPeriod.getMinValue(); i < +maxVal + 1; i+=1){%><div class='wegas-template-valuebox-unit <%= +i < +currentPeriod.getValue() ? ' wegas-template-valuebox-previous' : '' %><%= +i === +currentPeriod.getValue() ? ' wegas-template-valuebox-selected' : '' %>'><%= ''+i %></div> <% } %></span></div></div>"
+                                                                "custom": "<% var maxVal, phase = this.value, currentPeriod = Y.Wegas.Facade.Variable.cache.find('name', 'currentPeriod').get('items')[phase -1]; if (phase != 3) {maxVal = currentPeriod.getMaxValue()} else { var exec = Y.Wegas.Facade.Variable.cache.find('name', 'executionPeriods').get('value'); if (currentPeriod.getValue() >= exec) { maxVal = currentPeriod.getValue(); maxVal++} else { maxVal = exec}} if(maxVal > 1){ %><div class='wegas-template-valuebox'><% if(this.label){ %><label><%= this.label %></label><% } %><div class='wegas-template-valuebox-units'><% for(var i=+currentPeriod.getMinValue(); i < +maxVal + 1; i+=1){%><div class='wegas-template-valuebox-unit <%= +i < +currentPeriod.getValue() ? ' wegas-template-valuebox-previous' : '' %><%= +i === +currentPeriod.getValue() ? ' wegas-template-valuebox-selected' : '' %>'><%= ''+i %></div> <% } %></span></div></div><% } %>"
                                                             }
                                                         ]
                                                     },
@@ -585,10 +579,11 @@
                                                                         }
                                                                     }
                                                                 ],
-                                                                "content": "<p>Time cards</p>"
+                                                                "content": "<p>Time budget</p>"
                                                             },
                                                             {
                                                                 "type": "NumberTemplate",
+                                                                "cssClass": "pmg--number",
                                                                 "plugins": [
                                                                     {
                                                                         "fn": "CSSPosition",
@@ -611,6 +606,16 @@
                                                                 "variable": {
                                                                     "@class": "Script",
                                                                     "content": "Variable.find(gameModel, \"timeCards\");\n"
+                                                                },
+                                                                "data": {
+                                                                    "label": ""
+                                                                }
+                                                            },
+                                                            {
+                                                                "type": "BoxTemplate",
+                                                                "cssClass": "pmg--cards",
+                                                                "variable": {
+                                                                    "content": "Variable.find('timeCards')"
                                                                 },
                                                                 "data": {
                                                                     "label": ""
@@ -770,6 +775,31 @@
                                                                 }
                                                             }
                                                         ]
+                                                    }, {
+                                                        "label": "Iterations",
+                                                        "type": "Button",
+                                                        "plugins": [
+                                                            {
+                                                                "fn": "OpenPageAction",
+                                                                "cfg": {
+                                                                    "targetEvent": "click",
+                                                                    "subpageId": 20,
+                                                                    "targetPageLoaderId": "maindisplayarea"
+                                                                }
+                                                            },
+                                                            {
+                                                                "fn": "ConditionalDisable",
+                                                                "cfg": {
+                                                                    "condition": {
+                                                                        "@class": "Script",
+                                                                        "content": "Variable.find(gameModel, \"currentPhase\").getValue(self)<2 || !Variable.find(gameModel, \"burndownEnabled\").getValue(self)",
+                                                                        "language": "JavaScript"
+                                                                    },
+                                                                    "attribute": "cssClass",
+                                                                    "value": "hidden-button"
+                                                                }
+                                                            }
+                                                        ]
                                                     }
                                                 ]
                                             },
@@ -900,6 +930,12 @@
                                                             }
                                                         ],
                                                         "data": {}
+                                                    },
+                                                    {
+                                                        "type": "LoginButton",
+                                                        "cssClass": "menu-loginbutton",
+                                                        "forcedLabel": "",
+                                                        "targetPageLoader": "maindisplayarea"
                                                     }
                                                 ]
                                             }
@@ -1076,34 +1112,27 @@
                     {
                         "type": "PmgSlidePanel",
                         "cssClass": "indicators-management chart",
-                        "title": "Indicators History: Management and Users",
+                        "title": "Indicators History: %managementApproval% and %userApproval%",
                         "animation": false,
                         "openByDefault": true,
                         "children": [
                             {
                                 "type": "Chart",
-                                "chartType": "combo",
                                 "variables": [
                                     {
-                                        "name": "managementApproval",
-                                        "label": "Management"
+                                        "name": "managementApproval"
                                     },
                                     {
-                                        "name": "userApproval",
-                                        "label": "Users"
+                                        "name": "userApproval"
                                     }
                                 ],
-                                "hStart": 0,
-                                "hStep": 1,
-                                "hMinEnd": {
+                                "low": 0,
+                                "high": 200,
+                                "width": "100%",
+                                "xMinMax": {
                                     "name": "executionPeriods"
                                 },
-                                "minValue": 0,
-                                "maxValue": 200,
-                                "vStepValue": 25,
-                                "legendPosition": "bottom",
-                                "horizontalGridlines": true,
-                                "verticalGridlines": true
+                                "showXLabels": false
                             }
                         ]
                     },
@@ -1116,7 +1145,6 @@
                         "children": [
                             {
                                 "type": "Chart",
-                                "chartType": "combo",
                                 "variables": [
                                     {
                                         "name": "costs",
@@ -1124,24 +1152,19 @@
                                     },
                                     {
                                         "name": "delay",
-                                        "label": "Shedule"
+                                        "label": "Schedule"
                                     },
                                     {
                                         "name": "quality",
                                         "label": "Quality"
                                     }
                                 ],
-                                "hStart": 0,
-                                "hStep": 1,
-                                "hMinEnd": {
+                                "low": 0,
+                                "high": 200,
+                                "width": "100%",
+                                "xMinMax": {
                                     "name": "executionPeriods"
-                                },
-                                "minValue": 0,
-                                "maxValue": 200,
-                                "vStepValue": 25,
-                                "legendPosition": "bottom",
-                                "horizontalGridlines": true,
-                                "verticalGridlines": true
+                                }
                             }
                         ]
                     }
@@ -1166,7 +1189,7 @@
                         }
                     },
                     {
-                        "fn": "Taskonclickpopup",
+                        "fn": "Taskontableclickpopup",
                         "cfg": {
                             "width": "250px",
                             "column": 1
@@ -1193,7 +1216,7 @@
                         "label": "Estimated</br>duration",
                         "width": "54px",
                         "name": "Estimatedduration",
-                        "key": "instance%properties%duration",
+                        "key": "instance£properties£duration",
                         "className": "right",
                         "sortable": false,
                         "allowHTML": true
@@ -1201,7 +1224,7 @@
                     {
                         "label": "Fixed costs",
                         "name": "Fixedcosts",
-                        "key": "instance%properties%fixedCosts",
+                        "key": "instance£properties£fixedCosts",
                         "className": "right",
                         "formatter": "rounded",
                         "sortable": false,
@@ -1261,7 +1284,7 @@
                         "fn": "Plannificationcolor"
                     },
                     {
-                        "fn": "Taskonclickpopup"
+                        "fn": "Taskontableclickpopup"
                     }
                 ],
                 "variable": {
@@ -1292,7 +1315,7 @@
         "children": [
             {
                 "type": "PmgResourcesPanels",
-                "cssClass": "resources-page"
+                "cssClass": "resources-page slidepaneled-page"
             }
         ],
         "@name": "Resources"
@@ -1332,7 +1355,7 @@
                                 "@class": "Script",
                                 "content": "var currentPhase = Variable.find('currentPhase').getValue(self) - 1, currentPeriod = Variable.find('currentPeriod').item(currentPhase).getValue(self); return '' + Variable.find('actions').item(currentPhase).get('label') + ' Actions';"
                             },
-                            "outputType": "html"
+                            "outputType": "pdf"
                         }
                     },
                     {
@@ -1391,7 +1414,7 @@
                                 "@class": "Script",
                                 "content": "var currentPhase = Variable.find('currentPhase').getValue(self) - 1, currentPeriod = Variable.find('currentPeriod').item(currentPhase).getValue(self); return '' + Variable.find('questions').item(currentPhase).get('label') + '(' + parseInt(currentPeriod, 10) + ') - Questions';"
                             },
-                            "outputType": "html"
+                            "outputType": "pdf"
                         }
                     },
                     {
@@ -1452,6 +1475,39 @@
                 "template": "clean",
                 "setToReadAfter": 0.05,
                 "autoOpenFirstMail": false
+            }, {
+                "label": "",
+                "type": "Button",
+                "cssClass": "wegas-icon-pdf",
+                "plugins": [
+                    {
+                        "fn": "PrintActionPlugin",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "root": {
+                                "@class": "Script",
+                                "content": "return Variable.find('history');"
+                            },
+                            "title": {
+                                "@class": "Script",
+                                "content": "return \"Game History\""
+                            },
+                            "outputType": "pdf",
+                            "displayPath" : "false"
+                        }
+                    },
+                    {
+                        "fn": "CSSStyles",
+                        "cfg": {
+                            "styles": {
+                                "bottom": "0px",
+                                "left": "0px",
+                                "position": "absolute"
+                            }
+                        }
+                    }
+                ],
+                "data": {}
             }
         ],
         "@name": "History"
@@ -1471,18 +1527,11 @@
                         "type": "Chart",
                         "width": "90%",
                         "height": "400px",
-                        "chartType": "combo",
-                        "horizontalGridlines": true,
-                        "legendPosition": "bottom",
-                        "verticalGridlines": true,
-                        "hMinEnd": {
-                            "name": "executionPeriods"
-                        },
-                        "minValue": 0,
+                        "low": 0,
                         "variables": [
                             {
                                 "name": "planedValue",
-                                "label": "PV (Planed Value)"
+                                "label": "PV (Planned Value)"
                             },
                             {
                                 "name": "earnedValue",
@@ -1525,7 +1574,7 @@
                         "fn": "PlannificationProgressColor"
                     },
                     {
-                        "fn": "Taskonclickpopup"
+                        "fn": "Taskontableclickpopup"
                     },
                     {
                         "fn": "PMGLineCompleteness"
@@ -1649,7 +1698,7 @@
                 ],
                 "plugins": [
                     {
-                        "fn": "Taskonclickpopup"
+                        "fn": "Taskontableclickpopup"
                     },
                     {
                         "fn": "PMGLineCompleteness"
@@ -1677,86 +1726,28 @@
     },
     "15": {
         "type": "AbsoluteLayout",
+        "cssClass": "home-page",
         "children": [
             {
                 "type": "Template",
+                "cssClass": "pmg-welcome-text",
                 "custom": "<%== this.value || 'Unable to find welcome text' %>",
                 "data": {},
                 "variable": {
                     "name": "homeText"
-                },
-                "plugins": [
-                    {
-                        "fn": "CSSStyles",
-                        "cfg": {
-                            "styles": {
-                                "padding": "2%"
-                            }
-                        }
-                    },
-                    {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "0px",
-                                "left": "0px"
-                            }
-                        }
-                    },
-                    {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "width": "46%"
-                            }
-                        }
-                    }
-                ]
+                }
             },
             {
                 "type": "Text",
-                "content": "<div class='title'><h2>News</h2></div></div>",
-                "plugins": [
-                    {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "21px",
-                                "left": "50%"
-                            }
-                        }
-                    }
-                ]
+                "cssClass": "pmg-news-header",
+                "content": "<div class='title'><h2>News</h2></div></div>"
             },
             {
                 "type": "InboxList",
+                "cssClass": "pmg-news-content",
                 "variable": {
                     "name": "news"
-                },
-                "plugins": [
-                    {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "50px",
-                                "right": "0px"
-                            }
-                        }
-                    },
-                    {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "width": "50%"
-                            }
-                        }
-                    }
-                ]
+                }
             }
         ],
         "@name": "Home"
@@ -1766,370 +1757,270 @@
         "cssClass": "pmg-properties",
         "children": [
             {
-                "type": "Text",
-                "plugins": [
+                "type": "AbsoluteLayout",
+                "cssClass": "pmg-properties-left",
+                "children": [
                     {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "zIndex": "",
-                                "top": "30px",
-                                "left": "83px",
-                                "bottom": "",
-                                "right": ""
+                        "type": "Text",
+                        "cssClass": "pmg-properties-title",
+                        "plugins": [
+                            {
+                                "fn": "ConditionalDisable",
+                                "cfg": {
+                                    "condition": {
+                                        "@class": "Script",
+                                        "content": "var advLimitDesc;\ntry {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){}\nreturn advLimitDesc !== undefined;\n"
+                                    },
+                                    "attribute": "cssClass",
+                                    "value": "hidden"
+                                }
                             }
-                        }
+                        ],
+                        "content": "<span>Advancement limit</span>"
                     },
                     {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "width": "",
-                                "height": ""
-                            }
-                        }
-                    },
-                    {
-                        "fn": "ConditionalDisable",
-                        "cfg": {
-                            "condition": {
-                                "@class": "Script",
-                                "content": "var advLimitDesc;\ntry {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){}\nreturn advLimitDesc !== undefined;\n"
+                        "label": "<span class='checkbox'>Advancement limit</span>",
+                        "type": "Button",
+                        "cssClass": "pmg-properties-button",
+                        "plugins": [
+                            {
+                                "fn": "ExecuteScriptAction",
+                                "cfg": {
+                                    "targetEvent": "click",
+                                    "onClick": {
+                                        "@class": "Script",
+                                        "language": "JavaScript",
+                                        "content": "var advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch (e){}\n if (advLimitDesc != undefined){ advLimitDesc.setValue(self, !advLimitDesc.getValue(self));};"
+                                    }
+                                }
                             },
-                            "attribute": "cssClass",
-                            "value": "hidden"
-                        }
-                    }
-                ],
-                "content": "<p><strong>Advancement limit</strong></p>"
+                            {
+                                "fn": "ConditionalDisable",
+                                "cfg": {
+                                    "condition": {
+                                        "@class": "Script",
+                                        "content": "var  advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){} return (advLimitDesc === undefined || advLimitDesc.getValue(self));",
+                                        "language": "JavaScript"
+                                    },
+                                    "attribute": "cssClass",
+                                    "value": "selected"
+                                }
+                            },
+                            {
+                                "fn": "ConditionalDisable2",
+                                "cfg": {
+                                    "condition": {
+                                        "@class": "Script",
+                                        "content": "var  advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){} return (advLimitDesc === undefined);",
+                                        "language": "JavaScript"
+                                    },
+                                    "attribute": "cssClass",
+                                    "value": "hidden"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "cssClass": "pmg-advancement-limit-edtion",
+                        "type": "AdvancementLimit"
+                    }]
             },
             {
-                "label": "<span class='checkbox'>Advancement limit</span>",
-                "type": "Button",
-                "cssClass": "pmg-properties-button",
-                "plugins": [
+                "type": "AbsoluteLayout",
+                "cssClass": "pmg-properties-right",
+                "children": [
                     {
-                        "fn": "ExecuteScriptAction",
-                        "cfg": {
-                            "targetEvent": "click",
-                            "onClick": {
-                                "@class": "Script",
-                                "language": "JavaScript",
-                                "content": "var advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch (e){}\n if (advLimitDesc != undefined){ advLimitDesc.setValue(self, !advLimitDesc.getValue(self));};"
-                            }
-                        }
+                        "type": "Text",
+                        "content": "<span>Options</span>",
+                        "cssClass": "pmg-properties-title"
                     },
                     {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "28px",
-                                "left": "83px"
-                            }
-                        }
-                    },
-                    {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {}
-                        }
-                    },
-                    {
-                        "fn": "ConditionalDisable",
-                        "cfg": {
-                            "condition": {
-                                "@class": "Script",
-                                "content": "var  advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){} return (advLimitDesc === undefined || advLimitDesc.getValue(self));",
-                                "language": "JavaScript"
+                        "label": "<span class='checkbox'>Autoreservation</span>",
+                        "type": "Button",
+                        "cssClass": "pmg-properties-button",
+                        "plugins": [
+                            {
+                                "fn": "ExecuteScriptAction",
+                                "cfg": {
+                                    "targetEvent": "click",
+                                    "onClick": {
+                                        "@class": "Script",
+                                        "content": "var blnDesc = Variable.find(gameModel, \"autoReservation\"); blnDesc.setValue(self, ! blnDesc.getValue(self));"
+                                    }
+                                }
                             },
-                            "attribute": "cssClass",
-                            "value": "selected"
-                        }
+                            {
+                                "fn": "ConditionalDisable",
+                                "cfg": {
+                                    "condition": {
+                                        "@class": "Script",
+                                        "content": "Variable.find(gameModel, \"autoReservation\").getValue(self);\n"
+                                    },
+                                    "attribute": "cssClass",
+                                    "value": "selected"
+                                }
+                            }
+                        ],
+                        "data": {}
                     },
                     {
-                        "fn": "ConditionalDisable2",
-                        "cfg": {
-                            "condition": {
-                                "@class": "Script",
-                                "content": "var  advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){} return (advLimitDesc === undefined);",
-                                "language": "JavaScript"
+                        "label": "<span class='checkbox'>Force question replies</span>",
+                        "type": "Button",
+                        "cssClass": "pmg-properties-button",
+                        "plugins": [
+                            {
+                                "fn": "ExecuteScriptAction",
+                                "cfg": {
+                                    "targetEvent": "click",
+                                    "onClick": {
+                                        "@class": "Script",
+                                        "content": "var blnDesc = Variable.find(gameModel, \"forceQuestionReplies\"); blnDesc.setValue(self, ! blnDesc.getValue(self));"
+                                    }
+                                }
                             },
-                            "attribute": "cssClass",
-                            "value": "hidden"
-                        }
+                            {
+                                "fn": "ConditionalDisable",
+                                "cfg": {
+                                    "condition": {
+                                        "@class": "Script",
+                                        "content": "Variable.find(gameModel, \"forceQuestionReplies\").getValue(self);\n"
+                                    },
+                                    "attribute": "cssClass",
+                                    "value": "selected"
+                                }
+                            }
+                        ],
+                        "data": {}
+                    },
+                    {
+                        "label": "<span class='checkbox'>EVM</span>",
+                        "type": "Button",
+                        "cssClass": "pmg-properties-button",
+                        "plugins": [
+                            {
+                                "fn": "ExecuteScriptAction",
+                                "cfg": {
+                                    "targetEvent": "click",
+                                    "onClick": {
+                                        "@class": "Script",
+                                        "content": "var blnDesc = Variable.find(gameModel, \"evm\"); blnDesc.setValue(self, ! blnDesc.getValue(self));"
+                                    }
+                                }
+                            },
+                            {
+                                "fn": "ConditionalDisable",
+                                "cfg": {
+                                    "condition": {
+                                        "@class": "Script",
+                                        "content": "Variable.find(gameModel, \"evm\").getValue(self);\n"
+                                    },
+                                    "attribute": "cssClass",
+                                    "value": "selected"
+                                }
+                            }
+                        ],
+                        "data": {}
+                    }, {
+                        "label": "<span class='checkbox'>Burndowns (experimental)</span>",
+                        "type": "Button",
+                        "cssClass": "pmg-properties-button wegas-advanced-feature",
+                        "plugins": [
+                            {
+                                "fn": "ExecuteScriptAction",
+                                "cfg": {
+                                    "targetEvent": "click",
+                                    "onClick": {
+                                        "@class": "Script",
+                                        "content": "var blnDesc = Variable.find(gameModel, \"burndownEnabled\"); blnDesc.setValue(self, ! blnDesc.getValue(self));"
+                                    }
+                                }
+                            },
+                            {
+                                "fn": "ConditionalDisable",
+                                "cfg": {
+                                    "condition": {
+                                        "@class": "Script",
+                                        "content": "Variable.find(gameModel, \"burndownEnabled\").getValue(self);\n"
+                                    },
+                                    "attribute": "cssClass",
+                                    "value": "selected"
+                                }
+                            }
+                        ],
+                        "data": {}
                     }
                 ]
-            },
-            {
-                "type": "AdvancementLimit",
-                "plugins": [
-                    {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "zIndex": "",
-                                "top": "60px",
-                                "left": "89px",
-                                "bottom": "",
-                                "right": ""
-                            }
-                        }
-                    },
-                    {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "width": "",
-                                "height": ""
-                            }
-                        }
-                    }
-                ]
-            },
-            {
-                "type": "Text",
-                "plugins": [
-                    {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "zIndex": "",
-                                "top": "185px",
-                                "left": "83px",
-                                "bottom": "",
-                                "right": ""
-                            }
-                        }
-                    },
-                    {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "width": "",
-                                "height": ""
-                            }
-                        }
-                    }
-                ],
-                "content": "<p><strong>Options</strong></p>"
-            },
-            {
-                "label": "<span class='checkbox'>Autoreservation</span>",
-                "type": "Button",
-                "cssClass": "pmg-properties-button",
-                "plugins": [
-                    {
-                        "fn": "ExecuteScriptAction",
-                        "cfg": {
-                            "targetEvent": "click",
-                            "onClick": {
-                                "@class": "Script",
-                                "content": "if (Variable.find(gameModel, \"autoReservation\").getValue(self)){\n    Variable.find(gameModel, \"autoReservation\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"autoReservation\").setValue(self, true);\n}\n"
-                            }
-                        }
-                    },
-                    {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "zIndex": "",
-                                "top": "210px",
-                                "left": "83px",
-                                "bottom": "",
-                                "right": ""
-                            }
-                        }
-                    },
-                    {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "width": "",
-                                "height": ""
-                            }
-                        }
-                    },
-                    {
-                        "fn": "ConditionalDisable",
-                        "cfg": {
-                            "condition": {
-                                "@class": "Script",
-                                "content": "Variable.find(gameModel, \"autoReservation\").getValue(self);\n"
-                            },
-                            "attribute": "cssClass",
-                            "value": "selected"
-                        }
-                    }
-                ],
-                "data": {}
-            },
-            {
-                "label": "<span class='checkbox'>Force question replies</span>",
-                "type": "Button",
-                "cssClass": "pmg-properties-button",
-                "plugins": [
-                    {
-                        "fn": "ExecuteScriptAction",
-                        "cfg": {
-                            "targetEvent": "click",
-                            "onClick": {
-                                "@class": "Script",
-                                "content": "if (Variable.find(gameModel, \"forceQuestionReplies\").getValue(self)){\n    Variable.find(gameModel, \"forceQuestionReplies\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"forceQuestionReplies\").setValue(self, true);\n}\n"
-                            }
-                        }
-                    },
-                    {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "zIndex": "",
-                                "top": "235px",
-                                "left": "83px",
-                                "bottom": "",
-                                "right": ""
-                            }
-                        }
-                    },
-                    {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "width": "",
-                                "height": ""
-                            }
-                        }
-                    },
-                    {
-                        "fn": "ConditionalDisable",
-                        "cfg": {
-                            "condition": {
-                                "@class": "Script",
-                                "content": "Variable.find(gameModel, \"forceQuestionReplies\").getValue(self);\n"
-                            },
-                            "attribute": "cssClass",
-                            "value": "selected"
-                        }
-                    }
-                ],
-                "data": {}
-            },
-            {
-                "label": "<span class='checkbox'>EVM</span>",
-                "type": "Button",
-                "cssClass": "pmg-properties-button",
-                "plugins": [
-                    {
-                        "fn": "ExecuteScriptAction",
-                        "cfg": {
-                            "targetEvent": "click",
-                            "onClick": {
-                                "@class": "Script",
-                                "content": "if (Variable.find(gameModel, \"evm\").getValue(self)){\n    Variable.find(gameModel, \"evm\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"evm\").setValue(self, true);\n}\n"
-                            }
-                        }
-                    },
-                    {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "zIndex": "",
-                                "top": "260px",
-                                "left": "83px",
-                                "bottom": "",
-                                "right": ""
-                            }
-                        }
-                    },
-                    {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "width": "",
-                                "height": ""
-                            }
-                        }
-                    },
-                    {
-                        "fn": "ConditionalDisable",
-                        "cfg": {
-                            "condition": {
-                                "@class": "Script",
-                                "content": "Variable.find(gameModel, \"evm\").getValue(self);\n"
-                            },
-                            "attribute": "cssClass",
-                            "value": "selected"
-                        }
-                    }
-                ],
-                "data": {}
             }
         ],
         "@name": "Properties"
     },
-    "17": {
-        "type": "AbsoluteLayout",
+    "18": {
+        "@name": "Statistics",
+        "type": "List",
         "children": [
             {
-                "type": "Dashboard",
-                "tableCfg": {
-                    "columns": [
-                        {
-                            "key": "name",
-                            "label": " "
+                "type": "Statistics"
+            }
+        ]
+    },
+    "19": {
+        "@class": "Q1 Analysis",
+        "cssClass": "evm-page",
+        "direction": "vertical",
+        "type": "List",
+        "children": [
+            {
+                "type": "PmgSlidePanel",
+                "title": "Questions Analysis",
+                "cssClass": "evm",
+                "animation": false,
+                "children": [
+                    {
+                        "height": "200px",
+                        "chartType": "combo",
+                        "width": "90%",
+                        "horizontalGridlines": true,
+                        "legendPosition": "bottom",
+                        "type": "Chart",
+                        "verticalGridlines": true,
+                        "hMinEnd": {
+                            "name": "executionPeriods"
                         },
-                        {
-                            "label": "Phase",
-                            "script": "var names = ['Initiation', 'Planning', 'Executing', 'Closing'];return names[Variable.find(gameModel, 'currentPhase').getValue(self)-1]"
-                        },
-                        {
-                            "label": "Period",
-                            "script": "var currentPhase = Variable.find('currentPhase'); return Variable.find('currentPeriod').item(currentPhase.getValue(self)-1).getValue(self)"
-                        },
-                        {
-                            "label": "Questions",
-                            "script": "var currentPhase = Variable.find('currentPhase').getValue(self), currentPeriod = Variable.find('currentPeriod').item(currentPhase - 1).getValue(self), i, count = 0, total = 0, inst, q, items = [], item; q = Variable.find('questions').item(currentPhase - 1); if (q) { for (i in q.get('items')) { item = q.item(i); if (item.get('@class') === 'QuestionDescriptor') { items.push(item); } else if (+i === currentPeriod - 1 && item.get('@class') === 'ListDescriptor') { items = items.concat(item.flatten()); } } } for (i = 0; i < items.length; i = i + 1) { inst = items[i].getInstance(self); count += (inst.get('replies').length > 0 && inst.get('active')) ? 1 : 0; total += inst.get('active') ? 1 : 0; } return count + '/' + total;"
-                        },
-                        {
-                            "label": "Management",
-                            "script": "Variable.find(gameModel, 'managementApproval').getValue(self)",
-                            "formatter": "colored"
-                        },
-                        {
-                            "label": "User",
-                            "script": "Variable.find(gameModel, 'userApproval').getValue(self)",
-                            "formatter": "colored"
-                        },
-                        {
-                            "label": "Quality",
-                            "script": "Variable.find(gameModel, 'quality').getValue(self)",
-                            "formatter": "colored"
-                        },
-                        {
-                            "label": "Cost",
-                            "script": "Variable.find(gameModel, 'costs').getValue(self)",
-                            "formatter": "colored"
-                        },
-                        {
-                            "label": "Schedule",
-                            "script": "Variable.find(gameModel, 'delay').getValue(self)",
-                            "formatter": "colored"
-                        }
-                    ]
-                },
-                "remoteScript": "PMGDashboard.dashboard()"
+                        "minValue": 0,
+                        "maxValue": 200,
+                        "vStepValue": 25,
+                        "variables": [
+                            {
+                                "name": "managementApproval",
+                                "label": "Management"
+                            }, {
+                                "name": "userApproval",
+                                "label": "Users"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "20": {
+        "cssClass": "pmg-iterations-page slidepaneled-page",
+        "type": "List",
+        "direction": "vertical",
+        "children": [{
+                "type": "Text",
+                "content": "<div class=\"pmg-title\">Iterations</div>"
+            }, {
+                "type": "PmgIterationsPanels",
+                "cssClass": "pmg-iterations-panels",
+                "plugins": [
+                    {
+                        "fn": "Taskoniterationclickpopup"
+                    }
+                ]
             }
         ],
-        "@name": "Dashboard"
-    },
-    "18": {
-        "type": "AbsoluteLayout"
+        "@name": "Burndowns"
     },
     "Team": {
         "type": "EditTeam"

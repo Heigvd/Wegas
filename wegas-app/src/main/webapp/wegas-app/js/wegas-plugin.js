@@ -230,6 +230,7 @@ YUI.add("wegas-plugin", function(Y) {
     var PrintActionPlugin = Y.Base.create("PrintActionPlugin", Action, [], {
         execute: function() {
             var outputType = this.get("outputType"),
+                displayPath = this.get("displayPath"),
                 title = this.get("title.evaluated"),
                 playerId = Wegas.Facade.Game.get("currentPlayerId"),
                 roots = this.get("root.evaluated"),
@@ -248,6 +249,7 @@ YUI.add("wegas-plugin", function(Y) {
 
             printUrl = Wegas.app.get("base") + "print.html?id=" + playerId +
                 "&outputType=" + outputType +
+                "&displayPath=" + displayPath +
                 (title ? "&title=" + title : "") +
                 "&root=" + encodeURIComponent(root);
             window.open(printUrl);
@@ -283,7 +285,16 @@ YUI.add("wegas-plugin", function(Y) {
                 _inputex: {
                     label: "output type"
                 }
+            },
+            displayPath: {
+                type: "string",
+                value: "true",
+                choices: ["true", "false"],
+                _inputex: {
+                    label: "Display Path"
+                }
             }
+
         }
     });
     Plugin.PrintActionPlugin = PrintActionPlugin;

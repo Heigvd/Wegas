@@ -1,37 +1,34 @@
-<div class="card__illustration illustration illustration--big illustration--icon" illustration="{{session.properties.iconUri}}"></div>
+<div class="card__illustration illustration illustration--icon" illustration="{{session.properties.iconUri}}"></div>
 <div 
     class="card__description" 
     ng-class="{true:'card__description--two-lines', false:'card__description--three-lines'}[session.gameModel.comments == null || session.gameModel.comments == '']" >
-    <div class="line">{{session.createdTime | date:"dd.MM.yyyy"}}</div>
-    <div class="line line--primary">{{session.name | limitTo: MAX_DISPLAYED_CHARS}}<span ng-if="session.name.length > MAX_DISPLAYED_CHARS">...</span></div>
-    <div ng-if="!((session.gameModel.comments == null) || (session.gameModel.comments == ''))" class="line line--optionnal">{{session.gameModel.comments | limitTo: MAX_DISPLAYED_CHARS}}<span ng-if="session.gameModel.comments.length > MAX_DISPLAYED_CHARS">...</span></div>
+    <div class="line line--primary">{{session.name}}</div>
+    <div class="line">{{'COMMONS-DATE' | translate: {date: session.createdTime} }}</div>
+    <div ng-if="!((session.gameModel.comments == null) || (session.gameModel.comments == ''))" class="line line--optionnal">{{session.gameModel.comments}}</div>
 </div>
-<div class="card__access">
-</div>
-
 <div class="card__actions">
-    <div class="card__actions__access">
-      <div class="line">Access to new players</div>
-      <label 
-          class="choice choice--toogle">
-          <div class="choice__box">
-              <input ng-model="open" ng-change="editAccess(session)" type="checkbox" /> 
-              <div class="choice__box__display"></div>
-          </div>
-      </label>
-      <div ng-if="!open" class="key-label">No other player can join</div>
-      <div ng-if="open" class="key-label">Players can join with key:</div><div ng-if="open" class="key">{{session.token}}</div>
+    <div class="card__actions__access" ng-class="{true:'card__actions__access--open', false:'card__actions__access--close'}[open]">
+        <div class="line line--title-close">{{'TRAINER-CARD-ACCESS-CLOSE' | translate}}</div>
+        <div class="line line--title-open">{{'TRAINER-CARD-ACCESS-OPEN' | translate}}</div>      
+        <label 
+            class="choice choice--toogle">
+            <div class="choice__box">
+                <input ng-model="open" ng-change="editAccess(session)" type="checkbox" /> 
+                <div class="choice__box__display"></div>
+            </div>
+        </label>
+        <div class="key-label"><span class="key">{{session.token}}</span></div>
     </div>
-    <a class="button button--medium button--round button--default-reverse button--label-off button--settings" title="Settings" ui-sref=".settings({id: session.id})">
-      <span class="button__label">Settings</span>
+    <a class="button button--small button--round button--default-reverse button--label-off button--settings" title="{{'TRAINER-CARD-SETTINGS-BTN' | translate}}" ui-sref=".settings({id: session.id})">
+      <span class="button__label">{{'TRAINER-CARD-SETTINGS-BTN' | translate}}</span>
     </a>
-    <a class="button button--medium button--round button--default-reverse button--label-off button--user" title="Manage Users" ui-sref=".users({id: session.id})">
-      <span class="button__label">Manage Users</span>
+    <a class="button button--small button--round button--default-reverse button--label-off button--user" title="{{'TRAINER-CARD-USERS-BTN' | translate}}" ui-sref=".users({id: session.id})">
+      <span class="button__label">{{'TRAINER-CARD-USERS-BTN' | translate}}</span>
     </a>
-    <a class="button button--medium button--round button--default-reverse button--label-off button--archive" title="Move to archives" ng-click="archive(session)">
-      <span class="button__label">Move to archives</span>
+    <a class="button button--small button--round button--default-reverse button--label-off button--archive" title="{{'TRAINER-CARD-MOVE-ARCHIVE-BTN' | translate}}" ng-click="archive(session)">
+      <span class="button__label">{{'TRAINER-CARD-MOVE-ARCHIVE-BTN' | translate}}</span>
     </a>   
-    <a class="button button--medium button--round button--info button--label-off button--trainer" title="Monitoring session" href="{{ServiceURL}}host.html?gameId={{session.id}}" target="_blank">
-      <span class="button__label">Monitoring session</span>
+    <a class="button button--small button--round button--info button--label-off button--trainer" title="{{'TRAINER-CARD-MONITORING-BTN' | translate}}" href="{{ServiceURL}}host.html?gameId={{session.id}}" target="_blank">
+      <span class="button__label">{{'TRAINER-CARD-MONITORING-BTN' | translate}}</span>
     </a>
 </div>

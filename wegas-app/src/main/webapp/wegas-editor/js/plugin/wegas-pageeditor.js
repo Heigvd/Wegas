@@ -254,7 +254,6 @@ YUI.add('wegas-pageeditor', function(Y) {
             this.jsonView.hide();
             this.designButton.enable();
             this.saveButton.hide();
-            //host.get("widget").set("@pageId", host.get("widget")["@pageId"]);
             host.showOverlay();
             Wegas.Facade.Page.cache.patch(page, Y.bind(function() {
                 host.hideOverlay();
@@ -263,7 +262,7 @@ YUI.add('wegas-pageeditor', function(Y) {
         },
         saveCurrentPage: function() {
             var page = this.get("host").get("widget").toObject();
-            page["@pageId"] = this.get("host").get("pageId");
+            page["@pageId"] = this.get("host").get("widget")["@pageId"];
             Wegas.Facade.Page.cache.patch(page);
         },
         processSource: function() {

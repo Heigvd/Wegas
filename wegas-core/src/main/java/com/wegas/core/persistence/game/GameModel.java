@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -39,7 +40,7 @@ import org.apache.shiro.SecurityUtils;
 @NamedQueries({
     @NamedQuery(name = "GameModel.findByStatus", query = "SELECT a FROM GameModel a WHERE a.status = :status ORDER BY a.createdTime ASC"),
     @NamedQuery(name = "GameModel.findByName", query = "SELECT a FROM GameModel a WHERE a.name = :name")})
-public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor> {
+public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor> /*, Broadcastable */ {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -501,7 +502,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     public Map<String, JsonNode> getPages() {
         try (final Pages pagesDAO = new Pages(this.id.toString())) {
-            return pagesDAO.getPages();
+            return pagesDAO.getPagesContent();
         } catch (RepositoryException ex) {
             return new HashMap<>();
         }
@@ -631,6 +632,15 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     public void setTemplate(Boolean template) {
         this.template = template;
     }
+
+    /*@Override
+    public Map<String, List<AbstractEntity>> getEntities() {
+        Map<String, List<AbstractEntity>> map = new HashMap<>();
+        ArrayList<AbstractEntity> entities = new ArrayList<>();
+        entities.add(this);
+        map.put(Helper.getAudienceToken(this), entities);
+        return map;
+    }*/
 
     public enum Status {
         /**

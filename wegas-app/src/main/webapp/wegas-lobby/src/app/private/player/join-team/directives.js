@@ -7,7 +7,7 @@ angular.module('private.player.join.directives', [])
         },
         controller: 'PlayerSessionJoinController as playerSessionJoinCtrl'
     };
-}).controller('PlayerSessionJoinController', function PlayerSessionJoinController($rootScope, $scope, $stateParams, $interval, SessionsModel, TeamsModel, Flash){
+}).controller('PlayerSessionJoinController', function PlayerSessionJoinController($q, $rootScope, $scope, $stateParams, $translate, $interval, SessionsModel, TeamsModel, Flash){
     /* Assure access to ctrl. */
     var ctrl = this,
         refresher = null,
@@ -17,7 +17,7 @@ angular.module('private.player.join.directives', [])
                     $interval.cancel(refresher);
                     $scope.close();
                 }else{
-                    if(response.data.access != "CLOSE"){
+                    if(response.data.access !== "CLOSE"){
                         if(!response.data.properties.freeForAll){
                             ctrl.sessionToJoin = response.data;
                         }else{
@@ -25,13 +25,13 @@ angular.module('private.player.join.directives', [])
                             $scope.close();
                         }
                     }else{
-                        Flash.danger("Session closed");
+                        $translate('COMMONS-SESSIONS-CLOSE-FLASH-ERROR').then(function (message) {
+                            Flash.danger(message);
+                        });
                     }
                 }
             });
         };
-
-    ctrl.MAX_DISPLAYED_CHARS = MAX_DISPLAYED_CHARS;
     
     /* Container for datas */
     ctrl.sessionToJoin = null;
@@ -56,9 +56,10 @@ angular.module('private.player.join.directives', [])
 
     /* Method used to create new team and join this new team in the session. */
     ctrl.createTeam = function(){
+        var deferred = $q.defer();
         if(!ctrl.newTeam.alreadyUsed){
-            if(ctrl.newTeam.name != ""){
-                if(ctrl.sessionToJoin.access != "CLOSE"){
+            if(ctrl.newTeam.name !== ""){
+                if(ctrl.sessionToJoin.access !== "CLOSE"){
                     $interval.cancel(refresher);
                     TeamsModel.createTeam(ctrl.sessionToJoin, ctrl.newTeam.name).then(function(responseCreate){
                         if(!responseCreate.isErroneous()){
@@ -66,28 +67,42 @@ angular.module('private.player.join.directives', [])
                             refresher = $interval(function() {
                                 findSessionToJoin();
                             }, 1000);
+                            return deferred.resolve(true);
                         }else{
                             responseCreate.flash();
+                            return deferred.resolve(false);
                         }
                     });
                 }else{
-                    Flash.danger("Session closed");
+                    $translate('COMMONS-SESSIONS-CLOSE-FLASH-ERROR').then(function (message) {
+                        Flash.danger(message);
+                        return deferred.resolve(false);
+                    });
                 }
+            }else{
+                return deferred.resolve(false);
             }
+        }else{
+            return deferred.resolve(false);
         }
+        return deferred.promise;
     };
 
     /* Method used to join existing team in the session. */
     ctrl.joinTeam = function(teamId){
+        var deferred = $q.defer();
         TeamsModel.joinTeam(ctrl.sessionToJoin, teamId).then(function(response){
             if(!response.isErroneous()){
                 $interval.cancel(refresher);
                 $rootScope.$emit('newTeam', true);
                 $scope.close();
+                deferred.resolve(true);
             }else{
                 response.flash();
+                deferred.resolve(false);
             }
         });
+        return deferred.promise;
     };
 
     /* Initialize datas */
@@ -97,14 +112,14 @@ angular.module('private.player.join.directives', [])
     }, 1000);
 })
 .directive('playerSessionTeamsList', function() {
-  return {
-    templateUrl: 'app/private/player/join-team/directives.tmpl/teams-list.html',
-    scope: {
-        teams : "=",
-        joinTeam : "=",
-        newTeam : "="
-    }
-  };
+    return {
+        templateUrl: 'app/private/player/join-team/directives.tmpl/teams-list.html',
+        scope: {
+            teams : "=",
+            joinTeam : "=",
+            newTeam : "="
+        }
+    };
 })
 .directive('playerSessionAddTeam', function(){
     return {
@@ -118,10 +133,19 @@ angular.module('private.player.join.directives', [])
             scope.$watch(function(){return scope.newTeam.name;}, function(newVal){
                 scope.checkNameUsability();
             });
+            scope.create = function(){
+                var button = $(elem).find(".button--create-team");
+                if(!button.hasClass("button--disable")){
+                    button.addClass("button--disable button--spinner button--rotate");
+                    scope.createTeam().then(function(){
+                        button.removeClass("button--disable button--spinner button--rotate");
+                    });
+                }
+            };
         }
     };
 })
-.directive('playerSessionTeam', function(){
+.directive('playerSessionTeam', function(WegasTranslations, $translate){
     return {
         templateUrl: 'app/private/player/join-team/directives.tmpl/team-card.html',
         scope: {
@@ -129,18 +153,25 @@ angular.module('private.player.join.directives', [])
             joinTeam: "="
         },
         link: function(scope, elem, attrs){
-            scope.showPlayers = false;
-            scope.MAX_DISPLAYED_CHARS = MAX_DISPLAYED_CHARS;
-
-            scope.titleShowPlayers = "Show players";
+            scope.showPlayers = false;            
+            scope.hideToggle = {toggle: WegasTranslations.hideToggle['SHOW'][$translate.use()]};
             scope.tooglePlayersVisibility = function(){
                 scope.showPlayers = !scope.showPlayers;
                 if(scope.showPlayers){
-                    scope.titleShowPlayers = "Hide players";
+                    scope.hideToggle = {toggle: WegasTranslations.hideToggle['HIDE'][$translate.use()]};
                 }else{
-                    scope.titleShowPlayers = "Show players";
+                    scope.hideToggle = {toggle: WegasTranslations.hideToggle['SHOW'][$translate.use()]};
                 }
-            }
+            };
+            scope.join = function(teamId){
+                var button = $(elem).find(".button--join-team");
+                if(!button.hasClass("button--disable")){
+                    button.addClass("button--disable button--spinner button--rotate");
+                    scope.joinTeam(teamId).then(function(){
+                        button.removeClass("button--disable button--spinner button--rotate");
+                    });
+                }
+            };
         }
     };
 });

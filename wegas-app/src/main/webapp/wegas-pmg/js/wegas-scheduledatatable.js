@@ -36,7 +36,7 @@ YUI.add('wegas-scheduledatatable', function(Y) {
             Y.log("sync()", "log", "Wegas.ScheduleDT");
             this.__currentPhase = this._currentPhase();                       // Cache current phase value
             this.__currentPeriod = this._currentPeriod();                       // Cache current period value
-            this.setColumn(Math.max(this.currentPeriod(), this.initialMaximum()));
+            this.setColumn(this.getNumberOfColumn());
             this.setTime();
         },
         /**
@@ -44,6 +44,9 @@ YUI.add('wegas-scheduledatatable', function(Y) {
          * @private
          * @description setValue of column
          */
+        getNumberOfColumn: function() {
+            return Math.max(this.currentPeriod(), this.initialMaximum());
+        },
         setColumn: function(newval) {
             var diff = newval - (this.currentVal ? this.currentVal : 0),
                 table = this.get("host").datatable,
@@ -57,7 +60,8 @@ YUI.add('wegas-scheduledatatable', function(Y) {
                     table.addColumn({
                         key: (newval - diff + 1).toString(),
                         time: (newval - diff + 1),
-                        className: "schedulecolumn " + this.getClass(newval - diff + 1),
+                        className: "schedulecolumn ",
+                        //className: "schedulecolumn " + this.getClass(newval - diff + 1),
                         formatter: formatter
                     });
                     diff -= 1;

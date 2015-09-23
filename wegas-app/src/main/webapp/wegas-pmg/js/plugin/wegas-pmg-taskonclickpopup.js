@@ -13,10 +13,10 @@
 YUI.add('wegas-pmg-taskonclickpopup', function(Y) {
     "use strict";
 
-    var Wegas = Y.Wegas, Taskonclickpopup;
+    var Wegas = Y.Wegas, Taskonclickpopup, Taskontableclickpopup, Taskoniterationclickpopup;
     /**
-     *  @class add a popup on a table column
-     *  @name Y.Plugin.Taskonclickpopup
+     *  @class add a popup on a something
+     *  @name Y.Plugin.Taskontableclickpopup
      *  @extends Y.Plugin.Base
      *  @constructor
      */
@@ -40,16 +40,21 @@ YUI.add('wegas-pmg-taskonclickpopup', function(Y) {
         },
         bind: function() {
             Y.log("bind()", "log", "Wegas.Taskonclickpopup");
-            this.handlers.push(this.get("host").datatable.delegate("click", this.onClick, ".onclickpopup", this));
             this.handlers.push(Y.one("body").on("click", this.detailsOverlay.hide, this.detailsOverlay));
-            this.onceAfterHostEvent("render", this.sync);
-            this.afterHostMethod("syncUI", this.sync);
-            this.get("host").datatable.after("sort", this.sync, this);
+            this.onceAfterHostEvent("render", this._sync);
+            this.afterHostMethod("syncUI", this._sync);
+            this._customBind();
+        },
+        _customBind: function() {
+        },
+        _getTaskDescriptor: function(e) {
+        },
+        _sync: function() {
         },
         onClick: function(e) {
-            var key, requestedField = [], dt = this.get("host").datatable,
+            var key, requestedField = [],
                 fields = ["label", "description", 'requirements', 'duration'],
-                taskDescriptor = dt.getRecord(e.currentTarget).get("descriptor");
+                taskDescriptor = this._getTaskDescriptor(e);
 
             if (taskDescriptor !== this.currentTask) {
                 this.currentTask = taskDescriptor;
@@ -72,12 +77,6 @@ YUI.add('wegas-pmg-taskonclickpopup', function(Y) {
             }
 
             e.halt(true);
-        },
-        sync: function() {
-            var i, dt = this.get("host").datatable;
-            for (i = 0; i < dt.get("data").size(); i += 1) {
-                dt.getCell([i, this.get("column")]).addClass("onclickpopup");
-            }
         },
         request: function(taskDescriptor, requiredFields) {
             if (requiredFields.length > 0) {
@@ -142,7 +141,34 @@ YUI.add('wegas-pmg-taskonclickpopup', function(Y) {
             width: {
                 type: "string",
                 value: "250px"
-            },
+            }
+        },
+        NS: "taskonclickpopup"
+    });
+    Y.Plugin.Taskonclickpopup = Taskonclickpopup;
+
+    /**
+     *  @class add a popup on a table column
+     *  @name Y.Plugin.Taskontableclickpopup
+     *  @extends Y.Plugin.Base
+     *  @constructor
+     */
+    Taskontableclickpopup = Y.Base.create("wegas-pmg-taskontableclickpopup", Y.Plugin.Taskonclickpopup, [], {
+        _customBind: function() {
+            this.get("host").datatable.after("sort", this.sync, this);
+            this.handlers.push(this.get("host").datatable.delegate("click", this.onClick, ".onclickpopup", this));
+        },
+        _getTaskDescriptor: function(e) {
+            return this.get("host").datatable.getRecord(e.currentTarget).get("descriptor");
+        },
+        _sync: function() {
+            var i, dt = this.get("host").datatable;
+            for (i = 0; i < dt.get("data").size(); i += 1) {
+                dt.getCell([i, this.get("column")]).addClass("onclickpopup");
+            }
+        }
+    }, {
+        ATTRS: {
             column: {
                 value: 1,
                 _inputex: {
@@ -151,7 +177,37 @@ YUI.add('wegas-pmg-taskonclickpopup', function(Y) {
                 }
             }
         },
-        NS: "taskonclickpopup"
+        NS: "taskontableclickpopup"
     });
-    Y.Plugin.Taskonclickpopup = Taskonclickpopup;
+    Y.Plugin.Taskontableclickpopup = Taskontableclickpopup;
+
+
+    /**
+     *  @class add a popup on a table column
+     *  @name Y.Plugin.Taskontableclickpopup
+     *  @extends Y.Plugin.Base
+     *  @constructor
+     */
+    Taskoniterationclickpopup = Y.Base.create("wegas-pmg-taskontableclickpopup", Y.Plugin.Taskonclickpopup, [], {
+        _customBind: function() {
+            //this.get("host").datatable.after("sort", this.sync, this);
+            this.handlers.push(this.get("host").get("contentBox").delegate("click", this.onClick, "em.task", this));
+        },
+        _getTaskDescriptor: function(e) {
+            Y.log(e.target.getAttribute("taskId"));
+            return Y.Wegas.Facade.Variable.cache.findById(e.target.getAttribute("taskId"));
+            //return this.get("host").datatable.getRecord(e.currentTarget).get("descriptor");
+        },
+        _sync: function() {
+            //var i, dt = this.get("host").datatable;
+            //for (i = 0; i < dt.get("data").size(); i += 1) {
+            //    dt.getCell([i, this.get("column")]).addClass("onclickpopup");
+            //}
+        }
+    }, {
+        ATTRS: {
+        },
+        NS: "taskoniterationclickpopup"
+    });
+    Y.Plugin.Taskoniterationclickpopup = Taskoniterationclickpopup;
 });

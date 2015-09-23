@@ -653,6 +653,9 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
         },
         size: function() {
             return this.get("items").length;
+        },
+        getTreeEditorLabel: function(){
+            return "\u229e " + this.getEditorLabel();
         }
     }, {
         ATTRS: {
@@ -782,7 +785,18 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                                     label: "Task",
                                     targetClass: "TaskDescriptor",
                                     cssClass: "wegas-advanced-feature"
-                                }]
+                                }, {
+                                    type: "AddEntityChildButton",
+                                    label: "Peer Review",
+                                    targetClass: "PeerReviewDescriptor",
+                                    cssClass: "wegas-advanced-feature"
+                                 }, {
+                                    type: "AddEntityChildButton",
+                                    label: "Burndown",
+                                    targetClass: "BurndownDescriptor",
+                                    cssClass: "wegas-advanced-feature"
+                                }
+                            ]
                         }
                     }]
             }, {

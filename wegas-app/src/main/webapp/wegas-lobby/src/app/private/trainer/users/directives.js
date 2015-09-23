@@ -9,7 +9,7 @@ angular.module('private.trainer.users.directives', [
             templateUrl: 'app/private/trainer/users/directives.tmpl/index.html',
             controller: "TrainerUsersIndexCtrl as usersIndexCtrl"
         };
-    }).controller("TrainerUsersIndexCtrl", function TrainerUsersIndexCtrl($state, $stateParams, PermissionsModel, SessionsModel, Flash) {
+    }).controller("TrainerUsersIndexCtrl", function TrainerUsersIndexCtrl($state, $stateParams, $interval, PermissionsModel, SessionsModel, Flash) {
         var ctrl = this,
             formatPlayer = function(){
                 ctrl.session.players = [];
@@ -23,17 +23,8 @@ angular.module('private.trainer.users.directives', [
                 PermissionsModel.getSessionPermissions(ctrl.session).then(function(trainers){
                     ctrl.trainers = trainers;
                 });
-            };
-
-        ctrl.session = {};
-        ctrl.trainers = [];
-        ctrl.MAX_DISPLAYED_CHARS = MAX_DISPLAYED_CHARS;
-        ctrl.restrictRoles = ["Trainer", "Administrator", "Scenarist"];
-        ctrl.playersViewActived = true;
-        ctrl.kindsOfSession = ($state.$current.name == "wegas.private.trainer.users") ? "LIVE" : "BIN";
-
-        ctrl.refreshSession = function () {
-            SessionsModel.refreshSession(ctrl.kindsOfSession, ctrl.session).then(function(response) {
+            },
+            callbackSession = function(response){
                 if (!response.isErroneous()) {
                     ctrl.session = response.data;
                     if(ctrl.session.properties.freeForAll){
@@ -43,20 +34,33 @@ angular.module('private.trainer.users.directives', [
                 } else {
                     response.flash();
                 }
+            };
+
+        ctrl.session = {};
+        ctrl.trainers = [];
+        ctrl.restrictRoles = ["Trainer", "Administrator", "Scenarist"];
+        ctrl.playersViewActived = true;
+        ctrl.refreshing = -1;
+        ctrl.kindsOfSession = ($state.$current.name == "wegas.private.trainer.users") ? "LIVE" : "BIN";
+
+        ctrl.refreshSession = function () {
+            ctrl.refreshing = 1;
+            SessionsModel.refreshSession(ctrl.kindsOfSession, ctrl.session).then(function(response) {
+                callbackSession(response);
+                var refreshingTimer = $interval(function(){
+                    $interval.cancel(refreshingTimer);
+                    ctrl.refreshing = 0;  
+                    refreshingTimer = $interval(function(){
+                        $interval.cancel(refreshingTimer);
+                        ctrl.refreshing = -1;    
+                    }, 1200);
+                }, 500);
             });
         };
 
         ctrl.updateSession = function() {
             SessionsModel.getSession(ctrl.kindsOfSession, $stateParams.id).then(function(response) {
-                if (!response.isErroneous()) {
-                    ctrl.session = response.data || {};
-                    if(ctrl.session.properties.freeForAll){
-                        formatPlayer();
-                    }
-                    updatePermission();
-                }else{
-                    response.flash();
-                }
+                callbackSession(response);
             });
         };
 
@@ -97,6 +101,16 @@ angular.module('private.trainer.users.directives', [
                 }
             });
         };
+        
+        ctrl.removeTeam = function(teamId) {
+            SessionsModel.removeTeamToSession($stateParams.id, teamId).then(function(response) {
+                if (!response.isErroneous()) {
+                    ctrl.updateSession();
+                }else{
+                    response.flash();
+                }
+            });
+        };
 
         ctrl.updateSession();
     })
@@ -109,9 +123,9 @@ angular.module('private.trainer.users.directives', [
                 trainers: '='
             },
             link: function(scope, element, attrs, parentCtrl) {
-                scope.remove = function(trainerId) {
-                    parentCtrl.removeTrainer(trainerId);
-                }
+                scope.remove = function(trainer) {
+                    parentCtrl.removeTrainer(trainer);
+                };
             }
         }
     })
@@ -126,7 +140,7 @@ angular.module('private.trainer.users.directives', [
             link: function(scope, element, attrs, parentCtrl) {
                 scope.remove = function(playerId, teamId) {
                     parentCtrl.removePlayer(playerId, teamId);
-                }
+                };
             }
         }
     })
@@ -137,6 +151,11 @@ angular.module('private.trainer.users.directives', [
             require: "^trainerSessionsUsersIndex",
             scope: {
                 teams: '='
+            },
+            link: function(scope, element, attrs, parentCtrl) {
+                scope.remove = function(teamId) {
+                    parentCtrl.removeTeam(teamId);
+                };
             }
         }
     });

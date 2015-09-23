@@ -23,6 +23,8 @@ import org.apache.shiro.SecurityUtils;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -33,6 +35,7 @@ import java.util.Collection;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -114,7 +117,7 @@ public class GameController {
 
         gameFacade.publishAndCreate(gameModelId, entity);
         //gameFacade.create(gameModelId, entity);
-        return entity;
+        return getGameWithoutDebugTeam(entity);
     }
 
     /**
@@ -129,7 +132,7 @@ public class GameController {
         SecurityUtils.getSubject().checkPermission("GameModel:Instantiate:gm" + gameModelId);
 
         gameFacade.create(gameModelId, entity);
-        return entity;
+        return getGameWithoutDebugTeam(entity);
     }
 
     /**
@@ -186,15 +189,7 @@ public class GameController {
         final Collection<Game> games = gameFacade.findAll(status);
         for (Game g : games) {
             if (SecurityHelper.isPermitted(g, "Edit")) {
-                List<Team> withoutDebugTeam = new ArrayList<>();
-                for (Team teamToCheck : g.getTeams()) {
-                    if (!(teamToCheck instanceof DebugTeam)) {
-                        withoutDebugTeam.add(teamToCheck);
-                    }
-                }
-                em.detach(g);
-                g.setTeams(withoutDebugTeam);
-                retGames.add(g);
+                retGames.add(getGameWithoutDebugTeam(g));
             }
         }
         return retGames;
@@ -215,23 +210,17 @@ public class GameController {
 
     /**
      * @param entityId
-     * @return
      */
     @DELETE
     @Path("{entityId: [1-9][0-9]*}")
-    public Game delete(@PathParam("entityId") Long entityId) {
+    @RequiresRoles("Administrator")
+    public void forceDelete(@PathParam("entityId") Long entityId) {
         Game entity = gameFacade.find(entityId);
-        SecurityHelper.checkPermission(entity, "Edit");
         switch (entity.getStatus()) {
-            case LIVE:
-                gameFacade.bin(entity);
-                break;
-            case BIN:
-                gameFacade.delete(entity);
+            case DELETE:
+                gameFacade.remove(entity);
                 break;
         }
-//      gameFacade.remove(entity);
-        return entity;
     }
 
     @DELETE
@@ -271,7 +260,7 @@ public class GameController {
                     if (player == null) {
                         if (game.getGameModel().getProperties().getFreeForAll()) {
                             Team team = new Team("Individually-" + Helper.genToken(20));
-                            teamFacade.create(game.getId(), team);
+                            team = teamFacade.create(game.getId(), team); // return managed team
                             playerFacade.create(team, currentUser);
                             r = Response.status(Response.Status.CREATED).entity(team).build();
                         }
@@ -282,6 +271,20 @@ public class GameController {
         return r;
     }
 
+    private Game getGameWithoutDebugTeam(Game game) {
+        if (game != null) {
+            em.detach(game);
+            List<Team> withoutDebugTeam = new ArrayList<>();
+            for (Team teamToCheck : game.getTeams()) {
+                if (!(teamToCheck instanceof DebugTeam)) {
+                    withoutDebugTeam.add(teamToCheck);
+                }
+            }
+            game.setTeams(withoutDebugTeam);
+        }
+        return game;
+    }
+
     /**
      * @param token
      * @return
@@ -289,20 +292,8 @@ public class GameController {
     @GET
     @Path("/FindByToken/{token : .*}/")
     public Game findByToken(@PathParam("token") String token) {
-        Game gameToReturn = gameFacade.findByToken(token);
+        return getGameWithoutDebugTeam(gameFacade.findByToken(token));
 
-        if (gameToReturn != null) {
-            em.detach(gameToReturn);
-            List<Team> withoutDebugTeam = new ArrayList<>();
-            for (Team teamToCheck : gameToReturn.getTeams()) {
-                if (!(teamToCheck instanceof DebugTeam)) {
-                    withoutDebugTeam.add(teamToCheck);
-                }
-            }
-            gameToReturn.setTeams(withoutDebugTeam);
-            //r = Response.ok().entity(gameToReturn).build();
-        }
-        return gameToReturn;
     }
 
     /**

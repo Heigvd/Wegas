@@ -30,6 +30,152 @@ app.once("render",
         });
 
         Y.Wegas.PMGHelper = {
+            getTaskTable: function() {
+                var taskTable = {}, tasks,
+                    i, taskDesc, taskInst, properties;
+
+                tasks = Y.Wegas.Facade.Variable.cache.find("name", "tasks");
+
+                for (i = 0; i < tasks.size(); i += 1) {
+                    taskDesc = tasks.item(i);
+                    taskInst = taskDesc.getInstance();
+                    properties = taskInst.get("properties");
+                    if (parseInt(properties.completeness, 10) < 100) {
+                        taskDesc.timeSolde = taskInst.getRemainingTime();
+                        taskDesc.startPlannif = taskInst.getFirstPlannedPeriod();
+
+                        taskTable[taskDesc.get("id")] = taskDesc;
+                    }
+                }
+                return taskTable;
+            },
+            /**
+             * 
+             * fill each task table entry with:
+             *   - planned : periods numbers the task is planned on   (e.g. [3, 5, 6]
+             *   - beginAt : "real" time the work on task will start (e.g 3.25)
+             *   - endAt : "real" time the work on task will start (e.g 6.18)
+             *
+             * @param {type} taskTable
+             * @param {type} currentPeriod
+             * @returns {undefined}
+             */
+            computePert: function(taskTable, currentPeriod, currentStage) {
+                var taskId, taskDesc, initialPlanning,
+                    predecessors, i, minBeginAt, delta,
+                    allPredDefine, predecessorId, stillMissing,
+                    deltaMissing, queue = [],
+                    lastPlanned, max,
+                    taskInstance, stillPlanned;
+
+                taskTable = taskTable || Y.Wegas.PMGHelper.getTaskTable();
+                currentStage = currentStage || Y.Wegas.PMGHelper.getCurrentPhaseNumber();
+                currentPeriod = currentPeriod || Y.Wegas.PMGHelper.getCurrentPeriodNumber();
+
+                if (currentStage < 3) {
+                    // do not compute pert before stage3 but return the planning planned by players
+                    for (taskId in taskTable) {
+                        taskDesc = taskTable[taskId];
+                        initialPlanning = taskDesc.getInstance().getPlannedPeriods().sort(Y.Array.numericSort);
+                        taskDesc.planned = initialPlanning;
+                        taskDesc.beginAt = 0;
+                        taskDesc.endAt = 0;
+
+                        if (initialPlanning.length > 0) {
+                            taskDesc.beginAt = initialPlanning[0];
+                            taskDesc.endAt = initialPlanning[initialPlanning.length - 1];
+                        }
+                    }
+                } else {
+                    queue = [];
+
+                    for (taskId in taskTable) {
+                        queue.push(taskId);
+                    }
+                    while (taskId = queue.shift()) {
+                        taskDesc = taskTable[taskId];
+
+                        minBeginAt = currentPeriod;
+                        allPredDefine = true;
+                        predecessors = taskDesc.get("predecessors");
+
+                        // Check predecessors
+                        for (i = 0; i < predecessors.length; i += 1) {
+                            predecessorId = predecessors[i].get("id");
+                            if (taskTable[predecessorId]) {
+                                if (taskTable[predecessorId].endAt) {
+                                    if (minBeginAt < taskTable[predecessorId].endAt) {
+                                        minBeginAt = taskTable[predecessorId].endAt;
+                                    }
+                                } else {
+                                    // At least one precedecessor has not been processed
+                                    allPredDefine = false;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (allPredDefine) {
+                            // all require data are available, let's compute pert for the task
+                            taskInstance = taskDesc.getInstance();
+                            stillPlanned = taskInstance.getPlannedPeriods().filter(function(n) {
+                                return n >= minBeginAt;
+                            }, this).sort(Y.Array.numericSort);
+
+                            delta = minBeginAt - parseInt(minBeginAt, 10);
+                            stillMissing = taskInstance.getRemainingTime();
+
+
+                            // postpone task that could start in the second part of period
+                            if (minBeginAt - parseInt(minBeginAt, 10) > 0.50) {
+                                minBeginAt = parseInt(minBeginAt, 10) + 1;
+                            } else {
+                                minBeginAt = parseInt(minBeginAt, 10);
+                                stillMissing += delta;
+                            }
+                            if (stillPlanned.length > 0 && stillPlanned[0] > minBeginAt) {
+                                minBeginAt = stillPlanned[0];
+                                stillMissing -= delta;
+                            }
+                            taskDesc.beginAt = minBeginAt;
+
+                            if (stillMissing === 0) {
+                                taskDesc.endAt = minBeginAt;
+                                taskDesc.planned = [];
+                            } else if (stillPlanned.length >= stillMissing) {
+                                // enough or too many planned period
+                                deltaMissing = stillMissing - parseInt(stillMissing, 10);
+                                if (deltaMissing === 0) {
+                                    taskDesc.planned = stillPlanned.slice(0, parseInt(stillMissing, 10));
+                                    taskDesc.endAt = taskDesc.planned[taskDesc.planned.length - 1] + 1;
+                                } else {
+                                    taskDesc.planned = stillPlanned.slice(0, Math.ceil(stillMissing));
+                                    taskDesc.endAt = taskDesc.planned[taskDesc.planned.length - 1] || taskDesc.beginAt;
+                                    taskDesc.endAt += deltaMissing;
+                                }
+                            } else {
+                                // not enough planned period
+                                taskDesc.planned = stillPlanned.slice();
+                                if (stillPlanned.length === 0) {
+                                    lastPlanned = minBeginAt - 1;
+                                    // nothing planned -> stack
+                                    taskDesc.endAt = minBeginAt + stillMissing;
+                                } else {
+                                    lastPlanned = stillPlanned[stillPlanned.length - 1];
+                                    taskDesc.endAt = lastPlanned + stillMissing - stillPlanned.length + 1;
+                                }
+                                max = Math.ceil(stillMissing) - stillPlanned.length;
+                                for (i = 0; i < max; i += 1) {
+                                    taskDesc.planned.push(lastPlanned + i + 1);
+                                }
+                            }
+                        } else {
+                            queue.push(taskId);
+                        }
+                    }
+                }
+                return taskTable;
+            },
             defaultPhaseNames: ["Initiation", "Planning", "Execution", "Closing"],
             getPhaseName: function(phaseNumber) {
                 var names = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "phaseNames");
@@ -40,7 +186,14 @@ app.once("render",
                 }
             },
             getCurrentPhaseName: function() {
-                return Y.Wegas.PMGHelper.getPhaseName(Y.Wegas.Facade.VariableDescriptor.cache.find("name", "currentPhase").get("value"));
+                return Y.Wegas.PMGHelper.getPhaseName(Y.Wegas.PMGHelper.getCurrentPhaseNumber());
+            },
+            getCurrentPeriodNumber: function() {
+                return Y.Wegas.Facade.VariableDescriptor.cache.find("name", "currentPeriod").item(
+                    Y.Wegas.PMGHelper.getCurrentPhaseNumber() - 1).get("value");
+            },
+            getCurrentPhaseNumber: function(){
+                return Y.Wegas.Facade.VariableDescriptor.cache.find("name", "currentPhase").get("value");
             },
             getBACTotal: function() {
                 var i, bacs = 0, tasks = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "tasks"), task;
@@ -391,6 +544,10 @@ app.once("render",
                         value: 1000,
                         description: "[$]",
                         className: "short-input"
+                    }, {
+                        name: "automaticMode",
+                        type: "hidden",
+                        value: "Gantt"
                     }]
             };
 
@@ -488,6 +645,25 @@ app.once("render",
             }, true);
 
             Y.mix(persistence.TaskInstance.prototype, {
+                getPlannedPeriods: function() {
+                    return Y.Array.unique(this.get("plannification"));
+                },
+                getFirstPlannedPeriod: function() {
+                    return Math.max(0, Math.min.apply(Math, this.getPlannedPeriods()));
+                },
+                getRemainingTime: function() {
+                    var properties = this.get("properties"), timeSolde,
+                        //plannedPeriods = this._plannedPeriods(taskInst);
+                        plannedPeriods = this.getPlannedPeriods();
+
+                    if (plannedPeriods.length > 0) {
+                        timeSolde = (1 - parseInt(properties.completeness, 10) / 100) * plannedPeriods.length;
+                    } else {
+                        timeSolde = (1 - parseInt(properties.completeness, 10) / 100) * properties.duration;
+                    }
+                    return timeSolde;
+
+                },
                 isRequirementCompleted: function(req) {
 
                 },
@@ -508,21 +684,40 @@ app.once("render",
                     return assignments.length > 0 &&
                         assignments[0].get('taskDescriptorId') === taskDescriptor.get("id");
                 },
-                isReservedToWork: function() {
+                isReservedToWork: function(gantt) {
                     var autoReserve = Y.Wegas.Facade.Variable.cache.find("name", "autoReservation").get("value"),
+                        instance = this.getInstance(),
                         currentPeriod = Y.Wegas.Facade.Variable.cache.find("name",
                             "periodPhase3").getInstance().get("value"),
-                        occupations = this.getInstance().get("occupations"),
+                        occupations = instance.get("occupations"),
+                        assignment, assignments, i,
                         oi;
 
                     if (autoReserve) {
-                        // Auto Reservation : resource is always reserved unless
-                        // an uneditable occupation exist
+                        // Auto Reservation : resource is always reserved unless:
+                        // 1) an uneditable occupation exists
                         for (oi = 0; oi < occupations.length; oi++) {
                             if (occupations[oi].get("time") === currentPeriod && !occupations[oi].get("editable")) {
                                 return false;
                             }
                         }
+
+                        // 2) it have to work according to Gantt projection
+                        if (instance.get("properties.automaticMode") === "Gantt") {
+                            // FOLLOW Gantt
+                            gantt = gantt || Y.Wegas.PMGHelper.computePert();
+                            assignments = instance.get("assignments");
+                            for (i = 0; i < assignments.length; i += 1) {
+                                assignment = assignments[i];
+                                if (Y.Array.find(gantt[assignment.get("taskDescriptorId")].planned, function(periodNumber) {
+                                    return currentPeriod === periodNumber;
+                                })) {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        }
+
                         return true;
                     } else {
                         // Manual Reservation: never reserved unless
@@ -535,8 +730,11 @@ app.once("render",
                         return false;
                     }
                 },
-                isPlannedForCurrentPeriod: function(taskDescriptor) {
-                    return this.isFirstPriority(taskDescriptor) && this.isReservedToWork();
+                isPlannedForCurrentPeriod: function(taskDescriptor, gantt) {
+                    return this.isFirstPriority(taskDescriptor) && this.isReservedToWork(gantt);
+                },
+                getAutomaticBehaviour: function() {
+                    this.get("instance.properties.automaticBehaviour");
                 }
             });
 
@@ -751,33 +949,8 @@ app.once("render",
     var varLabel = function(name) {
         return Y.Wegas.Facade.Variable.cache.find("name", name).get("label");
     };
-    Y.namespace("Wegas.Config").Dashboard = function() {
-
-        return {
-            columns: [{
-                    "label": "Phase"
-                }, {
-                    "label": "Period"
-                }, {
-                    "label": "Questions"
-                }, {
-                    "label": varLabel("managementApproval"),
-                    "formatter": "colored"
-                }, {
-                    "label": varLabel("userApproval"),
-                    "formatter": "colored"
-                }, {
-                    "label": "Quality",
-                    "formatter": "colored"
-                }, {
-                    "label": "Costs",
-                    "formatter": "colored"
-                }, {
-                    "label": "Schedule",
-                    "formatter": "colored"
-                }],
-            remoteScript: "PMGDashboard.dashboard()"
-        };
+    Y.namespace("Wegas.Config").Dashboards = {
+        overview: "PMGDashboards.overview()"
     };
 
     Y.namespace("Wegas.Config").CustomImpacts = function() {
@@ -787,8 +960,7 @@ app.once("render",
             ["Add to project variables",
                 'Variable.find(gameModel, "managementApproval").add(self, ${"type":"number", "label":"' +
                     varLabel("managementApproval") + '"});'],
-            'Variable.find(gameModel, "userApproval").add(self, ${"type":"number", "label": "' +
-                varLabel("userApproval") + '"});',
+            'Variable.find(gameModel, "userApproval").add(self, ${"type":"number", "label": "' + varLabel("userApproval") + '"});',
             'Variable.find(gameModel, "qualityImpacts").add(self, ${"type":"number", "label": "Quality"});',
             'Variable.find(gameModel, "timeCards").add(self, ${"type":"number", "label": "Time cards"});',
             'Variable.find(gameModel, "projectFixedCosts").add(self, ${"type":"number", "label": "Fixed costs"});',
@@ -801,6 +973,13 @@ app.once("render",
                     type: "PageLoader",
                     pageLoaderId: "properties",
                     defaultPageId: 16
+                }]
+        }, {
+            label: "Statistics",
+            children: [{
+                    type: "PageLoader",
+                    pageLoaderId: "properties",
+                    defaultPageId: 18
                 }]
         }];
 })();

@@ -9,6 +9,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
+/*global tinyMCE*/
 YUI.add("wegas-inputex-rte", function(Y) {
     "use strict";
 
@@ -23,6 +24,7 @@ YUI.add("wegas-inputex-rte", function(Y) {
      */
     RTEField = function(options) {
         RTEField.superclass.constructor.call(this, options);
+        
     };
 
     Y.extend(RTEField, inputEx.Textarea, {
@@ -37,25 +39,12 @@ YUI.add("wegas-inputex-rte", function(Y) {
             this.options.typeInvite = null;
         },
         /**
-         * 
+         *
          * @returns {undefined}
          */
         destroy: function() {
-            if (this.editor) {
-                try {
-                    this.editor.destroy();
-                } catch (e) {
-                    // GOTCHA Editor may be out of dom and generate an exception
-                }
-            } else {
-                Y.once("domready", function() {
-                    try {
-                        this.editor.destroy();
-                    } catch (e) {
-                        // GOTCHA Editor may be out of dom and generate an exception
-                    }
-                }, this);
-            }
+            tinyMCE.remove(this.el.id);
+            this.editor = null;
             RTEField.superclass.destroy.call(this);
         },
         /**
@@ -64,19 +53,22 @@ YUI.add("wegas-inputex-rte", function(Y) {
         renderComponent: function() {
             RTEField.superclass.renderComponent.call(this);
             Y.once("domready", function() {
-                this.editor = new tinymce.Editor(this.el.id, {
+                this.editor = new tinyMCE.Editor(this.el.id, {
                     plugins: [
                         "autolink autoresize link image lists code media table contextmenu paste advlist textcolor"
-                            //textcolor wordcount autosave advlist charmap print preview hr anchor pagebreak spellchecker directionality
+                        //textcolor wordcount autosave advlist charmap print preview hr anchor pagebreak spellchecker
+                        // directionality
                     ],
                     external_plugins: {
-                        "dynamic_toolbar": Wegas.app.get("base") + "wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar.js"
+                        "dynamic_toolbar": Wegas.app.get("base") +
+                                           "wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar.js"
                     },
                     toolbar1: "bold italic bullist | link image media code addToolbarButton",
                     toolbar2: "forecolor backcolor underline alignleft aligncenter alignright alignjustify table",
                     toolbar3: "fontselect fontsizeselect styleselect",
-                    // formatselect removeformat underline unlink forecolor backcolor anchor previewfontselect fontsizeselect styleselect spellchecker template
-                    // contextmenu: "link image inserttable | cell row column deletetable | formatselect forecolor",
+                    // formatselect removeformat underline unlink forecolor backcolor anchor previewfontselect
+                    // fontsizeselect styleselect spellchecker template contextmenu: "link image inserttable | cell row
+                    // column deletetable | formatselect forecolor",
                     menubar: false,
                     statusbar: false,
                     relative_urls: false,
@@ -93,15 +85,16 @@ YUI.add("wegas-inputex-rte", function(Y) {
                     content_css: [
                         Wegas.app.get("base") + "wegas-editor/css/wegas-inputex-rte.css"
                     ],
-                    style_formats: [{// Style formats
+                    style_formats: [
+                        {// Style formats
                             title: 'Title 1',
                             block: 'h1'
                         }, {
                             title: 'Title 2',
                             block: 'h2'
-                                // styles : {
-                                //    color : '#ff0000'
-                                // }
+                            // styles : {
+                            //    color : '#ff0000'
+                            // }
                         }, {
                             title: 'Title 3',
                             block: 'h3'
@@ -112,10 +105,15 @@ YUI.add("wegas-inputex-rte", function(Y) {
                             title: "Code",
                             //icon: "code",
                             block: "code"
-                        }]}, tinymce.EditorManager);
+                        }]
+                }, tinyMCE.EditorManager);
 
                 //this.editor.on('change', Y.bind(this.sendUpdatedEvt, this));    // Update on editor update
                 this.editor.render();
+                
+                Y.one(this.wrapEl).delegate("click", function(e){
+                    Y.one(this.wrapEl).one(".mce-tinymce").toggleClass("mce--more");
+                },".mce-btn[aria-label='More options']", this);
 
                 //tinymce.createEditor(this.el.id, {});
                 //tinymce.execCommand('mceAddEditor', false, this.el.id);
@@ -154,21 +152,22 @@ YUI.add("wegas-inputex-rte", function(Y) {
         /**
          * Set the html content
          * @param {String} value The html string
-         * @param {boolean} sendUpdatedEvt (optional) Wether this setValue should fire the 'updated' event or not (default is true, pass false to NOT send the event)
+         * @param {boolean} sendUpdatedEvt (optional) Wether this setValue should fire the 'updated' event or not
+         *     (default is true, pass false to NOT send the event)
          */
         setValue: function(value, sendUpdatedEvent) {
-            var tmceI = tinyMCE.get(this.el.id);
-
             if (value && Wegas.Facade.File) {
                 value = value.replace(
                     new RegExp("data-file=\"([^\"]*)\"", "gi"),
-                    "src=\"" + Wegas.Facade.File.getPath() + "$1\""
-                    + " href=\"" + Wegas.Facade.File.getPath() + "$1\"");       // @hack Place both href and src so it will work for both <a> and <img> elements
+                    "src=\"" + Wegas.Facade.File.getPath() + "$1\"" +
+                    " href=\"" + Wegas.Facade.File.getPath() + "$1\"");       // @hack Place both href and src so it
+                                                                              // will work for both <a> and <img>
+                                                                              // elements
             }
             RTEField.superclass.setValue.call(this, value, sendUpdatedEvent);
 
-            if (tmceI) {
-                tmceI.setContent(value);
+            if (this.editor) {
+                this.editor.setContent(value);
             }
         },
         /**
@@ -176,11 +175,16 @@ YUI.add("wegas-inputex-rte", function(Y) {
          * @return {String} the html string
          */
         getValue: function() {
-            tinyMCE.triggerSave();
+            if (this.editor) {
+                this.editor.save();
+            }
             //return RTEField.superclass.getValue.call(this).replace(reg, "data-file=\"$3\" $1");
             return RTEField.superclass.getValue.call(this)
-                .replace(new RegExp("((src|href)=\".*/rest/File/GameModelId/.*/read([^\"]*)\")", "gi"), "data-file=\"$3\"")// Replace absolute path with injector style path
-                .replace(new RegExp("((src|href)=\".*/rest/GameModel/.*/File/read([^\"]*)\")", "gi"), "data-file=\"$3\"");// Replace absolute path with injector style path
+                .replace(new RegExp("((src|href)=\".*/rest/File/GameModelId/.*/read([^\"]*)\")", "gi"),
+                "data-file=\"$3\"")// Replace absolute path with injector style path
+                .replace(new RegExp("((src|href)=\".*/rest/GameModel/.*/File/read([^\"]*)\")", "gi"),
+                "data-file=\"$3\"");// Replace absolute path with injector style path
+
         }
     });
     inputEx.registerType("html", RTEField, []);                                 // Register this class as "html" type

@@ -27,7 +27,9 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import javax.persistence.*;
+import javax.persistence.NoResultException;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -109,6 +111,7 @@ public class GameFacade extends BaseFacade<Game> {
     public void publishAndCreate(final Long gameModelId, final Game game) throws IOException {
         GameModel gm = gameModelFacade.duplicate(gameModelId);
         gm.setName(gameModelFacade.find(gameModelId).getName());// @HACK Set name back to the original
+        gm.setComments(""); // Clear comments
         gm.setTemplate(false);
         this.create(gm, game);
     }
@@ -144,9 +147,9 @@ public class GameFacade extends BaseFacade<Game> {
         gameModelFacade.reset(gameModel);                                       // Reset the game so the default player will have instances
 
         userFacade.addAccountPermission(currentUser.getMainAccount(),
-                "Game:View,Edit:g" + game.getId());                             // Grant permission to creator
+            "Game:View,Edit:g" + game.getId());                             // Grant permission to creator
         userFacade.addAccountPermission(currentUser.getMainAccount(),
-                "Game:View:g" + game.getId());                                  // Grant play to creator
+            "Game:View:g" + game.getId());                                  // Grant play to creator
 
         try {                                                                   // By default games can be join w/ token
             roleFacade.findByName("Public").addPermission("Game:Token:g" + game.getId());
@@ -216,16 +219,18 @@ public class GameFacade extends BaseFacade<Game> {
     @Override
     public void remove(final Game entity) {
         gameRemovedEvent.fire(new PreEntityRemoved(entity));
+
+        // This is for retrocompatibility w/ game models that do not habe DebugGame
         if (entity.getGameModel().getGames().size() <= 1
-                && !(entity.getGameModel().getGames().get(0) instanceof DebugGame)) {// This is for retrocompatibility w/ game models that do not habe DebugGame
+            && !(entity.getGameModel().getGames().get(0) instanceof DebugGame)) {// This is for retrocompatibility w/ game models that do not habe DebugGame
             gameModelFacade.remove(entity.getGameModel());
-        }
-        for (Team t : entity.getTeams()) {
-            teamFacade.remove(t);
+        } else {
+            super.remove(entity);
         }
 
-        super.remove(entity);
-
+        //for (Team t : entity.getTeams()) {
+        //    teamFacade.remove(t);
+        //}
         userFacade.deleteAccountPermissionByInstance("g" + entity.getId());
         userFacade.deleteRolePermissionsByInstance("g" + entity.getId());
     }
@@ -265,9 +270,9 @@ public class GameFacade extends BaseFacade<Game> {
      */
     public List<Game> findByGameModelId(final Long gameModelId, final String orderBy) {
         return getEntityManager().createQuery("SELECT game FROM Game game "
-                + "WHERE TYPE(game) != DebugGame AND game.gameModel.id = :gameModelId ORDER BY game.createdTime DESC", Game.class)
-                .setParameter("gameModelId", gameModelId)
-                .getResultList();
+            + "WHERE TYPE(game) != DebugGame AND game.gameModel.id = :gameModelId ORDER BY game.createdTime DESC", Game.class)
+            .setParameter("gameModelId", gameModelId)
+            .getResultList();
     }
 
     /**
@@ -284,12 +289,12 @@ public class GameFacade extends BaseFacade<Game> {
      */
     public List<Game> findRegisteredGames(final Long userId) {
         final Query getByGameId = getEntityManager().createQuery("SELECT game, p FROM Game game "
-                + "LEFT JOIN game.teams t LEFT JOIN  t.players p "
-                + "WHERE t.gameId = game.id AND p.teamId = t.id "
-                + "AND p.user.id = :userId AND "
-                + "(game.status = com.wegas.core.persistence.game.Game.Status.LIVE OR game.status = com.wegas.core.persistence.game.Game.Status.BIN) "
-                + "ORDER BY p.joinTime ASC", Game.class)
-                .setParameter("userId", userId);
+            + "LEFT JOIN game.teams t LEFT JOIN  t.players p "
+            + "WHERE t.gameId = game.id AND p.teamId = t.id "
+            + "AND p.user.id = :userId AND "
+            + "(game.status = com.wegas.core.persistence.game.Game.Status.LIVE OR game.status = com.wegas.core.persistence.game.Game.Status.BIN) "
+            + "ORDER BY p.joinTime ASC", Game.class)
+            .setParameter("userId", userId);
 
         return this.findRegisterdGames(getByGameId);
     }
@@ -301,12 +306,12 @@ public class GameFacade extends BaseFacade<Game> {
      */
     public List<Game> findRegisteredGames(final Long userId, final Long gameModelId) {
         final Query getByGameId = getEntityManager().createQuery("SELECT game, p FROM Game game "
-                + "LEFT JOIN game.teams t LEFT JOIN  t.players p "
-                + "WHERE t.gameId = game.id AND p.teamId = t.id AND p.user.id = :userId AND game.gameModel.id = :gameModelId "
-                + "AND game.status = com.wegas.core.persistence.game.Game.Status.LIVE "
-                + "ORDER BY p.joinTime ASC", Game.class)
-                .setParameter("userId", userId)
-                .setParameter("gameModelId", gameModelId);
+            + "LEFT JOIN game.teams t LEFT JOIN  t.players p "
+            + "WHERE t.gameId = game.id AND p.teamId = t.id AND p.user.id = :userId AND game.gameModel.id = :gameModelId "
+            + "AND game.status = com.wegas.core.persistence.game.Game.Status.LIVE "
+            + "ORDER BY p.joinTime ASC", Game.class)
+            .setParameter("userId", userId)
+            .setParameter("gameModelId", gameModelId);
 
         return this.findRegisterdGames(getByGameId);
     }
@@ -402,8 +407,8 @@ public class GameFacade extends BaseFacade<Game> {
      */
     public void addRights(User user, Game game) {
         user.getMainAccount().addPermission(
-                "Game:View:g" + game.getId(), // Add "View" right on game,
-                "GameModel:View:gm" + game.getGameModel().getId());             // and also "View" right on its associated game model
+            "Game:View:g" + game.getId(), // Add "View" right on game,
+            "GameModel:View:gm" + game.getGameModel().getId());             // and also "View" right on its associated game model
     }
 
     /**

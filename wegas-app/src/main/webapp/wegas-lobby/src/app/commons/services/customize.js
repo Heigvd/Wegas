@@ -13,7 +13,6 @@ angular.module('wegas.service.customize', [])
 		'white-brown', 'light-brown', 'brown', 'dark-brown', 'black-brown',
 		'white-orangine', 'light-orangine', 'orangine', 'dark-orangine', 'black-orangine',
 		'white-pink', 'light-pink', 'pink', 'dark-pink', 'black-pink',
-
 		'white-ocean', 'light-ocean', 'ocean', 'dark-ocean', 'black-ocean',
 		'white-green', 'light-green', 'green', 'dark-green', 'black-green',
 		'white-wine', 'light-wine', 'wine', 'dark-wine', 'black-wine',
@@ -385,7 +384,9 @@ angular.module('wegas.service.customize', [])
 			{name: "glasses", key:"glasses", library: "icon"},
 			{name: "chart", key:"chart", library: "icon"},
 			{name: "address-book", key:"address-book", library: "icon"},
-			{name: "key-1", key:"key-1", library: "icon"}
+			{name: "key-1", key:"key-1", library: "icon"},
+                        {name: "user", key:"user", library: "wif"},
+			{name: "team", key:"team", library: "wif"}
 		];
 	return {
 		colorsPalette: function(){

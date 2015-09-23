@@ -1,10 +1,12 @@
 <div 
 	class="view view--join-session view--bottom" 
 	check-token="playerCtrl.checkToken"
-	player-join-form >
+	player-join-form 
+        expandable>
 </div>
 <div 
-	class="view view--sessions-list view--middle"
+	class="view view--played-sessions-list view--middle"
+        loading="playerCtrl.loading"
 	teams="playerCtrl.teams"
 	leave="playerCtrl.leaveTeam"
 	player-teams-list >

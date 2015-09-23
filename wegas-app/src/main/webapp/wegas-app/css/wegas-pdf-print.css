@@ -9,9 +9,23 @@
  * Created on : Jul 3, 2014, 6:56:19 PM
     Author     : maxence
 */
-@page {
+@page{
     size: a4;
     margin: 10mm;
+}
+
+@media print {
+    body {
+        font-size: 10pt;
+        font-family: "DejaVu Sans" ;
+    }
+}
+
+@media screen {
+    body {   
+        font-size: 10pt;
+        font-family: "DejaVu Sans" ;
+    }
 }
 
 @page {
@@ -90,11 +104,6 @@
 
 }
 
-.wegas-pdf-variable-container.wegas-pdf-QuestionDescriptor {
-    font-family: "DejaVu Sans" ;
-    font-size: 8pt;
-}
-
 div.wegas-pdf-text-container span.wegas-pdf-code{
     font-family: "DejaVu Sans Mono";
 }
@@ -161,8 +170,9 @@ div.wegas-pdf-picture img{
     max-height: 200px;
 }
 
-div.wegas-pdf-content div{
+span.wegas-pdf-message-from{
     float: inherit;
+    clear: both;
 }
 
 span.wegas-pdf-title-image {
@@ -218,7 +228,7 @@ div.wegas-pdf-text-container div{
 }
 
 span.wegas-pdf-variable-title {
-    font-size: 1.5em;
+    font-size: 1.2em;
     display : block;
     padding-bottom: 0px;
     font-weight: bolder;
@@ -256,7 +266,7 @@ div.wegas-pdf-property {
 }
 
 
-.mode_player Â .wegas-pdf-QuestionDescriptor span.wegas-pdf-property-key {
+.mode_player .wegas-pdf-QuestionDescriptor span.wegas-pdf-property-key {
     display : none;
 }
 
@@ -289,7 +299,7 @@ span.wegas-pdf-property-value-na {
     padding: 2px;
 }
 
-span.wegas-pdf-property-value {
+.wegas-pdf-property-value {
     font-style : italic;
 }
 
@@ -312,9 +322,48 @@ div.wegas-pdf-variable-container, div.wegas-pdf-message-container {
     margin: 0px 5px 0px 5px;
 }
 
+.wegas-pdf-message-container .wegas-pdf-message-from{
+    clear:both;
+    float:left;
+} 
+
+.wegas-pdf-message-container .wegas-pdf-message-header > div {
+    clear: both;
+}
+
+span.wegas-pdf-property-value {
+    font-size: 1.1em;
+    font-style: normal;
+}
+
+.wegas-variable-history .wegas-pdf-message-container .wegas-pdf-message-header .wegas-pdf-message-firstline .wegas-pdf-message-date {
+    float:left !important;
+    font-size: 1.1em;
+    font-weight: 700;
+}
+
+
+.wegas-variable-history .wegas-pdf-variable-title.wegas-pdf-inboxdescriptor,
+.wegas-variable-history .wegas-pdf-message-subject,
+.wegas-variable-history .wegas-pdf-message-from {
+    display: none;
+}
+
+.wegas-pdf-message-container .wegas-pdf-message-header .wegas-pdf-message-subject {
+    font-weight: bold;
+}
+
+.wegas-pdf-message-container .wegas-pdf-message-header  .wegas-pdf-message-firstline span {
+    float: left;
+}
+
+div.wegas-pdf-message-container .wegas-pdf-message-date {
+    float: right !important;
+}
 
 div.wegas-pdf-message-container div {
-    display: block;
+    display: block;;
+    clear: both;
 }
 
 div.wegas-pdf-variable-container {

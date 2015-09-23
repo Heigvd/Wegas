@@ -1,23 +1,19 @@
-<div class="card__illustration illustration illustration--medium illustration--icon" illustration="ICON_grey_users"></div>
-<div class="card__description card__description--one-line">
-    <div class="line line--primary">
-    	<span>{{team.name | limitTo : MAX_DISPLAYED_CHARS}}</span>
-  		<span ng-if="team.name.length > MAX_DISPLAYED_CHARS">...</span>
-    	<span> - </span>
-    	<span>({{team.players.length}} players)</span>
-    </div>
+<div class="card__illustration illustration illustration--icon" illustration="ICON_grey_group_wif"></div>
+<div class="card__description card__description--two-lines">
+    <div class="line line--primary">{{team.name}}</div>
+    <div class="line">{{team.players.length}} {{'PLAYER-MODALE-JOIN-TEAM-NUMBER-PLAYER' | translate}}<span ng-if="team.players.length > 1">s</span></div>
 </div>
 <div class="card__actions">
     <a ng-if="team.players.length > 0" class="button button--small button--default-reverse button--eye" ng-class="{true: 'button--eye-slash', false:'button--eye'}[showPlayers]" ng-click="tooglePlayersVisibility()">
-      <span class="button__label">{{titleShowPlayers}}</span>
+      <span class="button__label">{{'PLAYER-MODALE-JOIN-TEAM-HIDE-TOGGLE' | translate: hideToggle}}</span>
     </a> 
-    <a  class="button button--small button--info button--user-plus" 
-        confirmed-click="joinTeam(team.id)" 
-        ng-confirm-click="Join team {{team.name}} ?">
-      <span class="button__label">Join Team</span>
+    <a  class="button button--small button--join-team button--info" 
+        confirmed-click="join(team.id)" 
+        ng-confirm-click="{{'PLAYER-MODALE-JOIN-TEAM-JOIN-BTN' | translate}} {{team.name}} ?">
+      <span class="button__label">{{'PLAYER-MODALE-JOIN-TEAM-JOIN-BTN' | translate}}</span>
     </a>   
 </div>
 <div ng-if="showPlayers" class="card__list">
-	<h4>Players from session "{{team.name | limitTo : MAX_DISPLAYED_CHARS}}<span ng-if="team.name.length > MAX_DISPLAYED_CHARS">...</span>" : </h4>
+	<h4>{{'PLAYER-MODALE-JOIN-TEAM-PLAYERS-LIST' | translate}} : </h4>
 	<p><span class="card__list__player" ng-repeat="player in team.players">{{player.name}}</span></p>
 </div>

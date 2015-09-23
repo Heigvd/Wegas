@@ -91,7 +91,19 @@ public class UIResult extends UIComponentBase {
         }
         // For editors and players who selected this
         if (editorMode || hasBeenSelected) {
-            UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_IMPACT_TEXT, result.getAnswer(), false, editorMode);
+            String title;
+            if (result.getChoiceDescriptor().getTitle() != null && !result.getChoiceDescriptor().getTitle().trim().isEmpty()){
+                title = result.getChoiceDescriptor().getTitle();
+            } else {
+                title = UIHelper.TEXT_IMPACT_TEXT;
+            }
+            
+            UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
+            UIHelper.printText(context, writer, title, UIHelper.CSS_CLASS_VARIABLE_TITLE);
+
+            UIHelper.printTextArea(context, writer, result.getAnswer(), UIHelper.CSS_CLASS_PROPERTY_VALUE_TEXTAREA, false);
+            UIHelper.endDiv(writer);
+            //UIHelper.printPropertyTextArea(context, writer, title, result.getAnswer(), false, editorMode);
         }
 
         if (editorMode) {

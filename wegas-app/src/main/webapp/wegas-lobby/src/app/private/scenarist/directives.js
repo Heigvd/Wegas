@@ -1,7 +1,7 @@
 angular.module('private.scenarist.directives', [
     'wegas.behaviours.repeat.autoload'
 ])
-    .controller('ScenaristIndexController', function ScenaristIndexController($scope, $rootScope, ScenariosModel) {
+    .controller('ScenaristIndexController', function ScenaristIndexController($q, $scope, $rootScope, ScenariosModel) {
         var ctrl = this,
             initMaxScenariosDisplayed = function() {
                 if (ctrl.scenarios.length > 12) {
@@ -9,40 +9,41 @@ angular.module('private.scenarist.directives', [
                 } else {
                     ctrl.maxScenariosDisplayed = ctrl.scenarios.length;
                 }
+            },
+            updateDisplayScenarios = function() {
+                if (ctrl.maxScenariosDisplayed === null) {
+                    initMaxScenariosDisplayed();
+                } else {
+                    if (ctrl.maxScenariosDisplayed >= ctrl.scenarios.length) {
+                        ctrl.maxScenariosDisplayed = ctrl.scenarios.length;
+                    } else {
+                        ctrl.maxScenariosDisplayed = ctrl.maxScenariosDisplayed + 5;
+                    }
+                }
             };
+
+        ctrl.loading = true;
         ctrl.scenarios = [];
         ctrl.nbArchives = [];
         ctrl.search = '';
-
         ctrl.maxScenariosDisplayed = null;
-        var updateDisplayScenarios = function() {
-            if (ctrl.maxScenariosDisplayed === null) {
-                initMaxScenariosDisplayed();
-            } else {
-                if (ctrl.maxScenariosDisplayed >= ctrl.scenarios.length) {
-                    ctrl.maxScenariosDisplayed = ctrl.scenarios.length;
-                } else {
-                    ctrl.maxScenariosDisplayed = ctrl.maxScenariosDisplayed + 5;
-                }
-            }
-        };
+
         ctrl.updateScenarios = function(updateDisplay) {
+            ctrl.loading = true;
             if(!updateDisplay){
                 ScenariosModel.countArchivedScenarios().then(function(response) {
                     ctrl.nbArchives = response.data;
                 });
             }
             ScenariosModel.getScenarios('LIVE').then(function(response) {
-                if (response.isErroneous()) {
-                    response.flash();
-                } else {
-                    ctrl.scenarios = response.data || [];
-                    if (updateDisplay) {
-                        updateDisplayScenarios();
-                    }
+                ctrl.loading = false;
+                ctrl.scenarios = response.data || [];
+                if (updateDisplay) {
+                    updateDisplayScenarios();
                 }
             });
         };
+
         ctrl.archiveScenario = function(scenario) {
             ScenariosModel.archiveScenario(scenario).then(function(response) {
                 if (response.isErroneous()) {
@@ -52,14 +53,20 @@ angular.module('private.scenarist.directives', [
                 }
             });
         };
-        ctrl.createScenario = function(name, templateId) {
+
+        ctrl.createScenario = function(name, templateId) { 
+            var deferred = $q.defer();
             ScenariosModel.createScenario(name, templateId).then(function(response) {
                 if (!response.isErroneous()) {
+                    $scope.$emit('collapse');
                     ctrl.updateScenarios(true);
+                    deferred.resolve(true);
                 } else {
                     response.flash();
+                    deferred.resolve(true);
                 }
             });
+            return deferred.promise;
         };
         $rootScope.$on('changeLimit', function(e, hasNewData) {
             if (hasNewData) {
@@ -73,7 +80,9 @@ angular.module('private.scenarist.directives', [
                 ctrl.updateScenarios();
             }
         });
+
         ctrl.updateScenarios(true);
+        
         ScenariosModel.countArchivedScenarios().then(function(response) {
             ctrl.nbArchives = response.data;
         });
@@ -84,14 +93,14 @@ angular.module('private.scenarist.directives', [
             controller: 'ScenaristIndexController as scenaristIndexCtrl'
         };
     })
-    .directive('scenaristScenarioCreate', function(Flash) {
+    .directive('scenaristScenarioCreate', function(Flash, $translate) {
         return {
             templateUrl: 'app/private/scenarist/directives.tmpl/create.html',
             scope: {
                 scenarios: '=',
                 create: '='
             },
-            link: function(scope) {
+            link: function(scope, element, attrs) {
                 var resetNewScenario = function() {
                     scope.newScenario = {
                         name: '',
@@ -99,15 +108,26 @@ angular.module('private.scenarist.directives', [
                     };
                 };
                 scope.createScenario = function() {
+                    var button = $(element).find(".form__submit");
+
                     if (scope.newScenario.name !== '') {
                         if (scope.newScenario.templateId !== 0) {
-                            scope.create(scope.newScenario.name, scope.newScenario.templateId);
-                            resetNewScenario();
+                            if(!button.hasClass("button--disable")){
+                                button.addClass("button--disable button--spinner button--rotate");
+                                scope.create(scope.newScenario.name, scope.newScenario.templateId).then(function(){
+                                    button.removeClass("button--disable button--spinner button--rotate");
+                                    resetNewScenario();
+                                });
+                            }
                         } else {
-                            Flash.danger('You need to choose a template scenario');
+                            $translate('COMMONS-SCENARIOS-NO-TEMPLATE-FLASH-ERROR').then(function (message) {
+                                Flash.danger(message);
+                            });
                         }
                     } else {
-                        Flash.danger('Name field can not be empty');
+                        $translate('COMMONS-SCENARIOS-EMPTY-NAME-FLASH-ERROR').then(function (message) {
+                            Flash.danger(message);
+                        });
                     }
                 };
                 resetNewScenario();
@@ -134,7 +154,6 @@ angular.module('private.scenarist.directives', [
             },
             link: function(scope) {
                 scope.ServiceURL = ServiceURL;
-                scope.MAX_DISPLAYED_CHARS = MAX_DISPLAYED_CHARS;
             }
         };
     });

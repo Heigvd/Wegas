@@ -1,11 +1,16 @@
-<h3>My sessions</h3>
-<div class="view__list" ng-if="teams.length > 0">
+<h3><i class="fa fa-gamepad"></i><span>{{'PLAYER-INDEX-LIST-TITLE' | translate}}</span></h3>
+<a title="{{'PLAYER-INDEX-ADD-TITLE' | translate}}" class="view__button-expand button button--small button--info-reverse" expander>
+    <span class="button__label">{{'PLAYER-INDEX-ADD-TITLE' | translate}}</span>
+</a>
+<div class="view__list view__list--loading" ng-if="loading" 
+     content-loading="{{'COMMONS-SESSIONS-LOADING' | translate}}"></div>
+<div class="view__list" ng-if="!loading && teams.length > 0">
   <div 
-    class="card card--big card--player-session" 
+    class="card card--player-session" 
     ng-repeat="team in teams | orderBy: 'createdTime':true" 
     team="team" 
     leave="leave" 
     player-team-card >
   </div>
 </div>
-<p class="view__list view__list--no-content" ng-if="teams.length < 1">No sessions</p>
+<p class="view__list view__list--no-content" ng-if="!loading && teams.length < 1">{{'PLAYER-INDEX-NO-SESSION' | translate}}</p>

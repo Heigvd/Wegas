@@ -1,7 +1,5 @@
 @import url(http://fonts.googleapis.com/css?family=Lato:100,300,400,700,900);
 
-
-
 // Fonts 
 $font-family: "Lato", "Helvetica", "Arial", sans-serif;
 $font-weight-default: 300;
@@ -56,9 +54,9 @@ $buttons-types : (
 	(danger, $danger-color)
 );
 $sizes : (
-	(small, 48px, 0px), 
-	(medium, 64px, 8px), 
-	(big, 96px, 16px)
+	(small, 48px, 0px, 21px), 
+	(medium, 64px, 8px, 26px), 
+	(big, 96px, 16px, 32px)
 );
 $backgrounds-levels : (
 	(bottom, $background-default, lighten($primary-color-light, 10%)), 
@@ -155,8 +153,20 @@ $illustration-colors : (
 	('grey', #AEAAB2),
 	('dark-grey', darken(#AEAAB2, 10%)), 
 	('black-grey', darken(#AEAAB2, 20%))
+);
 
+$player-color:#fb8160;
+$trainer-color:#b4d66b;
+$scenarist-color:#68caf6;
+$admin-color:#B39DDB;
 
-); 
+// Card settings
+$card-size: 80px;
+$card-text-size : 13px;
+$card-base-padding: 4px;
 
-
+$card-description : (
+    ('one-line', 33px, 34px), 
+    ('two-lines', 25px, 25px), 
+    ('three-lines', 16px, 17px)
+);

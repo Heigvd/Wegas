@@ -14,6 +14,8 @@
 
     <ui:define name="pageUri">wegas-app/db/wegas-host-layout.json</ui:define>
 
+    <ui:define name="pusherMode">GAME</ui:define>
+
     <script>//<ui:define name="editorFooter"><![CDATA[
     Y.namespace("Wegas.Config").Dashboard = {
         remoteScript: "",
@@ -26,12 +28,19 @@
         // Handle switch from host to edit mode
         Y.use("wegas-button", function() {
             var editButton = new Y.Wegas.Button({
-                label: "Edit game",
-                cssClass: "host-switchmode"
+                label: "Edit scenario",
+                cssClass: "host-switchmode",
+                "plugins": [{
+                    "fn": "Tooltip",
+                    "cfg": {
+                        "content": "<p>Edit scenario for this session</p>"
+                    }
+                }]
+
             }).render(".wegas-layout-hd");
 
             editButton.on("click", function() {
-                window.location.replace(window.location.toString().replace("host.", "edit."));
+                window.open(window.location.toString().replace("host.", "edit."),'_blank');
             }, this);
         });
 

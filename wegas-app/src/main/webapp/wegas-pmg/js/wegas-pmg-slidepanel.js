@@ -8,7 +8,7 @@
 /**
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
-/*global YUI*/
+/*global YUI */
 YUI.add("wegas-pmg-slidepanel", function(Y) {
     "use strict";
 
@@ -24,10 +24,20 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
         {
             BOUNDING_TEMPLATE: "<div><div class='slidepanel-title' style='position:relative;'><h2></h2></div></div>",
             renderUI: function() {
+                var title = this.get("title"), pattern = /%([a-zA-Z0-9_]*)%/g,
+                    args = title.match(pattern), i, str;
+
+
+                if (args) {
+                    for (i = 0; i < args.length; i += 1) {
+                        str = Y.Wegas.Facade.Variable.cache.find("name", args[i].replace(/%/g, "")).get("label");
+                        title = title.replace(args[i], str);
+                    }
+                }
                 this.handlers = {};
-                this.get("boundingBox").one(".slidepanel-title h2").setContent(this.get("title"));
-                if(this.get("openByDefault")){
-                    this.get("boundingBox").addClass("wegas-slidepanel-toggled");
+                this.get("boundingBox").one(".slidepanel-title h2").setContent(title);
+                if (!this.get("openByDefault")) {
+                    this.get("boundingBox").addClass("wegas-slidepanel-closed");
                 }
             },
             bindUI: function() {
@@ -35,7 +45,7 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                 if (this.get("animation")) {
                     this.get("boundingBox").one(".slidepanel-title").on('click', function(e) {
                         e.preventDefault();
-                        this.get("boundingBox").toggleClass("wegas-slidepanel-toggled");
+                        this.get("boundingBox").toggleClass("wegas-slidepanel-closed");
                     }, this);
                 }
             },
@@ -45,35 +55,43 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                     this.handlers[k].detach();
                 }
             }
-        },
-        {
-            ATTRS: {
-                title: {
-                    type: "string",
-                    validator: function(s) {
-                        return s === null || Y.Lang.isString(s);
-                    },
-                    _inputex: {
-                        label: "Title"
-                    }
+        }, {
+        ATTRS: {
+            title: {
+                type: "string",
+                validator: function(s) {
+                    return s === null || Y.Lang.isString(s);
                 },
-                animation: {
-                    type: "boolean",
-                    value: true,
-                    _inputex: {
-                        label: "Animation"
-                    }
-                },
-                openByDefault: {
-                    type: "boolean",
-                    value: true,
-                    _inputex: {
-                        label: "Open by default"
-                    }
+                _inputex: {
+                    label: "Title"
+                }
+            },
+            animation: {
+                type: "boolean",
+                value: true,
+                _inputex: {
+                    label: "Animation"
+                }
+            },
+            openByDefault: {
+                type: "boolean",
+                value: false,
+                _inputex: {
+                    label: "Open by default"
                 }
             }
-        });
+        }
+    });
     Wegas.PmgSlidePanel = SlidePanel;
+
+
+    function autoModeFormatter(o) {
+        return "<label class=\"choice choice--toogle " + o.value + "\">" + 
+            "<div class=\"choice__box\">" +
+                "<div class=\"choice__box__display\"></div> " +
+            "</div>" +
+        "</label><p>" + o.value + "</p>";
+    }
 
     /**
      * Shortcut to create a slidepanel for each resource folders available.
@@ -86,80 +104,92 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
             Wegas.Parent],
         {
             renderUI: function() {
-                var resourceFolder = Wegas.Facade.Variable.cache.find("name", "employees"),
+                var columns, dt, resourceFolder = Wegas.Facade.Variable.cache.find("name", "employees"),
                     autoDesc = Wegas.Facade.Variable.cache.find("name", "autoReservation"),
                     autoReserve = autoDesc && autoDesc.getInstance().get("value"); // Ensure variable exists
                 //currentPhase = Wegas.Facade.Variable.cache.find("name", "currentPhase").getValue();
+
+                columns = [{
+                        key: "label",
+                        label: "Name",
+                        sortable: false
+                    }, {
+                        label: "Grade",
+                        formatter: "skillLevel",
+                        key: "instance.properties.level",
+                        sortable: false,
+                        allowHTML: true
+                    }, {
+                        label: "Monthly wages",
+                        key: "instance.properties.wage",
+                        sortable: false
+                    }, {
+                        label: "Rate",
+                        key: "instance.properties.activityRate",
+                        sortable: false
+                    }, {
+                        label: "Motiv.",
+                        key: "instance.properties.motivation",
+                        sortable: false
+                    }];
+
+                if (autoReserve) {
+                    columns.push({
+                        label: "Will work",
+                        key: "instance.properties.automaticMode",
+                        sortable: false,
+                        formatter: autoModeFormatter
+                    });
+                }
 
                 this.panels = Y.Array.map(resourceFolder.get("items"), function(vd) {
                     var panel = new Wegas.PmgSlidePanel({
                         title: vd.get("label"),
                         children: [{
-                            type: "PmgDatatable",
-                            plugins: [{
-                                fn: "ScheduleDT",
-                                cfg: {
-                                    variable: {
-                                        name: "periodPhase3"
+                                type: "PmgDatatable",
+                                plugins: [{
+                                        fn: "ScheduleDT",
+                                        cfg: {
+                                            variable: {
+                                                name: "periodPhase3"
+                                            }
+                                        }
+                                    }, {
+                                        fn: "Assignment",
+                                        cfg: {
+                                            taskList: {
+                                                name: "tasks"
+                                            },
+                                            columnPosition: (autoReserve ? 6 : 5)
+                                        }
+                                    }, {
+                                        fn: "OccupationColor",
+                                        cfg: {
+                                            autoReservation: autoReserve
+                                        }
+                                    }, {
+                                        fn: "ActivityColor"
                                     }
-                                }
+                                ],
+                                variable: {
+                                    name: vd.get("name")
+                                },
+                                columnsCfg: columns,
+                                defaultSort: null
                             }, {
-                                fn: "Assignment",
-                                cfg: {
-                                    taskList: {
-                                        name: "tasks"
-                                    },
-                                    columnPosition: 5
-                                }
-                            }, {
-                                fn: "OccupationColor",
-                                cfg: {
-                                    autoReservation: autoReserve
-                                }
-                            }, {
-                                fn: "ActivityColor"
-                            }
-                            ],
-                            variable: {
-                                name: vd.get("name")
-                            },
-                            columnsCfg: [{
-                                key: "label",
-                                label: "Name",
-                                sortable: false
-                            }, {
-                                label: "Grade",
-                                formatter: "skillLevel",
-                                key: "instance.properties.level",
-                                sortable: false,
-                                allowHTML: true
-                            }, {
-                                label: "Monthly wages",
-                                key: "instance.properties.wage",
-                                sortable: false
-                            }, {
-                                label: "Rate",
-                                key: "instance.properties.activityRate",
-                                sortable: false
-                            }, {
-                                label: "Motiv.",
-                                key: "instance.properties.motivation",
-                                sortable: false
-                            }],
-                            defaultSort: null
-                        }, {
-                            type: "Text",
-                            content: "<div class=\"pmg-legend\">\n<div><div class=\"worked\">&nbsp;</div>\nWorked</div>\n<div><div class=\"booked\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"unavailable\">&nbsp;</div>\nNot Available</div>\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nDelay to assign/unassign</div>\n</div>"
-                        }]
+                                type: "Text",
+                                content: "<div class=\"pmg-legend\">\n<div><div class=\"worked\">&nbsp;</div>\nWorked</div>\n<div><div class=\"booked\">&nbsp;</div>\nWill work</div>\n" + (autoReserve ? "<div><div class=\"maybe\">&nbsp;</div>\nMay work</div>\n" : "") + "<div>\n<div class=\"unavailable\">&nbsp;</div>\nNot Available</div>\n" + (!autoReserve ? "<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nToo late to change</div>\n</div>" : "")
+                            }]
                     }).render(this.get(CONTENTBOX));
-                    if (!autoReserve) {
-                        var dt = panel.item(0);
-                        //panel.item(0).plug(Y.Plugin.AutoReservationColor, {
-                        //    taskList: {
-                        //        name: "tasks"
-                        //    }
-                        //});
-                        //} else {
+                    if (autoReserve) {
+                        dt = panel.item(0);
+                        panel.item(0).plug(Y.Plugin.AutoReservationColor, {
+                            taskList: {
+                                name: "tasks"
+                            }
+                        });
+                    } else {
+                        dt = panel.item(0);
                         dt.plug(Y.Plugin.Reservation); // Player can click cell to reserve
                         dt.plug(Y.Plugin.EngagmentDelay);
                         dt.after("filtered", function() {
@@ -171,23 +201,28 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                         });
                         dt.plug(Y.Plugin.PMGLineFilter, {
                             filterFn: function(data, node) {
-                                var instance = data.get("instance"),
-                                    assignments = instance.assignments && instance.assignments.length > 0,
-                                    currentPeriod = Y.Wegas.Facade.Variable.cache.find("name",
-                                        "periodPhase3").getValue(),
-                                    occupations = Y.Array.some(instance.occupations, function(i) {
-                                        return i.get("editable") && currentPeriod < i.get("time") + 1;
-                                    });
+                                var instance, assignments, currentPeriod, occupations;
+                                instance = data.get("instance");
+                                instance = Y.Wegas.Facade.Variable.cache.findById(instance.descriptorId).getInstance().getAttrs();
+                                assignments = instance.assignments && instance.assignments.length > 0;
+                                currentPeriod = Y.Wegas.Facade.Variable.cache.find("name",
+                                    "periodPhase3").getValue();
+                                occupations = Y.Array.some(instance.occupations, function(i) {
+                                    return i.get("editable") && currentPeriod < i.get("time") + 1;
+                                });
                                 node.toggleClass("resourcepanel-warn", occupations !== assignments);
                             }
                         });
 
-                    }  
+                    }
                     panel.on(["*:message", "*:showOverlay", "*:hideOverlay"], this.fire, this);
                     return panel;
                 }, this);
             },
             destructor: function() {
+                Y.Array.each(this.handlers, function(h) {
+                    h.detach();
+                });
                 Y.Array.each(this.panels, function(p) {
                     p.destroy();
                 });

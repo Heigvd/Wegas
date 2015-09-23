@@ -1,5 +1,13 @@
-var ServiceURL = "",
-    MAX_DISPLAYED_CHARS = 32;
+var ServiceURL = "";
+    
+Storage.prototype.setObject = function(key, value) {
+    this.setItem(key, JSON.stringify(value));
+}
+ 
+Storage.prototype.getObject = function(key) {
+    var value = this.getItem(key);
+    return value && JSON.parse(value);
+}
 
 angular.module('Wegas', [
     'flash',
@@ -7,9 +15,14 @@ angular.module('Wegas', [
     'ngAnimate',
     'angular-loading-bar',
     'angularModalService',
+    'pascalprecht.translate',
     'wegas.service.responses',
     'wegas.service.auth',
+    'wegas.service.wegasTranslations',
     'wegas.directives.illustrations',
+    'wegas.directives.content.loading',
+    'wegas.directives.search.tool',
+    'wegas.behaviours.expandable',
     'wegas.behaviours.confirm',
     'wegas.behaviours.modals',
     'wegas.behaviours.tools',
@@ -17,7 +30,7 @@ angular.module('Wegas', [
     'private',
     'autologin'
 ])
-.config(function ($stateProvider, $urlRouterProvider, cfpLoadingBarProvider) {
+.config(function ($stateProvider, $urlRouterProvider, cfpLoadingBarProvider, $translateProvider, WegasTranslationsProvider) {
     // Configurate loading bar
     cfpLoadingBarProvider.latencyThreshold = 1000;
     cfpLoadingBarProvider.includeSpinner = true;
@@ -34,22 +47,26 @@ angular.module('Wegas', [
         })
     ;
     $urlRouterProvider.otherwise('/');
+    
+    $translateProvider.translations('en', WegasTranslationsProvider.getTranslations('en'));
+    $translateProvider.translations('fr', WegasTranslationsProvider.getTranslations('fr'));
+    WegasTranslationsProvider.default();
 })
 .run(function ($rootScope, $state) {
-  $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState) {
-    $state.previous = fromState;
-  });
+    $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState) {
+        $state.previous = fromState;
+    });
 })
 .controller('WegasMainCtrl', function WegasMainCtrl($state, Auth) {
     Auth.getAuthenticatedUser().then(function(user){
     	if(user == null){
     		$state.go("wegas.public");
     	}else{
-    		if(user.isScenarist || user.isTrainer){
-                        $state.go("wegas.private.trainer");
-                }else{
-                        $state.go("wegas.private.player");
-                }
+            if(user.isScenarist || user.isTrainer){
+                    $state.go("wegas.private.trainer");
+            }else{
+                    $state.go("wegas.private.player");
+            }
     	}
     });
 });

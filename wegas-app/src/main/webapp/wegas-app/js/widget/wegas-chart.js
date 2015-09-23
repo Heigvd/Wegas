@@ -7,339 +7,185 @@
  */
 /**
  * @fileoverview
- * @author Yannick Lagger <lagger.yannick@gmail.com>
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author maxence.laurent gmail.com
  */
+/*global YUI, Chartist */
 YUI.add('wegas-chart', function(Y) {
-    var CONTENTBOX = 'contentBox', Chart,
-        styleColor = ["#ed6a3c", "#1deaed", "#343843", "#7b818f"];
+    "use strict";
+    var CONTENTBOX = 'contentBox', Chart;
 
     Chart = Y.Base.create("wegas-chart", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+        CONTENT_TEMPLATE: "<div>" +
+            "<div class=\"ct-chart\">" +
+            "</div>" +
+            "<div class=\"legend\"></div>" +
+            "</div>",
         initializer: function() {
-            this.requestHistory = [];
+            this.handlers = [];
         },
         bindUI: function() {
-            this.dsUpdateHandler = Y.Wegas.Facade.Variable.after("update", this.syncUI, this);
+            this.handlers.push(Y.Wegas.Facade.Variable.after("update", this.syncUI, this));
         },
         renderUI: function() {
-            this.get(CONTENTBOX).append("Loading...");
-            this.chart = new Y.Chart({
-                type: this.get("chartType"),
-//                seriesCollection: seriesCollection,
-                // categoryType:"time",                                         // Start sur l'axe mais l'axe devient time
-                axes: {
-                    values: {
-                        minimum: this.get("minValue"),
-                        maximum: this.get("maxValue"),
-                        calculateEdgeOffset: false
-                    },
-                    category: {
-                        type: "numeric",
-                        minimum: +this.get("hStart")
-                        // calculateEdgeOffset: true
-                    }
+            var variables, i, vd, legendNode;
+
+            this.options = {
+                width: this.get("width"),
+                height: this.get("height"), /*
+                 lineSmooth: Chartist.Interpolation.none(),
+                 axisX: {
+                 type: Chartist.AutoScaleAxis,
+                 onlyInteger: true,
+                 },*/
+                axisX: {
+                    showLabel: this.get("showXLabels")
                 },
-//                legend: {
-//                    styles: {
-//                        gap: 0
-//                    },
-//                    position: this.get("legendPosition")
-//                },
-                tooltip: {
-                    markerLabelFunction: function(categoryItem, valueItem, itemIndex, series, seriesIndex) {
-                        return new Y.Node.create('<div><div><p>' + valueItem.displayName + ': ' + valueItem.axis.get("labelFunction").apply(this, [valueItem.value]) + '</p></div></div>');
-                    }
-                },
-                dataProvider: [],
-                horizontalGridlines: this.get("horizontalGridlines"),
-                verticalGridlines: this.get("verticalGridlines")
-            });
+                axisY: {
+                    type: Chartist.AutoScaleAxis,
+                    showLabel: this.get("showYLabels")
+                }
+            };
+
+            if (this.get("interpolation") === "simple") {
+                this.options.lineSmooth = Chartist.Interpolation.simple({divisor: 2});
+            } else if (this.get("interpolation") === "cardinal") {
+                this.options.lineSmooth = Chartist.Interpolation.cardinal({
+                    tension: 0.2
+                });
+            } else if (this.get("interpolation") === "step") {
+                this.options.lineSmooth = Chartist.Interpolation.step({postpone: true});
+            } else {
+                this.options.lineSmooth = Chartist.Interpolation.none();
+            }
+
+            if (Y.Lang.isNumber(this.get("low"))) {
+                this.options.axisY.low = this.get("low");
+            }
+            if (Y.Lang.isNumber(this.get("high"))) {
+                this.options.axisY.high = this.get("high");
+            }
+
+
+            variables = this.get("variables");
+            legendNode = this.get(CONTENTBOX).one(".legend");
+            for (i = 0; i < variables.length; i += 1) {
+                vd = Y.Wegas.Facade.Variable.cache.find("name", variables[i].name);
+                legendNode.append("<div><span class=\"color ct-series-" + String.fromCharCode(97 + i) + "\"></span>" +
+                    "<span class=\"label\">" + (this.get("variables")[i].label || vd.get("label")) + " </span></div>");
+            }
+            this.chart;
         },
         syncUI: function() {
-            var vd, i, variables = this.get("variables");
-            this.vdList = [];
-            this.requestCounter = 0;
+            var vd, i, variables = this.get("variables"), history,
+                promises = [], ctx = this;
 
-            for (i = 0; i < variables.length; i++) {
+            this.data = {labels: [], series: []};
+            this.counter = variables.length;
+            for (i = 0; i < variables.length; i += 1) {
                 vd = Y.Wegas.Facade.Variable.cache.find("name", variables[i].name);
                 if (!vd) {
                     this.showMessage("error", "Variable " + variables[i].name + " not found");
                     return;
                 }
-                vd.position = i;
-                vd.label = variables[i].label || variables[i].name;
-
-                this.vdList[i] = null;
-                this.historyRequest(vd);
+                promises.push(this.updateHistory(vd, i));
             }
+
+            Y.Promise.all(promises).then(function(a) {
+                var v;
+                for (i = 0; i < a.length; i += 1) {
+                    v = a[i];
+                    ctx.updateSerie(v.serie, i, v.label);
+                }
+            });
+        },
+        updateSerie: function(serie, i, label) {
+            var k, max, data = this.data;
+            this.counter -= 1;
+            this.data.series.push({
+                name: label,
+                data: serie
+            });
+
+            if (this.counter === 0) {
+                data.labels = [];
+                max = 0;
+                for (k = 0; k < data.series.length; k += 1) {
+                    max = Math.max(max, data.series[k].data.length);
+                }
+                if (this.get("xMinMax.evaluated")) {
+                    max = Math.max(max, this.get("xMinMax.evaluated").getValue());
+                }
+                for (k = 0; k < max; k++) {
+                    data.labels.push(k + 1);
+                }
+                Y.log("DATA: " + JSON.stringify(this.data));
+                Y.log("OPTIONS: " + JSON.stringify(this.options));
+
+                if (this.chart) {
+                    this.chart.update(data);
+                } else {
+                    this.chart = new Chartist.Line("#" + this.get(CONTENTBOX).get("id") + " .ct-chart", this.data, this.options);
+                    this.generateTooltip();
+                }
+            }
+        },
+        generateTooltip: function() {
+            var chart, tooltip, CB = this.get(CONTENTBOX);
+            chart = CB.one(".ct-chart");
+            chart.append('<div class="tooltip"></div>');
+            tooltip = chart.one(".tooltip");
+            tooltip.hide();
+
+            // TODO hide 
+            this.handlers.push(CB.delegate("mouseenter", function(e) {
+                var value, name;
+                name = e.target.getDOMNode().parentNode.getAttribute("ct:series-name");
+                value = e.target.getAttribute("ct:value");
+                tooltip.setContent(name + "<br />" + value);
+                tooltip.show();
+            }, ".ct-point", this));
+
+            this.handlers.push(CB.delegate("mouseleave", function(e) {
+                this.get(CONTENTBOX).one(".tooltip").hide();
+            }, ".ct-point", this));
+
+            this.handlers.push(chart.on("mousemove", function(e) {
+                var tooltip = this.get(CONTENTBOX).one(".tooltip");
+                tooltip.setStyle("left", (e.pageX + 10) + "px");
+                tooltip.setStyle("top", (e.pageY + 10) + "px");
+            }, this));
         },
         destructor: function() {
+            var i;
             if (this.chart) {
-                this.chart.destroy();
+                this.chart.detach();
             }
-            this.dsUpdateHandler.detach();
-            Y.Array.each(this.requestHistory, function(item) {
-                Y.Wegas.DataSource.abort(item);
-            });
+            for (i = 0; i < this.handlers.length; i += 1) {
+                this.handlers[i].detach();
+            }
         },
-        historyRequest: function(vd) {
-            this.requestHistory.push(Y.Wegas.Facade.Variable.cache.getWithView(vd.getInstance(), "Extended", {
-                on: {
-                    success: Y.bind(function(e) {
-                        var entity = e.response.entity;
-                        entity.label = vd.label;
-
-                        this.vdList[vd.position] = entity;
-
-                        this.requestCounter += 1;
-                        if (this.requestCounter === this.get("variables").length) {
-                            this.updateChart();
-                        }
-                    }, this),
-                    failure: function(r) {
-                        if (r.serverResponse.status === 0) {
-                            Y.log("Abort history query", "info", "Y.Wegas.Chart");
-                        } else {
+        updateHistory: function(vd, i) {
+            var ctx = this, promise = Y.Promise(function(resolve, reject) {
+                Y.Wegas.Facade.Variable.cache.getWithView(vd.getInstance(), "Extended", {
+                    on: {
+                        success: Y.bind(function(e) {
+                            var entity = e.response.entity;
+                            resolve({
+                                serie: entity.get("history").concat(entity.get("value")),
+                                label: this.get("variables")[i].label || vd.get("label")});
+                        }, ctx),
+                        failure: function(r) {
                             Y.error("Error by loading history data");
+                            resolve({serie: [], label: vd.get("label")});
                         }
                     }
-                }
-            }));
-        },
-        /**
-         * Creat a YUI3 Charts combospline' from given 'variables'
-         */
-        updateChart: function() {
-            var i, cb = this.get(CONTENTBOX),
-                seriesCollection = [],
-                rawSeries = [], data, axis,
-                hStep = this.get("hStep"),
-                vStep = this.get("vStepValue"),
-                max = -Infinity, min = Infinity,
-                range, j, n,
-                styles = {
-                    series:{},
-                    graph:{
-                        background:{
-                            fill:{
-                                alpha:0
-                            },
-                            border:{
-                                alpha:0
-                            }
-                        }
-                    }
-                };
-
-            if (this.vdList.length < 1) {
-                return;
-            }
-
-            /* Create a serie for each given variable */
-            
-            for (i = 0; i < this.vdList.length; i++) {
-                // name of serie
-                seriesCollection.push({
-                    yDisplayName: this.vdList[i].label
-                });
-                
-                /* Serie values are history + currentValue */
-                rawSeries.push(this.vdList[i].get("history"));
-                rawSeries[rawSeries.length - 1].push(this.vdList[i].get("value"));
-
-                // For auto Y-axis ticks adjustment, fetch min and max values
-                for (j = 0; j < rawSeries[rawSeries.length - 1].length; j++) {
-                    max = Math.max(max, rawSeries[rawSeries.length - 1][j]);
-                    min = Math.min(min, rawSeries[rawSeries.length - 1][j]);
-                }
-            }
-            
-            // Y-Axis scale
-            axis = this.chart.getAxisByKey("values");  // i.e. Y-axis
-            
-            if (!vStep) {
-                // Default vStep is 10% of range value -> 11 ticks
-                vStep = Math.floor((max - min) / 10) || 1;
-            }
-            if (max !== 0) {
-                max += vStep; // reserve some room
-            }
-            if (min !== 0) {
-                min -= vStep; // reserve some room too but avoid going bellow zero
-            }
-            axis.set("maximum", max);
-            axis.set("minimum", min);
-            range = max - min;
-
-            n = range / vStep; // how many ticks fit within 'maximum'
-
-            // Math.log10(x) =~ Math.log(x)/Math.LN10...
-            //if (n > 11) {
-            //    n = Math.ceil(n / Math.pow(10, Math.ceil(Math.log(n) / Math.LN10) - 1)); // let n an integer \in ]1;10] 
-            //    Y.log("N Ticks: " + n);
-            //}
-
-            if (n === range / vStep) {
-                n++; // need an extra tick
-            }
-
-            range = n * vStep; // New range is a whole multiple of vStep
-
-            this.chart.getAxisByKey("values").set("styles", {
-                label:{
-                    color:"#a3a7b0"
-                },
-                majorUnit: {
-                    count: n
-                }
+                }, ctx);
             });
-
-            this.chart.set("dataProvider", this.getChartValues(this.findNumberOfValue(rawSeries), rawSeries));
-            axis = this.chart.getAxisByKey("category");
-            if (this.get("hMinEnd.evaluated")) {
-                data = axis.get("data");
-                this.chart.getAxisByKey("category").set("maximum", Math.max(data[data.length - 1], this.get("hMinEnd.evaluated").getValue(), 2/*minimum 2 points (width...)*/));
-            }
-            hStep = hStep > 0 ? hStep : 1;
-            this.chart.getAxisByKey("category").set("styles", {
-                label:{
-                    color:"#a3a7b0"
-                },
-                majorUnit: {
-                    count: (axis.get("maximum") - axis.get("minimum")) / hStep + 1
-                }
-            });
-
-            if (!this.chart.get("rendered")) {
-                this.chart.set("styles", {
-                    graph:{
-                        background:{
-                            fill:{
-                                alpha:0
-                            },
-                            border:{
-                                alpha:0
-                            }
-                        }
-                    }
-                });
-                
-                this.chart.set("legend", {
-                    styles: {
-                        gap: 12,
-                        background:{
-                            fill:{
-                                color:"#a3a7b0"
-                            }
-                        }
-                    },
-                    position: this.get("legendPosition")
-                });
-                
-                this.get(CONTENTBOX).empty();
-                this.chart.render(cb);
-                this.chart.set("seriesCollection", seriesCollection);
-                this.chart.get("seriesCollection").forEach(function(serie, index){
-                    serie.set("styles", {
-                        line:{
-                            color:styleColor[(index%4)]
-                        },
-                        marker:{
-                            fill:{
-                                color:styleColor[(index%4)]
-                            },
-                            border:{
-                                color:styleColor[(index%4)]
-                            },
-                            over:{
-                                fill:{
-                                    color:styleColor[(index%4)]
-                                },
-                                border:{
-                                    color:styleColor[(index%4)]
-                                },
-                                width: 12,
-                                height: 12
-                            }
-                        },
-                    });
-                });
-                this.chart.get("legend").get("items").forEach(function(legend, index){
-                    legend.shape.set("fill", {
-                        color:styleColor[(index%4)]
-                    });
-                    legend.shape.set("stroke", {
-                        color:"#ffffff",
-                        weight:1.5
-                    });
-                });
-            } else {
-                this.chart.syncUI();
-            }
-        },
-        findNumberOfValue: function(series) {
-            var i, number = 0;
-            if (!this.get("numberOfValue")) {
-                for (i = 0; i < series.length; i++) {
-                    if (series[i].length > number) {
-                        number = series[i].length;
-                    }
-                }
-                return number;
-            } else {
-                return this.get("numberOfValue");
-            }
-        },
-        /**
-         * Create series for the chart.
-         * i = numberOfValues
-         * For each series, If number of values is smaller than i, copy the last value to create a serie with i values.
-         * If number of values is greater than i, keep only the i last values.
-         * @param Integer numberOfValues, the number of value wanted in the series.
-         * @param Array rawSeries, an array of array of Integer.
-         */
-        getChartValues: function(numberOfValues, rawSeries) {
-            var i, j, fitSeries = [], serieRawData = [], serieFitData = [],
-                dx = +this.get("hStart");
-
-            for (i = 0; i < numberOfValues; i++) {
-                serieFitData.push(i + dx);
-            }
-
-            fitSeries.push(serieFitData.slice());
-            for (i = 0; i < rawSeries.length; i++) {
-                serieRawData = rawSeries[i];
-                serieFitData.length = 0;
-                for (j = numberOfValues - 1; j >= 0; j--) {
-                    if (serieRawData.length - 1 >= j) {
-                        serieFitData.push(serieRawData[serieRawData.length - (j + 1)]);
-                    }
-                }
-                fitSeries.push(serieFitData.slice());
-            }
-
-            if (fitSeries[0].length === 0) {
-                for (i = 1; i < 2; i++) {
-                    fitSeries[0].push(i);
-                }
-            }
-            return fitSeries;
+            return promise;
         }
     }, {
         EDITORNAME: "Chart",
         ATTRS: {
-            /**
-             * The target variable, returned either based on the variableName attribute,
-             * and if absent by evaluating the expr attribute.
-             */
-            chartType: {
-                type: "string",
-                value: "combo",
-                choices: ['combo', 'line'],
-                _inputex: {
-                    label: "Chart type"
-                }
-            },
             variables: {
                 _inputex: {
                     _type: "list",
@@ -350,54 +196,20 @@ YUI.add('wegas-chart', function(Y) {
                     }
                 }
             },
-            hStart: {
+            low: {
                 optional: true,
                 type: "number",
-                value: 0,
+                value: undefined,
                 _inputex: {
                     label: "Horizontal start value"
                 }
             },
-            hStep: {
+            high: {
                 optional: true,
                 type: "number",
-                value: 1,
+                value: undefined,
                 _inputex: {
-                    label: "Horizontal steps"
-                }
-            },
-            hMinEnd: {
-                optional: true,
-                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                _inputex: {
-                    _type: "variableselect",
-                    label: "Minimum horizontal end value",
-                    classFilter: ["NumberDescriptor"]
-                }
-            },
-            minValue: {
-                optional: true,
-                _inputex: {
-                    _type: "integer",
-                    label: "Min. value",
-                    negative: true
-                }
-            },
-            maxValue: {
-                optional: true,
-                _inputex: {
-                    _type: "integer",
-                    label: "Max. value",
-                    negative: true
-                }
-            },
-            vStepValue: {
-                optional: true,
-                type: "number",
-                _inputex: {
-                    _type: "integer",
-                    label: "vertical steps",
-                    negative: false
+                    label: "Horizontal start value"
                 }
             },
             width: {
@@ -408,35 +220,30 @@ YUI.add('wegas-chart', function(Y) {
                 type: "string",
                 value: "200px"
             },
-            numberOfValue: {
-                type: "Number",
-                optional: "true",
+            xMinMax: {
+                optional: true,
+                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
-                    _type: "integer",
-                    label: "Number of value",
+                    _type: "variableselect",
+                    label: "Minimum horizontal end value",
+                    classFilter: ["NumberDescriptor"]
                 }
             },
-            legendPosition: {
-                value: "bottom",
+            interpolation: {
                 type: "string",
-                choices: ['bottom', 'left', 'right', 'top'],
+                value: "none",
+                choices: ['none', 'simple', 'cardinal', 'step'],
                 _inputex: {
-                    value: "bottom"
+                    value: "none"
                 }
             },
-            horizontalGridlines: {
-                value: true,
+            showXLabels: {
                 type: "boolean",
-                _inputex: {
-                    label: "Horizontal Gridlines"
-                }
+                value: true
             },
-            verticalGridlines: {
-                value: true,
+            showYLabels: {
                 type: "boolean",
-                _inputex: {
-                    label: "Vertical Gridlines"
-                }
+                value: true
             }
         }
     });

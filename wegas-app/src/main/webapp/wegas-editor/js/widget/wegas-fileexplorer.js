@@ -255,9 +255,9 @@ YUI.add('wegas-fileexplorer', function(Y) {
             this.treeView.on("*:nodeExpanded", function(e) {
                 this.listNodeData(e.node);
             }, this);
-            this.treeView.on(["treeleaf:iconClick", "treeleaf:labelClick"], function(e) {
-                if (e.target.path) {
-                    this.fire("fileSelected", e.target.path);
+            this.treeView.after("treeleaf:click", function(e) {
+                if (e.node.path) {
+                    this.fire("fileSelected", e.node.path);
                 }
             }, this);
             this.treeView.on(["treenode:iconClick", "treenode:labelClick"], function(e) {

@@ -32,6 +32,16 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.Helper;
+import com.wegas.core.persistence.Broadcastable;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import com.wegas.resourceManagement.persistence.BurndownInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,26 +53,26 @@ import org.slf4j.LoggerFactory;
 @Inheritance(strategy = InheritanceType.JOINED)
 //@EntityListeners({VariableInstancePersistenceListener.class})
 @NamedQueries({
-    @NamedQuery(name = "findTeamInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.teamScopeKey = :teamid"),
-    @NamedQuery(name = "findPlayerInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.playerScopeKey = :playerid"),
-    @NamedQuery(name = "findInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE EXISTS " +
-            "(SELECT player From Player player WHERE player.id = :playerid AND " +
-            "(variableinstance.playerScopeKey = player.id OR variableinstance.teamScopeKey = player.teamId OR variableinstance.gameScopeKey = player.team.gameId))")
+    //@NamedQuery(name = "findTeamInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.teamScopeKey = :teamid"),
+    //@NamedQuery(name = "findPlayerInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.playerScopeKey = :playerid"),
+    @NamedQuery(name = "findInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE EXISTS "
+            + "(SELECT player From Player player WHERE player.id = :playerid AND "
+            + "(variableinstance.playerScopeKey = player.id OR variableinstance.teamScopeKey = player.teamId OR variableinstance.gameScopeKey = player.team.gameId))")
 })
 
 /*@Indexes(value = { // JPA 2.0 eclipse link extension TO BE REMOVED
     
-    @Index(name = "index_variableinstance_gamescope_id", columnNames = {"gamescope_id"}),
-    @Index(name = "index_variableinstance_teamscope_id", columnNames = {"teamscope_id"}),
-    @Index(name = "index_variableinstance_playerscope_id", columnNames = {"playerscope_id"})
-})*/
+ @Index(name = "index_variableinstance_gamescope_id", columnNames = {"gamescope_id"}),
+ @Index(name = "index_variableinstance_teamscope_id", columnNames = {"teamscope_id"}),
+ @Index(name = "index_variableinstance_playerscope_id", columnNames = {"playerscope_id"})
+ })*/
 
 /* JPA2.1 (GlassFish4) Indexes */
- @Table(indexes = {
- @Index(columnList = "gamescope_id"),
- @Index(columnList = "teamscope_id"),
- @Index(columnList = "playerscope_id")
- })
+@Table(indexes = {
+    @Index(columnList = "gamescope_id"),
+    @Index(columnList = "teamscope_id"),
+    @Index(columnList = "playerscope_id")
+})
 
 //@JsonIgnoreProperties(value={"descriptorId"})
 @JsonSubTypes(value = {
@@ -78,9 +88,10 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "ResourceInstance", value = ResourceInstance.class),
     @JsonSubTypes.Type(name = "TaskInstance", value = TaskInstance.class),
     @JsonSubTypes.Type(name = "ObjectInstance", value = ObjectInstance.class),
-    @JsonSubTypes.Type(name = "PeerReviewInstance", value = PeerReviewInstance.class)
+    @JsonSubTypes.Type(name = "PeerReviewInstance", value = PeerReviewInstance.class),
+    @JsonSubTypes.Type(name = "BurndownInstance", value = BurndownInstance.class)
 })
-abstract public class VariableInstance extends AbstractEntity {
+abstract public class VariableInstance extends AbstractEntity implements Broadcastable {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(VariableInstance.class);
@@ -127,39 +138,76 @@ abstract public class VariableInstance extends AbstractEntity {
      */
     @Column(name = "variableinstances_key", insertable = false, updatable = false, columnDefinition = "bigint")
     private Long playerScopeKey;
+
+    @JoinColumn(name = "variableinstances_key", insertable = false, updatable = false)
+    private Player player;
+
     /**
      *
      */
     @Column(name = "gamevariableinstances_key", insertable = false, updatable = false, columnDefinition = "bigint")
     private Long gameScopeKey;
+
+    @JoinColumn(name = "gamevariableinstances_key", insertable = false, updatable = false)
+    private Game game;
     /**
      *
      */
     @Column(name = "teamvariableinstances_key", insertable = false, updatable = false, columnDefinition = "bigint")
     private Long teamScopeKey;
 
+    @JoinColumn(name = "teamvariableinstances_key", insertable = false, updatable = false)
+    private Team team;
+
     /**
      *
      * @return
      */
     @Override
-    public VariableInstance clone(){
+    public VariableInstance clone() {
         return (VariableInstance) super.clone();
+    }
+
+    @JsonIgnore
+    public String getAudience() {
+        if (this.teamScopeKey != null) {
+            return Helper.getAudienceTokenForTeam(this.teamScopeKey);
+        } else if (this.playerScopeKey != null) {
+            return Helper.getAudienceTokenForPlayer(this.playerScopeKey);
+        } else if (this.gameScopeKey != null) {
+            return Helper.getAudienceTokenForGame(this.gameScopeKey);
+        } else if (this.gameModelScope != null) {
+            return Helper.getAudienceTokenForGameModel(this.getGameModelScope().getVariableDescriptor().getId());
+        } else {
+            // Default instance
+            return null;
+        }
+    }
+
+    @Override
+    public Map<String, List<AbstractEntity>> getEntities() {
+        String audience = this.getAudience();
+        if (audience != null) {
+            Map<String, List<AbstractEntity>> map = new HashMap<>();
+            ArrayList<AbstractEntity> entities = new ArrayList<>();
+            entities.add(this);
+            map.put(this.getAudience(), entities);
+            return map;
+        } else if (this.getDefaultDescriptor() != null) {
+            // Default instance -> Propagate descriptor
+            return this.getDefaultDescriptor().getEntities();
+        } else {
+            return null;
+        }
     }
 
     /**
      *
+     * //@PostUpdate // @PostRemove // @PostPersist public void
+     * onInstanceUpdate() { // If the instance has no scope, it means it's a
+     * default if (this.getScope() != null) { //
+     * RequestFacade.lookup().getRequestManager().addUpdatedInstance(this); } }
      */
-    @PostUpdate
-//    @PostRemove
-//    @PostPersist
-    public void onInstanceUpdate() {
-        if (this.getScope() == null) {                                          // If the instance has no scope, it means it's a default
-            return;                                                             // default Instance and the updated event is not sent
-        }
-        RequestFacade.lookup().getRequestManager().addUpdatedInstance(this);
-    }
-
     /**
      * @return the scope
      */
@@ -186,7 +234,11 @@ abstract public class VariableInstance extends AbstractEntity {
     //@XmlTransient
     @JsonIgnore
     public VariableDescriptor getDescriptor() {
-        return this.getScope().getVariableDescriptor();
+        if (this.getScope() != null) {
+            return this.getScope().getVariableDescriptor();
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -362,6 +414,12 @@ abstract public class VariableInstance extends AbstractEntity {
      */
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + "( " + getId() + ", " + this.getDescriptor().getName() + ")";
+        if (this.defaultDescriptor != null) {
+            return "Default " + this.getClass().getSimpleName() + "( " + getId() + ") for " + this.defaultDescriptor.getName();
+        } else if (this.getDescriptor() != null) {
+            return this.getClass().getSimpleName() + "( " + getId() + ") for " + this.getDescriptor().getName();
+        } else {
+            return this.getClass().getSimpleName() + "( " + getId() + ") NO DESC";
+        }
     }
 }

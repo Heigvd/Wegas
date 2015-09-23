@@ -13,9 +13,14 @@ import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.game.DebugGame;
+import com.wegas.core.persistence.game.DebugTeam;
+import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.statemachine.State;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.Transition;
@@ -32,8 +37,10 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -73,11 +80,16 @@ public class UpdateController {
     @GET
     public String index() {
         StringBuilder ret = new StringBuilder();
+        //Long nbOrphans = this.countOrphans();
+        //List<Game> noDebugTeamGames = this.findNoDebugTeamGames();
+
+        //ret.append("<a href=\"Update/KillOrphans\">Kill Ulvide and 3000 Orphans (" + nbOrphans + " orphans)</a> <br />");
+        //ret.append("<a href=\"Update/RestoreDebugTeams\">Restore 25 Debug Teams and Kill Ulvide (" + noDebugTeamGames.size() + " games)</a> <br />");
         ret.append("<a href=\"Update/PMG_UPGRADE\">PMG upgrade</a> <br />");
-        for (GameModel gm : gameModelFacade.findAll()) {
-            ret.append("<a href=\"Encode/").append(gm.getId()).append("\">Update variable names ").append(gm.getId()).append("</a> | ");
-            ret.append("<a href=\"UpdateScript/").append(gm.getId()).append("\">Update script ").append(gm.getId()).append("</a><br />");
-        }
+        // for (GameModel gm : gameModelFacade.findAll()) {
+        //    ret.append("<a href=\"Encode/").append(gm.getId()).append("\">Update variable names ").append(gm.getId()).append("</a> | ");
+        //    ret.append("<a href=\"UpdateScript/").append(gm.getId()).append("\">Update script ").append(gm.getId()).append("</a><br />");
+        //}
         return ret.toString();
     }
 
@@ -150,13 +162,24 @@ public class UpdateController {
         script.setContent(s);
     }
 
-    private List<GameModel> findPMGs() {
+    private List<GameModel> findPMGs(boolean scenarioOnly) {
         final CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         final CriteriaQuery query = criteriaBuilder.createQuery();
 
         Root e = query.from(GameModel.class);
+        Predicate where;
+
+        if (scenarioOnly) {
+            where = criteriaBuilder.and(
+                    criteriaBuilder.equal(e.get("template"), true),
+                    criteriaBuilder.like(e.get("properties").get("clientScriptUri"), "wegas-pmg/js/wegas-pmg-loader.js%")
+            );
+        } else {
+            where = criteriaBuilder.like(e.get("properties").get("clientScriptUri"), "wegas-pmg/js/wegas-pmg-loader.js%");
+        }
+
         query.select(e)
-                .where(criteriaBuilder.like(e.get("properties").get("clientScriptUri"), "wegas-pmg/js/wegas-pmg-loader.js%"));
+                .where(where);
 
         return em.createQuery(query).getResultList();
     }
@@ -202,7 +225,7 @@ public class UpdateController {
     @GET
     @Path("PMG_UPGRADE")
     public String pmg_upgrade() {
-        List<GameModel> PMGs = this.findPMGs();
+        List<GameModel> PMGs = this.findPMGs(false);
         StringBuilder ret = new StringBuilder();
         String status;
 
@@ -213,20 +236,114 @@ public class UpdateController {
             ret.append(pmg.getName());
             ret.append("/");
             ret.append(pmg.getId());
-
-            // Add phase names variables
-            status = addVariable(pmg, "{\"@class\":\"ListDescriptor\",\"label\":\"Phase Names\",\"title\":null,\"name\":\"phaseNames\",\"items\":[{\"@class\":\"StringDescriptor\",\"label\":\"phase1Name\",\"title\":null,\"name\":\"phase1Name\",\"validationPattern\":null,\"comments\":\"\",\"defaultInstance\":{\"@class\":\"StringInstance\",\"value\":\"Initiation\"},\"scope\":{\"@class\":\"TeamScope\",\"broadcastScope\":\"TeamScope\"}},{\"@class\":\"StringDescriptor\",\"label\":\"phase2Name\",\"title\":null,\"name\":\"phase2Name\",\"validationPattern\":null,\"comments\":\"\",\"defaultInstance\":{\"@class\":\"StringInstance\",\"value\":\"Planning\"},\"scope\":{\"@class\":\"TeamScope\",\"broadcastScope\":\"TeamScope\"}},{\"@class\":\"StringDescriptor\",\"label\":\"phase3Name\",\"title\":null,\"name\":\"phase3Name\",\"validationPattern\":null,\"comments\":\"\",\"defaultInstance\":{\"@class\":\"StringInstance\",\"value\":\"Execution\"},\"scope\":{\"@class\":\"TeamScope\",\"broadcastScope\":\"TeamScope\"}},{\"@class\":\"StringDescriptor\",\"label\":\"phase4Name\",\"title\":null,\"name\":\"phase4Name\",\"validationPattern\":null,\"comments\":\"\",\"defaultInstance\":{\"@class\":\"StringInstance\",\"value\":\"Closing\"},\"scope\":{\"@class\":\"TeamScope\",\"broadcastScope\":\"TeamScope\"}}],\"comments\":\"\",\"defaultInstance\":{\"@class\":\"ListInstance\"},\"scope\":{\"@class\":\"TeamScope\",\"broadcastScope\":\"TeamScope\"}}", "phaseNames", "properties");
-            ret.append(" names: ");
+            status = addVariable(pmg, "{\"@class\":\"BooleanDescriptor\",\"comments\":\"\",\"defaultInstance\":{\"@class\":\"BooleanInstance\",\"value\":false},\"label\":\"burndownEnabled\",\"scope\":{\"@class\":\"GameScope\",\"broadcastScope\":\"TeamScope\"},\"title\":null,\"name\":\"burndownEnabled\"}", "burndownEnabled", "properties");
+            ret.append(" burndownEnabled: ");
             ret.append(status);
 
-            // Add initialBudget variable
-            status = addVariable(pmg, "{\"@class\":\"NumberDescriptor\",\"label\":\"Initial Budget\",\"title\":null,\"name\":\"initialBudget\",\"minValue\":0,\"maxValue\":null,\"defaultValue\":0.0,\"comments\":\"\",\"defaultInstance\":{\"@class\":\"NumberInstance\",\"value\":0.0,\"history\":[]},\"scope\":{\"@class\":\"TeamScope\",\"broadcastScope\":\"TeamScope\"}}", "initialBudget", "pageUtilities");
+            ret.append("</li>");
 
-            ret.append(" budget: ");
+            ret.append("<li>");
+            ret.append(pmg.getName());
+            ret.append("/");
+            ret.append(pmg.getId());
+            status = addVariable(pmg, "{\"@class\":\"BurndownDescriptor\",\"comments\":\"\",\"defaultInstance\":{\"@class\":\"BurndownInstance\",\"iterations\":[]},\"label\":\"burndown\",\"scope\":{\"@class\":\"TeamScope\",\"broadcastScope\":\"TeamScope\"},\"title\":\"\",\"name\":\"burndown\",\"description\":\"\"}", "burndown", "pageUtilities");
+            ret.append(" burndown: ");
             ret.append(status);
+
             ret.append("</li>");
         }
         ret.append("</ul>");
         return ret.toString();
+    }
+
+    @GET
+    @Path("KillOrphans")
+    public String killOrphans() {
+        List<VariableInstance> findOrphans = this.findOrphans();
+        int counter = 0;
+
+        /* Kill'em all */
+        for (VariableInstance vi : findOrphans) {
+            logger.error("Remove instance: " + vi.getId());
+            String descName;
+            if (vi.getScope() != null) {
+                descName = vi.getDescriptor().getName();
+            } else {
+                descName = "NOPE";
+            }
+            logger.error("    DESC: " + descName);
+            em.remove(vi);
+
+            if (++counter == 3000) {
+                break;
+            }
+        }
+        return "OK";
+    }
+
+    @GET
+    @Path("RestoreDebugTeams")
+    public String restoreDebugTeams() {
+        List<Game> findNoDebugTeamGames = this.findNoDebugTeamGames();
+        int counter = 0;
+
+        for (Game g : findNoDebugTeamGames) {
+            logger.error("Restore Game: " + g.getName() + "/" + g.getId());
+            DebugTeam dt = new DebugTeam();
+            g.addTeam(dt);
+            em.persist(dt);
+            g.getGameModel().propagateDefaultInstance(dt);
+            em.flush();
+            if (++counter == 25) {
+                break;
+            }
+        }
+
+        Long remaining = this.countOrphans();
+        return "OK" + (remaining > 0 ? "(still " + remaining + ")" : "");
+    }
+
+    private List<Game> findNoDebugTeamGames() {
+        final CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        final CriteriaQuery query = criteriaBuilder.createQuery();
+
+        Root e = query.from(Game.class);
+        query.select(e);
+
+        List<Game> games = em.createQuery(query).getResultList();
+        List<Game> noDebugTeamGames = new ArrayList<>();
+        for (Game g : games) {
+            if (!(g instanceof DebugGame)) {
+
+                List<Team> teams = g.getTeams();
+                boolean hasDebugTeam = false;
+                for (Team t : teams) {
+                    if (t instanceof DebugTeam) {
+                        hasDebugTeam = true;
+                        break;
+                    }
+                }
+                if (!hasDebugTeam) {
+                    noDebugTeamGames.add(g);
+                }
+            }
+        }
+        return noDebugTeamGames;
+    }
+
+    public Long countOrphans() {
+        String sql = "SELECT count(variableinstance) FROM VariableInstance variableinstance WHERE  (variableinstance.playerScopeKey IS NOT NULL AND  variableinstance.playerScopeKey NOT IN (SELECT player.id FROM Player player)) OR (variableinstance.teamScopeKey IS NOT NULL AND variableinstance.teamScopeKey NOT IN (SELECT team.id FROM Team team)) OR (variableinstance.gameScopeKey IS NOT NULL AND variableinstance.gameScopeKey NOT IN (SELECT game.id from Game game))";
+        Query query = em.createQuery(sql);
+        Long count = (Long) query.getSingleResult();
+
+        return count;
+    }
+
+    public List<VariableInstance> findOrphans() {
+        String sql = "SELECT variableinstance FROM VariableInstance variableinstance WHERE  (variableinstance.playerScopeKey IS NOT NULL AND  variableinstance.playerScopeKey NOT IN (SELECT player.id FROM Player player)) OR (variableinstance.teamScopeKey IS NOT NULL AND variableinstance.teamScopeKey NOT IN (SELECT team.id FROM Team team)) OR (variableinstance.gameScopeKey IS NOT NULL AND variableinstance.gameScopeKey NOT IN (SELECT game.id from Game game))";
+        Query query = em.createQuery(sql).setMaxResults(3000);
+        List<VariableInstance> vis = query.getResultList();
+
+        return vis;
     }
 }

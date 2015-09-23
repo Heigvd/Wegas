@@ -7,7 +7,7 @@
  */
 
 /*global Variable, gameModel, self, Y, PMGSimulation, debug, com, java, Java */
-var PMGDashboard = (function() {
+var PMGDashboards = (function() {
     "use strict";
     var Long = Java.type("java.lang.Long");
 
@@ -23,7 +23,7 @@ var PMGDashboard = (function() {
                 if (item instanceof com.wegas.mcq.persistence.QuestionDescriptor) {
                     items.add(item);
                 } else if (i === currentPeriod - 1 &&
-                           item instanceof com.wegas.core.persistence.variable.ListDescriptor) {
+                    item instanceof com.wegas.core.persistence.variable.ListDescriptor) {
                     items.addAll(item.flatten());
                 }
             }
@@ -47,7 +47,8 @@ var PMGDashboard = (function() {
         return Variable.find(gameModel, name).getLabel();
     }
 
-    function dashboard() {
+    function overview() {
+        // Find all values
         var teams = self.getGame().getTeams(),
             currentPhase = getInstances("currentPhase"),
             currentPeriod = getInstances("currentPeriod"),
@@ -60,28 +61,59 @@ var PMGDashboard = (function() {
             phaseName = ['Initiation', 'Planning', 'Executing', 'Closing'],
             managementLabel = getLabel("managementApproval"),
             userLabel = getLabel("userApproval"),
-            obj;
+            // Formatter function
+            formatter = function(bloc, value) {
+                bloc.one(".bloc__value")
+                    .setStyle("background-color", (value < 90 ? "#ff4a03" : (value > 110 ? "#4caf50" : "#ffa709")))
+                    .setStyle("color", "white")
+                    .setStyle("font-weight", "bold")
+                    .setStyle("border-radius", "2px");
+            },
+            // Columns & data object structure
+            monitoring = {
+                "structure": [{
+                        title: "Monitoring",
+                        items: [
+                            {"id": "Phase", "label": "Phase", "formatter": null},
+                            {"id": "Period", "label": "Period", "formatter": null},
+                            {"id": "Questions", "label": "Questions", "formatter": null},
+                            {"id": "Quality", "label": "Quality", "formatter": formatter},
+                            {"id": "Costs", "label": "Costs", "formatter": formatter},
+                            {"id": "Schedule", "label": "Schedule", "formatter": formatter},
+                            {"id": "indicator1", "label": managementLabel, "formatter": formatter},
+                            {"id": "indicator2", "label": userLabel, "formatter": formatter}
+                        ]
+                    }
+                ],
+                "data": {}
+            };
+
+        // Find data by team
         for (t = 0; t < teams.size(); t++) {
             teamId = new Long(teams.get(t).getId());
-            currentPeriod = Variable.find(gameModel, 'currentPeriod').item(currentPhase[teamId].getValue() -
-                                                                           1).getScope().getVariableInstances()[teamId].getValue();
-            obj = {
-                "id": teamId,
+            currentPeriod = Variable.find(gameModel, 'currentPeriod').item(currentPhase[teamId].getValue() - 1).getScope().getVariableInstances()[teamId].getValue();
+            monitoring.data[teamId] = {
                 "Phase": phaseName[currentPhase[teamId].getValue() - 1],
                 "Period": currentPeriod,
                 "Questions": questionAnswered(teamId, currentPhase[teamId].getValue(), currentPeriod),
                 "Quality": quality[teamId].getValue(),
                 "Costs": cost[teamId].getValue(),
-                "Schedule": schedule[teamId].getValue()
+                "Schedule": schedule[teamId].getValue(),
+                "indicator1": management[teamId].getValue(),
+                "indicator2": user[teamId].getValue()
             };
-            obj[managementLabel] = management[teamId].getValue();
-            obj[userLabel] = user[teamId].getValue();
-            arr.push(obj);
         }
-        return JSON.stringify(arr);
-    }
 
+        // Stringify formatter functions
+        monitoring.structure.forEach(function(groupItems) {
+            groupItems.items.forEach(function(item) {
+                item.formatter = item.formatter + "";
+            });
+        });
+        // Return stringified object
+        return JSON.stringify(monitoring);
+    }
     return {
-        dashboard: dashboard
+        overview: overview
     };
 })();

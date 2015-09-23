@@ -8,10 +8,10 @@ angular
                 close: "&"
             },
             templateUrl: 'app/private/profile/directives.tmpl/index.html',
-            controller: function($scope, $stateParams, $sce, $rootScope, Auth, Flash) {
+            controller: function($scope, $stateParams, $sce, $translate, $rootScope, Auth, Flash) {
                 var ctrl = this;
                 $scope.user = {};
-                $scope.originalUser = false
+                $scope.originalUser = false;
                 Auth.getAuthenticatedUser().then(function(user) {
                     if (user !== false) {
                         UsersModel.getFullUser(user.id).then(function(response) {
@@ -25,7 +25,9 @@ angular
                             }
                         });
                     } else {
-                        Flash.danger('Unable to load user informations...');
+                        $translate('COMMONS-USERS-LOAD-FLASH-ERROR').then(function (message) {
+                            Flash.danger(message);
+                        });
                     }
                 });
 
@@ -39,9 +41,8 @@ angular
                             $scope.close();
                         }
                     });
-                }
-
-
+                };
+                $scope.updateInformations = ctrl.updateInformations;
             }
         };
     })
@@ -51,16 +52,14 @@ angular
             scope: true,
             require: "^profileIndex",
             link: function($scope, element, attrs, parentCtrl) {
-
                 $scope.$watch(function() {
-                    return $scope.$parent.user
+                    return $scope.$parent.user;
                 }, function(n, o) {
                     $scope.user = n;
                 });
                 $scope.updateInformations = function() {
                     parentCtrl.updateInformations();
-                }
-
+                };
             }
         };
-    })
+    });

@@ -1,9 +1,9 @@
-<div class="card card--big"
+<div class="card card--scenarist-scenario"
       ng-repeat="scenario in scenarios | orderBy: 'createdTime':true | filter: {name: search, canView: true, canEdit: true} | limitTo: maximum"
       scenario="scenario"
       archive="archive"
       scenario-card >
 </div>
 <div ng-if="(search !== '') && (scenarios | filter:{name: search}).length == 0">
-    No current scenario with the name "{{search}}"
+    {{'SCENARIST-INDEX-LIST-NO-SCENARIO' | translate}}"{{search}}"
 </div>

@@ -92,6 +92,10 @@ div.inputEx-fieldWrapper {
     padding: 20px 10px 20px !important;
 }
 
+/*.inputEx-required .inputEx-label label:after {
+     content: "•"
+}*/
+
 .wegas-form div.inputEx-fieldWrapper,
 .wegas-form div.inputEx-Field {
     float: none;
@@ -472,9 +476,33 @@ img.inputEx-ListField-delButton {
 }
 
 /* Tinymce field */
+
 .wegas-form .mce-container {
     margin: 0;
     padding: 0;
+}
+
+.wegas-form .mce-tinymce{
+    overflow:auto;
+    resize:both;
+    padding-bottom:10px;
+    height:100%;
+}
+
+.wegas-form .mce-tinymce.mce-container .mce-container-body{
+    height:100%;
+}
+.wegas-form .mce-tinymce.mce-container .mce-container-body .mce-edit-area{
+    height: calc(100% - 28px);
+}
+
+.wegas-form .mce-tinymce.mce-container.mce--more .mce-container-body .mce-edit-area{
+    height: calc(100% - 74px);
+}
+
+.wegas-form .mce-container iframe{
+    height:100% !important;
+    border-bottom:solid 1px lightgrey;
 }
 
 .wegas-form .mce-panel {

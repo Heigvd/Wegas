@@ -16,6 +16,8 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.wegas.core.persistence.variable.VariableInstance;
+import java.util.List;
 
 /**
  *
@@ -24,7 +26,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Entity
 @NamedQueries({
     @NamedQuery(name = "findPlayerByGameId", query = "SELECT player FROM Player player WHERE player.team.game.id = :gameId"),
-    @NamedQuery(name = "findPlayerByGameIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.game.id = :gameId")
+    @NamedQuery(name = "findPlayerByGameIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.game.id = :gameId"),
+    @NamedQuery(name = "findPlayerByTeamIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.id = :teamId")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Player extends AbstractEntity {
@@ -38,6 +41,11 @@ public class Player extends AbstractEntity {
      */
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "player", cascade = CascadeType.REMOVE)
+    private List<VariableInstance> privateInstances;
+
     /**
      *
      */
@@ -236,6 +244,18 @@ public class Player extends AbstractEntity {
      */
     public void setJoinTime(Date joinTime) {
         this.joinTime = joinTime;
+    }
+
+    /**
+     * Retrieve all variableInstances that belongs to this player only (ie. playerScoped)
+     * @return all player playerScoped instances
+     */
+    public List<VariableInstance> getPrivateInstances() {
+        return privateInstances;
+    }
+
+    public void setPrivateInstances(List<VariableInstance> privateInstances) {
+        this.privateInstances = privateInstances;
     }
 
     @Override

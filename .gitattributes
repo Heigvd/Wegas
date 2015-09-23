@@ -33,6 +33,8 @@
 *.eap binary
 *.ico binary
 *.woff binary
+*.eot binary
 *.ttf binary
 *.mp3 binary
+*.enc binary
 

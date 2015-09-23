@@ -1,0 +1,23 @@
+{
+    "root": true,
+    "indent": {
+        "value": "    ",
+        "FunctionExpression": 1,
+        "ObjectExpression": 1
+    },
+    "plugins": [
+        "esformatter-jsx"
+    ],
+    "jsx": {
+        "formatJSX": true,
+        "attrsOnSameLineAsTag": false,
+        "maxAttrsOnTag": 1,
+        "firstAttributeOnSameLine": true,
+        "alignWithFirstAttribute": true,
+        "spaceInJSXExpressionContainers": " ",
+        "htmlOptions": {
+            "indent_chat": " ",
+            "indent_size": 2
+        }
+    }
+}

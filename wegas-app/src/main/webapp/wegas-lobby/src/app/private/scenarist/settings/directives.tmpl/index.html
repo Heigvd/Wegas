@@ -2,9 +2,9 @@
 <!-- Modal header -->
 <div class="modal__header">
 	<div class="modal__illustration illustration illustration--medium illustration--icon" illustration="ICON_{{settingsIndexCtrl.infos.color}}_{{settingsIndexCtrl.infos.icon.key}}_{{settingsIndexCtrl.infos.icon.library}}"></div>
-	<h5 class="modal__title">{{settingsIndexCtrl.scenario.name | limitTo: settingsIndexCtrl.MAX_DISPLAYED_CHARS}}<span ng-if="settingsIndexCtrl.scenarios.name.length > settingsIndexCtrl.MAX_DISPLAYED_CHARS">...</span></h5>
+	<h5 class="modal__title">{{settingsIndexCtrl.scenario.name}}</h5>
 	<a class="modal__close button button--medium button--label-off button--default-reverse button--close" ng-click="close()">
-   		<span class="button__label">Close</span>
+   		<span class="button__label">{{'MODALE-CLOSE' | translate}}</span>
 	</a>
 </div>
 
@@ -12,13 +12,13 @@
 <div class="modal__nav modal__nav--3tab">
    	<a 	class="modal__nav__tab modal__nav__tab--left"
    		ng-class="{'modal__nav__tab--active': settingsIndexCtrl.tabs.infos}"
-   		ng-click="settingsIndexCtrl.activeTab('infos')">Infos</a>
+   		ng-click="settingsIndexCtrl.activeTab('infos')">{{'PRIVATE-MODALE-TABS-INFOS' | translate}}</a>
    	<a 	class="modal__nav__tab modal__nav__tab--middle"
    		ng-class="{'modal__nav__tab--active': settingsIndexCtrl.tabs.display}"
-   		ng-click="settingsIndexCtrl.activeTab('display')">Icons & colors</a>
+   		ng-click="settingsIndexCtrl.activeTab('display')">{{'PRIVATE-MODALE-TABS-CUSTOMIZE' | translate}}</a>
     <a  class="modal__nav__tab modal__nav__tab--right"
         ng-class="{'modal__nav__tab--active': settingsIndexCtrl.tabs.advanced}"
-        ng-click="settingsIndexCtrl.activeTab('advanced')">Advanced</a>
+        ng-click="settingsIndexCtrl.activeTab('advanced')">{{'PRIVATE-MODALE-TABS-ADVANCED' | translate}}</a>
 </div>
 
 
@@ -56,11 +56,11 @@
 
 <!-- Modal tools -->
 <div class="modal__tools">
-	<p ng-if="settingsIndexCtrl.hasChanges.all" class="modal__tools__message"><i class="fa fa-warning"></i> Some changes aren't saved</p>
+	<p ng-if="settingsIndexCtrl.hasChanges.all" class="modal__tools__message"><i class="fa fa-warning"></i> {{'PRIVATE-MODALE-SETTINGS-NOT-SAVED-WARNING' | translate}}</p>
 	<a class="modal__tools__button button button--small button--success" ng-click="settingsIndexCtrl.save()">
-   		<span class="button__label">Save change</span>
+   		<span class="button__label">{{'PRIVATE-MODALE-SETTINGS-SAVE-BTN' | translate}}</span>
 	</a>
 	<a class="modal__tools__button button button--small button--default" ng-click="settingsIndexCtrl.cancel()">
-   		<span class="button__label">Cancel</span>
+   		<span class="button__label">{{'PRIVATE-MODALE-SETTINGS-CANCEL-BTN' | translate}}</span>
 	</a>
 </div>

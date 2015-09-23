@@ -86,7 +86,12 @@ i18nTable.en = {
         endOfTask: {
             from: "Project Tracking",
             subject: "Task \"%task%\" completed",
-            content: "Hello, <br /> <br /> We inform you that task \"%task%\" has been completed on %at% <br /><br />Regards"
+            content: "Hello, <br /> <br /> We inform you that task \"%task%\" has been completed on %step% <br /><br />Regards"
+        },
+        manual: {
+            from: "Project Tracking",
+            subject: "Manual for \"%phase%\" phase",
+            content: "You'll find <a target=\"_blank\" href=\"%href%\">here</a> the manual for the \"%phase%\" phase"
         }
     },
     date: {
@@ -126,7 +131,11 @@ i18nTable.en = {
     },
     question: {
         question: "Question",
-        action: "Action"
+        action: "Action",
+        result: "Result"
+    },
+    history: {
+        title: "Game History"
     }
 };
 

@@ -7,11 +7,15 @@
  */
 package com.wegas.core.security.persistence;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.*;
 
 /**
@@ -23,7 +27,8 @@ import javax.persistence.*;
     @UniqueConstraint(columnNames = "name")
 })
 @Cacheable(true)
-@NamedQueries({@NamedQuery(name = "Role.findByName", query = "SELECT a FROM Role a WHERE a.name = :name")})
+@NamedQueries({
+    @NamedQuery(name = "Role.findByName", query = "SELECT a FROM Role a WHERE a.name = :name")})
 public class Role extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
@@ -51,6 +56,13 @@ public class Role extends AbstractEntity {
     //@ElementCollection(fetch = FetchType.EAGER)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "role")
     private List<Permission> permissions = new ArrayList<>();
+
+    /**
+     *
+     */
+    @JsonIgnore
+    @ManyToMany(mappedBy = "roles")
+    private Set<AbstractAccount> abstractAccounts = new HashSet<>();
 
     /**
      *
@@ -183,6 +195,31 @@ public class Role extends AbstractEntity {
             }
         }
         return returnVal;
+    }
+
+    public int getNumberOfMember() {
+        return abstractAccounts.size();
+    }
+
+    public void setNumberOfMember(int numberOfMember) {
+    }
+
+    /**
+     * get role members
+     *
+     * @return all accounts which are member of this role
+     */
+    public Set<AbstractAccount> getAbstractAccounts() {
+        return abstractAccounts;
+    }
+
+    /**
+     * set the role members
+     *
+     * @param abstractAccounts list of member
+     */
+    public void setAbstractAccounts(Set<AbstractAccount> abstractAccounts) {
+        this.abstractAccounts = abstractAccounts;
     }
 
     @Override

@@ -1,5 +1,5 @@
-<div class="card card--medium card--users" ng-repeat="player in players">
-	<div class="card__illustration illustration illustration--medium illustration--icon" illustration="ICON_grey_user"></div>
+<div class="card card--users" ng-repeat="player in players track by player.id">
+	<div class="card__illustration illustration illustration--icon" illustration="ICON_grey_user_wif"></div>
 	<div class="card__description card__description--one-line">
 	    <div class="line line--primary">{{player.name}}</div>
 	</div>

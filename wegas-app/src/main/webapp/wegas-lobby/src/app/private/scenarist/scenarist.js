@@ -18,11 +18,10 @@ angular.module('private.scenarist', [
     })
     ;
 })
-.controller('ScenaristCtrl', function ScenaristCtrl($state, Auth, ViewInfos) {
+.controller('ScenaristCtrl', function ScenaristCtrl($rootScope, $state, Auth, $translate, WegasTranslations) {
     var scenaristCtrl = this;
     Auth.getAuthenticatedUser().then(function(user) {
         if(user != null) {
-            ViewInfos.editName("Scenarist workspace");
             if(!user.isScenarist && !user.isAdmin) {
                 if(user.isTrainer) {
                     $state.go("wegas.private.trainer");
@@ -30,6 +29,8 @@ angular.module('private.scenarist', [
                     $state.go("wegas.private.player");
                 }
             }
+            $("body").removeClass("player admin trainer").addClass("scenarist");
+            $rootScope.translationWorkspace = {workspace: WegasTranslations.workspaces['SCENARIST'][$translate.use()]};
         }
     });
 });

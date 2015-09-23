@@ -7,6 +7,7 @@
  */
 package com.wegas.integration;
 
+import com.wegas.core.Helper;
 import com.wegas.utils.TestHelper;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -76,6 +77,8 @@ public class IntegrationTest {
         Deployer deployer = glassfish.getDeployer();
         appName = deployer.deploy(war);
 
+        File appDirectory = new File("target/Wegas/");
+        Helper.setWegasRootDirectory(appDirectory.getAbsolutePath());
     }
 
     @AfterClass
@@ -113,7 +116,7 @@ public class IntegrationTest {
 
         HttpResponse loginResponse = client.execute(post);
 
-        Assert.assertEquals(HttpStatus.SC_NO_CONTENT, loginResponse.getStatusLine().getStatusCode());
+        Assert.assertEquals(HttpStatus.SC_OK, loginResponse.getStatusLine().getStatusCode());
 
         Header[] headers = loginResponse.getHeaders("Set-Cookie");
         if (headers.length > 0) {

@@ -13,7 +13,7 @@ angular.module('wegas.service.responses', [])
 				return (data === false);
 			}
 		};
-	}
+	};
 	return {
 		success: function(message, data){
 			return create("success", message, data);
