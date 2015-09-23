@@ -25,9 +25,13 @@ function questionSerie(questionName, questionData, snapshot) {
 
     question.items.forEach(function(i) {
         choices.set(i.name, new Map());
-        i.results.forEach(function(r) {
-            choices.get(i.name).set(r.label, 0);
-        });
+        if (i.results.length) {
+            i.results.forEach(function(r) {
+                choices.get(i.name).set(r.label, 0);
+            });
+        } else {
+            choices.get(i.name).set('', 0);
+        }
     });
 
 
