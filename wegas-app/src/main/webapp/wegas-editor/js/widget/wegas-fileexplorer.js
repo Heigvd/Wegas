@@ -231,6 +231,8 @@ YUI.add('wegas-fileexplorer', function(Y) {
                             this.showMessage("error", er.message);
                             file.treeLeaf.destroy();
                         }
+                    } else {
+                        this.showMessage("error", "Unknown file type");
                     }
                 }
             }, '.yui3-treenode, .yui3-treeview', this);
@@ -324,17 +326,20 @@ YUI.add('wegas-fileexplorer', function(Y) {
                 e.file.treeLeaf.set("loading", false);
 
                 if (endsWith(e.statusText, " already exists")) {
-                    Y.Wegas.Panel.confirm(e.statusText + "<br>Overwrite it ?<br><small>you will have to refresh your browser to see changes</small>", Y.bind(function() {
-                        this.treeView.find(function(i) {
-                            return i !== e.file.treeLeaf && i.get("label") === e.file.get("name");
-                        }).destroy();
-                        this.fileUploader.addFile(e.file, true);
-                    }, this), function() {
-                        try {
-                            e.file.treeLeaf.destroy();
-                        } catch (ex) {
-                        }
-                    });
+                    Y.Wegas.Panel.confirm(e.statusText +
+                                          "<br>Overwrite it ?<br><small>you will have to refresh your browser to see changes</small>",
+                        Y.bind(function() {
+                            this.treeView.find(function(i) {
+                                return i !== e.file.treeLeaf && i.get("label") === e.file.get("name");
+                            }).destroy();
+                            this.fileUploader.addFile(e.file, true);
+                        }, this),
+                        function() {
+                            try {
+                                e.file.treeLeaf.destroy();
+                            } catch (ex) {
+                            }
+                        });
                 } else {
                     try {
                         e.file.treeLeaf.destroy();
@@ -452,9 +457,10 @@ YUI.add('wegas-fileexplorer', function(Y) {
                             return;
                         } else if (name === "") {
                             this.showMessage("error", "Folder's name is required");
-                        } else if (!(FILENAME.test(name))) {
-                            this.showMessage("error",
-                                "Invalid name: " + name + ". Letters, numbers, whitespace or \".-_\" only");
+                            //                        } else if (!(FILENAME.test(name))) {
+                            //                            this.showMessage("error",
+                            //                                "Invalid name: " + name + ". Letters, numbers, whitespace
+                            // or \".-_\" only");
                         } else {
                             this.uploader.upload(this.fakeFile, path, {
                                 name: name
@@ -821,9 +827,10 @@ YUI.add('wegas-fileexplorer', function(Y) {
             this.uploader.destroy();
         },
         addFile: function(file, force) {
-            if (!(FILENAME.test(file.get("name")))) {
-                throw new Error("Invalid name: " + file.get("name") + ". Letters, numbers, whitespace or \".-_\" only");
-            } else if (file.get("size") > MAX_FILE_SIZE) {
+            /*    if (!(FILENAME.test(file.get("name")))) {
+             throw new Error("Invalid name: " + file.get("name") + ". Letters, numbers, whitespace or \".-_\" only");
+             } else */
+            if (file.get("size") > MAX_FILE_SIZE) {
                 throw new Error(file.get("name") + " (" + FileExplorer.formatFileSize(file.get("size")) +
                                 ") is too big. Max file size :" + FileExplorer.formatFileSize(MAX_FILE_SIZE));
             }

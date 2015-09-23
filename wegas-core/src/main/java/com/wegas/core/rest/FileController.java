@@ -471,7 +471,7 @@ public class FileController {
         Pattern pattern = Pattern.compile(FILENAME_REGEXP);
         Matcher matcher = pattern.matcher(name);
         if (name.equals("") || !matcher.matches()) {
-            throw WegasErrorMessage.error(name + " is not a valid filename.");
+            throw WegasErrorMessage.error(name + " is not a valid filename.  Letters, numbers, whitespace or \".-_\" only.");
         }
         try (final ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(gameModelId)) {
 
