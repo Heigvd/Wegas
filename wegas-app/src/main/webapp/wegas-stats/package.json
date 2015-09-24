@@ -18,7 +18,7 @@
     "react-input-autosize": "^0.5.3",
     "react-redux": "^2.1.2",
     "react-router": "^1.0.0-rc1",
-    "react-select": "^0.6.8",
+    "react-select": "^0.6.10",
     "redux": "^3.0.0",
     "redux-thunk": "^0.1.0",
     "rx": "^3.1.2",
