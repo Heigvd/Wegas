@@ -8,9 +8,11 @@
 /**
  * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
+ * @author Cyril Junod <cyril.junod at gmail.com>
  */
-YUI.add("wegas-inputex-pageselect", function(Y) {
-    "use strict";
+/*global YUI*/
+YUI.add('wegas-inputex-pageselect', function(Y) {
+    'use strict';
 
     var inputEx = Y.inputEx;
 
@@ -21,10 +23,11 @@ YUI.add("wegas-inputex-pageselect", function(Y) {
      * @constructor
      * @param {Object} options inputEx.Field options object
      * <ul>
-     *   <li>favicon: boolean whether the domain favicon.ico should be displayed or not (default is true, except for https)</li>
+     *   <li>favicon: boolean whether the domain favicon.ico should be displayed or not (default is true, except for
+     *     https)</li>
      * </ul>
      */
-    Y.namespace("inputEx.Wegas").PageSelect = function(options) {
+    Y.namespace('inputEx.Wegas').PageSelect = function(options) {
         inputEx.Wegas.PageSelect.superclass.constructor.call(this, options);
     };
 
@@ -38,18 +41,18 @@ YUI.add("wegas-inputex-pageselect", function(Y) {
             this.options.value = val;
         },
         buildList: function(value) {
-            var i;
-            for (i in value) {
+            Y.Array.each(value, function(v, i) {
                 this.addChoice({
-                    value: i,
-                    label: value[i] !== "" ? value[i] : "<i>Unnamed (" + i + ")</i>"
+                    value: v.id,
+                    label: v.name ? v.name : '<i>Unnamed (' + v.id + ')</i>'
                 });
-                if (i == this.options.value) {
-                    this.choicesList[i - 1].node.selected = "selected";
+                if ('' + v.id === '' + this.options.value) {
+                    this.choicesList[i].node.selected = 'selected';
                 }
-            }
+            }, this);
         }
     });
 
-    inputEx.registerType("pageselect", inputEx.Wegas.PageSelect);               // Register this class as "wegasurl" type
+    inputEx.registerType('pageselect', inputEx.Wegas.PageSelect);               // Register this class as "wegasurl"
+                                                                                // type
 });
