@@ -44,6 +44,7 @@ YUI.add('wegas-inputex-ace', function(Y) {
             Y.Object.each(this.handlers, function(i) {
                 i.detach();
             });
+            this.session.$stopWorker();
             this.session = null;
             this.editor.destroy();
             Y.one(this.editor.container).remove().destroy(true);
