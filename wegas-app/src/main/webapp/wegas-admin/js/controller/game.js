@@ -12,6 +12,15 @@
 /*global define*/
 define(["ember"], function(Ember) {
     "use strict";
+    /**
+     * Translate ...
+     */
+    var DICT = {
+        LIVE: "Live",
+        BIN: "Archived",
+        DELETE: "Delete",
+        SUPPRESSED: "Suppressed"
+    };
     return Ember.ObjectController.extend({
         actions: {
             editComment: function() {
@@ -22,8 +31,13 @@ define(["ember"], function(Ember) {
                 this.get('model').save();
             },
             forceDeletion: function() {
-                var gameId = this.get("model").get("gameId");
-                Ember.$.ajax("rest/GameModel/Game/" + gameId, {method: "DELETE"});
+                var model = this.get("model"),
+                    gameId = model.get("gameId");
+                if (gameId) {
+                    Ember.$.ajax("rest/GameModel/Game/" + gameId, {method: "DELETE"}).then(function() {
+                        this.set("gameStatus", "SUPPRESSED");
+                    }.bind(this));
+                }
             }
         },
         commentEdit: false,
@@ -55,6 +69,9 @@ define(["ember"], function(Ember) {
                 return value;
             }
         }.property('status'),
+        isDelete: function() {
+            return this.get("model").get("gameStatus") === "DELETE";
+        }.property(),
         gameLink: function(key, value) {
             return "host.html?gameId=" + this.get("model").get("gameId");
         }.property("gameId"),
@@ -62,6 +79,13 @@ define(["ember"], function(Ember) {
             if (value === undefined) {
                 return new Date(this.get("model").get("createdTime")).toLocaleDateString();
             }
-        }.property("createdTime")
+        }.property("createdTime"),
+        gameStatus: function(key, value) {
+            var model = this.get("model");
+            if (value in DICT) {
+                model.set("gameStatus", value);
+            }
+            return DICT[this.get("model").get("gameStatus")];
+        }.property("gameStatus")
     });
-})
+});
