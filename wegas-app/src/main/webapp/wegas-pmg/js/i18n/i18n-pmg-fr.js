@@ -67,7 +67,7 @@ YUI.add("wegas-i18n-pmg-fr", function(Y) {
             resources: {
                 name: "nom",
                 grade: "niveau",
-                wage: "salaire mensuel",
+                wages: "salaire mensuel",
                 rate: "taux",
                 motivation: "motiv.",
                 assignments: "affectations",

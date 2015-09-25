@@ -42,10 +42,10 @@ YUI.add("wegas-i18n-pmg-en", function(Y) {
             project: {
                 overview: "project Overview",
                 details: "project execution details",
-                history: "history of indicators",
+                history: "indicators history",
                 initialBudget: "initial budget",
                 percentOfInitialBudget: "{{percent}}% of initial budget",
-                bac: "budget At Completion (BAC)",
+                bac: "budgeted at completion (BAC)",
                 sumBac: "total BAC: {{total}}",
                 bac_short: "BAC",
                 percentOfBac: "{{percent}}% of bac",
@@ -58,7 +58,7 @@ YUI.add("wegas-i18n-pmg-en", function(Y) {
             tasks: {
                 index: "No",
                 name: "Name",
-                estimatedDuration: "Estimated Duration",
+                estimatedDuration: "Estimated<br />Duration",
                 duration: "Duration",
                 fixedCosts: "Fixed Costs",
                 requirements: "Required Resources",
@@ -68,18 +68,18 @@ YUI.add("wegas-i18n-pmg-en", function(Y) {
             resources: {
                 name: "Name",
                 grade: "Grade",
-                wage: "Monthly Wage",
+                wages: "Monthly Wages",
                 rate: "Rate",
                 motivation: "Motiv.",
                 assignments: "Assignments",
                 willWork: "Will Work"
             },
             gantt: {
-                worked: 'Worked',
-                willWork: 'Will Work',
-                mayWork: 'May Work',
-                unavailable: "Unavailable",
-                delay: "Too late to change",
+                worked: 'worked',
+                willWork: 'will work',
+                mayWork: 'may work',
+                unavailable: "unavailable",
+                delay: "too late to change",
                 baseline: "baseline",
                 effective: "worked",
                 projection: "projection"
@@ -96,7 +96,7 @@ YUI.add("wegas-i18n-pmg-en", function(Y) {
                 ac: "Actual Cost (AC)"
             },
             mcq: {
-                questionsTitle: "Questions to answer during {{thisTime}}",
+                questionsTitle: "Questions to answer {{thisTime}}",
                 actionsTitle: "Available actions during this phase"
             },
             mailbox: {
@@ -111,7 +111,7 @@ YUI.add("wegas-i18n-pmg-en", function(Y) {
                 willBeginAt: "will begin at period",
                 beganAt: "began at period",
                 planned: "planned",
-                realized: "realized",
+                realized: "realised",
                 projection: "projection",
                 spent: "spent",
                 deleteConfirmation: "Are you sure you want to delete this iteration?"

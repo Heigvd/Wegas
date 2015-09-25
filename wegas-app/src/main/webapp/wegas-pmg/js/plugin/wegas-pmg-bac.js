@@ -63,8 +63,8 @@ YUI.add('wegas-pmg-bac', function(Y) {
             }, ".bacField", this);
         },
         isValidField: function(value) {
-            if (!/^[+]?\d+$/.test(value)) {                                     //positive number
-                this.get("host").showMessage("error", "\"" + value + "\" is not a positive integer");
+            if (!/^[+]?\d+$/.test(value)) {
+                this.get("host").showMessage("error", Y.Wegas.I18n.t('errors.notAPositiveInteger', {value: value}));
                 return false;
             }
             return true;

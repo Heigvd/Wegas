@@ -284,11 +284,11 @@
 }
 
 .pmg-nextweek:after {
-    /* content: "Next period"; */
+     content: "Next period"; 
 }
 
 .passPhase:after {
-    /* content: "Next phase"; */
+     content: "Next phase"; 
 }
 
 .pmg--taskbar__infos .pmg--infos__indicators{

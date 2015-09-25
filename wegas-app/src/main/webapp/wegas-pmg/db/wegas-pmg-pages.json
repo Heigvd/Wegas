@@ -142,12 +142,24 @@
                                                         ]
                                                     },
                                                     {
-                                                        "label": "<% var self = Y.Wegas.Facade.Game.cache.getCurrentPlayer(), phase = Y.Wegas.Facade.Variable.cache.find('name', 'currentPhase').getValue(self), period = Y.Wegas.Facade.Variable.cache.find('name', 'currentPeriod').item(phase - 1), label; if ((phase != 3 && period.getMaxValue() == period.getValue(self)) || (phase == 3 && Y.Wegas.Facade.Variable.cache.find('name', 'projectCompleteness').getValue(self) >= 100)){label = Y.Wegas.I18n.t('pmg.navigation.nextPhase')} else {  label = Y.Wegas.I18n.t('pmg.navigation.nextPeriod')}%> <%=label.capitalize()%>",
+                                                        "label": "",
                                                         "type": "Button",
                                                         "cssClass": "pmg-nextweek",
                                                         "plugins": [
                                                             {
                                                                 "fn": "ConditionalDisable",
+                                                                "cfg": {
+                                                                    "condition": {
+                                                                        "@class": "Script",
+                                                                        "content": "var phase = Variable.find(gameModel, 'currentPhase').getValue(self), period = Variable.find(gameModel, 'currentPeriod').item(phase - 1);return  (phase != 3 && period.getMaxValue() == period.getValue(self)) || (phase == 3 && Variable.find(gameModel, 'projectCompleteness').getValue(self) >= 100);",
+                                                                        "language": "JavaScript"
+                                                                    },
+                                                                    "attribute": "cssClass",
+                                                                    "value": "passPhase"
+                                                                }
+                                                            },
+                                                            {
+                                                                "fn": "ConditionalDisable2",
                                                                 "cfg": {
                                                                     "condition": {
                                                                         "@class": "Script",
@@ -992,7 +1004,7 @@
                                     "@class": "Script",
                                     "content": "Variable.find(gameModel, \"tasks\");\n"
                                 },
-                                "custom": "<% var bacs = Y.Wegas.PMGHelper.getBACTotal(), ib = Y.Wegas.PMGHelper.getInitialBudget(), overcost = (ib <= 0 ? \"\" : Math.round(parseInt((bacs * 10000 / ib), 10)/100)) %> <div class='bacs'><span class='label'><%= Y.Wegas.I18n.t('pmg.project.bac').capitalize() %></span><span class='variableValue'><%=  bacs %></span><span class='variablePercent'><%= Y.Wegas.I18n.t('pmg.project.percentOfInitialBudget', {percent: overcost}).capitalize() %></span>\n</div>"
+                                "custom": "<% var bacs = Y.Wegas.PMGHelper.getBACTotal(), ib = Y.Wegas.PMGHelper.getInitialBudget(), overcost = (ib <= 0 ? \"\" : Math.round(parseInt((bacs * 10000 / ib), 10)/100)) %> <div class='bacs'><span class='label'><%= Y.Wegas.I18n.t('pmg.project.bac').capitalize() %></span><span class='variableValue'><%=  bacs %></span><span class='variablePercent'><%= (overcost ? Y.Wegas.I18n.t('pmg.project.percentOfInitialBudget', {percent: overcost}).capitalize() : '' )%></span>\n</div>"
                             },
                             {
                                 "type": "Template",
@@ -1001,7 +1013,7 @@
                                     "@class": "Script",
                                     "content": "Variable.find(gameModel, \"tasks\");\n"
                                 },
-                                "custom": "<%  var fixedCosts=0, wages=0, total=0, taskTotal=0, projectFixedCost = Y.Wegas.Facade.Variable.cache.find('name', 'projectFixedCosts').getInstance().get('value'), projectUnworkedHours = Y.Wegas.Facade.Variable.cache.find('name', 'projectUnworkedHours').getInstance().get('value'), bacs = Y.Wegas.PMGHelper.getBACTotal(), overcost; for(var i=0; i<this.variable.get('items').length; i++) { var properties = this.variable.get('items')[i].getInstance().get('properties'); wages = wages + parseFloat(properties.wages); if (properties.completeness > 0) fixedCosts = fixedCosts + parseFloat(properties.fixedCosts); } taskTotal = wages + fixedCosts + projectUnworkedHours; total = taskTotal + projectFixedCost; overcost = (bacs <= 0 ? \"\" : Math.round(parseInt((total * 10000 / bacs), 10)/100)); %> <div class='projectTotalCost'><span class='label'><%= Y.Wegas.I18n.t('pmg.evm.ac').capitalize() %></span><span class='variableValue'><%= total %></span><span class='variablePercent'><%= Y.Wegas.I18n.t('pmg.project.percentOfBac', {percent: overcost}).capitalize() %></span></div>"
+                                "custom": "<%  var fixedCosts=0, wages=0, total=0, taskTotal=0, projectFixedCost = Y.Wegas.Facade.Variable.cache.find('name', 'projectFixedCosts').getInstance().get('value'), projectUnworkedHours = Y.Wegas.Facade.Variable.cache.find('name', 'projectUnworkedHours').getInstance().get('value'), bacs = Y.Wegas.PMGHelper.getBACTotal(), overcost; for(var i=0; i<this.variable.get('items').length; i++) { var properties = this.variable.get('items')[i].getInstance().get('properties'); wages = wages + parseFloat(properties.wages); if (properties.completeness > 0) fixedCosts = fixedCosts + parseFloat(properties.fixedCosts); } taskTotal = wages + fixedCosts + projectUnworkedHours; total = taskTotal + projectFixedCost; overcost = (bacs <= 0 ? \"\" : Math.round(parseInt((total * 10000 / bacs), 10)/100)); %> <div class='projectTotalCost'><span class='label'><%= Y.Wegas.I18n.t('pmg.evm.ac').capitalize() %></span><span class='variableValue'><%= total %></span><span class='variablePercent'><%= (overcost ? Y.Wegas.I18n.t('pmg.project.percentOfBac', {percent: overcost}).capitalize() : '')  %></span></div>"
                             }
                         ]
                     },
@@ -1074,7 +1086,7 @@
                     {
                         "type": "PmgSlidePanel",
                         "cssClass": "indicators-management chart",
-                        "title": "<%= Y.Wegas.I18n.t('pmg.project.history').capitalize() %> %managementApproval% <%= Y.Wegas.I18n.t('global.and') %> %userApproval%",
+                        "title": "<%= Y.Wegas.I18n.t('pmg.project.history').capitalize().colonize() %> %managementApproval% <%= Y.Wegas.I18n.t('global.and') %> %userApproval%",
                         "animation": false,
                         "openByDefault": true,
                         "children": [
@@ -1101,7 +1113,7 @@
                     {
                         "type": "PmgSlidePanel",
                         "cssClass": "indicators-quality chart",
-                        "title": "<%= Y.Wegas.I18n.t('pmg.project.history').capitalize() %> <%= Y.Wegas.I18n.t('pmg.indicators.quality') %>, <%= Y.Wegas.I18n.t('pmg.indicators.costs') %> <%= Y.Wegas.I18n.t('global.and') %> <%= Y.Wegas.I18n.t('pmg.indicators.schedule') %>",
+                        "title": "<%= Y.Wegas.I18n.t('pmg.project.history').capitalize().colonize() %> <%= Y.Wegas.I18n.t('pmg.indicators.quality').capitalize() %>, <%= Y.Wegas.I18n.t('pmg.indicators.costs').capitalize() %> <%= Y.Wegas.I18n.t('global.and') %> <%= Y.Wegas.I18n.t('pmg.indicators.schedule').capitalize() %>",
                         "animation": false,
                         "openByDefault": true,
                         "children": [
@@ -1174,7 +1186,7 @@
                         "allowHTML": true
                     },
                     {
-                        "label": "<%= Y.Wegas.I18n.t('pmg.tasks.estimatedDuration').capitalize() %>",
+                        "label": "<%== Y.Wegas.I18n.t('pmg.tasks.estimatedDuration').capitalize() %>",
                         "width": "54px",
                         "name": "Estimatedduration",
                         "key": "instance£properties£duration",
@@ -1593,7 +1605,7 @@
                         "sortable": false
                     },
                     {
-                        "label": "<%= Y.Wegas.I18n.t('pmg.tasks.estimatedDuration').capitalize() %>",
+                        "label": "<%== Y.Wegas.I18n.t('pmg.tasks.estimatedDuration').capitalize() %>",
                         "width": "54px",
                         "name": "Estimatedduration",
                         "key": "instance.properties.duration",

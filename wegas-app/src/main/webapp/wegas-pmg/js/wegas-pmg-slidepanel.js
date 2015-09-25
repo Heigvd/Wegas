@@ -121,7 +121,7 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                         sortable: false,
                         allowHTML: true
                     }, {
-                        label: "<%= Y.Wegas.I18n.t('pmg.resources.wage').capitalize() %>",
+                        label: "<%= Y.Wegas.I18n.t('pmg.resources.wages').capitalize() %>",
                         key: "instance.properties.wage",
                         sortable: false
                     }, {
