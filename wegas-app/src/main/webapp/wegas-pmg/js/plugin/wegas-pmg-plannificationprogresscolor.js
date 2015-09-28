@@ -46,6 +46,9 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
                 if (parseInt(properties.completeness, 10) < 100) {
                     taskDesc.timeSolde = taskInst.getRemainingTime();
                     taskDesc.startPlannif = taskInst.getFirstPlannedPeriod();
+                    taskDesc.beginAt = undefined;
+                    taskDesc.endAt = undefined;
+                    taskDesc.planned= [];
 
                     this.taskTable[taskDesc.get("id")] = taskDesc;
                 }

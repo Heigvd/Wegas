@@ -46,6 +46,11 @@ YUI.add('wegas-pmg-planification', function(Y) {
             }, this));
         },
         request: function(taskInstanceId, time, method, cell) {
+            if (method === "DELETE") {
+                            cell.setContent('<span class="unplanned loading"></span>');
+                        } else {
+                            cell.setContent('<span class="booked planning loading"></span>');
+                        }
             Wegas.Facade.Variable.sendQueuedRequest({
                 request: "/ResourceDescriptor/Player/" + Wegas.Facade.Game.get('currentPlayerId') + "/Plan/" + taskInstanceId + "/" + time,
                 cfg: {
@@ -57,7 +62,7 @@ YUI.add('wegas-pmg-planification', function(Y) {
                         if (method === "DELETE") {
                             cell.setContent("");
                         } else {
-                            cell.append('<span class="booked planning"></span>');
+                            cell.setContent('<span class="booked planning"></span>');
                         }
                     }
                 }

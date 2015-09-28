@@ -10,6 +10,7 @@
 
 .yui3-datatable-table .maybe,
 .yui3-datatable-table .booked,
+.yui3-datatable-table .unplanned,
 .yui3-datatable-table .baseline,
 .yui3-datatable-table .worked,
 .yui3-datatable-table .activity,
@@ -21,6 +22,7 @@
     height: 14px;
 }
 
+.gantt-planning-page .unplanned,
 .gantt-execution-page .baseline,
 .pmg-legend .baseline {
     background-color: #878787;
@@ -78,14 +80,8 @@
     background-color: #B6F1EC;
 }
 
-.yui3-datatable-col-instanceÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£propertiesÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£automaticMode {
-    cursor: pointer;
-}
-
 .yui3-datatable-table .fill100 {
 }
-
-
 
 .yui3-datatable-table .fill0to25 {
     margin-right: 75%;
@@ -688,14 +684,23 @@ label.choice .choice__box {
     overflow: hidden
 }
 
-.yui3-datatable-col-instanceÂ£propertiesÂ£automaticMode {
+.yui3-datatable-cell.automatic-mode-toogle {
     cursor: pointer;
 }
-.yui3-datatable-col-instanceÂ£propertiesÂ£automaticMode > * {
+.yui3-datatable-cell.automatic-mode-toogle > * {
     float: left;
     font-size: 0.8em;
     display: block; 
 }
+
+.yui3-datatable-cell.automatic-mode-toogle.loading .choice__box {
+    -webkit-animation: fa-spin 2s infinite linear;
+    animation: fa-spin 2s infinite linear;
+}
+
+/*.yui3-datatable-cell.automatic-mode-toogle.loading:after {
+    content: "L"
+}*/
 
 label.choice.choice--toogle.Gantt .choice__box .choice__box__display {
     left: 0px;
@@ -703,6 +708,10 @@ label.choice.choice--toogle.Gantt .choice__box .choice__box__display {
 
 label.choice.choice--toogle.ASAP .choice__box .choice__box__display {
     left: 8px;
+}
+
+.yui3-datatable-cell.automatic-mode-toogle:hover label.choice.choice--toogle .choice__box .choice__box__display {
+    background: #53A29D;
 }
 
 label.choice.choice--toogle .choice__box .choice__box__display {
