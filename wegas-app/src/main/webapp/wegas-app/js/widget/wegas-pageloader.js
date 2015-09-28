@@ -236,6 +236,7 @@ YUI.add("wegas-pageloader", function(Y) {
                                 widget.render(this.get(CONTENTBOX));
                                 widget["@pageId"] = widgetCfg["@pageId"];       // @HACK set up a reference to the page
                                 this.set(WIDGET, widget);
+                                this.set("pageId", widget["@pageId"], {noquery: true});
                             } catch (e) {
                                 this.set("widgetCfg", widgetCfg);
                                 this.get(CONTENTBOX).setContent("<center class=" + pageloaderErrorMessageClass +
