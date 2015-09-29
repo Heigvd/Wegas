@@ -34,6 +34,7 @@ gulp.task("compress-css", ["submodule"], function() {
     "use strict";
     return gulp.src(["target/Wegas/**/*.css",
             "!target/Wegas/lib/**",
+            "!target/Wegas/wegas-stats/**/*.css",
             "!**/*-min.css"],
         {base: "target/Wegas"})
         .pipe(sourcemaps.init())
@@ -50,6 +51,7 @@ gulp.task("compress-js", ["submodule"], function() {
             "!**/*-min.js",
             "!**/gulpfile.js",
             "!target/Wegas/wegas-lobby/**/*.js",
+            "!target/Wegas/wegas-stats/**/*.js",
             "!target/Wegas/scripts/*.js"],
         {base: "target/Wegas"})
         .pipe(sourcemaps.init())

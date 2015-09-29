@@ -531,6 +531,7 @@
 .yui3-skin-sam .wegas-form.wegas-console-custom .inputEx-Group fieldset .inputEx-Group{
     width:50%;
     float:right;
+    clear:right;
 }
 .yui3-skin-sam .wegas-form.wegas-console-custom .inputEx-Group fieldset .inputEx-Group:first-child{
     width:50%;

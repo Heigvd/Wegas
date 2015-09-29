@@ -12,7 +12,6 @@
 YUI.add('wegas-console-custom', function(Y) {
     'use strict';
     var Wegas = Y.Wegas,
-        TEST = 'PMGHelper.sendMessage(${"type":"string", "label":"From"}, ${"type":"string", "label":"Subject"}, ${"type":"html", "label":"Body", "required":true}, []);',
         running = false,
         CONTENTBOX = "contentBox",
         inputEx = Y.inputEx,
@@ -47,18 +46,18 @@ YUI.add('wegas-console-custom', function(Y) {
             [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
                 BOUNDING_TEMPLATE: '<div class="wegas-form"></div>',
                 renderUI: function() {
-                    var cb = this.get(CONTENTBOX), menu, contents, contentBasics, contentAdvanced, cfg;       
-                    if(this.get("customImpacts").length > 0){
-                        menu = cb.append(""+
-                            "<div class='modal--menu'>"+
-                                "<button id='basics-impacts-btn' class='modal--tab-btn modal--tab-btn-selected'>Basics impacts</button>"+
-                                "<button id='advanced-impacts-btn' class='modal--tab-btn'>Advanced impacts</button>"+
-                            "</div>").one(".modal--menu");                    
-                        contents = cb.append(""+
-                            "<div class='modal--content-tabs'>"+
-                                "<div class='modal--content-basics modal--content-tab modal--content-selected'></div>"+
-                                "<div class='modal--content-advanced modal--content-tab'><div class='content-advanced-script'></div><button class='content-advanced-script-add'>Add Impact</button></div>"+
-                            "</div>");
+                    var cb = this.get(CONTENTBOX), menu, contents, contentBasics, contentAdvanced, cfg;
+                    if (this.get("customImpacts").length > 0) {
+                        menu = cb.append("" +
+                                         "<div class='modal--menu'>" +
+                                         "<button id='basics-impacts-btn' class='modal--tab-btn modal--tab-btn-selected'>Basics impacts</button>" +
+                                         "<button id='advanced-impacts-btn' class='modal--tab-btn'>Advanced impacts</button>" +
+                                         "</div>").one(".modal--menu");
+                        contents = cb.append("" +
+                                             "<div class='modal--content-tabs'>" +
+                                             "<div class='modal--content-basics modal--content-tab modal--content-selected'></div>" +
+                                             "<div class='modal--content-advanced modal--content-tab'><div class='content-advanced-script'></div><button class='content-advanced-script-add'>Add Impact</button></div>" +
+                                             "</div>");
                         contentBasics = cb.one(".modal--content-basics");
                         contentAdvanced = cb.one(".modal--content-advanced .content-advanced-script");
                         cfg = {
@@ -75,25 +74,28 @@ YUI.add('wegas-console-custom', function(Y) {
                         inputEx.use(cfg, Y.bind(function() {
                             this._form = new inputEx(cfg);
                         }, this));
-                    }else{
+                    } else {
                         cb.addClass("modal--content-advanced modal--without-menu");
-                        contentAdvanced = cb.append("<div class='content-advanced-script'></div><button class='content-advanced-script-add'>Add Impact</button>").one(".content-advanced-script");
-                    }        
+                        contentAdvanced = cb.append(
+                            "<div class='content-advanced-script'></div><button class='content-advanced-script-add'>Add Impact</button>").one(
+                            ".content-advanced-script");
+                    }
                     this.srcField = new Y.inputEx.WysiwygScript({
                         parentEl: contentAdvanced
                     });
-                    cb.append('<div class="wegas-status-bar wegas-status-bar-hidden"><div class="results wegas-advanced-feature"></div><div class="status"></div></div>');
+                    cb.append(
+                        '<div class="wegas-status-bar wegas-status-bar-hidden"><div class="results wegas-advanced-feature"></div><div class="status"></div></div>');
                     Y.one(this.srcField.getEl()).all("div > button").remove();
                 },
                 bindUI: function() {
-                    Y.Wegas.Facade.Variable.on("WegasOutOfBoundException", function(e){
+                    Y.Wegas.Facade.Variable.on("WegasOutOfBoundException", function(e) {
                         var message;
-                        if(e.value < e.min){
+                        if (e.value < e.min) {
                             message = e.variableName + " can not be less than " + e.min;
-                        }else{
-                            if(e.value > e.max){
+                        } else {
+                            if (e.value > e.max) {
                                 message = e.variableName + " can not be more than " + e.max;
-                            }else{
+                            } else {
                                 message = "Something's wrong with " + e.variableName;
                             }
                         }
@@ -102,7 +104,7 @@ YUI.add('wegas-console-custom', function(Y) {
                     }, this);
                     this.get(CONTENTBOX).delegate("click", function(e) {
                         var modalContent = this.get(CONTENTBOX).one(".modal--content-selected");
-                        if(!modalContent.hasClass("modal--content-basics")){
+                        if (!modalContent.hasClass("modal--content-basics")) {
                             modalContent.removeClass("modal--content-selected");
                             this.get(CONTENTBOX).one(".modal--content-basics").addClass("modal--content-selected");
                             this.get(CONTENTBOX).one(".modal--tab-btn-selected").removeClass("modal--tab-btn-selected");
@@ -111,56 +113,56 @@ YUI.add('wegas-console-custom', function(Y) {
                     }, "#basics-impacts-btn", this);
                     this.get(CONTENTBOX).delegate("click", function(e) {
                         var modalContent = this.get(CONTENTBOX).one(".modal--content-selected");
-                        if(!modalContent.hasClass("modal--content-advanced")){
+                        if (!modalContent.hasClass("modal--content-advanced")) {
                             modalContent.removeClass("modal--content-selected");
                             this.get(CONTENTBOX).one(".modal--content-advanced").addClass("modal--content-selected");
                             this.get(CONTENTBOX).one(".modal--tab-btn-selected").removeClass("modal--tab-btn-selected");
-                            this.get(CONTENTBOX).one("#advanced-impacts-btn").addClass("modal--tab-btn-selected"); 
+                            this.get(CONTENTBOX).one("#advanced-impacts-btn").addClass("modal--tab-btn-selected");
                         }
                     }, "#advanced-impacts-btn", this);
                     this.get(CONTENTBOX).delegate("click", function(e) {
                         var impacts = this.get(CONTENTBOX).all(".wegas-inputex-variabledescriptorselect-group");
-      
-                        if(impacts.size() < 5){
+
+                        if (impacts.size() < 5) {
                             this.add();
                         }
-                        if(impacts.size() === 0){
+                        if (impacts.size() === 0) {
                             this.get(CONTENTBOX).one(".content-advanced-script-add").addClass("secondary");
                         }
-                        if(impacts.size() === 4){
+                        if (impacts.size() === 4) {
                             e.currentTarget.remove();
                         }
                     }, ".content-advanced-script-add", this);
-                    this.get(CONTENTBOX).delegate("keyup", function(e){
-                        if(this.get("value").length > 0){
-                            if(!this.hasClass("selected")){
-                                this.addClass("selected"); 
+                    this.get(CONTENTBOX).delegate("keyup", function(e) {
+                        if (this.get("value").length > 0) {
+                            if (!this.hasClass("selected")) {
+                                this.addClass("selected");
                             }
-                        }else{
-                            if(this.hasClass("selected")){
-                                this.removeClass("selected"); 
+                        } else {
+                            if (this.hasClass("selected")) {
+                                this.removeClass("selected");
                             }
                         }
                     }, "input[type='text']");
-                }, 
+                },
                 viewSrc: function() {
                     this.srcField.viewSrc.fire("click");
                 },
                 add: function() {
-                    this.srcField.addButton.fire("click");                   
+                    this.srcField.addButton.fire("click");
                 },
                 setStatus: function(status) {
                     this.get(CONTENTBOX).one(".wegas-status-bar .status").set("text", status);
                 },
-                getBasicsImpactsScript: function(){
+                getBasicsImpactsScript: function() {
                     if (!this.validate()) {
                         this.showMessage("error", "Some fields are invalid", 1000);
                         return false;
                     }
                     return this.extractForm();
                 },
-                getAdvancedImpactsScript: function(){
-                    if(!this.srcField.validate()){
+                getAdvancedImpactsScript: function() {
+                    if (!this.srcField.validate()) {
                         this.showMessage("error", "Some fields are invalid", 1000);
                         return false;
                     }
@@ -171,17 +173,17 @@ YUI.add('wegas-console-custom', function(Y) {
                     if (running) {
                         return;
                     }
-                    if(this.get("customImpacts").length > 0){
+                    if (this.get("customImpacts").length > 0) {
                         tabSelected = this.get(CONTENTBOX).one(".modal--content-selected");
-                        if(tabSelected.hasClass("modal--content-basics")){
+                        if (tabSelected.hasClass("modal--content-basics")) {
                             script = this.getBasicsImpactsScript();
-                        }else{
+                        } else {
                             script = this.getAdvancedImpactsScript();
                         }
-                    }else{
+                    } else {
                         script = this.getAdvancedImpactsScript();
                     }
-                    if(script !== false){
+                    if (script) {
                         running = true;
                         this.get(CONTENTBOX).one(".wegas-status-bar").removeClass("wegas-status-bar-hidden");
                         this.get(CONTENTBOX).one(".status").addClass("status--running");
@@ -190,36 +192,41 @@ YUI.add('wegas-console-custom', function(Y) {
                                 success: Y.bind(function(event) {
                                     running = false;
                                     this.get(CONTENTBOX).one(".wegas-status-bar").addClass("wegas-status-bar-transition");
-                                    Y.later(200, this, function(){
-                                        this.get(CONTENTBOX).one(".wegas-status-bar").removeClass("wegas-status-bar-transition");
-                                        this.get(CONTENTBOX).one(".status").removeClass("status--running").addClass("status--success");
+                                    Y.later(200, this, function() {
+                                        this.get(CONTENTBOX).one(".wegas-status-bar").removeClass(
+                                            "wegas-status-bar-transition");
+                                        this.get(CONTENTBOX).one(".status").removeClass("status--running").addClass(
+                                            "status--success");
                                         this.hideOverlay();
-                                        this.get(CONTENTBOX).one(".results").prepend('<div class="result">Script exectuted. Returned value: ' +
-                                                                                     Y.JSON.stringify(event.response.results.entities[0]) +
-                                                                                     "</div>");
-                                        if(modale){
-                                            Y.later(1000, window, function(){
+                                        this.get(CONTENTBOX).one(".results").prepend(
+                                            '<div class="result">Script exectuted. Returned value: ' +
+                                            Y.JSON.stringify(event.response.results.entities[0]) +
+                                            "</div>");
+                                        if (modale) {
+                                            Y.later(1000, null, function() {
                                                 modale.close();
-                                            }, [], false);
+                                            });
                                         }
-                                    }, [], false);
+                                    });
                                 }, this),
                                 failure: Y.bind(function(e) {
                                     running = false;
-                                    this.get(CONTENTBOX).one(".status").removeClass("status--running").addClass("status--error");
+                                    this.get(CONTENTBOX).one(".status").removeClass("status--running").addClass(
+                                        "status--error");
                                     this.hideOverlay();
-                                    this.get(CONTENTBOX).one(".results").prepend('<div class="result error">Error executing script: ' +
-                                                                                 e.response.results.message + "</div>");
-                                     Y.later(2500, this, function(){
+                                    this.get(CONTENTBOX).one(".results").prepend(
+                                        '<div class="result error">Error executing script: ' +
+                                        e.response.results.message + "</div>");
+                                    Y.later(2500, this, function() {
                                         this.get(CONTENTBOX).one(".wegas-status-bar").addClass("wegas-status-bar-hidden");
                                         this.get(CONTENTBOX).one(".status").removeClass("status--error");
                                         this.setStatus("");
-                                    }, [], false);
+                                    });
                                 }, this)
                             }
                         }, this.get("player"));
                     }
-                }, 
+                },
                 extractForm: function() {
                     var inputs = this._form.inputs, i, out = [];
                     for (i = 0; i < inputs.length; i += 1) {
@@ -243,7 +250,7 @@ YUI.add('wegas-console-custom', function(Y) {
                 destructor: function() {
                     this.srcField.destroy();
                     this.srcField = null;
-                    if(this.get("customImpacts").length > 0){
+                    if (this.get("customImpacts").length > 0) {
                         this._form.destroy();
                         this._form = null;
                     }

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE html>
+<!--
+  ~ Wegas
+  ~ http://wegas.albasim.ch
+  ~
+  ~ Copyright (c) 2015 School of Business and Engineering Vaud, Comem
+  ~ Licensed under the MIT License
+  -->
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html">
+    <h:head>
+
+        <meta charset="UTF-8"/>
+        <meta http-equiv="Content-Type" content="text/html"/>
+        <meta http-equiv="Content-Language" content="#{requestController.locale.toLanguageTag()}"/>
+        <title>Wegas Stats</title>
+        <script type="application/javascript">
+            window.config={
+                debug: #{requestController.debugMode()},
+                contextPath:"#{request.contextPath}"
+            }
+        </script>
+    </h:head>
+    <h:body class="wegas-stats-default">
+        <div class="app"></div>
+        <script src="./wegas-stats/build/vendor.bundle.js" charset="utf-8"></script>
+        <script src="./wegas-stats/build/app.bundle-min.js" charset="utf-8"></script>
+    </h:body>
+
+
+</html>

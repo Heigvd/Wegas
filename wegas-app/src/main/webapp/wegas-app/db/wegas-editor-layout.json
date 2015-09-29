@@ -1,7 +1,8 @@
 {
     "type": "ResizableLayout",
     "cssClass": "wegas-editview",
-    "plugins": [{
+    "plugins": [
+        {
             "fn": "PopupListener"
         }
     ],
@@ -187,6 +188,7 @@
                         "type": "Tab",
                         "label": "Pages",
                         "cssClass": "editor-pages",
+                        "plugins": [{"fn": "UneditablePageDisabler"}],
                         "children": [
                             {
                                 "type": "PageTreeview"
@@ -207,9 +209,11 @@
                     {
                         "type": "Tab",
                         "label": "Preview",
-                        "plugins": [{
+                        "plugins": [
+                            {
                                 "fn": "TabDocker"
-                            }],
+                            }
+                        ],
                         "children": [
                             {
                                 "type": "PageLoader",
@@ -249,12 +253,14 @@
                         ]
                     }
                 ],
-                "plugins": [{
+                "plugins": [
+                    {
                         "fn": "ExtraTabs",
                         "cfg": {
                             "dock": true
                         }
-                    }]
+                    }
+                ]
             }
         ]
     },
