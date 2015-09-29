@@ -30,7 +30,8 @@ YUI.add("wegas-i18n-pmg-fr", function(Y) {
                 history: "historique",
                 nextPeriod: "periode suivante",
                 nextPhase: "phase suivante",
-                news: "nouvelles"
+                news: "nouvelles",
+                confirm: "Êtes-vous sûr de vouloir continuer ?"
             },
             indicators: {
                 costs: "coûts",
@@ -57,7 +58,7 @@ YUI.add("wegas-i18n-pmg-fr", function(Y) {
             tasks: {
                 index: "n°",
                 name: "nom",
-                estimatedDuration: "durée estimée",
+                estimatedDuration: "durée <br/>estimée",
                 duration: "durée",
                 fixedCosts: "frais fixes",
                 requirements: "ressources requises",

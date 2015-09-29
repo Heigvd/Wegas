@@ -11,7 +11,7 @@
 /*global Y, app, persistence */
 
 app.once("preRender", function() {
-    var lang = "en" || Y.Wegas.Facade.Variable.cache.find("name", "language").getValue();
+    var lang = Y.Wegas.Facade.Variable.cache.find("name", "language").getValue();
     Y.Wegas.I18n.setLang(lang);
     Y.use("wegas-i18n-pmg-" + lang);
 });

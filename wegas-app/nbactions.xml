@@ -41,7 +41,17 @@
             <skipTests>true</skipTests>
         </properties>
     </action>
-    
+     <action>
+        <actionName>CUSTOM-War exploded -skipTests</actionName>
+        <displayName>Explode -skipTests</displayName>
+        <goals>
+            <goal>war:exploded</goal>
+        </goals>
+        <properties>
+            <netbeans.deploy>true</netbeans.deploy>
+            <skipTests>true</skipTests>
+        </properties>
+    </action>   
     <action>
         <actionName>CUSTOM-clean build run exploded skiptest</actionName>
         <displayName>Clean Build Run -exploded -skipTests</displayName>

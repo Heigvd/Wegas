@@ -179,7 +179,7 @@
                                                                         "language": "JavaScript",
                                                                         "content": "PMGSimulation.nextPeriod()"
                                                                     },
-                                                                    "message": "Are you sure you want to continue?"
+                                                                    "message": "<%= Y.Wegas.I18n.t('pmg.navigation.confirm') %>"
                                                                 }
                                                             }
                                                         ]

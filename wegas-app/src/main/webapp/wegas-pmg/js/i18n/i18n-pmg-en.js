@@ -31,7 +31,8 @@ YUI.add("wegas-i18n-pmg-en", function(Y) {
                 history: "history",
                 nextPeriod: "next period",
                 nextPhase: "next phase",
-                news: "news"
+                news: "news",
+                confirm: "Are you sure you want to continue?"
             },
             indicators: {
                 costs: "costs",

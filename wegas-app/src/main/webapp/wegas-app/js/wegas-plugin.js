@@ -477,7 +477,7 @@ YUI.add("wegas-plugin", function(Y) {
     var ConfirmExecuteScriptAction = Y.Base.create("ConfirmExecuteScriptAction", ExecuteScriptAction, [], {
         execute: function() {
             if (!this.get(HOST).get("disabled")) {
-                Wegas.Panel.confirm(this.get("message"), Y.bind(ConfirmExecuteScriptAction.superclass.execute, this));
+                Wegas.Panel.confirm(Y.Template.Micro.compile(this.get("message"))(), Y.bind(ConfirmExecuteScriptAction.superclass.execute, this));
             }
         }
     }, {
