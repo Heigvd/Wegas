@@ -259,6 +259,11 @@
                 <version>9.0.7</version>
                 <type>jar</type>
             </dependency>
+            <dependency>
+                <groupId>net.sf.jtidy</groupId>
+                <artifactId>jtidy</artifactId>
+                <version>r938</version>
+            </dependency>
 
             <!-- For string escape utils -->
             <dependency>
@@ -733,7 +738,7 @@
                     <scmBranch>gh-pages</scmBranch>
                 </configuration>
             </plugin>
-<!--             Site deployment on github 
+            <!--             Site deployment on github 
             <plugin>
                 <groupId>com.github.github</groupId>
                 <artifactId>site-maven-plugin</artifactId>
