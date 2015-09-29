@@ -8,7 +8,9 @@
 package com.wegas.app.pdf;
 
 import com.lowagie.text.DocumentException;
+import com.sun.xml.bind.StringInputStream;
 import com.wegas.core.Helper;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -40,6 +42,8 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.tidy.Tidy;
+import org.w3c.tidy.ant.JTidyTask;
 import org.xhtmlrenderer.pdf.ITextOutputDevice;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 import org.xhtmlrenderer.pdf.ITextUserAgent;
@@ -81,11 +85,11 @@ public class PdfRenderer implements Filter {
 
     /**
      *
-     * @param request The servlet request we are processing
+     * @param request  The servlet request we are processing
      * @param response The servlet response we are creating
-     * @param chain The filter chain we are processing
+     * @param chain    The filter chain we are processing
      *
-     * @exception IOException if an input/output error occurs
+     * @exception IOException      if an input/output error occurs
      * @exception ServletException if a servlet error occurs
      */
     @Override
@@ -113,7 +117,16 @@ public class PdfRenderer implements Filter {
                     /*
                      * convert xhtml from String to XML Document 
                      */
-                    StringReader contentReader = new StringReader(capContent.getContent());
+                    String content = capContent.getContent();
+                    Tidy tidy = new Tidy();
+                    tidy.setXmlOut(true);
+
+                    OutputStream os = new ByteArrayOutputStream();
+
+                    tidy.parse(new StringInputStream(content), os);
+                    logger.error("CONTENT: " + os.toString());
+
+                    StringReader contentReader = new StringReader(os.toString());
                     InputSource source = new InputSource(contentReader);
 
                     Document xhtmlDocument = documentBuilder.parse(source);
