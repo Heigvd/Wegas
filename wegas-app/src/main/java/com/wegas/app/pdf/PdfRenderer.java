@@ -124,7 +124,6 @@ public class PdfRenderer implements Filter {
                     OutputStream os = new ByteArrayOutputStream();
 
                     tidy.parse(new StringInputStream(content), os);
-                    logger.error("CONTENT: " + os.toString());
 
                     StringReader contentReader = new StringReader(os.toString());
                     InputSource source = new InputSource(contentReader);
