@@ -44,6 +44,8 @@ YUI.add('wegas-pmg-autoreservation-color', function(Y) {
         onClick: function(e) {
             var resourceD = this.get("host").datatable.getRecord(e.target).get("descriptor");
 
+            this.get("host").datatable.getCell(e.target).addClass("loading");
+
             Wegas.Facade.Variable.sendQueuedRequest({
                 request: "/Script/Run/" + Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
@@ -60,6 +62,7 @@ YUI.add('wegas-pmg-autoreservation-color', function(Y) {
             this.taskTable = {};
             this.fillTaskTable();
             Y.Wegas.PMGHelper.computePert(this.taskTable, this.get("host").schedule.currentPeriod(), this.get("host").schedule.currentPhase());
+            this.get("host").get("contentBox").all(".yui3-datatable-col-instance£properties£automaticMode").addClass("automatic-mode-toogle");
             this.renderCells();
         },
         fillTaskTable: function() {
@@ -75,10 +78,12 @@ YUI.add('wegas-pmg-autoreservation-color', function(Y) {
                 taskDesc = Wegas.Facade.Variable.cache.find("id", items[i].get("id"));
                 taskInst = taskDesc.getInstance();
                 properties = taskInst.get("properties");
-                if (parseInt(properties.completeness, 10) < 100) {
+                if (taskInst.get("active") && parseInt(properties.completeness, 10) < 100) {
                     taskDesc.timeSolde = taskInst.getRemainingTime();
                     taskDesc.startPlannif = taskInst.getFirstPlannedPeriod();
-
+                    taskDesc.beginAt = undefined;
+                    taskDesc.endAt = undefined;
+                    taskDesc.planned= [];
                     this.taskTable[taskDesc.get("id")] = taskDesc;
                 }
             }

@@ -253,15 +253,18 @@ public class ResourceFacade {
         switch (type) {
             case "occupations":
                 Occupation o = this.findOccupation(abstractAssignementId);
-                getEntityManager().remove(o);
+                o.getResourceInstance().getOccupations().remove(o);
+               // getEntityManager().remove(o);
                 break;
             case "assignment":
                 Assignment a = this.findAssignment(abstractAssignementId);
-                getEntityManager().remove(a);
+                a.getResourceInstance().getAssignments().remove(a);
+//                getEntityManager().remove(a);
                 break;
             default:
                 Activity ac = this.findActivity(abstractAssignementId);
-                getEntityManager().remove(ac);
+                ac.getResourceInstance().getActivities().remove(ac);
+//                getEntityManager().remove(ac);
         }
     }
 

@@ -48,10 +48,12 @@ app.once("render",
                     taskDesc = tasks.item(i);
                     taskInst = taskDesc.getInstance();
                     properties = taskInst.get("properties");
-                    if (parseInt(properties.completeness, 10) < 100) {
+                    if (taskInst.get("active") & parseInt(properties.completeness, 10) < 100) {
                         taskDesc.timeSolde = taskInst.getRemainingTime();
                         taskDesc.startPlannif = taskInst.getFirstPlannedPeriod();
-
+                        taskDesc.beginAt = undefined;
+                        taskDesc.endAt = undefined;
+                        taskDesc.planned = [];
                         taskTable[taskDesc.get("id")] = taskDesc;
                     }
                 }

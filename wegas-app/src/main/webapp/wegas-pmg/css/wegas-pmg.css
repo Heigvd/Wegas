@@ -295,6 +295,7 @@
     display:block;
     position:relative;
     width:630px;
+    /* width:630++++px; */
     height:100%;
     float:right;
     border-left:solid 1px #4f515d;
@@ -1175,6 +1176,21 @@ td.yui3-datatable-col-Realised:after {
 
 
 /*---------------------------- schedulecolumn -------------------------------- */
+
+
+
+.gantt-planning-page .yui3-datatable-cell.present:hover:after,
+.gantt-planning-page .yui3-datatable-cell.futur:hover:after,
+.wegas-pmg-reservation .yui3-datatable-cell.present:hover:after,
+.wegas-pmg-reservation .yui3-datatable-cell.futur:hover:after {
+    background-color: rgba(0, 0, 0, .25);
+    height: 14px;
+    position: absolute;
+    width: 100%;
+    content: " ";
+    top: 13px;
+}
+
 .yui3-datatable-table th.schedulecolumn {
     text-align: center;
     width: 3.4em;
@@ -1183,6 +1199,7 @@ td.yui3-datatable-col-Realised:after {
 }
 .yui3-datatable-table .yui3-datatable-data .schedulecolumn {
     padding: 0 0 0 0;
+    position: relative;
 }
 
 .resources-page, .inbox-page{
@@ -1489,6 +1506,11 @@ td.yui3-datatable-col-Realised:after {
 .wegas-pmg-reservation .noteditable-period {
     cursor: default;
 }
+
+.wegas-pmg-reservation .noteditable-period:hover {
+    background-color: white;
+}
+
 
 .wegas-pmg-resourcespanels-content .pmg-legend {
     padding: 8px 0px 0px 0px;
