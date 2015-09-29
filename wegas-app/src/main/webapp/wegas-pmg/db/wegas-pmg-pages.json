@@ -1329,7 +1329,7 @@
                                 "@class": "Script",
                                 "content": "var currentPhase = Variable.find('currentPhase').getValue(self) - 1, currentPeriod = Variable.find('currentPeriod').item(currentPhase).getValue(self); return '' + Variable.find('actions').item(currentPhase).get('label') + ' Actions';"
                             },
-                            "outputType": "html"
+                            "outputType": "pdf"
                         }
                     },
                     {
@@ -1381,7 +1381,7 @@
                                 "@class": "Script",
                                 "content": "var currentPhase = Variable.find('currentPhase').getValue(self) - 1, currentPeriod = Variable.find('currentPeriod').item(currentPhase).getValue(self); return '' + Variable.find('questions').item(currentPhase).get('label') + '(' + parseInt(currentPeriod, 10) + ') - Questions';"
                             },
-                            "outputType": "html"
+                            "outputType": "pdf"
                         }
                     },
                     {
@@ -1459,7 +1459,7 @@
                                 "@class": "Script",
                                 "content": "return \"Game History\""
                             },
-                            "outputType": "html",
+                            "outputType": "pdf",
                             "displayPath": "false"
                         }
                     },
