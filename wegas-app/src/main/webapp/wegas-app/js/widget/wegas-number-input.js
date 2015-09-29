@@ -66,23 +66,44 @@ YUI.add("wegas-number-input", function(Y) {
         },
         updateValue: function(value) {
             var desc = this.get("variable.evaluated"),
-                inst = desc.getInstance();
+                inst = desc.getInstance(),
+                min = desc.get("minValue"),
+                max = desc.get("maxValue");
+            value = +value;
+            if (Y.Lang.isNumber(value)) {
 
 
-            if ((Y.Lang.isNumber(desc.get("minValue")) && value < desc.get("minValue")) ||
-                (Y.Lang.isNumber(desc.get("maxValue")) && value > desc.get("maxValue"))) {
-                this.showMessage("error", "Number is out of bound");
+                if (Y.Lang.isNumber(min)) {
+                    if (Y.Lang.isNumber(max)) {
+                        if (value < min || value > max) {
+                            // Out of bound
+                            this.showMessage("error", Y.Wegas.I18n.t('errors.outOfBounds', {value: value, min: min, max: max}));
+                            return false;
+                        }
+                    } else {
+                        if (value < min) {
+                            this.showMessage("error", Y.Wegas.I18n.t('errors.lessThan', {value: value, min: min}));
+                            return false;
+                        }
+                    }
+                } else if (Y.Lang.isNumber(max)) {
+                    this.showMessage("error", Y.Wegas.I18n.t('errors.greaterThan', {value: value, max: max}));
+                    return false;
+                }
+
+                inst.set("value", value);
+                /*if (this.wait) {
+                 this.wait.cancel();
+                 }*/
+                /*this.wait = Y.later(750, this, function() {
+                 this.wait = null;*/
+                Y.Wegas.Facade.Variable.cache.put(inst.toObject());
+                //});
+                return true;
+            } else {
+                this.showMessage("error", Y.Wegas.I18n.t('errors.nan', {value: value}));
                 return false;
             }
-            inst.set("value", value);
-            /*if (this.wait) {
-                this.wait.cancel();
-            }*/
-            /*this.wait = Y.later(750, this, function() {
-                this.wait = null;*/
-                Y.Wegas.Facade.Variable.cache.put(inst.toObject());
-            //});
-            return true;
         },
         updateInput: function(e) {
             var input = this.get(CONTENTBOX).one(".wegas-input"),
@@ -95,7 +116,7 @@ YUI.add("wegas-number-input", function(Y) {
         updateSlider: function(e) {
             var input = this.get(CONTENTBOX).one(".wegas-input"),
                 data = input.getData(),
-                value = +input.get("value");
+                value = input.get("value");
 
             if (data.wait) {
                 data.wait.cancel();
@@ -104,7 +125,7 @@ YUI.add("wegas-number-input", function(Y) {
                 data.wait = null;
                 if (this.updateValue(value)) {
                     if (this.xSlider) {
-                        this.xSlider.set("value", value);
+                        this.xSlider.set("value", +value);
                     }
                 }
             });

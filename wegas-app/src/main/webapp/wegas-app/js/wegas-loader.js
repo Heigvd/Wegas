@@ -15,7 +15,6 @@
 YUI().use(function(Y) {
     "use strict";
     var CSS = "css";
-
     if (!YUI_config) {
         YUI_config = {};
     }
@@ -36,13 +35,12 @@ YUI().use(function(Y) {
     YUI.addGroup = function(name, group) {
         YUI_config.groups[name] = group;
         group.combine = !YUI_config.debug;
-        group.filter = YUI_config.debug ? "raw" : "min";                        // Select raw files
-        group.base = YUI_config.Wegas.base + group.root;                        // Set up path
-        group.comboBase = YUI_config.Wegas.comboBase;                           // Set up combo path
+        group.filter = YUI_config.debug ? "raw" : "min"; // Select raw files
+        group.base = YUI_config.Wegas.base + group.root; // Set up path
+        group.comboBase = YUI_config.Wegas.comboBase; // Set up combo path
         loadModules(group);
         //YUI.applyConfig(YUI_config);
     };
-
     YUI.addGroup("wegas", {
         base: "./wegas-app/",
         root: "/wegas-app/",
@@ -52,11 +50,22 @@ YUI().use(function(Y) {
              */
             "wegas-app": {
                 requires: ["base", "plugin", "array-extras", "timers",
-                    "wegas-helper", "wegas-entity", "wegas-datasource", "font-awesome"]
+                    "wegas-helper", "wegas-entity", "wegas-datasource", "font-awesome", "template-micro", "wegas-i18n"]
             },
             "wegas-editable": {
                 requires: "inputex-jsonschema"
             },
+            "wegas-i18n-global-fr": {
+                path: 'js/i18n/i18n-global-fr.js'
+            },
+            "wegas-i18n-global-en": {
+                path: 'js/i18n/i18n-global-en.js'
+            },
+            "wegas-i18n-global": {
+                path: 'js/i18n/i18n-global.js',
+                requires: ['wegas-i18n']
+            },
+            "wegas-i18n": {},
             /**
              * Persistence
              */
@@ -197,7 +206,7 @@ YUI().use(function(Y) {
             "wegas-number-input": {
                 path: "js/widget/wegas-number-input-min.js",
                 ws_provides: "NumberInput",
-                requires: ["wegas-widget", "wegas-button", "slider"]
+                requires: ["wegas-widget", "wegas-button", "slider", "wegas-i18n-global"]
             },
             "wegas-text": {
                 path: "js/widget/wegas-text-min.js",
@@ -229,7 +238,7 @@ YUI().use(function(Y) {
             "wegas-inbox": {
                 path: "js/widget/wegas-inbox-min.js",
                 requires: ["tabview", "wegas-inboxcss", "wegas-tabviewcss",
-                    "wegas-widgettoolbar", "wegas-translator", "template-micro"],
+                    "wegas-widgettoolbar", "template-micro", "wegas-i18n-global"],
                 ws_provides: "InboxDisplay"
             },
             "wegas-inboxcss": {
@@ -260,10 +269,6 @@ YUI().use(function(Y) {
                 path: "js/widget/wegas-googletranslate-min.js",
                 requires: "googletranslate",
                 ws_provides: "GoogleTranslate"
-            },
-            "wegas-translator": {
-                pkg: "js/",
-                lang: ["fr"]
             },
             /** Plugins **/
             "wegas-plugin": {
@@ -357,7 +362,6 @@ YUI().use(function(Y) {
             }
         }
     });
-
     /**
      * Utilities
      */
@@ -759,14 +763,14 @@ YUI().use(function(Y) {
             },
             "wegas-mcq-tabview": {
                 requires: ["tabview", "wegas-tabviewcss", "wegas-gallery",
-                    "wegas-translator", "wegas-mcq-tabviewcss", "wegas-mcq-printcss",
-                    "wegas-mcq-entities"],
+                    "wegas-mcq-tabviewcss", "wegas-mcq-printcss",
+                    "wegas-mcq-entities", "wegas-i18n-mcq"],
                 ws_provides: "MCQTabView"
             },
             "wegas-mcq-view": {
                 requires: ["wegas-gallery",
-                    "wegas-translator", "wegas-mcq-tabviewcss", "wegas-mcq-printcss",
-                    "wegas-mcq-entities"],
+                    "wegas-mcq-tabviewcss", "wegas-mcq-printcss",
+                    "wegas-mcq-entities", "wegas-i18n-mcq"],
                 ws_provides: "MCQView"
             },
             "wegas-mcq-tabviewcss": {
@@ -774,7 +778,18 @@ YUI().use(function(Y) {
             },
             "wegas-mcq-printcss": {
                 type: CSS
+            },
+            "wegas-i18n-mcq-fr": {
+                path: 'js/i18n/i18n-mcq-fr.js'
+            },
+            "wegas-i18n-mcq-en": {
+                path: 'js/i18n/i18n-mcq-en.js'
+            },
+            "wegas-i18n-mcq": {
+                path: 'js/i18n/i18n-mcq.js',
+                requires: ['wegas-i18n', 'wegas-i18n-global']
             }
+
         }
     });
     /**
@@ -826,7 +841,6 @@ YUI().use(function(Y) {
             }
         }
     });
-
     //YUI.addGroup("wegas-form", {
     //    base: "./wegas-form/",
     //    root: "/wegas-form/",
@@ -883,7 +897,6 @@ YUI().use(function(Y) {
             //}
         }
     });
-
     /* Other libraries */
     YUI.addGroup("wegas-libraries", {
         base: "./lib/",
@@ -957,21 +970,18 @@ YUI().use(function(Y) {
             }
         }
     };
-
     function loadModules(group) {
         var i, module, type, fileName, moduleName,
             modules = group.modules,
             allModules = [];
-
         for (moduleName in modules) {                                           // Loop through all modules
             if (modules.hasOwnProperty(moduleName)) {
-                allModules.push(moduleName);                                    // Build a list of all modules
+                allModules.push(moduleName); // Build a list of all modules
 
                 module = modules[moduleName];
                 type = module.type || "js";
                 fileName = (type === CSS) ? moduleName.replace(/-?css$/gi, "") : moduleName;
                 module.path = module.path || type + "/" + fileName + "-min." + type;
-
                 if (type === CSS && YUI_config.debug) {
                     module.path = module.path.replace(/-min/gi, "");
                 }

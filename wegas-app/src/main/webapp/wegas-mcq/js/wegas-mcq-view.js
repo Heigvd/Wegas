@@ -46,10 +46,6 @@ YUI.add('wegas-mcq-view', function(Y) {
              * Reference to each used Event handlers
              */
             this.handlers = [];
-            /**
-             * JS translator
-             */
-            this.jsTranslator = new Wegas.Translator();
         },
         /**
          * @function
@@ -81,7 +77,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                     this.showOverlay();
                     this.dataSource.sendRequest({
                         request: "/QuestionDescriptor/SelectAndValidateChoice/" + e.target.get('id') + "/Player/" +
-                                 Wegas.Facade.Game.get('currentPlayerId'),
+                            Wegas.Facade.Game.get('currentPlayerId'),
                         cfg: {
                             method: "POST"
                         },
@@ -105,7 +101,7 @@ YUI.add('wegas-mcq-view', function(Y) {
         syncUI: function() {
             var question = this.get("variable.evaluated");
             if (!question || !(question instanceof Wegas.persistence.QuestionDescriptor)) {
-                this.get(CONTENTBOX).setHTML("<em>No question</em>");
+                this.get(CONTENTBOX).setHTML("<em>" + Y.Wegas.I18n.t("mcq.empty") + "</em>");
                 return;
             }
             if (this.gallery) {
@@ -120,7 +116,6 @@ YUI.add('wegas-mcq-view', function(Y) {
             }
             // this.hideOverlay();
         },
-
         /**
          * @function
          * @param question question
@@ -148,7 +143,7 @@ YUI.add('wegas-mcq-view', function(Y) {
         },
         genMarkup: function(question) {
             var i, ret, allowMultiple = question.get("allowMultipleReplies"), cachedQuestion = this.dataSource.cache.find("id",
-                    question.get("id")),
+                question.get("id")),
                 choices = cachedQuestion.get("items"), choiceD, choiceI,
                 questionInstance = cachedQuestion.getInstance(),
                 numberOfReplies = questionInstance.get("replies").length,
@@ -189,11 +184,11 @@ YUI.add('wegas-mcq-view', function(Y) {
                     }
 
                     if (answerable) {
-                        ret.push('<button class="yui3-button" id="', choiceD.get("id"), '">Submit</button>');
+                        ret.push('<button class="yui3-button" id="', choiceD.get("id"), '">', Y.Wegas.I18n.t('mcq.submit'), '</button>');
                     } else {
                         ret.push('<button class="yui3-button" disabled id="',
                             choiceD.get("id"),
-                            '">', "Submit",
+                            '">', Y.Wegas.I18n.t('mcq.submit'),
                             '</button>');
                     }
 
@@ -204,7 +199,7 @@ YUI.add('wegas-mcq-view', function(Y) {
             ret.push('</div>'); // end mcq-choices
 
             if (numberOfReplies > 0) {
-                ret.push('<div class="mcq-replies-title">Result', (numberOfReplies > 1 ? "s" : ""), '</div>');
+                ret.push('<div class="mcq-replies-title">', (numberOfReplies > 1 ? Y.Wegas.I18n.t('mcq.result').pluralize() : Y.Wegas.I18n.t('mcq.result')), '</div>');
                 ret.push('<div class="mcq-replies">');
                 for (i = numberOfReplies - 1; i >= 0; i -= 1) {
                     reply = questionInstance.get("replies")[i];

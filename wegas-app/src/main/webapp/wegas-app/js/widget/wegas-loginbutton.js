@@ -46,7 +46,7 @@ YUI.add("wegas-loginbutton", function(Y) {
             
             this.menu.add([{
                     type: "Button",
-                    label: "Logout",
+                    label: Y.Wegas.I18n.t('global.logout').capitalize(),
                     plugins: [{
                             fn: "OpenUrlAction",
                             cfg: {
@@ -263,7 +263,7 @@ YUI.add("wegas-loginbutton", function(Y) {
                         }]
                 }, {
                     type: "Button",
-                    label: "Logout",
+                    label: "Logout -----",
                     plugins: [{
                             fn: "OpenUrlAction",
                             cfg: {
