@@ -33,7 +33,7 @@ YUI.add('wegas-pmg-bac', function(Y) {
             this.onceAfterHostEvent("render", function() {
                 this.get("host").datatable.addColumn({
                     key: 'bac',
-                    label: "BAC",
+                    label: Y.Wegas.I18n.t('pmg.project.bac_short'),
                     allowHTML: true,
                     formatter: function(o) {
                         return "<input class='bacField' value='" + o.data.instance.properties.bac + "'></input>";
@@ -63,8 +63,8 @@ YUI.add('wegas-pmg-bac', function(Y) {
             }, ".bacField", this);
         },
         isValidField: function(value) {
-            if (!/^[+]?\d+$/.test(value)) {                                     //positive number
-                this.get("host").showMessage("error", "\"" + value + "\" is not a positive integer");
+            if (!/^[+]?\d+$/.test(value)) {
+                this.get("host").showMessage("error", Y.Wegas.I18n.t('errors.notAPositiveInteger', {value: value}));
                 return false;
             }
             return true;

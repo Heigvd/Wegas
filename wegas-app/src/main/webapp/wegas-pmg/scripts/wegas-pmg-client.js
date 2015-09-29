@@ -9,6 +9,14 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 /*global Y, app, persistence */
+
+app.once("preRender", function() {
+    var lang = Y.Wegas.Facade.Variable.cache.find("name", "language").getValue();
+    Y.Wegas.I18n.setLang(lang);
+    Y.use("wegas-i18n-pmg-" + lang);
+});
+
+
 app.once("render",
     function() {
         "use strict";
@@ -212,6 +220,9 @@ app.once("render",
             },
             getResourceSkill: function(resourceDescriptor) {
                 return Y.Wegas.Facade.Variable.cache.findParentDescriptor(resourceDescriptor).get("name");
+            },
+            getTimeUnit: function() {
+                return Y.Wegas.Facade.Variable.cache.find('name', 'timeUnit').getInstance().get("value");
             }
         };
         Y.use(["wegas-resourcemanagement-entities", "inputex-uneditable"], function() {

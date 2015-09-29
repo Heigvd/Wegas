@@ -35,7 +35,7 @@ YUI.add("wegas-pmg-assignment", function(Y) {
 
             this.get(HOST).datatable.addColumn({
                 key: "assignments",
-                label: "Assignments",
+                label: Y.Wegas.I18n.t("pmg.resources.assignments").capitalize(),
                 formatter: this.formatAssignment,
                 allowHTML: true
             }, this.get("columnPosition"));
@@ -251,8 +251,8 @@ YUI.add("wegas-pmg-assignment", function(Y) {
         },
         descriptionToDisplay: function(descriptor, fieldValue) {
             var i, requirements = descriptor.getInstance().get("requirements"),
-                progress = descriptor.getInstance().get("properties.completeness") > 0 ? '<div style="float:right;">Realised:' + descriptor.getInstance().get("properties.completeness") + '%</div>' : "",
-                dataToDisplay = '<div class="field" style="padding:5px 10px">' + progress + '<p class="popupTitel">Description</p><p>' + fieldValue + '</p></div><div style="padding:5px 10px" class="requirements"><p class="popupTitel">Requirements</p>';
+                progress = descriptor.getInstance().get("properties.completeness") > 0 ? '<div style="float:right;">' + Y.Wegas.I18n.t("pmg.tasks.realized").capitalize().colonize() + " " + descriptor.getInstance().get("properties.completeness") + '%</div>' : "",
+                dataToDisplay = '<div class="field" style="padding:5px 10px">' + progress + '<p class="popupTitel">' + Y.Wegas.I18n.t('global.description').capitalize() + '</p><p>' + fieldValue + '</p></div><div style="padding:5px 10px" class="requirements"><p class="popupTitel">' + Y.Wegas.I18n.t("pmg.tasks.requirements").capitalize() + '</p>';
 
             for (i = 0; i < requirements.length; i += 1) {
                 if (+requirements[i].get("quantity") > 0) {

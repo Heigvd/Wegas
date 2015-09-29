@@ -81,6 +81,7 @@ YUI.add('wegas-app', function(Y) {
                     document.getElementsByClassName("wegas-loading-app-current")[0].setAttribute("style", "width:" + ((1 - requestCounter / totalRequests) * 100) + "%");
 
                     if (requestCounter === 0) {                                 // If all initial request are completed,
+                        this.fire("preRender");
                         Y.later(10, this, function() {                          // Let the loading div update
                             this.widget = Wegas.Widget.create(widgetCfg)        // Instantiate the root widget
                                 .render();                                      // and render it

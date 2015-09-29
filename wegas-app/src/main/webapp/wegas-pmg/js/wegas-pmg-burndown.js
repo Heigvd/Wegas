@@ -30,7 +30,7 @@ YUI.add("wegas-pmg-burndown", function(Y) {
             "</div>" +
             "</div>" +
             "<div class=\"iteration-tasks\">" +
-            "<div class=\"iteration-tasks-title\">Tasks:</div>" +
+            "<div class=\"iteration-tasks-title\">" + Y.Wegas.I18n.t("pmg.iterations.tasks").capitalize().colonize() + "</div>" +
             "<div class=\"iteration-tasks-list\"></div>" +
             "<div class=\"iteration-tasks-toolbar\"></div>" +
             "</div>" +
@@ -43,7 +43,7 @@ YUI.add("wegas-pmg-burndown", function(Y) {
             "<div class=\"planning-ongoing\" style=\"clear: both;\"></div>" +
             "</div>" +
             "<div class=\"planning-tools\"></div>" +
-            "<div class=\"planning-legend\">Team size: </div>" +
+            "<div class=\"planning-legend\">" + Y.Wegas.I18n.t("pmg.iterations.teamSize").capitalize().colonize() + "</div>" +
             "</div>" +
             "<div class=\"wegas-chart\">" +
             "<div class=\"legend\" style=\"clear: both;\">" +
@@ -123,20 +123,21 @@ YUI.add("wegas-pmg-burndown", function(Y) {
                     CB.one(".iteration-config").append("<i class=\"rm-iteration fa fa-trash fa-2x\"></i>");
                 }
                 CB.one(".legend").setContent("<div>" +
-                    "<span class=\"color ct-series-a\"></span><span class=\"label\">Planned</span>" +
+                    "<span class=\"color ct-series-a\"></span><span class=\"label\">" + Y.Wegas.I18n.t("pmg.iterations.planned").capitalize() +
+                    "</span>" +
                     "</div>");
             } else {
                 CB.one(".legend").setContent("<div>" +
-                    "<span class=\"color ct-series-a\"></span><span class=\"label\">Planned</span>" +
+                    "<span class=\"color ct-series-a\"></span><span class=\"label\">" + Y.Wegas.I18n.t("pmg.iterations.planned").capitalize() +
                     "</div>" +
                     "<div>" +
-                    "<span class=\"color ct-series-b\"></span><span class=\"label\">Realized</span>" +
+                    "<span class=\"color ct-series-b\"></span><span class=\"label\">" + Y.Wegas.I18n.t("pmg.iterations.realized").capitalize() +
                     "</div>" +
                     "<div>" +
-                    "<span class=\"color ct-series-c\"></span><span class=\"label\">Projection</span>" +
+                    "<span class=\"color ct-series-c\"></span><span class=\"label\">" + Y.Wegas.I18n.t("pmg.iterations.projection").capitalize() +
                     "</div>" +
                     "<div>" +
-                    "<span class=\"color ct-series-d\"></span><span class=\"label\">Spent</span>" +
+                    "<span class=\"color ct-series-d\"></span><span class=\"label\">" + Y.Wegas.I18n.t("pmg.iterations.spent").capitalize() +
                     "</div>");
                 if (status === "STARTED") {
                     if (CB.one(".iteration-config .rm-iteration")) {
@@ -180,11 +181,11 @@ YUI.add("wegas-pmg-burndown", function(Y) {
 
             // edit beginAt only available when iteration has not started yet
             if (status === "NOT_STARTED") {
-                CB.one(".begin-at-label").setContent("Will begin at period: ");
+                CB.one(".begin-at-label").setContent(Y.Wegas.I18n.t("pmg.iterations.willBeginAt").capitalize().colonize());
                 CB.one(".begin-at-input").set("value", iteration.get("beginAt"));
                 CB.one(".iteration-tasks-toolbar").setContent("<span class=\"add\"></span>");
             } else {
-                CB.one(".begin-at-label").setContent("Began at period: ");
+                CB.one(".begin-at-label").setContent(Y.Wegas.I18n.t("pmg.iterations.beganAt").capitalize().colonize());
                 this.get(CONTENTBOX).one(".begin-at-input-container").setContent('<p>' +
                     minPeriod + '</p>');
             }
@@ -381,16 +382,16 @@ YUI.add("wegas-pmg-burndown", function(Y) {
 
             this.chart = new Chartist.Line(".chart-" + iteration.get("id"), {
                 series: [{
-                        name: "Planned",
+                        name: Y.Wegas.I18n.t("pmg.iterations.planned").capitalize(),
                         data: planningSerie
                     }, {
-                        name: "Realized",
+                        name: Y.Wegas.I18n.t("pmg.iterations.realized").capitalize(),
                         data: effectiveSerie
                     }, {
-                        name: "Projection",
+                        name: Y.Wegas.I18n.t("pmg.iterations.projection").capitalize(),
                         data: replanningSerie
                     }, {
-                        name: "Spent",
+                        name: Y.Wegas.I18n.t("pmg.iterations.spent").capitalize(),
                         data: retroSerie
                     }
                 ]
@@ -412,7 +413,7 @@ YUI.add("wegas-pmg-burndown", function(Y) {
                 plugins: [
                     Chartist.plugins.ctAxisTitle({
                         axisX: {
-                            axisTitle: 'Periods',
+                            axisTitle: Y.Wegas.I18n.t("pmg.iterations.period").pluralize(),
                             axisClass: 'ct-axis-title',
                             offset: {
                                 x: 0,
@@ -421,7 +422,7 @@ YUI.add("wegas-pmg-burndown", function(Y) {
                             textAnchor: 'middle'
                         },
                         axisY: {
-                            axisTitle: 'Workloads',
+                            axisTitle: Y.Wegas.I18n.t("pmg.iterations.workloads"),
                             axisClass: 'ct-axis-title',
                             offset: {
                                 x: 0,
@@ -504,7 +505,7 @@ YUI.add("wegas-pmg-burndown", function(Y) {
         destroyIteration: function(e) {
 
             Wegas.Panel.confirmPlayerAction(Y.bind(function() {
-                Wegas.Panel.confirm("Are you sure you want to delete this iteration?", Y.bind(function() {
+                Wegas.Panel.confirm(Y.Wegas.I18n.t("pmg.iterations.deleteConfirmation"), Y.bind(function() {
                     this.execScript("PMGHelper.removeIteration(" + this.get("iterationId") + ");");
                     this.get("parent").fire("killMe");
                 }, this));
@@ -598,8 +599,8 @@ YUI.add("wegas-pmg-burndown", function(Y) {
         },
         descriptionToDisplay: function(descriptor, fieldValue) {
             var i, requirements = descriptor.getInstance().get("requirements"),
-                progress = descriptor.getInstance().get("properties.completeness") > 0 ? '<div style="float:right;">Realised:' + descriptor.getInstance().get("properties.completeness") + '%</div>' : "",
-                dataToDisplay = '<div class="field" style="padding:5px 10px">' + progress + '<p class="popupTitel">Description</p><p>' + fieldValue + '</p></div><div style="padding:5px 10px" class="requirements"><p class="popupTitel">Requirements</p>';
+                progress = descriptor.getInstance().get("properties.completeness") > 0 ? '<div style="float:right;">' + Y.Wegas.I18n.t("pmg.tasks.realized").capitalize().colonize() + " " + descriptor.getInstance().get("properties.completeness") + '%</div>' : "",
+                dataToDisplay = '<div class="field" style="padding:5px 10px">' + progress + '<p class="popupTitel">' + Y.Wegas.I18n.t("pmg.tasks.realized").capitalize() + '</p><p>' + fieldValue + '</p></div><div style="padding:5px 10px" class="requirements"><p class="popupTitel">' + Y.Wegas.I18n.t('pmg.tasks.requirements') + '</p>';
 
             for (i = 0; i < requirements.length; i += 1) {
                 if (+requirements[i].get("quantity") > 0) {

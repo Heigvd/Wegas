@@ -1146,7 +1146,7 @@ var PMGSimulation = (function() {
                 !(CURRENT_PERIOD_NUMBER < periodLimit) &&
                 !(CURRENT_PHASE_NUMBER === 3 && !PMGHelper.checkEndOfProject()
                     && executionPeriods < periodLimit)) {
-                ErrorManager.throwInfo("Ask your course leader for permissions to continue.");
+                ErrorManager.throwInfo(I18n.t("errors.advancementLimit"));
             }
         }
     }
@@ -1185,7 +1185,7 @@ var PMGSimulation = (function() {
         for (i = 0; i < questions.length; i += 1) {
             question = questions[i];
             if (!question.isReplied(self) && question.isActive(self)) {
-                ErrorManager.throwWarn("You have not answered all questions from this week.");
+                ErrorManager.throwWarn(I18n.t("errors.allQuestions"));
             }
         }
     }
@@ -1332,7 +1332,6 @@ var PMGSimulation = (function() {
 
 
         debug("updateVariables(): pv: " + pv + ", ac: " + ac + ", ev: " + ev);
-        printMessage("updateVariables(): pv: " + pv + ", ac: " + ac + ", ev: " + ev);
 
         // Costs
         if (ac > 0) {
@@ -1345,7 +1344,6 @@ var PMGSimulation = (function() {
             if (currentPeriod3 > lastPlannedPeriod) {
                 pv = pv + (pv / lastPlannedPeriod) * (currentPeriod3 - lastPlannedPeriod);
             }
-            printMessage("updateVariables(): pv: " + pv + ", ac: " + ac + ", ev: " + ev);
             spi = ev / pv * 100;
         }
         delayValue = Math.min(Math.max(Math.round(spi), delay.minValueD), delay.maxValueD);

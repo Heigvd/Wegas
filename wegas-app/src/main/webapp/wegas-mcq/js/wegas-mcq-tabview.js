@@ -48,10 +48,6 @@ YUI.add('wegas-mcq-tabview', function(Y) {
              */
             this.handlers = {};
             this.isRemovingTabs = false;
-            /**
-             * JS translator
-             */
-            this.jsTranslator = new Wegas.Translator();
         },
         /**
          * @function
@@ -86,8 +82,8 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                             method: "POST"
                         },
                         on: {
-                                success: Y.bind(this.hideOverlay, this),
-                                failure: Y.bind(this.hideOverlay, this)
+                            success: Y.bind(this.hideOverlay, this),
+                            failure: Y.bind(this.hideOverlay, this)
                         }
                     });
                 }, this));
@@ -129,7 +125,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             if (this.tabView.isEmpty()) {
                 this.tabView.add(new Y.Tab({
                     label: "",
-                    content: "<center><i><br /><br /><br />No questions available yet.</i></center>"
+                    content: "<center><i><br /><br /><br /><%= Y.Wegas.I18n.t('mcq.empty') %></i></center>"
                 }));
                 this.tabView.selectChild(0);
             } else {
@@ -161,7 +157,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                         }
                     }
                     if (Y.Lang.isNull(cReplyLabel)) {
-                        cReplyLabel = (!cQuestion.get("allowMultipleReplies")) ? this.jsTranslator.getRB().Unanswered : this.jsTranslator.getRB().NotDone;
+                        cReplyLabel = (!cQuestion.get("allowMultipleReplies")) ? Y.Wegas.I18n.t('mcq.unanswered') : Y.Wegas.I18n.t('mcq.notDone');
                     }
 
                     tab = new Y.Tab({
@@ -217,6 +213,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 answerable = allowMultiple || numberOfReplies === 0,
                 reply;
 
+            Y.log("RENDER TAB");
 
             ret = ['<div class="mcq-question">',
                 '<div class="mcq-question-details">',
@@ -245,9 +242,9 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                     }
 
                     if (answerable) {
-                        ret.push('<button class="yui3-button" id="', choiceD.get("id"), '">Submit</button>');
+                        ret.push('<button class="yui3-button" id="', choiceD.get("id"), '">', Y.Wegas.I18n.t('mcq.submit'), '</button>');
                     } else {
-                        ret.push('<button class="yui3-button" disabled id="', choiceD.get("id"), '">',"Submit"
+                        ret.push('<button class="yui3-button" disabled id="', choiceD.get("id"), '">', Y.Wegas.I18n.t('mcq.submit')
                             //questionInstance.get("replies")[0].getChoiceDescriptor().get("id") === choiceD.get("id") ? "Made" : "Spurned"
                             , '</button>');
                     }
@@ -260,7 +257,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
 
 
             if (numberOfReplies > 0) {
-                ret.push('<div class="mcq-replies-title">Result', (numberOfReplies > 1 ? "s" : ""), '</div>');
+                ret.push('<div class="mcq-replies-title">', (numberOfReplies > 1 ? Y.Wegas.I18n.t('mcq.result').pluralize() : Y.Wegas.I18n.t('mcq.result')), '</div>');
                 ret.push('<div class="mcq-replies">');
                 for (i = numberOfReplies - 1; i >= 0; i -= 1) {
                     reply = questionInstance.get("replies")[i];
