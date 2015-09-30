@@ -51,7 +51,7 @@ YUI.add("wegas-i18n", function(Y) {
          * 
          */
         function mapArguments(string, args, tName) {
-            var pattern = /.*{{([a-zA-Z0-9_]*)}}/,
+            var pattern = /.*\{\{([a-zA-Z0-9_]*)\}\}/,
                 match, key;
             while (match = pattern.exec(string)) {
                 key = match[1];
@@ -111,7 +111,7 @@ YUI.add("wegas-i18n", function(Y) {
              *  {"lang" : { "token" : { "token" : "translation"}}
              */
             _tables: {},
-            _currentLocale: "en",
+            _currentLocale: undefined,
             _currentTable: function() {
                 return Y.Wegas.I18n._tables[Y.Wegas.I18n._currentLocale];
             },
@@ -123,17 +123,18 @@ YUI.add("wegas-i18n", function(Y) {
             },
             setLang: function(lang) {
                 Y.Wegas.I18n._currentLocale = lang;
+                String.prototype.capitalize = config[lang].capitalize;
+                String.prototype.colonize = config[lang].colonize;
+                String.prototype.pluralize = config[lang].pluralize;
             },
             t: function(key, args) {
-                var tr = translate(key, args);
-                tr.capitalize = config[lang].capitalize;
-                tr.colonize = config[lang].colonize;
-                tr.pluralize = config[lang].pluralize;
+                return translate(key, args);
             }
         };
     }());
 
     Y.config.win.I18n = I18n; // @hack -> let I18n module be accessible from the outside
     Y.Wegas.I18n = I18n;
+    I18n.setLang("en");
 
 });
