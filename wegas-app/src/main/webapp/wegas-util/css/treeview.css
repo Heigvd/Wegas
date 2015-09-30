@@ -42,25 +42,45 @@
 .yui3-treeleaf-content-icon {
     margin: -4px 0 -6px;
 }
+
+
+.yui3-treeleaf-default-icon,
 .yui3-treenode-default-icon{
-    background-image: url(../../wegas-app/images/wegas-app-sprite.png);
-    background-repeat: no-repeat;
-    background-position: 0px -1508px;
+    margin: -6px 0 -8px;
+    height: 24px;
+    display: inline-block;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
-.yui3-treenode-collapsed .yui3-treenode-default-icon {
-    background-position: 0px -1468px;
+
+.yui3-treeleaf-default-icon:before{
+    content: "\f016";
 }
+
+.yui3-treenode-default-icon:before{
+    content: "\f07c";
+    /*content: "\f115";*/
+}
+
+.yui3-treenode-collapsed .yui3-treenode-default-icon:before {
+    /*content: "\f114";*/
+    content: "\f07b";
+}
+
 .yui3-treenode-loading > div > .yui3-treenode-content-icon,
 .yui3-treenode-loading > div > .yui3-treeleaf-content-icon{
     background-image: url(../../wegas-app/images/loading-small.gif) !important;
     background-repeat: no-repeat !important;
     background-position: bottom left !important;
 }
-.yui3-treeleaf-default-icon {
+/*.yui3-treeleaf-default-icon {
     background-image: url(../../wegas-app/images/wegas-app-sprite.png);
     background-position: 0px -1290px;
     text-decoration: none;
-}
+}*/
 .yui3-treenode-collapsed ul > li > .content-header,
 .yui3-treenode-collapsed ul > li > div > .content-header{
     max-height: 0px !important;

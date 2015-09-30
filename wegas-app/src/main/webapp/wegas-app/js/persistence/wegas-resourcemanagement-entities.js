@@ -110,6 +110,9 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
     persistence.ResourceDescriptor = Y.Base.create("ResourceDescriptor", persistence.VariableDescriptor, [], {
         getConfidence: function() {
             return this.getInstance().get("confidence");
+        },
+        getIconCss: function() {
+            return "fa fa-user";
         }
     }, {
         ATTRS: {
@@ -488,6 +491,9 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 }
             }, this);
             return data;
+        },
+        getIconCss: function() {
+            return "fa fa-list";
         }
     }, {
         ATTRS: {
@@ -855,6 +861,9 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
      * BURNDOWN
      */
     persistence.BurndownDescriptor = Y.Base.create("BurndownDescriptor", persistence.VariableDescriptor, [], {
+        getIconCss: function() {
+            return "fa fa-area-chart";
+        }
     }, {
         ATTRS: {
             "@class": {
