@@ -21,13 +21,24 @@ YUI.add('wegas-panel', function(Y) {
                 this._childrenContainer = this.getStdModNode(Y.WidgetStdMod.BODY, true);
                 this._stdModParsed = {bodyContent: 1};
             },
+            bindUI: function() {
+                this.windowHandler = Y.on("windowresize", Y.bind(function() {
+                    this.get("content");
+                    this.fillHeight(this.getStdModNode(Y.WidgetStdMod.BODY))
+                    this.centered();
+                }, this));
+            },
             syncUI: function() {
-                this.set("content", this.get("content"));
+                this.get("content");
+                this.fillHeight(this.getStdModNode(Y.WidgetStdMod.BODY));
             },
             exit: function() {
                 this.destroy();
                 //this.get("boundingBox").hide(true);
                 //Y.later(500, this, this.destroy);
+            },
+            destructor: function() {
+                this.windowHandler.detach();
             }
         }, {
             CSS_PREFIX: "wegas-panel",

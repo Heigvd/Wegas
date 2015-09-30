@@ -414,7 +414,7 @@ YUI().use(function(Y) {
                 ws_provides: "Panel",
                 requires: ["wegas-panelcss", "widget-buttons", "widget-modality",
                     "widget-position", "widget-position-align", "widget-stack",
-                    "widget-stdmod", "transition"]
+                    "widget-stdmod", "transition", "event-resize"]
             },
             "wegas-panelcss": {
                 type: CSS
