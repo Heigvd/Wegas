@@ -50,7 +50,7 @@ YUI().use(function(Y) {
              */
             "wegas-app": {
                 requires: ["base", "plugin", "array-extras", "timers",
-                    "wegas-helper", "wegas-entity", "wegas-datasource", "font-awesome", "template-micro", "wegas-i18n"]
+                    "wegas-helper", "wegas-entity", "wegas-datasource", "font-awesome", "template-micro", "wegas-i18n-global"]
             },
             "wegas-editable": {
                 requires: "inputex-jsonschema"
@@ -175,7 +175,7 @@ YUI().use(function(Y) {
             },
             "wegas-loginbutton": {
                 path: "js/widget/wegas-loginbutton-min.js",
-                requires: "wegas-widgetmenu",
+                requires: ["wegas-widgetmenu", "wegas-i18n-global"],
                 ws_provides: ["LoginButton", "UserLoginButton", "RestartButton"]
             },
             "wegas-chat": {
@@ -684,7 +684,7 @@ YUI().use(function(Y) {
             "wegas-gamemodel-extractor": {
                 path: "js/widget/wegas-gamemodel-extractor-min.js",
                 requires: ["wegas-modal", "wegas-plugin"],
-                ws_provides: ["GmExtractorAction"]
+                ws_provides: ["GmExtractorAction", "GmDefaulterAction"]
             },
             "wegas-statemachineviewer": {
                 path: "js/widget/wegas-statemachineviewer-min.js",

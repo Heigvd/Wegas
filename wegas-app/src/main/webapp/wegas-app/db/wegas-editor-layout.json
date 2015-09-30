@@ -124,7 +124,16 @@
                             "children": [
                                 {
                                     "type": "Button",
-                                    "label": "Create new scenario from player",
+                                    "label": "Re-init default values from a player",
+                                    "plugins": [
+                                        {
+                                            "fn": "GmDefaulterAction"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "Button",
+                                    "label": "EXPERIMENTAL: Create new scenario from player",
                                     "plugins": [
                                         {
                                             "fn": "GmExtractorAction"

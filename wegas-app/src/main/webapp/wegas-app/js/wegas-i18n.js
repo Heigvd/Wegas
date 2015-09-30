@@ -12,11 +12,11 @@
 /*global Variable, gameModel, self */
 
 YUI.add("wegas-i18n", function(Y) {
+    "use strict";
 
     var I18n;
 
     I18n = (function() {
-        "use strict";
 
         var config = {
             fr: {
@@ -123,12 +123,12 @@ YUI.add("wegas-i18n", function(Y) {
             },
             setLang: function(lang) {
                 Y.Wegas.I18n._currentLocale = lang;
-                String.prototype.capitalize = config[lang].capitalize;
-                String.prototype.colonize = config[lang].colonize;
-                String.prototype.pluralize = config[lang].pluralize;
             },
             t: function(key, args) {
-                return translate(key, args);
+                var tr = translate(key, args);
+                tr.capitalize = config[lang].capitalize;
+                tr.colonize = config[lang].colonize;
+                tr.pluralize = config[lang].pluralize;
             }
         };
     }());
