@@ -917,6 +917,19 @@
                                                         "forcedLabel": "",
                                                         "targetPageLoader": "maindisplayarea"
                                                     }
+                                                ],
+                                                "plugins": [
+                                                    {
+                                                        "fn": "ConditionalDisable",
+                                                        "cfg": {
+                                                            "condition": {
+                                                                "@class": "Script",
+                                                                "content": "Variable.find(gameModel, \"burndownEnabled\").getValue(self);\n"
+                                                            },
+                                                            "attribute": "cssClass",
+                                                            "value": "small"
+                                                        }
+                                                    }
                                                 ]
                                             }
                                         ]

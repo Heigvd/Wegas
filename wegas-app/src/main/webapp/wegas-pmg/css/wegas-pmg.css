@@ -223,27 +223,27 @@
 }
 
 .pmg--app .wegas-template-valuebox-unit {
-  background: #525564; 
-  border: none;
-  margin: 1px 1.5px 1px 1.75px;
-  width: 20px;
-  height: 18px;
-  padding:0px;
-  font-size:12px;
-  line-height: 18px;
-  float: left;
-  color:white;
-  text-align: center;
+    background: #525564; 
+    border: none;
+    margin: 1px 1.5px 1px 1.75px;
+    width: 20px;
+    height: 18px;
+    padding:0px;
+    font-size:12px;
+    line-height: 18px;
+    float: left;
+    color:white;
+    text-align: center;
 }
 
 .pmg--app .wegas-template-valuebox-unit.wegas-template-valuebox-previous{
-  background: #7b818f;
-  color:white;
+    background: #7b818f;
+    color:white;
 }
 
 .pmg--app .wegas-template-valuebox-unit.wegas-template-valuebox-selected{
-  background: #40868d;
-  color:white;
+    background: #40868d;
+    color:white;
 }
 
 .pmg-nextweek {
@@ -284,11 +284,11 @@
 }
 
 .pmg-nextweek:after {
-     content: "Next period"; 
+    content: "Next period"; 
 }
 
 .passPhase:after {
-     content: "Next phase"; 
+    content: "Next phase"; 
 }
 
 .pmg--taskbar__infos .pmg--infos__indicators{
@@ -417,13 +417,13 @@
 }
 
 .pmg--cards .wegas-template-box .wegas-template-box-unit{
-   width:8px;
-   height:8px;
-   border:none;
-   background:#47b3b3;
-   padding:0px;
-   margin:2.5px 2px;
-   box-sizing: border-box;
+    width:8px;
+    height:8px;
+    border:none;
+    background:#47b3b3;
+    padding:0px;
+    margin:2.5px 2px;
+    box-sizing: border-box;
 }
 
 
@@ -472,7 +472,7 @@
 .pmg--taskbar__menus .pmg--menus__secondary-menu{
     display:block;
     position:relative;
-    width:631px;   
+    /* width:631px; */
     height: 56px;
     float:right;
 }
@@ -506,6 +506,14 @@
 
 .pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.pmg--menu-btn-last{
     width:166px;
+}
+
+
+.pmg--taskbar__menus .pmg--menus__secondary-menu.small .wegas-button{
+    width: 100px;
+}
+.pmg--taskbar__menus .pmg--menus__secondary-menu.small .wegas-button.pmg--menu-btn-last{
+    width: 99px;
 }
 
 .pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button:hover{
@@ -543,7 +551,7 @@
 }
 
 .yui3-skin-sam .yui3-button.wegas-widgetmenu-hassubmenu:after {
-  display:none;
+    display:none;
 }
 
 .pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.pmg--icon-action{
@@ -560,8 +568,8 @@
     width:64px;
 }
 .yui3-skin-sam .wegas-widgetmenu-hassubmenu.yui3-button.menu-loginbutton{
-    background-image: url(../../wegas-pmg/images/pmg2_icon_settings.png); 
-    width:64px;
+    background-image: url(../../wegas-pmg/images/pmg2_icon_settings.png);
+    width: 65px;
     border-left:solid 1px #4f515d;
 }
 
@@ -737,13 +745,13 @@ h2{
 }
 
 .questions-page  .wegas-mcqtabview .mcq-choice {
-  display: block;
-  position: relative;
-  border: solid 1px #cac9ce;
-  border-bottom:solid 4px #cac9ce;
-  margin: 16px 0px;
-  padding: 0;
-  background:white;
+    display: block;
+    position: relative;
+    border: solid 1px #cac9ce;
+    border-bottom:solid 4px #cac9ce;
+    margin: 16px 0px;
+    padding: 0;
+    background:white;
 }
 .questions-page  .wegas-mcqtabview .mcq-choice.spurned{
     text-decoration:none;
@@ -990,7 +998,7 @@ h2{
     font-weight:500;
 }
 .wegas-inbox .wegas-inbox-content .yui3-tabview-panel .msg-from{
-      display: block;
+    display: block;
     padding-top: 2px;
     padding-bottom: 8px;
 }
@@ -1058,7 +1066,7 @@ h2{
 }
 
 .yui3-skin-sam .wegas-inbox .yui3-tab-label > div {
-  padding: 0 10px 0 64px;
+    padding: 0 10px 0 64px;
 }
 .yui3-skin-sam .wegas-inbox .yui3-tab-label > div:before {
     content:"";
@@ -1313,7 +1321,7 @@ td.yui3-datatable-col-Realised:after {
     bottom: 8px;
     color: #d45951;
 }
-    
+
 .pmg-iterations-page .rm-iteration, .pmg-iterations-page .toolbar .add-iteration {
     cursor: pointer;
     color: #656774;
@@ -1446,8 +1454,8 @@ td.yui3-datatable-col-Realised:after {
 }
 
 .pmg-project-overview-content .variableValue input{
-  width: 84%;
-  border: none;
+    width: 84%;
+    border: none;
 }
 .pmg-project-overview-content .variableValue input:focus{
     border:solid 2px #ed6b3a;
@@ -1471,7 +1479,7 @@ td.yui3-datatable-col-Realised:after {
 }
 
 .project-page .pmg-overview-left{
-   padding-right:24px; 
+    padding-right:24px; 
 }
 
 .project-page .pmg-overview-right{
@@ -1581,11 +1589,11 @@ td.yui3-datatable-col-Realised:after {
     .pmg--taskbar__menus .pmg--menus__secondary-menu{
         width:430px;
     }
-    
+
     .wegas-editmode .pmg--taskbar__menus .pmg--menus__secondary-menu{
         width:631px;
     }
-    
+
     .pmg--infos__phases .pmg--phases__state{
         display:block;
         position:relative;
@@ -1609,25 +1617,25 @@ td.yui3-datatable-col-Realised:after {
     .wegas-editmode .wegas-pmg-breadcrumb span{
         display:block;
     }
-    
+
     .wegas-pmg-breadcrumb .current{
         display:block;
         padding-right:24px;
     }
-    
-     .wegas-editmode .wegas-pmg-breadcrumb .current{
+
+    .wegas-editmode .wegas-pmg-breadcrumb .current{
         display:block;
         padding-right:0px;
     }
-    
-    
+
+
     .pmg--app .wegas-template-valuebox-unit {
-       display:none;
+        display:none;
     }
     .wegas-editmode .pmg--app .wegas-template-valuebox-unit{
         display:block;
     }
-    
+
     .pmg--app .wegas-template-valuebox-unit.wegas-template-valuebox-selected{
         display: block;
         position: absolute;
@@ -1639,7 +1647,7 @@ td.yui3-datatable-col-Realised:after {
         font-weight: 300;
         color: white;
     }
-    
+
     .wegas-editmode .pmg--app .wegas-template-valuebox-unit.wegas-template-valuebox-selected{
         position:relative;
         top:auto;
@@ -1650,18 +1658,18 @@ td.yui3-datatable-col-Realised:after {
         background: #40868d;
         color:white;
     }
-    
+
     .pmg-nextweek{
         margin:24px 24px;
     }
     .wegas-editmode .pmg-nextweek{
         margin:24px 4px;
     }
-    
+
     .pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button{
         width:100px;
     }
-    
+
     .wegas-editmode .pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button{
         width:167px;
     }
@@ -1669,11 +1677,11 @@ td.yui3-datatable-col-Realised:after {
     .pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.pmg--menu-btn-last{
         width:99px;
     }
-    
+
     .wegas-editmode .pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.pmg--menu-btn-last{
         width:166px;
     }
-    
+
     .wegas-editmode .pmg--taskbar__menus .pmg--menus__secondary-menu .wegas-button.pmg--icon-history{
         width:64px;
     }
@@ -1686,46 +1694,46 @@ td.yui3-datatable-col-Realised:after {
     .pmg-header .pmg--header__identity{
         width:80px;
     }
-    
+
     .wegas-editmode .pmg-header .pmg--header__identity{
         width:180px;
     }
-    
+
     .pmg-header .pmg--header__identity .pmg--logo{
         width:64px;
         height:64px;
         margin:54px 8px;
     }
-    
+
     .wegas-editmode .pmg-header .pmg--header__identity .pmg--logo{
         width:104px;
         height:104px;
         margin:16px 38px 4px 38px;
     }
-    
+
     .pmg-header .pmg--header__identity .wegas-template{
         display:none;
     }
     .wegas-editmode .pmg-header .pmg--header__identity .wegas-template{
         display:block;
     }
-    
+
     .pmg--phases__state .wegas-pmg-breadcrumb{
         margin:16px 8px 0px 32px; 
     }
     .wegas-editmode .pmg--phases__state .wegas-pmg-breadcrumb{
         margin:24px 8px 0px 32px; 
     }
-    
-    
+
+
     .pmg-header .pmg--header__taskbar{
         padding-left:80px;
     }
-   
+
     .wegas-editmode .pmg-header .pmg--header__taskbar{
         padding-left:180px;
     }
-    
+
     .pmg--infos__phases .pmg--phases__state{
         padding:0px;
         height: 56px;
@@ -1734,8 +1742,8 @@ td.yui3-datatable-col-Realised:after {
     .wegas-editmode .pmg--infos__phases .pmg--phases__state{
         margin:0px;
     }
-    
-     .pmg--app .wegas-template-valuebox-unit.wegas-template-valuebox-selected{
+
+    .pmg--app .wegas-template-valuebox-unit.wegas-template-valuebox-selected{
         display: block;
         position: absolute;
         top: -33px;
@@ -1747,7 +1755,7 @@ td.yui3-datatable-col-Realised:after {
         font-weight: 600;
         color: white;
     }
-    
+
     .wegas-editmode .pmg--app .wegas-template-valuebox-unit.wegas-template-valuebox-selected{
         position:relative;
         top:auto;
@@ -1758,7 +1766,7 @@ td.yui3-datatable-col-Realised:after {
         background: #40868d;
         color:white;
     }
-    
+
     .pmg-nextweek{
         float:none;
         clear:both;
@@ -1769,7 +1777,7 @@ td.yui3-datatable-col-Realised:after {
         clear:none;
         margin:24px 4px;
     }
-    
+
     .pmg--taskbar__menus .pmg--menus__main-menu .wegas-button{
         padding:0px 12px;
         font-size:13px;
