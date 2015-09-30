@@ -418,6 +418,10 @@ YUI.add("wegas-widget", function(Y) {
                                                 data: "ExecuteScriptAction"
                                             }, {
                                                 type: BUTTON,
+                                                label: "Open Popup page",
+                                                data: "OpenPanelPageloader"
+                                            }, {
+                                                type: BUTTON,
                                                 label: "Play sound",
                                                 data: "PlaySoundAction"
                                             }, {

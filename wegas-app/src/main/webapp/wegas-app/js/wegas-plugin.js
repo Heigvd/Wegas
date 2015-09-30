@@ -97,7 +97,7 @@ YUI.add("wegas-plugin", function(Y) {
          * @protected
          */
         execute: function() {
-            Y.error("Y.Plugin.Action.execute() is abstract, should be overriddent");
+            Y.error("Y.Plugin.Action.execute() is abstract, should be overridden");
         },
         /**
          * @function
