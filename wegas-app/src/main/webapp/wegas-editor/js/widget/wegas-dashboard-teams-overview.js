@@ -138,7 +138,7 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                             if (context.get("team").get("notes")) {
                                 context.get("editor").setContent(context.get("team").get("notes"));
                             } else {
-                                context.get("editor").setContent("You can write notes here");
+                                context.get("editor").setContent("<i>Notes</i>");
                             }
                         });
                         mce.on('keyup', function(e) {
