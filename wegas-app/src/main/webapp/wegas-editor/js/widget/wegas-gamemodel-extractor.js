@@ -13,7 +13,7 @@ YUI.add('wegas-gamemodel-extractor', function(Y) {
     'use strict';
     var Wegas = Y.Wegas,
         CONTENTBOX = "contentBox",
-        inputEx = Y.inputEx, GmExtractor, GmExtractorAction, GmExtractorModal;
+        inputEx = Y.inputEx, GmExtractor, GmExtractorAction, GmExtractorModal, GmDefaulterAction;
 
     GmExtractor = Y.Base.create("wegas-gm-extractor", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         BOUNDING_TEMPLATE: '<div class="wegas-form"></div>',
@@ -22,7 +22,7 @@ YUI.add('wegas-gamemodel-extractor', function(Y) {
                 game = this.get("game"),
                 freeForAll = game.get("properties.freeForAll"),
                 cfg, options = [{label: "-select-", value: "-1"}], spacer = "";
-                
+
             if (!freeForAll) {
                 spacer = "&nbsp;&nbsp;";
             }
@@ -60,26 +60,31 @@ YUI.add('wegas-gamemodel-extractor', function(Y) {
 
             cb.append('<div><div class="results wegas-advanced-feature"></div><div class="status"></div></div>');
         },
-        syncUI: function(){
+        syncUI: function() {
             this.get("contentBox").one("select").all("option[value='-1']").setAttribute("disabled", true);
         },
         setStatus: function(status) {
             this.get("contentBox").one(".status").set("text", status);
         },
         create: function() {
-            var playerId = this._form.getValue().playerId, 
-            player = Y.Wegas.Facade.Game.cache.getPlayerById(playerId),
-            game = this.get("game"),
+            var playerId = this._form.getValue().playerId,
+                player = Y.Wegas.Facade.Game.cache.getPlayerById(playerId),
+                game = this.get("game"),
                 freeForAll = game.get("properties.freeForAll"),
-            msg;
+                msg,
+                mode = this.get("mode");
 
             if (!this.validate()) {
                 this.setStatus("Please select a player");
                 return;
             }
-            
-            msg = "This will create a new scenario based on the player named \"" + player.get("name") + "\"";
-            if (!freeForAll){
+
+            if (mode === "Create") {
+                msg = "This will create a new scenario based on the player named \"" + player.get("name") + "\"";
+            } else {
+                msg = "This will erase all default instances with values from the player named \"" + player.get("name") + "\"";
+            }
+            if (!freeForAll) {
                 msg += " from the team \"" + player.get("team").get("name") + "\"";
             }
             msg += ". Proceed ?";
@@ -88,7 +93,7 @@ YUI.add('wegas-gamemodel-extractor', function(Y) {
                 this.setStatus("Creating...");
                 this.showOverlay();
                 Wegas.Facade.GameModel.sendRequest({
-                    request: "/" + this.get("game").get("gameModelId") + "/CreateFromPlayer/" + playerId,
+                    request: "/" + this.get("game").get("gameModelId") + "/Create" + this.get("mode") + "FromPlayer/" + playerId,
                     cfg: {
                         method: "POST",
                         updateEvent: false
@@ -112,9 +117,9 @@ YUI.add('wegas-gamemodel-extractor', function(Y) {
             }, this));
         },
         validate: function() {
-            var playerId = this._form.getValue().playerId, 
+            var playerId = this._form.getValue().playerId,
                 player = Y.Wegas.Facade.Game.cache.getPlayerById(playerId);
-                return player !== undefined;
+            return player !== undefined;
         },
         destructor: function() {
             this._form && this._form.destroy();
@@ -124,6 +129,10 @@ YUI.add('wegas-gamemodel-extractor', function(Y) {
         ATTRS: {
             game: {
                 type: "object"
+            },
+            mode: {
+                type: "string",
+                value: "Create"
             }
         }
     });
@@ -150,29 +159,51 @@ YUI.add('wegas-gamemodel-extractor', function(Y) {
                 this.set("title", "Create A New Scenario Based On A Player");
                 this.set("icon", game.get("properties.freeForAll") ? "user" : "group");
                 this.add(new Y.Wegas.GmExtractor({
-                    "game": game
+                    "game": game,
+                    "mode": this.get("mode")
                 }));
                 this.set("actions", actions);
             }
         }
     }, {
-        // NO ATTRS
+        ATTRS: {
+            mode: {
+                type: "string",
+                value: "Create"
+            }
+        }
     });
     Y.Wegas.GmExtractorModal = GmExtractorModal;
 
     GmExtractorAction = Y.Base.create("GmExtractorAction", Y.Plugin.Action, [], {
         execute: function() {
-            Y.log("Salut");
             new Y.Wegas.GmExtractorModal({
                 "on": {
                     "gamemodel:created": function() {
                         this.close();
                     }
-                }
+                },
+                "mode": "Create"
             }).render();
         }
     }, {
         NS: "GmExtractorAction"
     });
     Y.Plugin.GmExtractorAction = GmExtractorAction;
+
+    GmDefaulterAction = Y.Base.create("GmDefaulterAction", Y.Plugin.Action, [], {
+        execute: function() {
+            new Y.Wegas.GmExtractorModal({
+                "on": {
+                    "gamemodel:created": function() {
+                        this.close();
+                    }
+                },
+                "mode": "Update"
+            }).render();
+        }
+    }, {
+        NS: "GmDefaulterAction"
+    });
+    Y.Plugin.GmDefaulterAction = GmDefaulterAction;
 });
