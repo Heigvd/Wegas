@@ -338,7 +338,11 @@ YUI.add("wegas-statemachine-entities", function(Y) {
     /*
      * TriggerDescriptor Entity
      */
-    persistence.TriggerDescriptor = Y.Base.create("TriggerDescriptor", persistence.FSMDescriptor, [], {}, {
+    persistence.TriggerDescriptor = Y.Base.create("TriggerDescriptor", persistence.FSMDescriptor, [], {
+        getIconCss: function(){
+            return "fa fa-cogs";
+        }
+    }, {
         ATTRS: {
             "@class": {
                 value: "TriggerDescriptor"
@@ -474,6 +478,9 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             } else {
                 return false;
             }
+        },
+        getIconCss: function() {
+            return "fa fa-comments-o";
         }
     }, {
         ATTRS: {

@@ -284,8 +284,8 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 collapsed = !this.isNodeExpanded(entity),
                 selected = (this.currentSelection === entity.get(ID)) ? 2 : 0,
                 text = entity.getEditorLabel(),
-            /* + "  <span class='treeview-sub'>" + el.getType().replace("Descriptor", "") + "</span>"*/
-                tooltip = entity.getType().replace("Descriptor", "") + ": " + entity.getEditorLabel(),
+            /* + "  <span class='treeview-sub'>" + el.getType().replace("Descriptor", "") + "</span>"
+                tooltip = entity.getType().replace("Descriptor", "") + ": " + entity.getEditorLabel(),*/
                 erroredClass = Y.Object.hasKey(Y.Wegas.Facade.Variable.script.errored, entity.get(ID)) ?
                     "variable-error" : "";
             if (entity.get("items")) {
@@ -295,6 +295,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             }
 
             switch (elClass) {
+                case 'TaskDescriptor':
                 case 'StringDescriptor':
                 case 'TextDescriptor':
                 case 'NumberDescriptor':
@@ -302,7 +303,6 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 case 'InboxDescriptor':
                 case 'TriggerDescriptor':
                 case 'FSMDescriptor':
-                case 'TaskDescriptor':
                 case 'ObjectDescriptor':
                 case 'ResourceDescriptor':
                 case 'BurndownDescriptor':
@@ -310,7 +310,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     return {
                         type: 'TreeNode',
                         label: text,
-                        tooltip: tooltip,
+                        /*tooltip: tooltip,*/
                         children: (!collapsed) ? this.genScopeTreeViewElements(entity) : [],
                         //children: (els.length >= 1) ? els : null, //no children now, loaded on expands
                         //children: null, //no children now, loaded on expands
@@ -320,14 +320,15 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         collapsed: collapsed,
                         selected: selected,
                         //rightWidget: Y.Node.create(EDITBUTTONTPL),
-                        iconCSS: "wegas-icon-variabledescriptor wegas-icon-" + elClass.toLowerCase(),
+                        //iconCSS: "wegas-icon-variabledescriptor wegas-icon-" + elClass.toLowerCase(),
+                        iconCSS: entity.getIconCss(),
                         cssClass: "wegas-editor-listitem " + erroredClass
                     };
                 case 'ListDescriptor':
                     return {
                         type: 'TreeNode',
                         label: text,
-                        tooltip: tooltip,
+                        /*tooltip: tooltip,*/
                         collapsed: collapsed,
                         selected: selected,
                         children: this.genTreeViewElements(entity.get("items")),
@@ -340,7 +341,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     return {
                         type: 'TreeNode',
                         label: text,
-                        tooltip: tooltip,
+                        /*tooltip: tooltip,*/
                         collapsed: collapsed,
                         selected: selected,
                         children: this.genTreeViewElements(entity.get("items")),
@@ -349,7 +350,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         data: {
                             entity: entity
                         },
-                        iconCSS: "wegas-icon-questiondescriptor",
+                        iconCSS: "fa fa-question-circle",
                         cssClass: "wegas-editor-listitem wegas-editor-question " + erroredClass
                     };
                 case 'ChoiceDescriptor':
@@ -361,14 +362,14 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                                 entity: result,
                                 parentEntity: entity
                             },
-                            iconCSS: "wegas-icon-result",
+                            iconCSS: result.getIconCss(),
                             cssClass: "wegas-editor-resultitem"
                         };
                     }, this);
                     return {
                         type: 'TreeNode',
                         label: text,
-                        tooltip: tooltip,
+                        /*tooltip: tooltip,*/
                         children: children,
                         data: {
                             entity: entity
@@ -376,14 +377,14 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         collapsed: collapsed,
                         selected: selected,
                         //rightWidget: Y.Node.create(EDITBUTTONTPL),
-                        iconCSS: "wegas-icon-choicedescriptor",
+                        iconCSS: entity.getIconCss(),
                         cssClass: "wegas-editor-questionitem " + erroredClass
                     };
                 case 'SingleResultChoiceDescriptor':
                     return {
                         type: 'TreeLeaf',
                         label: text,
-                        tooltip: tooltip,
+                        /*tooltip: tooltip,*/
                         selected: selected,
                         data: {
                             entity: entity
@@ -422,7 +423,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     return {
                         type: 'TreeNode',
                         label: text,
-                        tooltip: tooltip,
+                        /*tooltip: tooltip,*/
                         children: children,
                         data: {
                             entity: entity
@@ -436,7 +437,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 default:
                     return {
                         label: text,
-                        tooltip: tooltip,
+                        /*tooltip: tooltip,*/
                         data: {
                             entity: entity
                         }

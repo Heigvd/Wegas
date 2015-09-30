@@ -22,6 +22,9 @@ YUI.add('wegas-object-entities', function(Y) {
     persistence.ObjectDescriptor = Y.Base.create("ObjectDescriptor", persistence.VariableDescriptor, [], {
         getProperty: function(player, key) {
             return this.getInstance(player).get("properties." + key);
+        },
+        getIconCss: function() {
+            return "fa fa-database";
         }
     }, {
         ATTRS: {

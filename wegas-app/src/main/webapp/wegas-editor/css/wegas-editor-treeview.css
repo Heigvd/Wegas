@@ -122,7 +122,6 @@
 .yui3-skin-sam .wegas-icon-result,
 .yui3-skin-sam .wegas-icon-inboxdescriptor,
 .yui3-skin-sam .wegas-icon-fsmdescriptor,
-.yui3-skin-sam .wegas-icon-numberdescriptor,
 .yui3-skin-sam .wegas-icon-resourcedescriptor {
     margin: -6px 0 -8px;
     height: 24px;
@@ -158,9 +157,9 @@
     background: transparent url(../../wegas-editor/images/wegas-icon-pages.png) 0 -649px no-repeat;
 }
 
-.yui3-skin-sam .wegas-icon-numberdescriptor {
+/*.yui3-skin-sam .wegas-icon-numberdescriptor {
     background: transparent url(../../wegas-editor/images/wegas-icon-pages.png) 0 -1050px no-repeat;
-}
+}*/
 
 .yui3-skin-sam .wegas-icon-textdescriptor,
 .yui3-skin-sam .wegas-page-editor .wegas-icon-text {
