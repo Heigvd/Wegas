@@ -44,7 +44,7 @@
     max-width: 120px; 
 }
 .yui3-skin-sam .wegas-tabview-resizetabs > ul .yui3-tab-label {
-    width: 95%;
+    width: 98%;
     margin-right: 5%;
 }
 .yui3-skin-sam .yui3-tab:last-child .yui3-tab-label {
@@ -84,7 +84,7 @@
     border:1px solid transparent;
     line-height: 1em;
     color: black;
-    right: 1.2em;
+    right: 1em;
     top: 11px;
 }
 .yui3-tab-remove:hover {

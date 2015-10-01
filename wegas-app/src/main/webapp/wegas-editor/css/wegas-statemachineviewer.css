@@ -55,7 +55,7 @@
     text-overflow: ellipsis;
 }
 .sm-state{
-    border-color: #072644;
+    border-color: #03283A;
 }
 .sm-dialoguestate{
     border-color: #4372C4;
@@ -138,7 +138,7 @@
 }
 
 .droppable-state{
-    box-shadow: 0px 0px 8px #072644;
+    box-shadow: 0px 0px 8px #03283A;
 }
 .yui3-wegas-script{
     display:block;

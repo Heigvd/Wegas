@@ -168,7 +168,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                         outlineWidth: 4
                     },
                     HoverPaintStyle: {
-                        strokeStyle: "#072644"
+                        strokeStyle: "#03283A"
                     }
                 });
                 jp.bind("connectionDetached", Y.bind(function(e) {
