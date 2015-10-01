@@ -13,7 +13,7 @@
 /*global YUI*/
 
 YUI.add("wegas-i18n-pmg-en", function(Y) {
-    Y.Wegas.I18n.register("en", {
+    Y.Wegas.I18n.register("wegas-i18n-pmg", "en", {
         pmg: {
             navigation: {
                 thisWeek: "this week",

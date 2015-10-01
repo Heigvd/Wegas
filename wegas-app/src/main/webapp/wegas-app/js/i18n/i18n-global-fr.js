@@ -12,7 +12,7 @@
 /*global Variable, gameModel, self */
 
 YUI.add("wegas-i18n-global-fr", function(Y) {
-    Y.Wegas.I18n.register("fr", {
+    Y.Wegas.I18n.register("wegas-i18n-global", "fr", {
         global: {
             and: "et",
             description: "description",

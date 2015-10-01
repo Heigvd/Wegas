@@ -13,7 +13,7 @@
 /*global Variable, gameModel, self */
 
 YUI.add("wegas-i18n-mcq-en", function(Y) {
-    Y.Wegas.I18n.register("en", {
+    Y.Wegas.I18n.register("wegas-i18n-mcq", "en", {
         mcq: {
             result: "result",
             empty: "No questions available yet",
