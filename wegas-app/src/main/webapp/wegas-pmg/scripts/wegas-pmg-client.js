@@ -753,6 +753,14 @@ app.once("render",
 
         });
 
+        Y.use(["wegas-resourcemanagement-entities", "inputex-uneditable"], function() {
+            persistence.InboxDescriptor.METHODS = {};
+            /*Y.Object.filter(persistence.InboxDescriptor.METHODS,
+                function(m, k) {
+                    return !(k.match(/sendMessage/i));
+                });*/
+        });
+
         Y.use("wegas-inputex-variabledescriptorselect", function() {
             Y.mix(Y.inputEx.getFieldClass("statement").prototype.GLOBALMETHODS, {
                 separatorPMG: {
