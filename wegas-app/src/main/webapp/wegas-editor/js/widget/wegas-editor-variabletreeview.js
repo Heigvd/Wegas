@@ -389,7 +389,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         data: {
                             entity: entity
                         },
-                        iconCSS: "wegas-icon-choicedescriptor",
+                        iconCSS: entity.getIconCss(),
                         cssClass: "wegas-editor-questionitem " + erroredClass
                     };
                 case 'PeerReviewDescriptor':
@@ -490,8 +490,15 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             var selected = (+this.currentSelection === +el.get(ID)) ? 2 : 0,
                 k, children, collapsed;
             switch (el.get(CLASS)) {
-                case 'StringInstance':
                 case 'TextInstance':
+                     return {
+                        label: label + ': ' + el.get("value").slice(0.10),
+                        selected: selected,
+                        data: {
+                            entity: el
+                        }
+                    };
+                case 'StringInstance':
                 case 'NumberInstance':
                 case 'ListInstance':
                     return {
