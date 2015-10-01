@@ -27,7 +27,7 @@
 }
 .yui3-skin-sam .host-switchmode.yui3-button-selected {
     background: white;
-    color: #072644;
+    color: #03283A;
 }
  
 
@@ -75,6 +75,10 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     /* Only members of administrator group can see admin button */
     display: inline-block;
     font-style: italic;
+}
+
+.wegas-editmode .yui3-resize-handle-inner {
+    display: none;
 }
 
 #rightTabView .yui3-tabview-panel:empty:before {
@@ -350,7 +354,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 }
 
 .yui3-skin-sam .wegas-layout-resizable .wegas-layout-right .yui3-resize-handle {
-    background: #072644;
+    background: #03283A;
 }
 
 .wegas-layout-right > .wegas-list,
@@ -402,11 +406,11 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 /* Wegas logo */
 .yui3-skin-sam .yui3-button.wegas-logo,
 .yui3-skin-sam .yui3-button.wegas-logo:hover {
-    background: -2px -2px url(../../wegas-app/images/wegas-logoicon-35.png) no-repeat;
-    height: 32px;
-    width: 32px;
-    margin: 6px 5px;
-    line-height: 1.9em;
+    background: url(../../wegas-app/images/wegas-logoicon-35.png) 0 0 no-repeat;
+    height: 35px;
+    width: 35px;
+    margin: 3px 5px;
+    line-height: 1.9em
 }
 
 /* Wegas title */

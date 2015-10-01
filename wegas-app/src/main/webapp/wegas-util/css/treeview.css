@@ -35,18 +35,20 @@
 .yui3-treenode-content-icon,
 .yui3-treeleaf-content-icon {
     display:inline-block;
-    width:21px;
+    /* width:21px; */
     height: 18px;
     margin-top: -5px;
+    margin-right: 8px;
+    /* padding-right: 8px; */
 }
 .yui3-treeleaf-content-icon {
-    margin: -4px 0 -6px;
+    /* margin: -4px 0 -6px; */
 }
 
 
 .yui3-treeleaf-default-icon,
 .yui3-treenode-default-icon{
-    margin: -6px 0 -8px;
+    margin: -6px 8px -8px 0px;
     height: 24px;
     display: inline-block;
     font: normal normal normal 14px/1 FontAwesome;

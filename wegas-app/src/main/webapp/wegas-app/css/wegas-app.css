@@ -94,7 +94,7 @@ font {
 .wegas-loading-app > div > div {
     height: 100%;
     width: 0%;
-    background-color: #072644;
+    background-color: #03283A;
 }
 
 /* Wegas loading (overlay on content) */
@@ -204,8 +204,8 @@ font {
     margin-left: -16px;
 }
 .wegas-loader .bar {
-    background-color: #072644;
-    border: 1px solid #072644;
+    background-color: #03283A;
+    border: 1px solid #03283A;
     float:left;
     margin-right:4px; 
     margin-top:6px; 
