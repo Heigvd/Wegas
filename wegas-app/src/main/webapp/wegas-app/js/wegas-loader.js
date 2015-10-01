@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Wegas
  * http://wegas.albasim.ch
  *
@@ -50,7 +50,11 @@ YUI().use(function(Y) {
              */
             "wegas-app": {
                 requires: ["base", "plugin", "array-extras", "timers",
-                    "wegas-helper", "wegas-entity", "wegas-datasource", "font-awesome", "template-micro", "wegas-i18n"]
+                    "wegas-helper", "wegas-entity", "wegas-datasource", "font-awesome", "template-micro", "wegas-i18n",
+                    "wegas-keyframescss"]
+            },
+            "wegas-keyframescss":{
+                type:CSS
             },
             "wegas-editable": {
                 requires: "inputex-jsonschema"
