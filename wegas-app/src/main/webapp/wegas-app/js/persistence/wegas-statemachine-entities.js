@@ -112,6 +112,9 @@ YUI.add("wegas-statemachine-entities", function(Y) {
         },
         getState: function(identifier) {
             return this.get(STATES)[identifier];
+        },
+        getIconCss: function(){
+            return "fa fa-sitemap fa-rotate-270";
         }
     }, {
         ATTRS: {
