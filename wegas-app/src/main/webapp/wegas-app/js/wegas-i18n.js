@@ -99,11 +99,24 @@ YUI.add("wegas-i18n", function(Y) {
             }
         }
 
-        function add(lang, table) {
+        function add(module, lang, table) {
             var currentTable;
-
-            currentTable = Y.namespace('Wegas').I18n._tables[lang] || {};
+            Y.Wegas.I18n._modules[module] = true;
+            currentTable = Y.Wegas.I18n._tables[lang] || {};
             Y.Wegas.I18n._tables[lang] = Y.merge(currentTable, table);
+        }
+
+        function setLang(lang) {
+            var module, deps = [];
+            for (module in Y.Wegas.I18n._modules){
+                deps.push (module + "-" + lang);
+            }
+            Y.use(deps, function(Y) {
+                Y.Wegas.I18n._currentLocale = lang;
+                String.prototype.capitalize = config[lang].capitalize;
+                String.prototype.colonize = config[lang].colonize;
+                String.prototype.pluralize = config[lang].pluralize;
+            });
         }
 
         return {
@@ -111,22 +124,18 @@ YUI.add("wegas-i18n", function(Y) {
              *  {"lang" : { "token" : { "token" : "translation"}}
              */
             _tables: {},
+            _modules: {},
             _currentLocale: undefined,
             _currentTable: function() {
                 return Y.Wegas.I18n._tables[Y.Wegas.I18n._currentLocale];
             },
-            register: function(lang, table) {
-                add(lang, table);
+            register: function(module, lang, table) {
+                add(module, lang, table);
             },
             lang: function() {
                 return currentLocale();
             },
-            setLang: function(lang) {
-                Y.Wegas.I18n._currentLocale = lang;
-                String.prototype.capitalize = config[lang].capitalize;
-                String.prototype.colonize = config[lang].colonize;
-                String.prototype.pluralize = config[lang].pluralize;
-            },
+            setLang: setLang,
             t: function(key, args) {
                 return translate(key, args);
             }
