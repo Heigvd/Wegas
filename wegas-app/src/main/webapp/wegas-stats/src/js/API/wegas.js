@@ -1,17 +1,20 @@
 import Axios from 'axios';
 
-const BASE = '/rest/GameModel/';
-const EXPORT_BASE = '/rest/Export/GameModel';
+const PUBLIC = 'Public';
+const EDITOR_EXTENDED = 'EditorExtended';
+function basePath(view = "Public") {
+    return `/rest/${view}/GameModel/`;
+}
 
 export function getVariables(gmId) {
-    return Axios.get(`${EXPORT_BASE}${gmId}/VariableDescriptor`).then(res => res.data);
+    return Axios.get(`${basePath(EDITOR_EXTENDED)}${gmId}/VariableDescriptor`).then(res => res.data);
 }
 
 export function getGameModelForGame(gameId) {
-    return Axios.get(`${EXPORT_BASE}Game/${gameId}`)
+    return Axios.get(`${basePath(PUBLIC)}Game/${gameId}`)
         .then(d => d.data.gameModelId);
 }
 export function getGames() {
-    return Axios.get(`${BASE}Game`)
+    return Axios.get(`${basePath(PUBLIC)}Game`)
         .then(res => res.data);
 }

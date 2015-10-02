@@ -9,7 +9,7 @@ module.exports = {
         vendor: [
             'react', 'react-dom', 'react-router', 'history',
             'axios', 'redux', 'react-redux',
-            'updeep', 'chartist', 'tcomb-form'
+            'updeep', 'chartist', 'tcomb-form', 'style-loader'
         ]
     },
     output: {
