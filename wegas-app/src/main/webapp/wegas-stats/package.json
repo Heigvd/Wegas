@@ -9,20 +9,21 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.5.4",
+    "axios": "^0.7.0",
     "chartist": "^0.9.4",
-    "history": "^1.9.1",
+    "history": "^1.11.1",
+    "less": "^2.5.3",
     "lodash": "^3.10.1",
     "react": "^0.14.0-rc1",
     "react-dom": "^0.14.0-rc1",
     "react-input-autosize": "^0.5.3",
-    "react-redux": "^2.1.2",
+    "react-redux": "^3.0.1",
     "react-router": "^1.0.0-rc1",
-    "react-select": "^0.6.10",
-    "redux": "^3.0.0",
-    "redux-thunk": "^0.1.0",
-    "rx": "^3.1.2",
-    "tcomb-form": "^0.7.2",
+    "react-select": "^0.6.11",
+    "redux": "^3.0.2",
+    "redux-thunk": "^1.0.0",
+    "rx": "^4.0.0",
+    "tcomb-form": "^0.7.3",
     "updeep": "^0.10.1"
   },
   "devDependencies": {
@@ -31,9 +32,9 @@
     "babel-loader": "^5.3.2",
     "css-loader": "^0.18.0",
     "esformatter": "^0.7.3",
-    "esformatter-jsx": "^2.0.11",
+    "esformatter-jsx": "^2.3.3",
     "eslint": "^1.4.3",
-    "eslint-plugin-react": "^3.4.1",
+    "eslint-plugin-react": "^3.5.1",
     "file-loader": "^0.8.4",
     "html-minify-loader": "^1.0.0",
     "html-webpack-plugin": "^1.6.0",
@@ -45,5 +46,8 @@
     "style-loader": "^0.12.4",
     "webpack": "^1.12.2"
   },
-  "description": ""
+  "description": "",
+  "engines": {
+    "node": ">=4.0.0"
+  }
 }
