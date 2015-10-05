@@ -31,7 +31,7 @@ YUI.add("wegas-review-widgets", function(Y) {
         /** @lends Y.Wegas.ReviewOrchestrator# */
         CONTENT_TEMPLATE: "<div>" +
             "<div class=\"buttons\"></div>" +
-            "<div class=\"summary\"></div>" +
+            "<div class=\"summary\"><h1>Summary</h1></div>" +
             "<div class=\"charts\"></div>" +
             "</div>",
         initializer: function() {
@@ -155,8 +155,8 @@ YUI.add("wegas-review-widgets", function(Y) {
                     for (key in this._monitoredData.data[teamId]) {
                         entry[key] = this._monitoredData.data[teamId][key];
                     }
+                    dtData.push(entry);
                 }
-                dtData.push(entry);
             }
 
 
