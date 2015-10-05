@@ -48,7 +48,8 @@ YUI.add("wegas-review-widgets", function(Y) {
             return counters;
         },
         renderUI: function() {
-            var prd = this.get("variable.evaluated");
+            var prd = this.get("variable.evaluated"), ctx;
+            ctx = this;
             this.dispatchButton = new Y.Button({
                 label: "dispatch",
                 visible: true
@@ -71,12 +72,39 @@ YUI.add("wegas-review-widgets", function(Y) {
             }).render(this.get(CONTENTBOX).one(".buttons"));
 
 
-            Y.namespace("Wegas.Config").Dashboards = Y.namespace("Wegas.Config").Dashboards || {};
-            Y.namespace("Wegas.Config").Dashboards["orchestrator-" + prd.get("name")] = "ReviewHelper.summarize('" + prd.get("name") + "');";
+            //Y.namespace("Wegas.Config").Dashboards = Y.namespace("Wegas.Config").Dashboards || {};
+            //Y.namespace("Wegas.Config").Dashboards["orchestrator-" + prd.get("name")] = "ReviewHelper.summarize('" + prd.get("name") + "');";
+            this.request = "ReviewHelper.summarize('" + prd.get("name") + "');";
 
-            this.dashboard = new Y.Wegas.TeamsDashboard({
-                "name": "orchestrator-" + prd.get("name")
-            }).render(this.get(CONTENTBOX).one(".summary"));
+            //this.dashboard = new Y.Wegas.TeamsDashboard({
+            //    "name": "orchestrator-" + prd.get("name")
+            //}).render(this.get(CONTENTBOX).one(".summary"));
+
+
+
+        },
+        _getMonitoredData: function() {
+            var ctx = this;
+            //return new Y.Promise(function(resolve, reject) {
+            Y.Wegas.Facade.Variable.sendRequest({
+                request: "/Script/Run/" + Y.Wegas.Facade.Game.cache.getCurrentPlayer().get("id"),
+                cfg: {
+                    method: "POST",
+                    headers: {"Managed-Mode": false},
+                    data: {
+                        "@class": "Script",
+                        content: ctx.request
+                    }
+                },
+                on: {
+                    success: function(e) {
+                        ctx._monitoredData = e.response.results;
+                        ctx.syncTable();
+                    }//,
+                    //failure: reject
+                }
+            });
+            //});
         },
         /**
          * @function
@@ -92,14 +120,52 @@ YUI.add("wegas-review-widgets", function(Y) {
             this.notifyButton.on("click", this.onNotify, this);
             this.closeButton.on("click", this.onClose, this);
             this.refreshButton.on("click", this.syncUI, this);
-            this.dashboard.after("synched", this.syncSummary, this);
+            //this.datatable.after("synched", this.syncSummary, this);
         },
         /**
          * @function
          * @private
          */
         syncUI: function() {
-            this.dashboard && this.dashboard.syncUI();
+            this._getMonitoredData();
+        },
+        syncTable: function() {
+            //this.dashboard && this.dashboard.syncUI();
+            var ctx = this, dtData = [], columns = [], game, team;
+
+            game = Y.Wegas.Facade.Game.cache.getCurrentGame();
+
+            var group, item, i, j, teamId, entry, key;
+            columns.push({key: "team-name", label: "Team"});
+            for (i = 0; i < this._monitoredData.structure.length; i++) {
+                group = this._monitoredData.structure[i];
+                entry = {label: group.title, children: []};
+
+                for (j = 0; j < group.items.length; j++) {
+                    item = group.items[j];
+                    entry.children.push({key: item.id, label: item.label});
+                }
+                columns.push(entry);
+            }
+
+            for (teamId in this._monitoredData.data) {
+                team = Y.Wegas.Facade.Game.cache.getTeamById(teamId);
+                if ((game.get("@class") === "DebugGame" || team.get("@class") !== "DebugTeam") && team.get("players").length > 0) {
+                    entry = {"team-name": team.get("name")};
+                    for (key in this._monitoredData.data[teamId]) {
+                        entry[key] = this._monitoredData.data[teamId][key];
+                    }
+                }
+                dtData.push(entry);
+            }
+
+
+            if (ctx.datatable) {
+                ctx.datatable.destroy();
+            }
+            ctx.datatable = new Y.DataTable({columns: columns, data: dtData, sortable: true});
+            ctx.datatable.render(this.get(CONTENTBOX).one(".summary"));
+            ctx.syncSummary();
         },
         addCell: function(table, content, td) {
             td = td || "td";
@@ -119,11 +185,11 @@ YUI.add("wegas-review-widgets", function(Y) {
             return ["n/a"];
         },
         syncSummary: function() {
-            var data = this.dashboard.getMonitoredData(),
+            var data = this._monitoredData,
                 evalSummary,
                 node, prd;
 
-            prd = this.get("variable.evaluated")
+            prd = this.get("variable.evaluated");
             evalSummary = data.extra;
 
             node = this.get(CONTENTBOX).one(".charts");
@@ -1206,7 +1272,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             }
         },
         getCurrentValue: function() {
-            if (this.get("readonly")){
+            if (this.get("readonly")) {
                 return this.get(CONTENTBOX).one(".wegas-review-grade-instance-input-container p").getContent();
             } else {
                 return +this.get(CONTENTBOX).one(".wegas-review-grade-instance-input").get("value");
