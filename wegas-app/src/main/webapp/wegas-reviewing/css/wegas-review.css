@@ -10,6 +10,30 @@
  *    Author     : Maxence Laurent (maxence.laurent at gmail.com)
  */
 
+
+.wegas-review-orchestrator .summary table thead tr:nth-child(2) th {
+    font-weight : 400;
+    font-size : 0.9em;
+}
+
+.wegas-review-orchestrator .summary table th {
+  max-width: 80px;
+  white-space: normal;
+  background-image: none;
+  /* background-color : azure; */
+  border-bottom: 1px solid #cbcbcb;
+  vertical-align: middle;
+}
+.wegas-review-orchestrator .summary table th div {
+  text-overflow: ellipsis;
+  /* position: relative; */
+  /* display: block; */
+}
+
+.wegas-review-orchestrator .summary table td {
+  width: 80px;
+}
+
 .wegas-review-variableeditor .wegas-review-header {
     margin-bottom: 20px;
 }
@@ -71,14 +95,15 @@
  * Orchestrator 
  */
 .wegas-review-orchestrator .summary table tr > * {
-    border: 1px groove;
+    /* border: 1px groove; */
 }
 
 .wegas-review-orchestrator .summary table th {
     font-weight: 600;
     font-style : italic;
     text-align:center;
-    padding: 5px;
+    font-size: 1em;
+    /* padding: 5px; */
 }
 
 .wegas-review-orchestrator .summary table td {

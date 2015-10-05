@@ -280,6 +280,8 @@
     text-align:center;
     clear: both;
     float: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .card__blocs .bloc{
@@ -301,6 +303,10 @@
     height:80px;
 }
 
+.card__blocs .bloc.bloc--icon:hover{
+background-color: #eee;
+}
+
 .card__blocs .bloc.bloc--icon{
     background-position:center;
     background-repeat:no-repeat;
@@ -308,7 +314,12 @@
     line-height:9999px;
     white-space: nowrap;
     overflow:hidden;
-    transition:background .3s;
+    /*transition:background .3s;*/
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    border: none;
+    margin: 3px 4px 0px 0;
 }
 
 .card__blocs .bloc.bloc--info-details{
@@ -321,18 +332,16 @@
 
 .card__blocs .bloc.bloc--info-view{
     background-image:url("../../wegas-app/images/icon_vision.png");
+    background-color: #41D2FA;
 }
 
 .card__blocs .bloc.bloc--info-view:hover{
-    background-image:url("../../wegas-app/images/icon_vision_hover.png");
+    background-color: #06b7e8;
 }
+
 
 .card__blocs .bloc.bloc--action-impacts{
     background-image:url("../../wegas-app/images/icon_impact.png");
-}
-
-.card__blocs .bloc.bloc--action-impacts:hover{
-    background-image:url("../../wegas-app/images/icon_impact_hover.png");
 }
 
 .card__blocs .bloc.bloc--action-email{
@@ -340,7 +349,7 @@
 }
 
 .card__blocs .bloc.bloc--action-email:hover{
-    background-image:url("../../wegas-app/images/icon_mail_hover.png");
+    /* background-image:url("../../wegas-app/images/icon_mail_hover.png"); */
 }
 
 .bloc .bloc__label, .bloc .bloc__value{
