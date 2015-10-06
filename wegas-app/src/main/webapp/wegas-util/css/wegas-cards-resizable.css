@@ -6,7 +6,8 @@
  * Licensed under the MIT License
  */
 .resizable .card .card__title{
-    width:calc(100% - 80px);
+    width: calc(100% - 277px);
+    text-overflow: ellipsis;
 }
 
 .resizable.resizable--large .card .card__blocs.card__blocs--monitoring .bloc{
@@ -16,7 +17,7 @@
 .resizable.resizable--medium .card .card__blocs.card__blocs--monitoring{
     border:none;
     border-top:solid 2px #d4d4d4;
-    width:100%;
+    /* width:100%; */
 }
 
 .resizable.resizable--small .card .card__icon{
@@ -72,7 +73,7 @@
     box-shadow:none;
 }
 
-.resizable.resizable--medium .card .card__icon, .resizable.resizable--medium .card .card__title, .resizable.resizable--medium .card .card__actions{
+.card__icon{
     margin-bottom:0px;
     transition:margin .3s;
 }

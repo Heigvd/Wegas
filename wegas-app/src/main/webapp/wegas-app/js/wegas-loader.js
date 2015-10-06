@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Wegas
  * http://wegas.albasim.ch
  *
@@ -835,6 +835,7 @@ YUI().use(function(Y) {
             "wegas-review-widgets": {
                 requires: ["wegas-review-css",
                     "wegas-reviewing-entities",
+                    "datatable",
                     "slider",
                     "wegas-teams-dashboard",
                     "chartist",

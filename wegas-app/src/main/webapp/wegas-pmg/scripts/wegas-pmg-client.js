@@ -983,9 +983,9 @@ app.once("render",
                     varLabel("managementApproval") + '"});'],
             'Variable.find(gameModel, "userApproval").add(self, ${"type":"number", "label": "' + varLabel("userApproval") + '"});',
             'Variable.find(gameModel, "qualityImpacts").add(self, ${"type":"number", "label": "Quality"});',
-            'Variable.find(gameModel, "timeCards").add(self, ${"type":"number", "label": "Time cards"});',
+            'Variable.find(gameModel, "timeCards").add(self, ${"type":"number", "label": "Time budget"});'/*,
             'Variable.find(gameModel, "projectFixedCosts").add(self, ${"type":"number", "label": "Fixed costs"});',
-            'Variable.find(gameModel, "bonusRatio").add(self, ${"type":"number", "label": "Bonus ratio"});'
+            'Variable.find(gameModel, "bonusRatio").add(self, ${"type":"number", "label": "Bonus ratio"});'*/
         ];
     };
     Y.namespace("Wegas.Config").ExtraTabs = [{
