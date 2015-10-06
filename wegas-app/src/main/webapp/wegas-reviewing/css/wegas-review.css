@@ -56,6 +56,7 @@
 .wegas-review-widget .subtitle {
     font-size: 1.1em;
     margin-top: 10px;
+    font-weight: 600;
 }
 
 
@@ -77,17 +78,22 @@
 
 .wegas-review-widget .toReview .description,
 .wegas-review-evaluation {
-    background-color: #666;
+    /* background-color: #666; */
 }
 
 .wegas-review-widget .toReview .content {
     margin: 0px 5px;
 }
 
-.wegas-review-widget .toReview .content,
-.wegas-review-evaluation-content {
-    background-color: #999;
+.wegas-review-widget .toReview .content{
+    background-color: #eee;
     height: auto;
+    width: auto;
+}
+
+.wegas-review-evaluation-content {
+  border : 1px solid #ddd;
+  height: auto;
     width: auto;
 }
 

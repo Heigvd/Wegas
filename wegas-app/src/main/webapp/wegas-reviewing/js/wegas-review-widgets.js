@@ -1074,16 +1074,16 @@ YUI.add("wegas-review-widgets", function(Y) {
             }
 
             if (modeFb === "write" || modeFbEval === "write") {
+                this.saveButton = new Y.Button({
+                    label: "Save",
+                    visible: true
+                }).render(this.get(CONTENTBOX).one('.submit'));
                 if (this.get("showSubmitButton")) {
                     this.submitButton = new Y.Button({
                         label: "Submit",
                         visible: true
                     }).render(this.get(CONTENTBOX).one('.submit'));
                 }
-                this.saveButton = new Y.Button({
-                    label: "Save",
-                    visible: true
-                }).render(this.get(CONTENTBOX).one('.submit'));
             }
 
             evls = review.get("feedback");
