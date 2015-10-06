@@ -1,0 +1,21 @@
+<div>
+    <select type="value"
+            ng-model="perm.type">
+        <option value="GameModel">GameModel</option>
+        <option value="Game">Game</option>
+        <option value="User">User</option>
+    </select>
+    <input ng-model="perm.id"/>
+    <ul>
+        <li ng-repeat="permission in availablePermissions">
+            <label>
+                <input type="checkbox"
+                       value="{{permission}}"
+                       ng-checked='perm.permissions.indexOf(permission) > -1'
+                       ng-click="togglePerm(permission)"
+                       ng-disabled="perm.permissions.indexOf('*') > -1 && permission !=='*'"> {{permission}}
+            </label>
+        </li>
+    </ul>
+    <b>{{permission.value}}</b>
+</div>

@@ -1,4 +1,4 @@
-angular.module('private.admin.users.edit.directives', [])
+angular.module('private.admin.users.edit.directives', ['wegas.directive.permission.edit'])
     .directive('adminUsersEditIndex', function() {
         return {
             scope:{
@@ -8,7 +8,7 @@ angular.module('private.admin.users.edit.directives', [])
             controller: "AdminUsersEditIndexController as adminUsersEditIndexCtrl"
         };
     }).controller("AdminUsersEditIndexController", function AdminUsersEditIndexController(UsersModel, $stateParams, $state){
-        var ctrl = this; 
+        var ctrl = this;
         ctrl.user = {};
         UsersModel.getFullUser($stateParams.id).then(function(response) {
             if (!response.isErroneous()) {
@@ -26,7 +26,7 @@ angular.module('private.admin.users.edit.directives', [])
             var newPermission = {'id':null, "@class":"Permission","value":"", "inducedPermission":""};
             ctrl.user.account.permissions.push(newPermission);
         };
-        
+
         ctrl.save = function () {
             UsersModel.updateUser(ctrl.user.account).then(function (response) {
                 if (!response.isErroneous()) {
