@@ -549,6 +549,8 @@ var PMGTest = (function() {
         assign(informaticien1, task2);
         reserve(informaticien1, 1, 2, 3, 4);
 
+        assertEquals(80, task2.instance.requirements.get(0).limit, "Limits does not match");
+
         doNextPeriod(4);                                                            // -> Execution week 3
         checkProperty(task2, 'completeness', 50, "Limits"); // Old pmg: 50%
         nextPeriod();                                                               // -> Executing week 4
@@ -557,7 +559,7 @@ var PMGTest = (function() {
         checkProperty(task2, 'completeness', 80, "Limits"); // Old pmg: 80%
         nextPeriod();                                                               // -> Executing week 3
         checkProperty(task2, 'completeness', 80, "Limits"); // Old pmg: 80%
-
+        
         task2.instance.requirements.get(0).limit = 100;                              // Revert changes on the limit
     }
     function testPredecessorFactor() {
