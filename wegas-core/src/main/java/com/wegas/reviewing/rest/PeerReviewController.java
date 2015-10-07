@@ -26,6 +26,8 @@ import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import com.wegas.reviewing.persistence.PeerReviewInstance;
 import com.wegas.reviewing.persistence.Review;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
@@ -139,7 +141,7 @@ public class PeerReviewController {
         checkPermissions(playerFacade.find(playerId).getGame(), playerId);
 
         reviewFacade.submit(prdId, playerId);
-        requestFacade.commit();
+        requestFacade.commit(); // Player scoped
 
         return Response.ok().build();
     }
@@ -160,8 +162,8 @@ public class PeerReviewController {
             @PathParam("gameId") Long gameId
     ) {
         assertTeacherRight(prdId, gameId);
-        reviewFacade.dispatch(prdId);
-        requestFacade.commit();
+        List<PeerReviewInstance> touched = reviewFacade.dispatch(prdId);
+        this.commit(touched);
         return Response.ok().build();
     }
 
@@ -212,7 +214,7 @@ public class PeerReviewController {
     public PeerReviewInstance submitReview(Review review) {
         assertReviewWriteRight(reviewFacade.findReview(review.getId()));
         Review submitedReview = reviewFacade.submitReview(review);
-        requestFacade.commit();
+        requestFacade.commit(); // Player scoped
         return reviewFacade.getPeerReviewInstanceFromReview(submitedReview);
     }
 
@@ -232,8 +234,8 @@ public class PeerReviewController {
             @PathParam("gameId") Long gameId
     ) {
         assertTeacherRight(prdId, gameId);
-        reviewFacade.notify(prdId);
-        requestFacade.commit();
+        List<PeerReviewInstance> touched = reviewFacade.notify(prdId);
+        this.commit(touched);
         return Response.ok().build();
     }
 
@@ -253,8 +255,8 @@ public class PeerReviewController {
             @PathParam("gameId") Long gameId
     ) {
         assertTeacherRight(prdId, gameId);
-        reviewFacade.close(prdId);
-        requestFacade.commit();
+        List<PeerReviewInstance> touched = reviewFacade.close(prdId);
+        this.commit(touched);
         return Response.ok().build();
     }
 
@@ -295,13 +297,24 @@ public class PeerReviewController {
 
     /**
      * Assert the current user can act as given player
-     * @param game current game
+     *
+     * @param game     current game
      * @param playerId player context
-     * @throws UnauthorizedException 
+     * @throws UnauthorizedException
      */
     private void checkPermissions(Game game, Long playerId) throws UnauthorizedException {
         if (!SecurityHelper.isPermitted(game, "Edit") && !userFacade.matchCurrentUser(playerId)) {
             throw new UnauthorizedException();
+        }
+    }
+
+    private void commit(List<PeerReviewInstance> instances) {
+        for (PeerReviewInstance pri : instances) {
+            try {
+                Player findAPlayer = instanceFacade.findAPlayer(pri);
+                requestFacade.commit(findAPlayer);
+            } catch (NoPlayerException ex) {
+            }
         }
     }
 }

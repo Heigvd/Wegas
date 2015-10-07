@@ -170,9 +170,10 @@ public class ReviewingFacade {
      *
      * @param prd peer review descriptor to dispatch
      */
-    public void dispatch(PeerReviewDescriptor prd) {
+    public List<PeerReviewInstance> dispatch(PeerReviewDescriptor prd) {
         Collection<VariableInstance> values = prd.getScope().getVariableInstances().values();
         List<PeerReviewInstance> pris = new ArrayList(values);
+        List<PeerReviewInstance> touched = new ArrayList<>();
         int numberOfReview;
 
         if (prd.getGameModel().getTemplate()) {
@@ -196,6 +197,7 @@ public class ReviewingFacade {
                             instance.setReviewState(PeerReviewDescriptor.ReviewingState.DISCARDED);
                             pris.remove(instance);
                             variableInstanceFacade.merge(instance);
+                            touched.add(instance);
                         }
                     }
                 }
@@ -221,12 +223,14 @@ public class ReviewingFacade {
                     //reviewer.getToReview().add(r);
                 }
                 author.setReviewState(PeerReviewDescriptor.ReviewingState.DISPATCHED);
+                touched.add(author);
             }
         }
         for (PeerReviewInstance pri : pris) {
             variableInstanceFacade.merge(pri);
             em.flush();
         }
+        return touched;
     }
 
     /**
@@ -235,10 +239,10 @@ public class ReviewingFacade {
      *
      * @param peerReviewDescriptorId peer review descriptor id to dispatch
      */
-    public void dispatch(Long peerReviewDescriptorId) {
+    public List<PeerReviewInstance> dispatch(Long peerReviewDescriptorId) {
         VariableDescriptor vd = variableDescriptorFacade.find(peerReviewDescriptorId);
         if (vd instanceof PeerReviewDescriptor) {
-            dispatch((PeerReviewDescriptor) vd);
+            return dispatch((PeerReviewDescriptor) vd);
         } else {
             throw WegasErrorMessage.error("Submit failed: Descriptor is not instance of PeerReviewDescriptor");
         }
@@ -355,17 +359,20 @@ public class ReviewingFacade {
      *
      * @param prd the PeerReviewDescriptor
      */
-    public void notify(PeerReviewDescriptor prd) {
+    public List<PeerReviewInstance> notify(PeerReviewDescriptor prd) {
         List<PeerReviewInstance> pris = new ArrayList(prd.getScope().getVariableInstances().values());
+        List<PeerReviewInstance> touched = new ArrayList<>();
         for (PeerReviewInstance pri : pris) {
             for (Review review : pri.getReviewed()) {
                 if (review.getReviewState() == Review.ReviewState.DISPATCHED || review.getReviewState() == Review.ReviewState.REVIEWED) {
                     review.setReviewState(Review.ReviewState.NOTIFIED);
                 }
             }
+            touched.add(pri);
             variableInstanceFacade.merge(pri);
             //requestManager.addUpdatedInstance(pri);
         }
+        return touched;
     }
 
     /**
@@ -373,10 +380,10 @@ public class ReviewingFacade {
      *
      * @param peerReviewDescriptorId
      */
-    public void notify(Long peerReviewDescriptorId) {
+    public List<PeerReviewInstance> notify(Long peerReviewDescriptorId) {
         VariableDescriptor vd = variableDescriptorFacade.find(peerReviewDescriptorId);
         if (vd instanceof PeerReviewDescriptor) {
-            notify((PeerReviewDescriptor) vd);
+            return notify((PeerReviewDescriptor) vd);
         } else {
             throw WegasErrorMessage.error("Notify failed: Descriptor is not instance of PeerReviewDescriptor");
         }
@@ -386,9 +393,11 @@ public class ReviewingFacade {
      * The Reviewing will be completely finished after closing
      *
      * @param prd
+     * @return
      */
-    public void close(PeerReviewDescriptor prd) {
+    public List<PeerReviewInstance> close(PeerReviewDescriptor prd) {
         List<PeerReviewInstance> pris = new ArrayList(prd.getScope().getVariableInstances().values());
+        List<PeerReviewInstance> touched = new ArrayList<>();
         for (PeerReviewInstance pri : pris) {
             for (Review review : pri.getReviewed()) {
                 if (review.getReviewState() == Review.ReviewState.NOTIFIED
@@ -396,9 +405,11 @@ public class ReviewingFacade {
                     review.setReviewState(Review.ReviewState.CLOSED);
                 }
             }
+            touched.add(pri);
             variableInstanceFacade.merge(pri);
             //requestManager.addUpdatedInstance(pri);
         }
+        return touched;
     }
 
     /**
@@ -406,10 +417,10 @@ public class ReviewingFacade {
      *
      * @param peerReviewDescriptorId
      */
-    public void close(Long peerReviewDescriptorId) {
+    public List<PeerReviewInstance> close(Long peerReviewDescriptorId) {
         VariableDescriptor vd = variableDescriptorFacade.find(peerReviewDescriptorId);
         if (vd instanceof PeerReviewDescriptor) {
-            close((PeerReviewDescriptor) vd);
+            return close((PeerReviewDescriptor) vd);
         } else {
             throw WegasErrorMessage.error("Close failed: Descriptor is not instance of PeerReviewDescriptor");
         }

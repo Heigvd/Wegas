@@ -105,6 +105,9 @@ YUI.add("wegas-text-input", function(Y) {
             }
             // }, this);
         },
+        bindUI: function(){
+            this.handlers.push(Y.Wegas.Facade.Variable.after("update", this.syncUI, this));
+        },
         syncUI: function() {
             this.setContent();
         },
