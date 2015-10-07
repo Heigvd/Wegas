@@ -10,11 +10,8 @@
     border: 1px solid #60BDC5;
 }
 
-.ecc-app * {
-    font-family: Helvetica, Arial, sans-serif !important;
-}
-
 .ecc-app {
+    font-family: Helvetica, Arial, sans-serif;
     display: block;
     position: absolute;
     top: 0;
