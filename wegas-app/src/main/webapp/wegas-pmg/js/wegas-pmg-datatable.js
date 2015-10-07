@@ -53,7 +53,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                     };
                 }
                 if (ct[i].label){
-                    ct[i].label = Y.Template.Micro.compile(ct[i].label)();
+                    ct[i].label = Y.Template.Micro.compile(ct[i].label || "")();
                 }
             }
             

@@ -123,7 +123,7 @@ YUI.add("wegas-button", function(Y) {
     /* @fixme @hack So we can display html tag inside a button */
     Y.Button.prototype._setLabel = function(label, name, opts) {
         if (!opts || opts.src !== 'internal') {
-            this.set('labelHTML', Y.Template.Micro.compile(label)(), {src: 'internal'});
+            this.set('labelHTML', Y.Template.Micro.compile(label || "")(), {src: 'internal'});
         }
         return label;
     };

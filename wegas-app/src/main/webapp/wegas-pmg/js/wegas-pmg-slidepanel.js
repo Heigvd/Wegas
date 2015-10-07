@@ -34,7 +34,7 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                         title = title.replace(args[i], str);
                     }
                 }
-                title = Y.Template.Micro.compile(title)();
+                title = Y.Template.Micro.compile(title || "")();
                 this.handlers = {};
                 this.get("boundingBox").one(".slidepanel-title h2").setContent(title);
                 if (!this.get("openByDefault")) {
