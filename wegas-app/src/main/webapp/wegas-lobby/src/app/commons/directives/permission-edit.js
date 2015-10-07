@@ -6,9 +6,9 @@
  * Licensed under the MIT License
  */
 angular.module("wegas.directive.permission.edit", [])
-    .directive('permissionEdit', function(SessionsModel, ScenariosModel) {
+    .directive('permissionEdit', function($q, SessionsModel, ScenariosModel) {
         "use strict";
-        
+
         var DANGER_BG_CLASS = "bg-danger";
         var PERMISSIONS = {
             GameModel: ["*", "Edit", "Instantiate", "Duplicate", "View"],
@@ -30,9 +30,14 @@ angular.module("wegas.directive.permission.edit", [])
                 enumerable: true
             }
         });
+        var STATUS = ["LIVE", "BIN", "DELETE"];
+        var ALL_OPTION = {
+            name: "ALL",
+            id: "*"
+        };
 
         function parsePerm(permString) {
-            var match = permString.match(PERM_STRING_REGEX)
+            var match = permString.match(PERM_STRING_REGEX);
             if (!match || (TYPE_TO_KEY[match[1]] !== match[3] && !match[5])) {
                 throw new Error("Invalid permission string: " + permString);
             }
@@ -48,7 +53,7 @@ angular.module("wegas.directive.permission.edit", [])
                 throw new Error("Invalid type: " + obj.type);
             }
             return obj.type + ":" + obj.permissions.join(",") + ":" +
-                (obj.id === "*" ? "*" : (TYPE_TO_KEY[obj.type] || "") + obj.id);
+                   (obj.id === "*" ? "*" : (TYPE_TO_KEY[obj.type] || "") + obj.id);
         }
 
         return {
@@ -56,20 +61,24 @@ angular.module("wegas.directive.permission.edit", [])
             restrict: 'E',
             link: function(scope, elem) {
                 scope.availablePermissions = PERMISSIONS.GameModel;
+                scope.options = [];
                 scope.perm = {
                     permissions: [],
                     id: "",
                     type: "GameModel"
                 };
+
                 scope.update = function(val) {
+                    var permString;
                     elem.children().removeClass(DANGER_BG_CLASS);
                     scope.availablePermissions = PERMISSIONS[val.type];
                     _.remove(val.permissions, function(elem) {
                         return scope.availablePermissions.indexOf(elem) < 0;
                     });
                     try {
-                        scope.permission.value = genPerm(val);
-                        parsePerm(scope.permission.value);
+                        permString = genPerm(val);
+                        parsePerm(permString);
+                        scope.permission.value = permString;
                     } catch (e) {
                         elem.children().addClass(DANGER_BG_CLASS);
                     }
@@ -89,10 +98,38 @@ angular.module("wegas.directive.permission.edit", [])
                     }
                     scope.update(scope.perm);
                 };
+                /* Update available id options base on type (Game / GameModel / User) */
+                scope.$watch("perm.type", function(v) {
+                    scope.options = [ALL_OPTION];
+                    if (v === "GameModel") {
+                        $q.all(_.map(STATUS, function(status) {
+                                return ScenariosModel.getScenarios(status);
+                            }))
+                            .then(function(arr) {
+                                _.forEach(arr, function(el) {
+                                    scope.options = scope.options.concat(el.data);
+                                });
+                            });
+                    } else if (v === "Game") {
+                        $q.all(_.map(STATUS, function(status) {
+                                return SessionsModel.getSessions(status);
+                            }))
+                            .then(function(arr) {
+                                _.forEach(arr, function(el) {
+                                    scope.options = scope.options.concat(el.data);
+                                });
+                            });
+                    }
+                })
                 scope.$watchCollection('perm', function(value) {
                     scope.update(value);
                 });
-                scope.perm = parsePerm(scope.permission.value);
+                try {
+                    scope.perm = parsePerm(scope.permission.value);
+                } catch (e) {
+                    //ERROR stays unmodified
+                }
             }
+
         };
     });

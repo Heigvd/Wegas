@@ -5,8 +5,9 @@
         <option value="Game">Game</option>
         <option value="User">User</option>
     </select>
-    <input ng-model="perm.id"/>
-    <ul>
+    <label>ID<select ng-options="opt.id+'' as opt.name for opt in options" ng-model="perm.id"></select>
+    <input ng-model="perm.id"/></label>
+    <ul style="list-style-type: none">
         <li ng-repeat="permission in availablePermissions">
             <label>
                 <input type="checkbox"

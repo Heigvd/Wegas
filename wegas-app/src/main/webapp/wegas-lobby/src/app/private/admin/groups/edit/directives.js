@@ -34,6 +34,9 @@ angular.module('private.admin.groups.edit.directives', ['wegas.directive.permiss
         };
 
         ctrl.save = function() {
+            _.remove(ctrl.group.permissions, function(elem) {
+                return !elem.value;
+            });
             GroupsModel.updateGroup(ctrl.group).then(function(response) {
                 if (!response.isErroneous()) {
                     response.flash();
