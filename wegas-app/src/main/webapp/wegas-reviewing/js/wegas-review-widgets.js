@@ -317,8 +317,8 @@ YUI.add("wegas-review-widgets", function(Y) {
                     node.one("." + klass + " .legend").append("<p>based on " + data.numberOfValues + "/" + summary.maxNumberOfValue + " values</p>");
                 } else if (evD.get("@class") === "TextEvaluationDescriptor") {
                     node.one("." + klass + " .title").setContent("<h3>" + evD.get("name") + "</h3>");
-                    node.one("." + klass + " .chart").append("<p> Average number of words: " + data.averageNumberOfWords.toFixed(2) + "</p>");
-                    node.one("." + klass + " .chart").append("<p>Average number of characters: " + data.averageNumberOfCharacters.toFixed(2) + "</p>");
+                    node.one("." + klass + " .chart").append("<p> Average number of words: " + (data.averageNumberOfWords ? data.averageNumberOfWords.toFixed(2) : "n/a") + "</p>");
+                    node.one("." + klass + " .chart").append("<p>Average number of characters: " + (data.averageNumberOfCharacters ? data.averageNumberOfCharacters.toFixed(2) : "n/a") + "</p>");
                     node.one("." + klass + " .legend").append("<p>based on " + data.numberOfValues + "/" + summary.maxNumberOfValue + " values</p>");
                 }
             }
@@ -1469,7 +1469,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                     select = CB.one(".wegas-review-categinput-content select");
                     option = select.one("option[value='" + value + "']");
 
-                    option.setAttribute("selected");
+                    option && option.setAttribute("selected");
                 }
             } else {
                 // no-update case, fetch effective value from "select"
