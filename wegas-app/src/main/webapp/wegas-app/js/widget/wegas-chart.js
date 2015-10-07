@@ -72,7 +72,7 @@ YUI.add('wegas-chart', function(Y) {
                 vd = Y.Wegas.Facade.Variable.cache.find("name", variables[i].name);
 
                 if (this.get("variables")[i].label) {
-                    label = Y.Template.Micro.compile(this.get("variables")[i].label)();
+                    label = Y.Template.Micro.compile(this.get("variables")[i].label || "")();
                 } else {
                     label = vd.get("label");
                 }
@@ -177,7 +177,7 @@ YUI.add('wegas-chart', function(Y) {
                             var entity = e.response.entity,
                                 label;
                             if (this.get("variables")[i].label) {
-                                label = Y.Template.Micro.compile(this.get("variables")[i].label)();
+                                label = Y.Template.Micro.compile(this.get("variables")[i].label || "")();
                             } else {
                                 label = vd.get("label");
                             }

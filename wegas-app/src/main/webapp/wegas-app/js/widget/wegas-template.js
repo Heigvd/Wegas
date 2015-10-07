@@ -58,7 +58,7 @@ YUI.add("wegas-template", function(Y) {
 
                 //  data.label = this.undefinedToEmpty(desc.getLabel());
                 if (initialData.label) {
-                    initialData.label = Y.Template.Micro.compile(initialData.label)();
+                    initialData.label = Y.Template.Micro.compile(initialData.label || "")();
                 }
                 data.value = data.value || this.undefinedToEmpty(desc.getInstance().get("value"));
                 data.maxValue = this.undefinedToEmpty(desc.get("maxValue"));
@@ -124,7 +124,7 @@ YUI.add("wegas-template", function(Y) {
             var template = this.get("custom"),
                 hashCode = "" + Wegas.Helper.hashCode(template);
             if (Y.Lang.isUndefined(this.TEMPLATES[hashCode])) {
-                this.TEMPLATES[hashCode] = Micro.compile(template);
+                this.TEMPLATES[hashCode] = Micro.compile(template || "");
             }
             return this.TEMPLATES[hashCode];
         }

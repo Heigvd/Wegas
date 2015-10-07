@@ -32,7 +32,7 @@ YUI.add("wegas-text", function(Y) {
          */
         syncUI: function() {
             //this.set("content", this.get("content"));
-            this.get(CONTENTBOX).setContent(Y.Template.Micro.compile(this.get("content"))());
+            this.get(CONTENTBOX).setContent(Y.Template.Micro.compile(this.get("content") || "")());
         },
         getEditorLabel: function() {
             return this.get(CONTENTBOX).get("text");
