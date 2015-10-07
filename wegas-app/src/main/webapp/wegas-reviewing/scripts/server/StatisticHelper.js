@@ -117,12 +117,13 @@ var StatisticHelper = (function() {
     }
 
     function getTextStatistics(text) {
-        var wc, cc;
+        var wc = 0, cc = 0;
 
-        text.split();
-
-        cc = text.replace(/\s+/g, "").length;
-        wc = text.replace(/(^\s*)|(\s*$)/gi, "").split(/\s+/).length;
+        if (text) {
+            text.split();
+            cc = text.replace(/\s+/g, "").length;
+            wc = text.replace(/(^\s*)|(\s*$)/gi, "").split(/\s+/).length;
+        }
 
         return {
             wc: wc,
