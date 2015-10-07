@@ -125,7 +125,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             if (this.tabView.isEmpty()) {
                 this.tabView.add(new Y.Tab({
                     label: "",
-                    content: "<center><i><br /><br /><br /><%= Y.Wegas.I18n.t('mcq.empty') %></i></center>"
+                    content: "<center><i><br /><br /><br />" +  Y.Wegas.I18n.t('mcq.empty') + "</i></center>"
                 }));
                 this.tabView.selectChild(0);
             } else {
