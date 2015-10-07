@@ -37,19 +37,19 @@ angular.module('wegas.models.sessions', [])
                     }).success(function(data) {
                         if (data.events !== undefined && data.events.length == 0) {
                             sessions.cache[status].data = data.entities;
-                            $translate('COMMONS-SESSIONS-FIND-FLASH-SUCCESS').then(function (message) {
+                            $translate('COMMONS-SESSIONS-FIND-FLASH-SUCCESS').then(function(message) {
                                 deferred.resolve(Responses.success(message, sessions.cache[status]));
                             });
                         } else if (data.events !== undefined) {
                             sessions.cache[status].data = [];
                             console.log("WEGAS LOBBY : Error while loading sessions : ")
                             console.log(Responses.danger(data.events[0].exceptions));
-                            $translate('COMMONS-SESSIONS-FIND-FLASH-ERROR').then(function (message) {
+                            $translate('COMMONS-SESSIONS-FIND-FLASH-ERROR').then(function(message) {
                                 deferred.resolve(Responses.danger(message, false));
                             });
                         } else {
                             sessions.cache[status].data = [];
-                            $translate('COMMONS-SESSIONS-FIND-FLASH-ERROR').then(function (message) {
+                            $translate('COMMONS-SESSIONS-FIND-FLASH-ERROR').then(function(message) {
                                 deferred.resolve(Responses.danger(message, false));
                             });
                         }
@@ -58,11 +58,11 @@ angular.module('wegas.models.sessions', [])
                         if (data.events !== undefined && data.events.length > 0) {
                             console.log("WEGAS LOBBY : Error while loading sessions : ")
                             console.log(Responses.danger(data.events[0].exceptions));
-                            $translate('COMMONS-SESSIONS-FIND-FLASH-ERROR').then(function (message) {
+                            $translate('COMMONS-SESSIONS-FIND-FLASH-ERROR').then(function(message) {
                                 deferred.resolve(Responses.danger(message, false));
                             });
                         } else {
-                            $translate('COMMONS-SESSIONS-FIND-FLASH-ERROR').then(function (message) {
+                            $translate('COMMONS-SESSIONS-FIND-FLASH-ERROR').then(function(message) {
                                 deferred.resolve(Responses.danger(message, false));
                             });
                         }
@@ -119,7 +119,7 @@ angular.module('wegas.models.sessions', [])
                 var deferred = $q.defer(),
                     gameModelSetted = false,
                     scenarioBeforeChange = sessionBeforeChange.gameModel,
-                    properties = ["scriptUri","clientScriptUri","cssUri","pagesUri","logID"];
+                    properties = ["scriptUri", "clientScriptUri", "cssUri", "pagesUri", "logID"];
                 if (scenarioBeforeChange.properties.freeForAll !== sessionInfos.individual) {
                     sessionBeforeChange.properties.freeForAll = sessionInfos.individual;
                     scenarioBeforeChange.properties.freeForAll = sessionInfos.individual;
@@ -157,7 +157,7 @@ angular.module('wegas.models.sessions', [])
                 });
                 return deferred.promise;
             };
-        
+
         /* Remove team form persistante datas and change cached datas (Used from trainer workspace) */
         model.removeTeamToSession = function(sessionId, teamId) {
             var deferred = $q.defer(),
@@ -170,21 +170,21 @@ angular.module('wegas.models.sessions', [])
                 if (team) {
                     $http.delete(ServiceURL + "rest/GameModel/Game/Team/" + team.id).success(function(data) {
                         session.teams = _.without(session.teams, team);
-                        $translate('COMMONS-SESSIONS-TEAM-REMOVE-FLASH-SUCCESS').then(function (message) {
+                        $translate('COMMONS-SESSIONS-TEAM-REMOVE-FLASH-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, team));
                         });
                     }).error(function(data) {
-                        $translate('COMMONS-SESSIONS-TEAM-REMOVE-FLASH-ERROR').then(function (message) {
+                        $translate('COMMONS-SESSIONS-TEAM-REMOVE-FLASH-ERROR').then(function(message) {
                             deferred.resolve(Responses.danger(message, false));
                         });
                     });
                 } else {
-                    $translate('COMMONS-TEAMS-NO-TEAM-FLASH-ERROR').then(function (message) {
+                    $translate('COMMONS-TEAMS-NO-TEAM-FLASH-ERROR').then(function(message) {
                         deferred.resolve(Responses.danger(message, false));
                     });
                 }
             } else {
-                $translate('COMMONS-TEAMS-NO-TEAM-FLASH-ERROR').then(function (message) {
+                $translate('COMMONS-TEAMS-NO-TEAM-FLASH-ERROR').then(function(message) {
                     deferred.resolve(Responses.danger(message, false));
                 });
             }
@@ -207,34 +207,34 @@ angular.module('wegas.models.sessions', [])
                     });
                     if (player) {
                         $http.delete(ServiceURL + "rest/GameModel/Game/Team/" + player.teamId + "/Player/" + player.id).success(function(data) {
-                            if(team.players.length < 2){
+                            if (team.players.length < 2) {
                                 session.teams = _.without(session.teams, team);
-                            }else{
+                            } else {
                                 team.players = _.without(team.players, player);
                             }
-                            if(session.properties.freeForAll){
+                            if (session.properties.freeForAll) {
                                 session.players = _.without(session.players, player);
                             }
-                            $translate('COMMONS-SESSIONS-PLAYER-REMOVE-FLASH-SUCCESS').then(function (message) {
+                            $translate('COMMONS-SESSIONS-PLAYER-REMOVE-FLASH-SUCCESS').then(function(message) {
                                 deferred.resolve(Responses.success(message, team));
                             });
                         }).error(function(data) {
-                            $translate('COMMONS-SESSIONS-PLAYER-REMOVE-FLASH-ERROR').then(function (message) {
+                            $translate('COMMONS-SESSIONS-PLAYER-REMOVE-FLASH-ERROR').then(function(message) {
                                 deferred.resolve(Responses.danger(message, false));
                             });
                         });
                     } else {
-                        $translate('COMMONS-TEAMS-NO-PLAYER-FLASH-ERROR').then(function (message) {
+                        $translate('COMMONS-TEAMS-NO-PLAYER-FLASH-ERROR').then(function(message) {
                             deferred.resolve(Responses.danger(message, false));
                         });
                     }
                 } else {
-                    $translate('COMMONS-TEAMS-NO-TEAM-FLASH-ERROR').then(function (message) {
+                    $translate('COMMONS-TEAMS-NO-TEAM-FLASH-ERROR').then(function(message) {
                         deferred.resolve(Responses.danger(message, false));
                     });
                 }
             } else {
-                $translate('COMMONS-TEAMS-NO-TEAM-FLASH-ERROR').then(function (message) {
+                $translate('COMMONS-TEAMS-NO-TEAM-FLASH-ERROR').then(function(message) {
                     deferred.resolve(Responses.danger(message, false));
                 });
             }
@@ -248,16 +248,16 @@ angular.module('wegas.models.sessions', [])
                 ignoreLoadingBar: true
             }).success(function(data) {
                 if (data) {
-                    $translate('COMMONS-SESSIONS-GET-FLASH-SUCCESS').then(function (message) {
+                    $translate('COMMONS-SESSIONS-GET-FLASH-SUCCESS').then(function(message) {
                         deferred.resolve(Responses.success(message, data));
                     });
                 } else {
-                    $translate('COMMONS-SESSIONS-GET-FLASH-ERROR').then(function (message) {
+                    $translate('COMMONS-SESSIONS-GET-FLASH-ERROR').then(function(message) {
                         deferred.resolve(Responses.danger(message, false));
                     });
                 }
             }).error(function(data) {
-                $translate('COMMONS-SESSIONS-GET-FLASH-ERROR').then(function (message) {
+                $translate('COMMONS-SESSIONS-GET-FLASH-ERROR').then(function(message) {
                     deferred.resolve(Responses.danger(message, data));
                 });
             });
@@ -272,12 +272,12 @@ angular.module('wegas.models.sessions', [])
                     if (sessions.cache[status]) {
                         if (sessions.cache[status].loading) {
                             sessions.wait(status).then(function() {
-                                $translate('COMMONS-SESSIONS-FIND-FLASH-SUCCESS').then(function (message) {
+                                $translate('COMMONS-SESSIONS-FIND-FLASH-SUCCESS').then(function(message) {
                                     deferred.resolve(Responses.success(message, sessions.cache[status].data));
                                 });
                             });
                         } else {
-                            $translate('COMMONS-SESSIONS-FIND-FLASH-SUCCESS').then(function (message) {
+                            $translate('COMMONS-SESSIONS-FIND-FLASH-SUCCESS').then(function(message) {
                                 deferred.resolve(Responses.success(message, sessions.cache[status].data));
                             });
                         }
@@ -292,7 +292,7 @@ angular.module('wegas.models.sessions', [])
                         });
                     }
                 } else {
-                    $translate('COMMONS-AUTH-CURRENT-FLASH-ERROR').then(function (message) {
+                    $translate('COMMONS-AUTH-CURRENT-FLASH-ERROR').then(function(message) {
                         deferred.resolve(Responses.danger(message, false));
                     });
                 }
@@ -309,11 +309,11 @@ angular.module('wegas.models.sessions', [])
                     sessions.wait(status).then(function() {
                         session = sessions.findSession(status, id);
                         if (session) {
-                            $translate('COMMONS-SESSIONS-GET-FLASH-SUCCESS').then(function (message) {
+                            $translate('COMMONS-SESSIONS-GET-FLASH-SUCCESS').then(function(message) {
                                 deferred.resolve(Responses.success(message, session));
                             });
                         } else {
-                            $translate('COMMONS-SESSIONS-GET-FLASH-ERROR').then(function (message) {
+                            $translate('COMMONS-SESSIONS-GET-FLASH-ERROR').then(function(message) {
                                 deferred.resolve(Responses.danger(message, false));
                             });
                         }
@@ -321,11 +321,11 @@ angular.module('wegas.models.sessions', [])
                 } else {
                     session = sessions.findSession(status, id);
                     if (session) {
-                        $translate('COMMONS-SESSIONS-GET-FLASH-SUCCESS').then(function (message) {
+                        $translate('COMMONS-SESSIONS-GET-FLASH-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, session));
                         });
                     } else {
-                        $translate('COMMONS-SESSIONS-GET-FLASH-ERROR').then(function (message) {
+                        $translate('COMMONS-SESSIONS-GET-FLASH-ERROR').then(function(message) {
                             deferred.resolve(Responses.danger(message, false));
                         });
                     }
@@ -334,11 +334,11 @@ angular.module('wegas.models.sessions', [])
                 model.getSessions(status).then(function() {
                     session = sessions.findSession(status, id);
                     if (session) {
-                        $translate('COMMONS-SESSIONS-GET-FLASH-SUCCESS').then(function (message) {
+                        $translate('COMMONS-SESSIONS-GET-FLASH-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, session));
                         });
                     } else {
-                        $translate('COMMONS-SESSIONS-GET-FLASH-ERROR').then(function (message) {
+                        $translate('COMMONS-SESSIONS-GET-FLASH-ERROR').then(function(message) {
                             deferred.resolve(Responses.danger(message, false));
                         });
                     }
@@ -359,9 +359,9 @@ angular.module('wegas.models.sessions', [])
             $http
                 .get(ServiceURL + url)
                 .success(function(sessionRefreshed) {
-                    if(sessionRefreshed){
-                        sessionRefreshed.teams.forEach(function(team){
-                            if(team["@class"] == "DebugTeam"){
+                    if (sessionRefreshed) {
+                        sessionRefreshed.teams.forEach(function(team) {
+                            if (team["@class"] == "DebugTeam") {
                                 sessionRefreshed.teams = _.without(sessionRefreshed.teams, team);
                             }
                         });
@@ -369,14 +369,14 @@ angular.module('wegas.models.sessions', [])
                     uncacheSession(status, sessionToRefresh);
                     cacheSession(status, sessionRefreshed);
                     cachedSession = sessions.findSession(status, sessionRefreshed.id);
-                    $translate('COMMONS-SESSIONS-REFRESH-SUCCESS').then(function (message) {
+                    $translate('COMMONS-SESSIONS-REFRESH-SUCCESS').then(function(message) {
                         deferred.resolve(Responses.success(message, cachedSession));
                     });
                 }).error(function(data) {
-                    $translate('COMMONS-SESSIONS-REFRESH-ERROR').then(function (message) {
-                        deferred.resolve(Responses.danger(message, false));
-                    });
+                $translate('COMMONS-SESSIONS-REFRESH-ERROR').then(function(message) {
+                    deferred.resolve(Responses.danger(message, false));
                 });
+            });
             return deferred.promise;
         };
 
@@ -394,23 +394,23 @@ angular.module('wegas.models.sessions', [])
                     };
                     $http.post(ServiceURL + "rest/GameModel/" + newSession.gameModelId + "/Game?view=EditorExtended", newSession).success(function(data) {
                         cacheSession("LIVE", data)
-                        $translate('COMMONS-SESSIONS-CREATE-SUCCESS').then(function (message) {
+                        $translate('COMMONS-SESSIONS-CREATE-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, data));
                         });
                     }).error(function(data) {
-                        $translate('COMMONS-SESSIONS-CREATE-ERROR').then(function (message) {
+                        $translate('COMMONS-SESSIONS-CREATE-ERROR').then(function(message) {
                             deferred.resolve(Responses.danger(message, false));
                         });
                     });
                 } else {
-                    $translate('COMMONS-AUTH-CURRENT-FLASH-ERROR').then(function (message) {
+                    $translate('COMMONS-AUTH-CURRENT-FLASH-ERROR').then(function(message) {
                         deferred.resolve(Responses.danger(message, false));
                     });
                 }
             });
             return deferred.promise;
         };
-        
+
         /* Edit the session infos (Name, comments, icon, token, individual/team type) */
         model.updateSession = function(session, infosToSet) {
             var deferred = $q.defer();
@@ -419,23 +419,23 @@ angular.module('wegas.models.sessions', [])
                     if (sessionSetted) {
                         updateGameModelSession(infosToSet, sessionSetted).then(function(sessionSetted2) {
                             if (sessionSetted2) {
-                                $translate('COMMONS-SESSIONS-UPDATE-FLASH-SUCCESS').then(function (message) {
+                                $translate('COMMONS-SESSIONS-UPDATE-FLASH-SUCCESS').then(function(message) {
                                     deferred.resolve(Responses.success(message, sessionSetted2));
                                 });
                             } else {
-                                $translate('COMMONS-SESSIONS-UPDATE-FLASH-ERROR').then(function (message) {
+                                $translate('COMMONS-SESSIONS-UPDATE-FLASH-ERROR').then(function(message) {
                                     deferred.resolve(Responses.danger(message, false));
                                 });
                             }
                         });
                     } else {
-                        $translate('COMMONS-SESSIONS-UPDATE-FLASH-ERROR').then(function (message) {
+                        $translate('COMMONS-SESSIONS-UPDATE-FLASH-ERROR').then(function(message) {
                             deferred.resolve(Responses.danger(message, false));
                         });
                     }
                 });
             } else {
-                $translate('COMMONS-SESSIONS-UPDATE-NO-SESSION-FLASH-ERROR').then(function (message) {
+                $translate('COMMONS-SESSIONS-UPDATE-NO-SESSION-FLASH-ERROR').then(function(message) {
                     deferred.resolve(Responses.danger(message, false));
                 });
             }
@@ -456,13 +456,15 @@ angular.module('wegas.models.sessions', [])
                     ignoreLoadingBar: true
                 }).success(function(data) {
                     $translate(
-                        'COMMONS-SESSIONS-EDIT-ACCESS-SUCCESS', 
-                        {access: WegasTranslations.access[sessionBeforeChange.access][$translate.use()]}
-                    ).then(function (message) {
+                        'COMMONS-SESSIONS-EDIT-ACCESS-SUCCESS',
+                        {
+                            access: WegasTranslations.access[sessionBeforeChange.access][$translate.use()]
+                        }
+                    ).then(function(message) {
                         deferred.resolve(Responses.success(message, data));
                     });
                 }).error(function(data) {
-                    $translate('COMMONS-SESSIONS-EDIT-ACCESS-ERROR').then(function (message) {
+                    $translate('COMMONS-SESSIONS-EDIT-ACCESS-ERROR').then(function(message) {
                         deferred.resolve(Responses.danger(message, false));
                     });
                 });
@@ -483,21 +485,21 @@ angular.module('wegas.models.sessions', [])
                 if (!alreadyIn) {
                     $http.post(ServiceURL + "rest/Extended/User/addAccountPermission/Game:View,Edit:g" + session.id + "/" + trainer.id).success(function(data) {
                         session.trainers.push(trainer);
-                        $translate('COMMONS-SESSIONS-ADD-TRAINER-SUCCESS').then(function (message) {
+                        $translate('COMMONS-SESSIONS-ADD-TRAINER-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, trainer));
                         });
                     }).error(function(data) {
-                        $translate('COMMONS-SESSIONS-ADD-TRAINER-ERROR').then(function (message) {
+                        $translate('COMMONS-SESSIONS-ADD-TRAINER-ERROR').then(function(message) {
                             deferred.resolve(Responses.danger(message, false));
                         });
                     });
                 } else {
-                    $translate('COMMONS-SESSIONS-ALREADY-TRAINER-INFO').then(function (message) {
+                    $translate('COMMONS-SESSIONS-ALREADY-TRAINER-INFO').then(function(message) {
                         deferred.resolve(Responses.danger(message, false));
                     });
                 }
             } else {
-                $translate('COMMONS-SESSIONS-NO-ACCESS-ERROR').then(function (message) {
+                $translate('COMMONS-SESSIONS-NO-ACCESS-ERROR').then(function(message) {
                     deferred.resolve(Responses.danger(message, false));
                 });
             }
@@ -514,17 +516,17 @@ angular.module('wegas.models.sessions', [])
                 if (trainer) {
                     $http.delete(ServiceURL + "rest/Extended/User/DeleteAccountPermissionByInstanceAndAccount/g" + session.id + "/" + trainer.id).success(function(data) {
                         session.trainers = _.without(session.trainers, trainer);
-                        $translate('COMMONS-SESSIONS-REMOVE-TRAINER-SUCCESS').then(function (message) {
+                        $translate('COMMONS-SESSIONS-REMOVE-TRAINER-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, trainer));
                         });
                     }).error(function(data) {
-                        $translate('COMMONS-SESSIONS-REMOVE-TRAINER-ERROR').then(function (message) {
+                        $translate('COMMONS-SESSIONS-REMOVE-TRAINER-ERROR').then(function(message) {
                             deferred.resolve(Responses.danger(message, false));
                         });
                     });
                 }
             } else {
-                $translate('COMMONS-SESSIONS-ADD-TRAINER-ERROR').then(function (message) {
+                $translate('COMMONS-SESSIONS-ADD-TRAINER-ERROR').then(function(message) {
                     deferred.resolve(Responses.danger(message, false));
                 });
             }
@@ -539,17 +541,17 @@ angular.module('wegas.models.sessions', [])
                     if (sessionArchived) {
                         uncacheSession("LIVE", sessionToArchive);
                         cacheSession("BIN", sessionToArchive);
-                        $translate('COMMONS-SESSIONS-ARCHIVE-SUCCESS').then(function (message) {
+                        $translate('COMMONS-SESSIONS-ARCHIVE-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, sessionToArchive));
                         });
                     } else {
-                        $translate('COMMONS-SESSIONS-ARCHIVE-ERROR').then(function (message) {
+                        $translate('COMMONS-SESSIONS-ARCHIVE-ERROR').then(function(message) {
                             deferred.resolve(Responses.danger(message, false));
                         });
                     }
                 });
             } else {
-                $translate('COMMONS-SESSIONS-WRONG-OBJECT-ERROR').then(function (message) {
+                $translate('COMMONS-SESSIONS-WRONG-OBJECT-ERROR').then(function(message) {
                     deferred.resolve(Responses.danger(message, false));
                 });
             }
@@ -564,17 +566,17 @@ angular.module('wegas.models.sessions', [])
                     if (sessionUnarchived) {
                         uncacheSession("BIN", sessionToUnarchive);
                         cacheSession("LIVE", sessionToUnarchive);
-                        $translate('COMMONS-SESSIONS-UNARCHIVE-SUCCESS').then(function (message) {
+                        $translate('COMMONS-SESSIONS-UNARCHIVE-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, sessionToUnarchive));
                         });
                     } else {
-                        $translate('COMMONS-SESSIONS-UNARCHIVE-ERROR').then(function (message) {
+                        $translate('COMMONS-SESSIONS-UNARCHIVE-ERROR').then(function(message) {
                             deferred.resolve(Responses.danger(message, false));
                         });
                     }
                 });
             } else {
-                $translate('COMMONS-SESSIONS-WRONG-OBJECT-ERROR').then(function (message) {
+                $translate('COMMONS-SESSIONS-WRONG-OBJECT-ERROR').then(function(message) {
                     deferred.resolve(Responses.danger(message, false));
                 });
             }
@@ -585,7 +587,7 @@ angular.module('wegas.models.sessions', [])
         model.countArchivedSessions = function() {
             var deferred = $q.defer();
             $http.get(ServiceURL + "rest/GameModel/Game/status/BIN/count").success(function(data) {
-                $translate('PRIVATE-ARCHIVES-COUNT').then(function (message) {
+                $translate('PRIVATE-ARCHIVES-COUNT').then(function(message) {
                     deferred.resolve(Responses.info(message, data));
                 });
             });
@@ -599,17 +601,17 @@ angular.module('wegas.models.sessions', [])
                 setSessionStatus(sessionToDelete.id, "DELETE").then(function(data) {
                     if (data) {
                         uncacheSession("BIN", sessionToDelete);
-                        $translate('COMMONS-SESSIONS-SUPPRESSION-SUCCESS').then(function (message) {
+                        $translate('COMMONS-SESSIONS-SUPPRESSION-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, sessionToDelete));
                         });
                     } else {
-                        $translate('COMMONS-SESSIONS-SUPPRESSION-ERROR').then(function (message) {
+                        $translate('COMMONS-SESSIONS-SUPPRESSION-ERROR').then(function(message) {
                             deferred.resolve(Responses.danger(message, false));
                         });
                     }
                 });
             } else {
-                $translate('COMMONS-SESSIONS-WRONG-OBJECT-ERROR').then(function (message) {
+                $translate('COMMONS-SESSIONS-WRONG-OBJECT-ERROR').then(function(message) {
                     deferred.resolve(Responses.danger(message, false));
                 });
             }

@@ -8,7 +8,7 @@
 angular.module("wegas.directive.permission.edit", [])
     .directive('permissionEdit', function(SessionsModel, ScenariosModel) {
         "use strict";
-debugger;
+        
         var DANGER_BG_CLASS = "bg-danger";
         var PERMISSIONS = {
             GameModel: ["*", "Edit", "Instantiate", "Duplicate", "View"],
@@ -92,7 +92,7 @@ debugger;
                 scope.$watchCollection('perm', function(value) {
                     scope.update(value);
                 });
-                    scope.perm = parsePerm(scope.permission.value);
+                scope.perm = parsePerm(scope.permission.value);
             }
         };
     });
