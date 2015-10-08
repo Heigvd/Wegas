@@ -22,6 +22,11 @@
             </div>
         </div>
         <div class="card__actions">
+            <a class="button button--small button--round button--default-reverse button--label-off button--play"
+               title="Be!"
+               ng-click="adminUsersCtrl.be(user)">
+                <span class="button__label">{{'ADMIN-USERS-CARD-EDIT-BTN' | translate}}</span>
+            </a>
             <a class="button button--small button--round button--default-reverse button--label-off button--customize"
                title="{{'ADMIN-USERS-CARD-EDIT-BTN' | translate}}"
                ui-sref="wegas.private.admin.users.edit({id: user.id})">
