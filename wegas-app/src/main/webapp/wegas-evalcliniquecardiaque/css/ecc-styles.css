@@ -77,19 +77,6 @@
     border-top: solid 40px #60bdc5;
 }
 
-.ecc-workspace {
-    display: block !important;
-    position: relative !important;
-    width: 100%;
-    height: 100% !important;
-    padding-left: 16px;
-    padding-top: 16px;
-    box-sizing: border-box;
-    overflow-x: hidden;
-    overflow-y: auto;
-    z-index: 1 !important;
-}
-
 .wegas-mcqtabview .mcq-question-details {
     display: block !important;
     position: relative !important;
@@ -593,6 +580,38 @@
     color: white;
     background: none;
     background-color: #60bdc5;
+}
+
+.ecc-workspace {
+    display: block !important;
+    position: relative !important;
+    width: 100%;
+    height: 100% !important;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    overflow-y: auto;
+    z-index: 1 !important;
+}
+
+.ecc-workspace .wegas-list-content {
+    min-height: 100%;
+    position: relative;
+    padding: 16px 16px 70px 16px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.ecc-workspace .wegas-list-content > .footer {
+    display: block;
+    position: absolute;
+    max-height: 60px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #60bdc5;
+    color: white;
+    padding: 3px;
 }
 
 .ecc-end-btn:hover {
