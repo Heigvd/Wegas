@@ -88,6 +88,7 @@ YUI.add("treeview", function(Y) {
                     widget.fire("toggleClick", {
                         node: widget
                     });
+                    return;
                 }
                 widget.fire("click", {
                     node: widget,
