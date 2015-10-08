@@ -22,6 +22,14 @@ gulp.task('default', ['bower'], function() {
 });
 
 gulp.task('watch', ['debug-build'], function() {
-    gulp.watch(['src/**/*.js', 'src/**/*.scss', 'src/**/*.html'], ['debug-build']);
+    var t;
+    gulp.watch(['src/**/*.js', 'src/**/*.scss', 'src/**/*.html'], {debounceDelay: 5000}).on('change', function() {
+        if (!t) {
+            t = setTimeout(function() {
+                gulp.start('debug-build');
+                t = null;
+            }, 300);
+        }
+    });
 });
 
