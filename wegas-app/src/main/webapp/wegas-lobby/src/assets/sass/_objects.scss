@@ -11,6 +11,7 @@
 @import "objects/autocomplete";
 @import "objects/loading-bar";
 @import "objects/flash-messages";
+@import "objects/permission-edit";
 
 
 // Plugin animate.css
@@ -23,18 +24,18 @@
     }
 }
 .fade{
-	&.ng-enter, 
+	&.ng-enter,
     &.ng-leave
-    { 
+    {
         transition: .4s;
-    } 
-     
-    &.ng-enter.ng-enter-active, 
+    }
+
+    &.ng-enter.ng-enter-active,
     &.ng-leave {
         visibility:visible;
         opacity: 1;
     }
-     
+
     &.ng-leave.ng-leave-active,
     &.ng-enter {
         visibility:hidden;

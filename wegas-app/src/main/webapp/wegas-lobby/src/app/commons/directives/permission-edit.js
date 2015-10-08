@@ -11,9 +11,36 @@ angular.module("wegas.directive.permission.edit", [])
 
         var DANGER_BG_CLASS = "bg-danger";
         var PERMISSIONS = {
-            GameModel: ["*", "Edit", "Instantiate", "Duplicate", "View"],
-            Game: ["*", "Edit", "View"],
-            User: ["*"]
+            GameModel: [{
+                value: "*",
+                label: "All permissions"
+            }, {
+                value: "Edit",
+                label: "Edit"
+            }, {
+                value: "Instantiate",
+                label: "Instantiate"
+            }, {
+                value: "Duplicate",
+                label: "Copy"
+            }, {
+                value: "View",
+                label: "View"
+            }],
+            Game: [{
+                value: "*",
+                label: "All permissions"
+            }, {
+                value: "Edit",
+                label: "Edit"
+            }, {
+                value: "View",
+                label: "View"
+            }],
+            User: [{
+                value: "*",
+                label: "All permissions"
+            }]
         };
         var PERM_STRING_REGEX = /^(Game|GameModel|User):(.+):(?:(g|gm)(\d+)|(\*))$/;
         var TYPE_TO_KEY = Object.create(null, {
@@ -70,10 +97,12 @@ angular.module("wegas.directive.permission.edit", [])
 
                 scope.update = function(val) {
                     var permString;
+                    var availabaleValues;
                     elem.children().removeClass(DANGER_BG_CLASS);
                     scope.availablePermissions = PERMISSIONS[val.type];
+                    availabaleValues = _.map(scope.availablePermissions, "value")
                     _.remove(val.permissions, function(elem) {
-                        return scope.availablePermissions.indexOf(elem) < 0;
+                        return availabaleValues.indexOf(elem) < 0;
                     });
                     try {
                         permString = genPerm(val);
