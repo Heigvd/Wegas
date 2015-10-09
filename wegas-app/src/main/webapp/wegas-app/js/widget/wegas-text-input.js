@@ -105,7 +105,7 @@ YUI.add("wegas-text-input", function(Y) {
             }
             // }, this);
         },
-        bindUI: function(){
+        bindUI: function() {
             this.handlers.push(Y.Wegas.Facade.Variable.after("update", this.syncUI, this));
         },
         syncUI: function() {
@@ -113,7 +113,11 @@ YUI.add("wegas-text-input", function(Y) {
         },
         setContent: function() {
             Y.later(100, this, function() {
-                this.editor.setContent(this.getInitialContent());
+                var content = this.getInitialContent();
+                if (content != this._initialContent) {
+                    this._initialContent = content;
+                    this.editor.setContent(content);
+                }
                 /*var tmceI = tinyMCE.get(this.get("contentBox").one(".wegas-text-input-editor"));
                  if (tmceI) {
                  tmceI.setContent(this.getInitialContent());
@@ -153,6 +157,7 @@ YUI.add("wegas-text-input", function(Y) {
         },
         save: function(value) {
             var theVar = this.get("variable.evaluated").getInstance();
+            this._initialContent = value;
             theVar.set("value", value);
             Y.Wegas.Facade.Variable.cache.put(theVar.toObject());
             return true;
