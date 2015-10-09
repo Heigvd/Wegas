@@ -123,12 +123,14 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             this.hideOverlay();
 
             if (this.tabView.isEmpty()) {
+                this.get("contentBox").addClass("empty");
                 this.tabView.add(new Y.Tab({
                     label: "",
                     content: "<center><i><br /><br /><br />" +  Y.Wegas.I18n.t('mcq.empty') + "</i></center>"
                 }));
                 this.tabView.selectChild(0);
             } else {
+                this.get("contentBox").removeClass("empty");
                 if (lastSelection >= this.tabView.size()) {                     // Can occur when questions list has changed during event
                     lastSelection = 0;
                 }
