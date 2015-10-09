@@ -19,23 +19,21 @@ YUI.add('wegas-panel', function(Y) {
             Y.WidgetModality, Y.WidgetPositionAlign, Y.WidgetStack], {
             renderUI: function() {
                 this._childrenContainer = this.getStdModNode(Y.WidgetStdMod.BODY, true);
-                this._stdModParsed = {bodyContent: 1};
+                this._stdModParsed = {
+                    bodyContent: 1
+                };
             },
             bindUI: function() {
-                this.windowHandler = Y.on("windowresize", Y.bind(function() {
-                    this.get("content");
-                    this.fillHeight(this.getStdModNode(Y.WidgetStdMod.BODY))
-                    this.centered();
-                }, this));
+                this.windowHandler = Y.on("windowresize", Y.bind(this.syncUI, this));
             },
             syncUI: function() {
-                this.get("content");
-                this.fillHeight(this.getStdModNode(Y.WidgetStdMod.BODY));
+                this.set("content", this.get("content"));
+            // this.fillHeight(this.getStdModNode(Y.WidgetStdMod.BODY));
             },
             exit: function() {
                 this.destroy();
-                //this.get("boundingBox").hide(true);
-                //Y.later(500, this, this.destroy);
+            //this.get("boundingBox").hide(true);
+            //Y.later(500, this, this.destroy);
             },
             destructor: function() {
                 this.windowHandler.detach();
@@ -137,7 +135,7 @@ YUI.add('wegas-panel', function(Y) {
                         }]
                     }
                 }).render();
-                //bodyNode = panel.getStdModNode("body", true);
+            //bodyNode = panel.getStdModNode("body", true);
             },
             confirmPlayerAction: function(cb) {
                 if (!Y.fire("playerAction", {})) {
@@ -149,7 +147,7 @@ YUI.add('wegas-panel', function(Y) {
             prompt: function(msg, okCb, cancelCb) {
                 var panel = new Wegas.Panel({
                     headerContent: "<span class='fa fa-question fa-2x'></span><span style='margin-left:10px'>" +
-                                   Y.Escape.html(msg) + "</span>",
+                        Y.Escape.html(msg) + "</span>",
                     content: "<input class='prompt-value' type='text' style='width:97%'> </input>",
                     modal: true,
                     width: 400,
