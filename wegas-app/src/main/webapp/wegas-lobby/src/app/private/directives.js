@@ -1,5 +1,6 @@
 angular.module('private.directives', [])
     .directive('privateSidebar', function($state, $rootScope, $translate, $timeout, WegasTranslations, Auth) {
+        "use strict";
         return {
             templateUrl: 'app/private/directives.tmpl/sidebar.html',
             link: function(scope, element, attrs) {
@@ -31,7 +32,7 @@ angular.module('private.directives', [])
                             case "wegas.private.admin.groups":
                                 type = "ADMIN";
                                 break;          
-                        };
+                        }
                         $rootScope.translationWorkspace = {workspace: WegasTranslations.workspaces[type][$translate.use()]};
                     };
                 });

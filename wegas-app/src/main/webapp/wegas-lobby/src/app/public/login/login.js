@@ -1,37 +1,33 @@
-angular.module('public.login', [
-])
-.config(function ($stateProvider) {
-    $stateProvider
-        .state('wegas.public.login', {
-            url: '/login',
-        	views: {
-        		"form" :{
-            		controller: 'PublicLoginCtrl as publicLoginCtrl',
-            		templateUrl: 'app/public/login/login.tmpl.html'
-            	}
-            }
-        })
-    ;
-})
-.controller('PublicLoginCtrl', function PublicLoginCtrl($scope, Flash, Auth, $state, $translate) {
-
-    var publicLoginCtrl = this;
-
-    $scope.login = function(){
-        console.info('as');
-        if (this.username && this.password) {
-            Auth.login(this.username, this.password).then(function(response){
-                if(response.isErroneous()) {
-                    response.flash();
-                } else {
-                    $scope.username = $scope.password = "";
-                    $state.go('wegas');
+angular.module('public.login', [])
+    .config(function($stateProvider) {
+        "use strict";
+        $stateProvider
+            .state('wegas.public.login', {
+                url: '/login',
+                views: {
+                    "form": {
+                        controller: 'PublicLoginCtrl as publicLoginCtrl',
+                        templateUrl: 'app/public/login/login.tmpl.html'
+                    }
                 }
             });
-        } else {
-            $translate('LOGIN-FLASH-EMPTY').then(function (message) {
-                Flash.danger(message);
-            });
-        }
-    };
-});
+    })
+    .controller('PublicLoginCtrl', function PublicLoginCtrl($scope, Flash, Auth, $state, $translate) {
+        "use strict";
+        $scope.login = function() {
+            if (this.username && this.password) {
+                Auth.login(this.username, this.password).then(function(response) {
+                    if (response.isErroneous()) {
+                        response.flash();
+                    } else {
+                        $scope.username = $scope.password = "";
+                        $state.go('wegas');
+                    }
+                });
+            } else {
+                $translate('LOGIN-FLASH-EMPTY').then(function(message) {
+                    Flash.danger(message);
+                });
+            }
+        };
+    });
