@@ -14,7 +14,13 @@ define(["ember", "templates/components/modal-dialog"], function(Ember) {
             close: function() {
                 return this.sendAction();
             }
-        }
+        },
+        setupClass: function() {
+            Ember.$("body").addClass("modal-open");
+        }.on("init"),
+        clearClass: function() {
+            Ember.$("body").removeClass("modal-open");
+        }.on("willDestroyElement")
     });
     Ember.Application.initializer({
         name: "modalDialog",
