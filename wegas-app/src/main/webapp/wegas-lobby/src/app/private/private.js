@@ -15,6 +15,7 @@ angular.module('private', [
     'private.directives'
 ])
 .config(function ($stateProvider) {
+    "use strict";
     $stateProvider
         .state('wegas.private', {
             url: '',
@@ -29,10 +30,11 @@ angular.module('private', [
     ;
 })
 .controller('PrivateCtrl', function PrivateCtrl($state, Auth, $translate, $scope, WegasPusher) {
+    "use strict";
     var privateCtrl = this;
     privateCtrl.loading = 0;
     $scope.$on('cfpLoadingBar:loading', function () {
-        if (privateCtrl.loading == 0) {
+        if (privateCtrl.loading === 0) {
             $('.view--top').addClass('view--loading');
         }
         privateCtrl.loading++;
@@ -44,12 +46,12 @@ angular.module('private', [
         privateCtrl.loading--;
     });
     $scope.$on('cfpLoadingBar:completed', function () {
-        if (privateCtrl.loading == 0) {
+        if (privateCtrl.loading === 0) {
             $('.view--top').removeClass('view--loading');
         }
     });
     Auth.getAuthenticatedUser().then(function(user){
-        if(user == null){
+        if(user === null){
             $state.go("wegas.public");
         }
         WegasPusher.start();

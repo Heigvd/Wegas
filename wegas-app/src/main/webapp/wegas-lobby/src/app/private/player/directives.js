@@ -1,13 +1,17 @@
 angular.module('private.player.directives', [])
     .directive('playerIndex', function() {
+        "use strict";
         return {
             templateUrl: 'app/private/player/directives.tmpl/index.html',
             controller: 'PlayerController as playerCtrl'
         };
-    }).controller("PlayerController", function PlayerController($q, $rootScope, $scope, $state, $translate, TeamsModel, SessionsModel, Flash) {
+    }).controller("PlayerController",
+    function PlayerController($q, $rootScope, $scope, $state, $translate, TeamsModel, SessionsModel, Flash) {
         /* Assure access to ctrl. */
+        "use strict";
         var ctrl = this,
-            /* Method used to update sessions. */
+
+        /* Method used to update sessions. */
             updateTeams = function() {
                 ctrl.loading = true;
                 TeamsModel.getTeams().then(function(response) {
@@ -21,31 +25,31 @@ angular.module('private.player.directives', [])
             };
 
         /* Container for datas. */
-        ctrl.teams = []; 
+        ctrl.teams = [];
         ctrl.loading = true;
         /* Method used to check token for adding a session. */
         ctrl.checkToken = function(token) {
             var deferred = $q.defer();
             SessionsModel.findSessionToJoin(token).then(function(findResponse) {
                 if (findResponse.isErroneous()) {
-                    $translate('PLAYER-JOIN-TEAM-KEY-FLASH-ERROR').then(function (message) {
+                    $translate('PLAYER-JOIN-TEAM-KEY-FLASH-ERROR').then(function(message) {
                         Flash.danger(message);
                         deferred.resolve();
                     });
                 } else {
                     if (findResponse.data.access != "CLOSE") {
                         var alreadyJoin = false;
-                        ctrl.teams.forEach(function(team){
-                            if(team.gameId == findResponse.data.id){
+                        ctrl.teams.forEach(function(team) {
+                            if (team.gameId == findResponse.data.id) {
                                 alreadyJoin = true;
                             }
                         });
-                        if(alreadyJoin){
-                            $translate('COMMONS-TEAMS-ALREADY-JOIN-FLASH-INFO').then(function (message) {
+                        if (alreadyJoin) {
+                            $translate('COMMONS-TEAMS-ALREADY-JOIN-FLASH-INFO').then(function(message) {
                                 Flash.info(message);
                                 deferred.resolve();
                             });
-                        }else{
+                        } else {
                             if (findResponse.data.properties.freeForAll) {
                                 TeamsModel.joinIndividually(findResponse.data).then(function(joinResponse) {
                                     if (!joinResponse.isErroneous()) {
@@ -65,7 +69,7 @@ angular.module('private.player.directives', [])
                             }
                         }
                     } else {
-                        $translate('COMMONS-SESSIONS-CLOSE-FLASH-ERROR').then(function (message) {
+                        $translate('COMMONS-SESSIONS-CLOSE-FLASH-ERROR').then(function(message) {
                             Flash.danger(message);
                             deferred.resolve();
                         });
@@ -109,15 +113,15 @@ angular.module('private.player.directives', [])
                 // Use checkToken from index to join a new session.
                 scope.joinSession = function() {
                     var button = $(element).find(".button--join-session");
-                    if(!button.hasClass("button--disable")){
+                    if (!button.hasClass("button--disable")) {
                         button.addClass("button--disable button--spinner button--rotate");
-                        scope.checkToken(scope.sessionToJoin.token).then(function(){
+                        scope.checkToken(scope.sessionToJoin.token).then(function() {
                             button.removeClass("button--disable button--spinner button--rotate");
                             scope.sessionToJoin = {
                                 token: ""
                             };
                         });
-                    }                    
+                    }
                 };
             }
         };
