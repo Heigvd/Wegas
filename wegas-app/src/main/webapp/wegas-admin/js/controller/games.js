@@ -15,4 +15,4 @@ define(["ember"], function(Ember){
         queryParams: ["type"],
         type: "todo"
     });
-})
+});
