@@ -10,26 +10,26 @@
 </div>
 <div class="view__list" repeat-auto-load>
     <div class="card card--player-session"
-         ng-repeat="user in adminUsersCtrl.users | filter: adminUsersCtrl.search | limitTo: adminUsersCtrl.maxUsersDisplayed"
+         ng-repeat="user in adminUsersCtrl.users | filter: adminUsersCtrl.search | limitTo: adminUsersCtrl.maxUsersDisplayed | orderBy:'account.lastname'"
          user="user">
         <div class="card__illustration illustration illustration--icon" illustration="ICON_grey_user_wif"></div>
         <div class="card__description card__description--two-lines">
             <div class="line line--primary">
-                {{ user.account.firstname + ' ' + user.account.lastname }} <span ng-if="user.account.username">({{user.account.username}})</span>
+                {{ user.account.lastname + ' ' + user.account.firstname  }} <span ng-if="user.account.username">({{user.account.username}})</span>
             </div>
             <div class="line line--secondary">
                 {{ user.account.email }} -- {{user.id}}
             </div>
         </div>
         <div class="card__actions">
-            <a class="button button--small button--round button--default-reverse button--label-off button--play"
-               title="Be!"
-               ng-click="adminUsersCtrl.be(user)">
-                <span class="button__label">{{'ADMIN-USERS-CARD-EDIT-BTN' | translate}}</span>
-            </a>
             <a class="button button--small button--round button--default-reverse button--label-off button--customize"
                title="{{'ADMIN-USERS-CARD-EDIT-BTN' | translate}}"
                ui-sref="wegas.private.admin.users.edit({id: user.id})">
+                <span class="button__label">{{'ADMIN-USERS-CARD-EDIT-BTN' | translate}}</span>
+            </a>
+            <a class="button button--small button--round button--default-reverse button--label-off button--play"
+               title="Be!"
+               ng-click="adminUsersCtrl.be(user)">
                 <span class="button__label">{{'ADMIN-USERS-CARD-EDIT-BTN' | translate}}</span>
             </a>
             <a class="button button--small button--round button--danger-reverse button--label-off button--trash"
