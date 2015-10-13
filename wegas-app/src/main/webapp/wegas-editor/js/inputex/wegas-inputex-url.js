@@ -52,7 +52,9 @@ YUI.add("wegas-inputex-url", function(Y) {
         //},
         destructor: function() {
             this.fileExplorerButton.destroy();
-            this.uploader.destroy();
+            if(this.uploader){
+                this.uploader.destroy();
+            }
             if (this.filepanel) {
                 this.fileExplorer.destroy();
                 this.filepanel.destroy();
@@ -66,7 +68,7 @@ YUI.add("wegas-inputex-url", function(Y) {
 
             this.fieldContainer.classList.add("inputEx-wegas-UrlField");
 
-            this.uploader = new Y.UploaderHTML5({
+         /*   this.uploader = new Y.UploaderHTML5({
                 fileFieldName: "file",
                 selectButtonLabel: "<span class='wegas-icon wegas-icon-newfile'></span>",
                 appendNewFiles: false,
@@ -101,7 +103,7 @@ YUI.add("wegas-inputex-url", function(Y) {
                     .showMessage("error", e.statusText || "Error uploading file");
                 this.uploader.queue = null;                                     // @hack Otherwise file upload doesnt work after an error
                 this.uploader.set("enabled", true).set("fileList", []);
-            }, this);
+            }, this);*/
             // this.uploader.on("alluploadscomplete", function() {}, this);
 
             this.uploadButton = new Y.Button({
