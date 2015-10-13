@@ -17,6 +17,7 @@
         opacity: 1;
     }
 }
+
 @keyframes delay-disappear {
     0% {
         opacity: 1;
@@ -26,5 +27,14 @@
     }
     100% {
         opacity: 0;
+    }
+}
+
+@keyframes highlight {
+    from {
+        background: lightskyblue;
+    }
+    to {
+        background: none;
     }
 }

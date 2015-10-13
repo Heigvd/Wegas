@@ -276,7 +276,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                     n.expand();
                 }
                 this.listNodeData(n);
-                this.showMessage("success", "Folder successfully created");
+            //    this.showMessage("success", "Folder successfully created");
             }, this);
             this.uploader.after("fileselect", function(e) {
                 if (this.uploader.parentNode.get(LABEL) === "Filename") {
@@ -309,12 +309,13 @@ YUI.add('wegas-fileexplorer', function(Y) {
             this.fileUploader.on("fileuploadcomplete", function(e) {
                 e.file.treeLeaf.set("loading", false);
                 var node = this.createNode(e.data);
+                node.get(BOUNDING_BOX).setStyle("animation", "highlight 1s .5s");
                 if (node) {
                     e.file.treeLeaf.get("parent").add(node);
-                    this.showMessage("success", JSON.parse(e.data).name + " successfully uploaded");
+              //      this.showMessage("success", JSON.parse(e.data).name + " successfully uploaded");
                 } else {
                     e.file.progressBar.set("color", "red");
-                    this.showMessage("error", "Erro uploading \"" + JSON.parse(e.data).name + "\"");
+                    this.showMessage("error", "Error uploading \"" + JSON.parse(e.data).name + "\"");
                 }
                 try {
                     e.file.treeLeaf.destroy();
@@ -647,7 +648,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
             return childNode;
         },
         removeNode: function(event) {
-            this.showMessage("success", "Item deleted");
+        //    this.showMessage("success", "Item deleted");
             event.cfg.node.destroy();
         },
         refresh: function(node) {
