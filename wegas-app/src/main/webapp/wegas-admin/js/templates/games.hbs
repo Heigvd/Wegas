@@ -1,4 +1,6 @@
-{{#link-to "games.index" (query-params type="todo") class="btn btn-default"}}ToDo{{/link-to}} {{#link-to "games.index" (query-params type="processed,charged") class="btn btn-default"}}Done{{/link-to}}
+{{#link-to "games.index" (query-params type="todo") class="btn btn-default"}}ToDo{{/link-to}}
+{{#link-to "games.index" (query-params type="charged") class="btn btn-default"}}Charged{{/link-to}}
+{{#link-to "games.index" (query-params type="processed,charged") class="btn btn-default"}}Done{{/link-to}}
 <table class="table table-striped">
     <thead>
     <tr>
@@ -23,7 +25,7 @@
             <td>{{game.creator}}</td>
             <td>{{game.gameName}}</td>
             <td>{{game.gameModelName}}</td>
-            <td class="mouse-pointer" {{action 'openModal' "players" game}}>{{game.playerCount}}</td>
+            <td class="mouse-pointer" {{action 'openModal' "players" game}}><u>{{game.playerCount}}</u></td>
             <td>{{game.teamCount}}</td>
             <td>{{input type='checkbox' checked=game.isDone}}</td>
             <td>{{input type='checkbox' checked=game.isCharged}}</td>
