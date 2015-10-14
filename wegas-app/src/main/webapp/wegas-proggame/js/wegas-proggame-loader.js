@@ -16,7 +16,7 @@ YUI.addGroup("wegas-proggame", {
         'wegas-proggame-level': {
             requires: ['tabview', "treeview", 'event-key',
                 'wegas-tabview', 'wegas-widget', 'wegas-inputex-ace',
-                "wegas-proggame-scriptfiles", "wegas-treeview",
+                "wegas-proggame-scriptfiles", "wegas-treeview", "resize",
                 'wegas-proggame-display', 'wegas-proggame-jsinstrument'],
             ws_provides: 'ProgGameLevel'
         },

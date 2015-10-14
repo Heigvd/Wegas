@@ -69,6 +69,9 @@ YUI.add('wegas-proggame-display', function(Y) {
             }, this);
         },
         bindUI: function() {
+            Y.Wegas.Facade.Variable.on("WegasScriptException", function (e) {
+                    e.halt();               
+            });
             Crafty.bind(COMMANDEXECUTED, Y.bind(function() {                    // Every time a command is executed, 
                 if (this.allowNextCommand) {
                     this.allowNextCommand = false;
