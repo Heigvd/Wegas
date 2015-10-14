@@ -1,7 +1,8 @@
-[submodule "inputex"]
+﻿[submodule "inputex"]
 	path = wegas-resources/src/main/webapp/lib/inputex
 	url = git://github.com/Heigvd/inputex.git
 	branch = master
 [submodule "wegas-app/src/main/webapp/wegas-private"]
 	path = wegas-app/src/main/webapp/wegas-private
 	url = https://github.com/Heigvd/WegasPrivate.git
+	branch = master
