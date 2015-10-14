@@ -21,7 +21,7 @@ import org.junit.Before;
 //abstract public class PMGameAbstractTest extends AbstractEmbeddedGlassfishTest {
 abstract public class PMGameAbstractTest extends AbstractEJBContainerTest {
 
-    public static final String SCRIPTROOT = "src/main/webapp/wegas-pmg/scripts/";
+    public static final String SCRIPTROOT = "src/main/webapp/wegas-private/wegas-pmg/scripts/";
 
     protected abstract String getGameModelPath();
 

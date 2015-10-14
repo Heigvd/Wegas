@@ -22,7 +22,7 @@ public class PMGTest extends PMGameAbstractTest {
 
     @Override
     protected String getGameModelPath() {
-        return "src/main/webapp/wegas-pmg/db/wegas-pmg-gamemodel-simplePmg.json";
+        return "src/main/webapp/wegas-private/wegas-pmg/db/wegas-pmg-gamemodel-simplePmg.json";
     }
 
     @Override
