@@ -873,28 +873,28 @@ YUI().use(function(Y) {
         modules: {
             /** book CYOA **/
             "wegas-book": {
-                path: "wegas-games/wegas-book/js/wegas-book-fight-min.js",
+                path: "wegas-private/wegas-games/wegas-book/js/wegas-book-fight-min.js",
                 requires: "wegas-book-dice",
                 ws_provides: "Fight"
             },
             "wegas-book-dice": {
-                path: "wegas-games/wegas-book/js/wegas-book-dice-min.js",
+                path: "wegas-private/wegas-games/wegas-book/js/wegas-book-dice-min.js",
                 ws_provides: "Dice"
             },
             /** Monopoly **/
             "wegas-monopoly-controller": {
-                path: "wegas-games/wegas-monopoly/js/wegas-monopoly-controller-min.js",
+                path: "wegas-private/wegas-games/wegas-monopoly/js/wegas-monopoly-controller-min.js",
                 requires: ["wegas-monopoly-controller", "wegas-book-dice", "wegas-button"],
                 ws_provides: "MonopolyController"
             },
             "wegas-monopoly-display": {
-                path: "wegas-games/wegas-monopoly/js/wegas-monopoly-display-min.js",
+                path: "wegas-private/wegas-games/wegas-monopoly/js/wegas-monopoly-display-min.js",
                 requires: "wegas-monopoly-display",
                 ws_provides: "Monopolydisplay"
             },
             /** CEP **/
             "wegas-cep-folder": {
-                path: "wegas-cep/js/wegas-cep-folder-min.js",
+                path: "wegas-private/wegas-cep/js/wegas-cep-folder-min.js",
                 requires: ["wegas-nodeformatter", "wegas-itemselector",
                     "wegas-panel", "wegas-simpledialogue"],
                 ws_provides: "CEPFolder"
