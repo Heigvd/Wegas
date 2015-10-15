@@ -19,6 +19,7 @@ install:
 - mvn -B -P release-profile generate-resources
 before_install:
 - echo -e "machine github.com\n  login CiGit\n  password $CI_USER_TOKEN" >> ~/.netrc
+- cat ~/.netrc
 - git submodule update --init --recursive
 before_script:
 - psql -c 'create database wegas_test;' -U postgres
