@@ -34,7 +34,7 @@ public abstract class AbstractClientLanguageTest extends AbstractEJBContainerTes
         String[] aScripts = new String[scripts.size()];
 
         //guestLogin();
-        this.createGameModelFromFileWithScript(this.getGameModelPath(), scripts.toArray(aScripts));
+        this.createGameModelFromFileWithConcatenatedScript(this.getGameModelPath(), scripts.toArray(aScripts));
     }
 
     @After
