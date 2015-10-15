@@ -12,8 +12,11 @@ env:
   global:
   - secure: IldKSO+pk6RwzzF8iZt0qwh3yx1v49FAis/vJgUIDNWwDVQhOm7T5aJ4MUmbrGZgOFr9cCvlAO4A6qolf2Zn1cipaHzpyGzg5vhVlN1SEYh/WYYm9bTrDS0LqG6xL1Kp+YJD8B48rteEFG7dAL9au9w8ipoTO+PW66CbcoxDR5o=
   - secure: dc1+zvl7dLsaietPU2/s/MKyIopVry5BTS5sS6z+D2e50JH1zvhFoLD92UDJM0rs8zDWa4nzrwG0yYj8roDlVzCj+VJ+VMyQFspHtcHle109Uqo+V0Ac3BSfugkchbJfO2I545CiVXnJGR/SxOfiLPwPy7rRUU0YT34xyW5A8b0=
+    secure: "KuQwkPdUVTXgN9ArYpnwn8gS9nWDghrxWXzwp/UO2jIKHQP6MPDKLl4NeA4k7ey87QhUV+AgYc2/r7k261hG6m6L8JmaYARysGqk0/e84BnDYVHelHWQF0lMZq+pNlL+0OmmneL2Tr35IJqOk4NZ1S2cOfgKY7teVyQ+hxkHymI="
 install:
 - mvn -B -P release-profile generate-resources
+before_install:
+- echo -e "machine github.com\n  login $CI_USER_TOKEN" >> ~/.netrc
 before_script:
 - psql -c 'create database wegas_test;' -U postgres
 - psql -c "create user \"user\" with superuser password '1234';" -U postgres
