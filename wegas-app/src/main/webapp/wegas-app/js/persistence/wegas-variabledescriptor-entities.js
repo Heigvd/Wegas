@@ -15,7 +15,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array", NAME = "name",
         SELF = "self", BOOLEAN = "boolean", NUMBER = "number",
         ITEMS = "items", BUTTON = "Button", VALUE = "value", TEXT = "text",
-        HTML = "html",
+        HTML = "html", AVAILABLE_TYPES, OPTIONAL_AVAILABLE_TYPES,
         Wegas = Y.Wegas, persistence = Wegas.persistence, Base = Y.Base,
         IDATTRDEF = {
             type: STRING,
@@ -25,6 +25,53 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 _type: HIDDEN
             }
         };
+
+    AVAILABLE_TYPES = [
+        {
+            "label": "String",
+            "value": "StringDescriptor"
+        }, {
+            "label": "Text",
+            "value": "TextDescriptor"
+        }, {
+            "label": "Number",
+            "value": "NumberDescriptor"
+        }, {
+            "label": "Folder",
+            "value": "ListDescriptor"
+        }, {
+            "label": "Inbox",
+            "value": "InboxDescriptor"
+        }, {
+            "label": "Boolean",
+            "value": "BooleanDescriptor"
+        }, {
+            "label": "Question",
+            "value": "QuestionDescriptor"
+        }, {
+            "label": "Task",
+            "value": "TaskDescriptor"
+        }, {
+            "label": "Resource",
+            "value": "ResourceDescriptor"
+        }, {
+            "label": "State Machine",
+            "value": "FSMDescriptor"
+        }, {
+            "label": "Trigger",
+            "value": "TriggerDescriptor"
+        }, {
+            "label": "Dialogue",
+            "value": "DialogueDescriptor"
+        }, {
+            "label": "Peer Review",
+            "value": "Peer Review Descriptor"
+        }, {
+            "label": "Object",
+            "value": "ObjectDescriptor"
+        }];
+
+    OPTIONAL_AVAILABLE_TYPES = [{label: "none", value: ""}].concat(AVAILABLE_TYPES);
 
     /**
      * VariableDescriptor mapper
@@ -323,57 +370,57 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 return "fa fa-font";
             }
         },
-        {
-            ATTRS: {
-                "@class": {
-                    value: "StringDescriptor"
-                },
-                defaultInstance: {
-                    properties: {
-                        "@class": {
-                            type: STRING,
-                            _inputex: {
-                                value: "StringInstance",
-                                _type: HIDDEN
-                            }
-                        },
-                        id: IDATTRDEF,
-                        value: {
-                            type: STRING,
-                            _inputex: {
-                                label: "Default value"
-                            }
-                        }
-
-                    }
-                }
+    {
+        ATTRS: {
+            "@class": {
+                value: "StringDescriptor"
             },
-            METHODS: {
-                setValue: {
-                    label: "set",
-                    "arguments": [{
-                            type: HIDDEN,
-                            value: SELF
-                        }, {
-                            type: STRING,
-                            value: "",
-                            scriptType: STRING,
-                            required: true
-                        }]
-                },
-                getValue: {
-                    label: VALUE,
-                    returns: STRING,
-                    "arguments": [{
-                            type: HIDDEN,
-                            value: SELF
-                        }],
-                    localEval: function(player) {
-                        return this.getInstance(player).get(VALUE);
+            defaultInstance: {
+                properties: {
+                    "@class": {
+                        type: STRING,
+                        _inputex: {
+                            value: "StringInstance",
+                            _type: HIDDEN
+                        }
+                    },
+                    id: IDATTRDEF,
+                    value: {
+                        type: STRING,
+                        _inputex: {
+                            label: "Default value"
+                        }
                     }
+
                 }
             }
-        });
+        },
+        METHODS: {
+            setValue: {
+                label: "set",
+                "arguments": [{
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        value: "",
+                        scriptType: STRING,
+                        required: true
+                    }]
+            },
+            getValue: {
+                label: VALUE,
+                returns: STRING,
+                "arguments": [{
+                        type: HIDDEN,
+                        value: SELF
+                    }],
+                localEval: function(player) {
+                    return this.getInstance(player).get(VALUE);
+                }
+            }
+        }
+    });
     /**
      * StringInstance mapper
      */
@@ -483,7 +530,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 return this.get("minValue");
             },
             getIconCss: function() {
-                return "fa fa-superscript";
+                return "fa wegas-icon-numberdescriptor";
             }
         },
     {
@@ -602,10 +649,10 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             }
         }
     });
-    /**
-     * ListDescriptor mapper
-     */
-    persistence.ListDescriptor = Base.create("ListDescriptor", persistence.VariableDescriptor, [], {
+
+    persistence.VariableContainer = function() {
+    };
+    Y.mix(persistence.VariableContainer.prototype, {
         /**
          * Extend clone to add transient childs
          */
@@ -619,6 +666,23 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             }
             return object;
         },
+        /**
+         *
+         * @param {type} i
+         * @returns {Y.Wegas.persistence.VariableDescriptor}
+         */
+        item: function(i) {
+            return this.get("items")[i];
+        },
+        size: function() {
+            return this.get("items").length;
+        }
+    });
+
+    /**
+     * ListDescriptor mapper
+     */
+    persistence.ListDescriptor = Base.create("ListDescriptor", persistence.VariableDescriptor, [persistence.VariableContainer], {
         flatten: function() {
             var acc = [],
                 doFlatten = function(items) {
@@ -655,17 +719,6 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 };
             Y.Array.every(this.get(ITEMS), filterFn);
             return needle;
-        },
-        /**
-         *
-         * @param {type} i
-         * @returns {Y.Wegas.persistence.VariableDescriptor}
-         */
-        item: function(i) {
-            return this.get("items")[i];
-        },
-        size: function() {
-            return this.get("items").length;
         },
         getTreeEditorLabel: function() {
             return "\u229e " + this.getEditorLabel();
@@ -715,6 +768,27 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                         }
                     },
                     id: IDATTRDEF
+                }
+            },
+            allowedTypes: {
+                type: ARRAY,
+                cssClass: "wegas-advanced-feature",
+                _inputex: {
+                    label: "Allowed Types",
+                    elementType: {
+                        required: true,
+                        type: "select",
+                        choices: AVAILABLE_TYPES
+                    }
+                }
+            },
+            addShortcut: {
+                type: "select",
+                optional: true,
+                _inputex: {
+                    label: "default children type",
+                    optional: true,
+                    choices: OPTIONAL_AVAILABLE_TYPES
                 }
             }
         },
