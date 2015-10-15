@@ -45,10 +45,10 @@ public class UserFacadeTest {
         roleFacade.create(roleP);
         roleR = new Role("Registered");
         roleFacade.create(roleR);
-        abstractAccount.addRole(roleP);
-        abstractAccount.addRole(roleR);
         u = new User();
         u.addAccount(abstractAccount);
+        u.addRole(roleP);
+        u.addRole(roleR);
         userFacade.create(u);
     }
 
@@ -84,18 +84,18 @@ public class UserFacadeTest {
         final String PERM = "Game:*:*";
         final String PERM2 = "Game2:*:*";
 
-        abstractAccount.addPermission(PERM);
+        u.addPermission(PERM);
         accountFacade.update(abstractAccount.getId(), abstractAccount);
         AbstractAccount a = accountFacade.find(abstractAccount.getId());
-        Assert.assertEquals(PERM, a.getPermissions().get(0).getValue());
+        Assert.assertEquals(PERM, u.getPermissions().get(0).getValue());
 
-        a.addPermission(PERM2);
+        u.addPermission(PERM2);
         accountFacade.update(abstractAccount.getId(), a);
         a = accountFacade.find(abstractAccount.getId());
-        Assert.assertEquals(PERM2, a.getPermissions().get(1).getValue());
+        Assert.assertEquals(PERM2, u.getPermissions().get(1).getValue());
 
-        a.removePermission(PERM2);
-        a.removePermission(PERM);
+        u.removePermission(PERM2);
+        u.removePermission(PERM);
         accountFacade.update(a.getId(), a);
         a = accountFacade.find(abstractAccount.getId());
         Assert.assertTrue(a.getPermissions().isEmpty());
@@ -193,17 +193,17 @@ public class UserFacadeTest {
      */
     @Test
     public void testDeleteAccountPermission() throws Exception {
-        userFacade.addAccountPermission(abstractAccount.getId(), "GameModel:Edit:gm100");
-        userFacade.addAccountPermission(abstractAccount.getId(), "GameModel:View:gm100");
-        userFacade.addAccountPermission(abstractAccount.getId(), "GameModel:Edit:gm200");
-        userFacade.addAccountPermission(abstractAccount.getId(), "GameModel:Edit:gm200");
+        userFacade.addUserPermission(u, "GameModel:Edit:gm100");
+        userFacade.addUserPermission(u, "GameModel:View:gm100");
+        userFacade.addUserPermission(u, "GameModel:Edit:gm200");
+        userFacade.addUserPermission(u, "GameModel:Edit:gm200");
 
-        userFacade.findAccountPermissionByInstance("gm200");
+        userFacade.findUserPermissionByInstance("gm200");
 
-        userFacade.deleteAccountPermissionByInstance("gm100");
+        userFacade.deleteUserPermissionByInstance("gm100");
 
 //        Assert.assertTrue(accountFacade.find(abstractAccount.getId()).getPermissions().contains(new Permission("GameModel:Edit:gm200")));
-        Assert.assertTrue(accountFacade.find(abstractAccount.getId()).getPermissions().get(0).getValue().equals("GameModel:Edit:gm200"));
+        Assert.assertTrue(userFacade.find(u.getId()).getPermissions().get(0).getValue().equals("GameModel:Edit:gm200"));
     }
 
     /**
@@ -254,7 +254,7 @@ public class UserFacadeTest {
         Assert.assertEquals("Test", roleFacade.find(r.getId()).getName());
 
         //@FIXME This is the buggus part, if a user still belongs to the role, can't delete it (need to uncomment to see it)
-        abstractAccount.addRole(r);
+        u.addRole(r);
         accountFacade.merge(abstractAccount);
         Assert.assertEquals(3, accountFacade.find(abstractAccount.getId()).getRoles().size());
         Assert.assertEquals(1, roleFacade.find(r.getId()).getNumberOfMember());

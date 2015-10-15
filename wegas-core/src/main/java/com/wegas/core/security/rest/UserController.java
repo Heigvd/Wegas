@@ -299,7 +299,7 @@ public class UserController {
     public void teacherGuestLogin(AuthenticationInformation authInfo) {
         User user = userFacade.guestLogin();
         try {
-            user.getMainAccount().addRole(roleFacade.findByName("Scenarist"));
+            user.addRole(roleFacade.findByName("Scenarist"));
         } catch (WegasNoResultException ex) {
             throw WegasErrorMessage.error("Teacher mode is not available");
         }
@@ -600,11 +600,11 @@ public class UserController {
      */
     @GET
     @Path("FindAccountPermissionByInstance/{entityId}")
-    public List<AbstractAccount> findAccountPermissionByInstance(@PathParam("entityId") String entityId) {
+    public List<User> findUserPermissionByInstance(@PathParam("entityId") String entityId) {
 
         checkGmOrGPermission(entityId, "GameModel:Edit:", "Game:Edit:");
 
-        return userFacade.findAccountPermissionByInstance(entityId);
+        return userFacade.findUserPermissionByInstance(entityId);
     }
 
     /**
@@ -635,8 +635,9 @@ public class UserController {
             @PathParam("accountId") Long accountId) {
 
         checkGmOrGPermission(entityId, "GameModel:Edit:", "Game:Edit:");
+        AbstractAccount account = accountFacade.find(accountId);
 
-        userFacade.deleteAccountPermissionByInstanceAndAccount(entityId, accountId);
+        userFacade.deleteUserPermissionByInstanceAndUser(entityId, account.getUser().getId());
     }
 
     /**
@@ -652,8 +653,9 @@ public class UserController {
         String splitedPermission[] = permission.split(":");
 
         checkGmOrGPermission(splitedPermission[2], "GameModel:Edit:", "Game:Edit:");
+        AbstractAccount account = accountFacade.find(accountId);
 
-        userFacade.deleteAccountPermissionByPermissionAndAccount(permission, accountId);
+        userFacade.deleteUserPermissionByPermissionAndAccount(permission, account.getUser().getId());
     }
 
     private void checkGmOrGPermission(String entityId, String gmPermission, String gPermission) {

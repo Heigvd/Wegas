@@ -32,16 +32,15 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Entity
 @Cacheable(true)
 /*
-Those indexes must partial index (ie. with a WHERE clause).
-Tests will failed if not
-This is not possible with JPA, but with eclipselink
+ Those indexes must partial index (ie. with a WHERE clause).
+ Tests will failed if not
+ This is not possible with JPA, but with eclipselink
 
-@Table(indexes = {
-    @Index(columnList = "username", unique = true),
-    @Index(columnList = "email", unique = true)
-})*/
+ @Table(indexes = {
+ @Index(columnList = "username", unique = true),
+ @Index(columnList = "email", unique = true)
+ })*/
 @NamedQueries({
-    @NamedQuery(name = "findUserPermissions", query = "SELECT DISTINCT accounts FROM AbstractAccount accounts JOIN accounts.permissions p WHERE p.value LIKE :instance"),
     @NamedQuery(name = "AbstractAccount.findByUsername", query = "SELECT a FROM AbstractAccount a WHERE a.username = :username")
 })
 @JsonSubTypes(value = {
@@ -91,19 +90,15 @@ public class AbstractAccount extends AbstractEntity {
      *
      */
     //@ElementCollection(fetch = FetchType.EAGER)
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "account")
+    // Backward Compatibility
     @JsonView(Views.ExtendedI.class)
+    @Transient
     private List<Permission> permissions = new ArrayList<>();
     /**
      *
      */
-    @ManyToMany
     @JsonView(Views.ExtendedI.class)
-    @JoinTable(name = "abstractaccount_roles",
-            joinColumns = {
-                @JoinColumn(name = "abstractaccount_id", referencedColumnName = "id")},
-            inverseJoinColumns = {
-                @JoinColumn(name = "roles_id", referencedColumnName = "id")})
+    @Transient
     private Set<Role> roles = new HashSet<>();
 
     /**
@@ -127,7 +122,9 @@ public class AbstractAccount extends AbstractEntity {
         this.setFirstname(a.getFirstname());
         this.setLastname(a.getLastname());
         this.setUsername(a.getUsername());
-        ListUtils.mergeLists(this.permissions, a.getPermissions());
+        if (a.getDeserializedPermissions() != null && !a.getDeserializedPermissions().isEmpty()) {
+            ListUtils.mergeLists(this.user.getPermissions(), a.getDeserializedPermissions());
+        }
     }
 
     /**
@@ -211,6 +208,11 @@ public class AbstractAccount extends AbstractEntity {
      * @return the roles
      */
     public Set<Role> getRoles() {
+        return user.getRoles();
+    }
+
+    @JsonIgnore
+    public Set<Role> getDeserialisedRoles() {
         return roles;
     }
 
@@ -222,27 +224,15 @@ public class AbstractAccount extends AbstractEntity {
     }
 
     /**
-     *
-     * @param role
-     */
-    public void addRole(Role role) {
-        this.roles.add(role);
-    }
-
-    /**
-     * strike out this account from the role
-     *
-     * @param role
-     */
-    public void removeRole(Role role) {
-        this.roles.remove(role);
-    }
-
-    /**
      * @return the permissions
      */
     public List<Permission> getPermissions() {
-        return permissions;
+        return this.user.getPermissions();
+    }
+
+    @JsonIgnore
+    public List<Permission> getDeserializedPermissions() {
+        return this.permissions;
     }
 
     /**
@@ -250,50 +240,6 @@ public class AbstractAccount extends AbstractEntity {
      */
     public void setPermissions(List<Permission> permissions) {
         this.permissions = permissions;
-        for (Permission p : this.permissions) {
-            p.setAccount(this);
-        }
-    }
-
-    /**
-     *
-     * @param permission
-     */
-    public void removePermission(String permission) {
-        this.permissions.remove(new Permission(permission));
-    }
-
-    /**
-     *
-     * @param permission
-     * @param inducedPermission
-     * @return
-     */
-    public boolean addPermission(String permission, String inducedPermission) {
-        return this.addPermission(new Permission(permission, inducedPermission));
-    }
-
-    /**
-     *
-     * @param permission
-     * @return
-     */
-    public boolean addPermission(String permission) {
-        return this.addPermission(new Permission(permission));
-    }
-
-    /**
-     *
-     * @param permission
-     * @return
-     */
-    public boolean addPermission(Permission permission) {
-        if (!this.permissions.contains(permission)) {
-            permission.setAccount(this);
-            return this.permissions.add(permission);
-        } else {
-            return false;
-        }
     }
 
     /**
