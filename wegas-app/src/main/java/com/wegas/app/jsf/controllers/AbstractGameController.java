@@ -10,6 +10,7 @@ package com.wegas.app.jsf.controllers;
 import com.sun.faces.util.Util;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.LibraryFacade;
+import com.wegas.core.exception.internal.WegasForbiddenException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -88,7 +89,7 @@ public class AbstractGameController implements Serializable {
 //        return locale;
     }
 
-    public String getStaticClientScripts() throws IOException {
+    public String getStaticClientScripts() throws IOException, WegasForbiddenException {
         String clientScriptUri = this.getCurrentGameModel().getProperties().getClientScriptUri();
         final List<String> files = new ArrayList<>();
         if (clientScriptUri != null) {
