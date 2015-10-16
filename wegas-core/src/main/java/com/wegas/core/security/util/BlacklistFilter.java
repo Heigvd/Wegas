@@ -32,7 +32,7 @@ public class BlacklistFilter implements Filter {
 
     Logger logger = LoggerFactory.getLogger(BlacklistFilter.class);
 
-    private List<String> blacklist = new ArrayList<>();
+    private static List<String> blacklist = new ArrayList<>();
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -67,7 +67,6 @@ public class BlacklistFilter implements Filter {
         blacklist.add("/wegas-private/wegas-pmg/scripts/server-scripts/locales/en.js");
         blacklist.add("/wegas-private/wegas-pmg/scripts/server-scripts/locales/fr.js");
         blacklist.add("/wegas-private/wegas-pmg/scripts/server-scripts/wegas-pmg-server-event-listeners.js");
-        blacklist.add("/wegas-private/wegas-pmg/js/wegas-pmg-breadcrumb.js");
         blacklist.add("/wegas-private/wegas-pmg/db/wegas-pmg-gamemodel-language.json");
         blacklist.add("/wegas-private/wegas-pmg/db/wegas-pmg-gamemodel-Artos.json");
         blacklist.add("/wegas-private/wegas-pmg/db/wegas-pmg-gamemodel-simplePmg.json");
@@ -84,7 +83,7 @@ public class BlacklistFilter implements Filter {
             String url = req.getRequestURI().replaceFirst("^" + req.getContextPath(), "");
             logger.error("URL: " + url);
 
-            if (url.matches("/wegas-private/private/.*$") || blacklist.contains(url)) {
+            if (isBlacklisted(url)){
                 // Blacklist URL -> forbidden
                 logger.error("Trying to access blacklisted content (" + url + ") ! ");
                 resp.setStatus(403);
@@ -97,5 +96,9 @@ public class BlacklistFilter implements Filter {
 
     @Override
     public void destroy() {
+    }
+
+    public static boolean isBlacklisted(String url) {
+        return url.matches("/wegas-private/private/.*$") || blacklist.contains(url);
     }
 }
