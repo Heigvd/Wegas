@@ -611,6 +611,7 @@
     transition:.3s;
 }
 
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft .yui3-button.wegas-forbidden-feature,
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal.dashboard-panel .yui3-widget-ft .yui3-button.wegas-advanced-feature{
     display:none;
 }

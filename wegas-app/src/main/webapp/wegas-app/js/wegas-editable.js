@@ -120,7 +120,7 @@ YUI.add('wegas-editable', function(Y) {
             return form || [];
         },
         /**
-         * Returns the edition menu associated to this object, to be used a an inputex object.
+         * clone and return the edition menu associated to this object, to be used a an inputex object.
          *
          * @function
          * @param {type} data
@@ -128,6 +128,9 @@ YUI.add('wegas-editable', function(Y) {
          */
         getMenuCfg: function(data) {
             var menu = this.getStatic("EDITMENU", true)[0] || [];               // And if no form is defined we return the default one defined in the entity
+
+            menu = Y.JSON.parse(Y.JSON.stringify(menu)); // CLONE
+
 
             data = data || {};
             data.entity = data.entity || this;

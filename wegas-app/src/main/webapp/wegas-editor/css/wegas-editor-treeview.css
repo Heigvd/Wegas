@@ -9,6 +9,21 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
 */
 
+
+
+.wegas-editor-treeview .yui3-treenode-content-extra .add-child-shortcut:hover {
+    color: #4E525E;
+}
+
+.wegas-editor-treeview .yui3-treenode-content-extra .add-child-shortcut {
+    font-size: 1.3em;
+    color: #D3D3D3;
+    float: right;
+    position: absolute;
+    right: 0px;
+}
+
+
 /* Editor treeview styles */
 .wegas-editor-treeview .yui3-treenode-content-header,
 .wegas-editor-treeview .yui3-treeleaf-content-header,
@@ -96,9 +111,15 @@
 }*/
 
 /** Variable Treeview **/
+
+.wegas-editor-variabletreeview .yui3-treenode-content-icon,
+.wegas-editor-variabletreeview .yui3-treeleaf-content-icon {
+    color: #4E525E;
+}
+
 .wegas-editor-variabletreeview .yui3-dd-drop > div > .yui3-treenode-content-icon,
 .wegas-editor-variabletreeview .yui3-dd-drop > div > div > .yui3-treeleaf-content-icon {
-    /*cursor: url(../images/openhand.cur) 7 5, default;*/
+    /* cursor: url(../images/openhand.cur) 7 5, default; */
     cursor: move;
 }
 
@@ -157,9 +178,10 @@
     background: transparent url(../../wegas-editor/images/wegas-icon-pages.png) 0 -649px no-repeat;
 }
 
-/*.yui3-skin-sam .wegas-icon-numberdescriptor {
-    background: transparent url(../../wegas-editor/images/wegas-icon-pages.png) 0 -1050px no-repeat;
-}*/
+.yui3-skin-sam .wegas-icon-numberdescriptor:before {
+    content: "\211d"; 
+    font-weight: bold;
+}
 
 .yui3-skin-sam .wegas-icon-textdescriptor,
 .yui3-skin-sam .wegas-page-editor .wegas-icon-text {

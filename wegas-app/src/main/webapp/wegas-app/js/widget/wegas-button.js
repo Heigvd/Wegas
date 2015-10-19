@@ -220,7 +220,7 @@ YUI.add("wegas-button", function(Y) {
                         count += instance.get("replies").length === 0 && instance.get("active") ? 1 : 0; // only count if it is active
                     }
                 }
-                else if (descriptor instanceof Wegas.persistence.ListDescriptor) { // @hack since QuestionDescriptor is instanceof ListDescriptor: check against ListDescriptor after QuestionDescriptor
+                else if (descriptor instanceof Wegas.persistence.ListDescriptor) {
                     items = descriptor.flatten();
                     for (i = 0; i < items.length; i = i + 1) {
                         list.push(items[i]);

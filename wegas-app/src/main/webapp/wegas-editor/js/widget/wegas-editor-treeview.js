@@ -32,7 +32,7 @@ YUI.add("wegas-editor-treeview", function(Y) {
         /**
          *
          */
-        initializer: function(){
+        initializer: function() {
             this.handlers = [];
         },
         renderUI: function() {
@@ -42,6 +42,7 @@ YUI.add("wegas-editor-treeview", function(Y) {
             }).render(this.get(CONTENTBOX))                                     // Instantiate & render treeview
                 .addTarget(this);                                               // Listen to treeview's events
 
+            this.plug(Plugin.EditorTVShortcut);
             this.plug(Plugin.EditorTVContextMenu);                              // Open context menu on right click
             this.plug(Plugin.RememberExpandedTreeView);                         // Selected node is preserved across requests
         },
@@ -308,7 +309,7 @@ YUI.add("wegas-editor-treeview", function(Y) {
         },
         getMenuItems: function(data) {
             var menuItems = this.get("children"),
-                entity,
+                entity, allowedChildren, addChildrenMenu,
                 host = this.get(HOST);
 
             if (data) {
@@ -318,7 +319,23 @@ YUI.add("wegas-editor-treeview", function(Y) {
                 if (menuItems) {
                     Wegas.Editable.mixMenuCfg(menuItems, data);
                 } else {
-                    menuItems = entity.getMenuCfg(data).slice(0);               // If no menu is provided, use a clone of the entity default value
+                    menuItems = entity.getMenuCfg(data);               // If no menu is provided, use a clone of the entity default value
+                    allowedChildren = entity.get("allowedTypes");
+
+                    if (allowedChildren && allowedChildren.length > 0) {
+                        addChildrenMenu = Y.Array.find(menuItems, function(i) {
+                            return i.label === "Add";
+                        }, this);
+                        if (addChildrenMenu) {
+                            Y.Array.each(addChildrenMenu.plugins[0].cfg.children, function(i) {
+                                if (!Y.Array.find(allowedChildren, function(j) {
+                                    return i.targetClass === j;
+                                })) {
+                                    i.cssClass = "wegas-forbidden-feature";
+                                }
+                            }, this);
+                        }
+                    }
                 }
 
                 Y.Array.each(menuItems, function(i) {                           // @hack add icons to some buttons
@@ -363,6 +380,66 @@ YUI.add("wegas-editor-treeview", function(Y) {
         NS: "defaultmenuclick"
     });
 
+
+    /**
+     * @class Open a menu on right click, containing the admin edition field
+     * @constructor
+     */
+    Plugin.EditorTVShortcut = Y.Base.create("admin-menu", Plugin.Base, [], {
+        initializer: function() {
+            this.handlers = [
+                this.onHostEvent("treenode:extraClick", this.onAddChildrenShortcutClick, this)
+                    //this.get("host").get("contentBox").delegate("click", this.onAddChildrenShortcutClick, ".add-child-shortcut", this)
+            ];
+        },
+        onAddChildrenShortcutClick: function(e) {
+            var widget = Y.Widget.getByNode(e.node),
+                node = e.node,
+                entity = widget.get("data").entity,
+                button, cfg, target = entity.get("addShortcut");
+
+            if (target.match(/Descriptor$/)) {
+                cfg = {
+                    type: "AddEntityChildButton",
+                    targetClass: entity.get("addShortcut"),
+                    dataSource: Y.Wegas.Facade.VariableDescriptor,
+                    entity: entity
+                };
+            } else if (target === "Result") {
+                cfg = {
+                    type: "Button",
+                    plugins: [{
+                            fn: "EditEntityArrayFieldAction",
+                            cfg: {
+                                targetClass: "Result",
+                                method: "POST",
+                                attributeKey: "results",
+                                showEditionAfterRequest: true,
+                                dataSource: Y.Wegas.Facade.VariableDescriptor,
+                                entity: entity
+                            }
+                        }]
+                };
+            }
+
+            if (cfg) {
+                button = Wegas.Widget.create(cfg);
+                button.fire("click");
+                button.destroy();
+            }
+        },
+        destructor: function() {
+            Y.Array.each(this.handlers, function(i) {
+                i.detach();
+            });
+        }
+    }, {
+        NS: "addShortcut",
+        ATTRS: {
+            children: {}
+        }
+    });
+
     /**
      * @class Open a menu on right click, containing the admin edition field
      * @constructor
@@ -370,7 +447,6 @@ YUI.add("wegas-editor-treeview", function(Y) {
     Plugin.EditorTVContextMenu = Y.Base.create("admin-menu", Plugin.Base, [], {
         initializer: function() {
             this.onHostEvent("contextmenu", this.onTreeViewClick, this);
-
             this.menu = new Wegas.Menu();
             this.menu.addTarget(this.get(HOST));
             this.menu.render();
