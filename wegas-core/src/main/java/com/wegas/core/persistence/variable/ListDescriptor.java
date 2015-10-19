@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.persistence.AbstractEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +41,14 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
     //@OrderBy("id")
     @OrderColumn
     private List<VariableDescriptor> items = new ArrayList<>();
+
+    /**
+     * List of allowed children types
+     */
+    @ElementCollection
+    private List<String> allowedTypes = new ArrayList<>();
+
+    private String addShortcut = "";
 
     /**
      *
@@ -102,7 +112,10 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
      */
     @Override
     public void setItems(List<VariableDescriptor> items) {
-        this.items = items;
+        this.items.clear();
+        for (VariableDescriptor vd : items) {
+            this.addItem(vd);
+        }
     }
 
     /**
@@ -111,14 +124,38 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
      */
     @Override
     public void addItem(VariableDescriptor item) {
-        this.items.add(item);
-        item.setGameModel(this.getGameModel());
+        if (isAuthorized(item)) {
+            this.items.add(item);
+            item.setGameModel(this.getGameModel());
+        } else {
+            throw WegasErrorMessage.error(item.getClass().getSimpleName() + " not allowed in this folder");
+        }
     }
 
     @Override
     public void addItem(int index, VariableDescriptor item) {
-        this.items.add(index, item);
-        item.setGameModel(this.getGameModel());
+        if (isAuthorized(item)) {
+            this.items.add(index, item);
+            item.setGameModel(this.getGameModel());
+        } else {
+            throw WegasErrorMessage.error(item.getClass().getSimpleName() + " not allowed in this folder");
+        }
+    }
+
+    /**
+     *
+     * @param child
+     */
+    private boolean isAuthorized(String type) {
+        return (allowedTypes.isEmpty() || allowedTypes.contains(type));
+    }
+
+    /**
+     *
+     * @param child
+     */
+    private boolean isAuthorized(VariableDescriptor child) {
+        return this.isAuthorized(child.getClass().getSimpleName());
     }
 
     /**
@@ -140,12 +177,38 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
         return this.items.size();
     }
 
-    public List<VariableDescriptor> flatten(){
-        final List<VariableDescriptor> acc= new ArrayList<>();
-        for(VariableDescriptor v : this.getItems()){
-            if(v instanceof ListDescriptor){
+    /**
+     * Get the list of allowed types
+     *
+     * @return allowed types
+     */
+    public List<String> getAllowedTypes() {
+        return allowedTypes;
+    }
+
+    /**
+     * set the list of allowed types
+     *
+     * @param types allowed types
+     */
+    public void setAllowedTypes(List<String> types) {
+        this.allowedTypes = types;
+    }
+
+    public String getAddShortcut() {
+        return addShortcut;
+    }
+
+    public void setAddShortcut(String addShortcut) {
+        this.addShortcut = addShortcut;
+    }
+
+    public List<VariableDescriptor> flatten() {
+        final List<VariableDescriptor> acc = new ArrayList<>();
+        for (VariableDescriptor v : this.getItems()) {
+            if (v instanceof ListDescriptor) {
                 acc.addAll(((ListDescriptor) v).flatten());
-            }else{
+            } else {
                 acc.add(v);
             }
         }
@@ -161,4 +224,21 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
     public boolean remove(VariableDescriptor item) {
         return this.items.remove(item);
     }
+
+    @Override
+    public void merge(AbstractEntity a) {
+        if (a instanceof ListDescriptor) {
+            super.merge(a);
+            ListDescriptor o = (ListDescriptor) a;
+            this.allowedTypes.clear();
+            this.allowedTypes.addAll(o.getAllowedTypes());
+
+            if (o.getAddShortcut() == null || o.getAddShortcut().isEmpty() || isAuthorized(o.getAddShortcut())) {
+                this.addShortcut = o.getAddShortcut();
+            } else {
+                throw WegasErrorMessage.error(o.getAddShortcut() + " not allowed in this folder");
+            }
+        }
+    }
+
 }

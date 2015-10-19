@@ -26,7 +26,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
     /**
      * QuestionDescriptor mapper
      */
-    persistence.QuestionDescriptor = Y.Base.create("QuestionDescriptor", persistence.ListDescriptor, [], {
+    persistence.QuestionDescriptor = Y.Base.create("QuestionDescriptor", persistence.VariableDescriptor, [persistence.VariableContainer], {
         getRepliesByStartTime: function(startTime) {
             return this.getInstance().getRepliesByStartTime(startTime);
         }
@@ -35,6 +35,20 @@ YUI.add('wegas-mcq-entities', function(Y) {
             "@class": {
                 type: STRING,
                 value: "QuestionDescriptor"
+            },
+            items: {
+                type: ARRAY,
+                value: [],
+                "transient": true,
+                _inputex: {
+                    _type: HIDDEN
+                },
+                setter: function(val) {
+                    for (var i = 0; i < val.length; i = i + 1) {                // We set up a back reference to the parent
+                        val[i].parentDescriptor = this;
+                    }
+                    return val;
+                }
             },
             title: {
                 type: STRING,
@@ -303,6 +317,13 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     _type: HIDDEN,
                     index: 3
                 }
+            },
+            addShortcut: {
+                type: STRING,
+                value: "Result",
+                _inputex: {
+                    _type: HIDDEN
+                }
             }
 
         },
@@ -505,6 +526,13 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     listAddLabel: " ",
                     listRemoveLabel: " ",
                     wrapperClassName: "inputEx-fieldWrapper-nomargin"
+                }
+            },
+            addShortcut: {
+                type: STRING,
+                value: "",
+                _inputex: {
+                    _type: HIDDEN
                 }
             }
         },

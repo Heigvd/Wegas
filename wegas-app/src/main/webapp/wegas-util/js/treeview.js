@@ -14,7 +14,7 @@ YUI.add("treeview", function(Y) {
 
     var HOST = "host", SELECTED = "selected", SELECTION = "selection",
         TREEVIEW = "treeview", TREENODE = "treenode", CONTENT = "content",
-    //TREELEAF = "treeleaf",
+        //TREELEAF = "treeleaf",
         CONTENT_BOX = "contentBox", BOUNDING_BOX = "boundingBox",
         getClassName = Y.ClassNameManager.getClassName,
         classNames = {
@@ -70,7 +70,7 @@ YUI.add("treeview", function(Y) {
             this.after("removeChild", function(e) {
                 if (!this.size()) {
                     this.get(BOUNDING_BOX).append("<div class='" + classNames.emptyMSG + "'>" + this.get("emptyMsg") +
-                                                  "</div>");
+                        "</div>");
                 }
             });
             this.get(CONTENT_BOX).delegate("click", function(e) {
@@ -84,6 +84,12 @@ YUI.add("treeview", function(Y) {
                     widget.fire("labelClick", {
                         node: widget
                     });
+                } else if (node.ancestor().hasClass(widget.getClassName(CONTENT, "extra"))  )  {
+                    widget.fire("extraClick", {
+                        node: node,
+                        widget: widget
+                    });
+                    return;
                 } else if (node.hasClass(widget.getClassName(CONTENT, "toggle"))) {
                     widget.fire("toggleClick", {
                         node: widget
@@ -126,7 +132,7 @@ YUI.add("treeview", function(Y) {
             }
             if (!this.size()) {
                 this.get(BOUNDING_BOX).append("<div class='" + classNames.emptyMSG + "'>" + this.get("emptyMsg") +
-                                              "</div>");
+                    "</div>");
             }
         },
         syncUI: function() {
@@ -296,12 +302,13 @@ YUI.add("treeview", function(Y) {
     Y.TreeNode = Y.Base.create("treenode", Y.Widget, [Y.WidgetParent, Y.WidgetChild], {
         /** @lends Y.TreeNode# */
         BOUNDING_TEMPLATE: "<li>"
-                           + "<div class='content-header yui3-treenode-content-header'>"
-                           + "<span class='yui3-treenode-content-toggle'></span>"
-                           + "<span class='yui3-treenode-content-icon'></span>"
-                           + "<span class='yui3-treenode-content-label'></span>"
-                           + "<div class=\"yui3-treenode-content-rightwidget yui3-tree-rightwidget\">"
-                           + "</div></li>",
+            + "<div class='content-header yui3-treenode-content-header'>"
+            + "<span class='yui3-treenode-content-toggle'></span>"
+            + "<span class='yui3-treenode-content-icon'></span>"
+            + "<span class='yui3-treenode-content-label'></span>"
+            + "<span class='yui3-treenode-content-extra'></span>"
+            + "<div class=\"yui3-treenode-content-rightwidget yui3-tree-rightwidget\">"
+            + "</div></li>",
         CONTENT_TEMPLATE: "<ul></ul>",
         /**
          * Lifecycle method
@@ -324,6 +331,9 @@ YUI.add("treeview", function(Y) {
                 bubbles: true
             });
             this.publish("labelClick", {
+                bubbles: true
+            });
+            this.publish("extraClick", {
                 bubbles: true
             });
             this.publish("click", {
@@ -375,6 +385,7 @@ YUI.add("treeview", function(Y) {
             this.set("loading", this.get("loading"));
             this.set("iconCSS", this.get("iconCSS"));
             this.set("label", this.get("label"));
+            this.set("childrenShortcut", this.get("childrenShortcut"));
             this.set("tooltip", this.get("tooltip"));
             this.set("rightWidget", this.get("rightWidget"));
             this.set("collapsed", this.get("collapsed"));
@@ -398,7 +409,7 @@ YUI.add("treeview", function(Y) {
          */
         destructor: function() {
             this.blur();                                                        //remove a focused node generates some
-                                                                                // errors
+            // errors
             if (this.get("rightWidget")) {
                 this.get("rightWidget").destroy();
             }
@@ -496,6 +507,16 @@ YUI.add("treeview", function(Y) {
                 validator: Y.Lang.isString,
                 setter: function(v) {
                     this.get(BOUNDING_BOX).one(".yui3-treenode-content-label").setContent(v);
+                    return v;
+                }
+            },
+            childrenShortcut: {
+                value: "",
+                validator: Y.Lang.isString,
+                setter: function(v) {
+                    if (v){
+                        this.get(BOUNDING_BOX).one(".yui3-treenode-content-extra").setContent("<span class='add-child-shortcut fa fa-plus-circle' type='" + v + "'></span>");
+                    }
                     return v;
                 }
             },
@@ -604,10 +625,10 @@ YUI.add("treeview", function(Y) {
          * @private
          */
         CONTENT_TEMPLATE: "<div><div class='content-header yui3-treeleaf-content-header'>"
-                          + "<span class='yui3-treeleaf-content-icon'></span>"
-                          + "<span class='yui3-treeleaf-content-label'></span>"
-                          + "<div class=\"yui3-treeleaf-content-rightwidget yui3-tree-rightwidget\"></div>"
-                          + "</div></div>",
+            + "<span class='yui3-treeleaf-content-icon'></span>"
+            + "<span class='yui3-treeleaf-content-label'></span>"
+            + "<div class=\"yui3-treeleaf-content-rightwidget yui3-tree-rightwidget\"></div>"
+            + "</div></div>",
         /**
          * @field
          * @private
@@ -667,7 +688,7 @@ YUI.add("treeview", function(Y) {
          */
         destructor: function() {
             this.blur();                                                        //remove a focused node generates some
-                                                                                // errors
+            // errors
             this.set(SELECTED, 0);
             if (this.get("rightWidget") && this.get("rightWidget").destroy) {
                 try {
