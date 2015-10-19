@@ -1,10 +1,10 @@
 import React from 'react';
-import {connect} from 'react-redux';
-import {selectLogId} from '../Actions/logIdsActions';
-import {showOverlay, hideOverlay} from '../Actions/glabal';
+import { connect } from 'react-redux';
+import { selectLogId } from '../Actions/logIdsActions';
+import { showOverlay, hideOverlay } from '../Actions/glabal';
 import GameSelect from './GameSelect';
 import QuestionSelect from './QuestionSelect';
-import {fetchVariables} from '../Actions/gamesActions';
+import { fetchVariables } from '../Actions/gamesActions';
 import Graph from './Graph';
 
 // @connect(state => ({
@@ -15,7 +15,7 @@ class Stats extends React.Component {
         super(props);
         this.state = {
             currentQuestion: null,
-            groups: []
+            groups: [],
         };
     }
     componentWillMount() {
@@ -31,7 +31,14 @@ class Stats extends React.Component {
     }
     onQuestionSelect(question) {
         this.setState({
-            currentQuestion: question
+            currentQuestion: question,
+        });
+    }
+
+    onGamesChange(curr) {
+        //    curr = curr.filter(g => g && g[0] ? g : false);
+        this.setState({
+            groups: curr,
         });
     }
     genAll() {
@@ -42,43 +49,32 @@ class Stats extends React.Component {
             this.props.dispatch(hideOverlay());
         });
     }
-    onGamesChange(c) {
-        //    c = c.filter(g => g && g[0] ? g : false);
-        this.setState({
-            groups: c
-        });
-    }
     render() {
         const {groups, currentQuestion} = this.state;
         return (
             <div>
-                <h2>
-                    {this.props.routeParams.LogId}
-                </h2>
-                <GameSelect
-                    games={this.props.games}
-                    onChange={this.onGamesChange.bind(this)}
-                    onRefSelect={this.onRefSelect.bind(this)}/>
-                <QuestionSelect
-                    onQuestionSelect={this.onQuestionSelect.bind(this)}
-                    snapshot={this.props.snapshot}
-                    value={this.state.currentQuestion}/>
-                <button onClick={this.genAll.bind(this)}>
-                    Generate all
-                </button>
-                <Graph
-                    groups={groups}
-                    logId={this.props.routeParams.LogId}
-                    question={currentQuestion}
-                    ref='graph'
-                    snapshot={this.props.snapshot}/>
+              <h2>{ this.props.routeParams.LogId }</h2>
+              <GameSelect games={ this.props.games }
+                          onChange={ this.onGamesChange.bind(this) }
+                          onRefSelect={ this.onRefSelect.bind(this) } />
+              <QuestionSelect onQuestionSelect={ this.onQuestionSelect.bind(this) }
+                              snapshot={ this.props.snapshot }
+                              value={ this.state.currentQuestion } />
+              <button onClick={ this.genAll.bind(this) }>
+                Generate all
+              </button>
+              <Graph groups={ groups }
+                     logId={ this.props.routeParams.LogId }
+                     question={ currentQuestion }
+                     ref="graph"
+                     snapshot={ this.props.snapshot } />
             </div>
-        );
+            );
     }
 }
 export default connect(state => {
     return {
         games: state.games.available,
-        snapshot: state.variables.snapshot
+        snapshot: state.variables.snapshot,
     };
 })(Stats);

@@ -8,35 +8,5 @@
                 "SwitchCase": 1
             }
         ],
-        "quotes": [
-            2,
-            "single"
-        ],
-        "linebreak-style": [
-            2,
-            "unix"
-        ],
-        "semi": [
-            2,
-            "always"
-        ],
-        "no-var": 2,
-        "prefer-const": 2
-    },
-    "env": {
-        "es6": true,
-        "browser": true,
-        "node": true
-    },
-    "extends": "eslint:recommended",
-    "ecmaFeatures": {
-        "jsx": true,
-        "experimentalObjectRestSpread": true,
-        "modules": true,
-        "arrowFunctions": true
-    },
-    "parser": "babel-eslint",
-    "plugins": [
-        "react"
-    ]
+    }
 }

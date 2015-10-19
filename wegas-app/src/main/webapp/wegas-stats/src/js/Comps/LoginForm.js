@@ -1,11 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import t from 'tcomb-form';
+import tcomb from 'tcomb-form';
 import { userLogin, userLogout } from '../Actions/userActions';
 
-const User = t.struct({
-    username: t.Str,
-    password: t.Str
+const User = tcomb.struct({
+    username: tcomb.Str,
+    password: tcomb.Str,
 });
 
 // @connect(state => ({
@@ -13,8 +13,8 @@ const User = t.struct({
 // }))
 class LoginForm extends React.Component {
 
-    onLoginClick(e) {
-        e.preventDefault();
+    onLoginClick(event) {
+        event.preventDefault();
         const val = this.refs.form.getValue();
         if (val) {
             this.props.dispatch(userLogin(val.username, val.password));
@@ -38,19 +38,19 @@ class LoginForm extends React.Component {
                 </div>
             );
         } else {
-            let options = {
+            const options = {
                 fields: {
                     password: {
-                        type: 'password'
-                    }
-                }
+                        type: 'password',
+                    },
+                },
             };
             panel = (
                 <div>
                   <form onSubmit={ this.onLoginClick.bind(this) }>
-                    <t.form.Form options={ options }
-                                 ref='form'
-                                 type={ User } />
+                    <tcomb.form.Form options={ options }
+                                     ref="form"
+                                     type={ User } />
                     <button>
                       Login
                     </button>
@@ -63,5 +63,5 @@ class LoginForm extends React.Component {
     }
 }
 export default connect(state => ({
-        user: state.user
+        user: state.user,
 }))(LoginForm);

@@ -4,10 +4,10 @@ import { fetchGamesForLogId } from './gamesActions';
 
 export function bootstrapLogIds() {
     return dispatch => {
-        getLogIds().then((v) => {
+        getLogIds().then(value => {
             dispatch({
                 type: BOOTSTRAP_LOGIDS,
-                logIds: v
+                logIds: value,
             });
         });
     };
@@ -17,7 +17,7 @@ export function selectLogId(logId) {
     return (dispatch) => {
         dispatch({
             type: SELECT_LOGID,
-            logId
+            logId,
         });
         dispatch(fetchGamesForLogId());
     };

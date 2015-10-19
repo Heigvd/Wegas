@@ -21,9 +21,9 @@ class AppRoute extends React.Component {
               <Route components={ App }>
                 <Route components={ LogIdSelector }
                        history={ this.history }
-                       path='/' />
+                       path="/" />
                 <Route components={ Stats }
-                       path='/:LogId' />
+                       path="/:LogId" />
               </Route>
             </Router>
             );
