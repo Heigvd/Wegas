@@ -94,7 +94,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
 
         if (SecurityUtils.getSubject().isPermitted("User:Edit:" + entityId)) {
             Set<Role> revivedRoles = new HashSet<>();
-            for (Role r : account.getRoles()) {
+            for (Role r : account.getDeserialisedRoles()) {
                 try {
                     revivedRoles.add(roleFacade.find(r.getId()));
                 } catch (EJBException e) {

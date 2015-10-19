@@ -589,4 +589,35 @@ public class UserFacade extends BaseFacade<User> {
         }
         return isNotLastEdit;
     }
+
+    /**
+     * Transfer players and permission from one user to another
+     *
+     * @param from the player to take perm and players from
+     * @param to   the whow
+     */
+    public void transferPlayers(User from, User to) {
+        for (Player p : from.getPlayers()) {
+            p.setName(to.getName());
+            p.setUser(to);
+        }
+        for (Permission p : from.getPermissions()) {
+            p.setUser(to);
+        }
+    }
+
+    public void upgradeGuest(GuestJpaAccount guest, JpaAccount account) {
+        User user = guest.getUser();
+        user.addAccount(account);
+
+        accountFacade.create(account);
+        // Detach and delete account
+        accountFacade.remove(guest.getId());
+
+        this.refresh(user);
+        for (Player p : user.getPlayers()) {
+            p.setName(user.getName());
+        }
+
+    }
 }

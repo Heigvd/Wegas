@@ -18,8 +18,10 @@ import com.wegas.core.rest.util.Email;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
+import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationInformation;
 import java.io.IOException;
@@ -261,12 +263,27 @@ public class UserController {
 
         Subject subject = SecurityUtils.getSubject();
 
+        User guest = null;
+        if (subject.isAuthenticated()) {
+            AbstractAccount gAccount = accountFacade.find((Long) subject.getPrincipal());
+            if (gAccount instanceof GuestJpaAccount) {
+                logger.error("Logged as guest");
+                guest = gAccount.getUser();
+                subject.logout();
+            }
+        }
+
         //if (!currentUser.isAuthenticated()) {
         UsernamePasswordToken token = new UsernamePasswordToken(authInfo.getLogin(), authInfo.getPassword());
         token.setRememberMe(authInfo.isRemember());
         try {
             subject.login(token);
-            return userFacade.getCurrentUser();
+            User user = userFacade.getCurrentUser();
+
+            if (guest != null) {
+                userFacade.transferPlayers(guest, user);
+            }
+            return user;
         } catch (AuthenticationException aex) {
             throw WegasErrorMessage.error("Email/password combination not found");
         }
@@ -373,8 +390,18 @@ public class UserController {
         Response r;
         if (this.checkEmailString(account.getEmail())) {
             if (account.getUsername().equals("") || !this.checkExistingUsername(account.getUsername())) {
-                User user = new User(account);
-                userFacade.create(user);
+                User user;
+                Subject subject = SecurityUtils.getSubject();
+
+                if (subject.isAuthenticated() && accountFacade.find((Long) subject.getPrincipal()) instanceof GuestJpaAccount) {
+                    GuestJpaAccount from = (GuestJpaAccount) accountFacade.find((Long) subject.getPrincipal());
+                    subject.logout();
+                    userFacade.upgradeGuest(from, account);
+                } else {
+                    user = new User(account);
+                    userFacade.create(user);
+                }
+
                 r = Response.status(Response.Status.CREATED).build();
             } else {
                 r = Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error("The username is already taken.")).build();

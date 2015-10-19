@@ -62,7 +62,7 @@ public class AbstractAccount extends AbstractEntity {
     /**
      *
      */
-    @ManyToOne(cascade = {CascadeType.ALL}, optional = false)
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, optional = false)
     @JsonBackReference(value = "user-account")
     private User user;
     /**
