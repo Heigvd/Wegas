@@ -49,14 +49,36 @@ public abstract class AbstractTest {
     }
 
     protected final void createGameModelWithScript(GameModel gameModel, String... injectScriptsPath) throws IOException {
-        for (String injectScriptPath : injectScriptsPath){
+        for (String injectScriptPath : injectScriptsPath) {
             String injectScript = TestHelper.readFile(injectScriptPath);
 
             if (injectScript == null) {
                 throw WegasErrorMessage.error("Injected Script doesn't exists [" + injectScriptPath + "]");
             }
-            gameModel.getScriptLibrary().put("[injectedScript] " + injectScriptPath, new GameModelContent("JavaScript", injectScript));
+            gameModel.getScriptLibrary().put(injectScriptPath, new GameModelContent("JavaScript", injectScript));
         }
+
+        System.out.println("Create game model : " + gameModel.getName());
+        this.getGameModelFacade().createWithDebugGame(gameModel);
+        junit.framework.Assert.assertNotNull(gameModel.getId()); //persisted
+
+        this.gm = gameModel;
+        player = gm.getPlayers().get(0);
+    }
+
+    protected final void createGameModelWithConcatenatedScript(GameModel gameModel, String... injectScriptsPath) throws IOException {
+        StringBuilder scriptContent = new StringBuilder("");
+
+        for (String injectScriptPath : injectScriptsPath) {
+            String injectScript = TestHelper.readFile(injectScriptPath);
+
+            if (injectScript == null) {
+                throw WegasErrorMessage.error("Injected Script doesn't exists [" + injectScriptPath + "]");
+            }
+
+            scriptContent.append(injectScript);
+        }
+        gameModel.getScriptLibrary().put("ConcatenatedScript", new GameModelContent("JavaScript", scriptContent.toString()));
 
         System.out.println("Create game model : " + gameModel.getName());
         this.getGameModelFacade().createWithDebugGame(gameModel);
@@ -70,6 +92,19 @@ public abstract class AbstractTest {
         String pmg = TestHelper.readFile(path);
         GameModel gameModel = JacksonMapperProvider.getMapper().readValue(pmg, GameModel.class);
         this.createGameModelWithScript(gameModel, injectScriptsPath);
+    }
+
+    /**
+     * Same as createGameModelFromFileWithScript but will concatenate all scripts within a big one.
+     * This ensure scripts will be evaluated in the given order but we'll loose the filename reference...
+     * @param path
+     * @param injectScriptsPath
+     * @throws IOException 
+     */
+    protected final void createGameModelFromFileWithConcatenatedScript(String path, String... injectScriptsPath) throws IOException {
+        String pmg = TestHelper.readFile(path);
+        GameModel gameModel = JacksonMapperProvider.getMapper().readValue(pmg, GameModel.class);
+        this.createGameModelWithConcatenatedScript(gameModel, injectScriptsPath);
     }
 
     protected void cleanData() {

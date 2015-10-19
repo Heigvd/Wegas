@@ -125,7 +125,7 @@ public class IntegrationTest {
     }
 
     private void loadArtos() throws IOException, JSONException {
-        String postJSONFromFile = postJSONFromFile("/rest/GameModel", "src/main/webapp/wegas-pmg/db/wegas-pmg-gamemodel-Artos.json");
+        String postJSONFromFile = postJSONFromFile("/rest/GameModel", "src/main/webapp/wegas-private/wegas-pmg/db/wegas-pmg-gamemodel-Artos.json");
         JSONObject jsonObject = new JSONObject(postJSONFromFile);
         JSONArray jsonArray = jsonObject.getJSONArray("entities");
         this.artosId = jsonArray.getJSONObject(0).getLong("id");

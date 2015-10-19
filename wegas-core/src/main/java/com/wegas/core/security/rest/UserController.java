@@ -414,7 +414,7 @@ public class UserController {
         body += "<br /><br /><hr /><i> Sent by " + name + " from " + "albasim.ch</i>";
         email.setBody(body);
 
-        email.setFrom(name + " via Wegas <nobody@" + Helper.getWegasProperty("mail.default_domain") + ">");
+        email.setFrom(name + " via Wegas <noreply@" + Helper.getWegasProperty("mail.default_domain") + ">");
 
         try {
             userFacade.sendEmail(email);

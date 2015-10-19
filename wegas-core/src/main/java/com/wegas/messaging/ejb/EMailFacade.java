@@ -37,14 +37,16 @@ public class EMailFacade {
      *
      * @param to
      * @param from
+     * @param replyTo     effective from
      * @param subject
      * @param body
      * @param toType
      * @param mimetype
+     * @param replyToOrCC false -> add ReplyTo: replyTo true : acc CC: replyTo
      * @throws javax.mail.MessagingException when something went wrong
      */
     public void send(String to, String from, String replyTo,
-            String subject, String body, RecipientType toType, String mimetype) throws MessagingException {
+            String subject, String body, RecipientType toType, String mimetype, Boolean replyToOrCC) throws MessagingException {
 
         Properties props = new Properties();
         final String username = Helper.getWegasProperty("mail.smtp.username");
@@ -72,19 +74,25 @@ public class EMailFacade {
 
         javax.mail.Message msg = new MimeMessage(session);
 
-        if (replyTo != null){
-            msg.setHeader("Reply-To", replyTo);
-        }
         msg.setFrom(new InternetAddress(from));
         msg.setRecipients(toType, InternetAddress.parse(to, false));
         msg.setSubject(subject);
         msg.setContent(body, mimetype);
         msg.setSentDate(new Date());
+
+        if (replyTo != null) {
+            if (replyToOrCC) {
+                msg.setHeader("Reply-To", replyTo);
+            } else {
+                msg.addRecipients(RecipientType.CC, InternetAddress.parse(replyTo, false));
+            }
+        }
+
         Transport.send(msg);
     }
 
     /**
-     * @deprecated 
+     * @deprecated
      *
      * @param p
      * @param from
@@ -92,16 +100,16 @@ public class EMailFacade {
      * @param body
      */
     public void send(Player p, String from, String subject, String body) throws MessagingException {
-        this.send(p.getUser().getName(), from, null, subject, body, RecipientType.TO, "text/plain");
+        this.send(p.getUser().getName(), from, null, subject, body, RecipientType.TO, "text/plain", false);
     }
 
     /**
-     * @deprecated 
-     * @param p
+     * @deprecated @param p
      * @param msg
      */
     public void send(Player p, Message msg) throws MessagingException {
-        this.send(p, "admin@wegas.com", msg.getSubject(), msg.getBody());
+
+        this.send(p, "noreply@" + Helper.getWegasProperty("mail.default_domain"), msg.getSubject(), msg.getBody());
     }
 
     /**
