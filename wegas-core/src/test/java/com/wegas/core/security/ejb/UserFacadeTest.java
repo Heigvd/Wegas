@@ -5,6 +5,7 @@ import com.wegas.core.ejb.TestHelper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
+import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import java.util.Calendar;
@@ -16,12 +17,16 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Yannick Lagger
  */
 public class UserFacadeTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserFacadeTest.class);
 
     private static UserFacade userFacade;
     private static RoleFacade roleFacade;
@@ -193,10 +198,10 @@ public class UserFacadeTest {
      */
     @Test
     public void testDeleteAccountPermission() throws Exception {
-        userFacade.addUserPermission(u, "GameModel:Edit:gm100");
-        userFacade.addUserPermission(u, "GameModel:View:gm100");
-        userFacade.addUserPermission(u, "GameModel:Edit:gm200");
-        userFacade.addUserPermission(u, "GameModel:Edit:gm200");
+        userFacade.addUserPermission(u.getId(), "GameModel:Edit:gm100");
+        userFacade.addUserPermission(u.getId(), "GameModel:View:gm100");
+        userFacade.addUserPermission(u.getId(), "GameModel:Edit:gm200");
+        userFacade.addUserPermission(u.getId(), "GameModel:View:gm200");
 
         userFacade.findUserPermissionByInstance("gm200");
 

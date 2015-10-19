@@ -16,6 +16,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
+@NamedQueries({
+    @NamedQuery(name = "Permission.deleteByInstance", query = "DELETE FROM Permission p WHERE p.value LIKE :instance")
+})
 public class Permission extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
@@ -40,7 +43,7 @@ public class Permission extends AbstractEntity {
      *
      */
     /*@ManyToOne
-    private AbstractAccount account;*/
+     private AbstractAccount account;*/
     @ManyToOne
     @JsonIgnore
     private User user;
@@ -141,7 +144,8 @@ public class Permission extends AbstractEntity {
 
     /**
      * get the user the permission is for
-     * @return  the user or null whether the permission is for a Role
+     *
+     * @return the user or null whether the permission is for a Role
      */
     public User getUser() {
         return user;
@@ -149,6 +153,7 @@ public class Permission extends AbstractEntity {
 
     /**
      * set the user the permission is for
+     *
      * @param user the user
      */
     public void setUser(User user) {

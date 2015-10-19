@@ -393,21 +393,26 @@ public class UserFacade extends BaseFacade<User> {
      * @param instance
      */
     public void deleteUserPermissionByInstance(String instance) {
-        Query findByToken = getEntityManager().createNamedQuery("findUserPermissions");//@fixme Unable to select role with a like w/ embeddebale
+        Query query = getEntityManager().createNamedQuery("Permission.deleteByInstance");
+        query.setParameter("instance", "%:" + instance);
+        query.executeUpdate();
 
-        findByToken.setParameter("instance", "%:" + instance);
-        List<User> users = (List<User>) findByToken.getResultList();
-        for (User user : users) {
-            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext();) {
-                Permission p = sit.next();
-                String splitedPermission[] = p.getValue().split(":");
-                if (splitedPermission.length >= 3) {
-                    if (splitedPermission[2].equals(instance)) {
-                        sit.remove();
-                    }
-                }
-            }
-        }
+        /*
+         Query findByToken = getEntityManager().createNamedQuery("findUserPermissions");
+
+         findByToken.setParameter("instance", "%:" + instance);
+         List<User> users = (List<User>) findByToken.getResultList();
+         for (User user : users) {
+         for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext();) {
+         Permission p = sit.next();
+         String splitedPermission[] = p.getValue().split(":");
+         if (splitedPermission.length >= 3) {
+         if (splitedPermission[2].equals(instance)) {
+         sit.remove();
+         }
+         }
+         }
+         }*/
     }
 
     /**
