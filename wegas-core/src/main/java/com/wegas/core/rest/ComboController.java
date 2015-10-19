@@ -7,9 +7,12 @@
  */
 package com.wegas.core.rest;
 
+import com.hazelcast.spi.exception.ResponseAlreadySentException;
 import com.wegas.core.Helper;
+import com.wegas.core.exception.internal.WegasForbiddenException;
 import com.wegas.core.rest.util.CacheManagerHolder;
 import com.wegas.core.rest.util.annotations.CacheMaxAge;
+import com.wegas.core.security.util.BlacklistFilter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.servlet.ServletContext;
@@ -92,46 +96,51 @@ public class ComboController {
     @Produces({MediaTypeJs, MediaTypeCss})
     @CacheMaxAge(time = 3, unit = TimeUnit.HOURS)
     public Response index(@Context Request req) throws IOException {
-        Ehcache cache = cacheManagerHolder.getInstance().getEhcache(CACHE_NAME);
+        try {
+            Ehcache cache = cacheManagerHolder.getInstance().getEhcache(CACHE_NAME);
 
-        final int hash = this.uriInfo.getRequestUri().getQuery().hashCode();
+            final int hash = this.uriInfo.getRequestUri().getQuery().hashCode();
 
-        final Element combo = cache.get(hash);
-        CacheObject comboCache;
+            final Element combo = cache.get(hash);
+            CacheObject comboCache;
 
-        if (combo != null) { // Get from cache
-            comboCache = (CacheObject) combo.getObjectValue();
-        } else { // build Cache.
-            //final Set<String> files = this.uriInfo.getQueryParameters().keySet(); // Old version, removed cause query parameters where in the wrong order
-            ArrayList<String> files = new ArrayList<>();                         // New version, with parameters in the right order
-            for (String parameter : this.uriInfo.getRequestUri().getQuery().split("&")) {
-                String split = parameter.split("=")[0];
-                if (split != null) {
-                    files.add(split);
+            if (combo != null) { // Get from cache
+                comboCache = (CacheObject) combo.getObjectValue();
+            } else { // build Cache.
+                //final Set<String> files = this.uriInfo.getQueryParameters().keySet(); // Old version, removed cause query parameters where in the wrong order
+                ArrayList<String> files = new ArrayList<>();                         // New version, with parameters in the right order
+                for (String parameter : this.uriInfo.getRequestUri().getQuery().split("&")) {
+                    String split = parameter.split("=")[0];
+                    if (split != null) {
+                        files.add(split);
+                    }
                 }
-            }
-            files.remove("v");
-            files.remove("version");
-            final String mediaType = (files.iterator().next().endsWith("css"))
-                    ? MediaTypeCss : MediaTypeJs;            // Select the content-type based on the first file extension
-            comboCache = new CacheObject(this.getCombinedFile(files, mediaType), mediaType);
-            cache.put(new Element(hash, comboCache));
+                files.remove("v");
+                files.remove("version");
+                final String mediaType = (files.iterator().next().endsWith("css"))
+                        ? MediaTypeCss : MediaTypeJs;            // Select the content-type based on the first file extension
+                comboCache = new CacheObject(this.getCombinedFile(files, mediaType), mediaType);
+                cache.put(new Element(hash, comboCache));
 
+            }
+            ResponseBuilder rb = req.evaluatePreconditions(new EntityTag(comboCache.getETag()));
+            if (rb != null) {
+                return rb.tag(comboCache.getETag()).build();
+            }
+            // MediaType types[] = {"application/json", "application/xml"};
+            // List<Variant> vars = Variant.mediaTypes(types).add().build();
+            // Variant var = req.selectVariant(vars);
+            //EntityTag etag = new EntityTag();
+            //Response.ResponseBuilder responseBuilder = request.evaluatePreconditions(updateTimestamp, etag);
+            return Response.ok(comboCache.getFiles())
+                    .type(comboCache.getMediaType())
+                    //    .expires(new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 3)))
+                    .tag(new EntityTag(comboCache.getETag()))
+                    .build();
+
+        } catch (WegasForbiddenException ex) {
+            return Response.status(Response.Status.FORBIDDEN).entity(ex.getMessage()).build();
         }
-        ResponseBuilder rb = req.evaluatePreconditions(new EntityTag(comboCache.getETag()));
-        if (rb != null) {
-            return rb.tag(comboCache.getETag()).build();
-        }
-        // MediaType types[] = {"application/json", "application/xml"};
-        // List<Variant> vars = Variant.mediaTypes(types).add().build();
-        // Variant var = req.selectVariant(vars);
-        //EntityTag etag = new EntityTag();
-        //Response.ResponseBuilder responseBuilder = request.evaluatePreconditions(updateTimestamp, etag);
-        return Response.ok(comboCache.getFiles())
-                .type(comboCache.getMediaType())
-                        //    .expires(new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 3)))
-                .tag(new EntityTag(comboCache.getETag()))
-                .build();
     }
 
     @DELETE
@@ -142,9 +151,12 @@ public class ComboController {
         return Response.ok().build();
     }
 
-    public String getCombinedFile(List<String> fileList, String mediaType) throws IOException {
+    public String getCombinedFile(List<String> fileList, String mediaType) throws IOException, WegasForbiddenException {
         StringBuilder acc = new StringBuilder();
         for (String fileName : fileList) {
+            if (BlacklistFilter.isBlacklisted(fileName)) {
+                throw new WegasForbiddenException("Trying to access a blacklisted content");
+            }
             try {
                 InputStream fis = (InputStream) servletContext.getResourceAsStream(fileName);
                 String content = IOUtils.toString(fis, Helper.getWegasProperty("encoding"));
@@ -155,7 +167,7 @@ public class ComboController {
                     String dir = fileName.substring(0, fileName.lastIndexOf('/') + 1);
                     content = content.replaceAll("url\\(\"?\'?([^:\\)\"\']+)\"?\'?\\)",
                             "url(" + servletContext.getContextPath()
-                                    + dir + "$1)");                                     //Regexp to avoid rewriting protocol guess they contain ':' (http: data:)
+                            + dir + "$1)");                                     //Regexp to avoid rewriting protocol guess they contain ':' (http: data:)
                 }
                 acc.append(content).append("\n");
             } catch (NullPointerException e) {
