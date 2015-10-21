@@ -65,7 +65,7 @@ angular.module('private', [
             $translate.use(config.users[user.email].language);
         }else{
             config.users[user.email] = {
-                language : config.commons.language           
+                language : config.commons.language
             };
             localStorage.setObject("wegas-config", config);
             $translate.use(config.users[user.email].language);

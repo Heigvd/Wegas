@@ -22,6 +22,7 @@
         "angular": false,
         "YUI": true,
         "$": true,
+        "_": true,
         "window": true,
         // Angular Mocks
         "inject": false,

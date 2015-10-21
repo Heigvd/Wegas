@@ -95,7 +95,7 @@
             }
         }
     }
-    
+
     &.view--admin-menu{
         @include make-xs-column(12, 96px);
         @include make-md-column(3, 96px);
@@ -111,13 +111,14 @@
     &.view--create-scenario,
     &.view--history-download
     {
+        max-height:100%;
         @include make-xs-column(12, 96px);
         @include make-md-column(3, 96px);
         .form{
             margin:0px;
             padding:0px;
         }
-        
+
         @media screen and (max-width: $screen-md) {
             display:block;
             position:absolute;
@@ -134,13 +135,13 @@
                 transition:.3s;
             }
         }
-        
+
         @media screen and (max-width: 660px) {
             padding:0px 48px;
         }
 
     }
-    
+
     &.view--admin-content,
     &.view--played-sessions-list,
     &.view--managed-sessions-list,
@@ -158,12 +159,12 @@
             i{
                 padding-right:8px;
             }
-            
+
             @media screen and (max-width: $screen-md) {
                 width:auto;
                 float:left;
             }
-           
+
             @media screen and (max-width: 819px) {
                 i + span{
                     display:none;
@@ -177,7 +178,7 @@
             float:right;
             width:50%;
             max-width:320px;
-            
+
             @media screen and (max-width: 519px) {
                 clear: both;
                 width: 100%;
@@ -245,7 +246,7 @@
             }
         }
     }
-    
+
     &.view--scenarios-list,
     &.view--managed-sessions-list{
         @media screen and (max-width: 519px) {
@@ -291,7 +292,7 @@
             padding:64px 16px 16px 16px;
         }
     }
-    
+
     &.view__users-individual{
         padding:0px;
     }
@@ -316,7 +317,7 @@
             }
         }
     }
-    
+
 
     // Styles de décorations
     @each $level in $backgrounds-levels {
@@ -492,7 +493,7 @@
             text-align:center;
         }
     }
-    
+
     &.view--menu{
         .view__headding-workspace{
              @media screen and (max-width: $screen-xs) {
@@ -501,17 +502,17 @@
                 overflow:hidden;
             }
         }
-        
+
         .view__headding-workspace--label{
             @media screen and (max-width: $screen-xs) {
                 display:none;
             }
         }
-        
+
         .view__sub-menu{
             .button--user{
                 @media screen and (max-width: $screen-sm) {
-                    padding: 16px 24px;                
+                    padding: 16px 24px;
                     .button__label{
                         display:none;
                     }
@@ -533,17 +534,17 @@
                         padding-top:4px;
                         background: white;
                         @include material-shadow(1);
-                        
+
                         .subaction{
                             width:100%;
                             padding:0px;
                             margin:0px;
-                            
+
                             .button{
                                 width:100%;
                                 height:32px;
                                 line-height:32px;
-                                padding:0px 12px; 
+                                padding:0px 12px;
                                 text-overflow:ellipsis;
                                 overflow:hidden;
                                 white-space:nowrap;
@@ -575,9 +576,9 @@
             right: 32px;
         }
     }
-    
+
 }
- 
+
 .player{
     .view{
         &.view--menu{
