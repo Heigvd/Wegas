@@ -317,15 +317,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     _type: HIDDEN,
                     index: 3
                 }
-            },
-            addShortcut: {
-                type: STRING,
-                value: "Result",
-                _inputex: {
-                    _type: HIDDEN
-                }
             }
-
         },
         EDITMENU: [{
                 type: "EditEntityButton"
@@ -526,13 +518,6 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     listAddLabel: " ",
                     listRemoveLabel: " ",
                     wrapperClassName: "inputEx-fieldWrapper-nomargin"
-                }
-            },
-            addShortcut: {
-                type: STRING,
-                value: "",
-                _inputex: {
-                    _type: HIDDEN
                 }
             }
         },
