@@ -21,16 +21,17 @@ import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
-import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationInformation;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authz.UnauthorizedException;
+import org.apache.shiro.subject.SimplePrincipalCollection;
+import org.apache.shiro.subject.Subject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.mail.MessagingException;
@@ -43,17 +44,10 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.authz.UnauthorizedException;
-import org.apache.shiro.subject.SimplePrincipalCollection;
-import org.apache.shiro.subject.Subject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.IOException;
+import java.util.*;
 
 /**
- *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
@@ -69,16 +63,19 @@ public class UserController {
      */
     @EJB
     private UserFacade userFacade;
+
     /**
      *
      */
     @EJB
     private RoleFacade roleFacade;
+
     /**
      *
      */
     @EJB
     private AccountFacade accountFacade;
+
     /**
      *
      */
@@ -86,7 +83,6 @@ public class UserController {
     private GameFacade gameFacade;
 
     /**
-     *
      * @return
      */
     @GET
@@ -105,7 +101,6 @@ public class UserController {
     }
 
     /**
-     *
      * @param entityId
      * @return
      */
@@ -120,7 +115,6 @@ public class UserController {
     }
 
     /**
-     *
      * @param value
      * @return
      */
@@ -145,7 +139,6 @@ public class UserController {
     }
 
     /**
-     *
      * @param value
      * @param rolesList
      * @return
@@ -160,7 +153,6 @@ public class UserController {
     }
 
     /**
-     *
      * @param values
      * @return
      */
@@ -172,7 +164,6 @@ public class UserController {
     }
 
     /**
-     *
      * @param values
      * @return
      */
@@ -187,7 +178,6 @@ public class UserController {
     }
 
     /**
-     *
      * @param user
      * @return
      */
@@ -200,7 +190,6 @@ public class UserController {
     }
 
     /**
-     *
      * @param entityId
      * @param entity
      * @return
@@ -217,7 +206,6 @@ public class UserController {
     }
 
     /**
-     *
      * @param accountId
      * @return
      */
@@ -244,22 +232,21 @@ public class UserController {
     }
 
     /**
-     *
      * Allows to login using a post request
      *
      * @param authInfo
      * @param request
      * @param response
      * @return User the current user, WegasErrorMessage when authInfo values are
-     *         incorrect
+     * incorrect
      * @throws javax.servlet.ServletException
      * @throws java.io.IOException
      */
     @POST
     @Path("Authenticate")
     public User login(AuthenticationInformation authInfo,
-            @Context HttpServletRequest request,
-            @Context HttpServletResponse response) throws ServletException, IOException {
+                      @Context HttpServletRequest request,
+                      @Context HttpServletResponse response) throws ServletException, IOException {
 
         Subject subject = SecurityUtils.getSubject();
 
@@ -297,7 +284,6 @@ public class UserController {
     }
 
     /**
-     *
      * @param authInfo
      */
     @POST
@@ -307,7 +293,6 @@ public class UserController {
     }
 
     /**
-     *
      * @param authInfo
      */
     @POST
@@ -323,7 +308,6 @@ public class UserController {
     }
 
     /**
-     *
      * @return
      */
     @GET
@@ -352,7 +336,6 @@ public class UserController {
     }
 
     /**
-     *
      * @param username
      * @param password
      * @param firstname
@@ -364,10 +347,10 @@ public class UserController {
     @Deprecated
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public void signup(@FormParam("username") String username,
-            @FormParam("password") String password,
-            @FormParam("firstname") String firstname,
-            @FormParam("lastname") String lastname,
-            @FormParam("email") String email) {
+                       @FormParam("password") String password,
+                       @FormParam("firstname") String firstname,
+                       @FormParam("lastname") String lastname,
+                       @FormParam("email") String email) {
         JpaAccount account = new JpaAccount();                                   // Convert post params to entity
         account.setUsername(username);
         account.setPassword(password);
@@ -382,7 +365,7 @@ public class UserController {
      *
      * @param account
      * @return Response : Status Not acceptable if email is wrong or username
-     *         already exist. Created otherwise.
+     * already exist. Created otherwise.
      */
     @POST
     @Path("Signup")
@@ -413,14 +396,13 @@ public class UserController {
     }
 
     /**
-     *
      * @param authInfo
      * @param request
      */
     @POST
     @Path("SendNewPassword")
     public void sendNewPassword(AuthenticationInformation authInfo,
-            @Context HttpServletRequest request) {
+                                @Context HttpServletRequest request) {
         userFacade.sendNewPassword(authInfo.getLogin());
     }
 
@@ -480,30 +462,22 @@ public class UserController {
      * Find all teams for the current user.
      *
      * @return teamsToReturn, the collection of teams where the current user is
-     *         a player.
+     * a player.
      */
     @GET
     @Path("Current/Team")
     public Response findTeamsByCurrentUser() {
         Response r = Response.noContent().build();
-        Collection<Team> teamsToReturn = new ArrayList();
+        Collection<Team> teamsToReturn = new ArrayList<>();
         User currentUser = userFacade.getCurrentUser();
-        final Collection<Game> playedGames = gameFacade.findRegisteredGames(currentUser.getId());
-        for (Game g : playedGames) {
-            Collection<Team> teams = g.getTeams();
-            for (Team t : teams) {
-                for (Player p : t.getPlayers()) {
-                    if (p.getUserId() != null) {
-                        if (p.getUserId().equals(currentUser.getId())) {
-                            teamsToReturn.add(t);
-                        }
-                    }
-                }
-            }
+        final List<Player> players = currentUser.getPlayers();
+        for (Player p : players) {
+            teamsToReturn.add(p.getTeam());
         }
         if (!teamsToReturn.isEmpty()) {
             r = Response.ok().entity(teamsToReturn).build();
         }
+
         return r;
     }
 
@@ -571,7 +545,6 @@ public class UserController {
     }
 
     /**
-     *
      * @param roleName
      * @param permission
      * @return
@@ -596,7 +569,7 @@ public class UserController {
     @POST
     @Path("DeleteAllRolePermissions/{roleId : [1-9][0-9]*}/{gameModelId}")
     public boolean deleteAllRolePermissions(@PathParam("roleId") Long roleId,
-            @PathParam("gameModelId") String id) {
+                                            @PathParam("gameModelId") String id) {
 
         checkGmOrGPermission(id, "GameModel:Edit:", "Game:Edit:");
 
@@ -604,7 +577,6 @@ public class UserController {
     }
 
     /**
-     *
      * @param roleName
      * @param id
      * @return
@@ -612,7 +584,7 @@ public class UserController {
     @POST
     @Path("DeleteAllRolePermissions/{roleName}/{gameModelId}")
     public boolean deleteAllRolePermissions(@PathParam("roleName") String roleName,
-            @PathParam("gameModelId") String id) {
+                                            @PathParam("gameModelId") String id) {
         try {
             return this.deleteAllRolePermissions(roleFacade.findByName(roleName).getId(), id);
         } catch (WegasNoResultException ex) {
@@ -621,7 +593,6 @@ public class UserController {
     }
 
     /**
-     *
      * @param entityId
      * @return
      */
@@ -635,14 +606,13 @@ public class UserController {
     }
 
     /**
-     *
      * @param permission
      * @param accountId
      */
     @POST
     @Path("addAccountPermission/{permission}/{accountId : [1-9][0-9]*}")
     public void addAccountPermission(@PathParam("permission") String permission,
-            @PathParam("accountId") Long accountId) {
+                                     @PathParam("accountId") Long accountId) {
 
         String splitedPermission[] = permission.split(":");
 
@@ -652,14 +622,13 @@ public class UserController {
     }
 
     /**
-     *
      * @param entityId
      * @param accountId
      */
     @DELETE
     @Path("DeleteAccountPermissionByInstanceAndAccount/{entityId}/{accountId : [1-9][0-9]*}")
     public void deleteAccountPermissionByInstanceAndAccount(@PathParam("entityId") String entityId,
-            @PathParam("accountId") Long accountId) {
+                                                            @PathParam("accountId") Long accountId) {
 
         checkGmOrGPermission(entityId, "GameModel:Edit:", "Game:Edit:");
         AbstractAccount account = accountFacade.find(accountId);
@@ -668,14 +637,13 @@ public class UserController {
     }
 
     /**
-     *
      * @param permission
      * @param accountId
      */
     @DELETE
     @Path("DeleteAccountPermissionByPermissionAndAccount/{permission}/{accountId : [1-9][0-9]*}")
     public void deleteAccountPermissionByPermissionAndAccount(@PathParam("permission") String permission,
-            @PathParam("accountId") Long accountId) {
+                                                              @PathParam("accountId") Long accountId) {
 
         String splitedPermission[] = permission.split(":");
 
