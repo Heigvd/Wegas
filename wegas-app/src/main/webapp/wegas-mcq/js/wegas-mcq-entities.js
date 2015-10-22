@@ -317,6 +317,14 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     _type: HIDDEN,
                     index: 3
                 }
+            },
+            addShortcut: {
+                type: STRING,
+                "transient": true,
+                value: "Result",
+                _inputex: {
+                    _type: HIDDEN
+                }
             }
         },
         EDITMENU: [{
@@ -518,6 +526,14 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     listAddLabel: " ",
                     listRemoveLabel: " ",
                     wrapperClassName: "inputEx-fieldWrapper-nomargin"
+                }
+            },
+            addShortcut: {
+                type: STRING,
+                "transient": true,
+                value: "",
+                _inputex: {
+                    _type: HIDDEN
                 }
             }
         },
