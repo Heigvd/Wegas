@@ -1,6 +1,7 @@
 angular.module('wegas.models.permissions', [])
     .service('PermissionsModel', function($http, $q, $translate, Auth, Responses) {
-        var model = this;
+        "use strict";
+        var model = this, ServiceURL = window.ServiceURL;
         model.getSessionPermissions = function(session) {
             var deferred = $q.defer(),
                 permissionsToReturn;
@@ -35,7 +36,7 @@ angular.module('wegas.models.permissions', [])
             if (session) {
                 var alreadyIn = false;
                 trainers.forEach(function(elem) {
-                    if (elem.id == trainer.id) {
+                    if (elem.id === trainer.id) {
                         alreadyIn = true;
                     }
                 });
@@ -115,13 +116,13 @@ angular.module('wegas.models.permissions', [])
 
                 });
                 return permissions;
-            };           
+            }           
             $http.get(ServiceURL + url, {
                 "headers": {
                     "managed-mode": "true"
                 }
             }).success(function(data) {
-                if (data.events !== undefined && data.events.length == 0) {
+                if (data.events !== undefined && data.events.length === 0) {
                     var permissions = mapPermissions(data.entities);
                     $translate('COMMONS-PERMISSIONS-SCENARIOS-UPDATE-FLASH-SUCCESS').then(function (message) {
                         deferred.resolve(Responses.success(message, permissions));
@@ -217,7 +218,7 @@ angular.module('wegas.models.permissions', [])
                     "managed-mode": "true"
                 }
             }).success(function(data) {
-                if (data.events !== undefined && data.events.length == 0) {
+                if (data.events !== undefined && data.events.length === 0) {
                     $translate('COMMONS-PERMISSIONS-SCENARIOS-DELETE-FLASH-SUCCESS').then(function (message) {
                         deferred.resolve(Responses.success(message, true));
                     });

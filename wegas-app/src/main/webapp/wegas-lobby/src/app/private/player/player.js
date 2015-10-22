@@ -1,9 +1,9 @@
 angular.module('private.player', [
-        'private.player.join',
-        'private.player.team',
-        'private.player.directives',
-        'public.login'
-    ])
+    'private.player.join',
+    'private.player.team',
+    'private.player.directives',
+    'public.login'
+])
     .config(function($stateProvider) {
         "use strict";
         $stateProvider
@@ -33,8 +33,10 @@ angular.module('private.player', [
     .controller('PlayerCtrl', function PlayerCtrl($rootScope, $state, Auth, WegasTranslations, $translate) {
         "use strict";
         Auth.getAuthenticatedUser().then(function(user) {
-            if(user.isGuest){
+            if (user.isGuest) {
                 $state.go("wegas.private.guest");
+            } else {
+                $state.go("wegas.private.player");
             }
             $("body").removeClass("admin scenarist trainer").addClass("player");
             $rootScope.translationWorkspace = {

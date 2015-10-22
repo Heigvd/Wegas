@@ -1,6 +1,6 @@
 angular.module('wegas.service.auth', [
-        'wegas.models.sessions'
-    ])
+    'wegas.models.sessions'
+])
     .service('Auth', function($http, $q, $interval, $translate, Responses) {
         "use strict";
         var service = this,
@@ -33,7 +33,9 @@ angular.module('wegas.service.auth', [
                         isTrainer: false,
                         isScenarist: false,
                         isAdmin: false,
-                        isGuest: !!_.find(data.accounts,{"@class":"GuestJpaAccount"})
+                        isGuest: !!_.find(data.accounts, {
+                                "@class": "GuestJpaAccount"
+                            })
                     };
                     rights = data.accounts[0].roles;
                     rights.forEach(function(elem) {
@@ -91,6 +93,7 @@ angular.module('wegas.service.auth', [
                 }
             }).success(function(data) {
                 if (data.events !== undefined && !data.events.length) {
+                    authenticatedUser = null;
                     $translate('COMMONS-AUTH-LOGIN-FLASH-SUCCESS').then(function(message) {
                         deferred.resolve(Responses.success(message, true));
                     });
@@ -165,13 +168,13 @@ angular.module('wegas.service.auth', [
             var deferred = $q.defer(),
                 url = "rest/User/SendNewPassword";
             $http.post(window.ServiceURL + url, {
-                    "@class": "AuthenticationInformation",
-                    "login": email
-                }, {
-                    "headers": {
-                        "managed-mode": "true"
-                    }
-                })
+                "@class": "AuthenticationInformation",
+                "login": email
+            }, {
+                "headers": {
+                    "managed-mode": "true"
+                }
+            })
                 .success(function(data) {
                     $translate('COMMONS-AUTH-PASSWORD-FLASH-SUCCESS').then(function(message) {
                         deferred.resolve(Responses.success(message, true));
@@ -192,15 +195,15 @@ angular.module('wegas.service.auth', [
             service.getAuthenticatedUser().then(function(noUser) {
                 if (noUser === null) {
                     $http.post(window.ServiceURL + url, {
-                            "@class": "AuthenticationInformation",
-                            "login": "",
-                            "password": "",
-                            "remember": true
-                        }, {
-                            "headers": {
-                                "managed-mode": "true"
-                            }
-                        })
+                        "@class": "AuthenticationInformation",
+                        "login": "",
+                        "password": "",
+                        "remember": true
+                    }, {
+                        "headers": {
+                            "managed-mode": "true"
+                        }
+                    })
                         .success(function(data) {
                             service.getAuthenticatedUser().then(function(guest) {
                                 $translate('COMMONS-AUTH-GUEST-FLASH-SUCCESS').then(function(message) {

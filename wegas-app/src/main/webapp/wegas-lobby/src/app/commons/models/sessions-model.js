@@ -1,7 +1,9 @@
 angular.module('wegas.models.sessions', [])
     .service('SessionsModel', function($http, $q, $interval, $translate, WegasTranslations, Auth, Responses) {
         /* Namespace for model accessibility. */
+        "use strict";
         var model = this,
+            ServiceURL = window.ServiceURL,
             sessions = {
                 cache: [],
                 getPath: function(status) {

@@ -10,7 +10,7 @@ angular.module('wegas.models.teams', [])
                 findTeam: function(id) {
                     if (teams.cache &&teams.cache.data) {
                         return _.find(teams.cache.data, function(t) {
-                            return t.id === id;
+                            return t.id === +id;
                         });
                     } else {
                         return;
@@ -75,17 +75,14 @@ angular.module('wegas.models.teams', [])
             };
 
         model.clearCache = function() {
-            teams.cache = {
-                data: null,
-                loading: false
-            };
+            teams.cache = null;
         };
 
         /* Ask for all teams for current user. */
         model.getTeams = function() {
             var deferred = $q.defer();
             Auth.getAuthenticatedUser().then(function(user) {
-                if (user != null) {
+                if (user) {
                     if (teams.cache) {
                         if (teams.cache.loading) {
                             teams.wait().then(function() {
