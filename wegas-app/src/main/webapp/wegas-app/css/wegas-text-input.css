@@ -12,7 +12,7 @@
 }
 
 .wegas-text-input .mce-tinymce{
-    height:calc(100% - 24px);
+    height: calc(100% - 40px);
 }
 
 .wegas-text-input .wegas-text-input-content, .wegas-review-evaluation-content .mce-tinymce {
