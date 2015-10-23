@@ -76,3 +76,10 @@
     display: none;
 }
 
+/*
+ * OpenPanelPageloader Plugin
+ */
+.wegas-panel-pageloader {
+    width: 100%;
+    height: 100%;
+}
