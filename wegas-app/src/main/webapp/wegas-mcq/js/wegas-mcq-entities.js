@@ -262,6 +262,14 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     }
                 }
             },
+            cbx : {
+                type: BOOLEAN,
+                value: false,
+                _inputex: {
+                    label: "Checkbox selection",
+                    description: "Pour QCM standard"
+                }
+            },
             defaultInstance: {
                 properties: {
                     '@class': {
