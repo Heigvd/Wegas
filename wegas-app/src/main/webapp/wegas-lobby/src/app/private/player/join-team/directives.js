@@ -49,7 +49,7 @@ angular.module('private.player.join.directives', [])
             if (ctrl.sessionToJoin !== null) {
                 if (ctrl.sessionToJoin.teams) {
                     ctrl.sessionToJoin.teams.forEach(function(team) {
-                        if (team.name == ctrl.newTeam.name) {
+                        if (team.name === ctrl.newTeam.name) {
                             alreadyUsed = true;
                         }
                     });
@@ -116,6 +116,7 @@ angular.module('private.player.join.directives', [])
         }, 1000);
     })
     .directive('playerSessionTeamsList', function() {
+        "use strict";
         return {
             templateUrl: 'app/private/player/join-team/directives.tmpl/teams-list.html',
             scope: {
@@ -126,6 +127,7 @@ angular.module('private.player.join.directives', [])
         };
     })
     .directive('playerSessionAddTeam', function() {
+        "use strict";
         return {
             templateUrl: 'app/private/player/join-team/directives.tmpl/add-team.html',
             scope: {
@@ -152,6 +154,7 @@ angular.module('private.player.join.directives', [])
         };
     })
     .directive('playerSessionTeam', function(WegasTranslations, $translate) {
+        "use strict";
         return {
             templateUrl: 'app/private/player/join-team/directives.tmpl/team-card.html',
             scope: {
@@ -160,13 +163,13 @@ angular.module('private.player.join.directives', [])
             },
             link: function(scope, elem, attrs) {
                 scope.showPlayers = false;
-                scope.hideToggle = {toggle: WegasTranslations.hideToggle['SHOW'][$translate.use()]};
+                scope.hideToggle = {toggle: WegasTranslations.hideToggle.SHOW[$translate.use()]};
                 scope.tooglePlayersVisibility = function() {
                     scope.showPlayers = !scope.showPlayers;
                     if (scope.showPlayers) {
-                        scope.hideToggle = {toggle: WegasTranslations.hideToggle['HIDE'][$translate.use()]};
+                        scope.hideToggle = {toggle: WegasTranslations.hideToggle.HIDE[$translate.use()]};
                     } else {
-                        scope.hideToggle = {toggle: WegasTranslations.hideToggle['SHOW'][$translate.use()]};
+                        scope.hideToggle = {toggle: WegasTranslations.hideToggle.SHOW[$translate.use()]};
                     }
                 };
                 scope.join = function(teamId) {

@@ -1,4 +1,4 @@
-var ServiceURL = "";
+window.ServiceURL = "";
 
 window.Storage.prototype.setObject = function(key, value) {
     "use strict";

@@ -95,7 +95,7 @@ angular.module('wegas.models.scenarios', [])
                         if (scenario) {
                             scenarios.cache[cacheName].data = uncacheScenario(cacheName, scenario);
                         }
-                        if (status == cacheName) {
+                        if (status === cacheName) {
                             scenarios.cache[cacheName].data = cacheScenario(cacheName, data);
                         }
                     }
@@ -141,7 +141,7 @@ angular.module('wegas.models.scenarios', [])
                             "managed-mode": "true"
                         }
                     }).success(function(data) {
-                        if (data.events !== undefined && data.events.length == 0) {
+                        if (data.events !== undefined && data.events.length === 0) {
                             var scenario = data.entities[0];
                             deferred.resolve(scenario);
                         } else if (data.events !== undefined) {
@@ -168,7 +168,7 @@ angular.module('wegas.models.scenarios', [])
         model.getScenarios = function(status) {
             var deferred = $q.defer();
             Auth.getAuthenticatedUser().then(function(user) {
-                if (user != null) {
+                if (user) {
                     if (scenarios.cache[status]) {
                         if (scenarios.cache[status].loading) {
                             scenarios.wait(status).then(function() {
@@ -264,7 +264,7 @@ angular.module('wegas.models.scenarios', [])
                                 "managed-mode": "true"
                             }
                         }).success(function(data) {
-                            if (data.events !== undefined && data.events.length == 0) {
+                            if (data.events !== undefined && data.events.length === 0) {
                                 cacheScenario("LIVE", data.entities[0]);
                                 $translate('COMMONS-SCENARIOS-CREATE-FLASH-SUCCESS').then(function(message) {
                                     deferred.resolve(Responses.success(message, data.entities[0]));
@@ -314,13 +314,13 @@ angular.module('wegas.models.scenarios', [])
                         "managed-mode": "true"
                     }
                 }).success(function(data) {
-                    if (data.events !== undefined && data.events.length == 0) {
+                    if (data.events !== undefined && data.events.length === 0) {
                         cacheScenario("LIVE", data.entities[0]);
                         $translate('COMMONS-SCENARIOS-COPY-FLASH-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, data.entities[0]));
                         });
                     } else {
-                        if (data.events[0] && data.events[0]["@class"] == "CustomEvent") {
+                        if (data.events[0] && data.events[0]["@class"] === "CustomEvent") {
                             cacheScenario("LIVE", data.entities[0]);
                             $translate('COMMONS-SCENARIOS-COPY-FLASH-SUCCESS').then(function(message) {
                                 deferred.resolve(Responses.success(message, data.entities[0]));
@@ -365,7 +365,7 @@ angular.module('wegas.models.scenarios', [])
                     "Content-Type": undefined
                 }
             }).success(function(data) {
-                if (data.events !== undefined && data.events.length == 0) {
+                if (data.events !== undefined && data.events.length === 0) {
                     cacheScenario("LIVE", data.entities[0]);
                     $translate('COMMONS-SCENARIOS-CREATE-FLASH-SUCCESS').then(function(message) {
                         deferred.resolve(Responses.success(message, data.entities[0]));
@@ -430,7 +430,7 @@ angular.module('wegas.models.scenarios', [])
                 }
             })
                 .success(function(data) {
-                    if (data.events !== undefined && data.events.length == 0) {
+                    if (data.events !== undefined && data.events.length === 0) {
                         var versions = data.entities;
                         $translate('COMMONS-SCENARIOS-VERSIONS-FIND-FLASH-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, versions));
@@ -498,7 +498,7 @@ angular.module('wegas.models.scenarios', [])
                     "managed-mode": "true"
                 }
             }).success(function(data) {
-                if (data.events !== undefined && data.events.length == 0) {
+                if (data.events !== undefined && data.events.length === 0) {
                     $translate('COMMONS-SCENARIOS-VERSIONS-DELETE-FLASH-SUCCESS').then(function(message) {
                         deferred.resolve(Responses.success(message, true));
                     });
@@ -531,7 +531,7 @@ angular.module('wegas.models.scenarios', [])
                     "managed-mode": "true"
                 }
             }).success(function(data) {
-                if (data.events !== undefined && data.events.length == 0) {
+                if (data.events !== undefined && data.events.length === 0) {
                     var newScenario = data.entities[0];
                     cacheScenario("LIVE", newScenario);
                     $translate('COMMONS-SCENARIOS-VERSIONS-RESTORE-FLASH-SUCCESS', {

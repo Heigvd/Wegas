@@ -1,6 +1,7 @@
 angular
 .module('private.scenarist.history', ['private.scenarist.history.directives'])
 .config(function ($stateProvider) {
+    "use strict";
     $stateProvider
     .state('wegas.private.scenarist.history', {
         url: '/:scenarioId/history',
@@ -12,8 +13,9 @@ angular
     });
 })
 .controller("ScenaristHistoryController", function ScenaristHistoryController($state, $translate, WegasModalService, Auth){
+    "use strict";
     Auth.getAuthenticatedUser().then(function(user) {
-        if (user != null) {
+        if (user) {
             if (user.isAdmin || user.isScenarist) {
                 WegasModalService.displayAModal({
                     templateUrl: 'app/private/scenarist/history/history.tmpl.html',

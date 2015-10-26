@@ -182,7 +182,7 @@ angular.module('wegas.models.permissions', [])
                             "managed-mode": "true"
                         }
                     }).success(function(data) {
-                        if (data.events !== undefined && data.events.length == 0) {
+                        if (data.events !== undefined && data.events.length === 0) {
                             $translate('COMMONS-PERMISSIONS-SCENARIOS-UPDATE-FLASH-SUCCESS').then(function (message) {
                                 deferred.resolve(Responses.success(message, true));
                             });

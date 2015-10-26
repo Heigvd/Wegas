@@ -1,10 +1,15 @@
 angular.module('wegas.service.pusher', [])
     .service('WegasPusher', function($http, $q) {
-        var service = this, pusher, channels = [];
-        service.start = function(){
+        "use strict";
+        var service = this,
+            ServiceURL = window.ServiceURL,
+            pusher,
+            channels = [];
+        /*global Pusher*/
+        service.start = function() {
             var deferred = $q.defer();
             $http.get(ServiceURL + "rest/Pusher/ApplicationKey").success(function(key) {
-                if(key){                    
+                if (key) {
                     pusher = new Pusher(key, {
                         authEndpoint: ServiceURL + "rest/Pusher/auth"
                     });

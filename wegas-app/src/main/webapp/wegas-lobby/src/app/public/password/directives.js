@@ -1,5 +1,6 @@
 angular.module('public.password.directives', [])
     .directive('publicPasswordIndex', function() {
+        "use strict";
         return {
         	scope: {
                 close: "&"
@@ -9,12 +10,13 @@ angular.module('public.password.directives', [])
         };
     })
     .controller('PublicPasswordController', function PublicPasswordController($scope, $state, $stateParams, $translate, Auth, Flash) {
+        "use strict";
         var publicPasswordCtrl = this;
         publicPasswordCtrl.formInfo = {
             email: ""
         };
         var remindPassword = function() {
-           if (publicPasswordCtrl.formInfo.email != "") {
+           if (publicPasswordCtrl.formInfo.email !== "") {
                 Auth.remindPassword(publicPasswordCtrl.formInfo.email).then(function(response) {
                     response.flash();
                     if (!response.isErroneous()) {

@@ -1,7 +1,8 @@
 
 angular.module('wegas.behaviours.illustrations', [])
 .directive('illustrationEditable', function(){
-	return function(scope, element, attrs){
+	"use strict";
+	return function(scope, element){
      	$(element).addClass("card__illustration--editable");
      	// Implement events around editor box with icons and colors palette
 	};

@@ -1,5 +1,6 @@
 angular.module('private.scenarist.archives.directives', [])
     .directive('scenaristScenariosArchivesIndex', function() {
+        "use strict";
         return {
             scope: {
                 close: "&"
@@ -7,7 +8,9 @@ angular.module('private.scenarist.archives.directives', [])
             templateUrl: 'app/private/scenarist/archives/directives.tmpl/index.html',
             controller: "ScenaristArchivesIndexController as scenaristArchivesIndexCtrl"
         };
-    }).controller("ScenaristArchivesIndexController", function ScenaristArchivesIndexController($rootScope, $scope, $translate, ScenariosModel, Flash) {
+    })
+    .controller("ScenaristArchivesIndexController", function ScenaristArchivesIndexController($rootScope, $scope, $translate, ScenariosModel, Flash) {
+        "use strict";
         var ctrl = this;
         ctrl.archives = [];
         ctrl.search = "";
@@ -18,7 +21,7 @@ angular.module('private.scenarist.archives.directives', [])
             ScenariosModel.getScenarios("BIN").then(function(response) {
                 ctrl.loading = false;
                 ctrl.archives = response.data || [];
-                if (ctrl.archives.length == 0) {
+                if (ctrl.archives.length === 0) {
                     $scope.close();
                 }
             });
@@ -29,12 +32,12 @@ angular.module('private.scenarist.archives.directives', [])
                 ScenariosModel.unarchiveScenario(scenarioToUnarchive).then(function(response) {
                     if (!response.isErroneous()) {
                         $rootScope.$emit('changeLimit', true);
-                    }else{
+                    } else {
                         response.flash();
                     }
                 });
             } else {
-                $translate('COMMONS-SCENARIOS-NO-SCENARIO-FLASH-ERROR').then(function (message) {
+                $translate('COMMONS-SCENARIOS-NO-SCENARIO-FLASH-ERROR').then(function(message) {
                     Flash.danger(message);
                 });
             }
@@ -45,12 +48,12 @@ angular.module('private.scenarist.archives.directives', [])
                 ScenariosModel.deleteArchivedScenario(scenarioToDelete).then(function(response) {
                     if (!response.isErroneous()) {
                         $rootScope.$emit('changeScenarios', true);
-                    }else{
+                    } else {
                         response.flash();
                     }
                 });
             } else {
-                $translate('COMMONS-SCENARIOS-NO-SCENARIO-FLASH-ERROR').then(function (message) {
+                $translate('COMMONS-SCENARIOS-NO-SCENARIO-FLASH-ERROR').then(function(message) {
                     Flash.danger(message);
                 });
             }
@@ -66,13 +69,14 @@ angular.module('private.scenarist.archives.directives', [])
         ctrl.updateScenarios();
     })
     .directive('scenaristScenariosArchivesList', function() {
+        "use strict";
         return {
             scope: {
                 scenarios: "=",
                 unarchive: "=",
-                delete:"=",
-                search:"=",
-                loading:"="
+                delete: "=",
+                search: "=",
+                loading: "="
             },
             templateUrl: 'app/private/scenarist/archives/directives.tmpl/list.html'
         };

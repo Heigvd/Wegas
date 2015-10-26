@@ -240,12 +240,12 @@ angular.module('wegas.models.teams', [])
                     "name": "",
                     "players": []
                 };
-            Auth.getAuthenticatedUser().then(function(u) {
-                if (u != null) {
-                    if (session.access == "OPEN") {
+            Auth.getAuthenticatedUser().then(function(user) {
+                if (user) {
+                    if (session.access === "OPEN") {
                         var existingTeam = false;
                         session.teams.forEach(function(team) {
-                            if (team.name == teamName) {
+                            if (team.name === teamName) {
                                 existingTeam = true;
                             }
                         });
@@ -329,12 +329,12 @@ angular.module('wegas.models.teams', [])
             var deferred = $q.defer();
             Auth.getAuthenticatedUser().then(function(user) {
                 if (user !== null) {
-                    if (sessionToJoin.access == "CLOSE") {
+                    if (sessionToJoin.access === "CLOSE") {
                         $translate('COMMONS-SESSIONS-CLOSE-FLASH-ERROR').then(function(message) {
                             deferred.resolve(Responses.danger(message, false));
                         });
                     } else {
-                        if (teams.cache == null) {
+                        if (teams.cache === null) {
                             teams.cache = {
                                 data: [],
                                 loading: false
@@ -343,7 +343,7 @@ angular.module('wegas.models.teams', [])
                         var alreadyJoined = false;
                         sessionToJoin.teams.forEach(function(teamJoinable) {
                             teams.cache.data.forEach(function(teamJoined) {
-                                if (teamJoinable.id == teamJoined.id) {
+                                if (+teamJoinable.id === +teamJoined.id) {
                                     alreadyJoined = true;
                                 }
                             });
@@ -378,9 +378,9 @@ angular.module('wegas.models.teams', [])
         /* Leave a team for current player */
         model.leaveTeam = function(teamId) {
             var deferred = $q.defer(),
-                player = undefined;
-            Auth.getAuthenticatedUser().then(function(u) {
-                if (u != null) {
+                player;
+            Auth.getAuthenticatedUser().then(function(user) {
+                if (user) {
                     var cachedTeam = teams.findTeam(teamId);
                     if (!cachedTeam) {
                         $translate('COMMONS-TEAMS-NO-TEAM-FLASH-ERROR').then(function(message) {
@@ -388,7 +388,7 @@ angular.module('wegas.models.teams', [])
                         });
                     } else {
                         player = _.find(cachedTeam.players, function(p) {
-                            return p.userId == u.id;
+                            return +p.userId === +user.id;
                         });
                         if (player) {
                             $http.delete(ServiceURL + "rest/GameModel/Game/Team/" + player.teamId + "/Player/" +

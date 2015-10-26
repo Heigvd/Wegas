@@ -1,5 +1,6 @@
 angular.module('private.admin.users.edit.directives', ['wegas.directive.permission.edit'])
     .directive('adminUsersEditIndex', function() {
+        "use strict";
         return {
             scope:{
                 close:"&"
@@ -8,6 +9,7 @@ angular.module('private.admin.users.edit.directives', ['wegas.directive.permissi
             controller: "AdminUsersEditIndexController as adminUsersEditIndexCtrl"
         };
     }).controller("AdminUsersEditIndexController", function AdminUsersEditIndexController(UsersModel, $stateParams, $state){
+        "use strict";
         var ctrl = this;
         ctrl.user = {};
         UsersModel.getFullUser($stateParams.id).then(function(response) {
@@ -36,6 +38,7 @@ angular.module('private.admin.users.edit.directives', ['wegas.directive.permissi
         };
     })
     .directive('adminUsersEditGroups', function(GroupsModel) {
+        "use strict";
         return {
             templateUrl: "app/private/admin/users/edit/directives.tmpl/groups.html",
             scope: {
@@ -52,13 +55,14 @@ angular.module('private.admin.users.edit.directives', ['wegas.directive.permissi
 
                 // Create a new
                 scope.addGroup = function() {
-                    var new_group = angular.copy(scope.groups[0])
-                    scope.user.account.roles.push(new_group);
+                    var newGroup = angular.copy(scope.groups[0]);
+                    scope.user.account.roles.push(newGroup);
                 };
             }
         };
     })
     .directive('adminUsersEditGroup', function(GroupsModel) {
+        "use strict";
         return {
             templateUrl: "app/private/admin/users/edit/directives.tmpl/group.html",
             scope: {

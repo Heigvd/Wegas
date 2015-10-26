@@ -2,6 +2,7 @@ angular.module('private.trainer.settings.directives', [
     'wegas.service.customize'
 ])
     .directive('trainerSessionsSettingsIndex', function() {
+        "use strict";
         return {
             scope: {
                 close: "&"
@@ -9,7 +10,9 @@ angular.module('private.trainer.settings.directives', [
             templateUrl: 'app/private/trainer/settings/directives.tmpl/index.html',
             controller: "TrainerSettingsIndexController as settingsIndexCtrl"
         };
-    }).controller("TrainerSettingsIndexController", function TrainerSettingsIndexController($rootScope, $scope, $state, $stateParams, SessionsModel, Flash) {
+    })
+    .controller("TrainerSettingsIndexController", function TrainerSettingsIndexController($rootScope, $scope, $state, $stateParams, SessionsModel, Flash) {
+        "use strict";
         var ctrl = this,
             initTabs = function() {
                 return {
@@ -21,7 +24,7 @@ angular.module('private.trainer.settings.directives', [
         ctrl.hasChanges = {
             all: false,
             name: false,
-            comment: false, 
+            comment: false,
             token: false,
             individual: false,
             scriptUri: false,
@@ -31,13 +34,13 @@ angular.module('private.trainer.settings.directives', [
             logID: false
         };
         ctrl.infos = {
-            name : "",
-            token : "", 
-            comments :"",
+            name: "",
+            token: "",
+            comments: "",
             color: "orange",
-            icon:{
-                key:"gamepad",
-                library:'fa'
+            icon: {
+                key: "gamepad",
+                library: 'fa'
             },
             scenario: "",
             individual: false,
@@ -49,19 +52,19 @@ angular.module('private.trainer.settings.directives', [
         };
         ctrl.tabs = initTabs();
 
-        ctrl.kindsOfSession = ($state.$current.name == "wegas.private.trainer.settings") ? "LIVE" : "BIN";
+        ctrl.kindsOfSession = ($state.$current.name === "wegas.private.trainer.settings") ? "LIVE" : "BIN";
 
         ctrl.updateSession = function() {
             SessionsModel.getSession(ctrl.kindsOfSession, $stateParams.id, true).then(function(response) {
                 ctrl.session = response.data || {};
                 if (response.isErroneous()) {
                     response.flash();
-                }else{
+                } else {
                     var icon = ctrl.session.properties.iconUri.split("_");
-                    if (icon.length >= 3 && icon[0] == "ICON") {
+                    if (icon.length >= 3 && icon[0] === "ICON") {
                         ctrl.infos.color = icon[1];
                         ctrl.infos.icon.key = icon[2];
-                        if(icon[3]){
+                        if (icon[3]) {
                             ctrl.infos.icon.library = icon[3];
                         }
                     }
@@ -69,51 +72,51 @@ angular.module('private.trainer.settings.directives', [
                     ctrl.infos.token = ctrl.session.token;
                     ctrl.infos.comments = ctrl.session.gameModel.comments;
                     ctrl.infos.scenario = ctrl.session.gameModel.name;
-                    ctrl.infos.individual = ctrl.session.properties.freeForAll; 
+                    ctrl.infos.individual = ctrl.session.properties.freeForAll;
                     ctrl.infos.scriptUri = ctrl.session.gameModel.properties.scriptUri;
                     ctrl.infos.clientScriptUri = ctrl.session.gameModel.properties.clientScriptUri;
                     ctrl.infos.cssUri = ctrl.session.gameModel.properties.cssUri;
                     ctrl.infos.pagesUri = ctrl.session.gameModel.properties.pagesUri;
                     ctrl.infos.logID = ctrl.session.gameModel.properties.logID;
-               }
+                }
             });
         };
 
-        ctrl.checkChanges = function(type, changes){
-            if(ctrl.session['@class'] == "Game"){
-                switch(type){
+        ctrl.checkChanges = function(type, changes) {
+            if (ctrl.session['@class'] === "Game") {
+                switch (type) {
                     case "name":
                         ctrl.hasChanges.name = (ctrl.session.name !== changes);
                         break;
                     case "token":
-                        ctrl.hasChanges.token = (ctrl.session.token !==  changes);
+                        ctrl.hasChanges.token = (ctrl.session.token !== changes);
                         break;
                     case "comments":
-                        ctrl.hasChanges.comments = (ctrl.session.gameModel.comments !==  changes);
+                        ctrl.hasChanges.comments = (ctrl.session.gameModel.comments !== changes);
                         break;
-                    case "individual": 
-                        ctrl.hasChanges.individual = (ctrl.session.properties.freeForAll !==  changes);
+                    case "individual":
+                        ctrl.hasChanges.individual = (ctrl.session.properties.freeForAll !== changes);
                         break;
                     case "scriptUri":
-                        ctrl.hasChanges.scriptUri = (ctrl.session.gameModel.properties.scriptUri !==  changes);
+                        ctrl.hasChanges.scriptUri = (ctrl.session.gameModel.properties.scriptUri !== changes);
                         break;
                     case "clientScriptUri":
-                        ctrl.hasChanges.clientScriptUri = (ctrl.session.gameModel.properties.clientScriptUri !==  changes);
+                        ctrl.hasChanges.clientScriptUri = (ctrl.session.gameModel.properties.clientScriptUri !== changes);
                         break;
                     case "cssUri":
-                        ctrl.hasChanges.cssUri = (ctrl.session.gameModel.properties.cssUri !==  changes);
+                        ctrl.hasChanges.cssUri = (ctrl.session.gameModel.properties.cssUri !== changes);
                         break;
                     case "pages":
-                        ctrl.hasChanges.pagesUri = (ctrl.session.gameModel.properties.pagesUri !==  changes);
+                        ctrl.hasChanges.pagesUri = (ctrl.session.gameModel.properties.pagesUri !== changes);
                         break;
                     case "logID":
-                        ctrl.hasChanges.logID = (ctrl.session.gameModel.properties.logID !==  changes);
+                        ctrl.hasChanges.logID = (ctrl.session.gameModel.properties.logID !== changes);
                         break;
                 }
-                ctrl.hasChanges.all =   ctrl.hasChanges.name 
-                                        || ctrl.hasChanges.token || ctrl.hasChanges.comments || ctrl.hasChanges.individual
-                                        || ctrl.hasChanges.scriptUri || ctrl.hasChanges.clientScriptUri || ctrl.hasChanges.cssUri 
-                                        || ctrl.hasChanges.pagesUri || ctrl.hasChanges.logID;
+                ctrl.hasChanges.all = ctrl.hasChanges.name ||
+                    ctrl.hasChanges.token || ctrl.hasChanges.comments || ctrl.hasChanges.individual ||
+                    ctrl.hasChanges.scriptUri || ctrl.hasChanges.clientScriptUri || ctrl.hasChanges.cssUri ||
+                    ctrl.hasChanges.pagesUri || ctrl.hasChanges.logID;
             }
         };
 
@@ -123,27 +126,27 @@ angular.module('private.trainer.settings.directives', [
         };
 
         ctrl.save = function() {
-            SessionsModel.updateSession(ctrl.session, ctrl.infos).then(function(response){
-                if(!response.isErroneous()){
+            SessionsModel.updateSession(ctrl.session, ctrl.infos).then(function(response) {
+                if (!response.isErroneous()) {
                     $rootScope.$emit("changeSessions", true);
                     $scope.close();
-                }else{
+                } else {
                     response.flash();
                 }
             });
         };
 
-        ctrl.cancel = function(){
+        ctrl.cancel = function() {
             $scope.close();
         };
 
-        var properties = ["name","comments","individual","scriptUri","clientScriptUri","cssUri","pagesUri","logID"];
+        var properties = ["name", "comments", "individual", "scriptUri", "clientScriptUri", "cssUri", "pagesUri", "logID"];
 
         _.each(properties, function(el, index) {
             $scope.$watch(function() {
                 return ctrl.infos[el];
             }, function(newValue) {
-                ctrl.checkChanges(el, newValue)
+                ctrl.checkChanges(el, newValue);
             });
         });
 
@@ -151,13 +154,14 @@ angular.module('private.trainer.settings.directives', [
         ctrl.activeTab("infos");
     })
     .directive('trainerSessionsCustomizeInfos', function() {
+        "use strict";
         return {
-            scope:{
+            scope: {
                 activeInfos: "="
             },
             templateUrl: 'app/private/trainer/settings/directives.tmpl/infos-form.html',
-            link: function(scope, elem, attrs){
-                $(".link--selector").on("click", function(e){
+            link: function(scope, elem, attrs) {
+                $(".link--selector").on("click", function(e) {
                     e.stopPropagation();
                     $(".tool--selectable").trigger("click");
                 });
@@ -165,11 +169,11 @@ angular.module('private.trainer.settings.directives', [
         };
     })
     .directive('trainerSessionsCustomizeAdvanced', function() {
+        "use strict";
         return {
-            scope:{
+            scope: {
                 activeInfos: "="
             },
             templateUrl: 'app/private/trainer/settings/directives.tmpl/infos-advanced.html'
-        }
-    })
-    ;
+        };
+    });

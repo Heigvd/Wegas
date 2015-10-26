@@ -7,6 +7,7 @@ angular.module('wegas.directives.illustrations', [
     'wegas.behaviours.illustrations'
 ])
     .directive('illustration', function() {
+        "use strict";
         return {
             templateUrl: 'app/commons/directives/illustrations.tmpl.html',
             scope: {
@@ -17,9 +18,9 @@ angular.module('wegas.directives.illustrations', [
 
                 function changeIcon(illustration) {
                     element.removeClass("illustration--" + scope.icon.color);
-                    if (illustration != null && illustration != "") {
+                    if (illustration) {
                         var infos = illustration.split("_");
-                        if (infos.length >= 3 && infos[0] == "ICON") {
+                        if (infos.length >= 3 && infos[0] === "ICON") {
                             if(!infos[3]){
                                 infos[3] = "fa";
                             }
@@ -33,7 +34,7 @@ angular.module('wegas.directives.illustrations', [
                         }
                     }
                     element.addClass("illustration--" + scope.icon.color);
-                };
+                }
 
                 changeIcon(scope.illustration);
 

@@ -11,7 +11,7 @@ angular.module('wegas.models.sessions', [])
                 },
                 findSession: function(status, id) {
                     return _.find(sessions.cache[status].data, function(s) {
-                        return s.id == id;
+                        return +s.id === +id;
                     });
                 },
                 stopWaiting: function(waitFunction) {
@@ -37,14 +37,14 @@ angular.module('wegas.models.sessions', [])
                             "managed-mode": "true"
                         }
                     }).success(function(data) {
-                        if (data.events !== undefined && data.events.length == 0) {
+                        if (data.events !== undefined && data.events.length === 0) {
                             sessions.cache[status].data = data.entities;
                             $translate('COMMONS-SESSIONS-FIND-FLASH-SUCCESS').then(function(message) {
                                 deferred.resolve(Responses.success(message, sessions.cache[status]));
                             });
                         } else if (data.events !== undefined) {
                             sessions.cache[status].data = [];
-                            console.log("WEGAS LOBBY : Error while loading sessions : ")
+                            console.log("WEGAS LOBBY : Error while loading sessions : ");
                             console.log(Responses.danger(data.events[0].exceptions));
                             $translate('COMMONS-SESSIONS-FIND-FLASH-ERROR').then(function(message) {
                                 deferred.resolve(Responses.danger(message, false));
@@ -58,7 +58,7 @@ angular.module('wegas.models.sessions', [])
                     }).error(function(data) {
                         sessions.cache[status].data = [];
                         if (data.events !== undefined && data.events.length > 0) {
-                            console.log("WEGAS LOBBY : Error while loading sessions : ")
+                            console.log("WEGAS LOBBY : Error while loading sessions : ");
                             console.log(Responses.danger(data.events[0].exceptions));
                             $translate('COMMONS-SESSIONS-FIND-FLASH-ERROR').then(function(message) {
                                 deferred.resolve(Responses.danger(message, false));
@@ -134,7 +134,7 @@ angular.module('wegas.models.sessions', [])
                 _.each(properties, function(el, index) {
                     if (scenarioBeforeChange.properties[el] !== sessionInfos[el]) {
                         scenarioBeforeChange.properties[el] = sessionInfos[el];
-                        gameModelSetted = true
+                        gameModelSetted = true;
                     }
                 });
                 if (gameModelSetted) {
@@ -164,10 +164,10 @@ angular.module('wegas.models.sessions', [])
         model.removeTeamToSession = function(sessionId, teamId) {
             var deferred = $q.defer(),
                 session = sessions.findSession("LIVE", sessionId) || sessions.findSession("BIN", sessionId),
-                team = undefined;
+                team;
             if (session) {
                 team = _.find(session.teams, function(t) {
-                    return t.id == teamId;
+                    return +t.id === +teamId;
                 });
                 if (team) {
                     $http.delete(ServiceURL + "rest/GameModel/Game/Team/" + team.id).success(function(data) {
@@ -197,15 +197,15 @@ angular.module('wegas.models.sessions', [])
         model.removePlayerToSession = function(sessionId, playerId, teamId) {
             var deferred = $q.defer(),
                 session = sessions.findSession("LIVE", sessionId) || sessions.findSession("BIN", sessionId),
-                team = undefined,
-                player = undefined;
+                team,
+                player;
             if (session) {
                 team = _.find(session.teams, function(t) {
-                    return t.id == teamId;
+                    return +t.id === +teamId;
                 });
                 if (team) {
                     player = _.find(team.players, function(p) {
-                        return p.id == playerId;
+                        return +p.id === +playerId;
                     });
                     if (player) {
                         $http.delete(ServiceURL + "rest/GameModel/Game/Team/" + player.teamId + "/Player/" + player.id).success(function(data) {
@@ -270,7 +270,7 @@ angular.module('wegas.models.sessions', [])
         model.getSessions = function(status) {
             var deferred = $q.defer();
             Auth.getAuthenticatedUser().then(function(user) {
-                if (user != null) {
+                if (user) {
                     if (sessions.cache[status]) {
                         if (sessions.cache[status].loading) {
                             sessions.wait(status).then(function() {
@@ -363,7 +363,7 @@ angular.module('wegas.models.sessions', [])
                 .success(function(sessionRefreshed) {
                     if (sessionRefreshed) {
                         sessionRefreshed.teams.forEach(function(team) {
-                            if (team["@class"] == "DebugTeam") {
+                            if (team["@class"] === "DebugTeam") {
                                 sessionRefreshed.teams = _.without(sessionRefreshed.teams, team);
                             }
                         });
@@ -448,8 +448,8 @@ angular.module('wegas.models.sessions', [])
         model.updateAccessSession = function(sessionToSet) {
             var deferred = $q.defer(),
                 sessionBeforeChange = sessions.findSession("LIVE", sessionToSet.id);
-            if (sessionBeforeChange != undefined) {
-                if (sessionBeforeChange.access == "OPEN") {
+            if (sessionBeforeChange) {
+                if (sessionBeforeChange.access === "OPEN") {
                     sessionBeforeChange.access = "CLOSE";
                 } else {
                     sessionBeforeChange.access = "OPEN";
@@ -480,7 +480,7 @@ angular.module('wegas.models.sessions', [])
             if (session) {
                 var alreadyIn = false;
                 session.trainers.forEach(function(elem) {
-                    if (elem.id == trainer.id) {
+                    if (+elem.id === +trainer.id) {
                         alreadyIn = true;
                     }
                 });
@@ -513,7 +513,7 @@ angular.module('wegas.models.sessions', [])
             var deferred = $q.defer();
             if (session) {
                 var trainer = _.find(session.trainers, function(t) {
-                    return t.id == trainerId;
+                    return +t.id === +trainerId;
                 });
                 if (trainer) {
                     $http.delete(ServiceURL + "rest/Extended/User/DeleteAccountPermissionByInstanceAndAccount/g" + session.id + "/" + trainer.id).success(function(data) {

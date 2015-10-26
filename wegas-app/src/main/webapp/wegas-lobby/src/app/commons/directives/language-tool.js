@@ -1,5 +1,6 @@
 angular.module('wegas.directives.language.tool', [])      
     .directive('languageTool', function($translate, WegasTranslations) {
+        "use strict";
             return {
                 templateUrl: 'app/commons/directives/language-tool.tmpl.html',
                 scope: {},

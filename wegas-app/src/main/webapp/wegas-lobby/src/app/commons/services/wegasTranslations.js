@@ -1,5 +1,6 @@
 angular.module('wegas.service.wegasTranslations', [])
         .provider('WegasTranslations', function($translateProvider) {
+            "use strict";
             return {
                 getTranslations : function(language){
                     var translations = this.$get().translations,
