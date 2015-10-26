@@ -45,12 +45,12 @@ YUI.add("wegas-review-widgets", function(Y) {
             "<div class=\"transition close-review\"><span class=\"fa fa-arrow-circle-right fa-4x\"></span></div>" +
             "<div class=\"state commenting\">" +
             "<h7>Commenting</h7>" +
-            "The authors acquaint themeselves with peer reviews<br /><br /><i>They comment on those reviews</i>" +
+            "The authors acquaint themselves with peer reviews<br /><br /><i>They comment on those reviews</i>" +
             "</div>" +
             "<div class=\"transition close-comment\"><span class=\"fa fa-arrow-circle-right fa-4x\"></span></div>" +
             "<div class=\"state closed\">" +
             "<h7>Completed</h7>" +
-            "The reviewing process is completed<br /><br /><i>The authors take acquaintance of comments on reviews they've done</i>" +
+            "The reviewing process has been completed<br /><br /><i>The authors take acquaintance of comments on reviews they've done</i>" +
             "</div>" +
             "<div style=\"clear: both;\"></div>" +
             "</div>" +
