@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.exception.internal.NoPlayerException;
+import com.wegas.core.persistence.NumberListener;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Player;
@@ -62,7 +63,8 @@ public class Neo4jPlayerReply {
         sessionContext.getBusinessObject(Neo4jPlayerReply.class).addPlayerReply(event.player, event.reply, (ChoiceDescriptor) event.choice.getDescriptor(), (QuestionDescriptor) event.question.getDescriptor());
     }
 
-    public void onNumberUpdate(@Observes RequestManager.NumberUpdate update) throws NoPlayerException, JsonProcessingException {
+    public void onNumberUpdate(@Observes NumberListener.NumberUpdate update) throws NoPlayerException, JsonProcessingException {
+        System.out.println("NUMBER UPDATE " + update.number.toString() + " " + update.player.toString());
         sessionContext.getBusinessObject(Neo4jPlayerReply.class).addNumberUpdate(update.player, update.number);
     }
 

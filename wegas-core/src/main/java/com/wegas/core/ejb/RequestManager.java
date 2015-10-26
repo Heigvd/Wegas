@@ -7,7 +7,6 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.Helper;
 import com.wegas.core.event.client.ClientEvent;
 import com.wegas.core.event.client.CustomEvent;
 import com.wegas.core.event.client.ExceptionEvent;
@@ -15,25 +14,16 @@ import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.rest.util.Views;
 import jdk.nashorn.api.scripting.ScriptUtils;
 import jdk.nashorn.internal.runtime.ScriptObject;
-
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.script.ScriptEngine;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Named;
+import javax.script.ScriptEngine;
+import java.util.*;
 
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -43,9 +33,6 @@ import org.slf4j.LoggerFactory;
 public class RequestManager {
 
     private static Logger logger = LoggerFactory.getLogger(RequestManager.class);
-
-    @Inject
-    private Event<NumberUpdate> updatedNumber;
 
     /**
      *
@@ -118,16 +105,6 @@ public class RequestManager {
     }
 
     /**
-     * https://java.net/jira/browse/GLASSFISH-21195 this event should be fired
-     * from {@link com.wegas.core.persistence.NumberListener}
-     *
-     * @param numberInstance to be forwarded to event
-     */
-    public void numberChanged(NumberInstance numberInstance) { // @TODO remove me
-        updatedNumber.fire(new NumberUpdate(this.getPlayer(), numberInstance));
-    }
-
-    /**
      * @return the currentPlayer
      */
     public Player getPlayer() {
@@ -173,7 +150,6 @@ public class RequestManager {
     }
 
     /**
-     *
      * @return
      */
     public Map<String, List<AbstractEntity>> getUpdatedEntities() {
@@ -273,15 +249,4 @@ public class RequestManager {
         this.locale = local;
     }
 
-    public class NumberUpdate {
-
-        final public Player player;
-
-        final public NumberInstance number;
-
-        NumberUpdate(Player player, NumberInstance number) {
-            this.number = number;
-            this.player = player;
-        }
-    }
 }
