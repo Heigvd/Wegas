@@ -7,61 +7,52 @@
  */
 package com.wegas.core.persistence.variable;
 
-import com.wegas.core.ejb.RequestFacade;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.primitive.BooleanInstance;
-import com.wegas.core.persistence.variable.primitive.NumberInstance;
-import com.wegas.core.persistence.variable.primitive.ObjectInstance;
-import com.wegas.core.persistence.variable.primitive.StringInstance;
-import com.wegas.core.persistence.variable.primitive.TextInstance;
-import com.wegas.core.persistence.variable.scope.AbstractScope;
-import com.wegas.core.persistence.variable.scope.GameModelScope;
-import com.wegas.core.persistence.variable.scope.GameScope;
-import com.wegas.core.persistence.variable.scope.PlayerScope;
-import com.wegas.core.persistence.variable.scope.TeamScope;
+import com.wegas.core.persistence.Broadcastable;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.primitive.*;
+import com.wegas.core.persistence.variable.scope.*;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.mcq.persistence.ChoiceInstance;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.messaging.persistence.InboxInstance;
+import com.wegas.resourceManagement.persistence.BurndownInstance;
 import com.wegas.resourceManagement.persistence.ResourceInstance;
 import com.wegas.resourceManagement.persistence.TaskInstance;
 import com.wegas.reviewing.persistence.PeerReviewInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.persistence.*;
-////import javax.xml.bind.annotation.XmlTransient;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.Helper;
-import com.wegas.core.persistence.Broadcastable;
-import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.game.Team;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.wegas.resourceManagement.persistence.BurndownInstance;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+////import javax.xml.bind.annotation.XmlTransient;
 
 /**
- *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-//@EntityListeners({VariableInstancePersistenceListener.class})
 @NamedQueries({
     //@NamedQuery(name = "findTeamInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.teamScopeKey = :teamid"),
     //@NamedQuery(name = "findPlayerInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.playerScopeKey = :playerid"),
     @NamedQuery(name = "findInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE EXISTS "
-            + "(SELECT player From Player player WHERE player.id = :playerid AND "
-            + "(variableinstance.playerScopeKey = player.id OR variableinstance.teamScopeKey = player.teamId OR variableinstance.gameScopeKey = player.team.gameId))")
+        + "(SELECT player From Player player WHERE player.id = :playerid AND "
+        + "(variableinstance.playerScopeKey = player.id OR variableinstance.teamScopeKey = player.teamId OR variableinstance.gameScopeKey = player.team.gameId))")
 })
 
 /*@Indexes(value = { // JPA 2.0 eclipse link extension TO BE REMOVED
-    
+
  @Index(name = "index_variableinstance_gamescope_id", columnNames = {"gamescope_id"}),
  @Index(name = "index_variableinstance_teamscope_id", columnNames = {"teamscope_id"}),
  @Index(name = "index_variableinstance_playerscope_id", columnNames = {"playerscope_id"})
@@ -94,7 +85,9 @@ import org.slf4j.LoggerFactory;
 abstract public class VariableInstance extends AbstractEntity implements Broadcastable {
 
     private static final long serialVersionUID = 1L;
+
     private static final Logger logger = LoggerFactory.getLogger(VariableInstance.class);
+
     /**
      *
      */
@@ -103,36 +96,42 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     @GeneratedValue
     @JsonView(Views.IndexI.class)
     private Long id;
+
     /**
      *
      */
     @ManyToOne
     @JsonIgnore
     private GameScope gameScope;
+
     /**
      *
      */
     @ManyToOne
     @JsonIgnore
     private TeamScope teamScope;
+
     /**
      *
      */
     @ManyToOne
     @JsonIgnore
     private PlayerScope playerScope;
+
     /**
      *
      */
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "variableInstance")
     @JsonIgnore
     private GameModelScope gameModelScope;
+
     /**
      *
      */
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "defaultInstance")
     @JsonIgnore
     private VariableDescriptor defaultDescriptor;
+
     /**
      *
      */
@@ -150,6 +149,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
 
     @JoinColumn(name = "gamevariableinstances_key", insertable = false, updatable = false)
     private Game game;
+
     /**
      *
      */
@@ -160,7 +160,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     private Team team;
 
     /**
-     *
      * @return
      */
     @Override
@@ -228,7 +227,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     *
      * @return
      */
     //@XmlTransient
@@ -242,7 +240,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     *
      * @return
      */
     @JsonView(Views.IndexI.class)
@@ -255,7 +252,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     *
      * @param l
      */
     public void setDescriptorId(Long l) {
@@ -271,7 +267,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     *
      * @return
      */
     @JsonIgnore
@@ -280,7 +275,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     *
      * @param teamScopeKey
      */
     public void setTeamScopeKey(Long teamScopeKey) {
@@ -288,7 +282,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     *
      * @return
      */
     @JsonIgnore
@@ -305,7 +298,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     *
      * @param playerScopeKey
      */
     public void setPlayerScopeKey(Long playerScopeKey) {
@@ -313,7 +305,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     *
      * @param gameScopeKey
      */
     public void setGameScopeKey(Long gameScopeKey) {
@@ -376,7 +367,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     *
      * @return
      */
     public VariableDescriptor findDescriptor() {
@@ -409,7 +399,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     *
      * @return
      */
     @Override
