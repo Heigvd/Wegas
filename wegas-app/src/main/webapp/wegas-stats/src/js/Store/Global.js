@@ -1,21 +1,21 @@
-import u from 'updeep';
+import updeep from 'updeep';
 import { SHOW_OVERLAY, HIDE_OVERLAY } from '../Actions/constants/ActionTypes';
 
-const inc = x => x + 1;
-const dec = x => x - 1;
-const decBound = x => Math.max(dec(x), 0);
+const inc = val => val + 1;
+const dec = val => val - 1;
+const decBound = val => Math.max(dec(val), 0);
 
-function global(state = u({
-        overlay: 0
+function global(state = updeep({
+        overlay: 0,
     })(null), action) {
     switch (action.type) {
         case SHOW_OVERLAY:
-            return u({
-                overlay: inc
+            return updeep({
+                overlay: inc,
             }, state);
         case HIDE_OVERLAY:
-            return u({
-                overlay: decBound
+            return updeep({
+                overlay: decBound,
             }, state);
         default:
             return state;

@@ -11,27 +11,84 @@
  */
 
 
+.wegas-review-orchestrator .summary > div {
+    clear: both;
+    margin:10px;
+    position: relative;
+}
+.wegas-review-orchestrator .control-panel {
+    height: 125px;
+}
+
+.wegas-review-orchestrator .control-panel > * {
+    float: left;
+    display: block;
+    position: relative;
+}
+
+.wegas-review-orchestrator .control-panel .state.current {
+    background-color: hsl(16, 83%, 58%);
+    color: #FFFDFD;
+}
+.wegas-review-orchestrator .control-panel .state h7{
+    display:block;
+    line-height: 1.5em;
+    font-variant:small-caps;
+    font-size: 1.5em;
+}
+
+.wegas-review-orchestrator .control-panel .state {
+    background-color: #bbb;
+    width: 200px;
+    border-radius: 5px;
+    text-align: center;
+    border: 1px solid #999;
+    padding: 5px 10px 10px;
+    height: 100%;
+    color: #999;
+}
+
+.wegas-review-orchestrator .control-panel .transition {
+    height: calc(100% + 17px);
+    position: relative;
+}
+
+.wegas-review-orchestrator .control-panel .transition span{
+    color: #DDDDDD;
+    padding-top: 46px;
+    position: relative;
+}
+
+.wegas-review-orchestrator .control-panel .transition span.active{
+    color: #446d71;
+}
+
+.wegas-review-orchestrator .control-panel .transition span.active:hover{
+    color: #40868d;
+    cursor:pointer;
+}
+
 .wegas-review-orchestrator .summary table thead tr:nth-child(2) th {
     font-weight : 400;
     font-size : 0.9em;
 }
 
 .wegas-review-orchestrator .summary table th {
-  max-width: 80px;
-  white-space: normal;
-  background-image: none;
-  /* background-color : azure; */
-  border-bottom: 1px solid #cbcbcb;
-  vertical-align: middle;
+    max-width: 80px;
+    white-space: normal;
+    background-image: none;
+    /* background-color : azure; */
+    border-bottom: 1px solid #cbcbcb;
+    vertical-align: middle;
 }
 .wegas-review-orchestrator .summary table th div {
-  text-overflow: ellipsis;
-  /* position: relative; */
-  /* display: block; */
+    text-overflow: ellipsis;
+    /* position: relative; */
+    /* display: block; */
 }
 
 .wegas-review-orchestrator .summary table td {
-  width: 80px;
+    width: 80px;
 }
 
 .wegas-review-variableeditor .wegas-review-header {
@@ -92,8 +149,8 @@
 }
 
 .wegas-review-evaluation-content {
-  border : 1px solid #ddd;
-  height: auto;
+    border : 1px solid #ddd;
+    height: auto;
     width: auto;
 }
 
@@ -122,7 +179,7 @@
 
 .wegas-review-orchestrator .charts .evaluation {
     float: left;
-    
+
     width: 400px;
     /* height: 260px; */
     margin: 20px;
@@ -131,7 +188,7 @@
 
 .wegas-review-orchestrator .charts .evaluation .legend {
     /* position: absolute; */
-    
+
     bottom: 0px;
     font-style: italic;
     font-size: 0.8em;
@@ -139,12 +196,12 @@
 }
 
 .wegas-review-orchestrator .ct-label.ct-horizontal {
-  transform-origin: 0% 50%;
-  transform: translateY(50px) rotate(-45deg);
-  font-size: 0.7em;
+    transform-origin: 0% 50%;
+    transform: translateY(50px) rotate(-45deg);
+    font-size: 0.7em;
 }
 
 .wegas-review-orchestrator .ct-chart {
-  margin-bottom: 50px;
+    margin-bottom: 50px;
 }
 

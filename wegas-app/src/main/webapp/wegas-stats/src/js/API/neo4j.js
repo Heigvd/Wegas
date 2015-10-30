@@ -15,10 +15,9 @@ export function getQuestionData(logID, name, ...games) {
     if (logID && name && games[0]) {
         return Axios.get(`${BASE}LogId/${logID}/Question/${name}`, {
             params: {
-                gid: games.join(',')
-            }
+                gid: games.join(','),
+            },
         }).then(res => res.data);
-    } else {
-        return Promise.reject('getQuestion: Missing parameters');
     }
+    return Promise.reject('getQuestion: Missing parameters');
 }

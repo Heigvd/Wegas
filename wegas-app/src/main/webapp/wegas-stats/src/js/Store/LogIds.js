@@ -1,26 +1,26 @@
-import u from 'updeep';
+import updeep from 'updeep';
 import { BOOTSTRAP_LOGIDS, RESET, SELECT_LOGID } from '../Actions/constants/ActionTypes';
 
-function logIds(state = u({
+function logIds(state = updeep({
         status: 0,
         value: [],
-        current: null
+        current: null,
     }, null), action) {
     switch (action.type) {
         case BOOTSTRAP_LOGIDS:
-            return u({
+            return updeep({
                 status: 1,
-                value: action.logIds
+                value: action.logIds,
             }, state);
         case RESET:
-            return u({
+            return updeep({
                 status: 0,
                 value: [],
-                current: null
+                current: null,
             }, state);
         case SELECT_LOGID:
-            return u({
-                current: action.logId
+            return updeep({
+                current: action.logId,
             }, state);
         default :
             return state;

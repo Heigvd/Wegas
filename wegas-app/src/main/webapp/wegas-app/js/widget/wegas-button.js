@@ -225,12 +225,12 @@ YUI.add("wegas-button", function(Y) {
                     for (i = 0; i < items.length; i = i + 1) {
                         list.push(items[i]);
                     }
-                } else if (Wegas.persistence.FSMDescriptor && descriptor instanceof Wegas.persistence.FSMDescriptor) {
-                    instance = items[i].getInstance();
+                } /*else if (Wegas.persistence.FSMDescriptor && descriptor instanceof Wegas.persistence.FSMDescriptor) {
+                    instance = descriptor.getInstance();
                     if (instance.get("enabled")) {
                         count += 1;
                     }
-                } else if (Wegas.persistence.InboxDescriptor && descriptor instanceof Wegas.persistence.InboxDescriptor) {
+                } */else if (Wegas.persistence.InboxDescriptor && descriptor instanceof Wegas.persistence.InboxDescriptor) {
                     //messages = descriptor.getInstance().get("messages");
                     count += descriptor.getInstance().get("unreadCount");
                 }

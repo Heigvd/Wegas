@@ -1410,6 +1410,7 @@ YUI.add('wegas-datasource', function(Y) {
                     on: {
                         success: Y.bind(function(e) {
                             var page;
+                            this.pageQuery[pageId] = false;
                             if (callback instanceof Function) {
                                 var pId = e.data.getResponseHeader("Page") || pageId;
                                 page = Y.clone(this.getCache(pId));
@@ -1419,11 +1420,12 @@ YUI.add('wegas-datasource', function(Y) {
                                 }
                             }
                         }, this),
-                        failure: function(e) {
+                        failure: Y.bind(function(e) {
+                            this.pageQuery[pageId] = false;
                             if (Y.Lang.isFunction(callback)) {
                                 callback(null);
                             }
-                        }
+                        },this)
                     }
                 });
             }

@@ -163,7 +163,7 @@ YUI.add("wegas-text-input", function(Y) {
             return true;
         },
         getEditorLabel: function() {
-            return this.get(CONTENTBOX).get("text");
+            return "TextInput";
         },
         destructor: function() {
             Y.Array.each(this.handlers, function(h) {

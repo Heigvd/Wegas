@@ -8,51 +8,53 @@ const CHART_BAR_OPT = {
     width: 600,
     height: 400,
     axisY: {
-        labelInterpolationFnc: function(v) {
-            return v ? v + '%' : '<b>0%</b>';
+        labelInterpolationFnc: function label(value) {
+            return value ? value + '%' : '<b>0%</b>';
         },
         scaleMinSpace: 20,
-        onlyInteger: true
+        onlyInteger: true,
     },
     axisX: {
-        offset: 50
+        offset: 50,
     },
     low: 0,
-    high: 100
+    high: 100,
 };
-const DIFF_BAR_OPT = Object.assign({}, CHART_BAR_OPT, {
-    low: -100
-});
-const inline_style = {
+const DIFF_BAR_OPT = CHART_BAR_OPT;
+/* Object.assign({}, CHART_BAR_OPT, {
+    low: -100,
+}); */
+const inlineStyle = {
     display: 'inline-block',
-    whiteSpace: 'normal'
+    whiteSpace: 'normal',
 };
 const noWrap = {
-    whiteSpace: 'nowrap'
+    whiteSpace: 'nowrap',
 };
 const legendStyle = {
     marginRight: 20,
-    padding: '3px 10px'
+    padding: '3px 10px',
 };
 const noDisplay = {
-    display: 'none'
+    display: 'none',
 };
 function inlineSvgStyle(node) {
     const tw = document.createTreeWalker(node, 1);
-    let n;
-    while ((n = tw.nextNode())) {
-        n.setAttribute('style', getComputedStyle(n).cssText);
+    let currentNode = tw.nextNode();
+    while (currentNode) {
+        currentNode.setAttribute('style', getComputedStyle(currentNode).cssText);
+        currentNode = tw.nextNode();
     }
 }
 function svgToPng(node) {
     inlineSvgStyle(node);
-    return new Promise(function(resolve, reject) {
+    return new Promise((resolve, reject) => {
         const img = new Image();
         img.src = 'data:image/svg+xml;base64,' + btoa(window.unescape(encodeURIComponent((new XMLSerializer()).serializeToString(node))));
-        img.onload = function() {
-            const can = document.createElement('canvas'),
-                ctx = can.getContext('2d'),
-                target = new Image();
+        img.onload = function onload() {
+            const can = document.createElement('canvas');
+            const ctx = can.getContext('2d');
+            const target = new Image();
             can.width = img.width;
             can.height = img.height;
             ctx.drawImage(img, 0, 0, img.width, img.height);
@@ -66,35 +68,44 @@ class Graph extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            questionGroup: {}
+            questionGroup: {},
         };
-    //    log.info("start");
     }
+
     componentDidMount() {
         this.chart = new Chartist.Bar(this.refs.graph, {
             labels: [],
-            series: []
+            series: [],
         }, CHART_BAR_OPT);
         this.diffChart = new Chartist.Bar(this.refs.diffs, {
             labels: [],
-            series: []
+            series: [],
         }, DIFF_BAR_OPT);
-
+    }
+    componentDidUpdate() {
+        if (!this.props.question) {
+            return;
+        }
+        computeData(this.props).then(data => {
+            this.chart.update(data);
+            return data;
+        }).then(computeDiffs).then(data => this.diffChart.update(data));
     }
     componentWillUnmount() {
         this.chart.detach();
         this.diffChart.detach();
     }
+
     genAll() {
         const windowHandler = window.open();
         const {groups, snapshot, logId} = this.props;
         const tmpChart = new Chartist.Bar(this.refs.tmpChart, {
             labels: [],
-            series: []
+            series: [],
         }, CHART_BAR_OPT);
         const tmpDiff = new Chartist.Bar(this.refs.tmpDiff, {
             labels: [],
-            series: []
+            series: [],
         }, DIFF_BAR_OPT);
         let promiseChain = Promise.resolve();
         JSON.search(snapshot, '//*[@class="QuestionDescriptor"]/name').forEach(question => {
@@ -106,7 +117,7 @@ class Graph extends React.Component {
                     groups,
                     snapshot,
                     logId,
-                    question
+                    question,
                 }).then(data => {
                     tmpChart.update(data);
                     return data;
@@ -114,9 +125,10 @@ class Graph extends React.Component {
                     return Promise.all([svgToPng(tmpChart.container.firstChild), svgToPng(tmpDiff.container.firstChild)]);
                 }).then(([chart, diff]) => {
                     const container = document.createElement('div');
-                    const label = JSON.search(snapshot, `//*[name="${question}"]/ancestor::*[@class="ListDescriptor"]`).reduce((pre, cur) => {
-                            return `${pre}${cur.label} \u2192 `;
-                        }, '') + JSON.search(snapshot, `//*[@class='QuestionDescriptor'][name="${question}"]/label`)[0];
+                    const label = JSON.search(snapshot, `//*[name="${question}"]/ancestor::*[@class="ListDescriptor"]`)
+                            .reduce((pre, cur) => {
+                                return `${pre}${cur.label} \u2192 `;
+                            }, '') + JSON.search(snapshot, `//*[@class='QuestionDescriptor'][name="${question}"]/label`)[0];
                     container.setAttribute('style', 'white-space:nowrap');
                     container.innerHTML = `<div>${label}</div>`;
                     container.appendChild(chart);
@@ -134,18 +146,8 @@ class Graph extends React.Component {
         });
         return promiseChain;
     }
-    componentDidUpdate() {
-        if (!this.props.question) {
-            return;
-        }
-        computeData(this.props).then(data => {
-            this.chart.update(data);
-            return data;
-        }).then(computeDiffs).then(data => this.diffChart.update(data));
-    }
 
     render() {
-
         const legends = this.props.groups.map((val, index) => {
             return (
                 <span className={ 'color ct-series-' + String.fromCharCode(97 + index) }
@@ -154,17 +156,17 @@ class Graph extends React.Component {
                 );
         });
         return (
-            <div ref='box'>
-              <span className='legend'>{ legends }</span>
+            <div ref="box">
+              <span className="legend">{ legends }</span>
               <div style={ noWrap }>
-                <div ref='graph'
-                     style={ inline_style } />
-                <div ref='diffs'
-                     style={ inline_style } />
+                <div ref="graph"
+                     style={ inlineStyle } />
+                <div ref="diffs"
+                     style={ inlineStyle } />
               </div>
-              <div ref='tmpChart'
+              <div ref="tmpChart"
                    style={ noDisplay } />
-              <div ref='tmpDiff'
+              <div ref="tmpDiff"
                    style={ noDisplay } />
             </div>
             );
@@ -172,9 +174,9 @@ class Graph extends React.Component {
 }
 Graph.propTypes = {
     groups: PropTypes.arrayOf(PropTypes.array),
-    question: PropTypes.string
+    question: PropTypes.string,
 };
 Graph.defaultProps = {
-    groups: []
+    groups: [],
 };
 export default Graph;

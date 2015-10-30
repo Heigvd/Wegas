@@ -30,12 +30,39 @@ YUI.add("wegas-review-widgets", function(Y) {
     ReviewOrchestrator = Y.Base.create("wegas-review-orchestrator", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         /** @lends Y.Wegas.ReviewOrchestrator# */
         CONTENT_TEMPLATE: "<div>" +
-            "<div class=\"buttons\"></div>" +
-            "<div class=\"summary\"><h1>Summary</h1></div>" +
+            "<div class=\"summary\"><h1>Summary" +
+            "<span class=\"refresh\"></span></h1>" +
+            "<div class=\"control-panel\">" +
+            "<div class=\"state not-started\">" +
+            "<h7>Edition</h7>" +
+            "The authors are editing what will be reviewed<br/> <br /><i>The process has not begun yet</i>" +
+            "</div>" +
+            "<div class=\"transition start-review\"><span class=\"fa fa-arrow-circle-right fa-4x\"></span></div>" +
+            "<div class=\"state reviewing\">" +
+            "<h7>Reviewing</h7>" +
+            "The authors are reviewing their peers<br /><br /><i>This is the first step of the process</i>" +
+            "</div>" +
+            "<div class=\"transition close-review\"><span class=\"fa fa-arrow-circle-right fa-4x\"></span></div>" +
+            "<div class=\"state commenting\">" +
+            "<h7>Commenting</h7>" +
+            "The authors acquaint themselves with peer reviews<br /><br /><i>They comment on those reviews</i>" +
+            "</div>" +
+            "<div class=\"transition close-comment\"><span class=\"fa fa-arrow-circle-right fa-4x\"></span></div>" +
+            "<div class=\"state closed\">" +
+            "<h7>Completed</h7>" +
+            "The reviewing process has been completed<br /><br /><i>The authors take acquaintance of comments on reviews they've done</i>" +
+            "</div>" +
+            "<div style=\"clear: both;\"></div>" +
+            "</div>" +
+            "<div class=\"overview\"><h2>Overview</h2></div>" +
+            "<div class=\"reviews\"><h2>Reviews</h2></div>" +
+            "<div class=\"comments\"><h2>Comments</h2></div>" +
+            "</div>" +
             "<div class=\"charts\"></div>" +
             "</div>",
         initializer: function() {
             this.handlers = [];
+            this.datatables = {};
         },
         countByStatus: function(instances) {
             var counters = {}, instance, key;
@@ -50,38 +77,14 @@ YUI.add("wegas-review-widgets", function(Y) {
         renderUI: function() {
             var prd = this.get("variable.evaluated"), ctx;
             ctx = this;
-            this.dispatchButton = new Y.Button({
-                label: "dispatch",
-                visible: true
-                    //}).render(this.get(CONTENTBOX));
-            }).render(this.get(CONTENTBOX).one(".buttons"));
-            this.notifyButton = new Y.Button({
-                label: "notify",
-                visible: true
-                    //}).render(this.get(CONTENTBOX));
-            }).render(this.get(CONTENTBOX).one(".buttons"));
-            this.closeButton = new Y.Button({
-                label: "close",
-                visible: true
-                    //}).render(this.get(CONTENTBOX));
-            }).render(this.get(CONTENTBOX).one(".buttons"));
             this.refreshButton = new Y.Button({
-                label: "refresh",
+                label: "<span class=\"fa fa-refresh\"></span>",
+                //label: "<span class=\"wegas-icon wegas-icon-refresh\"></span>",
                 visible: true
                     //}).render(this.get(CONTENTBOX));
-            }).render(this.get(CONTENTBOX).one(".buttons"));
+            }).render(this.get(CONTENTBOX).one(".refresh"));
 
-
-            //Y.namespace("Wegas.Config").Dashboards = Y.namespace("Wegas.Config").Dashboards || {};
-            //Y.namespace("Wegas.Config").Dashboards["orchestrator-" + prd.get("name")] = "ReviewHelper.summarize('" + prd.get("name") + "');";
             this.request = "ReviewHelper.summarize('" + prd.get("name") + "');";
-
-            //this.dashboard = new Y.Wegas.TeamsDashboard({
-            //    "name": "orchestrator-" + prd.get("name")
-            //}).render(this.get(CONTENTBOX).one(".summary"));
-
-
-
         },
         _getMonitoredData: function() {
             var ctx = this;
@@ -115,10 +118,10 @@ YUI.add("wegas-review-widgets", function(Y) {
 
             // TODO use updatedInstance
             this.handlers.push(Wegas.Facade.Variable.after("update", this.syncUI, this));
+            this.get(CONTENTBOX).delegate("click", this.onDispatch, ".control-panel .transition.start-review span", this);
+            this.get(CONTENTBOX).delegate("click", this.onNotify, ".control-panel .transition.close-review span", this);
+            this.get(CONTENTBOX).delegate("click", this.onClose, ".control-panel .transition.close-comment span", this);
 
-            this.dispatchButton.on("click", this.onDispatch, this);
-            this.notifyButton.on("click", this.onNotify, this);
-            this.closeButton.on("click", this.onClose, this);
             this.refreshButton.on("click", this.syncUI, this);
             //this.datatable.after("synched", this.syncSummary, this);
         },
@@ -131,40 +134,115 @@ YUI.add("wegas-review-widgets", function(Y) {
         },
         syncTable: function() {
             //this.dashboard && this.dashboard.syncUI();
-            var ctx = this, dtData = [], columns = [], game, team;
+            var ctx = this,
+                columns = {}, data = {},
+                game, team, globalStatus, teamStatus,
+                group, item, i, j, teamId, entry, key, section;
 
             game = Y.Wegas.Facade.Game.cache.getCurrentGame();
+            data = {
+                overview: [],
+                reviews: [],
+                comments: []
+            };
 
-            var group, item, i, j, teamId, entry, key;
-            columns.push({key: "team-name", label: "Team"});
-            for (i = 0; i < this._monitoredData.structure.length; i++) {
-                group = this._monitoredData.structure[i];
-                entry = {label: group.title, children: []};
-
-                for (j = 0; j < group.items.length; j++) {
-                    item = group.items[j];
-                    entry.children.push({key: item.id, label: item.label});
+            for (section in this._monitoredData.structure) {
+                if (!columns[section]) {
+                    columns[section] = [{key: "team-name", label: "Team"}];
                 }
-                columns.push(entry);
+                for (i = 0; i < this._monitoredData.structure[section].length; i++) {
+                    group = this._monitoredData.structure[section][i];
+                    entry = {label: group.title, children: []};
+
+                    for (j = 0; j < group.items.length; j++) {
+                        item = group.items[j];
+                        entry.children.push({key: item.id, label: item.label});
+                    }
+                    columns[section].push(entry);
+                }
             }
 
             for (teamId in this._monitoredData.data) {
                 team = Y.Wegas.Facade.Game.cache.getTeamById(teamId);
                 if ((game.get("@class") === "DebugGame" || team.get("@class") !== "DebugTeam") && team.get("players").length > 0) {
-                    entry = {"team-name": team.get("name")};
-                    for (key in this._monitoredData.data[teamId]) {
-                        entry[key] = this._monitoredData.data[teamId][key];
+                    switch (this._monitoredData.data[teamId].overview.status) {
+                        case "Editing":
+                        case "Ready to review":
+                            teamStatus = "NOT_STARTED";
+                            break;
+                        case "Reviewing":
+                        case "Review done":
+                            teamStatus = "REVIEWING";
+                            break;
+                        case "Commenting":
+                        case "Completed":
+                            teamStatus = "COMMENTING";
+                            break;
+                        case "Closed":
+                            teamStatus = "CLOSED";
+                            break;
+                        default:
+                            teamStatus = "N/A";
                     }
-                    dtData.push(entry);
+                    if (!globalStatus) {
+                        globalStatus = teamStatus;
+                    } else if (globalStatus !== teamStatus) {
+                        globalStatus = "N/A";
+                    }
+
+                    for (section in this._monitoredData.data[teamId]) {
+                        entry = {"team-name": team.get("name")};
+                        for (key in this._monitoredData.data[teamId][section]) {
+                            entry[key] = this._monitoredData.data[teamId][section][key];
+                        }
+                        data[section].push(entry);
+                    }
                 }
             }
 
+            this.get(CONTENTBOX).one(".state.not-started").removeClass("current");
+            this.get(CONTENTBOX).one(".state.reviewing").removeClass("current");
+            this.get(CONTENTBOX).one(".state.commenting").removeClass("current");
+            this.get(CONTENTBOX).one(".state.closed").removeClass("current");
 
-            if (ctx.datatable) {
-                ctx.datatable.destroy();
+            this.get(CONTENTBOX).one(".transition.start-review span").removeClass("active");
+            this.get(CONTENTBOX).one(".transition.close-review span").removeClass("active");
+            this.get(CONTENTBOX).one(".transition.close-comment span").removeClass("active");
+
+            switch (globalStatus) {
+                case "NOT_STARTED":
+                    this.get(CONTENTBOX).one(".transition.start-review span").addClass("active");
+                    this.get(CONTENTBOX).one(".state.not-started").addClass("current");
+                    break;
+                case "REVIEWING":
+                    this.get(CONTENTBOX).one(".transition.close-review span").addClass("active");
+                    this.get(CONTENTBOX).one(".state.reviewing").addClass("current");
+                    break;
+                case "COMMENTING":
+                    this.get(CONTENTBOX).one(".transition.close-comment span").addClass("active");
+                    this.get(CONTENTBOX).one(".state.commenting").addClass("current");
+                    break;
+                case "CLOSED":
+                    this.get(CONTENTBOX).one(".state.closed").addClass("current");
+                    break;
+                case "N/A":
+                    this.get(CONTENTBOX).one(".transition.start-review span").addClass("active");
+                    this.get(CONTENTBOX).one(".transition.close-review span").addClass("active");
+                    this.get(CONTENTBOX).one(".transition.close-review span").addClass("active");
+                    this.dispatchButton.enable(); // UKNW
+                    this.notifyButton.enable();  // UKNW
+                    this.closeButton.enable(); // UKWN
+                    break;
             }
-            ctx.datatable = new Y.DataTable({columns: columns, data: dtData, sortable: true});
-            ctx.datatable.render(this.get(CONTENTBOX).one(".summary"));
+
+            for (section in ctx.datatables) {
+                ctx.datatables[section].destroy();
+            }
+
+            for (section in this._monitoredData.structure) {
+                ctx.datatables[section] = new Y.DataTable({columns: columns[section], data: data[section], sortable: true});
+                ctx.datatables[section].render(this.get(CONTENTBOX).one(".summary ." + section));
+            }
             ctx.syncSummary();
         },
         addCell: function(table, content, td) {
@@ -195,8 +273,8 @@ YUI.add("wegas-review-widgets", function(Y) {
             node = this.get(CONTENTBOX).one(".charts");
             node.setContent("");
             node.append("<h1>Charts</h1>");
-            node.append("<div class=\"feedback\"></div>");
-            node.append("<div class=\"comments\"></div>");
+            node.append("<div class=\"feedback\"><h2>Reviews</h2></div>");
+            node.append("<div class=\"comments\"><h2>Comments</h2></div>");
 
             this.buildCharts(prd.get("feedback").get("evaluations"), node.one(".feedback"), evalSummary);
             this.buildCharts(prd.get("fbComments").get("evaluations"), node.one(".comments"), evalSummary);
@@ -252,8 +330,12 @@ YUI.add("wegas-review-widgets", function(Y) {
             }
             this.chart = new Chartist.Bar(klass, data, options);
         },
+        _formatNumber: function(value, nD) {
+            nD = nD || 2;
+            return value ? value.toFixed(nD) : "n/a";
+        },
         buildCharts: function(evals, node, summary) {
-            var i, evD, klass, data, math;
+            var i, evD, klass, data;/*math,*/
             for (i in evals) {
                 evD = evals[i];
                 klass = "eval-" + evD.get("id");
@@ -264,62 +346,62 @@ YUI.add("wegas-review-widgets", function(Y) {
                     "</div>");
                 data = summary[evD.get("id")].get("val");
                 if (evD.get("@class") === "GradeDescriptor") {
-                    if (Y.Lang.isNumber(data.sd)) {
-                        /*
-                         math = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">" + 
-                         "<mrow>" +
-                         "<mstyle displaystyle=\"true\" scriptlevel=\"0\"> " +
-                         "<mrow> " +
-                         "<mrow> " +
-                         "<mover> " +
-                         "<mi>x</mi> " +
-                         "<mo stretchy=\"false\">¯<!-- ¯ --></mo> " +
-                         "</mover> " +
-                         "</mrow> " +
-                         "<mo>=</mo>" +
-                         "<mn>"  + data.mean.toFixed(2) + "</mn>" +
-                         "<mo>;</mo>" +        
-                         "</mrow> " +
-                         "<mrow>"+
-                         "<mrow>"+
-                         "<mover> " +
-                         "<mi>x</mi> " +
-                         "<mo stretchy=\"false\">~<!-- ~ --></mo> " +
-                         "</mover> " +
-                         "</mrow> " +
-                         "</mrow> " +
-                         "<mo>=</mo>" +
-                         "<mn>"  + data.median.toFixed(2) + "</mn>" +
-                         "<mo>;</mo>" +
-                         "<mrow> " +
-                         "<mi>σ<!-- σ --></mi> " +
-                         "</mrow> " +
-                         "<mo>=</mo>" +
-                         "<mn>"  + data.sd.toFixed(2) + "</mn>" +
-                         "<mo>;</mo>" +
-                         "</mstyle> " +
-                         "</mrow> " +
-                         "</math>";*/
-                        this.createGradeChart("." + klass + " .chart", data, evD);
-                        node.one("." + klass + " .title").setContent("<h3>" + evD.get("name") + "</h3>");
-                        //node.one("." + klass + " .legend").append(math);
-                        node.one("." + klass + " .legend").append("<p>" +
-                            "avg: " + data.mean.toFixed(2) +
-                            "; med: " + data.median.toFixed(2) +
-                            "; &sigma;: " + data.sd.toFixed(2) +
-                            "; bounds: [" + data.min.toFixed(2) + "," + data.min.toFixed(2) + "]" +
-                            " </p>");
-                        node.one("." + klass + " .legend").append("<p>based on " + data.numberOfValues + "/" + summary.maxNumberOfValue + " values</p>");
-                    }
+                    /*
+                     math = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">" + 
+                     "<mrow>" +
+                     "<mstyle displaystyle=\"true\" scriptlevel=\"0\"> " +
+                     "<mrow> " +
+                     "<mrow> " +
+                     "<mover> " +
+                     "<mi>x</mi> " +
+                     "<mo stretchy=\"false\">¯<!-- ¯ --></mo> " +
+                     "</mover> " +
+                     "</mrow> " +
+                     "<mo>=</mo>" +
+                     "<mn>"  + data.mean.toFixed(2) + "</mn>" +
+                     "<mo>;</mo>" +        
+                     "</mrow> " +
+                     "<mrow>"+
+                     "<mrow>"+
+                     "<mover> " +
+                     "<mi>x</mi> " +
+                     "<mo stretchy=\"false\">~<!-- ~ --></mo> " +
+                     "</mover> " +
+                     "</mrow> " +
+                     "</mrow> " +
+                     "<mo>=</mo>" +
+                     "<mn>"  + data.median.toFixed(2) + "</mn>" +
+                     "<mo>;</mo>" +
+                     "<mrow> " +
+                     "<mi>σ<!-- σ --></mi> " +
+                     "</mrow> " +
+                     "<mo>=</mo>" +
+                     "<mn>"  + data.sd.toFixed(2) + "</mn>" +
+                     "<mo>;</mo>" +
+                     "</mstyle> " +
+                     "</mrow> " +
+                     "</math>";*/
+                    this.createGradeChart("." + klass + " .chart", data, evD);
+                    node.one("." + klass + " .title").setContent("<h3>" + evD.get("name") + "</h3>");
+                    //node.one("." + klass + " .legend").append(math);
+                    node.one("." + klass + " .legend").append("<p>" +
+                        "avg: " + this._formatNumber(data.mean) +
+                        "; med: " + this._formatNumber(data.median) +
+                        "; &sigma;: " + this._formatNumber(data.sd) +
+                        "; bounds: [" + this._formatNumber(data.min) + "," + this._formatNumber(data.min) + "]" +
+                        " </p>");
+
+                    node.one("." + klass + " .legend").append("<p>based on " + (data.numberOfValues || 0) + "/" + summary.maxNumberOfValue + " values</p>");
                 } else if (evD.get("@class") === "CategorizedEvaluationDescriptor") {
                     this.createCategoryChart("." + klass + " .chart", summary[evD.get("id")].get("val"), evD);
                     node.one("." + klass + " .title").setContent("<h3>" + evD.get("name") + "</h3>");
-                    node.one("." + klass + " .legend").append("<p>based on " + data.numberOfValues + "/" + summary.maxNumberOfValue + " values</p>");
+
+                    node.one("." + klass + " .legend").append("<p>based on " + (data.numberOfValues || 0) + "/" + summary.maxNumberOfValue + " values</p>");
                 } else if (evD.get("@class") === "TextEvaluationDescriptor") {
                     node.one("." + klass + " .title").setContent("<h3>" + evD.get("name") + "</h3>");
                     node.one("." + klass + " .chart").append("<p> Average number of words: " + (data.averageNumberOfWords ? data.averageNumberOfWords.toFixed(2) : "n/a") + "</p>");
                     node.one("." + klass + " .chart").append("<p>Average number of characters: " + (data.averageNumberOfCharacters ? data.averageNumberOfCharacters.toFixed(2) : "n/a") + "</p>");
-                    node.one("." + klass + " .legend").append("<p>based on " + data.numberOfValues + "/" + summary.maxNumberOfValue + " values</p>");
+                    node.one("." + klass + " .legend").append("<p>based on " + (data.numberOfValues || 0) + "/" + summary.maxNumberOfValue + " values</p>");
                 }
             }
         },
@@ -339,14 +421,20 @@ YUI.add("wegas-review-widgets", function(Y) {
         getEditorLabel: function() {
             return "Orchestrator";
         },
-        onClose: function() {
-            this.onAction("Close");
+        onClose: function(e) {
+            if (e.target.hasClass("active")) {
+                this.onAction("Close");
+            }
         },
-        onNotify: function() {
-            this.onAction("Notify");
+        onNotify: function(e) {
+            if (e.target.hasClass("active")) {
+                this.onAction("Notify");
+            }
         },
-        onDispatch: function() {
-            this.onAction("Dispatch");
+        onDispatch: function(e) {
+            if (e.target.hasClass("active")) {
+                this.onAction("Dispatch");
+            }
         },
         onAction: function(action) {
             var prd = this.get("variable.evaluated");
@@ -1431,6 +1519,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             if (!this.get("readonly")) {
                 frag = ['<select>'];
                 categs = desc.get("categories");
+                frag.push("<option value=\"\" disabled selected>--select--</option>");
                 for (i in categs) {
                     if (categs.hasOwnProperty(i)) {
                         categ = categs[i];

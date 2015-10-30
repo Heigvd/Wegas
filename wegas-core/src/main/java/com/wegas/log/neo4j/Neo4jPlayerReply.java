@@ -13,8 +13,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.wegas.core.Helper;
-import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.exception.internal.NoPlayerException;
+import com.wegas.core.persistence.NumberListener;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Player;
@@ -62,7 +62,7 @@ public class Neo4jPlayerReply {
         sessionContext.getBusinessObject(Neo4jPlayerReply.class).addPlayerReply(event.player, event.reply, (ChoiceDescriptor) event.choice.getDescriptor(), (QuestionDescriptor) event.question.getDescriptor());
     }
 
-    public void onNumberUpdate(@Observes RequestManager.NumberUpdate update) throws NoPlayerException, JsonProcessingException {
+    public void onNumberUpdate(@Observes NumberListener.NumberUpdate update) throws NoPlayerException, JsonProcessingException {
         sessionContext.getBusinessObject(Neo4jPlayerReply.class).addNumberUpdate(update.player, update.number);
     }
 
@@ -117,9 +117,9 @@ public class Neo4jPlayerReply {
     /**
      * Creates a new Question node, with all the necessary properties.
      *
-     * @param player             the player data
-     * @param reply              the player's answer data
-     * @param choiceDescriptor   the selected choice description
+     * @param player the player data
+     * @param reply the player's answer data
+     * @param choiceDescriptor the selected choice description
      * @param questionDescriptor the selected question description
      * @return a node object
      */
@@ -149,8 +149,8 @@ public class Neo4jPlayerReply {
      * Creates a new Number node, with all the necessary properties.
      *
      * @param player the player data
-     * @param name   the variable name
-     * @param value  the actual variable value
+     * @param name the variable name
+     * @param value the actual variable value
      * @return a node object
      * @throws JsonProcessingException
      */
@@ -172,10 +172,10 @@ public class Neo4jPlayerReply {
     /**
      * Link a new node to an already existing newest filtered by key
      *
-     * @param key           key to filter "youngest" nodes
+     * @param key key to filter "youngest" nodes
      * @param relationLabel label to put onto the relation
-     * @param target        new node to create
-     * @param label         label to put onto the node
+     * @param target new node to create
+     * @param label label to put onto the node
      * @throws JsonProcessingException
      */
     private static void createLinkedToYoungest(String key, String relationLabel, ObjectNode target, String label) throws JsonProcessingException {

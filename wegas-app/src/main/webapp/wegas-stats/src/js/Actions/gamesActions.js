@@ -5,28 +5,29 @@ import { getGameModelForGame, getVariables, getGames } from '../API/wegas';
 export function fetchGamesForLogId() {
     return (dispatch, getState) => {
         getGameForLogId(getState().logIds.current)
-            .then(v => dispatch({
+            .then(value => dispatch({
                     type: FETCH_GAMES_LOGID,
-                    data: v
-                }));
+                    data: value,
+                })
+        );
     };
 }
 export function fetchVariables(gameId) {
     return (dispatch) => {
         getGameModelForGame(gameId)
-            .then(function(gmId) {
-                return getVariables(gmId);
-            }).then(data => dispatch({
-                type: FETCH_VARS,
-                data: data
-            }));
+            .then(gmId => getVariables(gmId))
+            .then(data => dispatch({
+                    type: FETCH_VARS,
+                    data: data,
+                }));
     };
 }
 export function fetchGames() {
     return dispatch => {
-        getGames().then(res => dispatch({
-                type: FETCH_GAMES,
-                data: res
-            }));
-    }
+        getGames()
+            .then(res => dispatch({
+                    type: FETCH_GAMES,
+                    data: res,
+                }));
+    };
 }

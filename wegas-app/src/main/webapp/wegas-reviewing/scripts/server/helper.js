@@ -14,7 +14,7 @@
  *
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
-/*global Variable, gameModel, Java, javax, com, Infinity, StatisticHelper*/
+/*global self, Variable, gameModel, Java, javax, com, Infinity, StatisticHelper*/
 var ReviewHelper = (function() {
     "use strict";
     var Long = Java.type("java.lang.Long");
@@ -168,9 +168,7 @@ var ReviewHelper = (function() {
     }
 
     function getEvSummary(values, evDescriptor) {
-        if (values.length === 0) {
-            return {type: "Empty"};
-        } else if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.TextEvaluationDescriptor) {
+        if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.TextEvaluationDescriptor) {
             return getTextSummary(values, evDescriptor);
         } else if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.GradeDescriptor) {
             return getGradeSummary(values, evDescriptor);
@@ -183,32 +181,47 @@ var ReviewHelper = (function() {
 
     function summarize(peerReviewDescriptorName) {
         var prd = Variable.findByName(gameModel, peerReviewDescriptorName),
-            teams = self.getGame().getTeams(), t, teamId,
+            game = self.getGame(), teams = game.getTeams(), t, teamId,
             pris, pri, reviews, review, evs, ev, evK, i, j, k,
-            entry, nbRDone, nbRTot, nbRCom, nbRComTotal,
-            evaluations, evaluationsValues = {}, evDescriptor,
-            evDescriptors = {}, summary, tmp,
+            entry, nbRDone, nbRTot, nbRCom, nbRComClosed, nbRComTotal,
+            evaluationsR, evaluationsC, evaluationsAll, evaluationsValues = {}, evDescriptor,
+            evDescriptors = {}, tmp, key,
             maxNumberOfValue = 0,
             instanceFacade = lookupBean("VariableInstanceFacade"),
+            maxNumberOfReview = Math.min(prd.getMaxNumberOfReview(), teams.size() - 2), // Assume team scoped review. !~_~! 
+
             monitoring = {
-                structure: [{
-                        title: "Overview",
-                        items: [
-                            {id: "status", label: "Status", formatter: null},
-                            {id: "done", label: "Review Done", formatter: null},
-                            {id: "commented", label: "Review Commented", formatter: null}
-                        ]
-                    }],
+                structure: {
+                    overview: [{
+                            title: "Overview",
+                            items: [
+                                {id: "status", label: "Status", formatter: null},
+                                {id: "done", label: "Review Done", formatter: null},
+                                {id: "commented", label: "Review Commented", formatter: null}
+                            ]
+                        }],
+                    reviews: [],
+                    comments: []
+                },
                 data: {},
                 extra: {}
             };
 
-        evaluations = Java.from(prd.getFeedback().getEvaluations()).concat(Java.from(prd.getFbComments().getEvaluations()));
+        evaluationsR = Java.from(prd.getFeedback().getEvaluations());
+        evaluationsC = Java.from(prd.getFbComments().getEvaluations());
+        evaluationsAll = evaluationsC.concat(evaluationsR);
 
-        for (i = 0; i < evaluations.length; i += 1) {
-            ev = evaluations[i].getId();
+        for (i = 0; i < evaluationsR.length; i += 1) {
+            ev = evaluationsR[i].getId();
             evaluationsValues[ev] = [];
-            monitoring.structure.push(getEvStructure(evaluations[i]));
+            monitoring.structure.reviews.push(getEvStructure(evaluationsR[i]));
+        }
+
+
+        for (i = 0; i < evaluationsC.length; i += 1) {
+            ev = evaluationsC[i].getId();
+            evaluationsValues[ev] = [];
+            monitoring.structure.comments.push(getEvStructure(evaluationsC[i]));
         }
 
         pris = prd.getScope().getVariableInstances();
@@ -221,13 +234,16 @@ var ReviewHelper = (function() {
                 continue;
             }
 
-            entry = {};
+            entry = {
+                overview: {},
+                reviews: {},
+                comments: {}
+            };
 
             reviews = Java.from(pri.getToReview());
             maxNumberOfValue += reviews.length;
 
             nbRDone = nbRTot = reviews.length;
-            //entry.comments = {};
             tmp = {};
             for (j in reviews) {
                 if (reviews.hasOwnProperty(j)) {
@@ -256,13 +272,13 @@ var ReviewHelper = (function() {
                     }
                 }
             }
-            entry.done = nbRDone + " / " + nbRTot;
+            entry.overview.done = nbRDone + " / " + (nbRTot > 0 ? nbRTot : maxNumberOfReview);
             for (evK in tmp) {
-                mergeEvSummary(entry, tmp[evK], evDescriptors[evK]);
+                mergeEvSummary(entry.comments, tmp[evK], evDescriptors[evK]);
             }
 
             reviews = Java.from(pri.getReviewed());
-            nbRCom = nbRComTotal = 0;
+            nbRComClosed = nbRCom = nbRComTotal = 0;
             tmp = {};
             for (j in reviews) {
                 if (reviews.hasOwnProperty(j)) {
@@ -270,12 +286,14 @@ var ReviewHelper = (function() {
                     evs = Java.from(review.getFeedback());
 
                     switch (review.getReviewState().toString()) {
-                        case "COMPLETED":
                         case "CLOSED":
+                            nbRComClosed += 1;
+                        case "COMPLETED":
                             nbRCom += 1;
                             /*falls through*/
                         case "NOTIFIED":
                             nbRComTotal += 1;
+                        case "REVIEWED":
                             for (k in evs) {
                                 if (evs.hasOwnProperty(k)) {
                                     ev = evs[k];
@@ -292,46 +310,61 @@ var ReviewHelper = (function() {
                     }
                 }
             }
-            entry.commented = nbRCom + " / " + nbRComTotal;
+            entry.overview.commented = nbRCom + " / " + (nbRComTotal > 0 ? nbRComTotal : maxNumberOfReview);
             for (evK in tmp) {
-                mergeEvSummary(entry, tmp[evK], evDescriptors[evK]);
+                mergeEvSummary(entry.reviews, tmp[evK], evDescriptors[evK]);
             }
 
             // Set status
             if (nbRComTotal > 0) {
-                if (nbRComTotal === nbRCom) {
-                    entry.status = "Completed";
+                if (nbRComTotal === nbRComClosed) {
+                    entry.overview.status = "Closed";
+                } else if (nbRComTotal === nbRCom) {
+                    entry.overview.status = "Completed";
                 } else {
-                    entry.status = "Commenting";
+                    entry.overview.status = "Commenting";
                 }
             } else if (nbRTot > 0) {
                 if (nbRTot === nbRDone) {
-                    entry.status = "Review done";
+                    entry.overview.status = "Review done";
                 } else {
-                    entry.status = "Reviewing";
+                    entry.overview.status = "Reviewing";
                 }
             } else if (pri.getReviewState().toString() === "NOT_STARTED") {
-                entry.status = "Editing";
+                entry.overview.status = "Editing";
             } else if (pri.getReviewState().toString() === "SUBMITTED") {
-                entry.status = "Ready to review";
+                entry.overview.status = "Ready to review";
             } else {
-                entry.status = "N/A";
+                entry.overview.status = "N/A";
             }
 
             monitoring.data[teamId] = entry;
         }
 
-        for (i = 0; i < evaluations.length; i += 1) {
-            evDescriptor = evaluations[i];
+        for (i = 0; i < evaluationsAll.length; i += 1) {
+            evDescriptor = evaluationsAll[i];
             monitoring.extra[evDescriptor.getId()] = getEvSummary(evaluationsValues[evDescriptor.getId()], evDescriptor);
         }
+
+        if (maxNumberOfValue === 0) {
+            if (game.getClass().getSimpleName() === "DebugGame") {
+                maxNumberOfValue = 1;
+            } else {
+                // evict test teams...
+                maxNumberOfValue = (teams.size() - 1) * maxNumberOfReview;
+            }
+        }
+
         monitoring.extra.maxNumberOfValue = maxNumberOfValue;
 
-        monitoring.structure.forEach(function(groupItems) {
-            groupItems.items.forEach(function(item) {
-                item.formatter = item.formatter + "";
+        for (key in monitoring.structure) {
+            monitoring.structure[key].forEach(function(groupItems) {
+                groupItems.items.forEach(function(item) {
+                    item.formatter = item.formatter + "";
+                });
             });
-        });
+        }
+        ;
         return JSON.stringify(monitoring);
     }
 

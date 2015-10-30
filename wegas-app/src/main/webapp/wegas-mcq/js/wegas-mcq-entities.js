@@ -320,12 +320,12 @@ YUI.add('wegas-mcq-entities', function(Y) {
             },
             addShortcut: {
                 type: STRING,
+                "transient": true,
                 value: "Result",
                 _inputex: {
                     _type: HIDDEN
                 }
             }
-
         },
         EDITMENU: [{
                 type: "EditEntityButton"
@@ -530,6 +530,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
             },
             addShortcut: {
                 type: STRING,
+                "transient": true,
                 value: "",
                 _inputex: {
                     _type: HIDDEN

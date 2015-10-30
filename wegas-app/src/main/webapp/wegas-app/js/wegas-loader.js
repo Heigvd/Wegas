@@ -53,8 +53,8 @@ YUI().use(function(Y) {
                     "wegas-helper", "wegas-entity", "wegas-datasource", "font-awesome", "template-micro", "wegas-i18n",
                     "wegas-keyframescss"]
             },
-            "wegas-keyframescss":{
-                type:CSS
+            "wegas-keyframescss": {
+                type: CSS
             },
             "wegas-editable": {
                 requires: "inputex-jsonschema"
@@ -207,10 +207,13 @@ YUI().use(function(Y) {
                 ws_provides: "TextInput",
                 requires: ["wegas-text-inputcss", "wegas-widget", "tinymce", "wegas-panel-fileselect", "wegas-button"]
             },
+            "wegas-number-inputcss": {
+                type: CSS
+            },
             "wegas-number-input": {
                 path: "js/widget/wegas-number-input-min.js",
-                ws_provides: "NumberInput",
-                requires: ["wegas-widget", "wegas-button", "slider", "wegas-i18n-global"]
+                ws_provides: ["NumberInput", "BoxesNumberInput"],
+                requires: ["wegas-number-inputcss", "wegas-widget", "wegas-button", "slider", "wegas-i18n-global"]
             },
             "wegas-text": {
                 path: "js/widget/wegas-text-min.js",
@@ -335,10 +338,10 @@ YUI().use(function(Y) {
                 path: "js/plugin/wegas-blockrightclick-min.js",
                 ws_provides: "BlockRightclick"
             },
-            "wegas-panel-pageloader":{
-                path:"js/plugin/wegas-panel-pageloader-min.js",
-                requires:["wegas-plugin", "wegas-pageloader", "wegas-panel"],
-                ws_provides:"OpenPanelPageloader"
+            "wegas-panel-pageloader": {
+                path: "js/plugin/wegas-panel-pageloader-min.js",
+                requires: ["wegas-plugin", "wegas-pageloader", "wegas-panel"],
+                ws_provides: "OpenPanelPageloader"
             },
             "wegas-visibilitytimer": {
                 path: "js/plugin/wegas-visibilitytimer-min.js",

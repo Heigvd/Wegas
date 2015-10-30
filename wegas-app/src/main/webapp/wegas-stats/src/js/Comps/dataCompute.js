@@ -4,14 +4,14 @@ function genLabel(questionName, snapshot) {
     const question = JSON.search(snapshot, `//*[@class='QuestionDescriptor'][name='${questionName}']`)[0];
     const labels = [];
     if (question) {
-        question.items.forEach(function(i) {
-            if (i.results.length) {
-                i.results.forEach(function(r) {
-                    labels.push(JSON.search(snapshot, `//*[name="${i.name}"]`)[0].label +
-                        (r.label ? ` (${r.label})` : ''));
+        question.items.forEach(function(choice) {
+            if (choice.results.length) {
+                choice.results.forEach(function(result) {
+                    labels.push(JSON.search(snapshot, `//*[name="${choice.name}"]`)[0].label +
+                        (result.label ? ` (${result.label})` : ''));
                 });
             } else {
-                labels.push(JSON.search(snapshot, `//*[name="${i.name}"]`)[0].label);
+                labels.push(JSON.search(snapshot, `//*[name="${choice.name}"]`)[0].label);
             }
         });
     }
@@ -23,54 +23,56 @@ function questionSerie(questionName, questionData, snapshot) {
     const serie = [];
     let count = 0;
 
-    question.items.forEach(function(i) {
-        choices.set(i.name, new Map());
-        if (i.results.length) {
-            i.results.forEach(function(r) {
-                choices.get(i.name).set(r.label, 0);
+    question.items.forEach(function(choice) {
+        choices.set(choice.name, new Map());
+        if (choice.results.length) {
+            choice.results.forEach(function(result) {
+                choices.get(choice.name).set(result.label, 0);
             });
         } else {
-            choices.get(i.name).set('', 0);
+            choices.get(choice.name).set('', 0);
         }
     });
 
 
-    questionData.forEach(function(i) {
-        choices.get(i.choice).set(i.result, choices.get(i.choice).get(i.result) + 1);
+    questionData.forEach(function(questionItem) {
+        choices.get(questionItem.choice).set(questionItem.result, choices.get(questionItem.choice).get(questionItem.result) + 1);
         count += 1;
     });
 
-    choices.forEach(function(v) {
-        v.forEach(function(val) {
+    choices.forEach(function(choice) {
+        choice.forEach(function(val) {
             serie.push(val / (count ? count : 1) * 100);
         });
     });
     return {
         serie,
-        count
+        count,
     };
 }
 function computeData({question, snapshot, logId, groups}) {
     const data = {
         labels: genLabel(question, snapshot),
-        series: []
+        series: [],
     };
-    return Promise.all(groups.map((g, index) => {
-        if (g.length) {
-            return getQuestionData(logId, question, ...g)
-                .then(data => questionSerie(question, data, snapshot, index));
-        } else {
-            return {
-                serie: [],
-                count: 0
-            };
+    return Promise.all(groups.map((group, index) => {
+        if (group.length) {
+            return getQuestionData(logId, question, ...group)
+                .then(questionData => questionSerie(question, questionData, snapshot, index));
         }
+        return {
+            serie: [],
+            count: 0,
+        };
     }))
         .then(questions => {
-            for (let q in questions) {
-                data.series[q] = {
-                    data: questions[q].serie
-                };
+            let quest;
+            for (quest in questions) {
+                if (questions.hasOwnProperty(quest)) {
+                    data.series[quest] = {
+                        data: questions[quest].serie,
+                    };
+                }
             }
             return data;
         })
@@ -82,14 +84,19 @@ function computeDiffs(data) {
     const ref = data.series[0].data;
     const newData = {
         labels: data.labels,
-        series: []
+        series: [],
     };
-    for (let i in data.series) {
-        newData.series[i] = {
-            data: data.series[i].data.map((val, index) => ref[index] - val) //quote DJ : "doit moins avoir"
-        };
+    let item;
+    function diff(val, index) {
+        return Math.abs(ref[index] - val); // quote DJ : "doit moins avoir" => Abs
+    }
+    for (item in data.series) {
+        if (data.series.hasOwnProperty(item)) {
+            newData.series[item] = {
+                data: data.series[item].data.map(diff),
+            };
+        }
     }
     return newData;
-
 }
 export { computeData, computeDiffs };

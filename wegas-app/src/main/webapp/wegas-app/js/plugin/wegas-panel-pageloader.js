@@ -19,6 +19,7 @@ YUI.add("wegas-panel-pageloader", function(Y) {
                 new Y.Wegas.Panel({
                     children: [new Y.Wegas.PageLoader({
                         pageId: this.get("page"),
+                        cssClass: "wegas-panel-pageloader",
                         pageLoaderId: "Modalpageloader" + Y.Lang.now()
                     })],
                     width: this.get("width"),
