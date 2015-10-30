@@ -89,7 +89,7 @@ angular.module('private.admin.users.edit.directives', ['wegas.directive.permissi
                 scope.removeGroup = function() {
                     scope.user.account.roles = _(scope.user.account.roles).filter(function (r) {
                         return r.id !== scope.selectedGroup.id;
-                    });
+                    }).value();
                 };
             }
         };
