@@ -18,11 +18,11 @@ angular.module('wegas.models.permissions', [])
                             var localPermission = permission.value.match(pattern)[1].split(",");
                             permissions = permissions.merge(localPermission)
                         }
-                    });
+                    }).value();
                     if (permissions.indexOf("View") >= 0 && permissions.indexOf("Edit") >= 0) {
                         permissionsToReturn.push(account);
                     }
-                });
+                }).value();
                 deferred.resolve(permissionsToReturn);
             }).error(function(data) {
                 deferred.resolve(false);

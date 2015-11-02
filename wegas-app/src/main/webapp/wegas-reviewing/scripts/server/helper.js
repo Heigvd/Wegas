@@ -137,7 +137,7 @@ var ReviewHelper = (function() {
             structure.items.push({"id": evDescriptor.getId() + "-cc", "label": "Char Count", formatter: null});
         } else if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.GradeDescriptor) {
             structure.items.push({"id": evDescriptor.getId() + "-mean", "label": "mean", formatter: null});
-            structure.items.push({"id": evDescriptor.getId() + "-median", "label": "median", formatter: null});
+            //structure.items.push({"id": evDescriptor.getId() + "-median", "label": "median", formatter: null});
             structure.items.push({"id": evDescriptor.getId() + "-sd", "label": "sd", formatter: null});
         } else if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.CategorizedEvaluationDescriptor) {
             cats = Java.from(evDescriptor.getCategories());

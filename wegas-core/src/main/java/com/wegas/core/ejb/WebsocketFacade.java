@@ -109,7 +109,7 @@ public class WebsocketFacade {
             if (player != null) {
                 if (currentPlayer != null && currentPlayer.getUser() != null
                         && currentPlayer.getUser().equals(user)) {
-                    return player == currentPlayer;
+                    return player.equals(currentPlayer);
                 } else {
                     // Trainer and scenarist 
                     return SecurityHelper.isPermitted(player.getGame(), "Edit");
