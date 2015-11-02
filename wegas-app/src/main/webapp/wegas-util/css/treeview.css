@@ -193,7 +193,7 @@
     display: block;
     text-align: center;
 }
-.yui3-treenode-collapsed>ul:empty::before{
+.yui3-treenode-collapsed ul:empty::before{
     content: "";
 }
 /** FILTER **/
