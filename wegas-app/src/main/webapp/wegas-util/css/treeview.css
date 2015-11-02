@@ -215,19 +215,7 @@
     padding-bottom: 0;
     max-height: 0;
 }
-
-.yui3-treeview-content .yui3-dd-dragging{
-    display:block;
-    margin:0px 5px;
-    height:2px;
-    background-color:#6D6D6D;
-    opacity:1 !important;
-}
-
-.yui3-treeview-content .yui3-dd-dragging *{
-    display:none;
-}
-
-.yui3-treeview-content .yui3-dd-in{
+.yui3-treeview-content .yui3-sortable-widget {
+    opacity: 0.5;
     border: dashed 1px grey;
 }

@@ -397,7 +397,7 @@ YUI().use(function(Y) {
             },
             "treeview-filter": {},
             "treeview-sortable": {
-                requires: ["sortable", "sortable-scroll"]
+                requires: ["plugin", "event", "array-extras", "yui-later"]
             },
             "wegas-progressbar": {
                 requires: "widget"

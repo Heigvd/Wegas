@@ -115,7 +115,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                                 },
                                 searchVal: "--" + results.join("--")
                             });
-                        }, this.treeView.filter), false/*Exact match*/);
+                        }, this.treeView.filter), false /*Exact match*/);
                     }, this)
                 }
             });
@@ -158,13 +158,13 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             this.treeView.plug(Plugin.TreeViewSortable, {
                 nodeGroups: [{
                     nodeClass: "wegas-editor-questionitem",
-                    parentNode: ".wegas-editor-question"
+                    parentNode: "wegas-editor-question"
                 }, {
                     nodeClass: "wegas-editor-listitem",
-                    parentNode: ".wegas-editor-list"
+                    parentNode: ["wegas-editor-list", "yui3-treeview"]
                 }, {
                     nodeClass: "wegas-editor-resultitem",
-                    parentNode: ".wegas-editor-questionitem"
+                    parentNode: "wegas-editor-questionitem"
                 }]
             }); // Add sortable plugin to the treeview
             this.treeView.sortable.on("sort", function(e) { // On sort event,
@@ -266,7 +266,9 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             //oldElement.set("label", e.entity.getEditorLabel());
         },
         updateInstance: function(e) {
-            this.updateDescriptor({entity: Y.Wegas.Facade.Variable.cache.find("id", e.entity.get("descriptorId"))});
+            this.updateDescriptor({
+                entity: Y.Wegas.Facade.Variable.cache.find("id", e.entity.get("descriptorId"))
+            });
         },
         deleteEntity: function(e) {
             var node = this.findNode(e.entity);
@@ -281,7 +283,8 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
          * @private
          */
         genTreeViewElement: function(entity) {
-            var children, elClass = entity.get(CLASS),
+            var children,
+                elClass = entity.get(CLASS),
                 collapsed = !this.isNodeExpanded(entity),
                 selected = (this.currentSelection === entity.get(ID)) ? 2 : 0,
                 text = entity.getEditorLabel(),
@@ -290,7 +293,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
              tooltip = entity.getType().replace("Descriptor", "") + ": " + entity.getEditorLabel(),*/
                 erroredClass = Y.Object.hasKey(Y.Wegas.Facade.Variable.script.errored, entity.get(ID)) ?
                     "variable-error" : "",
-                advancedClass = text.indexOf("_")===0 ? "wegas-advanced-feature" : "",
+                advancedClass = text.indexOf("_") === 0 ? "wegas-advanced-feature" : "",
                 addClass = [erroredClass, advancedClass].join(" ");
             if (entity.get("items")) {
                 collapsed = collapsed && !Y.Array.find(entity.get("items"), function(e) {
