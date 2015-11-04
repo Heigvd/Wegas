@@ -5,24 +5,30 @@ angular.module('wegas.models.permissions', [])
         model.getSessionPermissions = function(session) {
             var deferred = $q.defer(),
                 permissionsToReturn;
-            $http.get(ServiceURL + "rest/Extended/User/FindAccountPermissionByInstance/g" + session.id).success(function(data) {
+            $http.get(ServiceURL + "rest/Extended/User/FindUserPermissionByInstance/g" +
+                      session.id).success(function(data) {
                 permissionsToReturn = [];
-                _(data).each(function(account, i) {
-                    var permissions = [],
-                        pattern = new RegExp("^Game:(.*):g" + session.id + "$");
+                _(data)
+                    .map(function(user) {
+                        return user.accounts;
+                    })
+                    .flatten()
+                    .each(function(account, i) {
+                        var permissions = [],
+                            pattern = new RegExp("^Game:(.*):g" + session.id + "$");
 
-                    // For each permission of each account...
-                    _(account.permissions).each(function(permission, j) {
-                        // Is permission linked with current game ?
-                        if (pattern.test(permission.value)) {
-                            var localPermission = permission.value.match(pattern)[1].split(",");
-                            permissions = permissions.merge(localPermission)
+                        // For each permission of each account...
+                        _(account.permissions).each(function(permission, j) {
+                            // Is permission linked with current game ?
+                            if (pattern.test(permission.value)) {
+                                var localPermission = permission.value.match(pattern)[1].split(",");
+                                permissions = permissions.merge(localPermission)
+                            }
+                        }).value();
+                        if (permissions.indexOf("View") >= 0 && permissions.indexOf("Edit") >= 0) {
+                            permissionsToReturn.push(account);
                         }
                     }).value();
-                    if (permissions.indexOf("View") >= 0 && permissions.indexOf("Edit") >= 0) {
-                        permissionsToReturn.push(account);
-                    }
-                }).value();
                 deferred.resolve(permissionsToReturn);
             }).error(function(data) {
                 deferred.resolve(false);
@@ -41,22 +47,23 @@ angular.module('wegas.models.permissions', [])
                     }
                 });
                 if (!alreadyIn) {
-                    $http.post(ServiceURL + "rest/Extended/User/addAccountPermission/Game:View,Edit:g" + session.id + "/" + trainer.id).success(function(data) {
-                        $translate('COMMONS-PERMISSIONS-SESSIONS-CREATE-FLASH-SUCCESS').then(function (message) {
+                    $http.post(ServiceURL + "rest/Extended/User/addAccountPermission/Game:View,Edit:g" + session.id +
+                               "/" + trainer.id).success(function(data) {
+                        $translate('COMMONS-PERMISSIONS-SESSIONS-CREATE-FLASH-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, trainer));
                         });
                     }).error(function(data) {
-                        $translate('COMMONS-PERMISSIONS-SESSIONS-CREATE-FLASH-ERROR').then(function (message) {
+                        $translate('COMMONS-PERMISSIONS-SESSIONS-CREATE-FLASH-ERROR').then(function(message) {
                             deferred.resolve(Responses.error(message, false));
                         });
                     });
                 } else {
-                    $translate('COMMONS-PERMISSIONS-SESSIONS-ALREADY-CREATE-FLASH-INFO').then(function (message) {
+                    $translate('COMMONS-PERMISSIONS-SESSIONS-ALREADY-CREATE-FLASH-INFO').then(function(message) {
                         deferred.resolve(Responses.info(message, false));
                     });
                 }
             } else {
-                $translate('COMMONS-AUTH-CURRENT-FLASH-ERROR').then(function (message) {
+                $translate('COMMONS-AUTH-CURRENT-FLASH-ERROR').then(function(message) {
                     deferred.resolve(Responses.danger(message, false));
                 });
             }
@@ -67,27 +74,28 @@ angular.module('wegas.models.permissions', [])
         model.removeSessionPermission = function(session, trainers, trainer) {
             var deferred = $q.defer();
             if (session) {
-                $http.delete(ServiceURL + "rest/Extended/User/DeleteAccountPermissionByInstanceAndAccount/g" + session.id + "/" + trainer.id).success(function(data) {
-                    $translate('COMMONS-PERMISSIONS-SESSIONS-DELETE-FLASH-SUCCESS').then(function (message) {
+                $http.delete(ServiceURL + "rest/Extended/User/DeleteAccountPermissionByInstanceAndAccount/g" +
+                             session.id + "/" + trainer.id).success(function(data) {
+                    $translate('COMMONS-PERMISSIONS-SESSIONS-DELETE-FLASH-SUCCESS').then(function(message) {
                         deferred.resolve(Responses.success(message, trainer));
                     });
                 }).error(function(data) {
-                    $translate('COMMONS-PERMISSIONS-SESSIONS-DELETE-FLASH-ERROR').then(function (message) {
+                    $translate('COMMONS-PERMISSIONS-SESSIONS-DELETE-FLASH-ERROR').then(function(message) {
                         deferred.resolve(Responses.danger(message, false));
                     });
                 });
             } else {
-                $translate('COMMONS-AUTH-CURRENT-FLASH-ERROR').then(function (message) {
+                $translate('COMMONS-AUTH-CURRENT-FLASH-ERROR').then(function(message) {
                     deferred.resolve(Responses.danger(message, false));
                 });
             }
             return deferred.promise;
         };
 
-
         model.getScenarioPermissions = function(scenarioId) {
             var deferred = $q.defer(),
-            	url = "rest/Extended/User/FindAccountPermissionByInstance/gm" + scenarioId;
+                url = "rest/Extended/User/FindUserPermissionByInstance/gm" + scenarioId;
+
             function mapPermissions(data) {
                 /* Transform permissions in a comprehensible way :) */
                 var permissions = [];
@@ -96,27 +104,34 @@ angular.module('wegas.models.permissions', [])
                 var itemsRegex = new RegExp(":(.*):");
 
                 /* For each user */
-                _.each(data, function(user) {
+                _(data)
+                    .map(function(user) {
+                        return user.accounts;
+                    })
+                    .flatten()
+                    .each(function(account) {
 
                     /* Search for permissions linked with current scenario */
                     var userPermissions = [];
-                    _.each(user.permissions, function(element, index, list) {
+                    _.each(account.permissions, function(element, index, list) {
                         if (gameRegex.test(element.value)) {
                             var items = itemsRegex.exec(element.value);
                             userPermissions = userPermissions.concat(items[1].split(","));
                         }
                     });
 
-                    userPermissions = _.uniq(userPermissions); /* Remove duplicates */
+                    userPermissions = _.uniq(userPermissions);
+                    /* Remove duplicates */
 
                     permissions.push({
-                        user: user,
+                        user: account,
                         permissions: userPermissions
                     });
 
-                });
+                }).value();
                 return permissions;
-            }           
+            }
+
             $http.get(ServiceURL + url, {
                 "headers": {
                     "managed-mode": "true"
@@ -124,30 +139,29 @@ angular.module('wegas.models.permissions', [])
             }).success(function(data) {
                 if (data.events !== undefined && data.events.length === 0) {
                     var permissions = mapPermissions(data.entities);
-                    $translate('COMMONS-PERMISSIONS-SCENARIOS-UPDATE-FLASH-SUCCESS').then(function (message) {
+                    $translate('COMMONS-PERMISSIONS-SCENARIOS-UPDATE-FLASH-SUCCESS').then(function(message) {
                         deferred.resolve(Responses.success(message, permissions));
                     });
                 } else {
                     if (data.events !== undefined) {
                         console.log("WEGAS LOBBY : Error while loading permissions");
                         console.log(data.events);
-                    } 
-                    $translate('COMMONS-PERMISSIONS-SCENARIOS-FIND-FLASH-ERROR').then(function (message) {
+                    }
+                    $translate('COMMONS-PERMISSIONS-SCENARIOS-FIND-FLASH-ERROR').then(function(message) {
                         deferred.resolve(Responses.danger(message, false));
                     });
-                } 
+                }
             }).error(function(data) {
                 if (data.events !== undefined) {
                     console.log("WEGAS LOBBY : Error while loading permissions");
                     console.log(data.events);
-                } 
-                $translate('COMMONS-PERMISSIONS-SCENARIOS-FIND-FLASH-ERROR').then(function (message) {
+                }
+                $translate('COMMONS-PERMISSIONS-SCENARIOS-FIND-FLASH-ERROR').then(function(message) {
                     deferred.resolve(Responses.danger(message, false));
                 });
             });
             return deferred.promise;
         };
-
 
         model.updateScenarioPermissions = function(scenarioId, userId, canCreate, canDuplicate, canEdit) {
             var deferred = $q.defer();
@@ -175,7 +189,7 @@ angular.module('wegas.models.permissions', [])
                     }
 
                     var url = "rest/Extended/User/addAccountPermission/" +
-                        "GameModel:" + permissions + ":gm" + scenarioId + "/" + userId;
+                              "GameModel:" + permissions + ":gm" + scenarioId + "/" + userId;
                     // Updating permissions
                     $http.post(ServiceURL + url, null, {
                         "headers": {
@@ -183,15 +197,15 @@ angular.module('wegas.models.permissions', [])
                         }
                     }).success(function(data) {
                         if (data.events !== undefined && data.events.length === 0) {
-                            $translate('COMMONS-PERMISSIONS-SCENARIOS-UPDATE-FLASH-SUCCESS').then(function (message) {
+                            $translate('COMMONS-PERMISSIONS-SCENARIOS-UPDATE-FLASH-SUCCESS').then(function(message) {
                                 deferred.resolve(Responses.success(message, true));
                             });
                         } else {
                             if (data.events !== undefined) {
                                 console.log("WEGAS LOBBY : Error while updating permissions");
                                 console.log(data.events);
-                            } 
-                            $translate('COMMONS-PERMISSIONS-SCENARIOS-UPDATE-FLASH-ERROR').then(function (message) {
+                            }
+                            $translate('COMMONS-PERMISSIONS-SCENARIOS-UPDATE-FLASH-ERROR').then(function(message) {
                                 deferred.resolve(Responses.danger(message, false));
                             });
                         }
@@ -199,8 +213,8 @@ angular.module('wegas.models.permissions', [])
                         if (data.events !== undefined) {
                             console.log("WEGAS LOBBY : Error while updating permissions");
                             console.log(data.events);
-                        } 
-                        $translate('COMMONS-PERMISSIONS-SCENARIOS-UPDATE-FLASH-ERROR').then(function (message) {
+                        }
+                        $translate('COMMONS-PERMISSIONS-SCENARIOS-UPDATE-FLASH-ERROR').then(function(message) {
                             deferred.resolve(Responses.danger(message, false));
                         });
                     });
@@ -211,7 +225,7 @@ angular.module('wegas.models.permissions', [])
 
         model.deleteScenarioPermissions = function(scenarioId, userId) {
             var deferred = $q.defer(),
-            	url = "rest/Extended/User/DeleteAccountPermissionByInstanceAndAccount/gm" + scenarioId + "/" + userId;
+                url = "rest/Extended/User/DeleteAccountPermissionByInstanceAndAccount/gm" + scenarioId + "/" + userId;
 
             $http.delete(ServiceURL + url, {
                 "headers": {
@@ -219,15 +233,15 @@ angular.module('wegas.models.permissions', [])
                 }
             }).success(function(data) {
                 if (data.events !== undefined && data.events.length === 0) {
-                    $translate('COMMONS-PERMISSIONS-SCENARIOS-DELETE-FLASH-SUCCESS').then(function (message) {
+                    $translate('COMMONS-PERMISSIONS-SCENARIOS-DELETE-FLASH-SUCCESS').then(function(message) {
                         deferred.resolve(Responses.success(message, true));
                     });
                 } else {
                     if (data.events !== undefined) {
                         console.log("WEGAS LOBBY : Error while deleting permissions");
                         console.log(data.events);
-                    } 
-                    $translate('COMMONS-PERMISSIONS-SCENARIOS-DELETE-FLASH-ERROR').then(function (message) {
+                    }
+                    $translate('COMMONS-PERMISSIONS-SCENARIOS-DELETE-FLASH-ERROR').then(function(message) {
                         deferred.resolve(Responses.danger(message, false));
                     });
                 }
@@ -235,8 +249,8 @@ angular.module('wegas.models.permissions', [])
                 if (data.events !== undefined) {
                     console.log("WEGAS LOBBY : Error while deleting permissions");
                     console.log(data.events);
-                } 
-                $translate('COMMONS-PERMISSIONS-SCENARIOS-DELETE-FLASH-ERROR').then(function (message) {
+                }
+                $translate('COMMONS-PERMISSIONS-SCENARIOS-DELETE-FLASH-ERROR').then(function(message) {
                     deferred.resolve(Responses.danger(message, false));
                 });
             });

@@ -10,7 +10,7 @@ angular.module('wegas.models.scenarios', [])
                 cache: {},
                 findScenario: function(status, id) {
                     return _.find(scenarios.cache[status].data, function(s) {
-                        return s.id === id;
+                        return +s.id === +id;
                     });
                 },
                 stopWaiting: function(waitFunction) {
@@ -145,7 +145,7 @@ angular.module('wegas.models.scenarios', [])
                             var scenario = data.entities[0];
                             deferred.resolve(scenario);
                         } else if (data.events !== undefined) {
-                            //Responses.danger(data.events[0].exceptions[0].message, 
+                            //Responses.danger(data.events[0].exceptions[0].message,
                             deferred.resolve(false);
                         } else {
                             deferred.resolve(false);

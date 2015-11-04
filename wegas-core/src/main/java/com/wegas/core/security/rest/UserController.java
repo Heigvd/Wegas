@@ -597,7 +597,7 @@ public class UserController {
      * @return
      */
     @GET
-    @Path("FindAccountPermissionByInstance/{entityId}")
+    @Path("FindUserPermissionByInstance/{entityId}")
     public List<User> findUserPermissionByInstance(@PathParam("entityId") String entityId) {
 
         checkGmOrGPermission(entityId, "GameModel:Edit:", "Game:Edit:");
