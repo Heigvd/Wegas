@@ -8,6 +8,7 @@
 package com.wegas.core.persistence.variable.primitive;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -69,6 +70,10 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
         this.setMinValue(other.getMinValue());
         this.setMaxValue(other.getMaxValue());
         super.merge(a);
+        if (!this.isValueValid(this.getDefaultValue())) {
+            throw new WegasOutOfBoundException(this.getMinValue(),
+                    this.getMaxValue(), this.getDefaultValue(), this.getLabel());
+        }
     }
 
     /**
@@ -194,5 +199,9 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
      */
     public double getValue(Player p) {
         return this.getInstance(p).getValue();
+    }
+
+    public boolean isValueValid(double value) {
+        return !(this.getMaxValue() != null && value > this.getMaxValueD() || (this.getMinValue() != null && value < this.getMinValueD()));
     }
 }

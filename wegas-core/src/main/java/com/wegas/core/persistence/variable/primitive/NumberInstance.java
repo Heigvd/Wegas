@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NumberListener;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import org.slf4j.Logger;
@@ -30,8 +31,8 @@ import java.util.List;
 @EntityListeners(NumberListener.class)
 
 /*@Table(indexes = {
-    @Index(columnList = "history.numberinstance_variableinstance_id")
-})*/
+ @Index(columnList = "history.numberinstance_variableinstance_id")
+ })*/
 public class NumberInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
@@ -81,11 +82,11 @@ public class NumberInstance extends VariableInstance {
      */
     public void setValue(double value) {
         try {
-            if (this.getDescriptor() instanceof NumberDescriptor) {             // @fixme (Occurs when numberinstance are used for list descriptors)
-                NumberDescriptor desc = (NumberDescriptor) this.getDescriptor();
+            VariableDescriptor vd = this.getDescriptorOrDefaultDescriptor();
+            if (vd instanceof NumberDescriptor) { // @fixme (Occurs when numberinstance are used for list descriptors) (IS THAT FUCKIN EXISTING ANY MORE ???)
+                NumberDescriptor desc = (NumberDescriptor) vd;
 
-                if ((desc.getMaxValue() != null && value > desc.getMaxValueD())
-                    || (desc.getMinValue() != null && value < desc.getMinValueD())) {
+                if (!desc.isValueValid(value)) {
                     throw new WegasOutOfBoundException(desc.getMinValue(), desc.getMaxValue(), value, desc.getLabel());
                 }
             }
