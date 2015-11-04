@@ -16,6 +16,10 @@ import java.util.Locale;
 import javax.persistence.*;
 ////import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.rest.util.Views;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
@@ -23,6 +27,10 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
  */
 @Entity
 @Table(name = "users")
+
+@NamedQueries({
+    @NamedQuery(name = "findUserPermissions", query = "SELECT DISTINCT users FROM User users JOIN users.permissions p WHERE p.value LIKE :instance")
+})
 public class User extends AbstractEntity implements Comparable<User> {
 
     private static final long serialVersionUID = 1L;
@@ -44,6 +52,19 @@ public class User extends AbstractEntity implements Comparable<User> {
     @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference(value = "user-account")
     private List<AbstractAccount> accounts = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
+    @JsonIgnore
+    private List<Permission> permissions = new ArrayList<>();
+
+    @ManyToMany
+    @JsonView(Views.ExtendedI.class)
+    @JoinTable(name = "users_roles",
+            joinColumns = {
+                @JoinColumn(name = "users_id", referencedColumnName = "id")},
+            inverseJoinColumns = {
+                @JoinColumn(name = "roles_id", referencedColumnName = "id")})
+    private Set<Role> roles = new HashSet<>();
 
     /**
      *
@@ -142,6 +163,95 @@ public class User extends AbstractEntity implements Comparable<User> {
         } else {
             return "unnamed";
         }
+    }
+
+    /**
+     * @return the permissions
+     */
+    public List<Permission> getPermissions() {
+        return this.permissions;
+    }
+
+    /**
+     * @param permissions the permissions to set
+     */
+    public void setPermissions(List<Permission> permissions) {
+        this.permissions = permissions;
+        for (Permission p : this.permissions) {
+            p.setUser(this);
+        }
+    }
+
+    /**
+     *
+     * @param permission
+     */
+    public void removePermission(String permission) {
+        this.permissions.remove(new Permission(permission));
+    }
+
+    /**
+     *
+     * @param permission
+     * @param inducedPermission
+     * @return
+     */
+    public boolean addPermission(String permission, String inducedPermission) {
+        return this.addPermission(new Permission(permission, inducedPermission));
+    }
+
+    /**
+     *
+     * @param permission
+     * @return
+     */
+    public boolean addPermission(String permission) {
+        return this.addPermission(new Permission(permission));
+    }
+
+    /**
+     *
+     * @param permission
+     * @return
+     */
+    public boolean addPermission(Permission permission) {
+        if (!this.permissions.contains(permission)) {
+            permission.setUser(this);
+            return this.permissions.add(permission);
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @return the roles
+     */
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    /**
+     * @param roles the roles to set
+     */
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    /**
+     *
+     * @param role
+     */
+    public void addRole(Role role) {
+        this.roles.add(role);
+    }
+
+    /**
+     * strike out this account from the role
+     *
+     * @param role
+     */
+    public void removeRole(Role role) {
+        this.roles.remove(role);
     }
 
     @Override

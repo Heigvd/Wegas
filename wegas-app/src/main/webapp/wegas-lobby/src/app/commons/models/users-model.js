@@ -1,12 +1,13 @@
-'use strict';
 angular.module('wegas.models.users', [])
     .service('UsersModel', function($http, $q, $interval, $translate, Auth, Responses) {
+        "use strict";
         var model = this,
+            ServiceURL = window.ServiceURL,
             users = {
                 cache: null,
                 findUser: function(id) {
                     return _.find(users.cache.data, function(s) {
-                        return s.id == id;
+                        return +s.id === +id;
                     });
                 },
 
@@ -18,7 +19,7 @@ angular.module('wegas.models.users', [])
                         waitUsers = $interval(function() {
                             if (!users.cache.loading) {
                                 users.stopWaiting(waitUsers);
-                                deferred.resolve(true)
+                                deferred.resolve(true);
                             }
                         }, 500);
                     return deferred.promise;
@@ -92,7 +93,7 @@ angular.module('wegas.models.users', [])
                 }
                 return list;
             };
-            
+
         model.clearCache = function() {
             users.cache = null;
         };
@@ -104,12 +105,12 @@ angular.module('wegas.models.users', [])
                     if (users.cache) {
                         if (users.cache.loading) {
                             users.wait().then(function() {
-                                $translate('COMMONS-USERS-FIND-FLASH-SUCCESS').then(function (message) {
+                                $translate('COMMONS-USERS-FIND-FLASH-SUCCESS').then(function(message) {
                                     deferred.resolve(Responses.success(message, users.cache.data));
                                 });
                             });
                         } else {
-                            $translate('COMMONS-USERS-FIND-FLASH-SUCCESS').then(function (message) {
+                            $translate('COMMONS-USERS-FIND-FLASH-SUCCESS').then(function(message) {
                                 deferred.resolve(Responses.success(message, users.cache.data));
                             });
                         }
@@ -120,13 +121,13 @@ angular.module('wegas.models.users', [])
                         };
                         cacheUsers().then(function() {
                             users.cache.loading = false;
-                            $translate('COMMONS-USERS-FIND-FLASH-SUCCESS').then(function (message) {
+                            $translate('COMMONS-USERS-FIND-FLASH-SUCCESS').then(function(message) {
                                 deferred.resolve(Responses.success(message, users.cache.data));
                             });
                         });
                     }
                 } else {
-                    $translate('COMMONS-AUTH-CURRENT-FLASH-ERROR').then(function (message) {
+                    $translate('COMMONS-AUTH-CURRENT-FLASH-ERROR').then(function(message) {
                         deferred.resolve(Responses.danger(message, false));
                     });
                 }
@@ -143,11 +144,11 @@ angular.module('wegas.models.users', [])
                     users.wait().then(function() {
                         user = users.findUser(id);
                         if (user) {
-                            $translate('COMMONS-USERS-GET-FLASH-SUCCESS').then(function (message) {
+                            $translate('COMMONS-USERS-GET-FLASH-SUCCESS').then(function(message) {
                                 deferred.resolve(Responses.success(message, user));
                             });
                         } else {
-                            $translate('COMMONS-USERS-GET-FLASH-ERROR').then(function (message) {
+                            $translate('COMMONS-USERS-GET-FLASH-ERROR').then(function(message) {
                                 deferred.resolve(Responses.danger(message, false));
                             });
                         }
@@ -155,11 +156,11 @@ angular.module('wegas.models.users', [])
                 } else {
                     user = users.findUser(id);
                     if (user) {
-                        $translate('COMMONS-USERS-GET-FLASH-SUCCESS').then(function (message) {
+                        $translate('COMMONS-USERS-GET-FLASH-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, user));
                         });
                     } else {
-                        $translate('COMMONS-USERS-GET-FLASH-ERROR').then(function (message) {
+                        $translate('COMMONS-USERS-GET-FLASH-ERROR').then(function(message) {
                             deferred.resolve(Responses.danger(message, false));
                         });
                     }
@@ -168,11 +169,11 @@ angular.module('wegas.models.users', [])
                 model.getUsers().then(function() {
                     user = users.findUser(id);
                     if (user) {
-                        $translate('COMMONS-USERS-GET-FLASH-SUCCESS').then(function (message) {
+                        $translate('COMMONS-USERS-GET-FLASH-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, user));
                         });
                     } else {
-                        $translate('COMMONS-USERS-GET-FLASH-ERROR').then(function (message) {
+                        $translate('COMMONS-USERS-GET-FLASH-ERROR').then(function(message) {
                             deferred.resolve(Responses.danger(message, false));
                         });
                     }
@@ -197,15 +198,15 @@ angular.module('wegas.models.users', [])
             }).success(function(data) {
                 if (data.events !== undefined && data.events.length === 0) {
                     data.entities[0].account = data.entities[0].accounts[0];
-                    $translate('COMMONS-USERS-FULL-LOAD-FLASH-SUCCESS').then(function (message) {
+                    $translate('COMMONS-USERS-FULL-LOAD-FLASH-SUCCESS').then(function(message) {
                         deferred.resolve(Responses.success(message, data.entities[0]));
                     });
                 } else {
                     if (data.events !== undefined) {
                         console.log("WEGAS LOBBY : Error while loading full profil");
                         console.log(data.events);
-                    } 
-                    $translate('COMMONS-USERS-LOAD-FLASH-ERROR').then(function (message) {
+                    }
+                    $translate('COMMONS-USERS-LOAD-FLASH-ERROR').then(function(message) {
                         deferred.resolve(Responses.danger(message, false));
                     });
                 }
@@ -213,8 +214,8 @@ angular.module('wegas.models.users', [])
                 if (data.events !== undefined) {
                     console.log("WEGAS LOBBY : Error while loading full profil");
                     console.log(data.events);
-                } 
-                $translate('COMMONS-USERS-LOAD-FLASH-ERROR').then(function (message) {
+                }
+                $translate('COMMONS-USERS-LOAD-FLASH-ERROR').then(function(message) {
                     deferred.resolve(Responses.danger(message, false));
                 });
             });
@@ -224,10 +225,10 @@ angular.module('wegas.models.users', [])
 
             var deferred = $q.defer();
 
-            console.log(user.password != user.password2);
-            if (user.password !== user.password2 && user.password !== null 
-                    && user.password !== undefined && user.password2 !== null && user.password2 !== undefined) {
-                $translate('COMMONS-USERS-UPDATE-PASSWORD-FLASH-ERROR').then(function (message) {
+            console.log(user.password !== user.password2);
+            if (user.password !== user.password2 && user.password !== null &&
+                user.password !== undefined && user.password2 !== null && user.password2 !== undefined) {
+                $translate('COMMONS-USERS-UPDATE-PASSWORD-FLASH-ERROR').then(function(message) {
                     deferred.resolve(Responses.danger(message, false));
                 });
                 return deferred.promise;
@@ -245,27 +246,27 @@ angular.module('wegas.models.users', [])
                 })
                 .success(function(data) {
                     if (data.events !== undefined && data.events.length === 0) {
-                        $translate('COMMONS-USERS-UPDATE-FLASH-SUCCESS').then(function (message) {
+                        $translate('COMMONS-USERS-UPDATE-FLASH-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, data.entities[0]));
                         });
                     } else {
                         if (data.events !== undefined) {
                             console.log("WEGAS LOBBY : Error while updating profil");
                             console.log(data.events);
-                        } 
-                        $translate('COMMONS-USERS-UPDATE-FLASH-ERROR').then(function (message) {
+                        }
+                        $translate('COMMONS-USERS-UPDATE-FLASH-ERROR').then(function(message) {
                             deferred.resolve(Responses.danger(message, false));
                         });
                     }
                 }).error(function(data) {
-                    if (data.events !== undefined) {
-                        console.log("WEGAS LOBBY : Error while updating profil");
-                        console.log(data.events);
-                    } 
-                    $translate('COMMONS-USERS-UPDATE-FLASH-ERROR').then(function (message) {
-                        deferred.resolve(Responses.danger(message, false));
-                    });
+                if (data.events !== undefined) {
+                    console.log("WEGAS LOBBY : Error while updating profil");
+                    console.log(data.events);
+                }
+                $translate('COMMONS-USERS-UPDATE-FLASH-ERROR').then(function(message) {
+                    deferred.resolve(Responses.danger(message, false));
                 });
+            });
             return deferred.promise;
         };
 
@@ -281,30 +282,30 @@ angular.module('wegas.models.users', [])
                     }
                 })
                 .success(function(data) {
-                    if (data.events !== undefined && data.events.length == 0) {
+                    if (data.events !== undefined && data.events.length === 0) {
                         users.cache.data = uncacheUser(user);
-                
-                        $translate('COMMONS-USERS-DELETE-FLASH-SUCCESS').then(function (message) {
+
+                        $translate('COMMONS-USERS-DELETE-FLASH-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, data.entities));
                         });
                     } else {
                         if (data.events !== undefined) {
                             console.log("WEGAS LOBBY : Error while deleting user");
                             console.log(data.events);
-                        } 
-                        $translate('COMMONS-USERS-DELETE-FLASH-ERROR').then(function (message) {
+                        }
+                        $translate('COMMONS-USERS-DELETE-FLASH-ERROR').then(function(message) {
                             deferred.resolve(Responses.danger(message, false));
                         });
-                    }                
+                    }
                 }).error(function(data) {
-                    if (data.events !== undefined) {
-                        console.log("WEGAS LOBBY : Error while deleting user");
-                        console.log(data.events);
-                    } 
-                    $translate('COMMONS-USERS-DELETE-FLASH-ERROR').then(function (message) {
-                        deferred.resolve(Responses.danger(message, false));
-                    });
+                if (data.events !== undefined) {
+                    console.log("WEGAS LOBBY : Error while deleting user");
+                    console.log(data.events);
+                }
+                $translate('COMMONS-USERS-DELETE-FLASH-ERROR').then(function(message) {
+                    deferred.resolve(Responses.danger(message, false));
                 });
+            });
 
 
             return deferred.promise;
@@ -322,8 +323,8 @@ angular.module('wegas.models.users', [])
                 .success(function(data) {
                     deferred.resolve(data);
                 }).error(function(data) {
-                    deferred.resolve([]);
-                });
+                deferred.resolve([]);
+            });
             return deferred.promise;
         };
     });

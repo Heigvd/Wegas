@@ -2,6 +2,7 @@ angular.module('private.scenarist.directives', [
     'wegas.behaviours.repeat.autoload'
 ])
     .controller('ScenaristIndexController', function ScenaristIndexController($q, $scope, $rootScope, ScenariosModel) {
+        "use strict";
         var ctrl = this,
             initMaxScenariosDisplayed = function() {
                 if (ctrl.scenarios.length > 12) {
@@ -88,12 +89,14 @@ angular.module('private.scenarist.directives', [
         });
     })
     .directive('scenaristScenariosIndex', function() {
+        "use strict";
         return {
             templateUrl: 'app/private/scenarist/directives.tmpl/index.html',
             controller: 'ScenaristIndexController as scenaristIndexCtrl'
         };
     })
     .directive('scenaristScenarioCreate', function(Flash, $translate) {
+        "use strict";
         return {
             templateUrl: 'app/private/scenarist/directives.tmpl/create.html',
             scope: {
@@ -135,6 +138,7 @@ angular.module('private.scenarist.directives', [
         };
     })
     .directive('scenaristScenariosList', function() {
+        "use strict";
         return {
             templateUrl: 'app/private/scenarist/directives.tmpl/list.html',
             scope: {
@@ -146,6 +150,7 @@ angular.module('private.scenarist.directives', [
         };
     })
     .directive('scenarioCard', function() {
+        "use strict";
         return {
             templateUrl: 'app/private/scenarist/directives.tmpl/card.html',
             scope: {
@@ -153,7 +158,7 @@ angular.module('private.scenarist.directives', [
                 archive: '='
             },
             link: function(scope) {
-                scope.ServiceURL = ServiceURL;
+                scope.ServiceURL = window.ServiceURL;
             }
         };
     });

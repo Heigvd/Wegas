@@ -146,9 +146,9 @@ public class GameFacade extends BaseFacade<Game> {
         gameModel.addGame(game);
         gameModelFacade.reset(gameModel);                                       // Reset the game so the default player will have instances
 
-        userFacade.addAccountPermission(currentUser.getMainAccount(),
+        userFacade.addUserPermission(currentUser,
             "Game:View,Edit:g" + game.getId());                             // Grant permission to creator
-        userFacade.addAccountPermission(currentUser.getMainAccount(),
+        userFacade.addUserPermission(currentUser,
             "Game:View:g" + game.getId());                                  // Grant play to creator
 
         try {                                                                   // By default games can be join w/ token
@@ -231,7 +231,7 @@ public class GameFacade extends BaseFacade<Game> {
         //for (Team t : entity.getTeams()) {
         //    teamFacade.remove(t);
         //}
-        userFacade.deleteAccountPermissionByInstance("g" + entity.getId());
+        userFacade.deleteUserPermissionByInstance("g" + entity.getId());
         userFacade.deleteRolePermissionsByInstance("g" + entity.getId());
     }
 
@@ -406,7 +406,7 @@ public class GameFacade extends BaseFacade<Game> {
      * @param game
      */
     public void addRights(User user, Game game) {
-        user.getMainAccount().addPermission(
+        user.addPermission(
             "Game:View:g" + game.getId(), // Add "View" right on game,
             "GameModel:View:gm" + game.getGameModel().getId());             // and also "View" right on its associated game model
     }

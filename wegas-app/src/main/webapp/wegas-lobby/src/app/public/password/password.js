@@ -2,6 +2,7 @@ angular.module('public.password', [
     'public.password.directives'
 ])
     .config(function($stateProvider) {
+        "use strict";
         $stateProvider
             .state('wegas.public.password', {
                 url: '/password',
@@ -14,6 +15,7 @@ angular.module('public.password', [
             });
     })
     .controller("PublicPasswordModalController", function PublicPasswordModalController($state, WegasModalService) {
+        "use strict";
         WegasModalService.displayAModal({
             templateUrl: 'app/public/password/password.tmpl.html',
             controller: "ModalsController as modalsCtrl"

@@ -1,18 +1,24 @@
 angular.module('wegas.models.teams', [])
     .service('TeamsModel', function($http, $q, $interval, $translate, Auth, Responses) {
+        "use strict";
         /* Namespace for model accessibility. */
         var model = this,
-            /* Cache for data */
+            ServiceURL = window.ServiceURL,
+        /* Cache for data */
             teams = {
                 cache: null,
                 findTeam: function(id) {
-                    return _.find(teams.cache.data, function(t) {
-                        return t.id == id;
-                    });
+                    if (teams.cache &&teams.cache.data) {
+                        return _.find(teams.cache.data, function(t) {
+                            return t.id === +id;
+                        });
+                    } else {
+                        return;
+                    }
                 },
                 findTeamBySessionId: function(sessionId) {
                     return _.find(teams.cache.data, function(t) {
-                        return t.gameId == sessionId;
+                        return t.gameId === sessionId;
                     });
                 },
                 stopWaiting: function(waitFunction) {
@@ -47,20 +53,24 @@ angular.module('wegas.models.teams', [])
                 return deferred.promise;
             },
 
-            /* Cache a team in the cached teams */
+        /* Cache a team in the cached teams */
             cacheTeam = function(teamToCache) {
                 if (teamToCache) {
-                    teams.cache.data.push(teamToCache);
+                    if (teams.cache) {
+                        teams.cache.data.push(teamToCache);
+                    }else{
+                        teams.cache={data: [teamToCache]};
+                    }
                 }
             },
 
-            /* Uncache a team in the cached teams */
+        /* Uncache a team in the cached teams */
             uncacheTeam = function(team) {
                 if (team) {
-                	var teamToRemove = teams.findTeam(team.id);
-                	if(teamToRemove){
-	                    teams.cache.data = _.without(teams.cache.data, teamToRemove);
-                	}
+                    var teamToRemove = teams.findTeam(team.id);
+                    if (teamToRemove) {
+                        teams.cache.data = _.without(teams.cache.data, teamToRemove);
+                    }
                 }
             };
 
@@ -72,16 +82,16 @@ angular.module('wegas.models.teams', [])
         model.getTeams = function() {
             var deferred = $q.defer();
             Auth.getAuthenticatedUser().then(function(user) {
-                if (user != null) {
-                    if (teams.cache != null) {
+                if (user) {
+                    if (teams.cache) {
                         if (teams.cache.loading) {
                             teams.wait().then(function() {
-                                $translate('COMMONS-TEAMS-FIND-FLASH-SUCCESS').then(function (message) {
+                                $translate('COMMONS-TEAMS-FIND-FLASH-SUCCESS').then(function(message) {
                                     deferred.resolve(Responses.success(message, teams.cache.data));
                                 });
                             });
                         } else {
-                            $translate('COMMONS-TEAMS-FIND-FLASH-SUCCESS').then(function (message) {
+                            $translate('COMMONS-TEAMS-FIND-FLASH-SUCCESS').then(function(message) {
                                 deferred.resolve(Responses.success(message, teams.cache.data));
                             });
                         }
@@ -92,13 +102,13 @@ angular.module('wegas.models.teams', [])
                         };
                         cacheTeams().then(function() {
                             teams.cache.loading = false;
-                            $translate('COMMONS-TEAMS-FIND-FLASH-SUCCESS').then(function (message) {
+                            $translate('COMMONS-TEAMS-FIND-FLASH-SUCCESS').then(function(message) {
                                 deferred.resolve(Responses.success(message, teams.cache.data));
                             });
                         });
                     }
                 } else {
-                    $translate('COMMONS-AUTH-CURRENT-FLASH-ERROR').then(function (message) {
+                    $translate('COMMONS-AUTH-CURRENT-FLASH-ERROR').then(function(message) {
                         deferred.resolve(Responses.danger(message, false));
                     });
                 }
@@ -108,40 +118,39 @@ angular.module('wegas.models.teams', [])
 
         model.refreshTeam = function(teamToRefresh) {
             var deferred = $q.defer(),
-            	url = "rest/Extended/User/Current/Team/" + teamToRefresh.id,
-            	teamRefreshed = false;
+                url = "rest/Extended/User/Current/Team/" + teamToRefresh.id,
+                teamRefreshed = false;
             $http
                 .get(ServiceURL + url)
                 .success(function(data) {
                     uncacheTeam(teamToRefresh);
                     cacheTeam(data);
                     teamRefreshed = teams.findTeam(data.id);
-                    $translate('COMMONS-TEAMS-RELOAD-FLASH-SUCCESS').then(function (message) {
+                    $translate('COMMONS-TEAMS-RELOAD-FLASH-SUCCESS').then(function(message) {
                         deferred.resolve(Responses.success(message, teamRefreshed));
                     });
                 }).error(function(data) {
-                    $translate('COMMONS-TEAMS-RELOAD-FLASH-ERROR').then(function (message) {
-                        deferred.resolve(Responses.error(message, teamRefreshed));
-                    });
+                $translate('COMMONS-TEAMS-RELOAD-FLASH-ERROR').then(function(message) {
+                    deferred.resolve(Responses.error(message, teamRefreshed));
                 });
+            });
             return deferred.promise;
         };
-
 
         /* Ask for one team joined. */
         model.getTeam = function(id) {
             var deferred = $q.defer(),
-            	team = null;
+                team = null;
             if (teams.cache) {
                 if (teams.cache.loading) {
                     teams.wait().then(function() {
-                    	team = teams.findTeam(id);
+                        team = teams.findTeam(id);
                         if (team) {
-                            $translate('COMMONS-TEAMS-GET-FLASH-SUCCESS').then(function (message) {
+                            $translate('COMMONS-TEAMS-GET-FLASH-SUCCESS').then(function(message) {
                                 deferred.resolve(Responses.success(message, team));
                             });
                         } else {
-                            $translate('COMMONS-TEAMS-GET-FLASH-ERROR').then(function (message) {
+                            $translate('COMMONS-TEAMS-GET-FLASH-ERROR').then(function(message) {
                                 deferred.resolve(Responses.danger(message, false));
                             });
                         }
@@ -149,11 +158,11 @@ angular.module('wegas.models.teams', [])
                 } else {
                     team = teams.findTeam(id);
                     if (team) {
-                        $translate('COMMONS-TEAMS-GET-FLASH-SUCCESS').then(function (message) {
+                        $translate('COMMONS-TEAMS-GET-FLASH-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, team));
                         });
                     } else {
-                        $translate('COMMONS-TEAMS-GET-FLASH-ERROR').then(function (message) {
+                        $translate('COMMONS-TEAMS-GET-FLASH-ERROR').then(function(message) {
                             deferred.resolve(Responses.danger(message, false));
                         });
                     }
@@ -162,11 +171,11 @@ angular.module('wegas.models.teams', [])
                 model.getTeams().then(function() {
                     team = teams.findTeam(id);
                     if (team) {
-                        $translate('COMMONS-TEAMS-GET-FLASH-SUCCESS').then(function (message) {
+                        $translate('COMMONS-TEAMS-GET-FLASH-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, team));
                         });
                     } else {
-                        $translate('COMMONS-TEAMS-GET-FLASH-ERROR').then(function (message) {
+                        $translate('COMMONS-TEAMS-GET-FLASH-ERROR').then(function(message) {
                             deferred.resolve(Responses.danger(message, false));
                         });
                     }
@@ -174,21 +183,21 @@ angular.module('wegas.models.teams', [])
             }
             return deferred.promise;
         };
-        
+
         /* Ask for one team joined. */
         model.getTeamBySessionId = function(sessionId) {
             var deferred = $q.defer(),
-            	team = null;
+                team = null;
             if (teams.cache) {
                 if (teams.cache.loading) {
                     teams.wait().then(function() {
-                    	team = teams.findTeamBySessionId(sessionId);
+                        team = teams.findTeamBySessionId(sessionId);
                         if (team) {
-                            $translate('COMMONS-TEAMS-GET-FLASH-SUCCESS').then(function (message) {
+                            $translate('COMMONS-TEAMS-GET-FLASH-SUCCESS').then(function(message) {
                                 deferred.resolve(Responses.success(message, team));
                             });
                         } else {
-                            $translate('COMMONS-TEAMS-GET-FLASH-ERROR').then(function (message) {
+                            $translate('COMMONS-TEAMS-GET-FLASH-ERROR').then(function(message) {
                                 deferred.resolve(Responses.danger(message, false));
                             });
                         }
@@ -196,11 +205,11 @@ angular.module('wegas.models.teams', [])
                 } else {
                     team = teams.findTeamBySessionId(sessionId);
                     if (team) {
-                        $translate('COMMONS-TEAMS-GET-FLASH-SUCCESS').then(function (message) {
+                        $translate('COMMONS-TEAMS-GET-FLASH-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, team));
                         });
                     } else {
-                        $translate('COMMONS-TEAMS-GET-FLASH-ERROR').then(function (message) {
+                        $translate('COMMONS-TEAMS-GET-FLASH-ERROR').then(function(message) {
                             deferred.resolve(Responses.danger(message, false));
                         });
                     }
@@ -209,11 +218,11 @@ angular.module('wegas.models.teams', [])
                 model.getTeams().then(function() {
                     team = teams.findTeamBySessionId(sessionId);
                     if (team) {
-                        $translate('COMMONS-TEAMS-GET-FLASH-SUCCESS').then(function (message) {
+                        $translate('COMMONS-TEAMS-GET-FLASH-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, team));
                         });
                     } else {
-                        $translate('COMMONS-TEAMS-GET-FLASH-ERROR').then(function (message) {
+                        $translate('COMMONS-TEAMS-GET-FLASH-ERROR').then(function(message) {
                             deferred.resolve(Responses.danger(message, false));
                         });
                     }
@@ -231,38 +240,39 @@ angular.module('wegas.models.teams', [])
                     "name": "",
                     "players": []
                 };
-            Auth.getAuthenticatedUser().then(function(u) {
-                if (u != null) {
-                    if (session.access == "OPEN") {
+            Auth.getAuthenticatedUser().then(function(user) {
+                if (user) {
+                    if (session.access === "OPEN") {
                         var existingTeam = false;
-                        session.teams.forEach(function(team){
-                            if(team.name == teamName){
+                        session.teams.forEach(function(team) {
+                            if (team.name === teamName) {
                                 existingTeam = true;
                             }
                         });
                         if (existingTeam) {
-                            $translate('COMMONS-TEAMS-CREATE-EXISTING-TEAM-FLASH-INFO').then(function (message) {
+                            $translate('COMMONS-TEAMS-CREATE-EXISTING-TEAM-FLASH-INFO').then(function(message) {
                                 deferred.resolve(Responses.info(message, false));
                             });
                         } else {
                             newTeam.name = teamName;
-                            $http.post(ServiceURL + "rest/GameModel/Game/" + session.id + "/Team", newTeam).success(function(team) {
-                                $translate('COMMONS-TEAMS-CREATE-FLASH-SUCCESS').then(function (message) {
-                                    deferred.resolve(Responses.success(message, team));
-                                });
-                            }).error(function(data) {
-                                $translate('COMMONS-TEAMS-CREATE-FLASH-ERROR').then(function (message) {
+                            $http.post(ServiceURL + "rest/GameModel/Game/" + session.id + "/Team", newTeam).success(
+                                function(team) {
+                                    $translate('COMMONS-TEAMS-CREATE-FLASH-SUCCESS').then(function(message) {
+                                        deferred.resolve(Responses.success(message, team));
+                                    });
+                                }).error(function(data) {
+                                $translate('COMMONS-TEAMS-CREATE-FLASH-ERROR').then(function(message) {
                                     deferred.resolve(Responses.danger(message, false));
                                 });
                             });
                         }
                     } else {
-                        $translate('COMMONS-SESSIONS-CLOSE-FLASH-ERROR').then(function (message) {
+                        $translate('COMMONS-SESSIONS-CLOSE-FLASH-ERROR').then(function(message) {
                             deferred.resolve(Responses.danger(message, false));
                         });
                     }
                 } else {
-                    $translate('COMMONS-AUTH-CURRENT-FLASH-ERROR').then(function (message) {
+                    $translate('COMMONS-AUTH-CURRENT-FLASH-ERROR').then(function(message) {
                         deferred.resolve(Responses.danger(message, false));
                     });
                 }
@@ -274,38 +284,39 @@ angular.module('wegas.models.teams', [])
         model.joinTeam = function(sessionToJoin, teamId) {
             var deferred = $q.defer();
             Auth.getAuthenticatedUser().then(function(user) {
-                if (user != null) {
-                	if(sessionToJoin.access == "CLOSE"){
-                            $translate('COMMONS-SESSIONS-CLOSE-FLASH-ERROR').then(function (message) {
-                                deferred.resolve(Responses.danger(message, false));
+                if (user !== null) {
+                    if (sessionToJoin.access === "CLOSE") {
+                        $translate('COMMONS-SESSIONS-CLOSE-FLASH-ERROR').then(function(message) {
+                            deferred.resolve(Responses.danger(message, false));
+                        });
+                    } else {
+                        var cachedTeam = teams.findTeam(teamId);
+                        if (cachedTeam) {
+                            $translate('COMMONS-TEAMS-ALREADY-JOIN-FLASH-INFO').then(function(message) {
+                                deferred.resolve(Responses.info(message, false));
                             });
-                	}else{
-	                    var cachedTeam = teams.findTeam(teamId);
-	                    if (cachedTeam) {
-                                $translate('COMMONS-TEAMS-ALREADY-JOIN-FLASH-INFO').then(function (message) {
-                                    deferred.resolve(Responses.info(message, false));
-                                });
-                            } else { 					
-	                        $http.post(ServiceURL + "rest/Extended/GameModel/Game/Team/" + teamId + "/Player").success(function(team) {
-	                            if (team) {
-                                    cacheTeam(team);
-	                                $translate('COMMONS-TEAMS-JOIN-FLASH-SUCCESS').then(function (message) {
+                        } else {
+                            $http.post(ServiceURL + "rest/Extended/GameModel/Game/Team/" + teamId + "/Player").success(
+                                function(team) {
+                                    if (team) {
+                                        cacheTeam(team);
+                                        $translate('COMMONS-TEAMS-JOIN-FLASH-SUCCESS').then(function(message) {
                                             deferred.resolve(Responses.success(message, team));
                                         });
-	                            } else {
-	                                $translate('COMMONS-TEAMS-JOIN-FLASH-ERROR').then(function (message) {
+                                    } else {
+                                        $translate('COMMONS-TEAMS-JOIN-FLASH-ERROR').then(function(message) {
                                             deferred.resolve(Responses.danger(message, false));
                                         });
-	                            }
-	                        }).error(function(data) {
-	                            $translate('COMMONS-TEAMS-JOIN-FLASH-ERROR').then(function (message) {
-                                        deferred.resolve(Responses.danger(message, false));
-                                    });
-	                        });
-	                    }
+                                    }
+                                }).error(function(data) {
+                                $translate('COMMONS-TEAMS-JOIN-FLASH-ERROR').then(function(message) {
+                                    deferred.resolve(Responses.danger(message, false));
+                                });
+                            });
+                        }
                     }
                 } else {
-                    $translate('COMMONS-AUTH-CURRENT-FLASH-ERROR').then(function (message) {
+                    $translate('COMMONS-AUTH-CURRENT-FLASH-ERROR').then(function(message) {
                         deferred.resolve(Responses.danger(message, false));
                     });
                 }
@@ -317,45 +328,46 @@ angular.module('wegas.models.teams', [])
         model.joinIndividually = function(sessionToJoin) {
             var deferred = $q.defer();
             Auth.getAuthenticatedUser().then(function(user) {
-            	if(user !== null){
-                    if(sessionToJoin.access == "CLOSE"){
-                        $translate('COMMONS-SESSIONS-CLOSE-FLASH-ERROR').then(function (message) {
+                if (user !== null) {
+                    if (sessionToJoin.access === "CLOSE") {
+                        $translate('COMMONS-SESSIONS-CLOSE-FLASH-ERROR').then(function(message) {
                             deferred.resolve(Responses.danger(message, false));
                         });
-                    }else{
-                        if(teams.cache == null){
+                    } else {
+                        if (teams.cache === null) {
                             teams.cache = {
                                 data: [],
                                 loading: false
                             };
                         }
                         var alreadyJoined = false;
-                        sessionToJoin.teams.forEach(function(teamJoinable){
-                            teams.cache.data.forEach(function(teamJoined){
-                                if(teamJoinable.id == teamJoined.id){
-                                        alreadyJoined = true;
+                        sessionToJoin.teams.forEach(function(teamJoinable) {
+                            teams.cache.data.forEach(function(teamJoined) {
+                                if (+teamJoinable.id === +teamJoined.id) {
+                                    alreadyJoined = true;
                                 }
                             });
                         });
                         if (alreadyJoined) {
-                            $translate('COMMONS-TEAMS-ALREADY-JOIN-FLASH-INFO').then(function (message) {
+                            $translate('COMMONS-TEAMS-ALREADY-JOIN-FLASH-INFO').then(function(message) {
                                 deferred.resolve(Responses.info(message, false));
                             });
                         } else {
-                            $http.post(ServiceURL + "rest/Extended/GameModel/Game/" + sessionToJoin.id + "/Player").success(function(individualTeamJoined) {
-                            cacheTeam(individualTeamJoined);
-                                $translate('COMMONS-TEAMS-JOIN-INDIVIDUALLY-FLASH-SUCCESS').then(function (message) {
+                            $http.post(ServiceURL + "rest/Extended/GameModel/Game/" + sessionToJoin.id +
+                                       "/Player").success(function(individualTeamJoined) {
+                                cacheTeam(individualTeamJoined);
+                                $translate('COMMONS-TEAMS-JOIN-INDIVIDUALLY-FLASH-SUCCESS').then(function(message) {
                                     deferred.resolve(Responses.success(message, individualTeamJoined));
                                 });
                             }).error(function(data) {
-                                $translate('COMMONS-TEAMS-JOIN-INDIVIDUALLY-FLASH-ERROR').then(function (message) {
+                                $translate('COMMONS-TEAMS-JOIN-INDIVIDUALLY-FLASH-ERROR').then(function(message) {
                                     deferred.resolve(Responses.danger(message, false));
                                 });
                             });
                         }
                     }
                 } else {
-                    $translate('COMMONS-AUTH-CURRENT-FLASH-ERROR').then(function (message) {
+                    $translate('COMMONS-AUTH-CURRENT-FLASH-ERROR').then(function(message) {
                         deferred.resolve(Responses.danger(message, false));
                     });
                 }
@@ -363,41 +375,41 @@ angular.module('wegas.models.teams', [])
             return deferred.promise;
         };
 
-
         /* Leave a team for current player */
         model.leaveTeam = function(teamId) {
             var deferred = $q.defer(),
-                player = undefined;
-            Auth.getAuthenticatedUser().then(function(u) {
-                if (u != null) {
+                player;
+            Auth.getAuthenticatedUser().then(function(user) {
+                if (user) {
                     var cachedTeam = teams.findTeam(teamId);
                     if (!cachedTeam) {
-                        $translate('COMMONS-TEAMS-NO-TEAM-FLASH-ERROR').then(function (message) {
+                        $translate('COMMONS-TEAMS-NO-TEAM-FLASH-ERROR').then(function(message) {
                             deferred.resolve(Responses.danger(message, false));
                         });
                     } else {
                         player = _.find(cachedTeam.players, function(p) {
-                            return p.userId == u.id;
+                            return +p.userId === +user.id;
                         });
                         if (player) {
-                            $http.delete(ServiceURL + "rest/GameModel/Game/Team/" + player.teamId + "/Player/" + player.id).success(function(data) {
+                            $http.delete(ServiceURL + "rest/GameModel/Game/Team/" + player.teamId + "/Player/" +
+                                         player.id).success(function(data) {
                                 uncacheTeam(cachedTeam);
-                                $translate('COMMONS-TEAMS-LEAVE-FLASH-SUCCESS').then(function (message) {
+                                $translate('COMMONS-TEAMS-LEAVE-FLASH-SUCCESS').then(function(message) {
                                     deferred.resolve(Responses.success(message, teams.cache.data));
                                 });
                             }).error(function(data) {
-                                $translate('COMMONS-TEAMS-LEAVE-FLASH-ERROR').then(function (message) {
+                                $translate('COMMONS-TEAMS-LEAVE-FLASH-ERROR').then(function(message) {
                                     deferred.resolve(Responses.danger(message, false));
                                 });
                             });
                         } else {
-                            $translate('COMMONS-TEAMS-NO-PLAYER-FLASH-ERROR').then(function (message) {
+                            $translate('COMMONS-TEAMS-NO-PLAYER-FLASH-ERROR').then(function(message) {
                                 deferred.resolve(Responses.danger(message, false));
                             });
                         }
                     }
                 } else {
-                    $translate('COMMONS-AUTH-CURRENT-FLASH-ERROR').then(function (message) {
+                    $translate('COMMONS-AUTH-CURRENT-FLASH-ERROR').then(function(message) {
                         deferred.resolve(Responses.danger(message, false));
                     });
                 }

@@ -3,6 +3,7 @@ angular
     'private.scenarist.archives.directives'
 ])
 .config(function ($stateProvider) {
+    "use strict";
     $stateProvider
         .state('wegas.private.scenarist.archives', {
             url: '/archives',
@@ -14,8 +15,9 @@ angular
         });
 })
 .controller('ScenaristArchivesController', function ScenaristArchivesController($animate, $state, WegasModalService, Auth) {
+    "use strict";
     Auth.getAuthenticatedUser().then(function(user) {
-        if (user != null) {
+        if (user) {
             if (user.isAdmin || user.isScenarist) {
                 WegasModalService.displayAModal({
                     templateUrl: 'app/private/scenarist/archives/archives.tmpl.html',

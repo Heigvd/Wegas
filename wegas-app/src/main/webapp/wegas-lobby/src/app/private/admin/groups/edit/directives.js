@@ -1,5 +1,6 @@
 angular.module('private.admin.groups.edit.directives', ['wegas.directive.permission.edit'])
     .directive('adminGroupsEditIndex', function() {
+        "use strict";
         return {
             scope: {
                 close: "&"
@@ -9,6 +10,7 @@ angular.module('private.admin.groups.edit.directives', ['wegas.directive.permiss
         };
     }).controller("AdminGroupsEditIndexController",
     function AdminUsersEditIndexController(GroupsModel, $stateParams, $state) {
+        "use strict";
         var ctrl = this;
         ctrl.group = {};
         GroupsModel.getGroup($stateParams.id).then(function(response) {

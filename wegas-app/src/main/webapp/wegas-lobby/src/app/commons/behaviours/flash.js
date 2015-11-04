@@ -2,14 +2,15 @@ angular
     .module('flash', [])
     .factory('Flash', ['$rootScope', '$timeout',
         function($rootScope, $timeout) {
+            "use strict";
             var messages = [];
 
             var emit = function() {
                 $rootScope.$emit('flash:message', messages);
-            }
+            };
 
             var addMessages = function(level, text) {
-                messages = asArrayOfMessages(level, text)
+                messages = asArrayOfMessages(level, text);
                 emit();
                 $timeout(function() {
                     removeMessages();
@@ -19,7 +20,7 @@ angular
             var removeMessages = function() {
                 messages = [];
                 emit();
-            }
+            };
 
             $rootScope.$on('$locationChangeSuccess', emit);
 
@@ -35,9 +36,11 @@ angular
             };
 
             var asArrayOfMessages = function(level, text) {
-                if (level instanceof Array) return level.map(function(message) {
-                    return message.text ? message : asMessage(message);
-                });
+                if (level instanceof Array) {
+                    return level.map(function(message) {
+                        return message.text ? message : asMessage(message);
+                    });
+                }
                 return text ? [{
                     level: level,
                     text: text
@@ -58,22 +61,23 @@ angular
         }
     ])
 
-.directive('flashMessages', [
-    function() {
-        var directive = {
-            restrict: 'EA',
-            replace: true,
-            template: '<ol id="flash-messages"><li ng-repeat="m in messages" class="{{m.level}}">{{m.text}}</li></ol>'
-        };
+    .directive('flashMessages', [
+        function() {
+            "use strict";
+            var directive = {
+                restrict: 'EA',
+                replace: true,
+                template: '<ol id="flash-messages"><li ng-repeat="m in messages" class="{{m.level}}">{{m.text}}</li></ol>'
+            };
 
-        directive.controller = ['$scope', '$rootScope',
-            function($scope, $rootScope) {
-                $rootScope.$on('flash:message', function(_, messages, done) {
-                    $scope.messages = messages;
-                });
-            }
-        ];
+            directive.controller = ['$scope', '$rootScope',
+                function($scope, $rootScope) {
+                    $rootScope.$on('flash:message', function(_, messages) {
+                        $scope.messages = messages;
+                    });
+                }
+            ];
 
-        return directive;
-    }
-]);
+            return directive;
+        }
+    ]);

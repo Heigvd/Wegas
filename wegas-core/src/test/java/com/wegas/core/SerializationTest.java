@@ -228,8 +228,8 @@ public class SerializationTest {
         jpaUser.getPlayers().add(jpaPlayer);
 
         Permission permission = new Permission();
-        permission.setAccount(jpaAccount);
-        jpaAccount.addPermission(permission);
+        permission.setUser(jpaUser);
+        jpaUser.addPermission(permission);
 
         assertPropertyEquals(mapper.writerWithView(Views.Public.class).writeValueAsString(game),
                 "@class", "Game");

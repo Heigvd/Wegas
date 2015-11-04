@@ -37,10 +37,10 @@ angular.module('private.player.directives', [])
                         deferred.resolve();
                     });
                 } else {
-                    if (findResponse.data.access != "CLOSE") {
+                    if (findResponse.data.access !== "CLOSE") {
                         var alreadyJoin = false;
                         ctrl.teams.forEach(function(team) {
-                            if (team.gameId == findResponse.data.id) {
+                            if (team.gameId === findResponse.data.id) {
                                 alreadyJoin = true;
                             }
                         });
@@ -62,7 +62,7 @@ angular.module('private.player.directives', [])
                                 });
                             } else {
                                 $scope.$emit('collapse');
-                                $state.go('wegas.private.player.join', {
+                                $state.go('wegas.private.join', {
                                     token: findResponse.data.token
                                 });
                                 deferred.resolve();
@@ -87,7 +87,7 @@ angular.module('private.player.directives', [])
                     response.flash();
                 }
             });
-        }
+        };
 
         /* Listen for new session */
         $rootScope.$on('newTeam', function(e, hasNewData) {
@@ -100,6 +100,7 @@ angular.module('private.player.directives', [])
         updateTeams();
     })
     .directive('playerJoinForm', function() {
+        "use strict";
         return {
             templateUrl: 'app/private/player/directives.tmpl/join-form.html',
             scope: {
@@ -127,6 +128,7 @@ angular.module('private.player.directives', [])
         };
     })
     .directive('playerTeamsList', function() {
+        "use strict";
         return {
             templateUrl: 'app/private/player/directives.tmpl/list.html',
             scope: {
@@ -137,6 +139,7 @@ angular.module('private.player.directives', [])
         };
     })
     .directive('playerTeamCard', function() {
+        "use strict";
         return {
             templateUrl: 'app/private/player/directives.tmpl/card.html',
             scope: {
@@ -144,7 +147,7 @@ angular.module('private.player.directives', [])
                 leave: "="
             },
             link: function(scope, element, attrs) {
-                scope.ServiceURL = ServiceURL;
+                scope.ServiceURL = window.ServiceURL;
             }
         };
     });

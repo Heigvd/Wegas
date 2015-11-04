@@ -1,5 +1,6 @@
 angular.module('wegas.service.responses', [])
 .factory('Responses', function(Flash) {
+	"use strict";
 	var create = function(level, message, data){
 		return {
 			level: level,

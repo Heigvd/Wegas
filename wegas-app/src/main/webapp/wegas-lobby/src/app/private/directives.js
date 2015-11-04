@@ -74,7 +74,7 @@ angular.module('private.directives', [])
                         default:
                             profileState = "wegas.private.profile";
                          
-                    };
+                    }
                     $state.go(profileState);
                 };
                 

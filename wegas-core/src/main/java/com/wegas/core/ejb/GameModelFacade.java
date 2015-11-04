@@ -124,9 +124,9 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         this.getEntityManager().flush();
         variableDescriptorFacade.reviveItems(entity);                           // Revive entities
         createdGameModelEvent.fire(new EntityCreated<>(entity));
-        userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:View,Edit,Delete,Duplicate,Instantiate:gm" + entity.getId());
-        userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:Duplicate:gm" + entity.getId());
-        userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:Instantiate:gm" + entity.getId());
+        userFacade.getCurrentUser().addPermission("GameModel:View,Edit,Delete,Duplicate,Instantiate:gm" + entity.getId());
+        userFacade.getCurrentUser().addPermission("GameModel:Duplicate:gm" + entity.getId());
+        userFacade.getCurrentUser().addPermission("GameModel:Instantiate:gm" + entity.getId());
     }
 
     /**
@@ -196,11 +196,11 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
     @Override
     public void remove(final Long id) {
-        userFacade.deleteAccountPermissionByInstance("gm" + id);
+        userFacade.deleteUserPermissionByInstance("gm" + id);
         userFacade.deleteRolePermissionsByInstance("gm" + id);
 
         for (Game g : this.find(id).getGames()) {
-            userFacade.deleteAccountPermissionByInstance("g" + g.getId());
+            userFacade.deleteUserPermissionByInstance("g" + g.getId());
             userFacade.deleteRolePermissionsByInstance("g" + g.getId());
         }
         preRemovedGameModelEvent.fire(new PreEntityRemoved<>(this.find(id)));
