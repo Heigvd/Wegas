@@ -30,10 +30,23 @@ angular.module('private.player', [
                 }
             });
     })
-    .controller('PlayerCtrl', function PlayerCtrl($rootScope, $state, Auth, WegasTranslations, $translate) {
+    .controller('PlayerCtrl', function PlayerCtrl($rootScope, $scope,$state, Auth, WegasTranslations, $translate) {
         "use strict";
+        $scope.message = "";
         Auth.getAuthenticatedUser().then(function(user) {
+            var detach;
             if (user.isGuest) {
+                $translate('UPDGRADE-ACCOUNT').then(function(val) {
+                    $scope.message = val;
+                });
+                detach = $rootScope.$on('$translateChangeSuccess', function () {
+                    $translate('UPDGRADE-ACCOUNT').then(function(val) {
+                        $scope.message = val;
+                    });
+                });
+                $scope.$on("$destroy", function(){
+                    detach();
+                });
                 $state.go("wegas.private.guest");
             } else if ($state.current.name === 'wegas.private.guest') {
                 $state.go("wegas.private.player");
