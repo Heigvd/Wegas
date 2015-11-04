@@ -101,6 +101,9 @@ YUI.add('wegas-form', function(Y) {
             });                                                                 // Set up the form parentEl attribute, so it knows where to render
 
             inputEx.use(val, Y.bind(function(cfg) {                           // Load form dependencies
+                if(this.get("destroyed")){
+                    return;
+                }
                 var form = inputEx(cfg);                                      // Initialize and render form
                 form.setValue(this.get("values"), false);                       // Sync form with "values" ATTR
                 form.removeClassFromState();                                    // Remove required state
