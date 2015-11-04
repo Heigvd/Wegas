@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.LocalBean;
@@ -153,7 +154,7 @@ public class UserFacade extends BaseFacade<User> {
             }
         } catch (WegasNoResultException | EJBTransactionRolledbackException e) {
             // GOTCHA
-            // E-Mail not yet registered -> proceed 
+            // E-Mail not yet registered -> proceed
         }
 
         super.create(user);
@@ -189,7 +190,7 @@ public class UserFacade extends BaseFacade<User> {
                 }
             }
         } catch (WegasNoResultException ex) {
-            // GOTCHA 
+            // GOTCHA
         }
         this.create(user);                                                      // If user could not be found, create and return it
         return user;
@@ -597,9 +598,15 @@ public class UserFacade extends BaseFacade<User> {
      * @param to   the whow
      */
     public void transferPlayers(User from, User to) {
+        final List<Long> gameIds = new ArrayList<>();
+        for(Player player : to.getPlayers()){
+            gameIds.add(player.getGame().getId());
+        }
         for (Player p : from.getPlayers()) {
-            p.setName(to.getName());
-            p.setUser(to);
+            if(!gameIds.contains(p.getGame().getId())) { // User already has a player in p's game
+                p.setName(to.getName());
+                p.setUser(to);
+            }
         }
         for (Permission p : from.getPermissions()) {
             p.setUser(to);
