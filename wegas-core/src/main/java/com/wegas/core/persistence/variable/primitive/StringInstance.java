@@ -7,8 +7,11 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import java.util.List;
 import javax.persistence.Entity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +62,14 @@ public class StringInstance extends VariableInstance {
      * @param value the value to set
      */
     public void setValue(String value) {
+        VariableDescriptor vd = this.getDescriptorOrDefaultDescriptor();
+        if (vd instanceof StringDescriptor) {
+            StringDescriptor sd = (StringDescriptor) vd;
+            if (!sd.isValueAllowed(value)){
+                throw WegasErrorMessage.error("Value \"" + value + "\" not allowed !");
+            }
+        }
+
         this.val = value;
     }
 }
