@@ -26,8 +26,8 @@ import javax.persistence.Table;
 @Access(AccessType.FIELD)
 
 /*@Table(indexes = {
-    @Index(columnList = "properties.objectinstance_variableinstance_id")
-})*/
+ @Index(columnList = "properties.objectinstance_variableinstance_id")
+ })*/
 public class ObjectInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
@@ -73,4 +73,32 @@ public class ObjectInstance extends VariableInstance {
     public void setProperties(Map<String, String> properties) {
         this.properties = properties;
     }
+
+    /**
+     *
+     * @param key
+     * @param val
+     */
+    public void setProperty(String key, String val) {
+        this.properties.put(key, val);
+    }
+
+    /**
+     *
+     * @param key
+     * @return
+     */
+    public String getProperty(String key) {
+        return this.properties.get(key);
+    }
+
+    /**
+     *
+     * @param key
+     * @return
+     */
+    public double getPropertyD(String key) {
+        return Double.valueOf(this.properties.get(key));
+    }
+
 }

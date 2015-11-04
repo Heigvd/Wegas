@@ -88,9 +88,10 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> {
 
     /**
      * Metods for use in script
+     *
      * @param p
      * @param key
-     * @return 
+     * @return
      */
     public String getProperty(Player p, String key) {
         return this.getInstance(p).getProperties().get(key);
@@ -114,4 +115,42 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> {
     public void removeProperty(Player p, String key) {
         this.getInstance(p).getProperties().remove(key);
     }
+
+    /**
+     *
+     * @param p
+     * @param key
+     * @return
+     */
+    public String getInstanceProperty(Player p, String key) {
+        return this.getInstance(p).getProperty(key);
+    }
+
+    /**
+     *
+     * @param p
+     * @param key
+     * @param value
+     */
+    public void setInstanceProperty(Player p, String key, String value) {
+        this.getInstance(p).setProperty(key, value);
+    }
+
+    /**
+     *
+     * @param p
+     * @param key
+     * @param value
+     */
+    public void addNumberAtInstanceProperty(Player p, String key, String value) {
+        try {
+            ObjectInstance instance = this.getInstance(p);
+            double oldValue = instance.getPropertyD(key);
+            double newValue = oldValue + Double.parseDouble(value);
+            instance.setProperty(key, "" + newValue);
+        } catch (NumberFormatException e) {
+            // do nothing...
+        }
+    }
+
 }
