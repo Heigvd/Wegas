@@ -67,12 +67,21 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     index: 9
                 }
             },
+            cbx : {
+                type: BOOLEAN,
+                value: false,
+                _inputex: {
+                    label: "Checkbox selection",
+                    description: "Pour QCM standard",
+                    index: 10
+                }
+            },
             description: {
                 type: STRING,
                 format: HTML,
                 optional: true,
                 _inputex: {
-                    index: 10
+                    index: 11
                 }
             },
             defaultInstance: {
@@ -219,6 +228,10 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 value: true,
                 type: BOOLEAN
             },
+            validated: {
+                value: false,
+                type: BOOLEAN
+            },
             replies: {
                 value: [],
                 type: ARRAY,
@@ -262,14 +275,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     }
                 }
             },
-            cbx : {
-                type: BOOLEAN,
-                value: false,
-                _inputex: {
-                    label: "Checkbox selection",
-                    description: "Pour QCM standard"
-                }
-            },
+
             defaultInstance: {
                 properties: {
                     '@class': {

@@ -16,6 +16,7 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import static java.lang.Boolean.FALSE;
 import javax.persistence.OrderBy;
 import org.eclipse.persistence.annotations.BatchFetch;
 import org.eclipse.persistence.annotations.BatchFetchType;
@@ -47,6 +48,10 @@ public class QuestionInstance extends VariableInstance {
      *
      */
     private Boolean unread = true;
+    /**
+     * False until the user has clicked on the global question-wide "submit" button.
+     */
+    private Boolean validated = FALSE;
 
     /**
      *
@@ -57,6 +62,8 @@ public class QuestionInstance extends VariableInstance {
         QuestionInstance other = (QuestionInstance) a;
         this.setActive(other.getActive());
         this.setUnread(other.getUnread());
+        Boolean v = other.getValidated();
+        this.setValidated(v);
         this.replies.clear();
         this.addReplies(other.getReplies());
     }
@@ -137,6 +144,20 @@ public class QuestionInstance extends VariableInstance {
      */
     public void desactivate() {
         this.setActive(false);
+    }
+
+    /**
+     * @param validated the validation status to set
+     */
+    public void setValidated(Boolean validated) {
+        this.validated = validated;
+    }
+
+    /**
+     * @return The validation status of the question
+     */
+    public Boolean getValidated() {
+        return this.validated;
     }
 
     /**

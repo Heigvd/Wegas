@@ -24,7 +24,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Scripted;
-import static java.lang.Boolean.FALSE;
 
 /**
  *
@@ -66,11 +65,6 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     @JsonView(Views.ExtendedI.class)
     private String description;
     
-        /**
-     * Set this to true when the choice is to be selected with an HTML checkbox
-     */
-    private Boolean cbx = FALSE;
-
     /**
      *
      */
@@ -102,8 +96,6 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
         super.merge(a);
         this.setDuration(other.getDuration());
         this.setCost(other.getCost());
-        Boolean tmpl = other.getCbx();
-        this.setCbx(tmpl);
         
         ListUtils.mergeReplace(this.getResults(), other.getResults());
 
@@ -199,21 +191,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     public void setDescription(String description) {
         this.description = description;
     }
-    
-    /**
-     * @return the checkbox flag
-     */
-    public Boolean getCbx() {
-        return cbx;
-    }
 
-    /**
-     * @param cb: if the checkbox mode is set
-     */
-    public void setCbx(Boolean cb) {
-        this.cbx = cb;
-    }
-    
     /**
      * @return the duration
      */

@@ -320,6 +320,64 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     }
 
     /**
+     * Validates a question that's marked as checkbox type: sequentially validates all replies (i.e. selected choices)
+     * and processes all other choices as "ignored".
+     * 
+     * @param validateQuestion
+     * @param player
+     * @throws com.wegas.core.exception.client.WegasRuntimeException
+     */
+    public void validateQuestion(final QuestionInstance validateQuestion, final Player player) throws WegasRuntimeException {
+        
+        final QuestionDescriptor questionDescriptor = (QuestionDescriptor) validateQuestion.getDescriptor();
+        if (!questionDescriptor.getCbx()){
+            logger.error("validateQuestion() invoked on a Question which is not of checkbox type");
+            return;
+        }
+        
+        // Should this be done as a final step, considering the whole validation as a transaction?
+        validateQuestion.setValidated(true);
+        
+        // Loop on all choices: validate all replies (checked choices) and "ignore()" all unchecked choices.
+        // NB: there should be only one reply per choice for each player.
+       
+        for (ChoiceDescriptor choice : questionDescriptor.getItems()){
+            // Test if the current choice has been selected, i.e. there is a reply for it.
+            boolean selected = false;
+            for (Reply r : choice.getQuestion().getInstance(player).getReplies()) {
+                if (r.getResult().getChoiceDescriptor().equals(choice)) {
+                    // It's been selected: validate the reply (which executes the impact)
+                    this.validateReply(player, r);
+                    selected = true;
+                    break;
+                }
+            }
+            if (!selected){
+                // There is no reply, we have to create one (and/or a Result) for executing the ignoration impact...
+                //Reply pseudoReply = questionSingleton.createReply(choice.getId(), player, 0L);
+                //pseudoReply.setResult(choice.getInstance(player).getResult());// Refresh the current result
+                // scriptManager.eval(player, validateReply.getResult().getIgnorationImpact());
+            }
+        }
+    }
+
+    /**
+     * @param questionInstanceId
+     * @param player
+     */
+    public void validateQuestion(Long questionInstanceId, Player player) {
+        this.validateQuestion(getEntityManager().find(QuestionInstance.class, questionInstanceId), player);
+    }
+
+    /**
+     * @param questionInstanceId
+     * @param playerId
+     */
+    public void validateQuestion(Long questionInstanceId, Long playerId) {
+        this.validateQuestion(questionInstanceId, playerFacade.find(playerId));
+    }
+
+    /**
      *
      */
     public static class ReplyValidate {
