@@ -1,29 +1,37 @@
 import { getQuestionData } from '../API/neo4j';
 
 function genLabel(questionName, snapshot) {
-    let question = JSON.search(snapshot, `//*[@class='QuestionDescriptor'][name='${questionName}']`)[0];
-    let labels = [];
+    const question = JSON.search(snapshot, `//*[@class='QuestionDescriptor'][name='${questionName}']`)[0];
+    const labels = [];
     if (question) {
         question.items.forEach(function(i) {
-            i.results.forEach(function(r) {
-                labels.push(JSON.search(snapshot, `//*[name='${i.name}']`)[0].label +
-                    (r.label ? ` (${r.label})` : ''));
-            });
+            if (i.results.length) {
+                i.results.forEach(function(r) {
+                    labels.push(JSON.search(snapshot, `//*[name="${i.name}"]`)[0].label +
+                        (r.label ? ` (${r.label})` : ''));
+                });
+            } else {
+                labels.push(JSON.search(snapshot, `//*[name="${i.name}"]`)[0].label);
+            }
         });
     }
     return labels;
 }
 function questionSerie(questionName, questionData, snapshot) {
-    let question = JSON.search(snapshot, `//*[@class='QuestionDescriptor'][name='${questionName}']`)[0];
-    let choices = new Map();
-    let serie = [];
+    const question = JSON.search(snapshot, `//*[@class='QuestionDescriptor'][name='${questionName}']`)[0];
+    const choices = new Map();
+    const serie = [];
     let count = 0;
 
     question.items.forEach(function(i) {
         choices.set(i.name, new Map());
-        i.results.forEach(function(r) {
-            choices.get(i.name).set(r.label, 0);
-        });
+        if (i.results.length) {
+            i.results.forEach(function(r) {
+                choices.get(i.name).set(r.label, 0);
+            });
+        } else {
+            choices.get(i.name).set('', 0);
+        }
     });
 
 
