@@ -621,7 +621,7 @@ YUI().use(function(Y) {
             "wegas-pageeditor": {
                 path: "js/plugin/wegas-pageeditor-min.js",
                 ws_provides: "PageEditor",
-                requires: ["diff_match_patch", "wegas-editor-widgetaction",
+                requires: ["json_patch", "wegas-editor-widgetaction",
                     "event-mouse-startstop", "node-scroll-info",
                     "wegas-pageeditor-dragdrop", "wegas-pageeditorcss",
                     "wegas-pageeditor-resize"]
@@ -921,8 +921,8 @@ YUI().use(function(Y) {
             gzip: {
                 path: "zlib_and_gzip.min.js"
             },
-            diff_match_patch: {
-                path: "diffmatchpatch/diff_match_patch.js"
+            json_patch: {
+                path: "jsonpatch/json-patch-duplex-min.js"
             }
         }
     });

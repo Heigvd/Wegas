@@ -8,7 +8,9 @@
 package com.wegas.core.rest;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.fge.jsonpatch.JsonPatchException;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.jcr.page.Page;
@@ -329,16 +331,17 @@ public class PageController {
     @Consumes(MediaType.TEXT_PLAIN)
     public Response patch(@PathParam("gameModelId") String gameModelId,
                           @PathParam("pageId") String pageId,
-                          String patch) throws RepositoryException, JSONException, IOException {
+                          String patch) throws RepositoryException, JSONException, IOException, JsonPatchException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
         try (final Pages pages = new Pages(gameModelId)) {
-            Page page = pages.getPage(pageId);
+            final Page page = pages.getPage(pageId);
             if (page == null) {
                 return Response.status(Response.Status.NOT_FOUND).header("Page", pageId).build();
             }
-            page.patch(patch);
+            JsonNode patches = (new ObjectMapper()).readTree(patch);
+            page.patch(patches);
             pages.store(page);
             return Response.ok(page.getContent(), MediaType.APPLICATION_JSON)
                 .header("Page", pageId).build();

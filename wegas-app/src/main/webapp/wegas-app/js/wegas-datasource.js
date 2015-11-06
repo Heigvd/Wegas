@@ -73,7 +73,7 @@ YUI.add('wegas-datasource', function(Y) {
         },
         hasInitialRequest: function() {
             return !Y.Lang.isUndefined(this.get("initialRequest")) ||
-                !Y.Lang.isUndefined(this.get("initialFullRequest"));
+                   !Y.Lang.isUndefined(this.get("initialFullRequest"));
         },
         /**
          * Server requests methods
@@ -213,9 +213,9 @@ YUI.add('wegas-datasource', function(Y) {
                     if (this.get("host").fire(val["@class"], val)) {
 
                         node = Y.Widget.getByNode(".wegas-login-page") ||
-                            (Y.Widget.getByNode("#centerTabView") &&
+                               (Y.Widget.getByNode("#centerTabView") &&
                                 Y.Widget.getByNode("#centerTabView").get("selection")) ||
-                            Y.Widget.getByNode(".wegas-playerview");
+                               Y.Widget.getByNode(".wegas-playerview");
 
                         switch (val["@class"]) {
                             case "WegasErrorMessage":
@@ -231,8 +231,8 @@ YUI.add('wegas-datasource', function(Y) {
                                 max = (val.max !== null ? val.max : "∞");
                                 level = "error";
                                 msg = "\"" + val.variableName +
-                                    "\" is out of bound. <br />(" + val.value + " not in [" + min + ";" + max +
-                                    "])";
+                                      "\" is out of bound. <br />(" + val.value + " not in [" + min + ";" + max +
+                                      "])";
                                 break;
                             case "WegasScriptException":
                                 level = "error";
@@ -271,9 +271,9 @@ YUI.add('wegas-datasource', function(Y) {
             var node;
             if (Y.Widget) {
                 node = Y.Widget.getByNode(".wegas-login-page") ||
-                    (Y.Widget.getByNode("#centerTabView") &&
+                       (Y.Widget.getByNode("#centerTabView") &&
                         Y.Widget.getByNode("#centerTabView").get("selection")) ||
-                    Y.Widget.getByNode(".wegas-playerview");
+                       Y.Widget.getByNode(".wegas-playerview");
             }
 
             if (node) {
@@ -339,7 +339,7 @@ YUI.add('wegas-datasource', function(Y) {
                     if (!e.error) { // If there was an server error, do not update the cache
                         for (i = 0; i < response.length; i += 1) {
                             this.updated = this.updateCache(e.cfg.method, response[i], !e.cfg.initialRequest) ||
-                                this.updated;
+                                           this.updated;
                         }
                         return;
                     }
@@ -352,7 +352,7 @@ YUI.add('wegas-datasource', function(Y) {
                             if (Lang.isObject(entity)) {
                                 method = e.cfg && e.cfg.method ? e.cfg.method : "POST";
                                 this.updated = this.updateCache(method, entity, !e.cfg || !e.cfg.initialRequest) ||
-                                    this.updated;
+                                               this.updated;
                             }
                         }
                     }
@@ -391,42 +391,42 @@ YUI.add('wegas-datasource', function(Y) {
             switch (method) {
                 case "DELETE":
                     if (this.find(ID, entity, Y.bind(function(entity, needle, index, stack) {
-                        stack.splice(index, 1);
-                        this.get(HOST).fire("delete", {"entity": entity});
-                        return true;
-                    }, this))) {
+                            stack.splice(index, 1);
+                            this.get(HOST).fire("delete", {"entity": entity});
+                            return true;
+                        }, this))) {
                         return true;
                     }
                     break;
                 default:
                     if (this.find(ID, entity, Y.bind(function(entity, needle) {
-                        entity.setAttrs(needle.getAttrs());
+                            entity.setAttrs(needle.getAttrs());
 
-                        if (this.oldIds) {
-                            // NEW ENTITY IN PARENT
+                            if (this.oldIds) {
+                                // NEW ENTITY IN PARENT
 
-                            // oldIds is filled by VarDescCache.post when adding a variable as
-                            // a child. oldIds contains new variable siblings ids
+                                // oldIds is filled by VarDescCache.post when adding a variable as
+                                // a child. oldIds contains new variable siblings ids
 
-                            // Since return entity is not the new one but its parent,
-                            // this statement search an entity with an unknown id (ie not in oldIds) within
-                            // the parent items (ie children).
-                            var newEntity = Y.Array.find(entity.get("items"), function(i) {
-                                return Y.Array.indexOf(this.oldIds, i.get("id")) < 0;
-                            }, this);
-                            this.get(HOST).fire("added", {// New entity as children
-                                entity: newEntity,
-                                parent: entity
-                            });
-                            this.oldIds = null;
-                        } else {
-                            // Update Entity (anywhere)
-                            this.get(HOST).fire("updatedDescriptor", {
-                                entity: entity
-                            });
-                        }
-                        return true;
-                    }, this))) {
+                                // Since return entity is not the new one but its parent,
+                                // this statement search an entity with an unknown id (ie not in oldIds) within
+                                // the parent items (ie children).
+                                var newEntity = Y.Array.find(entity.get("items"), function(i) {
+                                    return Y.Array.indexOf(this.oldIds, i.get("id")) < 0;
+                                }, this);
+                                this.get(HOST).fire("added", {// New entity as children
+                                    entity: newEntity,
+                                    parent: entity
+                                });
+                                this.oldIds = null;
+                            } else {
+                                // Update Entity (anywhere)
+                                this.get(HOST).fire("updatedDescriptor", {
+                                    entity: entity
+                                });
+                            }
+                            return true;
+                        }, this))) {
                         return true;
                     }
                     break;
@@ -683,10 +683,10 @@ YUI.add('wegas-datasource', function(Y) {
                 value: function(entity, key, needle) {
                     var value = (entity.get) ? entity.get(key) : entity[key], // Normalize item and needle values
                         needleValue = (needle && needle.get) ? needle.get(key) :
-                        (Y.Lang.isObject(needle)) ? needle[key] : needle;
+                            (Y.Lang.isObject(needle)) ? needle[key] : needle;
 
                     return value === needleValue &&
-                        (!needle._classes || entity instanceof needle._classes[0]);
+                           (!needle._classes || entity instanceof needle._classes[0]);
                 }
             }
         }
@@ -1298,8 +1298,8 @@ YUI.add('wegas-datasource', function(Y) {
          */
         patch: function(o, callback) {
             /*global diff_match_patch*/
-            var dmp = new diff_match_patch(),
-                oldPage = this.getCache(o["@pageId"]),
+            // var dmp = new diff_match_patch(),
+            var oldPage = this.getCache(o["@pageId"]),
                 newPage = Y.merge(o),
                 pageId = o["@pageId"],
                 patch;
@@ -1308,7 +1308,9 @@ YUI.add('wegas-datasource', function(Y) {
                 Y.log("Failed to define page id", "error", "Y.Plugin.PageCache");
                 return;
             }
-            patch = dmp.patch_toText(dmp.patch_make(Y.JSON.stringify(oldPage), Y.JSON.stringify(newPage)));
+            //            patch = dmp.patch_toText(dmp.patch_make(Y.JSON.stringify(oldPage),
+            // Y.JSON.stringify(newPage)));
+            patch = jsonpatch.compare(oldPage, newPage);
             return this.sendRequest({
                 request: "" + pageId,
                 cfg: {
@@ -1425,7 +1427,7 @@ YUI.add('wegas-datasource', function(Y) {
                             if (Y.Lang.isFunction(callback)) {
                                 callback(null);
                             }
-                        },this)
+                        }, this)
                     }
                 });
             }
@@ -1435,7 +1437,7 @@ YUI.add('wegas-datasource', function(Y) {
                 if (+meta.index === pos) {
                     //Same pos. return old index
                     this.getIndex(callback);
-                    return;
+
                 } else {
                     this.index = null;
                     return this.sendRequest({
