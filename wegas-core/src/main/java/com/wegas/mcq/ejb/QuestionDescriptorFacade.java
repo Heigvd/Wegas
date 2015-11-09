@@ -292,7 +292,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         final ChoiceDescriptor choiceDescriptor = validateReply.getResult().getChoiceDescriptor();
         validateReply.setResult(choiceDescriptor.getInstance(player).getResult());// Refresh the current result
 
-        scriptManager.eval(player, validateReply.getResult().getImpact());
+        scriptManager.eval(player, validateReply.getResult().getImpact(), choiceDescriptor);
         final ReplyValidate replyValidate = new ReplyValidate(validateReply, choiceDescriptor.getInstance(player), validateReply.getQuestionInstance(), player);
         try {
             scriptEvent.fire(player, "replyValidate", replyValidate);

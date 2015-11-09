@@ -84,7 +84,7 @@ public class StateMachineController {
         for (Transition transition : transitions) {
             if (transition instanceof DialogueTransition && transition.getId().equals(transitionId)) {
                 if (transition.getTriggerCondition() != null && !transition.getTriggerCondition().getContent().equals("")) {
-                    valid = (Boolean) scriptManager.eval(playerId, transition.getTriggerCondition());
+                    valid = (Boolean) scriptManager.eval(playerId, transition.getTriggerCondition(), stateMachineDescriptor);
                 }
                 if (valid) {
                     if (transition.getPreStateImpact() != null) {
@@ -97,7 +97,7 @@ public class StateMachineController {
                     if (stateMachineInstance.getCurrentState().getOnEnterEvent() != null) {
                         impacts.add(stateMachineInstance.getCurrentState().getOnEnterEvent());
                     }
-                    scriptManager.eval(playerFacade.find(playerId), impacts);
+                    scriptManager.eval(playerFacade.find(playerId), impacts, stateMachineDescriptor);
                 }
                 break;
             }

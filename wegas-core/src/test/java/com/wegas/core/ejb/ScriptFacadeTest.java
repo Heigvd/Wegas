@@ -49,7 +49,7 @@ public class ScriptFacadeTest extends AbstractEJBTest {
         final Script s = new Script();
         s.setLanguage("JavaScript");
         s.setContent(VARIABLENAME + ".value = \"" + VALUE2 + "\"");
-        sm.eval(player.getId(), s);
+        sm.eval(player.getId(), s, null);
         logger.info("Tested " + sm);
 
         // Verify the new value
@@ -59,7 +59,7 @@ public class ScriptFacadeTest extends AbstractEJBTest {
         //Test with events
         final Script testEvent = new Script("Event.on('testEvent', function(o){VariableDescriptorFacade.findByName(gameModel,'" + VARIABLENAME + "').getInstance(self).setValue(o.value);});\nEvent.fire('testEvent', {'value':'" + VALUE + "'});");
         testEvent.setLanguage("JavaScript");
-        sm.eval(player.getId(), testEvent);
+        sm.eval(player.getId(), testEvent, null);
         Assert.assertEquals(VALUE, ((StringInstance) vif.find(stringDescriptor.getId(), player.getId())).getValue());
     }
 }

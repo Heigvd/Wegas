@@ -43,7 +43,7 @@ YUI.add('wegas-scripteval', function(Y) {
          *  @param cb A callback object, containing success, failure function or just a function as success callback.
          *     First parameter passed will be result
          */
-        eval: function(script, cfg, player) {
+        eval: function(script, cfg, player, contextId) {
             var result;
 
             if (cfg instanceof Function) {                                      // Normalize callback argument
@@ -57,7 +57,7 @@ YUI.add('wegas-scripteval', function(Y) {
             try {
                 result = this.localEval(script, player);                        // Try to do local eval
             } catch (error) {                                                   // And if there is an error  
-                this.remoteEval(script, cfg, player);                           // Use server fallback
+                this.remoteEval(script, cfg, player, contextId);                // Use server fallback
                 return;                                                         // and stop the method
             }
 
@@ -75,7 +75,7 @@ YUI.add('wegas-scripteval', function(Y) {
          * @param {type} script
          * @param {type} cfg
          */
-        remoteEval: function(script, cfg, player) {
+        remoteEval: function(script, cfg, player, contextId) {
             var playerId;
             if(player){
                 playerId = player.get("id");
@@ -88,7 +88,7 @@ YUI.add('wegas-scripteval', function(Y) {
             }
 
             this.get("host").sendRequest(Y.mix(cfg || {}, {
-                request: "/Script/Run/" + (playerId || Wegas.Facade.Game.get('currentPlayerId')),
+                request: "/Script/Run/" + (playerId || Wegas.Facade.Game.get('currentPlayerId')) + (contextId ? "/" + contextId : ""),
                 cfg: {
                     method: "POST",
                     data: script
@@ -98,8 +98,8 @@ YUI.add('wegas-scripteval', function(Y) {
         /**
          * Sugar
          */
-        run: function(script, cfg, player) {
-            this.remoteEval(script, cfg, player);
+        run: function(script, cfg, player, contextId) {
+            this.remoteEval(script, cfg, player, contextId);
         },
         /**
          * Tries to evaluate the script locally, using variables cache

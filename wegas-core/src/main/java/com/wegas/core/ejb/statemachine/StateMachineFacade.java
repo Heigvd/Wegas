@@ -127,14 +127,16 @@ public class StateMachineFacade {
 
     private Integer doSteps(Player player, List<Transition> passedTransitions, List<StateMachineDescriptor> stateMachineDescriptors, Integer steps) throws WegasScriptException {
 
-        List<Script> impacts = new ArrayList<>();
-        List<Script> preImpacts = new ArrayList<>();
+        //List<Script> impacts = new ArrayList<>();
+        //List<Script> preImpacts = new ArrayList<>();
+        Map<StateMachineInstance, Transition> selectedTransitions = new HashMap<>();
+
         List<Transition> transitions;
         StateMachineInstance smi;
         Boolean validTransition;
         Boolean transitionPassed = false;
 
-        for (VariableDescriptor sm : stateMachineDescriptors) {
+        for (StateMachineDescriptor sm : stateMachineDescriptors) {
             validTransition = false;
             smi = (StateMachineInstance) sm.getInstance(player);
             if (!smi.getEnabled() || smi.getCurrentState() == null) { // a state may not be defined : remove statemachine's state when a player is inside that state
@@ -160,7 +162,7 @@ public class StateMachineFacade {
                         logger.debug("Loop detected, already marked {} IN {}", transition, passedTransitions);
                     } else {
                         try {
-                            if (this.eventTransition(player, transition, smi)) {
+                            if (this.eventTransition(player, transition, sm, smi)) {
                                 passedTransitions.add(transition);
                                 transitionPassed = true;
                                 smi.transitionHistoryAdd(transition.getId());
@@ -174,7 +176,7 @@ public class StateMachineFacade {
 
                 } else {
                     try {
-                        validTransition = (Boolean) scriptManager.eval(player, transition.getTriggerCondition());
+                        validTransition = (Boolean) scriptManager.eval(player, transition.getTriggerCondition(), sm);
                     } catch (WegasScriptException ex) {
                         ex.setScript("Variable " + sm.getLabel());
                         requestManager.addException(ex);
@@ -194,8 +196,8 @@ public class StateMachineFacade {
                     } else {
                         passedTransitions.add(transition);
                         smi.setCurrentStateId(transition.getNextStateId());
-                        preImpacts.add(transition.getPreStateImpact());
-                        impacts.add(smi.getCurrentState().getOnEnterEvent());
+
+                        selectedTransitions.put(smi, transition);
                         smi.transitionHistoryAdd(transition.getId());
                         transitionPassed = true;
                         if (sm instanceof TriggerDescriptor) {
@@ -211,13 +213,19 @@ public class StateMachineFacade {
         if (transitionPassed) {
             /*@DIRTY, @TODO : find something else : Running scripts overrides previous state change Only for first Player (resetEvent). */
             variableDescriptorFacade.findByClass(player.getGameModel(), StateMachineDescriptor.class);
-            preImpacts.addAll(impacts);
-            try {
-                scriptManager.eval(player, preImpacts);
-            } catch (WegasScriptException ex) {
-                ex.setScript("StateMachines impacts");
-                requestManager.addException(ex);
-                logger.warn("Script failed ", ex);
+            for (StateMachineInstance fsmi : selectedTransitions.keySet()) {
+                List<Script> scripts = new ArrayList<>();
+
+                scripts.add(selectedTransitions.get(fsmi).getPreStateImpact());
+                scripts.add(fsmi.getCurrentState().getOnEnterEvent());
+
+                try {
+                    scriptManager.eval(player, scripts, fsmi.getDescriptor());
+                } catch (WegasScriptException ex) {
+                    ex.setScript("StateMachines impacts");
+                    requestManager.addException(ex);
+                    logger.warn("Script failed ", ex);
+                }
             }
             steps++;
             steps = this.doSteps(player, passedTransitions, stateMachineDescriptors, steps);
@@ -234,7 +242,7 @@ public class StateMachineFacade {
      * @param smi        current {@link StateMachineInstance} passing transition
      * @return
      */
-    private Boolean eventTransition(Player player, Transition transition, StateMachineInstance smi) throws WegasScriptException {
+    private Boolean eventTransition(Player player, Transition transition, StateMachineDescriptor sm, StateMachineInstance smi) throws WegasScriptException {
         String script = transition.getTriggerCondition().getContent();
         Pattern pattern = Pattern.compile("Event\\.fired\\([ ]*(['\"])(.+?)\\1[ ]*\\)");
         Matcher matcher = pattern.matcher(script);
@@ -246,7 +254,7 @@ public class StateMachineFacade {
         }
         Object[] firedParams = scriptEvent.getFiredParameters(event);
         /* events and more ? */
-        if (!(Boolean) scriptManager.eval(player, transition.getTriggerCondition())) {
+        if (!(Boolean) scriptManager.eval(player, transition.getTriggerCondition(), sm)) {
             return false;
         }
         final Integer instanceEventCount = stateMachineEventsCounter.count(smi, event);
@@ -254,10 +262,10 @@ public class StateMachineFacade {
             smi.setCurrentStateId(transition.getNextStateId());
             stateMachineEventsCounter.increase(smi, event);
             if (!this.isNotDefined(transition.getPreStateImpact())) {
-                this.evalEventImpact(player, transition.getPreStateImpact(), firedParams[instanceEventCount]);
+                this.evalEventImpact(player, transition.getPreStateImpact(), firedParams[instanceEventCount], sm);
             }
             if (!this.isNotDefined(smi.getCurrentState().getOnEnterEvent())) {
-                this.evalEventImpact(player, smi.getCurrentState().getOnEnterEvent(), firedParams[instanceEventCount]);
+                this.evalEventImpact(player, smi.getCurrentState().getOnEnterEvent(), firedParams[instanceEventCount], sm);
             }
 
             return true;
@@ -274,13 +282,13 @@ public class StateMachineFacade {
      * @param param  the parameter to pass to the script
      * @see #EVENT_PARAMETER_NAME
      */
-    private void evalEventImpact(Player player, final Script script, final Object param) throws WegasRuntimeException {
+    private void evalEventImpact(Player player, final Script script, final Object param, VariableDescriptor context) throws WegasRuntimeException {
         //try {
         final Object impactFunc;
         if (script.getLanguage().toLowerCase().equals("javascript")) {
-            impactFunc = scriptManager.eval(new Script(script.getLanguage(),
+            impactFunc = scriptManager.eval(player, new Script(script.getLanguage(),
                     String.format("function(%s){%s}", EVENT_PARAMETER_NAME, script.getContent()) // A JavaScript Function. should check for engine type
-            ));
+            ), context);
         } else {
             return; // define other language here
         }
