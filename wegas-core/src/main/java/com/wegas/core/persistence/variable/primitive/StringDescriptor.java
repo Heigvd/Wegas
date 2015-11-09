@@ -124,6 +124,6 @@ public class StringDescriptor extends VariableDescriptor<StringInstance> {
     }
 
     public boolean isValueAllowed(String value) {
-        return allowedValues == null || allowedValues.isEmpty() || allowedValues.contains(value);
+        return allowedValues == null || allowedValues.isEmpty() || value.isEmpty() || allowedValues.contains(value);
     }
 }
