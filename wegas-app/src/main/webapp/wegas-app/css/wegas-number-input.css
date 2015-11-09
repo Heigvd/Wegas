@@ -8,11 +8,13 @@
 
 
 .wegas-boxes-number-input {
-
 }
 
 .wegas-boxes-number-input .boxes {
-
+    cursor: default;
+}
+.wegas-boxes-number-input .boxes.clickable .box {
+    cursor: pointer;
 }
 
 .wegas-boxes-number-input .boxes .box {
