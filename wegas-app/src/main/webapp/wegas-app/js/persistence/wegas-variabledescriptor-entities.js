@@ -391,6 +391,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                     id: IDATTRDEF,
                     value: {
                         type: STRING,
+                        optional: true,
                         _inputex: {
                             label: "Default value"
                         }
