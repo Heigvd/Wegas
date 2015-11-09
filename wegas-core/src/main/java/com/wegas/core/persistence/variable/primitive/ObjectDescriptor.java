@@ -136,6 +136,17 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> {
         this.getInstance(p).setProperty(key, value);
     }
 
+    public double getNumberInstanceProperty(Player p, String key) {
+        String value = this.getInstance(p).getProperty(key);
+        double parsedValue;
+        try {
+            parsedValue = Double.parseDouble(value);
+        } catch (NullPointerException | NumberFormatException e) {
+            parsedValue = Double.NaN;
+        }
+        return parsedValue;
+    }
+
     /**
      *
      * @param p
