@@ -268,7 +268,6 @@ YUI.add("wegas-text-input", function (Y) {
 			var desc = this.get("variable.evaluated"),
 				inst = desc.getInstance(),
 				allowedValues = desc.get("allowedValues"),
-				readonly = this.get("readonly.evaluated"),
 				CB = this.get("contentBox"),
 				input = CB.one(".wegas-input-text"),
 				label = CB.one(".wegas-input-label"),
@@ -364,14 +363,14 @@ YUI.add("wegas-text-input", function (Y) {
 				_inputex: {
 					_type: "variableselect",
 					label: "variable",
-					classFilter: ["NumberDescriptor"]
+					classFilter: ["StringDescriptor"]
 				}
 			},
 			readonly: {
 				getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
 				type: "boolean",
 				value: false,
-				optional: true,
+				optional: false,
 				_inputex: {
 					_type: "script",
 					expects: "condition"
