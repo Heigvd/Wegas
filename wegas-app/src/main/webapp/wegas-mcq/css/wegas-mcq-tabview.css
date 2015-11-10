@@ -94,6 +94,12 @@
     color: #757575;
 }
 
+.wegas-mcqtabview .mcq-checkbox { /* For checkboxes and radio boxes */
+    float: right !important;
+    margin-right: 30px;
+    width:15px;
+    height:15px;
+}
 /**
  * Choice replies
  */

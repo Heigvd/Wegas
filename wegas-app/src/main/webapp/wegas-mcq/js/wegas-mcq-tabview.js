@@ -152,7 +152,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                         }
     }
                 }, this));
-            }, "input.mcq-checkbox", this); // Dummy class ...
+            }, "input.mcq-checkbox", this);
 
             this.handlers.response = this.dataSource.after("update", this.syncUI, this);
         },
@@ -336,11 +336,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                         }
                         ret.push('<div class="mcq-choice-name">', choiceD.get("title"), '</div>');
                         ret.push('<div class="mcq-choice-description">', question.get("items")[i].get("description"), '</div>');
-                        if (answerable) {
-                            ret.push('<input class="mcq-checkbox" type="checkbox"', (checked ? ' checked ' : ' '), 'id="', choiceD.get("id"), '" name="', questionScriptAlias, '" style="float: right; margin-right: 30px;">');
-                        } else {
-                            ret.push('<input class="mcq-checkbox" type="checkbox"', (checked ? ' checked ' : ' '), 'disabled id="', choiceD.get("id"), '" name="', questionScriptAlias, '" style="float: right; margin-right: 30px;">');
-                        }
+                        ret.push('<input class="mcq-checkbox"', (allowMultiple ? ' type="checkbox"' : ' type="radio"'), (checked ? ' checked' : ''), (answerable ? '' : ' disabled'), ' id="', choiceD.get("id"), '" name="', questionScriptAlias, '">');
                     } else { // This is not a checkbox-type question:
                         if (answerable || questionInstance.get("replies")[0].getChoiceDescriptor().get("id") === choiceD.get("id")) {
                             ret.push('<div class="mcq-choice">');
