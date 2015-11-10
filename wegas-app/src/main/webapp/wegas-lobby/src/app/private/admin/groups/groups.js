@@ -2,6 +2,7 @@ angular.module('private.admin.groups', [
     'private.admin.groups.edit'
     ])
 .config(function ($stateProvider) {
+    "use strict";
     $stateProvider
         .state('wegas.private.admin.groups', {
             url: '/groups',
@@ -15,6 +16,7 @@ angular.module('private.admin.groups', [
     ;
 })
 .controller('AdminGroupsCtrl', function AdminGroupsCtrl(GroupsModel) {
+    "use strict";
     var ctrl = this;
     ctrl.groups = [];
     ctrl.newGroup = {
@@ -52,5 +54,4 @@ angular.module('private.admin.groups', [
         });
     };
     ctrl.updateGroups();    
-})
-;
+});

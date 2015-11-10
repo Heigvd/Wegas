@@ -3,6 +3,7 @@ angular
     'private.scenarist.coscenarists.directives'
 ])
 .config(function ($stateProvider) {
+    "use strict";
     $stateProvider
         .state('wegas.private.scenarist.coscenarists', {
             url: '/:scenarioId/coscenarists',
@@ -14,8 +15,9 @@ angular
         });
 })
 .controller('CoscenaristsCtrl', function CoscenaristsCtrl($state, WegasModalService, Auth) {
+    "use strict";
     Auth.getAuthenticatedUser().then(function(user) {
-        if (user != null) {
+        if (user) {
             if (user.isAdmin || user.isScenarist) {
                 WegasModalService.displayAModal({
                     templateUrl: 'app/private/scenarist/coscenarists/coscenarists.tmpl.html',

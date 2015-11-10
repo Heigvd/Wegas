@@ -1,5 +1,6 @@
 angular.module('wegas.service.customize', [])
 .factory('Customize', function(Flash) {
+	"use strict";
 	var colors = [
 		'white-orange', 'light-orange', 'orange', 'dark-orange', 'black-orange',
 		'white-red', 'light-red', 'red', 'dark-red', 'black-red',

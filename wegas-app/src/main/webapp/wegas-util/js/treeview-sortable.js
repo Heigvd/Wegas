@@ -47,7 +47,7 @@ YUI.add("treeview-sortable", function(Y) {
 
         function init() {
             handles.push(host.get(BOUNDINGBOX).delegate("mousedown", function(mdevent) {
-                mdevent.stopPropagation();
+                mdevent.halt(true);
                 lastXY = [mdevent.pageX, mdevent.pageY];
                 startDrag(mdevent.currentTarget);
             }, Y.Array.reduce(cfg.nodeGroups, "", function(prev, next) {
@@ -163,7 +163,7 @@ YUI.add("treeview-sortable", function(Y) {
                 tmpHandles.push(scrollTimer);
             }));
             tmpHandles.push(BB.on("mouseenter", function() {
-                if (scrollTimer.cancel) {
+                if (scrollTimer && scrollTimer.cancel) {
                     scrollTimer.cancel();
                 }
             }));

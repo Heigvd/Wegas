@@ -11,19 +11,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchException;
 import com.wegas.core.Helper;
-import name.fraser.neil.plaintext.StandardBreakScorer;
-import name.fraser.neil.plaintext.diff_match_patch;
 import org.slf4j.LoggerFactory;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
-
-////import javax.xml.bind.annotation.XmlRootElement;
-////import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * @author Cyril Junod <cyril.junod at gmail.com>
@@ -32,7 +27,9 @@ import java.util.List;
 public class Page {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(Page.class);
+
     static final protected String INDEX_KEY = "index";
+
     static final protected String NAME_KEY = "pageName";
 
     @JsonIgnore
@@ -118,7 +115,7 @@ public class Page {
         try {
             this.content = mapper.readTree(content);
         } catch (IOException e) {
-            this.content = null;
+
         }
     }
 
@@ -161,15 +158,12 @@ public class Page {
     }
 
     /**
-     * @param patch
-     * @throws IOException
+     * @param patch RFC6902: patch Array
      */
-    public void patch(String patch) throws IOException {
-        diff_match_patch dmp = new diff_match_patch(new StandardBreakScorer());
-        List<diff_match_patch.Patch> patches = dmp.patch_fromText(patch);
-        Object[] result = dmp.patch_apply(new LinkedList<>(patches), this.content.toString());
-        logger.info("INPUT\n" + this.content.toString() + "\nPATCH\n" + patch + "\nRESULT\n" + (String) result[0]);
-        this.setContent((String) result[0]);
+    public void patch(JsonNode patch) throws IOException, JsonPatchException {
+        final JsonNode target = JsonPatch.fromJson(patch).apply(this.getContent());
+        logger.info("INPUT\n" + this.content.toString() + "\nPATCH\n" + patch + "\nRESULT\n" + target.asText());
+        this.setContent(target);
     }
 
     //@TODO : tokenizer

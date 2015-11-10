@@ -62,10 +62,10 @@
     </licenses>
 
     <distributionManagement>
-<!--        <site>
-            <id>localhost</id>
-            <url>file://./site</url>
-        </site>-->
+        <!--        <site>
+                    <id>localhost</id>
+                    <url>file://./site</url>
+                </site>-->
         <site>
             <id>github</id>
             <url>scm:git:https://github.com/Heigvd/Wegas.git</url>
@@ -198,7 +198,7 @@
                 <version>${httpcomponents.version}</version>
                 <type>jar</type>
             </dependency>
-            
+
             <!--<dependency>
                 <groupId>javax.enterprise</groupId>
                 <artifactId>cdi-api</artifactId>
@@ -214,11 +214,11 @@
             </dependency>
 
             <!-- Jackson -->
-        <dependency> 
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-jaxb-annotations</artifactId>
-            <version>2.3.2</version>
-        </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.module</groupId>
+                <artifactId>jackson-module-jaxb-annotations</artifactId>
+                <version>2.3.2</version>
+            </dependency>
 
 
             <!-- Java Content Repository -->
@@ -240,19 +240,17 @@
                 </exclusions>
                 <scope>compile</scope>
             </dependency>
-
             <dependency>
-                <groupId>com.madgag</groupId>
-                <artifactId>util-diff</artifactId>
-                <version>1.33</version>
+                <groupId>com.github.fge</groupId>
+                <artifactId>json-patch</artifactId>
+                <version>1.9</version>
             </dependency>
-
             <!-- PDF Generation -->
             <dependency>
                 <groupId>com.itextpdf</groupId>
                 <artifactId>itextpdf</artifactId>
-	        <version>5.5.4</version>
-	    </dependency>
+                <version>5.5.4</version>
+            </dependency>
             <dependency>
                 <groupId>org.xhtmlrenderer</groupId>
                 <artifactId>flying-saucer-pdf</artifactId>
@@ -397,13 +395,13 @@
                 <version>2.2</version>
             </dependency>-->
             <dependency>
-                   <groupId>fish.payara.extras</groupId>
-                   <artifactId>payara-embedded-all</artifactId>
-                    <version>${payara.version}</version>
-                    <scope>provided</scope>
-               </dependency>
+                <groupId>fish.payara.extras</groupId>
+                <artifactId>payara-embedded-all</artifactId>
+                <version>${payara.version}</version>
+                <scope>provided</scope>
+            </dependency>
 
-            <!-- Embedded glassfish 
+            <!-- Embedded glassfish
             <dependency>
                 <groupId>org.glassfish.main.extras</groupId>
                 <artifactId>glassfish-embedded-all</artifactId>
@@ -542,35 +540,35 @@
                     <version>3.4</version>
                 </plugin>
 
-<!--                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>cobertura-maven-plugin</artifactId>
-                    <version>2.7</version>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>clean</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                       <formats>
-                            <format>xml</format>
-                            <format>html</format>
-                        </formats>
-                        <check>
-                            <haltOnFailure>false</haltOnFailure>
-                            <branchRate>85</branchRate>
-                            <lineRate>85</lineRate>
-                            <totalBranchRate>85</totalBranchRate>
-                            <totalLineRate>85</totalLineRate>
-                            <packageLineRate>85</packageLineRate>
-                            <packageBranchRate>85</packageBranchRate>
+                <!--                <plugin>
+                                    <groupId>org.codehaus.mojo</groupId>
+                                    <artifactId>cobertura-maven-plugin</artifactId>
+                                    <version>2.7</version>
+                                    <executions>
+                                        <execution>
+                                            <goals>
+                                                <goal>clean</goal>
+                                            </goals>
+                                        </execution>
+                                    </executions>
+                                    <configuration>
+                                       <formats>
+                                            <format>xml</format>
+                                            <format>html</format>
+                                        </formats>
+                                        <check>
+                                            <haltOnFailure>false</haltOnFailure>
+                                            <branchRate>85</branchRate>
+                                            <lineRate>85</lineRate>
+                                            <totalBranchRate>85</totalBranchRate>
+                                            <totalLineRate>85</totalLineRate>
+                                            <packageLineRate>85</packageLineRate>
+                                            <packageBranchRate>85</packageBranchRate>
 
-                        </check>
+                                        </check>
 
-                    </configuration>
-                </plugin>-->
+                                    </configuration>
+                                </plugin>-->
             </plugins>
         </pluginManagement>
 
@@ -731,14 +729,14 @@
                 </executions>
                 <configuration>
                     <serverId>github</serverId>
-                   
-                    <!--<dryRun>true</dryRun>-->                    
+
+                    <!--<dryRun>true</dryRun>-->
                     <!--<tryUpdate>true</tryUpdate>-->
                     <content>${project.build.directory}/staging</content>
                     <scmBranch>gh-pages</scmBranch>
                 </configuration>
             </plugin>
-            <!--             Site deployment on github 
+            <!--             Site deployment on github
             <plugin>
                 <groupId>com.github.github</groupId>
                 <artifactId>site-maven-plugin</artifactId>

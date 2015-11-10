@@ -30,7 +30,7 @@ angular.module('private.admin.users', [
         ctrl.search = "";
 
         ctrl.updateDisplay = function() {
-            if (ctrl.maxUsersDisplayed == null) {
+            if (ctrl.maxUsersDisplayed === null) {
                 initMaxUsersDisplayed();
             }
             if (ctrl.maxUsersDisplayed >= ctrl.users.length) {

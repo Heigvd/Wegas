@@ -1,5 +1,6 @@
 angular.module('private.player.team.directives', [])
     .directive('playerTeamIndex', function() {
+        "use strict";
         return {
             templateUrl: 'app/private/player/team/directives.tmpl/index.html',
             scope: {
@@ -7,8 +8,10 @@ angular.module('private.player.team.directives', [])
             },
             controller: 'PlayerTeamController as playerTeamCtrl'
         };
-    }).controller('PlayerTeamController', function PlayerTeamController($scope, $state, $interval, $stateParams, Auth, TeamsModel) {
-        /* Assure access to ctrl. */
+    })
+    .controller('PlayerTeamController', function PlayerTeamController($scope, $state, $interval, $stateParams, Auth, TeamsModel) {
+        "use strict";
+        /* Ensure access to ctrl. */
         var ctrl = this;
         /* Container for datas */
         ctrl.team = {};
@@ -33,30 +36,32 @@ angular.module('private.player.team.directives', [])
                 $scope.close();
             }
         });
-        ctrl.refreshTeam = function () {
+        ctrl.refreshTeam = function() {
             ctrl.refreshing = 1;
             TeamsModel.refreshTeam(ctrl.team).then(function(response) {
-                var refreshingTimer = undefined;
+                var refreshingTimer;
                 if (!response.isErroneous()) {
-                    refreshingTimer = $interval(function(){
+                    refreshingTimer = $interval(function() {
                         $interval.cancel(refreshingTimer);
-                        ctrl.refreshing = 0; 
-                        refreshingTimer = $interval(function(){
+                        ctrl.refreshing = 0;
+                        refreshingTimer = $interval(function() {
                             $interval.cancel(refreshingTimer);
-                            ctrl.refreshing = -1;                
+                            ctrl.refreshing = -1;
                         }, 1200);
                     }, 500);
                     ctrl.team = response.data;
                 } else {
-                    refreshingTimer = $interval(function(){
+                    refreshingTimer = $interval(function() {
                         $interval.cancel(refreshingTimer);
-                        ctrl.refreshing = -1;                
+                        ctrl.refreshing = -1;
                     }, 1200);
                     response.flash();
                 }
             });
         };
-    }).directive('playerTeamPlayersList', function() {
+    })
+    .directive('playerTeamPlayersList', function() {
+        "use strict";
         return {
             templateUrl: 'app/private/player/team/directives.tmpl/players-list.html',
             scope: {

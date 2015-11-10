@@ -13,6 +13,7 @@ import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
+import com.wegas.core.security.persistence.User;
 import javax.ejb.EJBException;
 import javax.naming.NamingException;
 import org.apache.shiro.authc.*;
@@ -76,8 +77,9 @@ public class JpaRealm extends AuthorizingRealm {
 //            }
 
             AbstractAccount account = accountFacade().find((Long) principals.getPrimaryPrincipal());
+            User user = account.getUser();
             SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
-            for (Role role : account.getRoles()) {
+            for (Role role : user.getRoles()) {
                 info.addRole(role.getName());
 
                 for (Permission p : role.getPermissions()) {
@@ -85,7 +87,7 @@ public class JpaRealm extends AuthorizingRealm {
                 }
             }
 
-            for (Permission p : account.getPermissions()) {
+            for (Permission p : user.getPermissions()) {
                 addPermissions(info, p);
             }
             return info;

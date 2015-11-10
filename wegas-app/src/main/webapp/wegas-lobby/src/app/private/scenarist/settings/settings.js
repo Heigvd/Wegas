@@ -2,6 +2,7 @@ angular.module('private.scenarist.settings', [
     'private.scenarist.settings.directives'
 ])
     .config(function($stateProvider) {
+        "use strict";
         $stateProvider
             .state('wegas.private.scenarist.settings', {
                 url: '/:scenarioId/settings',
@@ -12,8 +13,9 @@ angular.module('private.scenarist.settings', [
                 }
             });
     }).controller("ScenaristSettingsController", function ScenaristSettingsController($state, WegasModalService, Auth) {
+        "use strict";
         Auth.getAuthenticatedUser().then(function(user) {
-            if (user != null) {
+            if (user) {
                 if (user.isAdmin || user.isScenarist) {
                     WegasModalService.displayAModal({
                         templateUrl: 'app/private/scenarist/settings/settings.tmpl.html',

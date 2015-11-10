@@ -103,44 +103,44 @@ font {
 }
 @keyframes fadein {
     from {
-        opacity: 0; 
+        opacity: 0;
     }
-    to   { 
+    to   {
         opacity: 1;
     }
 }
 
 @-moz-keyframes fadein {
-    from { 
-        opacity: 0; 
+    from {
+        opacity: 0;
     }
-    to   { 
+    to   {
         opacity: 1;
     }
 }
 
 @-webkit-keyframes fadein {
-    from { 
+    from {
         opacity: 0;
     }
-    to   { 
-        opacity: 1; 
+    to   {
+        opacity: 1;
     }
 }
 
 @-ms-keyframes fadein {
     from {
-        opacity: 0; 
+        opacity: 0;
     }
-    to   { 
+    to   {
         opacity: 1;
     }
 }
 @-o-keyframes fadein {
-    from { 
+    from {
         opacity: 0;
     }
-    to   { 
+    to   {
         opacity: 1;
     }
 }
@@ -194,7 +194,7 @@ font {
 .wegas-loading-overlay.wegas-loading-long:after {
     opacity: 1;
 }
-.wegas-loader { 
+.wegas-loader {
     width: 36px;
     height: 32px;
     position: absolute;
@@ -207,23 +207,23 @@ font {
     background-color: #03283A;
     border: 1px solid #03283A;
     float:left;
-    margin-right:4px; 
-    margin-top:6px; 
-    width:6px; 
+    margin-right:4px;
+    margin-top:6px;
+    width:6px;
     height:18px;
     -webkit-animation:loadingbar 1.2s linear infinite;
     -moz-animation:loadingbar 1.2s linear infinite;
     animation:loadingbar 1.2s linear infinite;
 }
-.wegas-loader .bar:nth-child(2) { 
+.wegas-loader .bar:nth-child(2) {
     animation-delay: 0.1s;                                                      /* Delay both the second and third bar animation */
-    -webkit-animation-delay: 0.1s; 
-    -moz-animation-delay: 0.1s; 
+    -webkit-animation-delay: 0.1s;
+    -moz-animation-delay: 0.1s;
 }
-.wegas-loader .bar:nth-child(3) { 
+.wegas-loader .bar:nth-child(3) {
     animation-delay: 0.2s;
-    -webkit-animation-delay: 0.2s; 
-    -moz-animation-delay: 0.2s; 
+    -webkit-animation-delay: 0.2s;
+    -moz-animation-delay: 0.2s;
 }
 @-webkit-keyframes loadingbar {
     0% { }
@@ -438,7 +438,7 @@ font {
     margin-left:2px;
     background-color: #0981A9;
     box-shadow: 1px 0px 1px white;
-    font-family: Arial;    
+    font-family: Arial;
     font-size: 0.9em;
     padding: 3px 7px 3px 6px;
     border-radius: 16px;
@@ -503,4 +503,29 @@ font {
     overflow: hidden;
     background-repeat: no-repeat;
     background-image: url(../../wegas-app/images/wegas-app-sprite.png);
+}
+
+.loading {
+    position: relative;
+    /*color: transparent !important;*/
+    cursor: default;
+}
+
+.loading:before,
+.loading:after {
+    box-sizing: border-box;
+    position: absolute;
+    content: '';
+    top: 50%;
+    left: 50%;
+    margin: -10px 0 0 -10px;
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    border: 3px solid rgba(0, 0, 0, .25);
+}
+
+.loading:after {
+    animation: rotate .7s linear infinite;
+    border-color: rgba(255, 255, 255, 0.95) transparent transparent transparent;
 }

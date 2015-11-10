@@ -2,12 +2,14 @@ angular.module('private.trainer.directives', [
     'wegas.behaviours.repeat.autoload'
 ])
     .directive('trainerSessionsIndex', function() {
+        "use strict";
         return {
             templateUrl: 'app/private/trainer/directives.tmpl/index.html',
             controller: "TrainerIndexController as trainerIndexCtrl"
         };
     })
     .controller("TrainerIndexController", function TrainerIndexController($rootScope, $scope, $translate, SessionsModel, Flash) {
+        "use strict";
         var ctrl = this,
             initMaxSessionsDisplayed = function() {
                 if (ctrl.sessions.length > 12) {
@@ -17,7 +19,7 @@ angular.module('private.trainer.directives', [
                 }
             },
             updateDisplaySessions = function() {
-                if (ctrl.maxSessionsDisplayed == null) {
+                if (ctrl.maxSessionsDisplayed === null) {
                     initMaxSessionsDisplayed();
                 } else {
                     if (ctrl.maxSessionsDisplayed >= ctrl.sessions.length) {
@@ -106,6 +108,7 @@ angular.module('private.trainer.directives', [
         });
     })
     .directive('trainerSessionsAdd', function(ScenariosModel, SessionsModel, Flash, $translate) {
+        "use strict";
         return {
             templateUrl: 'app/private/trainer/directives.tmpl/add-form.html',
             scope: false,
@@ -129,7 +132,7 @@ angular.module('private.trainer.directives', [
                 
                 scope.addSession = function() {
                     var button = $(element).find(".form__submit");
-                    if (scope.newSession.scenarioId != 0) {
+                    if (+scope.newSession.scenarioId !== 0) {
                         if(!button.hasClass("button--disable")){
                             button.addClass("button--disable button--spinner button--rotate");
                             SessionsModel.createSession(scope.newSession.name, scope.newSession.scenarioId).then(function(response) {
@@ -156,8 +159,8 @@ angular.module('private.trainer.directives', [
                 scope.$watch(function() {
                     return scope.newSession.name;
                 }, function(newValue) {
-                    if(newValue != "" && newValue != undefined && newValue != null){
-                        if(!scope.loadingScenarios && scope.scenarios.length == 0){
+                    if(newValue){
+                        if(!scope.loadingScenarios && scope.scenarios.length === 0){
                             loadScenario();
                         }
                     }
@@ -166,6 +169,7 @@ angular.module('private.trainer.directives', [
         };
     })
     .directive('trainerSessionsList', function() {
+        "use strict";
         return {
             templateUrl: 'app/private/trainer/directives.tmpl/list.html',
             scope: {
@@ -178,6 +182,7 @@ angular.module('private.trainer.directives', [
         };
     })
     .directive('trainerSession', function(Flash) {
+        "use strict";
         return {
             templateUrl: 'app/private/trainer/directives.tmpl/card.html',
             scope: {
@@ -190,7 +195,7 @@ angular.module('private.trainer.directives', [
                 if (scope.session.access !== "OPEN") {
                     scope.open = false;
                 }
-                scope.ServiceURL = ServiceURL;
+                scope.ServiceURL = window.ServiceURL;
             }
         };
     })

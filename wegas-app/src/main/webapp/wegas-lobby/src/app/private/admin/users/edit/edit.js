@@ -2,6 +2,7 @@ angular.module('private.admin.users.edit', [
     'private.admin.users.edit.directives'
     ])
     .config(function($stateProvider) {
+        "use strict";
         $stateProvider
             .state('wegas.private.admin.users.edit', {
                 url: '/:id',
@@ -13,8 +14,9 @@ angular.module('private.admin.users.edit', [
             });
     })
     .controller("AdminUserEditController", function AdminUserEditController($animate, $state, ModalService, Auth) {
+        "use strict";
         Auth.getAuthenticatedUser().then(function(user) {
-            if (user != null) {
+            if (user) {
                 if (user.isAdmin) {
                     ModalService.showModal({
                         templateUrl: 'app/private/admin/users/edit/edit.tmpl.html',

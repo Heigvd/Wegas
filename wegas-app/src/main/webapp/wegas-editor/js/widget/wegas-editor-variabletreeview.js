@@ -104,11 +104,14 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 label: "<span title='Search in every fields'>Full</span>",
                 on: {
                     click: Y.bind(function() {
+                        var btnBox = this._searchBttn.get("boundingBox");
                         Y.Wegas.DataSource.abort(req);
                         if (!searchVal) {
                             return;
                         }
+                        btnBox.addClass("loading");
                         req = Y.Wegas.Facade.Variable.cache.remoteSearch(searchVal, Y.bind(function(results) {
+                            btnBox.removeClass("loading");
                             this.setAttrs({
                                 testFn: function(val) {
                                     return val.indexOf(this.get("data.entity").get("id")) > -1;
@@ -131,8 +134,8 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 label: scriptCheckLabel,
                 on: {
                     pressedChange: Y.bind(function(e) {
-                        this._validateBttn.set("label", "<i class='fa fa-refresh fa-spin'></i>" + scriptCheckLabel);
                         if (e.newVal) {
+                            this._validateBttn.get("boundingBox").addClass("loading");
                             checkReq = Y.Wegas.Facade.Variable.script.checkGameModel(Y.bind(function(results) {
                                 this.syncUI();
                                 this.treeView.filter.setAttrs({
@@ -141,14 +144,14 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                                     },
                                     searchVal: "dummy" //Empty won't search.
                                 });
-                                this._validateBttn.set("label", scriptCheckLabel);
+                                this._validateBttn.get("boundingBox").removeClass("loading");
                             }, this));
                         } else {
                             Y.Wegas.DataSource.abort(checkReq);
                             this.treeView.filter.setAttrs({
                                 searchVal: ""
                             });
-                            this._validateBttn.set("label", scriptCheckLabel);
+                            this._validateBttn.get("boundingBox").removeClass("loading");
                         }
 
                     }, this)

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>wegas-project</artifactId>
@@ -27,7 +28,7 @@
             <groupId>org.apache.shiro</groupId>
             <artifactId>shiro-web</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
@@ -48,10 +49,10 @@
             <groupId>org.glassfish.main.extras</groupId>
             <artifactId>glassfish-embedded-all</artifactId>
             <scope>provided</scope>-->
-            <!-- Compile scope is usefull to test JPQL queries-->
-            <!--            <scope>compile</scope>-->
+        <!-- Compile scope is usefull to test JPQL queries-->
+        <!--            <scope>compile</scope>-->
         <!--</dependency>-->
-        
+
         <!-- Liquibase -->
         <dependency>
             <groupId>org.liquibase</groupId>
@@ -76,16 +77,10 @@
             <artifactId>jackrabbit-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.madgag</groupId>
-            <artifactId>util-diff</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>com.github.fge</groupId>
+            <artifactId>json-patch</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>net.sf.ehcache</groupId>
             <artifactId>ehcache</artifactId>
