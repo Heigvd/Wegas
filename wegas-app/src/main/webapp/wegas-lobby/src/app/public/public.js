@@ -5,6 +5,7 @@ angular.module('public', [
     'public.password'
 ])
 .config(function ($stateProvider) {
+    "use strict";
     $stateProvider
         .state('wegas.public', {
             url: 'public',
@@ -21,9 +22,10 @@ angular.module('public', [
         })
     ;
 })
-.controller('PublicIndexCtrl', function PublicIndexCtrl($state, Auth) {    
+.controller('PublicIndexCtrl', function PublicIndexCtrl($state, Auth) {
+    "use strict";
     Auth.getAuthenticatedUser().then(function(user){
-        if(user != null){
+        if(user !== null){
             if(user.isScenarist){
                 $state.go("wegas.private.scenarist");
             }else{

@@ -3,6 +3,7 @@ angular
 
     ])
     .directive('profileIndex', function(UsersModel) {
+        "use strict";
         return {
             scope: {
                 close: "&"
@@ -47,6 +48,7 @@ angular
         };
     })
     .directive('profileContent', function() {
+        "use strict";
         return {
             templateUrl: 'app/private/profile/directives.tmpl/content.html',
             scope: true,

@@ -41,7 +41,7 @@ import javax.persistence.Table;
  * feedback yet
  * <li> notified: author has access to the feedback and can edit feedback
  * comments
- * <li> closed: feedback comments turns read-only, not yet visible by peers
+ * <li> completed: feedback comments turns read-only, not yet visible by peers
  * <li>
  * <li> closed: feedback comments is visible by the reviewer <li>
  * </ol>

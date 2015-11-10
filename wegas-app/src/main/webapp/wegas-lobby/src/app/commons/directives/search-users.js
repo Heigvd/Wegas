@@ -4,6 +4,7 @@ angular.module('wegas.directives.search.users', [
     'MassAutoComplete'
 ])
 .directive('searchUsers', function($sce, UsersModel) {
+    "use strict";
     return {
         templateUrl: 'app/commons/directives/search-users.tmpl.html',
         scope: {
@@ -13,15 +14,15 @@ angular.module('wegas.directives.search.users', [
             restrictRoles: "="
         },
         link: function(scope, element, attrs) {
-            function suggest_obj(term) {
+            function suggestObj(term) {
                 return UsersModel.autocomplete(term, scope.restrictRoles).then(function(matches) {
                     var results = [];
 
                     function highlight(str, term) {
-                        var highlight_regex = new RegExp('(' + term + ')', 'gi');
-                        return str.replace(highlight_regex,
+                        var highlightRegex = new RegExp('(' + term + ')', 'gi');
+                        return str.replace(highlightRegex,
                             '<strong>$1</strong>');
-                    };
+                    }
 
                     for (var i = 0; i < matches.length; i++) {
                         var user = matches[i];
@@ -46,9 +47,9 @@ angular.module('wegas.directives.search.users', [
             function selectUser(selected) {
               scope.callback(selected.obj);
               scope.dirty.value = "";
-            };
+            }
             scope.autocomplete_options = {
-                suggest: suggest_obj,
+                suggest: suggestObj,
                 on_select: selectUser
             };
         }

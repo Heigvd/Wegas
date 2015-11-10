@@ -1,6 +1,7 @@
 {
     "node": true,
-    "esnext": true,
+    "browser": true,
+    "esnext": false,
     "bitwise": true,
     "camelcase": true,
     "curly": true,
@@ -22,7 +23,7 @@
         "angular": false,
         "YUI": true,
         "$": true,
-        "window": true,
+        "_": true,
         // Angular Mocks
         "inject": false,
         // JASMINE

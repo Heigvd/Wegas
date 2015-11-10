@@ -45,12 +45,12 @@ YUI.add("wegas-review-widgets", function(Y) {
             "<div class=\"transition close-review\"><span class=\"fa fa-arrow-circle-right fa-4x\"></span></div>" +
             "<div class=\"state commenting\">" +
             "<h7>Commenting</h7>" +
-            "The authors acquaint themeselves with peer reviews<br /><br /><i>They comment on those reviews</i>" +
+            "The authors acquaint themselves with peer reviews<br /><br /><i>They comment on those reviews</i>" +
             "</div>" +
             "<div class=\"transition close-comment\"><span class=\"fa fa-arrow-circle-right fa-4x\"></span></div>" +
             "<div class=\"state closed\">" +
             "<h7>Completed</h7>" +
-            "The reviewing process is completed<br /><br /><i>The authors take acquaintance of comments on reviews they've done</i>" +
+            "The reviewing process has been completed<br /><br /><i>The authors take acquaintance of comments on reviews they've done</i>" +
             "</div>" +
             "<div style=\"clear: both;\"></div>" +
             "</div>" +
@@ -273,8 +273,8 @@ YUI.add("wegas-review-widgets", function(Y) {
             node = this.get(CONTENTBOX).one(".charts");
             node.setContent("");
             node.append("<h1>Charts</h1>");
-            node.append("<div class=\"feedback\"></div>");
-            node.append("<div class=\"comments\"></div>");
+            node.append("<div class=\"feedback\"><h2>Reviews</h2></div>");
+            node.append("<div class=\"comments\"><h2>Comments</h2></div>");
 
             this.buildCharts(prd.get("feedback").get("evaluations"), node.one(".feedback"), evalSummary);
             this.buildCharts(prd.get("fbComments").get("evaluations"), node.one(".comments"), evalSummary);
@@ -330,8 +330,12 @@ YUI.add("wegas-review-widgets", function(Y) {
             }
             this.chart = new Chartist.Bar(klass, data, options);
         },
+        _formatNumber: function(value, nD) {
+            nD = nD || 2;
+            return value ? value.toFixed(nD) : "n/a";
+        },
         buildCharts: function(evals, node, summary) {
-            var i, evD, klass, data, math;
+            var i, evD, klass, data;/*math,*/
             for (i in evals) {
                 evD = evals[i];
                 klass = "eval-" + evD.get("id");
@@ -342,62 +346,62 @@ YUI.add("wegas-review-widgets", function(Y) {
                     "</div>");
                 data = summary[evD.get("id")].get("val");
                 if (evD.get("@class") === "GradeDescriptor") {
-                    if (Y.Lang.isNumber(data.sd)) {
-                        /*
-                         math = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">" + 
-                         "<mrow>" +
-                         "<mstyle displaystyle=\"true\" scriptlevel=\"0\"> " +
-                         "<mrow> " +
-                         "<mrow> " +
-                         "<mover> " +
-                         "<mi>x</mi> " +
-                         "<mo stretchy=\"false\">¯<!-- ¯ --></mo> " +
-                         "</mover> " +
-                         "</mrow> " +
-                         "<mo>=</mo>" +
-                         "<mn>"  + data.mean.toFixed(2) + "</mn>" +
-                         "<mo>;</mo>" +        
-                         "</mrow> " +
-                         "<mrow>"+
-                         "<mrow>"+
-                         "<mover> " +
-                         "<mi>x</mi> " +
-                         "<mo stretchy=\"false\">~<!-- ~ --></mo> " +
-                         "</mover> " +
-                         "</mrow> " +
-                         "</mrow> " +
-                         "<mo>=</mo>" +
-                         "<mn>"  + data.median.toFixed(2) + "</mn>" +
-                         "<mo>;</mo>" +
-                         "<mrow> " +
-                         "<mi>σ<!-- σ --></mi> " +
-                         "</mrow> " +
-                         "<mo>=</mo>" +
-                         "<mn>"  + data.sd.toFixed(2) + "</mn>" +
-                         "<mo>;</mo>" +
-                         "</mstyle> " +
-                         "</mrow> " +
-                         "</math>";*/
-                        this.createGradeChart("." + klass + " .chart", data, evD);
-                        node.one("." + klass + " .title").setContent("<h3>" + evD.get("name") + "</h3>");
-                        //node.one("." + klass + " .legend").append(math);
-                        node.one("." + klass + " .legend").append("<p>" +
-                            "avg: " + data.mean.toFixed(2) +
-                            "; med: " + data.median.toFixed(2) +
-                            "; &sigma;: " + data.sd.toFixed(2) +
-                            "; bounds: [" + data.min.toFixed(2) + "," + data.min.toFixed(2) + "]" +
-                            " </p>");
-                        node.one("." + klass + " .legend").append("<p>based on " + data.numberOfValues + "/" + summary.maxNumberOfValue + " values</p>");
-                    }
+                    /*
+                     math = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">" + 
+                     "<mrow>" +
+                     "<mstyle displaystyle=\"true\" scriptlevel=\"0\"> " +
+                     "<mrow> " +
+                     "<mrow> " +
+                     "<mover> " +
+                     "<mi>x</mi> " +
+                     "<mo stretchy=\"false\">¯<!-- ¯ --></mo> " +
+                     "</mover> " +
+                     "</mrow> " +
+                     "<mo>=</mo>" +
+                     "<mn>"  + data.mean.toFixed(2) + "</mn>" +
+                     "<mo>;</mo>" +        
+                     "</mrow> " +
+                     "<mrow>"+
+                     "<mrow>"+
+                     "<mover> " +
+                     "<mi>x</mi> " +
+                     "<mo stretchy=\"false\">~<!-- ~ --></mo> " +
+                     "</mover> " +
+                     "</mrow> " +
+                     "</mrow> " +
+                     "<mo>=</mo>" +
+                     "<mn>"  + data.median.toFixed(2) + "</mn>" +
+                     "<mo>;</mo>" +
+                     "<mrow> " +
+                     "<mi>σ<!-- σ --></mi> " +
+                     "</mrow> " +
+                     "<mo>=</mo>" +
+                     "<mn>"  + data.sd.toFixed(2) + "</mn>" +
+                     "<mo>;</mo>" +
+                     "</mstyle> " +
+                     "</mrow> " +
+                     "</math>";*/
+                    this.createGradeChart("." + klass + " .chart", data, evD);
+                    node.one("." + klass + " .title").setContent("<h3>" + evD.get("name") + "</h3>");
+                    //node.one("." + klass + " .legend").append(math);
+                    node.one("." + klass + " .legend").append("<p>" +
+                        "avg: " + this._formatNumber(data.mean) +
+                        "; med: " + this._formatNumber(data.median) +
+                        "; &sigma;: " + this._formatNumber(data.sd) +
+                        "; bounds: [" + this._formatNumber(data.min) + "," + this._formatNumber(data.min) + "]" +
+                        " </p>");
+
+                    node.one("." + klass + " .legend").append("<p>based on " + (data.numberOfValues || 0) + "/" + summary.maxNumberOfValue + " values</p>");
                 } else if (evD.get("@class") === "CategorizedEvaluationDescriptor") {
                     this.createCategoryChart("." + klass + " .chart", summary[evD.get("id")].get("val"), evD);
                     node.one("." + klass + " .title").setContent("<h3>" + evD.get("name") + "</h3>");
-                    node.one("." + klass + " .legend").append("<p>based on " + data.numberOfValues + "/" + summary.maxNumberOfValue + " values</p>");
+
+                    node.one("." + klass + " .legend").append("<p>based on " + (data.numberOfValues || 0) + "/" + summary.maxNumberOfValue + " values</p>");
                 } else if (evD.get("@class") === "TextEvaluationDescriptor") {
                     node.one("." + klass + " .title").setContent("<h3>" + evD.get("name") + "</h3>");
                     node.one("." + klass + " .chart").append("<p> Average number of words: " + (data.averageNumberOfWords ? data.averageNumberOfWords.toFixed(2) : "n/a") + "</p>");
                     node.one("." + klass + " .chart").append("<p>Average number of characters: " + (data.averageNumberOfCharacters ? data.averageNumberOfCharacters.toFixed(2) : "n/a") + "</p>");
-                    node.one("." + klass + " .legend").append("<p>based on " + data.numberOfValues + "/" + summary.maxNumberOfValue + " values</p>");
+                    node.one("." + klass + " .legend").append("<p>based on " + (data.numberOfValues || 0) + "/" + summary.maxNumberOfValue + " values</p>");
                 }
             }
         },
@@ -1515,6 +1519,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             if (!this.get("readonly")) {
                 frag = ['<select>'];
                 categs = desc.get("categories");
+                frag.push("<option value=\"\" disabled selected>--select--</option>");
                 for (i in categs) {
                     if (categs.hasOwnProperty(i)) {
                         categ = categs[i];

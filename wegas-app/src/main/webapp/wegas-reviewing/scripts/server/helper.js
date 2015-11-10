@@ -14,7 +14,7 @@
  *
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
-/*global Variable, gameModel, Java, javax, com, Infinity, StatisticHelper*/
+/*global self, Variable, gameModel, Java, javax, com, Infinity, StatisticHelper*/
 var ReviewHelper = (function() {
     "use strict";
     var Long = Java.type("java.lang.Long");
@@ -137,7 +137,7 @@ var ReviewHelper = (function() {
             structure.items.push({"id": evDescriptor.getId() + "-cc", "label": "Char Count", formatter: null});
         } else if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.GradeDescriptor) {
             structure.items.push({"id": evDescriptor.getId() + "-mean", "label": "mean", formatter: null});
-            structure.items.push({"id": evDescriptor.getId() + "-median", "label": "median", formatter: null});
+            //structure.items.push({"id": evDescriptor.getId() + "-median", "label": "median", formatter: null});
             structure.items.push({"id": evDescriptor.getId() + "-sd", "label": "sd", formatter: null});
         } else if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.CategorizedEvaluationDescriptor) {
             cats = Java.from(evDescriptor.getCategories());
@@ -168,9 +168,7 @@ var ReviewHelper = (function() {
     }
 
     function getEvSummary(values, evDescriptor) {
-        if (values.length === 0) {
-            return {type: "Empty"};
-        } else if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.TextEvaluationDescriptor) {
+        if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.TextEvaluationDescriptor) {
             return getTextSummary(values, evDescriptor);
         } else if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.GradeDescriptor) {
             return getGradeSummary(values, evDescriptor);
@@ -183,13 +181,15 @@ var ReviewHelper = (function() {
 
     function summarize(peerReviewDescriptorName) {
         var prd = Variable.findByName(gameModel, peerReviewDescriptorName),
-            teams = self.getGame().getTeams(), t, teamId,
+            game = self.getGame(), teams = game.getTeams(), t, teamId,
             pris, pri, reviews, review, evs, ev, evK, i, j, k,
             entry, nbRDone, nbRTot, nbRCom, nbRComClosed, nbRComTotal,
             evaluationsR, evaluationsC, evaluationsAll, evaluationsValues = {}, evDescriptor,
-            evDescriptors = {}, summary, tmp, key,
+            evDescriptors = {}, tmp, key,
             maxNumberOfValue = 0,
             instanceFacade = lookupBean("VariableInstanceFacade"),
+            maxNumberOfReview = Math.min(prd.getMaxNumberOfReview(), teams.size() - 2), // Assume team scoped review. !~_~! 
+
             monitoring = {
                 structure: {
                     overview: [{
@@ -272,7 +272,7 @@ var ReviewHelper = (function() {
                     }
                 }
             }
-            entry.overview.done = nbRDone + " / " + nbRTot;
+            entry.overview.done = nbRDone + " / " + (nbRTot > 0 ? nbRTot : maxNumberOfReview);
             for (evK in tmp) {
                 mergeEvSummary(entry.comments, tmp[evK], evDescriptors[evK]);
             }
@@ -293,6 +293,7 @@ var ReviewHelper = (function() {
                             /*falls through*/
                         case "NOTIFIED":
                             nbRComTotal += 1;
+                        case "REVIEWED":
                             for (k in evs) {
                                 if (evs.hasOwnProperty(k)) {
                                     ev = evs[k];
@@ -309,7 +310,7 @@ var ReviewHelper = (function() {
                     }
                 }
             }
-            entry.overview.commented = nbRCom + " / " + nbRComTotal;
+            entry.overview.commented = nbRCom + " / " + (nbRComTotal > 0 ? nbRComTotal : maxNumberOfReview);
             for (evK in tmp) {
                 mergeEvSummary(entry.reviews, tmp[evK], evDescriptors[evK]);
             }
@@ -344,6 +345,16 @@ var ReviewHelper = (function() {
             evDescriptor = evaluationsAll[i];
             monitoring.extra[evDescriptor.getId()] = getEvSummary(evaluationsValues[evDescriptor.getId()], evDescriptor);
         }
+
+        if (maxNumberOfValue === 0) {
+            if (game.getClass().getSimpleName() === "DebugGame") {
+                maxNumberOfValue = 1;
+            } else {
+                // evict test teams...
+                maxNumberOfValue = (teams.size() - 1) * maxNumberOfReview;
+            }
+        }
+
         monitoring.extra.maxNumberOfValue = maxNumberOfValue;
 
         for (key in monitoring.structure) {

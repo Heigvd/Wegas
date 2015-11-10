@@ -2,6 +2,7 @@ angular.module('private.admin.groups.edit', [
 	'private.admin.groups.edit.directives'
     ])
     .config(function($stateProvider) {
+        "use strict";
         $stateProvider
             .state('wegas.private.admin.groups.edit', {
                 url: '/:id',
@@ -13,8 +14,9 @@ angular.module('private.admin.groups.edit', [
             });
     })
     .controller("AdminGroupsEditController", function AdminGroupsEditController($animate, $state, ModalService, Auth) {
+        "use strict";
         Auth.getAuthenticatedUser().then(function(user) {
-            if (user != null) {
+            if (user) {
                 if (user.isAdmin) {
                     ModalService.showModal({
                         templateUrl: 'app/private/admin/groups/edit/edit.tmpl.html',

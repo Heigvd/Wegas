@@ -4,34 +4,39 @@ angular.module('private.admin', [
     'private.admin.groups'
 
 ])
-.config(function ($stateProvider) {
-    $stateProvider
-        .state('wegas.private.admin', {
-            url: 'admin',
-            views: {
-                'workspace': {
-                    controller: 'AdminCtrl as adminCtrl',
-                    templateUrl: 'app/private/admin/admin.tmpl.html'
+    .config(function($stateProvider) {
+        "use strict";
+        $stateProvider
+            .state('wegas.private.admin', {
+                url: 'admin',
+                views: {
+                    'workspace': {
+                        controller: 'AdminCtrl as adminCtrl',
+                        templateUrl: 'app/private/admin/admin.tmpl.html'
+                    }
                 }
-            }
-        })
-    ;
-})
-.controller('AdminCtrl', function AdminCtrl($rootScope, $state, Auth, $translate, WegasTranslations) {
-    var ctrl = this;
-        ctrl.serviceUrl = ServiceURL;
-    Auth.getAuthenticatedUser().then(function(user){
-        if(user != null){
-            if(!user.isAdmin){
-                $state.go("wegas.private.scenarist");
-            }
+            })
+        ;
+    })
+    .controller('AdminCtrl', function AdminCtrl($rootScope, $state, Auth, $translate, WegasTranslations) {
+        "use strict";
+        var ctrl = this;
+        ctrl.serviceUrl = window.ServiceURL;
+        Auth.getAuthenticatedUser().then(function(user) {
+            if (user) {
+                if (!user.isAdmin) {
+                    $state.go("wegas.private.scenarist");
+                }
 
-            $("body").removeClass("player scenarist trainer").addClass("admin");
-            $rootScope.translationWorkspace = {workspace: WegasTranslations.workspaces['ADMIN'][$translate.use()]};
-        }
-    });
-})
-.directive('scenarioCreateUpload', function(ScenariosModel) {
+                $("body").removeClass("player scenarist trainer").addClass("admin");
+                $rootScope.translationWorkspace = {
+                    workspace: WegasTranslations.workspaces.ADMIN[$translate.use()]
+                };
+            }
+        });
+    })
+    .directive('scenarioCreateUpload', function(ScenariosModel) {
+        "use strict";
         return {
             restrict: 'A',
             link: function(scope, element, attrs) {

@@ -1,5 +1,6 @@
 angular.module('wegas.behaviours.expandable', [])
 .directive('expandable', function(){
+    "use strict";
     return function(scope, element, attrs){
         scope.$on('expand', function() {
             if(!element.hasClass("view--expanded")){
@@ -15,6 +16,7 @@ angular.module('wegas.behaviours.expandable', [])
     };
 })
 .directive('expander', function(){
+    "use strict";
     return function(scope, element, attrs){
         element.on("click", function(){
             scope.$emit('expand');
@@ -23,8 +25,9 @@ angular.module('wegas.behaviours.expandable', [])
     };
 })
 .directive('collapser', function(){
+    "use strict";
     return function(scope, element, attrs){
-        element.on('click', function(e) {
+        element.on('click', function() {
             scope.$emit('collapse');
         });
     };

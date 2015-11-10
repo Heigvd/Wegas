@@ -8,7 +8,6 @@
 package com.wegas.core.security.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import java.util.ArrayList;
@@ -60,9 +59,12 @@ public class Role extends AbstractEntity {
     /**
      *
      */
+    /*@JsonIgnore
+     @ManyToMany(mappedBy = "roles")
+     private Set<AbstractAccount> abstractAccounts = new HashSet<>();*/
     @JsonIgnore
     @ManyToMany(mappedBy = "roles")
-    private Set<AbstractAccount> abstractAccounts = new HashSet<>();
+    private Set<User> users = new HashSet<>();
 
     /**
      *
@@ -198,7 +200,8 @@ public class Role extends AbstractEntity {
     }
 
     public int getNumberOfMember() {
-        return abstractAccounts.size();
+        return users.size();
+        //return abstractAccounts.size();
     }
 
     public void setNumberOfMember(int numberOfMember) {
@@ -207,19 +210,19 @@ public class Role extends AbstractEntity {
     /**
      * get role members
      *
-     * @return all accounts which are member of this role
+     * @return all users which are member of this role
      */
-    public Set<AbstractAccount> getAbstractAccounts() {
-        return abstractAccounts;
+    public Set<User> getUsers() {
+        return users;
     }
 
     /**
      * set the role members
      *
-     * @param abstractAccounts list of member
+     * @param users list of member
      */
-    public void setAbstractAccounts(Set<AbstractAccount> abstractAccounts) {
-        this.abstractAccounts = abstractAccounts;
+    public void setUsers(Set<User> users) {
+        this.users = users;
     }
 
     @Override

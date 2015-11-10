@@ -8,6 +8,7 @@ angular
         'wegas.behaviours.modals'
     ])
     .config(function($stateProvider) {
+        "use strict";
         $stateProvider
             .state('wegas.private.profile', {
                 url: 'user-profile',
@@ -68,7 +69,7 @@ angular
 
     })
     .controller('ProfileCtrl', function ProfileCtrl($animate, $state, ModalService) {
-
+        "use strict";
         ModalService.showModal({
             templateUrl: 'app/private/profile/profile.tmpl.html',
             controller: "ModalsController as modalsCtrl"
@@ -83,7 +84,7 @@ angular
             modal.close.then(function(result) {
                 $('body').removeClass('modal-displayed');
                 // Ensure a state will be found
-                var destination = ($state.previous.name == "") ? "wegas.public" : $state.previous.name;
+                var destination = ($state.previous.name === "") ? "wegas.public" : $state.previous.name;
                 $state.go(destination);
             });
         });

@@ -31,8 +31,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.stream.Stream;
 import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.LocalBean;
@@ -155,17 +154,17 @@ public class UserFacade extends BaseFacade<User> {
             }
         } catch (WegasNoResultException | EJBTransactionRolledbackException e) {
             // GOTCHA
-            // E-Mail not yet registered -> proceed 
+            // E-Mail not yet registered -> proceed
         }
 
         super.create(user);
         try {
-            account.addRole(roleFacade.findByName("Public"));
+            user.addRole(roleFacade.findByName("Public"));
         } catch (WegasNoResultException ex) {
             logger.error("Unable to find Role: Public");
         }
         try {
-            account.addRole(roleFacade.findByName("Registered"));
+            user.addRole(roleFacade.findByName("Registered"));
         } catch (WegasNoResultException ex) {
             //logger.error("Unable to find Role: Registered", ex);
             logger.error("Unable to find Role: Registered");
@@ -191,7 +190,7 @@ public class UserFacade extends BaseFacade<User> {
                 }
             }
         } catch (WegasNoResultException ex) {
-            // GOTCHA 
+            // GOTCHA
         }
         this.create(user);                                                      // If user could not be found, create and return it
         return user;
@@ -260,6 +259,19 @@ public class UserFacade extends BaseFacade<User> {
         return r.addPermission(this.generatePermisssion(permission));
     }
 
+    public boolean addUserPermission(final Long userId, final String permission) {
+        return this.addUserPermission(userId, this.generatePermisssion(permission));
+    }
+
+    public boolean addUserPermission(final Long userId, final Permission p) {
+        final User user = this.find(userId);
+        return user.addPermission(p);
+    }
+
+    public boolean addUserPermission(final User user, final String permission) {
+        return user.addPermission(this.generatePermisssion(permission));
+    }
+
     /**
      *
      * @param abstractAccountId
@@ -278,7 +290,7 @@ public class UserFacade extends BaseFacade<User> {
      */
     public boolean addAccountPermission(final Long abstractAccountId, final Permission p) {
         final AbstractAccount a = accountFacade.find(abstractAccountId);
-        return a.addPermission(p);
+        return a.getUser().addPermission(p);
     }
 
     /**
@@ -288,7 +300,7 @@ public class UserFacade extends BaseFacade<User> {
      * @return
      */
     public boolean addAccountPermission(final AbstractAccount a, final String permission) {
-        return a.addPermission(this.generatePermisssion(permission));
+        return a.getUser().addPermission(this.generatePermisssion(permission));
     }
 
     /**
@@ -370,51 +382,51 @@ public class UserFacade extends BaseFacade<User> {
      * @param instance
      * @return
      */
-    public List<AbstractAccount> findAccountPermissionByInstance(String instance) {
+    public List<User> findUserPermissionByInstance(String instance) {
         Query findByToken = getEntityManager().createNamedQuery("findUserPermissions");
         findByToken.setParameter("instance", "%:" + instance);
-        List<AbstractAccount> accounts = (List<AbstractAccount>) findByToken.getResultList();
-        return accounts;
+        List<User> users = (List<User>) findByToken.getResultList();
+        return users;
     }
 
     /**
      *
      * @param instance
      */
-    public void deleteAccountPermissionByInstance(String instance) {
-        Query findByToken = getEntityManager().createNamedQuery("findUserPermissions");//@fixme Unable to select role with a like w/ embeddebale
-        //  The queries below are all invalid, may be due to an old version of eclipselink
-        // Query findByToken = getEntityManager().createQuery("SELECT DISTINCT abstractaccount FROM AbstractAccount abstractaccount");
-        // @NamedQuery(name = "findUserPermissions", query = "SELECT DISTINCT abstractaccount FROM AbstractAccount abstractaccount, IN(abstractaccount.permissions) p WHERE p.inducedPermission LIKE :gameId")
-        // @NamedQuery(name = "findUserPermissions", query = "SELECT abstractaccount FROM AbstractAccount abstractaccount WHERE (select count(p) from abstractaccount.permissions p where p.value LIKE :gameId) > 0 ")
-        // @NamedQuery(name = "findUserPermissions", query = "SELECT abstractaccount FROM AbstractAccount abstractaccount left outer join fetch abstractaccount.permissions p WHERE p.value LIKE :gameId")
+    public void deleteUserPermissionByInstance(String instance) {
+        Query query = getEntityManager().createNamedQuery("Permission.deleteByInstance");
+        query.setParameter("instance", "%:" + instance);
+        query.executeUpdate();
 
-        findByToken.setParameter("instance", "%:" + instance);
-        List<AbstractAccount> accounts = (List<AbstractAccount>) findByToken.getResultList();
-        for (AbstractAccount a : accounts) {
-            for (Iterator<Permission> sit = a.getPermissions().iterator(); sit.hasNext();) {
-                Permission p = sit.next();
-                String splitedPermission[] = p.getValue().split(":");
-                if (splitedPermission.length >= 3) {
-                    if (splitedPermission[2].equals(instance)) {
-                        sit.remove();
-                    }
-                }
-            }
-        }
+        /*
+         Query findByToken = getEntityManager().createNamedQuery("findUserPermissions");
+
+         findByToken.setParameter("instance", "%:" + instance);
+         List<User> users = (List<User>) findByToken.getResultList();
+         for (User user : users) {
+         for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext();) {
+         Permission p = sit.next();
+         String splitedPermission[] = p.getValue().split(":");
+         if (splitedPermission.length >= 3) {
+         if (splitedPermission[2].equals(instance)) {
+         sit.remove();
+         }
+         }
+         }
+         }*/
     }
 
     /**
      *
      * @param instance
-     * @param accountId
+     * @param userId
      */
-    public void deleteAccountPermissionByInstanceAndAccount(String instance, Long accountId) {
-        Query findByToken = getEntityManager().createQuery("SELECT DISTINCT accounts FROM AbstractAccount accounts JOIN accounts.permissions p "
-                + "WHERE p.value LIKE '%:" + instance + "' AND p.account.id =" + accountId);
+    public void deleteUserPermissionByInstanceAndUser(String instance, Long userId) {
+        Query findByToken = getEntityManager().createQuery("SELECT DISTINCT users FROM User users JOIN users.permissions p "
+                + "WHERE p.value LIKE '%:" + instance + "' AND p.user.id =" + userId);
         try {
-            AbstractAccount account = (AbstractAccount) findByToken.getSingleResult();
-            for (Iterator<Permission> sit = account.getPermissions().iterator(); sit.hasNext();) {
+            User user = (User) findByToken.getSingleResult();
+            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext();) {
                 String p = sit.next().getValue();
                 String splitedPermission[] = p.split(":");
                 if (splitedPermission.length >= 3) {
@@ -435,14 +447,14 @@ public class UserFacade extends BaseFacade<User> {
     /**
      *
      * @param permission
-     * @param accountId
+     * @param userId
      */
-    public void deleteAccountPermissionByPermissionAndAccount(String permission, Long accountId) {
-        Query findByToken = getEntityManager().createQuery("SELECT DISTINCT accounts FROM AbstractAccount accounts JOIN accounts.permissions p "
-                + "WHERE p.value LIKE '" + permission + "' AND p.account.id =" + accountId);
+    public void deleteUserPermissionByPermissionAndAccount(String permission, Long userId) {
+        Query findByToken = getEntityManager().createQuery("SELECT DISTINCT users FROM User users JOIN users.permissions p "
+                + "WHERE p.value LIKE '" + permission + "' AND p.user.id =" + userId);
         try {
-            AbstractAccount account = (AbstractAccount) findByToken.getSingleResult();
-            for (Iterator<Permission> sit = account.getPermissions().iterator(); sit.hasNext();) {
+            User user = (User) findByToken.getSingleResult();
+            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext();) {
                 String p = sit.next().getValue();
                 String splitedPermission[] = p.split(":");
                 if (splitedPermission.length >= 3 && p.equals(permission)) {
@@ -550,15 +562,15 @@ public class UserFacade extends BaseFacade<User> {
      * @param newGmId
      */
     public void duplicatePermissionByInstance(String gmId, String newGmId) {
-        List<AbstractAccount> accounts = this.findAccountPermissionByInstance(gmId);
+        List<User> users = this.findUserPermissionByInstance(gmId);
         String splitedPermission[];
-        for (AbstractAccount account : accounts) {
-            List<Permission> perm = account.getPermissions();
+        for (User user : users) {
+            List<Permission> perm = user.getPermissions();
             for (int ii = 0; ii < perm.size(); ii++) {
                 if (perm.get(ii).getValue().contains(gmId)) {
                     splitedPermission = perm.get(ii).getValue().split(":");
                     String newPerm = splitedPermission[0] + ":" + splitedPermission[1] + ":" + newGmId;
-                    this.addAccountPermission(account.getId(), newPerm);
+                    this.addUserPermission(user.getId(), newPerm);
                 }
             }
         }
@@ -577,5 +589,42 @@ public class UserFacade extends BaseFacade<User> {
             isNotLastEdit = true;
         }
         return isNotLastEdit;
+    }
+
+    /**
+     * Transfer players and permission from one user to another
+     *
+     * @param from the player to take perm and players from
+     * @param to   the whow
+     */
+    public void transferPlayers(User from, User to) {
+        final List<Long> gameIds = new ArrayList<>();
+        for(Player player : to.getPlayers()){
+            gameIds.add(player.getGame().getId());
+        }
+        for (Player p : from.getPlayers()) {
+            if(!gameIds.contains(p.getGame().getId())) { // User already has a player in p's game
+                p.setName(to.getName());
+                p.setUser(to);
+            }
+        }
+        for (Permission p : from.getPermissions()) {
+            p.setUser(to);
+        }
+    }
+
+    public void upgradeGuest(GuestJpaAccount guest, JpaAccount account) {
+        User user = guest.getUser();
+        user.addAccount(account);
+
+        accountFacade.create(account);
+        // Detach and delete account
+        accountFacade.remove(guest.getId());
+
+        this.refresh(user);
+        for (Player p : user.getPlayers()) {
+            p.setName(user.getName());
+        }
+
     }
 }

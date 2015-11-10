@@ -1,13 +1,21 @@
-<div 
-	class="view view--join-session view--bottom" 
-	check-token="playerCtrl.checkToken"
-	player-join-form 
-        expandable>
+<div class="view view--join-session view--bottom" expandable>
+    <a title="{{'VIEW-CLOSE' | translate}}"
+       class="view__button-collapse button button--medium button--round button--default-reverse button--label-off button--close"
+       collapser>
+        <span class="button__label">{{'VIEW-CLOSE' | translate}}</span>
+    </a>
+
+    <div ui-view="join">
+        <div
+            check-token="playerCtrl.checkToken"
+            player-join-form>
+        </div>
+    </div>
 </div>
-<div 
-	class="view view--played-sessions-list view--middle"
-        loading="playerCtrl.loading"
-	teams="playerCtrl.teams"
-	leave="playerCtrl.leaveTeam"
-	player-teams-list >
+<div
+    class="view view--played-sessions-list view--middle"
+    loading="playerCtrl.loading"
+    teams="playerCtrl.teams"
+    leave="playerCtrl.leaveTeam"
+    player-teams-list>
 </div>

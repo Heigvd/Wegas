@@ -2,6 +2,7 @@ angular.module('wegas.service.auth', [
     'wegas.models.sessions'
 ])
     .service('Auth', function($http, $q, $interval, $translate, Responses) {
+        "use strict";
         var service = this,
             authenticatedUser = null,
             rights = null,
@@ -21,7 +22,7 @@ angular.module('wegas.service.auth', [
             },
             getCurrentUser = function() {
                 var deferred = $q.defer();
-                $http.get(ServiceURL + "rest/User/Current?view=EditorExtended").success(function(data) {
+                $http.get(window.ServiceURL + "rest/User/Current?view=EditorExtended").success(function(data) {
                     authenticatedUser = {
                         id: data.id,
                         jpaId: data.accounts[0].id,
@@ -31,7 +32,10 @@ angular.module('wegas.service.auth', [
                         lastname: data.accounts[0].lastname,
                         isTrainer: false,
                         isScenarist: false,
-                        isAdmin: false
+                        isAdmin: false,
+                        isGuest: !!_.find(data.accounts, {
+                                "@class": "GuestJpaAccount"
+                            })
                     };
                     rights = data.accounts[0].roles;
                     rights.forEach(function(elem) {
@@ -57,7 +61,7 @@ angular.module('wegas.service.auth', [
 
         service.getAuthenticatedUser = function() {
             var deferred = $q.defer();
-            if (authenticatedUser != null) {
+            if (authenticatedUser !== null) {
                 deferred.resolve(authenticatedUser);
             } else {
                 if (loading) {
@@ -78,7 +82,7 @@ angular.module('wegas.service.auth', [
         service.login = function(login, password) {
             var deferred = $q.defer(),
                 url = "rest/User/Authenticate";
-            $http.post(ServiceURL + url, {
+            $http.post(window.ServiceURL + url, {
                 "@class": "AuthenticationInformation",
                 "login": login,
                 "password": password,
@@ -88,31 +92,32 @@ angular.module('wegas.service.auth', [
                     "managed-mode": "true"
                 }
             }).success(function(data) {
-                if (data.events !== undefined && data.events.length == 0) {
-                    $translate('COMMONS-AUTH-LOGIN-FLASH-SUCCESS').then(function (message) {
+                if (data.events !== undefined && !data.events.length) {
+                    authenticatedUser = null;
+                    $translate('COMMONS-AUTH-LOGIN-FLASH-SUCCESS').then(function(message) {
                         deferred.resolve(Responses.success(message, true));
                     });
                     service.getAuthenticatedUser();
                 } else if (data.events !== undefined) {
-                    console.log("WEGAS LOBBY : Error during login")
+                    console.log("WEGAS LOBBY : Error during login");
                     console.log(data.events);
-                    $translate('COMMONS-AUTH-LOGIN-FLASH-ERROR-CLIENT').then(function (message) {
+                    $translate('COMMONS-AUTH-LOGIN-FLASH-ERROR-CLIENT').then(function(message) {
                         deferred.resolve(Responses.danger(message, false));
                     });
                 } else {
-                    $translate('COMMONS-AUTH-LOGIN-FLASH-ERROR-SERVER').then(function (message) {
+                    $translate('COMMONS-AUTH-LOGIN-FLASH-ERROR-SERVER').then(function(message) {
                         deferred.resolve(Responses.danger(message, false));
                     });
                 }
             }).error(function(data) {
                 if (data.events !== undefined && data.events.length > 0) {
-                    console.log("WEGAS LOBBY : Error during login")
+                    console.log("WEGAS LOBBY : Error during login");
                     console.log(data.events);
-                    $translate('COMMONS-AUTH-LOGIN-FLASH-ERROR-CLIENT').then(function (message) {
+                    $translate('COMMONS-AUTH-LOGIN-FLASH-ERROR-CLIENT').then(function(message) {
                         deferred.resolve(Responses.danger(message, false));
                     });
                 } else {
-                    $translate('COMMONS-AUTH-LOGIN-FLASH-ERROR-SERVER').then(function (message) {
+                    $translate('COMMONS-AUTH-LOGIN-FLASH-ERROR-SERVER').then(function(message) {
                         deferred.resolve(Responses.danger(message, false));
                     });
                 }
@@ -123,13 +128,13 @@ angular.module('wegas.service.auth', [
         service.logout = function() {
             var deferred = $q.defer(),
                 url = "rest/User/Logout";
-            $http.get(ServiceURL + url).success(function(data) {
+            $http.get(window.ServiceURL + url).success(function(data) {
                 authenticatedUser = null;
-                $translate('COMMONS-AUTH-LOGOUT-FLASH-SUCCESS').then(function (message) {
+                $translate('COMMONS-AUTH-LOGOUT-FLASH-SUCCESS').then(function(message) {
                     deferred.resolve(Responses.success(message, true));
                 });
             }).error(function(data) {
-                $translate('COMMONS-AUTH-LOGOUT-FLASH-ERROR').then(function (message) {
+                $translate('COMMONS-AUTH-LOGOUT-FLASH-ERROR').then(function(message) {
                     deferred.resolve(Responses.danger(message, false));
                 });
             });
@@ -139,7 +144,7 @@ angular.module('wegas.service.auth', [
         service.signup = function(email, username, password, firstname, lastname) {
             var deferred = $q.defer(),
                 url = "rest/User/Signup";
-            $http.post(ServiceURL + url, {
+            $http.post(window.ServiceURL + url, {
                 "@class": "JpaAccount",
                 "email": email,
                 "username": username,
@@ -147,11 +152,11 @@ angular.module('wegas.service.auth', [
                 "firstname": firstname,
                 "lastname": lastname
             }).success(function(data) {
-                $translate('COMMONS-AUTH-CREATE-ACCOUNT-FLASH-SUCCESS').then(function (message) {
+                $translate('COMMONS-AUTH-CREATE-ACCOUNT-FLASH-SUCCESS').then(function(message) {
                     deferred.resolve(Responses.success(message, true));
                 });
             }).error(function(data) {
-                $translate('COMMONS-AUTH-CREATE-ACCOUNT-FLASH-ERROR').then(function (message) {
+                $translate('COMMONS-AUTH-CREATE-ACCOUNT-FLASH-ERROR').then(function(message) {
                     deferred.resolve(Responses.danger(message, true));
                 });
                 deferred.resolve(Responses.danger(data.message, false));
@@ -162,7 +167,7 @@ angular.module('wegas.service.auth', [
         service.remindPassword = function(email) {
             var deferred = $q.defer(),
                 url = "rest/User/SendNewPassword";
-            $http.post(ServiceURL + url, {
+            $http.post(window.ServiceURL + url, {
                 "@class": "AuthenticationInformation",
                 "login": email
             }, {
@@ -171,12 +176,12 @@ angular.module('wegas.service.auth', [
                 }
             })
                 .success(function(data) {
-                    $translate('COMMONS-AUTH-PASSWORD-FLASH-SUCCESS').then(function (message) {
+                    $translate('COMMONS-AUTH-PASSWORD-FLASH-SUCCESS').then(function(message) {
                         deferred.resolve(Responses.success(message, true));
                     });
                 })
                 .error(function(data) {
-                    $translate('COMMONS-AUTH-PASSWORD-FLASH-ERROR').then(function (message) {
+                    $translate('COMMONS-AUTH-PASSWORD-FLASH-ERROR').then(function(message) {
                         deferred.resolve(Responses.danger(message, false));
                     });
                 });
@@ -185,11 +190,11 @@ angular.module('wegas.service.auth', [
 
         service.loginAsGuest = function() {
             var deferred = $q.defer(),
-                url = "rest/User/GuestLogin/",
-                messageARendre;
+                url = "rest/User/GuestLogin/";
+
             service.getAuthenticatedUser().then(function(noUser) {
-                if (noUser == null) {
-                    $http.post(ServiceURL + url, {
+                if (noUser === null) {
+                    $http.post(window.ServiceURL + url, {
                         "@class": "AuthenticationInformation",
                         "login": "",
                         "password": "",
@@ -200,19 +205,19 @@ angular.module('wegas.service.auth', [
                         }
                     })
                         .success(function(data) {
-                            service.getAuthenticatedUser().then(function(guest){
-                                $translate('COMMONS-AUTH-GUEST-FLASH-SUCCESS').then(function (message) {
+                            service.getAuthenticatedUser().then(function(guest) {
+                                $translate('COMMONS-AUTH-GUEST-FLASH-SUCCESS').then(function(message) {
                                     deferred.resolve(Responses.success(message, guest));
                                 });
                             });
                         })
                         .error(function(data) {
-                            $translate('COMMONS-AUTH-GUEST-FLASH-ERROR').then(function (message) {
+                            $translate('COMMONS-AUTH-GUEST-FLASH-ERROR').then(function(message) {
                                 deferred.resolve(Responses.danger(message, false));
                             });
                         });
-                }else{
-                    $translate('COMMONS-AUTH-GUEST-FLASH-ERROR').then(function (message) {
+                } else {
+                    $translate('COMMONS-AUTH-GUEST-FLASH-ERROR').then(function(message) {
                         deferred.resolve(Responses.danger(message, false));
                     });
                 }

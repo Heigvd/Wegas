@@ -28,8 +28,8 @@
             };
         </script>
 
-        <script type="text/javascript" src="http://neyric.github.com/inputex/src/loader.js"></script>
-        <!--<script type="text/javascript" src="../../lib/inputex/src/loader.js"></script>-->
+        <!--<script type="text/javascript" src="http://neyric.github.com/inputex/src/loader.js"></script>-->
+        <script type="text/javascript" src="../../lib/inputex/src/loader.js"></script>
         <script type="text/javascript" src="../js/wegas-loader.js"></script>
 
         <script type="text/javascript" src="../../wegas-util/tests/wegas-widgettoolbar-test.js"></script>
@@ -43,7 +43,8 @@
                     YUI_config.groups[i].combine = false;
                 }
             }
-            YUI_config.groups.inputex.base = "http://neyric.github.com/inputex/src/";
+            //YUI_config.groups.inputex.base = "http://neyric.github.com/inputex/src/";
+            YUI_config.groups.inputex.base = "../../../lib/inputex/src/";
             YUI_config.groups.inputex.filter = "raw";
             YUI_config.groups.libraries.base = "../../lib/";                    // Set up libraries path
             YUI_config.groups.libraries.filter = "raw";

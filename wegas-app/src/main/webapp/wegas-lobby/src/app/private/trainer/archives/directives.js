@@ -1,5 +1,6 @@
 angular.module('private.trainer.archives.directives', [])
     .directive('trainerSessionsArchivesIndex', function() {
+        "use strict";
         return {
             scope: {
                 close: "&"
@@ -8,6 +9,7 @@ angular.module('private.trainer.archives.directives', [])
             controller: "TrainerArchivesIndexController as indexCtrl"
         };
     }).controller("TrainerArchivesIndexController", function TrainerArchivesIndexController($timeout, $translate, $rootScope, $scope, $state, SessionsModel, Flash) {
+        "use strict";
         var ctrl = this;
         ctrl.archives = [];
         ctrl.search = "";
@@ -21,7 +23,7 @@ angular.module('private.trainer.archives.directives', [])
                 if (response.isErroneous()) {
                     response.flash();
                 }
-                if (ctrl.archives.length == 0) {
+                if (ctrl.archives.length === 0) {
                     $scope.close();
                 }
             });
@@ -97,6 +99,7 @@ angular.module('private.trainer.archives.directives', [])
         ctrl.updateSessions();
     })
     .directive('trainerSessionsArchivesList', function() {
+        "use strict";
         return {
             scope: {
                 sessions: "=",
