@@ -152,7 +152,7 @@ YUI.add("wegas-inputex-rte", function(Y) {
         /**
          * Set the html content
          * @param {String} value The html string
-         * @param {boolean} sendUpdatedEvt (optional) Wether this setValue should fire the 'updated' event or not
+         * @param {boolean} sendUpdatedEvent (optional) Wether this setValue should fire the 'updated' event or not
          *     (default is true, pass false to NOT send the event)
          */
         setValue: function(value, sendUpdatedEvent) {

@@ -9,6 +9,7 @@
  * Wegas Team Dashboard - Extends of Basic Dashboard
  * @author Raphaël Schmutz <raph@hat-owl.cc>
  */
+/*global tinyMCE*/
 YUI.add('wegas-teams-overview-dashboard', function(Y) {
     "use strict";
 
@@ -19,7 +20,7 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                 context = this;
             this.get("cardsData").forEach(function(data) {
                 teams.forEach(function(team) {
-                    if (team.get("id") == data.id) {
+                    if (+team.get("id") === +data.id) {
                         data.blocs = context._getBlocs(team);
                     }
                 });
@@ -43,33 +44,33 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                 "title": "Actions",
                 "type": "action",
                 "items": [{
-                        "icon": "action-impacts",
-                        "label": "Impacts",
-                        "do": function() {
-                            new Y.Wegas.ImpactsTeamModal({
-                                "team": team
-                            }).render();
-                        }
-                    }, {
-                        "icon": "action-email",
-                        "label": "Send real E-Mail",
-                        "do": function() {
-                            new Y.Wegas.EmailTeamModal({
-                                "team": team,
-                                "on": {
-                                    "email:sent": function() {
-                                        this.close();
-                                    }
+                    "icon": "action-impacts",
+                    "label": "Impacts",
+                    "do": function() {
+                        new Y.Wegas.ImpactsTeamModal({
+                            "team": team
+                        }).render();
+                    }
+                }, {
+                    "icon": "action-email",
+                    "label": "Send real E-Mail",
+                    "do": function() {
+                        new Y.Wegas.EmailTeamModal({
+                            "team": team,
+                            "on": {
+                                "email:sent": function() {
+                                    this.close();
                                 }
-                            }).render();
-                        }
-                    }, {
-                        "icon": "info-view",
-                        "label": "View playing session",
-                        "do": function() {
-                            window.open("game-lock.html?id=" + team.get("players")[0].get("id"), "_blank");
-                        }
-                    }]
+                            }
+                        }).render();
+                    }
+                }, {
+                    "icon": "info-view",
+                    "label": "View playing session",
+                    "do": function() {
+                        window.open("game-lock.html?id=" + team.get("players")[0].get("id"), "_blank");
+                    }
+                }]
             };
             blocs.push(bloc);
             this._addOriginalBloc(team.get("id"), bloc);
@@ -99,7 +100,7 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
             this.afterHostEvent("render", function(event) {
                 game = Y.Wegas.Facade.Game.cache.getCurrentGame();
                 game.get("teams").forEach(function(team) {
-                    if (context.get("host").get("id") == team.get("id")) {
+                    if (+context.get("host").get("id") === +team.get("id")) {
                         context.set("team", team);
                     }
                 });
@@ -118,39 +119,40 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                     context.get("host").get("contentBox").addClass("card--team");
                     teamList = Y.Node.create(context.TEAM_LIST_TEMPLATE);
                     context.get("team").get("players").forEach(function(player) {
-                        var player = Y.Node.create(context.PLAYER_TEMPLATE).append(player.get("name"));
+                        player = Y.Node.create(context.PLAYER_TEMPLATE).append(player.get("name"));
                         teamList.one(".bloc-details__players__list").append(player);
                     });
                     base.prepend(teamList);
                 }
 
-                tinyMCE.init({
-                    "width": "100%",
-                    "height": "100%",
-                    "menubar": false,
-                    "statusbar": false,
-                    "toolbar": "bold italic | alignleft aligncenter alignright alignjustify | bullist numlist",
-                    "selector": '.infos-comments',
-                    "setup": function(mce) {
-                        var saveTimer;
-                        mce.on('init', function(args) {
-                            context.set("editor", args.target);
-                            if (context.get("team").get("notes")) {
-                                context.get("editor").setContent(context.get("team").get("notes"));
-                            } else {
-                                context.get("editor").setContent("<i>Notes</i>");
-                            }
-                        });
-                        mce.on('keyup', function(e) {
-                            clearTimeout(saveTimer);
-                            saveTimer = setTimeout(context._saveNotes, 500, context);
-                        });
-                    }
-                });
-
                 detailLink.on("click", function(event) {
                     event.preventDefault();
                     event.stopPropagation();
+                    if (!context.get("editor")) {
+                        tinyMCE.init({
+                            "width": "100%",
+                            "height": "100%",
+                            "menubar": false,
+                            "statusbar": false,
+                            "toolbar": "bold italic | alignleft aligncenter alignright alignjustify | bullist numlist",
+                            "selector": "#" + context.get("host").get("boundingBox").get("id") + " .infos-comments",
+                            "setup": function(mce) {
+                                var saveTimer;
+                                mce.on('init', function(args) {
+                                    context.set("editor", args.target);
+                                    if (context.get("team").get("notes")) {
+                                        context.get("editor").setContent(context.get("team").get("notes"));
+                                    } else {
+                                        context.get("editor").setContent("<i>Notes</i>");
+                                    }
+                                });
+                                mce.on('keyup', function() {
+                                    clearTimeout(saveTimer);
+                                    saveTimer = setTimeout(context._saveNotes, 500, context);
+                                });
+                            }
+                        });
+                    }
                     context.get("host").get("contentBox").toggleClass("card__detailed");
                     detailLink.toggleClass("card__title__link--close");
                     detailLink.toggleClass("card__title__link--open");
@@ -170,26 +172,26 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
 
             if (game && team) {
                 actions = [{
-                        "types": ["primary"],
-                        "label": "Apply impact",
-                        "do": function() {
-                            this.item(0).run(this);
-                        }
-                    }, {
-                        "label": "Cancel",
-                        "do": function() {
-                            this.close();
-                        }
-                    }, {
-                        "label": "View src",
-                        "types": ["secondary", "advanced"],
-                        "do": function() {
-                            this.item(0).viewSrc();
-                        }
-                    }];
-                this.set("title", game.get("properties.freeForAll")
-                    ? "Impact player \"" + team.get("players")[0].get("name") + "\""
-                    : "Impact team \"" + team.get("name") + "\"");
+                    "types": ["primary"],
+                    "label": "Apply impact",
+                    "do": function() {
+                        this.item(0).run(this);
+                    }
+                }, {
+                    "label": "Cancel",
+                    "do": function() {
+                        this.close();
+                    }
+                }, {
+                    "label": "View src",
+                    "types": ["secondary", "advanced"],
+                    "do": function() {
+                        this.item(0).viewSrc();
+                    }
+                }];
+                this.set("title", game.get("properties.freeForAll") ?
+                    "Impact player \"" + team.get("players")[0].get("name") + "\"" :
+                    "Impact team \"" + team.get("name") + "\"");
                 this.add(new Y.Wegas.CustomConsole({
                     player: team.get("players")[0],
                     statusNode: Y.Node.create("<span></span>")
@@ -211,20 +213,20 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
 
             if (game && team) {
                 actions = [{
-                        "types": ["primary"],
-                        "label": "Send",
-                        "do": function() {
-                            this.item(0).send();
-                        }
-                    }, {
-                        "label": 'Cancel',
-                        "do": function() {
-                            this.close();
-                        }
-                    }];
-                this.set("title", game.get("properties.freeForAll")
-                    ? "Send real E-Mail to player \"" + team.get("players")[0].get("name") + "\""
-                    : "Send real E-Mail to players of team \"" + team.get("name") + "\"");
+                    "types": ["primary"],
+                    "label": "Send",
+                    "do": function() {
+                        this.item(0).send();
+                    }
+                }, {
+                    "label": 'Cancel',
+                    "do": function() {
+                        this.close();
+                    }
+                }];
+                this.set("title", game.get("properties.freeForAll") ?
+                    "Send real E-Mail to player \"" + team.get("players")[0].get("name") + "\"" :
+                    "Send real E-Mail to players of team \"" + team.get("name") + "\"");
                 this.set("icon", game.get("properties.freeForAll") ? "user" : "group");
                 this.add(new Y.Wegas.SendMail({
                     "players": team.get("players"),
