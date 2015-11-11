@@ -97,7 +97,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     active: {
                         type: BOOLEAN,
                         _inputex: {
-                            label: 'Active by default',
+                            label: 'Active from start',
                             value: true
                         }
                     }
@@ -289,7 +289,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     active: {
                         type: BOOLEAN,
                         _inputex: {
-                            label: 'Active by default',
+                            label: 'Active from start',
                             value: true
                         }
                     },
@@ -450,7 +450,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     active: {
                         type: BOOLEAN,
                         _inputex: {
-                            label: 'Active by default',
+                            label: 'Active from start',
                             value: true
                         }
                     },
