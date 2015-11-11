@@ -64,6 +64,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     @Lob
     @JsonView(Views.ExtendedI.class)
     private String description;
+    
     /**
      *
      */
@@ -95,6 +96,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
         super.merge(a);
         this.setDuration(other.getDuration());
         this.setCost(other.getCost());
+        
         ListUtils.mergeReplace(this.getResults(), other.getResults());
 
         // Has currentResult been removed ?

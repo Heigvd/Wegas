@@ -28,6 +28,7 @@ import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
+import static java.lang.Boolean.FALSE;
 
 /**
  *
@@ -49,6 +50,10 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      *
      */
     private boolean allowMultipleReplies = false;
+    /**
+     * Set this to true when the choice is to be selected with an HTML radio/checkbox
+     */
+    private Boolean cbx = FALSE;
     /**
      *
      */
@@ -77,6 +82,8 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
         this.setDescription(other.getDescription());
         this.setAllowMultipleReplies(other.getAllowMultipleReplies());
         this.setPictures(other.getPictures());
+        Boolean tmpl = other.getCbx();
+        this.setCbx(tmpl);
     }
 // *** Sugar for scripts *** //
 
@@ -142,7 +149,21 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     public void setAllowMultipleReplies(boolean allowMultipleReplies) {
         this.allowMultipleReplies = allowMultipleReplies;
     }
+    
+    /**
+     * @return the checkbox flag
+     */
+    public Boolean getCbx() {
+        return cbx;
+    }
 
+    /**
+     * @param cb: if the checkbox mode is set
+     */
+    public void setCbx(Boolean cb) {
+        this.cbx = cb;
+    }
+    
     /**
      * @return the pictures
      */
