@@ -16,11 +16,9 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
     Y.Wegas.TeamsOverviewDashboard = Y.Base.create("wegas-teams-overview-dashboard", Y.Wegas.TeamsDashboard, [], {
         BOUNDING_TEMPLATE: "<div class='dashboard dashboard--teams-overview' />",
         initializer: function() {
-            var teams = Y.Wegas.Facade.Game.cache.getCurrentGame().get("teams"),
-                context = this;
-            this.get("cardsData").forEach(function(data) {
-                data.blocs = context._getBlocs(data.team);
-            });
+            Y.Array.each(this.get("cardsData"), function(data) {
+                data.blocs = this._getBlocs(data.team);
+            }, this);
         },
         syncUI: function() {
             this._createCards().then(Y.bind(function(cardsData) {
@@ -85,7 +83,7 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
             Y.Wegas.Facade.Game.cache.put(context.get("team").toObject("players"), {});
         },
         initializer: function() {
-            this.handles = []
+            this.handles = [];
             this.afterHostEvent("render", function() {
                 var teamList,
                     game = Y.Wegas.Facade.Game.cache.getCurrentGame(),
