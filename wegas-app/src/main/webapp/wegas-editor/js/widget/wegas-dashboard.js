@@ -47,28 +47,32 @@ YUI.add('wegas-dashboard', function(Y) {
             getMonitoredData: function() {
                 return this._monitoredData || {};
             },
+            /**
+             * 
+             * create cards as child
+             * return Promise-> cardsData
+             */
             _createCards: function() {
                 var context = this;
-                return new Y.Promise(function(resolve, reject) {
-                    context._getMonitoredData().then(function(monitoredBlocs) {
-                        context._monitoredData = monitoredBlocs;
-                        context.removeAll();
-                        context.get("cardsData").forEach(function(data) {
-                            var card = {
-                                "id": data.id,
-                                "title": data.title,
-                                "icon": data.icon || null,
-                                "blocs": context._combineBlocs(data, monitoredBlocs)
-                            };
-                            context.add(new Y.Wegas.Card(card));
-                        });
-                        if (context.get("resize")) {
-                            context.plug(Y.Wegas.CardsResizable);
-                            context.CardsResizable.resetClassSize();
-                            context.CardsResizable.resize();
-                        }
-                        resolve(true);
+
+                return context._getMonitoredData().then(function(monitoredBlocs) {
+                    context._monitoredData = monitoredBlocs;
+                    context.destroyAll();
+                    context.get("cardsData").forEach(function(data) {
+                        var card = {
+                            "id": data.id,
+                            "title": data.title,
+                            "icon": data.icon || null,
+                            "blocs": context._combineBlocs(data, monitoredBlocs)
+                        };
+                        context.add(new Y.Wegas.Card(card));
                     });
+                    if (context.get("resize")) {
+                        context.plug(Y.Wegas.CardsResizable);
+                        context.CardsResizable.resetClassSize();
+                        context.CardsResizable.resize();
+                    }
+                    return context.get("cardsData");
                 });
             },
             _addOriginalBloc: function(idCard, originalBloc) {
@@ -99,7 +103,9 @@ YUI.add('wegas-dashboard', function(Y) {
                             "type": "monitoring",
                             "items": []
                         };
-                        blocsToAdd.title ? newBlocs.title = blocsToAdd.title : null;
+                        if (blocsToAdd.title) {
+                            newBlocs.title = blocsToAdd.title;
+                        }
                         blocsToAdd.items.forEach(function(bloc) {
                             newBloc = {
                                 label: bloc.label,
