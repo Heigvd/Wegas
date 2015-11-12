@@ -64,7 +64,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 type: BOOLEAN,
                 _inputex: {
                     label: 'Allow multiple replies',
-                    index: 9
+                    index: 8
                 }
             },
             cbx : {
@@ -73,6 +73,16 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 _inputex: {
                     label: "Checkbox selection",
                     description: "Pour QCM standard",
+                    index: 9
+                }
+            },
+            tabular : {
+                type: BOOLEAN,
+                value: true,
+                _inputex: {
+                    label: "Tabular layout",
+                    description: "Replies are presented horizontally",
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
                     index: 10
                 }
             },
@@ -493,19 +503,27 @@ YUI.add('wegas-mcq-entities', function(Y) {
                                 _type: HIDDEN
                             }
                         },
+                        "": {
+                            optional: true,
+                            type: "uneditable",
+                            transient: true,
+                            _inputex: {
+                                label: "<b>IMPACT&nbsp;SECTION</b>"
+                            }
+                        },
                         answer: {
                             type: STRING,
                             optional: true,
                             format: HTML,
                             _inputex: {
-                                label: "Impact text"
+                                label: "Feedback"
                             }
                         },
                         impact: {
                             optional: true,
                             _inputex: {
                                 _type: SCRIPT,
-                                label: "Impact"
+                                label: "Impact on variables"
                             }
                         },
                         choiceDescriptorId: {
@@ -641,7 +659,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     return s === null || Y.Lang.isString(s);
                 }
             },
-            answer: {
+             answer: {
                 type: STRING,
                 optional: true,
                 format: HTML,
