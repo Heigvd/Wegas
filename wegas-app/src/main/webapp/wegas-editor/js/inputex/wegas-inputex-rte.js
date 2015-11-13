@@ -13,7 +13,8 @@
 YUI.add("wegas-inputex-rte", function(Y) {
     "use strict";
 
-    var inputEx = Y.inputEx, RTEField, Wegas = Y.Wegas;
+    var inputEx = Y.inputEx, RTEField,
+        Wegas = Y.Wegas;
 
     /**
      * @class Wrapper for the Rich Text Editor from YUI
@@ -24,7 +25,7 @@ YUI.add("wegas-inputex-rte", function(Y) {
      */
     RTEField = function(options) {
         RTEField.superclass.constructor.call(this, options);
-        
+
     };
 
     Y.extend(RTEField, inputEx.Textarea, {
@@ -53,15 +54,16 @@ YUI.add("wegas-inputex-rte", function(Y) {
         renderComponent: function() {
             RTEField.superclass.renderComponent.call(this);
             Y.once("domready", function() {
-                this.editor = new tinyMCE.Editor(this.el.id, {
+                tinyMCE.init({
+                    selector: "#" + this.el.id,
                     plugins: [
-                        "autolink autoresize link image lists code media table contextmenu paste advlist textcolor"
-                        //textcolor wordcount autosave advlist charmap print preview hr anchor pagebreak spellchecker
-                        // directionality
+                        "autolink link image lists code media table contextmenu paste advlist textcolor"
+                    //textcolor autoresize wordcount autosave advlist charmap print preview hr anchor pagebreak spellchecker
+                    // directionality
                     ],
                     external_plugins: {
                         "dynamic_toolbar": Wegas.app.get("base") +
-                                           "wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar.js"
+                            "wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar.js"
                     },
                     toolbar1: "bold italic bullist | link image media code addToolbarButton",
                     toolbar2: "forecolor backcolor underline alignleft aligncenter alignright alignjustify table",
@@ -86,15 +88,15 @@ YUI.add("wegas-inputex-rte", function(Y) {
                         Wegas.app.get("base") + "wegas-editor/css/wegas-inputex-rte.css"
                     ],
                     style_formats: [
-                        {// Style formats
+                        { // Style formats
                             title: 'Title 1',
                             block: 'h1'
                         }, {
                             title: 'Title 2',
                             block: 'h2'
-                            // styles : {
-                            //    color : '#ff0000'
-                            // }
+                        // styles : {
+                        //    color : '#ff0000'
+                        // }
                         }, {
                             title: 'Title 3',
                             block: 'h3'
@@ -106,17 +108,17 @@ YUI.add("wegas-inputex-rte", function(Y) {
                             //icon: "code",
                             block: "code"
                         }]
-                }, tinyMCE.EditorManager);
+                });
 
                 //this.editor.on('change', Y.bind(this.sendUpdatedEvt, this));    // Update on editor update
-                this.editor.render();
-                
-                Y.one(this.wrapEl).delegate("click", function(e){
-                    Y.one(this.wrapEl).one(".mce-tinymce").toggleClass("mce--more");
-                },".mce-btn[aria-label='More options']", this);
+                //    this.editor.render();
 
-                //tinymce.createEditor(this.el.id, {});
-                //tinymce.execCommand('mceAddEditor', false, this.el.id);
+                Y.one(this.wrapEl).delegate("click", function(e) {
+                    Y.one(this.wrapEl).one(".mce-tinymce").toggleClass("mce--more");
+                }, ".mce-btn[aria-label='More options']", this);
+
+            //tinymce.createEditor(this.el.id, {});
+            //tinymce.execCommand('mceAddEditor', false, this.el.id);
             }, this);
         },
         onFileBrowserClick: function(field_name, url, type, win) {
@@ -129,19 +131,19 @@ YUI.add("wegas-inputex-rte", function(Y) {
                 var win = RTEField.filePanel.win,
                     field_name = RTEField.filePanel.field_name,
                     targetInput = win.document.getElementById(field_name);
-                targetInput.value = Wegas.Facade.File.getPath() + path;        // update the input field
+                targetInput.value = Wegas.Facade.File.getPath() + path; // update the input field
 
-                if (typeof (win.ImageDialog) !== "undefined") {                 // are we an image browser
-                    if (win.ImageDialog.getImageData) {                         // we are, so update image dimensions...
+                if (typeof (win.ImageDialog) !== "undefined") { // are we an image browser
+                    if (win.ImageDialog.getImageData) { // we are, so update image dimensions...
                         win.ImageDialog.getImageData();
                     }
 
-                    if (win.ImageDialog.showPreviewImage) {                     // ... and preview if necessary
+                    if (win.ImageDialog.showPreviewImage) { // ... and preview if necessary
                         win.ImageDialog.showPreviewImage(Wegas.Facade.File.getPath() + path);
                     }
                 }
-                if (win.Media) {                                                // If in an editor window
-                    win.Media.formToData("src");                                // update the data
+                if (win.Media) { // If in an editor window
+                    win.Media.formToData("src"); // update the data
                 }
                 RTEField.filePanel.destroy();
             });
@@ -160,9 +162,9 @@ YUI.add("wegas-inputex-rte", function(Y) {
                 value = value.replace(
                     new RegExp("data-file=\"([^\"]*)\"", "gi"),
                     "src=\"" + Wegas.Facade.File.getPath() + "$1\"" +
-                    " href=\"" + Wegas.Facade.File.getPath() + "$1\"");       // @hack Place both href and src so it
-                                                                              // will work for both <a> and <img>
-                                                                              // elements
+                    " href=\"" + Wegas.Facade.File.getPath() + "$1\""); // @hack Place both href and src so it
+            // will work for both <a> and <img>
+            // elements
             }
             RTEField.superclass.setValue.call(this, value, sendUpdatedEvent);
 
@@ -181,11 +183,11 @@ YUI.add("wegas-inputex-rte", function(Y) {
             //return RTEField.superclass.getValue.call(this).replace(reg, "data-file=\"$3\" $1");
             return RTEField.superclass.getValue.call(this)
                 .replace(new RegExp("((src|href)=\".*/rest/File/GameModelId/.*/read([^\"]*)\")", "gi"),
-                "data-file=\"$3\"")// Replace absolute path with injector style path
+                    "data-file=\"$3\"") // Replace absolute path with injector style path
                 .replace(new RegExp("((src|href)=\".*/rest/GameModel/.*/File/read([^\"]*)\")", "gi"),
-                "data-file=\"$3\"");// Replace absolute path with injector style path
+                    "data-file=\"$3\""); // Replace absolute path with injector style path
 
         }
     });
-    inputEx.registerType("html", RTEField, []);                                 // Register this class as "html" type
+    inputEx.registerType("html", RTEField, []); // Register this class as "html" type
 });
