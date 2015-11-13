@@ -174,11 +174,12 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                                + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
                         cfg: {
                             method: "GET"
-                        },
+                        }
+                        /* ,
                         on: {
                             success: {},
                             failure: {}
-                        }
+                        } */
                     });
                 }
             }
