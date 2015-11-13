@@ -58,7 +58,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     /**
      * Determines if choices are presented horizontally in a tabular fashion
      */
-    private Boolean tabular = TRUE;
+    private Boolean tabular = FALSE;
     /**
      *
      */

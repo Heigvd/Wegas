@@ -78,7 +78,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
             },
             tabular : {
                 type: BOOLEAN,
-                value: true,
+                value: false,
                 _inputex: {
                     label: "Tabular layout",
                     description: "Replies are presented horizontally",
