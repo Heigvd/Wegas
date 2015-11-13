@@ -378,7 +378,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
             this.setComments(other.getComments());
             this.defaultInstance.merge(other.getDefaultInstance());
             if (other.getScope() != null) {
-                System.out.println("This.Scope: " + this.scope);
                 this.scope.setBroadcastScope(other.getScope().getBroadcastScope());
             }
         } catch (PersistenceException pe) {

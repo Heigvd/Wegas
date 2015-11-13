@@ -26,7 +26,8 @@ YUI.add("wegas-i18n-global-fr", function(Y) {
             nan: "\"{{value}}\" n'est pas un nombre",
             outOfBounds: "{{value}} n'est pas compris dans [{{min}},{{max}}]",
             lessThan: "{{value}} est plus petit que {{min}}",
-            greaterThan: "{{value}} est plus grand que {{max}}"
+            greaterThan: "{{value}} est plus grand que {{max}}",
+			prohibited: "\"{{value}}\" n'est pas permise. Elle doit être choisie parmis : {{values}}"
         },
         inbox :{
             deleteEmailConfirmation: "Êtes-vous sûr de vouloir supprimer le message {{subject}} de manière définitive ?",

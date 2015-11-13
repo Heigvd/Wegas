@@ -160,7 +160,7 @@ font {
     animation: fadein 0.2s 0.1s 1;
 }
 .wegas-loading-overlay:after {
-    //content: "A long-running process has been\a detected. Please wait...";
+    /*content: "A long-running process has been\a detected. Please wait...";*/
     content: "Please wait...";
     text-shadow: 0 0 3px white;
     font-style: italic;

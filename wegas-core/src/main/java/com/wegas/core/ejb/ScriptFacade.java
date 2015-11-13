@@ -49,6 +49,11 @@ import org.slf4j.LoggerFactory;
 public class ScriptFacade {
 
     private static final Logger logger = LoggerFactory.getLogger(ScriptFacade.class);
+
+	/**
+	 * name 
+	 */
+    public static final String CONTEXT = "currentDescriptor";
     /**
      *
      */
@@ -109,7 +114,7 @@ public class ScriptFacade {
      *
      * @return
      */
-    public Object eval(Script script, Map<String, AbstractEntity> arguments) throws WegasScriptException {
+    private Object eval(Script script, Map<String, AbstractEntity> arguments) throws WegasScriptException {
         if (script == null) {
             return null;
         }
@@ -286,13 +291,14 @@ public class ScriptFacade {
 
     // *** Sugar *** //
     /**
+     * Concatenate scripts
      *
      * @param scripts
      * @param arguments
      *
      * @return
      */
-    public Object eval(List<Script> scripts, Map<String, AbstractEntity> arguments) throws WegasScriptException {
+    private Object eval(Player player, List<Script> scripts, Map<String, AbstractEntity> arguments) throws WegasScriptException {
         Object ret;
         if (scripts.isEmpty()) {
             return null;
@@ -309,41 +315,27 @@ public class ScriptFacade {
             }
             //result = engine.eval(s.getContent());
         }
-        return this.eval(new Script(buf.toString()));
+        return this.eval(player, new Script(buf.toString()), arguments);
     }
 
-    /**
-     *
-     * @param scripts
-     *
-     * @return
-     */
-    public Object eval(List<Script> scripts) throws WegasScriptException {
-        return this.eval(scripts, new HashMap<>());
-    }
-
-    /**
-     *
-     * @param p
-     * @param s
-     *
-     * @return
-     */
-    public Object eval(Player p, Script s) throws WegasScriptException {
-        requestManager.setPlayer(p);
-        return this.eval(s);
+    public Object eval(Player player, List<Script> scripts, VariableDescriptor context) {
+        Map<String, AbstractEntity> arguments = new HashMap<>();
+        arguments.put(ScriptFacade.CONTEXT, context);
+        return this.eval(player, scripts, arguments);
     }
 
     /**
      *
      * @param p
      * @param s
+     * @param context
      *
      * @return
      */
-    public Object eval(Player p, List<Script> s) throws WegasScriptException {
-        requestManager.setPlayer(p);
-        return this.eval(s);
+    public Object eval(Player p, Script s, VariableDescriptor context) throws WegasScriptException {
+        Map<String, AbstractEntity> arguments = new HashMap<>();
+        arguments.put(ScriptFacade.CONTEXT, context);
+        return this.eval(p, s, arguments);
     }
 
     /**
@@ -354,43 +346,22 @@ public class ScriptFacade {
      *
      * @return
      */
-    public Object eval(Player player, Script s, Map<String, AbstractEntity> arguments) throws WegasScriptException {
+    private Object eval(Player player, Script s, Map<String, AbstractEntity> arguments) throws WegasScriptException {
         requestManager.setPlayer(player);
         return this.eval(s, arguments);
     }
 
     /**
      *
-     * @param player
-     * @param scripts
-     * @param arguments
-     *
-     * @return
-     */
-    public Object eval(Player player, List<Script> scripts, Map<String, AbstractEntity> arguments) throws WegasScriptException {
-        requestManager.setPlayer(player);                                       // Set up request's execution context
-        return this.eval(scripts, arguments);
-    }
-
-    /**
-     *
      * @param playerId
      * @param s
-     *
+     * @param context
      * @return
+     * @throws WegasScriptException
      */
-    public Object eval(Long playerId, Script s) throws WegasScriptException {
-        requestManager.setPlayer(playerEntityFacade.find(playerId));
-        return this.eval(s);
-    }
-
-    /**
-     *
-     * @param s
-     *
-     * @return
-     */
-    public Object eval(Script s) throws WegasScriptException {
-        return this.eval(s, new HashMap<>());
+    public Object eval(Long playerId, Script s, VariableDescriptor context) throws WegasScriptException { // ICI CONTEXT
+        Map<String, AbstractEntity> arguments = new HashMap<>();
+        arguments.put(ScriptFacade.CONTEXT, context);
+        return this.eval(playerEntityFacade.find(playerId), s, arguments);
     }
 }

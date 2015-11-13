@@ -117,7 +117,7 @@ abstract public class GameModelTest {
     protected Object evalScript(String script) {
         if (gm != null) {
             if (player != null) {
-                return this.lookup(ScriptController.class).run(gm.getId(), this.player.getId(), new Script(script));
+                return this.lookup(ScriptController.class).run(gm.getId(), this.player.getId(), null, new Script(script));
             } else {
                 throw WegasErrorMessage.error("Player shall not be null");
             }

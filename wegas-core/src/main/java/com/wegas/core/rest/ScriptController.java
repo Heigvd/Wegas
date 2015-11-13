@@ -80,18 +80,27 @@ public class ScriptController {
      *
      * @param gameModelId
      * @param playerId
+     * @param variableDescritptorId
      * @param script
      *
      * @return p
      */
     @POST
-    @Path("Run/{playerId : [1-9][0-9]*}")
+    @Path("Run/{playerId : [1-9][0-9]*}{sep: /?}{variableDescriptorId : ([1-9][0-9]*)?}")
     public Object run(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("playerId") Long playerId, Script script) {
+            @PathParam("playerId") Long playerId,
+            @PathParam("variableDescriptorId") Long variableDescritptorId,
+            Script script) {
 
         if (SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + gameModelId)
                 || userFacade.matchCurrentUser(playerId)) {
-            Object r = scriptManager.eval(playerId, script);
+            VariableDescriptor context;
+            if (variableDescritptorId != null && variableDescritptorId > 0) {
+                context = variableDescriptorFacade.find(variableDescritptorId);
+            } else {
+                context = null;
+            }
+            Object r = scriptManager.eval(playerId, script, context);
             requestFacade.commit();
             return r;
         } else {
@@ -106,8 +115,9 @@ public class ScriptController {
      * @return
      */
     @POST
-    @Path("Multirun")
+    @Path("Multirun{sep: /?}{variableDescriptorId : ([1-9][0-9]*)?}")
     public List<Object> multirun(@PathParam("gameModelId") Long gameModelId,
+            @PathParam("variableDescriptorId") Long variableDescritptorId,
             HashMap<String, Object> multiplayerScripts) throws WegasScriptException {
 
         Script script = new Script();
@@ -118,8 +128,15 @@ public class ScriptController {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
+        VariableDescriptor context;
+        if (variableDescritptorId != null && variableDescritptorId > 0) {
+            context = variableDescriptorFacade.find(variableDescritptorId);
+        } else {
+            context = null;
+        }
+
         for (Integer playerId : playerIdList) {
-            Object r = scriptManager.eval(playerId.longValue(), script);
+            Object r = scriptManager.eval(playerId.longValue(), script, context);
             results.add(r);
             requestFacade.commit(playerFacadeFacade.find(playerId.longValue()));
         }
@@ -144,7 +161,7 @@ public class ScriptController {
                 .forEach((VariableDescriptor vd) -> {
                     ((Scripted) vd).getScripts().stream().filter(script -> script != null)
                     .anyMatch((Script script) -> {
-                        WegasScriptException validate = scriptCheck.validate(script, player);
+                        WegasScriptException validate = scriptCheck.validate(script, player, vd);
                         if (validate != null) {
                             ret.put(vd.getId(), validate);
                             return true;

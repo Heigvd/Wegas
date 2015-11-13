@@ -14,7 +14,6 @@ YUI.add("treeview", function(Y) {
 
     var HOST = "host", SELECTED = "selected", SELECTION = "selection",
         TREEVIEW = "treeview", TREENODE = "treenode", CONTENT = "content",
-        //TREELEAF = "treeleaf",
         CONTENT_BOX = "contentBox", BOUNDING_BOX = "boundingBox",
         getClassName = Y.ClassNameManager.getClassName,
         classNames = {
@@ -60,17 +59,17 @@ YUI.add("treeview", function(Y) {
          * @returns {undefined}
          */
         bindUI: function() {
-            //this.after("*:addChild", function(e) {
-            //    /* Selection is not updated if a child with selected attribute is added, force it. */
-            //    e.target._set(SELECTION, e.target.get(SELECTION));
-            //});
-            this.after("addChild", function(e) {
+            this.after("*:addChild", function(e) {
+                /* Selection is not updated if a child with selected attribute is added, force it. */
+                e.target._set(SELECTION, e.target.get(SELECTION));
+            });
+            this.after("addChild", function() {
                 this.get(BOUNDING_BOX).all("." + classNames.emptyMSG).remove(true);
             });
-            this.after("removeChild", function(e) {
+            this.after("removeChild", function() {
                 if (!this.size()) {
                     this.get(BOUNDING_BOX).append("<div class='" + classNames.emptyMSG + "'>" + this.get("emptyMsg") +
-                        "</div>");
+                                                  "</div>");
                 }
             });
             this.get(CONTENT_BOX).delegate("click", function(e) {
@@ -84,7 +83,7 @@ YUI.add("treeview", function(Y) {
                     widget.fire("labelClick", {
                         node: widget
                     });
-                } else if (node.ancestor().hasClass(widget.getClassName(CONTENT, "extra"))  )  {
+                } else if (node.ancestor().hasClass(widget.getClassName(CONTENT, "extra"))) {
                     widget.fire("extraClick", {
                         node: node,
                         widget: widget
@@ -132,7 +131,7 @@ YUI.add("treeview", function(Y) {
             }
             if (!this.size()) {
                 this.get(BOUNDING_BOX).append("<div class='" + classNames.emptyMSG + "'>" + this.get("emptyMsg") +
-                    "</div>");
+                                              "</div>");
             }
         },
         syncUI: function() {
@@ -302,13 +301,13 @@ YUI.add("treeview", function(Y) {
     Y.TreeNode = Y.Base.create("treenode", Y.Widget, [Y.WidgetParent, Y.WidgetChild], {
         /** @lends Y.TreeNode# */
         BOUNDING_TEMPLATE: "<li>"
-            + "<div class='content-header yui3-treenode-content-header'>"
-            + "<span class='yui3-treenode-content-toggle'></span>"
-            + "<span class='yui3-treenode-content-icon'></span>"
-            + "<span class='yui3-treenode-content-label'></span>"
-            + "<span class='yui3-treenode-content-extra'></span>"
-            + "<div class=\"yui3-treenode-content-rightwidget yui3-tree-rightwidget\">"
-            + "</div></li>",
+                           + "<div class='content-header yui3-treenode-content-header'>"
+                           + "<span class='yui3-treenode-content-toggle'></span>"
+                           + "<span class='yui3-treenode-content-icon'></span>"
+                           + "<span class='yui3-treenode-content-label'></span>"
+                           + "<span class='yui3-treenode-content-extra'></span>"
+                           + "<div class=\"yui3-treenode-content-rightwidget yui3-tree-rightwidget\">"
+                           + "</div></li>",
         CONTENT_TEMPLATE: "<ul></ul>",
         /**
          * Lifecycle method
@@ -514,8 +513,9 @@ YUI.add("treeview", function(Y) {
                 value: "",
                 validator: Y.Lang.isString,
                 setter: function(v) {
-                    if (v){
-                        this.get(BOUNDING_BOX).one(".yui3-treenode-content-extra").setContent("<span class='add-child-shortcut fa fa-plus-circle' type='" + v + "'></span>");
+                    if (v) {
+                        this.get(BOUNDING_BOX).one(".yui3-treenode-content-extra").setContent(
+                            "<span class='add-child-shortcut fa fa-plus-circle' type='" + v + "'></span>");
                     }
                     return v;
                 }
@@ -625,10 +625,10 @@ YUI.add("treeview", function(Y) {
          * @private
          */
         CONTENT_TEMPLATE: "<div><div class='content-header yui3-treeleaf-content-header'>"
-            + "<span class='yui3-treeleaf-content-icon'></span>"
-            + "<span class='yui3-treeleaf-content-label'></span>"
-            + "<div class=\"yui3-treeleaf-content-rightwidget yui3-tree-rightwidget\"></div>"
-            + "</div></div>",
+                          + "<span class='yui3-treeleaf-content-icon'></span>"
+                          + "<span class='yui3-treeleaf-content-label'></span>"
+                          + "<div class=\"yui3-treeleaf-content-rightwidget yui3-tree-rightwidget\"></div>"
+                          + "</div></div>",
         /**
          * @field
          * @private

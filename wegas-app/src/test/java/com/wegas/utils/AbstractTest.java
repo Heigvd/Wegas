@@ -117,7 +117,7 @@ public abstract class AbstractTest {
     }
 
     protected Object evalScript(String script) {
-        return getScriptController().run(gm.getId(), this.player.getId(), new Script(script));
+        return getScriptController().run(gm.getId(), this.player.getId(), null, new Script(script));
     }
 
     protected abstract ScriptController getScriptController();

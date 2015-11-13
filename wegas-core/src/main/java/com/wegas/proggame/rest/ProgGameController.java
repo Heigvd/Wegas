@@ -44,6 +44,6 @@ public class ProgGameController {
     public Object run(
             @PathParam("playerId") Long playerId, String script) throws WegasScriptException {
 
-        return scriptFacade.eval(playerId, new Script("JavaScript", script));
+        return scriptFacade.eval(playerId, new Script("JavaScript", script), null);
     }
 }

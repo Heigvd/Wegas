@@ -81,7 +81,6 @@ public class BlacklistFilter implements Filter {
             HttpServletResponse resp = (HttpServletResponse) response;
 
             String url = req.getRequestURI().replaceFirst("^" + req.getContextPath(), "");
-            logger.error("URL: " + url);
 
             if (isBlacklisted(url)){
                 // Blacklist URL -> forbidden

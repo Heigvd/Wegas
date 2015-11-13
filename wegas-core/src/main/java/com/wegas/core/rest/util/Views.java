@@ -95,7 +95,7 @@ public class Views {
     /**
      * Variable Descriptor with a single instance for the current player
      */
-    public static class EditorExtended extends Public implements EditorI, ExtendedI, EditorExtendedI {
+    public static class EditorExtended extends Public implements EditorI, ExtendedI, EditorExtendedI, WithScopeI {
     }
 
     /**

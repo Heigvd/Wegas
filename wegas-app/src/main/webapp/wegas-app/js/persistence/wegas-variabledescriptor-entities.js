@@ -71,7 +71,11 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             "value": "ObjectDescriptor"
         }];
 
+    persistence.AVAILABLE_TYPES = AVAILABLE_TYPES;
+
     OPTIONAL_AVAILABLE_TYPES = [{label: "none", value: ""}].concat(AVAILABLE_TYPES);
+
+    persistence.OPTIONAL_AVAILABLE_TYPES = OPTIONAL_AVAILABLE_TYPES;
 
     /**
      * VariableDescriptor mapper
@@ -387,13 +391,25 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                     id: IDATTRDEF,
                     value: {
                         type: STRING,
+                        optional: true,
                         _inputex: {
                             label: "Default value"
                         }
                     }
 
                 }
-            }
+            },
+            allowedValues: {
+                type: ARRAY,
+                cssClass: "wegas-advanced-feature",
+                _inputex: {
+                    label: "Allowed Values",
+                    elementType: {
+                        required: true,
+                        type: "string"
+                    }
+                }
+            },
         },
         METHODS: {
             setValue: {

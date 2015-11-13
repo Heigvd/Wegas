@@ -12,6 +12,7 @@ import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -52,10 +53,10 @@ public class ScriptCheck {
      *
      * @return Exception the exception found in script or null if none occured
      */
-    public WegasScriptException validate(Script script, Player player) {
+    public WegasScriptException validate(Script script, Player player, VariableDescriptor context) {
         ScriptEngine engine = scriptFacade.instanciateEngine(player, script.getLanguage());
 
-        return this.rollbackEval(engine, script, player.getId());
+        return this.rollbackEval(engine, script, player.getId(), context);
 
     }
 
@@ -68,12 +69,13 @@ public class ScriptCheck {
      *
      * @return Exception the exception found in script or null if none occured
      */
-    private WegasScriptException rollbackEval(ScriptEngine engine, Script script, Long playerId) {
+    private WegasScriptException rollbackEval(ScriptEngine engine, Script script, Long playerId, VariableDescriptor context) {
 
         try {
             utx.begin();
             requestFacade.setPlayer(playerId);
             try {
+                engine.put(ScriptFacade.CONTEXT, context);
                 engine.eval(script.getContent());
             } catch (ScriptException ex) {
                 logger.debug("Script Error: {} \n {}", script.getContent(), ex.getMessage(), ex.getStackTrace());

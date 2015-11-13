@@ -126,7 +126,7 @@ public class ScriptEventFacade {
         }
         if (requestManager.getCurrentEngine() == null) {
             /* init script engine, declared eventListeners are not yet in memory */
-            scriptFacace.eval(player, new Script(""));
+            scriptFacace.eval(player, new Script(""), null);
         }
         ScriptEngine engine = requestManager.getCurrentEngine();
 

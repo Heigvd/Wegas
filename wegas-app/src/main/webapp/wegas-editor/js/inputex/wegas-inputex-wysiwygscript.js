@@ -178,7 +178,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                                 "Error executing impact: <br /><br />" + (e.response.results.exception || e.response));
                     }, this)
                 }
-            });
+            }, undefined, parentWidget.get("form").getValue().id);
         },
         /**
          *

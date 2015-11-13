@@ -202,7 +202,7 @@ public class StateMachineITest extends AbstractEJBTest {
         RequestFacade rf = lookupBy(RequestFacade.class);
         rf.getRequestManager().setPlayer(null);
 
-        scriptFacade.eval(player.getId(), new Script("personalScore.value = 10"));
+        scriptFacade.eval(player.getId(), new Script("personalScore.value = 10"), null);
         rf.getRequestManager().setPlayer(null);                                 //@TODO : THIS SHOULD NOT BE HERE
         rf.commit();
         Assert.assertEquals(10, ((NumberInstance) instanceFacade.find(personalScore.getId(), player.getId())).getValue(), 0);
@@ -227,7 +227,7 @@ public class StateMachineITest extends AbstractEJBTest {
         trigger.setPostTriggerEvent(new Script("print('Update testnumber');VariableDescriptorFacade.findByName(gameModel, 'testnumber').setValue(self, param);"));
         descriptorFacade.create(gameModel.getId(), trigger);
 
-        sf.eval(player, new Script("JavaScript", "Event.on('testEvent', function(e){print('args: ' + e)});Event.fire('testEvent', " + ENDVAL + ")"));
+        sf.eval(player, new Script("JavaScript", "Event.on('testEvent', function(e){print('args: ' + e)});Event.fire('testEvent', " + ENDVAL + ")"), null);
         lookupBy(RequestFacade.class).commit();
         Assert.assertEquals(ENDVAL, ((NumberInstance) instanceFacade.find(number.getId(), player.getId())).getValue(), 0);
     }
