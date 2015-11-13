@@ -50,9 +50,9 @@ public class ScriptFacade {
 
     private static final Logger logger = LoggerFactory.getLogger(ScriptFacade.class);
 
-	/**
-	 * name 
-	 */
+    /**
+     * name
+     */
     public static final String CONTEXT = "currentDescriptor";
     /**
      *
@@ -69,6 +69,11 @@ public class ScriptFacade {
      */
     @Inject
     private ScriptEventFacade event;
+    /**
+     *
+     */
+    @EJB
+    DelayedScriptEventFacade delayedEvent;
     /**
      *
      */
@@ -94,7 +99,7 @@ public class ScriptFacade {
             }
             try {
                 engineInvocationEvent.fire(
-                        new EngineInvocationEvent(player, engine));// Fires the engine invocation event, to allow extensions
+                    new EngineInvocationEvent(player, engine));// Fires the engine invocation event, to allow extensions
 
             } catch (ObserverException ex) {
                 throw (WegasRuntimeException) ex.getCause();
@@ -149,11 +154,12 @@ public class ScriptFacade {
         evt.getEngine().put("VariableDescriptorFacade", variableDescriptorFacade);// @backwardcompatibility
         evt.getEngine().put("RequestManager", requestManager);                  // Inject the request manager
         evt.getEngine().put("Event", event);                                    // Inject the Event manager
+        evt.getEngine().put("DelayedEvent", delayedEvent);
         evt.getEngine().put("ErrorManager", new WegasErrorMessageManager());    // Inject the MessageErrorManager
         event.detachAll();
         this.injectStaticScript(evt);
         for (Entry<String, GameModelContent> arg
-                : evt.getPlayer().getGameModel().getScriptLibrary().entrySet()) { // Inject the script library
+            : evt.getPlayer().getGameModel().getScriptLibrary().entrySet()) { // Inject the script library
             evt.getEngine().put(ScriptEngine.FILENAME, "Server script " + arg.getKey()); //@TODO: JAVA 8 filename in scope
             try {
                 evt.getEngine().eval(arg.getValue().getContent());
@@ -165,7 +171,7 @@ public class ScriptFacade {
         }
 
         for (VariableDescriptor vd
-                : evt.getPlayer().getGameModel().getChildVariableDescriptors()) { // Inject the variable instances in the script
+            : evt.getPlayer().getGameModel().getChildVariableDescriptors()) { // Inject the variable instances in the script
             VariableInstance vi = vd.getInstance(evt.getPlayer());
             try {
                 evt.getEngine().put(vd.getName(), vi);
@@ -261,12 +267,10 @@ public class ScriptFacade {
                     } else {
                         queue.addAll(Arrays.asList(listFiles));
                     }
-                } else {
-                    if (current.isFile()
-                            && current.getName().endsWith(".js") // Is a javascript
-                            && !isMinifedDuplicata(current)) { // avoid minified version when original exists
-                        result.add(current.getPath());
-                    }
+                } else if (current.isFile()
+                    && current.getName().endsWith(".js") // Is a javascript
+                    && !isMinifedDuplicata(current)) { // avoid minified version when original exists
+                    result.add(current.getPath());
                 }
             }
         }
