@@ -58,7 +58,8 @@ public class QuestionSingleton {
         QuestionDescriptor questionDescriptor = choice.getQuestion();
         QuestionInstance questionInstance = questionDescriptor.getInstance(player);
 
-        if (!questionDescriptor.getAllowMultipleReplies()
+        if (!questionDescriptor.getCbx()
+                && !questionDescriptor.getAllowMultipleReplies()
                 && this.findReplyCount(questionInstance.getId()) > 0) {         // @fixme Need to check reply count this way, otherwise in case of double request, both will be added
             //if (!questionDescriptor.getAllowMultipleReplies()
             //&& !questionInstance.getReplies().isEmpty()) {                    // Does not work when sending 2 requests at once

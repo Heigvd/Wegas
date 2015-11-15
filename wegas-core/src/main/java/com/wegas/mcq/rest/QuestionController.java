@@ -74,6 +74,28 @@ public class QuestionController {
 
         return Response.ok().build();
     }
+    /**
+     *
+     * @param questionInstanceId
+     * @param playerId
+     * @return p
+     * @throws com.wegas.core.exception.client.WegasScriptException
+     */
+    @POST
+    @Path("/ValidateQuestion/{questionInstanceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
+    public Response ValidateQuestion(
+                @PathParam("questionInstanceId") Long questionInstanceId,
+                @PathParam("playerId") Long playerId) throws WegasScriptException {
+
+        // !!!!!   CHECK TYPE OF RETURN PARAM   !!!!
+        
+        checkPermissions(playerFacade.find(playerId).getGame(), playerId);
+
+        questionDescriptorFacade.validateQuestion(questionInstanceId, playerId);
+        requestFacade.commit();
+
+        return Response.ok().build();
+    }
 
     /**
      *

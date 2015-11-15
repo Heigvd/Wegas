@@ -164,7 +164,7 @@ YUI.add('wegas-mcq-view', function(Y) {
             ret.push('<div class="mcq-choices">');
             for (i = 0; i < choices.length; i += 1) {
                 choiceD = choices[i];
-                choiceI = choiceD.getInstance();
+                choiceI = choiceD.getInstance();                
                 if (choiceI.get("active")) {
                     if (answerable ||
                         questionInstance.get("replies")[0].getChoiceDescriptor().get("id") === choiceD.get("id")) {

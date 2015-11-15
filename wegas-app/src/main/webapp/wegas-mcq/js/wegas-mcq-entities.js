@@ -64,7 +64,26 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 type: BOOLEAN,
                 _inputex: {
                     label: 'Allow multiple replies',
+                    index: 8
+                }
+            },
+            cbx : {
+                type: BOOLEAN,
+                value: false,
+                _inputex: {
+                    label: "Checkbox selection",
+                    description: "Pour QCM standard",
                     index: 9
+                }
+            },
+            tabular : {
+                type: BOOLEAN,
+                value: false,
+                _inputex: {
+                    label: "Tabular layout",
+                    description: "Replies are presented horizontally",
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
+                    index: 10
                 }
             },
             description: {
@@ -72,7 +91,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 format: HTML,
                 optional: true,
                 _inputex: {
-                    index: 10
+                    index: 11
                 }
             },
             defaultInstance: {
@@ -88,7 +107,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     active: {
                         type: BOOLEAN,
                         _inputex: {
-                            label: 'Active by default',
+                            label: 'Active from start',
                             value: true
                         }
                     }
@@ -219,6 +238,10 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 value: true,
                 type: BOOLEAN
             },
+            validated: {
+                value: false,
+                type: BOOLEAN
+            },
             replies: {
                 value: [],
                 type: ARRAY,
@@ -262,6 +285,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     }
                 }
             },
+
             defaultInstance: {
                 properties: {
                     '@class': {
@@ -275,7 +299,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     active: {
                         type: BOOLEAN,
                         _inputex: {
-                            label: 'Active by default',
+                            label: 'Active from start',
                             value: true
                         }
                     },
@@ -436,7 +460,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     active: {
                         type: BOOLEAN,
                         _inputex: {
-                            label: 'Active by default',
+                            label: 'Active from start',
                             value: true
                         }
                     },
@@ -479,19 +503,27 @@ YUI.add('wegas-mcq-entities', function(Y) {
                                 _type: HIDDEN
                             }
                         },
+                        "": {
+                            optional: true,
+                            type: "uneditable",
+                            transient: true,
+                            _inputex: {
+                                label: "<b>IMPACT&nbsp;SECTION</b>"
+                            }
+                        },
                         answer: {
                             type: STRING,
                             optional: true,
                             format: HTML,
                             _inputex: {
-                                label: "Impact text"
+                                label: "Feedback"
                             }
                         },
                         impact: {
                             optional: true,
                             _inputex: {
                                 _type: SCRIPT,
-                                label: "Impact"
+                                label: "Impact on variables"
                             }
                         },
                         choiceDescriptorId: {
@@ -627,7 +659,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     return s === null || Y.Lang.isString(s);
                 }
             },
-            answer: {
+             answer: {
                 type: STRING,
                 optional: true,
                 format: HTML,
