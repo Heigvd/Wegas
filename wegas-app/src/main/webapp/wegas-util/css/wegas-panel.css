@@ -6,20 +6,23 @@
  * Licensed under the MIT License
  */
 .wegas-panel {
-    position:absolute;
-    /*max-width: 100%;*/
+    position: absolute;
+    min-width: 300px;
     max-width: 90%;
     max-height: 100%;
 }
+
 .yui3-skin-sam .dashboard-panel .wegas-panel-content {
     background: rgba(239, 239, 239, 1);
     color: black;
 }
+
 .yui3-skin-sam .dashboard-panel .wegas-panel-content .yui3-widget-hd {
     font-size: 1.3em;
     margin: 5px;
     margin-bottom: 20px;
 }
+
 .yui3-skin-sam .dashboard-panel .wegas-panel-content .wegas-form legend.inputEx-Group-legend {
     color: #505050;
 }
@@ -33,45 +36,56 @@
     position: relative;
     border: 1px solid gray;
 }
-.wegas-panel-content .yui3-widget-bd{
+
+.wegas-panel-content .yui3-widget-bd {
     text-align: center;
     overflow: auto;
 }
-.wegas-panel-content .yui3-widget-ft{
+
+.wegas-panel-content .yui3-widget-ft {
     padding-top: 0.4em;
     text-align: right;
 }
-.yui3-skin-sam .wegas-panel .wegas-panel-content .yui3-widget-ft{
+
+.yui3-skin-sam .wegas-panel .wegas-panel-content .yui3-widget-ft {
     background: none;
 }
+
 .yui3-skin-sam .wegas-panel-content .yui3-widget-ft button:hover,
-.yui3-skin-sam .wegas-panel-content .yui3-widget-hd button:hover{
+.yui3-skin-sam .wegas-panel-content .yui3-widget-hd button:hover {
     background-color: rgba(107, 107, 107, 1);
 }
+
 .yui3-skin-sam .wegas-panel-content .yui3-widget-ft button,
-.yui3-skin-sam .wegas-panel-content .yui3-widget-hd button{
+.yui3-skin-sam .wegas-panel-content .yui3-widget-hd button {
     background-color: rgba(181, 181, 181, 1);
     color: white;
     margin-left: 0.3em;
     background-image: none;
 }
-.wegas-panel-content .yui3-widget-bd .icon{
+
+.wegas-panel-content .yui3-widget-bd .icon {
     background-repeat: no-repeat;
     min-height: 48px;
     padding-left: 48px;
 }
-.wegas-panel-content .yui3-widget-bd .icon-error{
+
+.wegas-panel-content .yui3-widget-bd .icon-error {
     background-image: url(../../wegas-app/images/wegas-icon-error-48.png)
 }
-.wegas-panel-content .yui3-widget-bd .icon-success{
+
+.wegas-panel-content .yui3-widget-bd .icon-success {
     background-image: url(../../wegas-app/images/wegas-icon-success-48.png)
 }
-.wegas-panel-content .yui3-widget-bd .icon-info{
+
+.wegas-panel-content .yui3-widget-bd .icon-info {
     background-image: url(../../wegas-app/images/wegas-icon-info-48.png)
 }
-.wegas-panel-content .yui3-widget-bd .icon-warn{
+
+.wegas-panel-content .yui3-widget-bd .icon-warn {
     background-image: url(../../wegas-app/images/wegas-icon-warning-48.png)
 }
+
 .wegas-panel-hidden {
     display: none;
 }
