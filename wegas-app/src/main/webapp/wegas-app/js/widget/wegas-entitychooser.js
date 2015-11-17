@@ -40,8 +40,13 @@ YUI.add("wegas-entitychooser", function (Y) {
 					if (filter.length === 0 || filter.find(function (item) {
 						return item === items[i].get("@class");
 					})) {
-						entityBox.append("<li class='chooser-entity' data-name='" + items[i].get("name") + "'>" +
-							(items[i].get("title") || items[i].get("label")) + "</li>");
+						if ((! items[i].getInstance().getAttrs().hasOwnProperty("active") || 
+								items[i].getInstance().get("active")) &&
+								(! items[i].getInstance().getAttrs().hasOwnProperty("enabled") || 
+								items[i].getInstance().get("enabled")))  {
+							entityBox.append("<li class='chooser-entity' data-name='" + items[i].get("name") + "'>" +
+								(items[i].get("title") || items[i].get("label")) + "</li>");
+						}
 					}
 				}
 			},
