@@ -449,7 +449,7 @@ YUI.add('wegas-mcq-tabview', function (Y) {
                            For each choice, there are 3 cases:
                                1. checked => display title and answer (if any).
                                2. unchecked and no ignorationAnswer => display nothing.
-                               3. New: unchecked and there is an ignorationAnswer => display title and highlight any ignorationAnswer.
+                               3. New case: unchecked and there is an ignorationAnswer => display title and any ignorationAnswer.
                         */
                         var checked = false,
                             answer = "",
@@ -476,7 +476,7 @@ YUI.add('wegas-mcq-tabview', function (Y) {
                             if (checked){
                                 ret.push('<div class="mcq-reply-content">', answer, '</div>');
                             } else {
-                                ret.push('<div class="mcq-reply-content" style="color:red">',  ignorationAnswer, '</div>');
+                                ret.push('<div class="mcq-reply-content">',  ignorationAnswer, '</div>');
                             }
                             ret.push('</div>'); // end mcq-reply
                         }
