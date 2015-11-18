@@ -151,7 +151,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                                         }]
                                 }, {
                                     type: BUTTON,
-                                    label: "Conditionnal results",
+                                    label: "Conditional results",
                                     plugins: [{
                                             fn: "AddEntityChildAction",
                                             cfg: {
@@ -503,27 +503,47 @@ YUI.add('wegas-mcq-entities', function(Y) {
                                 _type: HIDDEN
                             }
                         },
-                        "": {
-                            optional: true,
-                            type: "uneditable",
-                            transient: true,
-                            _inputex: {
-                                label: "<b>IMPACT&nbsp;SECTION</b>"
-                            }
-                        },
                         answer: {
                             type: STRING,
                             optional: true,
                             format: HTML,
                             _inputex: {
-                                label: "Feedback"
+                                label: "Feedback",
+                                index: 1
                             }
                         },
                         impact: {
                             optional: true,
                             _inputex: {
                                 _type: SCRIPT,
-                                label: "Impact on variables"
+                                label: "Impact on variables",
+                                index: 2
+                            }
+                        },
+                        "": {
+                            optional: true,
+                            type: "uneditable",
+                            transient: true,
+                            _inputex: {
+                                label: "<div style=\"height:60px\"><div style=\"position:absolute;margin-top:10px;\"><b>IMPACT&nbsp;WHEN&nbsp;IGNORED:</b><div style=\"font-size:85%\">For checkbox-type questions</div></div></div>",
+                                index: 3
+                            }
+                        },
+                        ignorationAnswer: {
+                            type: STRING,
+                            optional: true,
+                            format: HTML,
+                            _inputex: {
+                                label: "Feedback",
+                                index: 4
+                            }
+                        },
+                        ignorationImpact: {
+                            optional: true,
+                            _inputex: {
+                                _type: SCRIPT,
+                                label: "Impact on variables",
+                                index: 5
                             }
                         },
                         choiceDescriptorId: {
@@ -659,19 +679,34 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     return s === null || Y.Lang.isString(s);
                 }
             },
-             answer: {
+            answer: {
                 type: STRING,
                 optional: true,
                 format: HTML,
                 _inputex: {
-                    label: "Impact text"
+                    label: "Feedback when selected"
                 }
             },
             impact: {
                 optional: true,
                 _inputex: {
                     _type: SCRIPT,
-                    label: "Impact"
+                    label: "Impact when selected"
+                }
+            },
+            ignorationAnswer: {
+                type: STRING,
+                optional: true,
+                format: HTML,
+                _inputex: {
+                    label: "Feedback when ignored"
+                }
+            },
+            ignorationImpact: {
+                optional: true,
+                _inputex: {
+                    _type: SCRIPT,
+                    label: "Impact on variables when ignored"
                 }
             },
             choiceDescriptorId: {
