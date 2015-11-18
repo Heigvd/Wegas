@@ -6,7 +6,7 @@ angular.module('wegas.behaviours.repeat.autoload', [])
                 var stateScroll = element.height() + element.scrollTop(),
                     maxHeight = (this.scrollHeight - 40) - 50;
                 if (stateScroll >= maxHeight) {
-                    $rootScope.$emit("changeLimit");
+                    $rootScope.$emit("changeLimit", true);
                 }
             });
         };
