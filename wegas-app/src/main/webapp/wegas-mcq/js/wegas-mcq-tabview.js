@@ -243,11 +243,11 @@ YUI.add('wegas-mcq-tabview', function (Y) {
                 if (cQuestion instanceof Wegas.persistence.QuestionDescriptor
                     && cQuestionInstance.get("active")) {                   // If current question is active
                 
-                    var useCbx = cQuestion.get("cbx"),
-                        validatedCbx = (useCbx ? cQuestionInstance.get('validated') : false);
+                    var cbxType = cQuestion.get("cbx"),
+                        validatedCbx = (cbxType ? cQuestionInstance.get('validated') : false);
                 
-                    if ((cQuestionInstance.get("replies").length > 0 && !useCbx) || validatedCbx) {          // Find the last selected replies
-                        if (cQuestion.get("allowMultipleReplies") || useCbx) {
+                    if ((cQuestionInstance.get("replies").length > 0 && !cbxType) || validatedCbx) {          // Find the last selected replies
+                        if (cQuestion.get("allowMultipleReplies") || cbxType) {
                             cReplyLabel = cQuestionInstance.get("replies").length + "x";
                         } else {
                             choiceDescriptor = cQuestionInstance.get("replies")[cQuestionInstance.get("replies").length - 1 ].getChoiceDescriptor();
@@ -305,14 +305,15 @@ YUI.add('wegas-mcq-tabview', function (Y) {
         },
         renderTab: function(tab, question) {
             var i, ret, allowMultiple = question.get("allowMultipleReplies"),
-                useCbx = question.get("cbx"),
+                cbxType = question.get("cbx"),
                 cQuestion = tab.cQuestion,
                 choices = cQuestion.get("items"), choiceD, choiceI,
                 questionInstance = cQuestion.getInstance(),
                 questionScriptAlias = cQuestion.get("name"),
-                numberOfReplies = questionInstance.get("replies").length,
-                answerable = (useCbx ? !questionInstance.get('validated') : allowMultiple || numberOfReplies === 0),
-                tabularMCQ = question.get("tabular"),
+                allReplies = questionInstance.get("replies"),
+                totalNumberOfReplies = allReplies.length,
+                answerable = (cbxType ? !questionInstance.get('validated') : allowMultiple || totalNumberOfReplies === 0),
+                tabularMCQ = cbxType && question.get("tabular"),
                 checked, reply;
 
 			Y.log("RENDER TAB");
@@ -324,8 +325,8 @@ YUI.add('wegas-mcq-tabview', function (Y) {
 				'</div>'];
 
             // Display choices
-            if (useCbx && tabularMCQ){
-                // Find how many choices are active and if there is any description field to be displayed:
+            if (tabularMCQ){
+                // First find how many choices are active and if there is any description field to be displayed:
                 var hasDescription = false;
                 var nbActiveChoices = 0;
                 for (i = 0; i < choices.length; i += 1) {
@@ -374,7 +375,7 @@ YUI.add('wegas-mcq-tabview', function (Y) {
                     choiceD = choices[i];
                     choiceI = choiceD.getInstance();
                     if (choiceI.get("active")) {
-                        if (useCbx){
+                        if (cbxType){
                             checked = this.getNumberOfReplies(questionInstance, choiceD) > 0;
                             if (answerable){
                                 ret.push('<div class="mcq-choice">');
@@ -412,7 +413,7 @@ YUI.add('wegas-mcq-tabview', function (Y) {
                     }
                 }
                 // Global submit button in case of checkbox-type question:
-                if (useCbx){
+                if (cbxType){
                     ret.push('<button class="yui3-button"', (answerable ? '' : ' disabled'),' id="', cQuestion.get("id"), '" style="float: right; margin: 20px 20px;">', Y.Wegas.I18n.t('mcq.submit'), '</button>');
                     ret.push('<div style="clear:both"></div>');
                 }
@@ -420,23 +421,72 @@ YUI.add('wegas-mcq-tabview', function (Y) {
                 ret.push('</div>'); // end mcq-choices
             }
             
-            var notValidatedMCQ = useCbx && !questionInstance.get("validated");
-            if (numberOfReplies > 0 && !notValidatedMCQ) {
-                ret.push('<div class="mcq-replies-title">', (numberOfReplies > 1 ? Y.Wegas.I18n.t('mcq.result').pluralize() : Y.Wegas.I18n.t('mcq.result')), '</div>');
-                ret.push('<div class="mcq-replies">');
-                for (i = numberOfReplies - 1; i >= 0; i -= 1) {
-                    reply = questionInstance.get("replies")[i];
-                    choiceD = reply.getChoiceDescriptor();
-                    ret.push('<div class="mcq-reply"', useCbx ? ' style="font-style:normal; color:inherit"' : '', '>');
-                    ret.push('<div class="mcq-reply-title">', choiceD.get("title"), '</div>');
-                    ret.push('<div class="mcq-reply-content">', reply.get("result").get("answer"), '</div>');
-                    ret.push('</div>'); // end mcq-reply
+            if (!cbxType){
+                if (totalNumberOfReplies > 0) {
+                    ret.push('<div class="mcq-replies-title">', (totalNumberOfReplies > 1 ? Y.Wegas.I18n.t('mcq.result').pluralize() : Y.Wegas.I18n.t('mcq.result')), '</div>');
+                    ret.push('<div class="mcq-replies">');
+                    for (i = totalNumberOfReplies - 1; i >= 0; i -= 1) {
+                        reply = allReplies[i];
+                        choiceD = reply.getChoiceDescriptor();
+                        ret.push('<div class="mcq-reply">');
+                        ret.push('<div class="mcq-reply-title">', choiceD.get("title"), '</div>');
+                        ret.push('<div class="mcq-reply-content">', reply.get("result").get("answer"), '</div>');
+                        ret.push('</div>'); // end mcq-reply
+                    }
+                    ret.push('</div>'); // end mcq-replies
                 }
-                ret.push('</div>'); // end mcq-replies
+            } else {
+                // It's a CBX-type question:
+                // For each defined choice, see if it's checked, i.e. if there is a reply. If not, display the ignorationAnswer.
+                if (questionInstance.get("validated")){
+                    ret.push('<div class="mcq-replies-title">', Y.Wegas.I18n.t('mcq.result').pluralize(), '</div>');
+                    ret.push('<div class="mcq-replies">');
+                    for (i = 0; i < choices.length; i += 1) {
+                        choiceD = choices[i];
+                        choiceI = choiceD.getInstance();
+                        if (!choiceI.get("active")) continue;
+                        /*              
+                           For each choice, there are 3 cases:
+                               1. checked => display title and answer (if any).
+                               2. unchecked and no ignorationAnswer => display nothing.
+                               3. New: unchecked and there is an ignorationAnswer => display title and highlight any ignorationAnswer.
+                        */
+                        var checked = false,
+                            answer = "",
+                            ignorationAnswer = "";
+                        for (var j = totalNumberOfReplies - 1; j >= 0; j -= 1) {
+                            reply = allReplies[j];
+                            if (reply.getChoiceDescriptor().get("id")===choiceD.get("id")){
+                                checked = true;
+                                answer = reply.get("result").get("answer");
+                                break;
+                            }
+                        }
+                        if (!checked){
+                            var results = choiceD.get("results")[0];
+                            if (results!==undefined)
+                                ignorationAnswer = results.get("ignorationAnswer");
+                            // Empty (invisible) ignoration answers would be confusing and must not be displayed:
+                            if (ignorationAnswer===null || ignorationAnswer===undefined || ignorationAnswer.replace(/(\r\n|\n|\r)/gm,"").trim().length===0)
+                                ignorationAnswer = "";
+                        }
+                        if (checked || ignorationAnswer.length!==0){
+                            ret.push('<div class="mcq-reply" style="font-style:normal; color:inherit">');
+                            ret.push('<div class="mcq-reply-title">', choiceD.get("title"), '</div>');
+                            if (checked){
+                                ret.push('<div class="mcq-reply-content">', answer, '</div>');
+                            } else {
+                                ret.push('<div class="mcq-reply-content" style="color:red">',  ignorationAnswer, '</div>');
+                            }
+                            ret.push('</div>'); // end mcq-reply
+                        }
+                    }
+                    ret.push('</div>'); // end mcq-replies                        
+                }
             }
             ret.push('</div>'); // end mcq-question
 
-			tab.set("content", ret.join(""));
+            tab.set("content", ret.join(""));
 
 		},
 		/**

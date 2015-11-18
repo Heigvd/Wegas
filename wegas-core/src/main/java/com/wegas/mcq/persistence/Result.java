@@ -60,8 +60,16 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     //@Basic(fetch = FetchType.LAZY) // CARE, lazy fetch on Basics has some trouble.
     //@JsonView(Views.ExtendedI.class)
     private String answer;
-
-    /*
+    
+    /**
+     *
+     */
+    @Column(length = 4096)
+    //@Basic(fetch = FetchType.LAZY) // CARE, lazy fetch on Basics has some trouble.
+    //@JsonView(Views.ExtendedI.class)
+    private String ignorationAnswer;
+    
+     /*
      *
      */
     @ElementCollection
@@ -72,6 +80,18 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     @Embedded
     @JsonView(Views.EditorExtendedI.class)
     private Script impact;
+    /**
+     *
+     */
+    @Embedded
+        @AttributeOverrides({
+        @AttributeOverride(name = "content", column
+                = @Column(name = "ignoration_content")),
+        @AttributeOverride(name = "lang", column
+                = @Column(name = "ignoration_language"))
+    })
+    @JsonView(Views.EditorExtendedI.class)
+    private Script ignorationImpact;
     /**
      *
      */
@@ -131,7 +151,9 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     public Boolean containsAll(final List<String> criterias) {
         return Helper.insensitiveContainsAll(this.getName(), criterias)
                 || Helper.insensitiveContainsAll(this.getAnswer(), criterias)
-                || (this.getImpact() != null && this.getImpact().containsAll(criterias));
+                || (this.getImpact() != null && this.getImpact().containsAll(criterias))
+                || Helper.insensitiveContainsAll(this.getIgnorationAnswer(), criterias)
+                || (this.getImpact() != null && this.getIgnorationImpact().containsAll(criterias));
     }
 
     @Override
@@ -152,6 +174,8 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
         this.setLabel(other.getLabel());
         this.setAnswer(other.getAnswer());
         this.setImpact(other.getImpact());
+        this.setIgnorationAnswer(other.getIgnorationAnswer());
+        this.setIgnorationImpact(other.getIgnorationImpact());
         this.setFiles(other.getFiles());
         this.setChoiceDescriptor(other.getChoiceDescriptor());
     }
@@ -226,6 +250,33 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
      */
     public void setImpact(Script impact) {
         this.impact = impact;
+    }
+   /**
+     * @return the ignoration answer
+     */
+    public String getIgnorationAnswer() {
+        return ignorationAnswer;
+    }
+
+    /**
+     * @param answer the answer to set
+     */
+    public void setIgnorationAnswer(String answer) {
+        this.ignorationAnswer = answer;
+    }
+
+    /**
+     * @return the impact
+     */
+    public Script getIgnorationImpact() {
+        return ignorationImpact;
+    }
+
+    /**
+     * @param impact the impact to set
+     */
+    public void setIgnorationImpact(Script impact) {
+        this.ignorationImpact = impact;
     }
 
     /**
