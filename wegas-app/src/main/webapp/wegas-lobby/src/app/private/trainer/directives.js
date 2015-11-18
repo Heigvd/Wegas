@@ -45,7 +45,7 @@ angular.module('private.trainer.directives', [
                     updateDisplaySessions();
                 }
             });
-            if(!updateDisplay){
+            if (updateDisplay) {
                 SessionsModel.countArchivedSessions().then(function(response) {
                     ctrl.nbArchives = response.data;
                 });
@@ -73,12 +73,12 @@ angular.module('private.trainer.directives', [
                     }
                 });
             } else {
-                $translate('COMMONS-SCENARIOS-NO-SCENARIO-FLASH-ERROR').then(function (message) {
+                $translate('COMMONS-SCENARIOS-NO-SCENARIO-FLASH-ERROR').then(function(message) {
                     Flash.danger(message);
                 });
             }
         };
-        
+
         $rootScope.$on('changeArchives', function(e, hasNewData) {
             if (hasNewData) {
                 SessionsModel.countArchivedSessions().then(function(response) {
@@ -116,24 +116,24 @@ angular.module('private.trainer.directives', [
             link: function(scope, element, attrs, parentCtrl) {
                 scope.scenarios = [];
                 scope.loadingScenarios = false;
-                var loadScenario = function(){
-                        scope.loadingScenarios = true;
-                        ScenariosModel.getScenarios("LIVE").then(function(response) {
-                            if (!response.isErroneous()) {
-                                scope.loadingScenarios = false;
-                                scope.scenarios = response.data;
-                            }
-                        });
-                    };
+                var loadScenario = function() {
+                    scope.loadingScenarios = true;
+                    ScenariosModel.getScenarios("LIVE").then(function(response) {
+                        if (!response.isErroneous()) {
+                            scope.loadingScenarios = false;
+                            scope.scenarios = response.data;
+                        }
+                    });
+                };
                 scope.newSession = {
                     name: "",
                     scenarioId: 0
                 };
-                
+
                 scope.addSession = function() {
                     var button = $(element).find(".form__submit");
                     if (+scope.newSession.scenarioId !== 0) {
-                        if(!button.hasClass("button--disable")){
+                        if (!button.hasClass("button--disable")) {
                             button.addClass("button--disable button--spinner button--rotate");
                             SessionsModel.createSession(scope.newSession.name, scope.newSession.scenarioId).then(function(response) {
                                 if (!response.isErroneous()) {
@@ -150,17 +150,17 @@ angular.module('private.trainer.directives', [
                             });
                         }
                     } else {
-                        $translate('COMMONS-SCENARIOS-NO-SCENARIO-FLASH-ERROR').then(function (message) {
+                        $translate('COMMONS-SCENARIOS-NO-SCENARIO-FLASH-ERROR').then(function(message) {
                             Flash.warning(message);
                         });
-                    }                    
+                    }
                 };
-                
+
                 scope.$watch(function() {
                     return scope.newSession.name;
                 }, function(newValue) {
-                    if(newValue){
-                        if(!scope.loadingScenarios && scope.scenarios.length === 0){
+                    if (newValue) {
+                        if (!scope.loadingScenarios && scope.scenarios.length === 0) {
                             loadScenario();
                         }
                     }
@@ -199,4 +199,4 @@ angular.module('private.trainer.directives', [
             }
         };
     })
-    ;
+;

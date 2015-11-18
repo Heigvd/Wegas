@@ -47,9 +47,9 @@ YUI.add('wegas-popuplistener', function(Y) {
                         points: [Y.WidgetPositionAlign.TC, Y.WidgetPositionAlign.TC]
                     },
                     centered: false,
-                    width: "350px"
+                    width: "auto"
                 }, event, true),
-                panel = new Y.Wegas.Panel(cfg).render(host.get(this.get("targetAttr")));
+                panel = (new Y.Wegas.Panel(cfg)).render(host.get(this.get("targetAttr")));
 
             if (event.timeout) {
                 setTimeout(function() {
@@ -62,7 +62,7 @@ YUI.add('wegas-popuplistener', function(Y) {
             if (this.counter === 0) {
                 PopupListener.showOverlay(node);
             }
-            if (klass){
+            if (klass) {
                 node.addClass(klass);
             }
             this.counter += 1;
@@ -76,7 +76,7 @@ YUI.add('wegas-popuplistener', function(Y) {
                 PopupListener.hideOverlay(node);
                 this.counter = 0;
             }
-            if (klass){
+            if (klass) {
                 node.removeClass(klass);
             }
             e.halt(true);
@@ -94,7 +94,8 @@ YUI.add('wegas-popuplistener', function(Y) {
         },
         showOverlay: function(node) {
             node.addClass("wegas-loading")
-                .prepend("<div class='wegas-loading-overlay'><div class='wegas-loader'><div class='bar'></div><div class='bar'></div><div class='bar'></div></div></div>");
+                .prepend(
+                    "<div class='wegas-loading-overlay'><div class='wegas-loader'><div class='bar'></div><div class='bar'></div><div class='bar'></div></div></div>");
 
             Y.later(8000, this, function() {
                 node.all(".wegas-loading-overlay").addClass("wegas-loading-long");
@@ -109,7 +110,7 @@ YUI.add('wegas-popuplistener', function(Y) {
     Plugin.PopupListener = PopupListener;
 
     /**
-     * 
+     *
      */
     Plugin.ServerPopupListener = Y.Base.create("wegas-serverpopuplistener", Plugin.Base, [], {
         initializer: function() {

@@ -100,10 +100,10 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                     base.addClass("bloc-details--team");
                     this.get("host").get("contentBox").addClass("card--team");
                     teamList = Y.Node.create(this.TEAM_LIST_TEMPLATE);
-                    this.get("team").get("players").forEach(function(player) {
+                    Y.Array.each(this.get("team").get("players"), function(player) {
                         player = Y.Node.create(this.PLAYER_TEMPLATE).append(player.get("name"));
                         teamList.one(".bloc-details__players__list").append(player);
-                    });
+                    }, this);
                     base.prepend(teamList);
                 }
 

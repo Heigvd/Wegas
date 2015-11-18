@@ -651,6 +651,26 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                         scriptType: "string",
                         required: true
                     }]
+            },
+            "DelayedEvent.delayedFire": {
+                label: "Fire delayed event",
+                "arguments": [
+                    {
+                        type: "number",
+                        typeInvite: "minutes",
+                        scriptType: "string",
+                        required: true
+                    }, {
+                        type: "number",
+                        typeInvite: "seconds",
+                        scriptType: "string",
+                        required: true
+                    }, {
+                        type: "string",
+                        typeInvite: "event name",
+                        scriptType: "string",
+                        required: true
+                    }]
             }
         }
     });

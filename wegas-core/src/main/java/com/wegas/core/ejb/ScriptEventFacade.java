@@ -86,7 +86,6 @@ public class ScriptEventFacade {
      * @throws com.wegas.core.exception.client.WegasScriptException
      */
     public void fire(Player player, String eventName, Object param) throws WegasScriptException {
-        this.eventsFired.put(eventName, param);
         this.doFire(player, eventName, param);
     }
 
@@ -129,6 +128,7 @@ public class ScriptEventFacade {
             scriptFacace.eval(player, new Script(""), null);
         }
         ScriptEngine engine = requestManager.getCurrentEngine();
+        this.eventsFired.put(eventName, params);
 
         if (this.registeredEvents.containsKey(eventName)) {
             Collection callbacks = this.registeredEvents.getCollection(eventName);
@@ -138,7 +138,7 @@ public class ScriptEventFacade {
 
                 Object scope = (((Object[]) cb).length == 2 ? ((Object[]) cb)[1] : new EmptyObject());
                 String fcnSource;
-                
+
                 if (obj instanceof ScriptObjectMirror) {
                     // @hack openjdk 1.8.0_45
                     fcnSource = obj.toString();
