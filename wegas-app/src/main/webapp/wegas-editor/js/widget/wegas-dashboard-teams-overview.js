@@ -149,9 +149,9 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
         },
         destructor: function() {
             var editor = this.get("editor");
+            this.set("editor", null);
             if (editor && editor.destroy) {
                 editor.remove();
-                editor.destroy();
             }
             Y.Array.each(this.handles, function(handle) {
                 handle.detach();

@@ -18,7 +18,11 @@ YUI.add('wegas-card-bloc', function(Y) {
         renderUI: function() {
             this.get("boundingBox")
                 .addClass("card__blocs--" + this.get("type"));
-            (this._hasTitle()) ? this.get("boundingBox").append(this.TITLE_TEMPLATE) : this.get("boundingBox").addClass("card__blocs--untitled") ;
+            if (this._hasTitle()) {
+                this.get("boundingBox").append(this.TITLE_TEMPLATE);
+            } else {
+                this.get("boundingBox").addClass("card__blocs--untitled");
+            }
         },
         syncUI: function() {
             var context = this;
@@ -52,8 +56,7 @@ YUI.add('wegas-card-bloc', function(Y) {
         },
         bindUI: function() {
             this.get("boundingBox").on("click", function(event) {
-                event.preventDefault();
-                event.stopPropagation();
+                event.halt(true);
                 this.get("do")();
             }, this);
         },
@@ -74,7 +77,9 @@ YUI.add('wegas-card-bloc', function(Y) {
         CONTENT_TEMPLATE: "<span class='bloc__value' />",
         renderUI: function() {
             this.get("boundingBox").prepend(Y.Node.create("<span class='bloc__label' />"));
-            this.get("formatter") !== null ? this.get("formatter")(this.get("boundingBox"), this.get("value")) : null;
+            if (Y.Lang.isFunction(this.get("formatter"))) {
+                this.get("formatter")(this.get("boundingBox"), this.get("value"));
+            }
         },
         syncUI: function() {
             this.get("contentBox").setContent(this.get("value"));
