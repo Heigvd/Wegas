@@ -31,49 +31,56 @@ YUI.add('wegas-dashboard', function(Y) {
                     this.toolbar.add(new Y.Wegas.Button({
                         label: '<span class="wegas-icon wegas-icon-refresh"></span> Refresh',
                         on: {
-                            click: Y.bind(function() {
-                                this.syncUI();
+                            click: Y.bind(function(event) {
+                                var button = event.target;
+                                if (button.get("boundingBox").hasClass("loading")) {
+                                    return;
+                                }
+                                button.get("boundingBox").addClass("loading");
+                                this.syncUI().then(function() {
+                                    button.get("boundingBox").removeClass("loading");
+                                });
                             }, this)
                         }
                     }));
                 }
             },
             syncUI: function() {
-                var context = this;
-                this._createCards().then(function() {
-                    context.fire("synched");
+                var BB = this.get("boundingBox");
+                BB.addClass("loading");
+                return this._createCards().then(function(data) {
+                    BB.removeClass("loading");
+                    return data;
                 });
             },
             getMonitoredData: function() {
                 return this._monitoredData || {};
             },
             /**
-             * 
+             *
              * create cards as child
              * return Promise-> cardsData
              */
             _createCards: function() {
-                var context = this;
-
-                return context._getMonitoredData().then(function(monitoredBlocs) {
-                    context._monitoredData = monitoredBlocs;
-                    context.destroyAll();
-                    context.get("cardsData").forEach(function(data) {
+                return this._getMonitoredData().then(Y.bind(function(monitoredBlocs) {
+                    this.destroyAll();
+                    this._monitoredData = monitoredBlocs;
+                    Y.Array.each(this.get("cardsData"), function(data) {
                         var card = {
                             "id": data.id,
                             "title": data.title,
                             "icon": data.icon || null,
-                            "blocs": context._combineBlocs(data, monitoredBlocs)
+                            "blocs": this._combineBlocs(data, monitoredBlocs)
                         };
-                        context.add(new Y.Wegas.Card(card));
-                    });
-                    if (context.get("resize")) {
-                        context.plug(Y.Wegas.CardsResizable);
-                        context.CardsResizable.resetClassSize();
-                        context.CardsResizable.resize();
+                        this.add(new Y.Wegas.Card(card));
+                    }, this);
+                    if (this.get("resize")) {
+                        this.plug(Y.Wegas.CardsResizable);
+                        this.CardsResizable.resetClassSize();
+                        this.CardsResizable.resize();
                     }
-                    return context.get("cardsData");
-                });
+                    return this.get("cardsData");
+                }), this);
             },
             _addOriginalBloc: function(idCard, originalBloc) {
                 var originalBlocs = this.get("originalBlocs");
