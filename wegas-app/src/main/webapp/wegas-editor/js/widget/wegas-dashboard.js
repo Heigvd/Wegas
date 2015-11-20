@@ -80,7 +80,7 @@ YUI.add('wegas-dashboard', function(Y) {
                         this.CardsResizable.resize();
                     }
                     return this.get("cardsData");
-                }), this);
+                }, this));
             },
             _addOriginalBloc: function(idCard, originalBloc) {
                 var originalBlocs = this.get("originalBlocs");
