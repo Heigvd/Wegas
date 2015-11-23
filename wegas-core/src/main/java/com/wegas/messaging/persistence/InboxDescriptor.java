@@ -76,14 +76,13 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      * @param from
      * @param subject
      * @param body
-     * @param date
+     * @param token
      * @return {
      * @see Message} The sent message
      */
-    public Message sendDatedMessage(Player p, String from, String date, String subject, String body) {
-        return this.getInstance(p).sendMessage(from, subject, body, date);
+    public Message sendMessageWithToken(Player p, String from, String subject, String body, String token) {
+        return this.getInstance(p).sendMessage(from, subject, body, null, token, null);
     }
-
 
     /**
      *
@@ -93,8 +92,24 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      * @param from
      * @param subject
      * @param body
-     * @param attachements 
-    * @return {@link Message} the sent message
+     * @param date
+     * @return {
+     * @see Message} The sent message
+     */
+    public Message sendDatedMessage(Player p, String from, String date, String subject, String body) {
+        return this.getInstance(p).sendMessage(from, subject, body, date);
+    }
+
+    /**
+     *
+     * Sugar to be used from scripts.
+     *
+     * @param p
+     * @param from
+     * @param subject
+     * @param body
+     * @param attachements
+     * @return {@link Message} the sent message
      */
     public Message sendMessage(Player p, String from, String subject, String body, List<String> attachements) {
         return this.getInstance(p).sendMessage(from, subject, body, attachements);
@@ -109,13 +124,29 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      * @param subject
      * @param body
      * @param date
-     * @param attachements 
-    * @return {@link Message} the sent message
+     * @param attachements
+     * @return {@link Message} the sent message
      */
     public Message sendDatedMessage(Player p, String from, String date, String subject, String body, List<String> attachements) {
         return this.getInstance(p).sendMessage(from, subject, body, date, attachements);
     }
 
+    /**
+     *
+     * Sugar to be used from scripts.
+     *
+     * @param p
+     * @param from
+     * @param subject
+     * @param body
+     * @param date
+     * @param token
+     * @param attachements
+     * @return {@link Message} the sent message
+     */
+    public Message sendMessageFull(Player p, String from, String date, String subject, String body, String token, List<String> attachements) {
+        return this.getInstance(p).sendMessage(from, subject, body, date, token, attachements);
+    }
 
     /**
      *
@@ -134,4 +165,16 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
     public int getUnreadCount(Player player) {
         return this.getInstance(player).getUnreadCount();
     }
+
+    /**
+     * Return true is a message identified by the token exists and has been read
+     *
+     * @param self
+     * @param token
+     * @return
+     */
+    public boolean isTokenMarkedAsRead(Player self, String token) {
+        return this.getInstance(self).isTokenMarkedAsRead(token);
+    }
+
 }

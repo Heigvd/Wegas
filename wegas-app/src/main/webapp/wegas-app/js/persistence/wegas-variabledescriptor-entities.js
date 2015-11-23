@@ -374,69 +374,69 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 return "fa fa-font";
             }
         },
-    {
-        ATTRS: {
-            "@class": {
-                value: "StringDescriptor"
-            },
-            defaultInstance: {
-                properties: {
-                    "@class": {
-                        type: STRING,
-                        _inputex: {
-                            value: "StringInstance",
-                            _type: HIDDEN
+        {
+            ATTRS: {
+                "@class": {
+                    value: "StringDescriptor"
+                },
+                defaultInstance: {
+                    properties: {
+                        "@class": {
+                            type: STRING,
+                            _inputex: {
+                                value: "StringInstance",
+                                _type: HIDDEN
+                            }
+                        },
+                        id: IDATTRDEF,
+                        value: {
+                            type: STRING,
+                            optional: true,
+                            _inputex: {
+                                label: "Default value"
+                            }
                         }
-                    },
-                    id: IDATTRDEF,
-                    value: {
-                        type: STRING,
-                        optional: true,
-                        _inputex: {
-                            label: "Default value"
-                        }
-                    }
 
-                }
-            },
-            allowedValues: {
-                type: ARRAY,
-                cssClass: "wegas-advanced-feature",
-                _inputex: {
-                    label: "Allowed Values",
-                    elementType: {
-                        required: true,
-                        type: "string"
                     }
-                }
+                },
+                allowedValues: {
+                    type: ARRAY,
+                    cssClass: "wegas-advanced-feature",
+                    _inputex: {
+                        label: "Allowed Values",
+                        elementType: {
+                            required: true,
+                            type: "string"
+                        }
+                    }
+                },
             },
-        },
-        METHODS: {
-            setValue: {
-                label: "set",
-                "arguments": [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: STRING,
-                        value: "",
-                        scriptType: STRING,
-                        required: true
-                    }]
-            },
-            getValue: {
-                label: VALUE,
-                returns: STRING,
-                "arguments": [{
-                        type: HIDDEN,
-                        value: SELF
-                    }],
-                localEval: function(player) {
-                    return this.getInstance(player).get(VALUE);
+            METHODS: {
+                setValue: {
+                    label: "set",
+                    "arguments": [{
+                            type: HIDDEN,
+                            value: SELF
+                        }, {
+                            type: STRING,
+                            value: "",
+                            scriptType: STRING,
+                            required: true
+                        }]
+                },
+                getValue: {
+                    label: VALUE,
+                    returns: STRING,
+                    "arguments": [{
+                            type: HIDDEN,
+                            value: SELF
+                        }],
+                    localEval: function(player) {
+                        return this.getInstance(player).get(VALUE);
+                    }
                 }
             }
-        }
-    });
+        });
     /**
      * StringInstance mapper
      */
@@ -549,102 +549,102 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 return "fa wegas-icon-numberdescriptor";
             }
         },
-    {
-        ATTRS: {
-            "@class": {
-                value: "NumberDescriptor"
-            },
-            minValue: {
-                type: NUMBER,
-                optional: true,
-                _inputex: {
-                    label: "Minimum"
-                }
-            },
-            maxValue: {
-                type: NUMBER,
-                optional: true,
-                _inputex: {
-                    label: "Maximum"
-                }
-            },
-            value: {
-                "transient": true,
-                getter: function() {
-                    if (this.getInstance()) {
-                        return this.getInstance().get(VALUE);
-                    } else {
-                        return null;
+        {
+            ATTRS: {
+                "@class": {
+                    value: "NumberDescriptor"
+                },
+                minValue: {
+                    type: NUMBER,
+                    optional: true,
+                    _inputex: {
+                        label: "Minimum"
                     }
-                }
-            },
-            defaultValue: {
-                type: STRING,
-                "transient": true
-            },
-            defaultInstance: {
-                properties: {
-                    "@class": {
-                        type: STRING,
-                        _inputex: {
-                            value: "NumberInstance",
-                            _type: HIDDEN
-                        }
-                    },
-                    id: IDATTRDEF,
-                    value: {
-                        type: NUMBER,
-                        _inputex: {
-                            label: "Default value"
+                },
+                maxValue: {
+                    type: NUMBER,
+                    optional: true,
+                    _inputex: {
+                        label: "Maximum"
+                    }
+                },
+                value: {
+                    "transient": true,
+                    getter: function() {
+                        if (this.getInstance()) {
+                            return this.getInstance().get(VALUE);
+                        } else {
+                            return null;
                         }
                     }
+                },
+                defaultValue: {
+                    type: STRING,
+                    "transient": true
+                },
+                defaultInstance: {
+                    properties: {
+                        "@class": {
+                            type: STRING,
+                            _inputex: {
+                                value: "NumberInstance",
+                                _type: HIDDEN
+                            }
+                        },
+                        id: IDATTRDEF,
+                        value: {
+                            type: NUMBER,
+                            _inputex: {
+                                label: "Default value"
+                            }
+                        }
 
+                    }
+                }
+            },
+            /**
+             * Defines methods available in wysiwyge script editor
+             */
+            METHODS: {
+                add: {
+                    "arguments": [{
+                            type: HIDDEN,
+                            value: SELF
+                        }, {
+                            type: NUMBER,
+                            required: true
+                        }]
+                }, /*
+                 sub: {
+                 label: "subtract",
+                 "arguments": [{
+                 type: HIDDEN,
+                 value: SELF
+                 }, {
+                 type: NUMBER,
+                 required: true
+                 }]
+                 },*/
+                setValue: {
+                    label: "set",
+                    "arguments": [{
+                            type: HIDDEN,
+                            value: SELF
+                        }, {
+                            type: NUMBER,
+                            required: true
+                        }]
+                },
+                getValue: {
+                    label: VALUE,
+                    returns: NUMBER,
+                    "arguments": [{
+                            type: HIDDEN,
+                            value: SELF
+                        }]
                 }
             }
-        },
-        /**
-         * Defines methods available in wysiwyge script editor
-         */
-        METHODS: {
-            add: {
-                "arguments": [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: NUMBER,
-                        required: true
-                    }]
-            }, /*
-             sub: {
-             label: "subtract",
-             "arguments": [{
-             type: HIDDEN,
-             value: SELF
-             }, {
-             type: NUMBER,
-             required: true
-             }]
-             },*/
-            setValue: {
-                label: "set",
-                "arguments": [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: NUMBER,
-                        required: true
-                    }]
-            },
-            getValue: {
-                label: VALUE,
-                returns: NUMBER,
-                "arguments": [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
-            }
-        }
-    });
+        });
     /**
      * NumberInstance mapper
      */
@@ -1060,6 +1060,47 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                         }
                     }]
             },
+            sendMessageFull: {
+                label: "send message",
+                className: "wegas-method-sendmessage",
+                "arguments": [{
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        label: "From",
+                        scriptType: STRING
+                    }, {
+                        type: STRING,
+                        label: "Date",
+                        scriptType: STRING
+                    }, {
+                        type: STRING,
+                        label: "Subject",
+                        scriptType: STRING,
+                        required: true
+                    }, {
+                        type: HTML,
+                        label: "Body",
+                        scriptType: STRING,
+                        required: true
+                    }, {
+                        type: STRING,
+                        label: "Token",
+                        scriptType: STRING,
+                        required: false
+                    }, {
+                        type: "list",
+                        label: "",
+                        scriptType: STRING,
+                        /*sortable: true*/
+                        elementType: {
+                            type: "wegasurl",
+                            label: "",
+                            required: true
+                        }
+                    }]
+            },
             isEmpty: {
                 label: "is empty",
                 returns: BOOLEAN,
@@ -1070,6 +1111,18 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 localEval: function(player) {
                     return this.getInstance(player).get("messages").length < 1;
                 }
+            },
+            isTokenMarkedAsRead: {
+                label: "is token marked as read",
+                returns: BOOLEAN,
+                "arguments": [{
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        scriptType: STRING
+                    }
+                ]
             }
         }
     });
@@ -1110,6 +1163,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 type: BOOLEAN
             },
             from: {},
+            token: {},
             date: {},
             attachements: {}
         }
@@ -1212,73 +1266,73 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 return "fa fa-toggle-on";
             }
         },
-    {
-        ATTRS: {
-            "@class": {
-                value: "BooleanDescriptor"
-            },
-            value: {
-                "transient": true,
-                getter: function() {
-                    if (this.getInstance()) {
-                        return this.getInstance().get(VALUE);
-                    } else {
-                        return null;
-                    }
-                }
-            },
-            defaultValue: {
-                type: BOOLEAN,
-                value: false,
-                "transient": true
-            },
-            defaultInstance: {
-                properties: {
-                    "@class": {
-                        type: BOOLEAN,
-                        _inputex: {
-                            value: "BooleanInstance",
-                            _type: HIDDEN
-                        }
-                    },
-                    id: IDATTRDEF,
-                    value: {
-                        type: BOOLEAN,
-                        _inputex: {
-                            label: "Default value",
-                            _type: "select",
-                            choices: [true, false]
+        {
+            ATTRS: {
+                "@class": {
+                    value: "BooleanDescriptor"
+                },
+                value: {
+                    "transient": true,
+                    getter: function() {
+                        if (this.getInstance()) {
+                            return this.getInstance().get(VALUE);
+                        } else {
+                            return null;
                         }
                     }
+                },
+                defaultValue: {
+                    type: BOOLEAN,
+                    value: false,
+                    "transient": true
+                },
+                defaultInstance: {
+                    properties: {
+                        "@class": {
+                            type: BOOLEAN,
+                            _inputex: {
+                                value: "BooleanInstance",
+                                _type: HIDDEN
+                            }
+                        },
+                        id: IDATTRDEF,
+                        value: {
+                            type: BOOLEAN,
+                            _inputex: {
+                                label: "Default value",
+                                _type: "select",
+                                choices: [true, false]
+                            }
+                        }
 
+                    }
+                }
+            },
+            /**
+             * Defines methods available in wysiwyge script editor
+             */
+            METHODS: {
+                setValue: {
+                    label: "set",
+                    "arguments": [{
+                            type: HIDDEN,
+                            value: SELF
+                        }, {
+                            type: "select",
+                            required: true,
+                            choices: [true, false]
+                        }]
+                },
+                getValue: {
+                    label: VALUE,
+                    returns: BOOLEAN,
+                    "arguments": [{
+                            type: HIDDEN,
+                            value: SELF
+                        }]
                 }
             }
-        },
-        /**
-         * Defines methods available in wysiwyge script editor
-         */
-        METHODS: {
-            setValue: {
-                label: "set",
-                "arguments": [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: "select",
-                        required: true,
-                        choices: [true, false]
-                    }]
-            },
-            getValue: {
-                label: VALUE,
-                returns: BOOLEAN,
-                "arguments": [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
-            }
-        }
-    });
+        });
     /**
      * BooleanInstance mapper
      */
