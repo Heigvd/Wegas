@@ -29,7 +29,8 @@ import java.util.Set;
 @Table(name = "users")
 
 @NamedQueries({
-    @NamedQuery(name = "findUserPermissions", query = "SELECT DISTINCT users FROM User users JOIN users.permissions p WHERE p.value LIKE :instance")
+    @NamedQuery(name = "findUserPermissions", query = "SELECT DISTINCT users FROM User users JOIN users.permissions p WHERE p.value LIKE :instance"),
+    @NamedQuery(name = "findUsersWithRole", query = "SELECT DISTINCT users FROM User users JOIN users.roles r WHERE r.id = :role_id")
 })
 public class User extends AbstractEntity implements Comparable<User> {
 

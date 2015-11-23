@@ -1502,6 +1502,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Edit group",
                             'fr': "Modifier le groupe"
                         },
+                        'ADMIN-GROUPS-CARD-MEMBER-BTN': {
+                            'en': "Goup members",
+                            'fr': "Membres du groupe"
+                        },
                         'ADMIN-GROUPS-CARD-DELETE-BTN': {
                             'en': "Delete group",
                             'fr': "Supprimer le groupe"

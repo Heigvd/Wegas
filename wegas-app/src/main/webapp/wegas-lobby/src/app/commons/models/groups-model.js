@@ -281,4 +281,14 @@ angular.module('wegas.models.groups', [])
             });
             return deferred.promise;
         };
+        model.getMembers = function(groupId) {
+            var deferred = $q.defer(),
+                url = "rest/User/FindUsersWithRole/" + groupId;
+            $http.get(ServiceURL + url, {})
+                .success(function(data) {
+                    deferred.resolve(data);
+                });
+            return deferred.promise;
+        };
+
     });
