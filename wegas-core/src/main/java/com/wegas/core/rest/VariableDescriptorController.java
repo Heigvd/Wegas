@@ -94,13 +94,15 @@ public class VariableDescriptorController {
     }
 
     /**
-     * @param gameModelId
-     * @param entity
+     * Add new descriptor at GameModel root level
+     *
+     * @param gameModelId the game model
+     * @param entity      the new descriptor
      * @return
      */
     @POST
     public VariableDescriptor create(@PathParam("gameModelId") Long gameModelId,
-                                     VariableDescriptor entity) {
+        VariableDescriptor entity) {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
@@ -109,8 +111,11 @@ public class VariableDescriptorController {
     }
 
     /**
-     * @param entityId
-     * @param entity
+     * Add new descriptor in the given gameModel as a child of the descriptor
+     * identified by entityId
+     *
+     * @param entityId the parent descriptor id
+     * @param entity   the new descriptor
      * @return
      */
     @POST
@@ -124,6 +129,9 @@ public class VariableDescriptorController {
     }
 
     /**
+     * Add new descriptor in the given gameModel as a child of the descriptor
+     * identified by entityName
+     *
      * @param gameModelId
      * @param entityName  parent entity, identified by its name
      * @param entity      Entity to add
@@ -132,7 +140,7 @@ public class VariableDescriptorController {
     @POST
     @Path("{variableDescriptorName : [_a-zA-Z][_a-zA-Z0-9]*}")
     public DescriptorListI createChild(@PathParam("gameModelId") Long gameModelId,
-                                       @PathParam("variableDescriptorName") String entityName, VariableDescriptor entity) {
+        @PathParam("variableDescriptorName") String entityName, VariableDescriptor entity) {
 
         try {
             SecurityUtils.getSubject().
@@ -186,8 +194,8 @@ public class VariableDescriptorController {
     @PUT
     @Path("{descriptorId: [1-9][0-9]*}/Move/{parentDescriptorId: [1-9][0-9]*}/{index: [0-9]*}")
     public void move(@PathParam("descriptorId") Long descriptorId,
-                     @PathParam("parentDescriptorId") Long parentDescriptorId,
-                     @PathParam("index") int index) {
+        @PathParam("parentDescriptorId") Long parentDescriptorId,
+        @PathParam("index") int index) {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + variableDescriptorFacade.find(descriptorId).getGameModelId());
 
@@ -195,6 +203,8 @@ public class VariableDescriptorController {
     }
 
     /**
+     * Make a descriptor copy that will stands at the same level
+     *
      * @param entityId
      * @return
      * @throws IOException
@@ -206,11 +216,20 @@ public class VariableDescriptorController {
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + variableDescriptorFacade.find(entityId).getGameModelId());
         VariableDescriptor duplicate = variableDescriptorFacade.duplicate(entityId);
 
-        DescriptorListI parent = variableDescriptorFacade.findParentList(variableDescriptorFacade.find(entityId));
-        if (parent instanceof VariableDescriptor) {                             // If the duplicated var is in a list descriptor,
-            return (VariableDescriptor) parent;                                 // return the whole list so the editor will be updated
-        } else {                                                                // Otherwise,
-            return duplicate;                                                   // the duplicate is at root level
+        DescriptorListI parent = variableDescriptorFacade.find(entityId).getParent();
+        if (parent instanceof VariableDescriptor) {
+            /*
+             * If the duplicated var is in a list descriptor, return the whole 
+             * list so the editor will be updated 
+             */
+            return (VariableDescriptor) parent;
+        } else {
+            /* 
+             * Otherwise, the duplicate is at root level
+             * @fixme we shall not make such a difference... 
+             * Find a way to return the whole gamemodel rootlevel descriptors !
+             */
+            return duplicate;
         }
     }
 
