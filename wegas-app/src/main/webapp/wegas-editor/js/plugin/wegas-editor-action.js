@@ -28,16 +28,20 @@ YUI.add('wegas-editor-action', function(Y) {
          * @private
          */
         execute: function() {
-            //if (confirm("This will restart for every player. Are you sure?")) {
-            this.showOverlay();
-            Wegas.Facade.Variable.sendRequest({
-                request: '/Reset/',
-                on: {
-                    success: Y.bind(this.hideOverlay, this),
-                    failure: Y.bind(this.hideOverlay, this)
-                }
-            });
-            //}
+            var editGame = Y.one("body.wegas-editmode-game");
+
+
+            // Ask confirmation when editing the scenario of a real game
+            if (!editGame || confirm("This action will reset all players in the game you're editing the scenario for. Do you really want to continue?")) {
+                this.showOverlay();
+                Wegas.Facade.Variable.sendRequest({
+                    request: '/Reset/',
+                    on: {
+                        success: Y.bind(this.hideOverlay, this),
+                        failure: Y.bind(this.hideOverlay, this)
+                    }
+                });
+            }
         }
     }, {
         NS: "reset"
