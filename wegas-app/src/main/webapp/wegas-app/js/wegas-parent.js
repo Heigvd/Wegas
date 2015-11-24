@@ -423,6 +423,26 @@ YUI.add("wegas-parent", function (Y) {
 												event: "mouseenter",
 												children: [{
 														type: BUTTON,
+														label: "Page display",
+														plugins: [{
+																fn: "AddChildWidgetAction",
+																cfg: {
+																	childType: "PageLoader"
+																}
+															}]
+													}, {
+														type: BUTTON,
+														label: "List",
+														cssClass: "wegas-advanced-feature",
+														plugins: [{
+																fn: "AddChildWidgetAction",
+																cfg: {
+																	childType: "List"
+																}
+															}]
+													}, 
+{
+														type: BUTTON,
 														label: "SlideShow",
 														plugins: [{
 																fn: "AddChildWidgetAction",
@@ -443,25 +463,6 @@ YUI.add("wegas-parent", function (Y) {
 																fn: "AddChildWidgetAction",
 																cfg: {
 																	childType: "TabView"
-																}
-															}]
-													}, {
-														type: BUTTON,
-														label: "Page display",
-														plugins: [{
-																fn: "AddChildWidgetAction",
-																cfg: {
-																	childType: "PageLoader"
-																}
-															}]
-													}, {
-														type: BUTTON,
-														label: "List",
-														cssClass: "wegas-advanced-feature",
-														plugins: [{
-																fn: "AddChildWidgetAction",
-																cfg: {
-																	childType: "List"
 																}
 															}]
 													}, {
