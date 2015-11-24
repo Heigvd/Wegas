@@ -60,7 +60,7 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     //@Basic(fetch = FetchType.LAZY) // CARE, lazy fetch on Basics has some trouble.
     //@JsonView(Views.ExtendedI.class)
     private String answer;
-    
+
     /**
      *
      */
@@ -68,8 +68,8 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     //@Basic(fetch = FetchType.LAZY) // CARE, lazy fetch on Basics has some trouble.
     //@JsonView(Views.ExtendedI.class)
     private String ignorationAnswer;
-    
-     /*
+
+    /*
      *
      */
     @ElementCollection
@@ -84,11 +84,11 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
      *
      */
     @Embedded
-        @AttributeOverrides({
+    @AttributeOverrides({
         @AttributeOverride(name = "content", column
-                = @Column(name = "ignoration_content")),
+            = @Column(name = "ignoration_content")),
         @AttributeOverride(name = "lang", column
-                = @Column(name = "ignoration_language"))
+            = @Column(name = "ignoration_language"))
     })
     @JsonView(Views.EditorExtendedI.class)
     private Script ignorationImpact;
@@ -150,16 +150,19 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     @Override
     public Boolean containsAll(final List<String> criterias) {
         return Helper.insensitiveContainsAll(this.getName(), criterias)
-                || Helper.insensitiveContainsAll(this.getAnswer(), criterias)
-                || (this.getImpact() != null && this.getImpact().containsAll(criterias))
-                || Helper.insensitiveContainsAll(this.getIgnorationAnswer(), criterias)
-                || (this.getImpact() != null && this.getIgnorationImpact().containsAll(criterias));
+            || Helper.insensitiveContainsAll(this.getAnswer(), criterias)
+            || (this.getImpact() != null && this.getImpact().containsAll(criterias))
+            || Helper.insensitiveContainsAll(this.getIgnorationAnswer(), criterias)
+            || (this.getIgnorationImpact() != null && this.getIgnorationImpact().containsAll(criterias));
     }
 
     @Override
     public List<Script> getScripts() {
         List<Script> ret = new ArrayList<>();
-        ret.add(this.impact);
+        ret.add(this.getImpact());
+        if (this.getIgnorationImpact() != null) {
+            ret.add(this.getIgnorationImpact());
+        }
         return ret;
     }
 
@@ -251,7 +254,8 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     public void setImpact(Script impact) {
         this.impact = impact;
     }
-   /**
+
+    /**
      * @return the ignoration answer
      */
     public String getIgnorationAnswer() {
