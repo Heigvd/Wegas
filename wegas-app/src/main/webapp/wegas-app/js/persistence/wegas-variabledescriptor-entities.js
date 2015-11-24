@@ -1085,9 +1085,10 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                         required: true
                     }, {
                         type: STRING,
-                        className: "wegas-advanced-feature",
+                        wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature",
                         label: "Token",
-                        scriptType: STRING
+                        scriptType: STRING,
+                        description  : "like an message identifier, may be used to reference the message within FSM/Trigger condition"
                     }, {
                         type: "list",
                         label: "",

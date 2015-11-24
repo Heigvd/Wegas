@@ -323,6 +323,10 @@ div.inputEx-description {
     margin-top: -3px;
 }
 
+.wegas-stdmode .inputEx-WysiwygScript .wegas-method-sendmessage .inputEx-fieldWrapper.wegas-advanced-feature {
+    display:none !important;
+}
+
 .inputEx-WysiwygScript .wegas-method-sendmessage .inputEx-fieldWrapper {
     display: block !important;
     float: initial !important;
