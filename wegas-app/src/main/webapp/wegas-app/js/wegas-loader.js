@@ -253,7 +253,7 @@ YUI().use(function(Y) {
             },
             "wegas-inbox-list": {
                 path: "js/widget/wegas-inbox-list-min.js",
-                requires: ["template-micro", "wegas-inboxcss"],
+                requires: ["template-micro", "wegas-inboxcss", "promise"],
                 ws_provides: "InboxList"
             },
             "wegas-form": {
