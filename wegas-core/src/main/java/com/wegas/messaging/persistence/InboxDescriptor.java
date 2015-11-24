@@ -144,7 +144,7 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      * @param attachements
      * @return {@link Message} the sent message
      */
-    public Message sendMessageFull(Player p, String from, String date, String subject, String body, String token, List<String> attachements) {
+    public Message sendMessage(Player p, String from, String date, String subject, String body, String token, List<String> attachements) {
         return this.getInstance(p).sendMessage(from, subject, body, date, token, attachements);
     }
 

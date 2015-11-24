@@ -993,7 +993,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             }
         },
         METHODS: {
-            sendMessage: {
+            /*sendMessage: {
                 label: "send message",
                 className: "wegas-method-sendmessage",
                 "arguments": [{
@@ -1052,15 +1052,14 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                         type: "list",
                         label: "",
                         scriptType: STRING,
-                        /*sortable: true*/
                         elementType: {
                             type: "wegasurl",
                             label: "",
                             required: true
                         }
                     }]
-            },
-            sendMessageFull: {
+            },*/
+            sendMessage: {
                 label: "send message",
                 className: "wegas-method-sendmessage",
                 "arguments": [{
@@ -1086,9 +1085,9 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                         required: true
                     }, {
                         type: STRING,
+                        className: "wegas-advanced-feature",
                         label: "Token",
-                        scriptType: STRING,
-                        required: false
+                        scriptType: STRING
                     }, {
                         type: "list",
                         label: "",
