@@ -8,45 +8,45 @@
 package com.wegas.core.security.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.game.Player;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import javax.persistence.*;
-////import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.rest.util.Views;
-import java.util.HashSet;
-import java.util.Set;
+
+import javax.persistence.*;
+import java.util.*;
+
+////import javax.xml.bind.annotation.XmlTransient;
 
 /**
- *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
 @Table(name = "users")
 
 @NamedQueries({
-    @NamedQuery(name = "findUserPermissions", query = "SELECT DISTINCT users FROM User users JOIN users.permissions p WHERE p.value LIKE :instance"),
-    @NamedQuery(name = "findUsersWithRole", query = "SELECT DISTINCT users FROM User users JOIN users.roles r WHERE r.id = :role_id")
+        @NamedQuery(name = "findUserPermissions", query = "SELECT DISTINCT users FROM User users JOIN users.permissions p WHERE p.value LIKE :instance"),
+        @NamedQuery(name = "findUsersWithRole", query = "SELECT DISTINCT users FROM User users JOIN users.roles r WHERE r.id = :role_id")
 })
 public class User extends AbstractEntity implements Comparable<User> {
 
     private static final long serialVersionUID = 1L;
+
     /**
      *
      */
     @Id
     @GeneratedValue
     private Long id;
+
     /**
      *
      */
     @OneToMany(mappedBy = "user", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, orphanRemoval = true)
     @JsonManagedReference(value = "player-user")
     private List<Player> players = new ArrayList<>();
+
     /**
      *
      */
@@ -62,9 +62,9 @@ public class User extends AbstractEntity implements Comparable<User> {
     @JsonView(Views.ExtendedI.class)
     @JoinTable(name = "users_roles",
             joinColumns = {
-                @JoinColumn(name = "users_id", referencedColumnName = "id")},
+                    @JoinColumn(name = "users_id", referencedColumnName = "id")},
             inverseJoinColumns = {
-                @JoinColumn(name = "roles_id", referencedColumnName = "id")})
+                    @JoinColumn(name = "roles_id", referencedColumnName = "id")})
     private Set<Role> roles = new HashSet<>();
 
     /**
@@ -74,7 +74,6 @@ public class User extends AbstractEntity implements Comparable<User> {
     }
 
     /**
-     *
      * @param acc
      */
     public User(AbstractAccount acc) {
@@ -82,7 +81,6 @@ public class User extends AbstractEntity implements Comparable<User> {
     }
 
     /**
-     *
      * @return
      */
     @Override
@@ -91,7 +89,6 @@ public class User extends AbstractEntity implements Comparable<User> {
     }
 
     /**
-     *
      * @param a
      */
     @Override
@@ -132,7 +129,6 @@ public class User extends AbstractEntity implements Comparable<User> {
     }
 
     /**
-     *
      * @param account
      */
     public final void addAccount(AbstractAccount account) {
@@ -141,7 +137,6 @@ public class User extends AbstractEntity implements Comparable<User> {
     }
 
     /**
-     *
      * @return
      */
     //@XmlTransient
@@ -155,7 +150,6 @@ public class User extends AbstractEntity implements Comparable<User> {
     }
 
     /**
-     *
      * @return
      */
     public String getName() {
@@ -184,7 +178,6 @@ public class User extends AbstractEntity implements Comparable<User> {
     }
 
     /**
-     *
      * @param permission
      */
     public void removePermission(String permission) {
@@ -192,7 +185,6 @@ public class User extends AbstractEntity implements Comparable<User> {
     }
 
     /**
-     *
      * @param permission
      * @param inducedPermission
      * @return
@@ -202,7 +194,6 @@ public class User extends AbstractEntity implements Comparable<User> {
     }
 
     /**
-     *
      * @param permission
      * @return
      */
@@ -211,7 +202,6 @@ public class User extends AbstractEntity implements Comparable<User> {
     }
 
     /**
-     *
      * @param permission
      * @return
      */
@@ -239,7 +229,6 @@ public class User extends AbstractEntity implements Comparable<User> {
     }
 
     /**
-     *
      * @param role
      */
     public void addRole(Role role) {
