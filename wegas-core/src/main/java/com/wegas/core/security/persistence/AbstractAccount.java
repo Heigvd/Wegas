@@ -7,26 +7,18 @@
  */
 package com.wegas.core.security.persistence;
 
-import com.wegas.core.security.guest.GuestJpaAccount;
+import com.fasterxml.jackson.annotation.*;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.facebook.FacebookAccount;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import com.wegas.core.security.guest.GuestJpaAccount;
+
 import javax.persistence.*;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonView;
+import java.util.*;
 //////import javax.xml.bind.annotation.XmlTransient;
 
 /**
- *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
@@ -41,30 +33,33 @@ import com.fasterxml.jackson.annotation.JsonView;
  @Index(columnList = "email", unique = true)
  })*/
 @NamedQueries({
-    @NamedQuery(name = "AbstractAccount.findByUsername", query = "SELECT a FROM AbstractAccount a WHERE a.username = :username")
+        @NamedQuery(name = "AbstractAccount.findByUsername", query = "SELECT a FROM AbstractAccount a WHERE a.username = :username")
 })
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "FacebookAccount", value = FacebookAccount.class),
-    @JsonSubTypes.Type(name = "GuestJpaAccount", value = GuestJpaAccount.class),
-    @JsonSubTypes.Type(name = "JpaAccount", value = com.wegas.core.security.jparealm.JpaAccount.class),
-    @JsonSubTypes.Type(name = "GameAccount", value = com.wegas.core.security.jparealm.GameAccount.class)
+        @JsonSubTypes.Type(name = "FacebookAccount", value = FacebookAccount.class),
+        @JsonSubTypes.Type(name = "GuestJpaAccount", value = GuestJpaAccount.class),
+        @JsonSubTypes.Type(name = "JpaAccount", value = com.wegas.core.security.jparealm.JpaAccount.class),
+        @JsonSubTypes.Type(name = "GameAccount", value = com.wegas.core.security.jparealm.GameAccount.class)
 })
 @JsonIgnoreProperties({"passwordConfirm"})
 public class AbstractAccount extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
+
     /**
      *
      */
     @Id
     @GeneratedValue
     private Long id;
+
     /**
      *
      */
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, optional = false)
     @JsonBackReference(value = "user-account")
     private User user;
+
     /**
      *
      */
@@ -72,20 +67,24 @@ public class AbstractAccount extends AbstractEntity {
     @Column(length = 100)
     //@Pattern(regexp = "^\\w+$")
     private String username = "";
+
     /**
      *
      */
     private String firstname;
+
     /**
      *
      */
     private String lastname;
+
     /**
      *
      */
     @Temporal(TemporalType.TIMESTAMP)
     @JsonIgnore
     private Date createdTime = new Date();
+
     /**
      *
      */
@@ -94,6 +93,7 @@ public class AbstractAccount extends AbstractEntity {
     @JsonView(Views.ExtendedI.class)
     @Transient
     private List<Permission> permissions = new ArrayList<>();
+
     /**
      *
      */
@@ -123,7 +123,8 @@ public class AbstractAccount extends AbstractEntity {
         this.setLastname(a.getLastname());
         this.setUsername(a.getUsername());
         if (a.getDeserializedPermissions() != null && !a.getDeserializedPermissions().isEmpty()) {
-            ListUtils.mergeLists(this.user.getPermissions(), a.getDeserializedPermissions());
+            // Pass through setter to update user
+            this.user.setPermissions(ListUtils.mergeLists(this.user.getPermissions(), a.getDeserializedPermissions()));
         }
     }
 

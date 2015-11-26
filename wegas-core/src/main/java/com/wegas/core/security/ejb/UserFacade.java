@@ -14,42 +14,33 @@ import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
-import com.wegas.core.security.jparealm.JpaAccount;
-import com.wegas.core.security.persistence.AbstractAccount;
-import com.wegas.core.security.persistence.Role;
-import com.wegas.core.security.persistence.User;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.rest.util.Email;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.guest.GuestToken;
+import com.wegas.core.security.jparealm.JpaAccount;
+import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Permission;
+import com.wegas.core.security.persistence.Role;
+import com.wegas.core.security.persistence.User;
 import com.wegas.messaging.ejb.EMailFacade;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
-import javax.ejb.EJB;
-import javax.ejb.EJBTransactionRolledbackException;
-import javax.ejb.LocalBean;
-import javax.ejb.Schedule;
-import javax.ejb.Stateless;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.persistence.NoResultException;
-import javax.persistence.Query;
-import javax.persistence.TemporalType;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.crypto.RandomNumberGenerator;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.LoggerFactory;
 
+import javax.ejb.*;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.persistence.NoResultException;
+import javax.persistence.Query;
+import javax.persistence.TemporalType;
+import javax.persistence.TypedQuery;
+import java.util.*;
+
 /**
- *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
@@ -57,21 +48,25 @@ import org.slf4j.LoggerFactory;
 public class UserFacade extends BaseFacade<User> {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(UserFacade.class);
+
     /**
      *
      */
     @EJB
     private AccountFacade accountFacade;
+
     /**
      *
      */
     @EJB
     private RoleFacade roleFacade;
+
     /**
      *
      */
     @EJB
     private PlayerFacade playerFacade;
+
     /**
      *
      */
@@ -86,7 +81,6 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     *
      * @return
      */
     public User guestLogin() {
@@ -110,8 +104,6 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     *
-     *
      * @return a User entity, based on the shiro login state
      */
     public User getCurrentUser() {
@@ -127,8 +119,6 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     *
-     *
      * @param username String representing the username
      * @return a User entity, based on the username
      */
@@ -173,7 +163,6 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     *
      * @param user
      * @return
      */
@@ -197,7 +186,6 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     *
      * @param accounts
      * @return
      */
@@ -273,7 +261,6 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     *
      * @param abstractAccountId
      * @param permission
      * @return
@@ -283,7 +270,6 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     *
      * @param abstractAccountId
      * @param p
      * @return
@@ -294,7 +280,6 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     *
      * @param a
      * @param permission
      * @return
@@ -304,7 +289,6 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     *
      * @param permissionStr
      * @return
      */
@@ -378,19 +362,22 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     *
      * @param instance
      * @return
      */
     public List<User> findUserPermissionByInstance(String instance) {
-        Query findByToken = getEntityManager().createNamedQuery("findUserPermissions");
+        final TypedQuery<User> findByToken = getEntityManager().createNamedQuery("findUserPermissions", User.class);
         findByToken.setParameter("instance", "%:" + instance);
-        List<User> users = (List<User>) findByToken.getResultList();
-        return users;
+        return findByToken.getResultList();
+    }
+
+    public List<User> findUsersWithRole(Long role_id) {
+        final TypedQuery<User> findWithRole = getEntityManager().createNamedQuery("findUsersWithRole", User.class);
+        findWithRole.setParameter("role_id", role_id);
+        return findWithRole.getResultList();
     }
 
     /**
-     *
      * @param instance
      */
     public void deleteUserPermissionByInstance(String instance) {
@@ -417,7 +404,6 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     *
      * @param instance
      * @param userId
      */
@@ -426,7 +412,7 @@ public class UserFacade extends BaseFacade<User> {
                 + "WHERE p.value LIKE '%:" + instance + "' AND p.user.id =" + userId);
         try {
             User user = (User) findByToken.getSingleResult();
-            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext();) {
+            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext(); ) {
                 String p = sit.next().getValue();
                 String splitedPermission[] = p.split(":");
                 if (splitedPermission.length >= 3) {
@@ -445,7 +431,6 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     *
      * @param permission
      * @param userId
      */
@@ -454,7 +439,7 @@ public class UserFacade extends BaseFacade<User> {
                 + "WHERE p.value LIKE '" + permission + "' AND p.user.id =" + userId);
         try {
             User user = (User) findByToken.getSingleResult();
-            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext();) {
+            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext(); ) {
                 String p = sit.next().getValue();
                 String splitedPermission[] = p.split(":");
                 if (splitedPermission.length >= 3 && p.equals(permission)) {
@@ -472,7 +457,6 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     *
      * @param email
      */
     public void sendNewPassword(String email) {
@@ -509,7 +493,6 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     *
      * @FIXME Should also remove players, created games and game models
      */
     @Schedule(hour = "4", minute = "12")
@@ -531,7 +514,6 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     *
      * @param playerId
      * @return
      */
@@ -540,7 +522,6 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     *
      * @param accountRoles
      * @param compareRoles
      * @return
@@ -557,7 +538,6 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     *
      * @param gmId
      * @param newGmId
      */
@@ -599,11 +579,11 @@ public class UserFacade extends BaseFacade<User> {
      */
     public void transferPlayers(User from, User to) {
         final List<Long> gameIds = new ArrayList<>();
-        for(Player player : to.getPlayers()){
+        for (Player player : to.getPlayers()) {
             gameIds.add(player.getGame().getId());
         }
         for (Player p : from.getPlayers()) {
-            if(!gameIds.contains(p.getGame().getId())) { // User already has a player in p's game
+            if (!gameIds.contains(p.getGame().getId())) { // User already has a player in p's game
                 p.setName(to.getName());
                 p.setUser(to);
             }
