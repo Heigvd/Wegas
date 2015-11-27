@@ -513,10 +513,10 @@ YUI.add('wegas-mcq-tabview', function(Y) {
         },
         getEditorLabel: function() {
             var variable = this.get("variable.evaluated");
-            if (variable) {
+            if (variable && variable.getEditorLabel) {
                 return variable.getEditorLabel();
             }
-            return null;
+            return Wegas.MCQTabView.EDITORNAME;
         },
         /**
          * @function
