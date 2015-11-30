@@ -147,6 +147,21 @@ YUI.add("wegas-button", function(Y) {
          */
         initializer: function() {
             this.handlers = {};
+            this._counters = {
+                "InboxDescriptor": function(descriptor, instance) {
+                    return instance.get("unreadCount");
+                },
+                "DialogueDescriptor": function(descriptor, instance) {
+                    if (instance.get("enabled") && false) {
+                        return 1;
+                    }
+                },
+                "QuestionDescriptor": function(descriptor, instance) {
+                    if (instance.get("replies")) {
+                        return instance.get("replies").length === 0 && instance.get("active") ? 1 : 0; // only count if it is active
+                    }
+                }
+            };
             this.bindUI();
         },
         /**
@@ -201,7 +216,7 @@ YUI.add("wegas-button", function(Y) {
          * @description Count the number of unread reply in given variable.
          */
         getUnreadCount: function() {
-            var i, instance, /*messages,*/ items, count = 0,
+            var i, instance, /*messages,*/ items, count = 0, klass,
                 list = this.get('variable.evaluated'), descriptor;
 
             if (!list) {
@@ -214,25 +229,16 @@ YUI.add("wegas-button", function(Y) {
 
             descriptor = list.pop();
             while (descriptor) {
-                if (Wegas.persistence.QuestionDescriptor && descriptor instanceof Wegas.persistence.QuestionDescriptor) {
-                    instance = descriptor.getInstance();
-                    if (instance.get("replies")) {
-                        count += instance.get("replies").length === 0 && instance.get("active") ? 1 : 0; // only count if it is active
-                    }
-                }
-                else if (descriptor instanceof Wegas.persistence.ListDescriptor) {
+                klass = descriptor.get("@class");
+                if (klass === "ListDescriptor") {
                     items = descriptor.flatten();
                     for (i = 0; i < items.length; i = i + 1) {
                         list.push(items[i]);
                     }
-                } /*else if (Wegas.persistence.FSMDescriptor && descriptor instanceof Wegas.persistence.FSMDescriptor) {
-                    instance = descriptor.getInstance();
-                    if (instance.get("enabled")) {
-                        count += 1;
+                } else {
+                    if (this._counters[klass]) {
+                        count += this._counters[klass](descriptor, descriptor.getInstance());
                     }
-                } */else if (Wegas.persistence.InboxDescriptor && descriptor instanceof Wegas.persistence.InboxDescriptor) {
-                    //messages = descriptor.getInstance().get("messages");
-                    count += descriptor.getInstance().get("unreadCount");
                 }
 
                 descriptor = list.pop();
