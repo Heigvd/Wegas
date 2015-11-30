@@ -14,7 +14,7 @@
 YUI.add("wegas-historydialog", function(Y) {
     "use strict";
 
-    var CONTENTBOX = "contentBox", HistoryDialog, EntityChooser,
+    var CONTENTBOX = "contentBox", HistoryDialog,
         persistence = Y.Wegas.persistence;
 
     HistoryDialog = Y.Base.create("wegas-historydialog", Y.Wegas.SimpleDialogue, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
