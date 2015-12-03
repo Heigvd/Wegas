@@ -152,8 +152,8 @@ var ReviewHelper = (function() {
         var summary, k;
         if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.TextEvaluationDescriptor) {
             summary = getTextSummary(values, evDescriptor);
-            entry[summary.id + "-wc"] = summary.averageNumberOfCharacters;
-            entry[summary.id + "-cc"] = summary.averageNumberOfWords;
+            entry[summary.id + "-wc"] = summary.averageNumberOfWords;
+            entry[summary.id + "-cc"] = summary.averageNumberOfCharacters;
         } else if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.GradeDescriptor) {
             summary = getGradeSummary(values, evDescriptor);
             entry[summary.id + "-mean"] = summary.mean;
