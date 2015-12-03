@@ -168,7 +168,7 @@ YUI.add("wegas-inputex-rte", function(Y) {
             }
             RTEField.superclass.setValue.call(this, value, sendUpdatedEvent);
 
-            if (this.editor) {
+            if (this.editor && Y.Lang.isString(value)) {
                 this.editor.setContent(value);
             }
         },
