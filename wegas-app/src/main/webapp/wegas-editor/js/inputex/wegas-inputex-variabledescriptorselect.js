@@ -100,7 +100,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             return null;
         },
         validate: function() {
-            var valid = !!this.getValue() && VariableDescriptorSelect.superclass.validate.call(this);
+            var valid = !!this.getValue() && VariableDescriptorSelect.superclass.validate.call(this), entity;
             if (valid) {
                 try {
                     window.esprima.parse(this.getValue());
@@ -108,8 +108,9 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                     valid = false;
                 }
             }
-            if (this.currentEntityField && this.currentEntityField.getValue()) {
-                if (Y.Array.indexOf(this.options.classFilter, Wegas.Facade.Variable.cache.find("name", this.currentEntityField.getValue()).get("@class")) < 0) {
+            if (this.options.classFilter && this.currentEntityField && this.currentEntityField.getValue()) {
+                entity = Wegas.Facade.Variable.cache.find("name", this.currentEntityField.getValue());
+                if (entity && Y.Array.indexOf(this.options.classFilter, entity.get("@class")) < 0) {
                     valid = false;
                 }
             }
@@ -291,22 +292,28 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
          * @function
          */
         generateSelectConfig: function(entity, selectedEntity, items) {
-            var value;
+            var value, choices;
             if (entity === this.currentEntity) {
                 value = this.options.method;
             }
             if (selectedEntity) {
                 value = selectedEntity.get("name");
             }
+            choices = this.genChoices(entity, items);
+            if (choices.length) {
+                return {
+                    type: 'select',
+                    choices: [{
+                        label: DISABLED_CHOICE_LABEL.variable,
+                        value: null,
+                        disabled: true
+                    }].concat(choices),
+                    value: value,
+                    parentEntity: entity
+                };
+            }
             return {
-                type: 'select',
-                choices: [{
-                    label: DISABLED_CHOICE_LABEL.variable,
-                    value: null,
-                    disabled: true
-                }].concat(this.genChoices(entity, items)),
-                value: value,
-                parentEntity: entity
+                type: "hidden"
             };
         },
         /**
