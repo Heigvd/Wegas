@@ -10,7 +10,6 @@ package com.wegas.core.rest.util;
 import com.fasterxml.jackson.jaxrs.base.JsonMappingExceptionMapper;
 import com.fasterxml.jackson.jaxrs.base.JsonParseExceptionMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
-//import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
@@ -44,7 +43,6 @@ public class JacksonFeature implements Feature {
         context.property(PropertiesHelper.getPropertyNameForRuntime(InternalProperties.JSON_FEATURE, config.getRuntimeType()),
                 JSON_FEATURE);
 
-        //JaxbAnnotationIntrospector fuckin;
         // Register Jackson.
         if (!config.isRegistered(JacksonJsonProvider.class)) {
             // add the default Jackson exception mappers
