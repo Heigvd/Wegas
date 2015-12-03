@@ -90,7 +90,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                 }, this));
             }, "button.yui3-button", this);
             this.after("variableChange", this.syncUI);
-        // this.handlers.response = this.dataSource.after("update", this.syncUI, this);
+            // this.handlers.response = this.dataSource.after("update", this.syncUI, this);
         },
         /**
          * @function
@@ -115,7 +115,7 @@ YUI.add('wegas-mcq-view', function(Y) {
             if (this.gallery) {
                 this.gallery.syncUI();
             }
-        // this.hideOverlay();
+            // this.hideOverlay();
         },
         /**
          * @function
@@ -124,7 +124,7 @@ YUI.add('wegas-mcq-view', function(Y) {
          * @description fetch question and displays it
          */
         genQuestion: function(question) {
-            this.dataSource.cache.getWithView(question, "Extended", { // Retrieve the question/choice description from the server
+            this.dataSource.cache.getWithView(question, "Extended", {// Retrieve the question/choice description from the server
                 on: {
                     success: Y.bind(function(e) {
                         var question = e.response.entity;
@@ -144,6 +144,7 @@ YUI.add('wegas-mcq-view', function(Y) {
         },
         genMarkup: function(question) {
             var i, ret,
+                readonly = this.get("readonly.evaluated"),
                 allowMultiple = question.get("allowMultipleReplies"),
                 cachedQuestion = this.dataSource.cache.find("id",
                     question.get("id")),
@@ -186,7 +187,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                             '<span class="symbole">x</span></span>');
                     }
 
-                    if (answerable) {
+                    if (answerable && !readonly) {
                         ret.push('<button class="yui3-button" id="', choiceD.get("id"), '">', Y.Wegas.I18n.t('mcq.submit'), '</button>');
                     } else {
                         ret.push('<button class="yui3-button" disabled id="',
@@ -285,6 +286,16 @@ YUI.add('wegas-mcq-view', function(Y) {
                     _type: "variableselect",
                     label: "Question",
                     classFilter: ["QuestionDescriptor"]
+                }
+            },
+            readonly: {
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                type: "boolean",
+                value: false,
+                optional: true,
+                _inputex: {
+                    _type: "script",
+                    expects: "condition"
                 }
             }
         }
