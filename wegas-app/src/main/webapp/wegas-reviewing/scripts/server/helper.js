@@ -189,6 +189,7 @@ var ReviewHelper = (function() {
             maxNumberOfValue = 0,
             instanceFacade = lookupBean("VariableInstanceFacade"),
             maxNumberOfReview = Math.min(prd.getMaxNumberOfReview(), teams.size() - 2), // Assume team scoped review. !~_~! 
+            aPlayer,
 
             monitoring = {
                 structure: {
@@ -199,7 +200,13 @@ var ReviewHelper = (function() {
                                 {id: "done", label: "Review Done", formatter: null},
                                 {id: "commented", label: "Review Commented", formatter: null}
                             ]
-                        }],
+                        }, {
+                            title: "Reviewed Data",
+                            items: [
+                                {id: "data", label: "Data", formatter: null}
+                            ]
+                        }
+                    ],
                     reviews: [],
                     comments: []
                 },
@@ -229,7 +236,8 @@ var ReviewHelper = (function() {
         for (t = 0; t < teams.size(); t += 1) {
             teamId = new Long(teams.get(t).getId());
             pri = pris[teamId];
-            if (pris.length > 1 && instanceFacade.findAPlayer(pri).getTeam() instanceof  com.wegas.core.persistence.game.DebugTeam) {
+            aPlayer = instanceFacade.findAPlayer(pri);
+            if (pris.length > 1 && aPlayer.getTeam() instanceof  com.wegas.core.persistence.game.DebugTeam) {
                 // Skip Debug Team
                 continue;
             }
@@ -239,6 +247,8 @@ var ReviewHelper = (function() {
                 reviews: {},
                 comments: {}
             };
+
+            entry.overview.data = prd.getToReview().getInstance(aPlayer).getValue();
 
             reviews = Java.from(pri.getToReview());
             maxNumberOfValue += reviews.length;
