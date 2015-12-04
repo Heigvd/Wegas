@@ -13,7 +13,10 @@
  */
 YUI.add("wegas-entitychooser", function(Y) {
     "use strict";
-    var CONTENTBOX = "contentBox", EntityChooser, EntityChooser2;
+    var CONTENTBOX = "contentBox", EntityChooser, EntityChooser2,
+        CLASSES = {
+            CHOOSEN: "chooser-choosen"
+        };
 
     EntityChooser = Y.Base.create("wegas-entitychooser",
         Y.Widget,
@@ -54,15 +57,17 @@ YUI.add("wegas-entitychooser", function(Y) {
             },
             bindUI: function() {
                 this.get(CONTENTBOX).delegate("click", function(e) {
+                    if (e.target.hasClass(CLASSES.CHOOSEN)) { // I'm the choosen one
+                        return;
+                    }
                     this.genWidget(e.target.getData("name"));
-                    this.get(CONTENTBOX).all(".chooser-choosen").removeClass("chooser-choosen");
-                    e.target.addClass("chooser-choosen");
+                    this.get(CONTENTBOX).all("." + CLASSES.CHOOSEN).removeClass(CLASSES.CHOOSEN);
+                    e.target.addClass(CLASSES.CHOOSEN);
                 }, ".chooser-entities .chooser-entity", this);
             },
             genWidget: function(name) {
                 var cfg = this.get("widget"),
                     ctx = this;
-                // TODO fetch type
                 Y.Wegas.Editable.use(cfg, function(Y) {
                     if (ctx.widget) {
                         ctx.widget.set(ctx.get("widgetAttr"), {
@@ -168,9 +173,12 @@ YUI.add("wegas-entitychooser", function(Y) {
             },
             bindUI: function() {
                 this.get(CONTENTBOX).delegate("click", function(e) {
-                    this.genWidget(e.target.getData("type"), e.target.getData("name"));
-                    this.get(CONTENTBOX).all(".chooser-choosen").removeClass("chooser-choosen");
-                    e.target.addClass("chooser-choosen");
+                     if (e.target.hasClass(CLASSES.CHOOSEN)) { // I'm the choosen one
+                        return;
+                    }
+                    this.genWidget(e.target.getData("name"));
+                    this.get(CONTENTBOX).all("." + CLASSES.CHOOSEN).removeClass(CLASSES.CHOOSEN);
+                    e.target.addClass(CLASSES.CHOOSEN);
                 }, ".chooser-entities .chooser-entity", this);
             },
             genWidget: function(type, name) {
