@@ -35,20 +35,18 @@ YUI.add("wegas-historydialog", function(Y) {
         },
         displayHistory: function(history) {
             var historyNode = this.get(CONTENTBOX).one(".history"), i;
+            HistoryDialog.superclass.syncUI.call(this);
             history.pop(); //remove last element (currentState)
             historyNode.empty(true);
             for (i in history) {
                 if (history[i] instanceof persistence.DialogueTransition) {
-                    historyNode.append("<div class='response h" + history[i].get('id') + "'>" + history[i].get("actionText") + "</ul>");
+                    historyNode.append("<div class='response h" + history[i].get('id') + "'>" + (history[i].get("actionText") === null ? "" : history[i].get("actionText")) + "</ul>");
                 } else if (history[i] instanceof persistence.DialogueState) {
-                    historyNode.append("<div class='talk h" + history[i].get('id') + "'>" + history[i].get("text") + "</div>");
+                    historyNode.append("<div class='talk h" + history[i].get('id') + "'>" + (history[i].get("text") === null ? "" : history[i].get("text")) + "</div>");
                 }
             }
-            HistoryDialog.superclass.syncUI.call(this);
         }
 
     }, {});
     Y.Wegas.HistoryDialog = HistoryDialog;
-
-
 });

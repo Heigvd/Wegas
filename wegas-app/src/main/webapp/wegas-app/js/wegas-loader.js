@@ -39,7 +39,7 @@ YUI().use(function(Y) {
         group.base = YUI_config.Wegas.base + group.root; // Set up path
         group.comboBase = YUI_config.Wegas.comboBase; // Set up combo path
         loadModules(group);
-        //YUI.applyConfig(YUI_config);
+    //YUI.applyConfig(YUI_config);
     };
     YUI.addGroup("wegas", {
         base: "./wegas-app/",
@@ -97,7 +97,7 @@ YUI().use(function(Y) {
             },
             "wegas-variabledescriptor-entities": {
                 path: "js/persistence/wegas-variabledescriptor-entities-min.js",
-                requires: "wegas-entity",
+                requires: ["wegas-entity", "promise"],
                 ws_provides: ["NumberDescriptor", "TextDescriptor"]
             },
             "wegas-statemachine-entities": {
@@ -355,8 +355,13 @@ YUI().use(function(Y) {
             },
             "wegas-historydialog": {
                 path: "js/widget/wegas-historydialog-min.js",
-                requires: ["wegas-simpledialogue"],
+                requires: ["wegas-simpledialogue", "wegas-dialogcss"],
                 ws_provides: ["HistoryDialog"]
+            },
+            "wegas-dialogue-folder": {
+                path: "js/widget/wegas-dialogue-folder-min.js",
+                requires: ["wegas-entitychooser"],
+                ws_provides: ["DialogueFolder"]
             },
             "wegas-dialogcss": {
                 type: CSS
@@ -902,12 +907,12 @@ YUI().use(function(Y) {
                     "wegas-panel", "wegas-simpledialogue"],
                 ws_provides: "CEPFolder"
             }
-            /* Chess */
-            //"wegas-chess": {
-            //    path: "wegas-games/wegas-chess/js/wegas-chess-min.js",
-            //    ws_provides: "ChessBoard",
-            //    requires: "transition"
-            //}
+        /* Chess */
+        //"wegas-chess": {
+        //    path: "wegas-games/wegas-chess/js/wegas-chess-min.js",
+        //    ws_provides: "ChessBoard",
+        //    requires: "transition"
+        //}
         }
     });
     /* Other libraries */
@@ -987,7 +992,7 @@ YUI().use(function(Y) {
         var i, module, type, fileName, moduleName,
             modules = group.modules,
             allModules = [];
-        for (moduleName in modules) {                                           // Loop through all modules
+        for (moduleName in modules) { // Loop through all modules
             if (modules.hasOwnProperty(moduleName)) {
                 allModules.push(moduleName); // Build a list of all modules
 
@@ -999,7 +1004,7 @@ YUI().use(function(Y) {
                     module.path = module.path.replace(/-min/gi, "");
                 }
 
-                if (module.ws_provides) {                                       // Build a reverse index on which module provides what type (Wegas)
+                if (module.ws_provides) { // Build a reverse index on which module provides what type (Wegas)
                     if (Y.Lang.isArray(module.ws_provides)) {
                         for (i = 0; i < module.ws_provides.length; i = i + 1) {
                             YUI_config.Wegas.modulesByType[module.ws_provides[i]] = moduleName;
@@ -1008,7 +1013,7 @@ YUI().use(function(Y) {
                         YUI_config.Wegas.modulesByType[module.ws_provides] = moduleName;
                     }
                 }
-                if (module.ix_provides) {                                       // Build a reverse index on which module provides what type (inputEx)
+                if (module.ix_provides) { // Build a reverse index on which module provides what type (inputEx)
                     if (Y.Lang.isArray(module.ix_provides)) {
                         for (i = 0; i < module.ix_provides.length; i = i + 1) {
                             YUI_config.groups.inputex.modulesByType[module.ix_provides[i]] = moduleName;
