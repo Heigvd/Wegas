@@ -63,6 +63,16 @@ YUI.add("wegas-review-widgets", function(Y) {
         initializer: function() {
             this.handlers = [];
             this.datatables = {};
+
+            this.detailsOverlay = new Y.Overlay({
+                zIndex: 100,
+                width: this.get("width"),
+                constrain: true,
+                visible: false
+            }).render(this.get("contentBox"));
+            
+            this.detailsOverlay.get("contentBox").addClass("wegas-review-orchestrator--popup-overlay");
+
         },
         countByStatus: function(instances) {
             var counters = {}, instance, key;
@@ -122,8 +132,52 @@ YUI.add("wegas-review-widgets", function(Y) {
             this.get(CONTENTBOX).delegate("click", this.onNotify, ".control-panel .transition.close-review span", this);
             this.get(CONTENTBOX).delegate("click", this.onClose, ".control-panel .transition.close-comment span", this);
 
+            this.handlers.push(Y.one("body").on("click", this.detailsOverlay.hide, this.detailsOverlay));
+            this.get(CONTENTBOX).delegate("click", this.onTeamNameClick, ".yui3-datatable-col-team-name", this);
+
+            //this.get(CONTENTBOX).delegate("click", this.onTextEvalClick, ".yui3-datatable-cell span.wc, .yui3-datatable-cell span.cc", this);
+
+
             this.refreshButton.on("click", this.syncUI, this);
             //this.datatable.after("synched", this.syncSummary, this);
+        },
+        onTextEvalClick: function(e) {
+            var cell, teamId;
+            cell = this.datatables.overview.getRecord(e.currentTarget) || 
+                   this.datatables.reviews.getRecord(e.currentTarget) ||
+                   this.datatables.comments.getRecord(e.currentTarget);
+            teamId = cell.get("team-id");
+            if (teamId !== this.currentTeamId || !this.detailsOverlay.get("visible")) {
+                this.currentTeamId = teamId;
+                this.currentPos = [e.pageX + 10, e.pageY + 20];
+                this.display( "Data \"" + cell.get("team-name") + "\"", this._monitoredData.variable[teamId]);
+            } else {
+                this.detailsOverlay.hide();
+                this.currentTeamId = null;
+            }
+            e.halt(true);
+        },
+        onTeamNameClick: function(e) {
+            var cell, teamId;
+            cell = this.datatables.overview.getRecord(e.currentTarget) || 
+                   this.datatables.reviews.getRecord(e.currentTarget) ||
+                   this.datatables.comments.getRecord(e.currentTarget);
+            teamId = cell.get("team-id");
+            if (teamId !== this.currentTeamId || !this.detailsOverlay.get("visible")) {
+                this.currentTeamId = teamId;
+                this.currentPos = [e.pageX + 10, e.pageY + 20];
+                this.display( "Data reviewed by peers for team \"" + cell.get("team-name") + "\"", this._monitoredData.variable[teamId]);
+            } else {
+                this.detailsOverlay.hide();
+                this.currentTeamId = null;
+            }
+            e.halt(true);
+        },
+        display: function(title, body) {
+            this.detailsOverlay.set("headerContent", title);
+            this.detailsOverlay.setStdModContent('body', body);
+            this.detailsOverlay.move(this.currentPos[0], this.currentPos[1]);
+            this.detailsOverlay.show();
         },
         /**
          * @function
@@ -148,7 +202,8 @@ YUI.add("wegas-review-widgets", function(Y) {
 
             for (section in this._monitoredData.structure) {
                 if (!columns[section]) {
-                    columns[section] = [{key: "team-name", label: "Team"}];
+                    // TODO Add team ID !!
+                    columns[section] = [{key: "team-name", label: "Team", formatter: "{value} <i class=\"fa fa-info-circle\"></i>"}];
                 }
                 for (i = 0; i < this._monitoredData.structure[section].length; i++) {
                     group = this._monitoredData.structure[section][i];
@@ -156,7 +211,7 @@ YUI.add("wegas-review-widgets", function(Y) {
 
                     for (j = 0; j < group.items.length; j++) {
                         item = group.items[j];
-                        entry.children.push({key: item.id, label: item.label});
+                        entry.children.push({key: item.id, label: item.label, formatter: "<span class=\"" + item.id.replace(/[0-9]+-/, "") + "\">{value}</span>"});
                     }
                     columns[section].push(entry);
                 }
@@ -191,7 +246,10 @@ YUI.add("wegas-review-widgets", function(Y) {
                     }
 
                     for (section in this._monitoredData.data[teamId]) {
-                        entry = {"team-name": team.get("name")};
+                        entry = {
+                            "team-name": team.get("name"),
+                            "team-id": teamId
+                        };
                         for (key in this._monitoredData.data[teamId][section]) {
                             entry[key] = this._monitoredData.data[teamId][section][key];
                         }
@@ -254,8 +312,7 @@ YUI.add("wegas-review-widgets", function(Y) {
         getInfoFromSummary: function(summary) {
             if (summary.type === "GradeSummary") {
                 return  [summary.mean, summary.median, summary.sd];
-            }
-            else if (summary.type === "TextSummary") {
+            } else if (summary.type === "TextSummary") {
                 return [summary.averageNumberOfWords, summary.averageNumberOfCharacters];
             } else {
                 return ["n/a"];

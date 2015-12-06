@@ -205,3 +205,68 @@
     margin-bottom: 50px;
 }
 
+
+.wegas-review-orchestrator--popup-overlay {
+    background: white;
+    border: 1px solid lightgray;
+    box-shadow: 1px 2px 4px #6d6d6d;
+    z-index: 100;
+    /* position: absolute; */
+    font-size: 8pt;
+    min-width: 12em;
+    /* padding: 5px; */
+}
+
+.wegas-review-orchestrator--popup-overlay .yui3-widget-bd .subtitle {
+    color: rgb(28, 28, 28);
+    margin-bottom: 3px;
+    font-weight: bold;
+    font-size: 8.5pt;
+}
+
+.wegas-review-orchestrator--popup-overlay .yui3-widget-hd {
+    font-size: 9pt;
+    font-weight: bold;
+    padding: 5px 10px 0;
+    color: rgb(28, 28, 28);
+}
+
+.wegas-review-orchestrator .yui3-datatable-col-team-name {
+    cursor: pointer;
+}
+.wegas-review-orchestrator td.yui3-datatable-col-team-name i:before {
+color: #6262A7;    
+}
+
+
+
+.wegas-review-orchestrator--popup-overlay{
+    background:rgb(250, 250, 250);
+    border:none;
+    border-radius:2px;
+    padding:0px 0px 0px 0px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    color:#333333;
+    min-width: 460px;
+    max-width: 460px;
+}
+
+.wegas-review-orchestrator--popup-overlay .yui3-widget-hd, .wegas-review-orchestrator--popup-overlay .yui3-widget-bd .subtitle{
+    color:#333333;
+}
+.wegas-review-orchestrator--popup-overlay .yui3-widget-bd p{
+    font-size:12px;
+}
+
+.wegas-review-orchestrator--popup-overlay .yui3-widget-hd{
+    background:rgb(255, 255, 255);
+    padding:16px 34px;
+    border-top-left-radius:2px;
+    border-top-right-radius:2px;
+    border-bottom:solid 1px #d4d4d4;
+}
+.wegas-review-orchestrator--popup-overlay .yui3-widget-bd{
+    padding:16px 24px 12px 24px;
+}
+
+

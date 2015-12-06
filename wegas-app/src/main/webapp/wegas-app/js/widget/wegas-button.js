@@ -146,6 +146,7 @@ YUI.add("wegas-button", function(Y) {
          * @description Set variable with initials values.
          */
         initializer: function() {
+            var k;
             this.handlers = {};
             this._counters = {
                 "InboxDescriptor": function(descriptor, instance) {
@@ -160,8 +161,31 @@ YUI.add("wegas-button", function(Y) {
                     if (instance.get("replies")) {
                         return instance.get("replies").length === 0 && instance.get("active") ? 1 : 0; // only count if it is active
                     }
+                },
+                "PeerReviewDescriptor": function(descriptor, instance) {
+                    var i, j, k, types = ["toReview", "reviewed"],
+                        reviews, review,
+                        counter = 0;
+
+                    for (i = 0; i < 2; i++) {
+                        reviews = instance.get(types[i]);
+                        for (j = 0; j < reviews.length; j++) {
+                            review = reviews[j];
+                            if ((i === 0 && review.get("reviewState") !== "DISPATCHED") ||
+                                (i === 1 && review.get("reviewState") !== "NOTIFIED")) {
+                                counter++;
+                            }
+                        }
+                    }
+                    return counter;
+                },
+                "BooleanDescriptor": function(descriptor, instance) {
+                    return instance.getValue() ? 1 : 0;
                 }
             };
+            for (k in this.get("userCounters")){
+                this._counters[k] = eval("(" + this.get("userCounters")[k] + ")");
+            }
             this.bindUI();
         },
         /**
@@ -273,6 +297,13 @@ YUI.add("wegas-button", function(Y) {
                     _type: "variableselect",
                     label: "Unread count",
                     classFilter: ["ListDescriptor", "InboxDescriptor"]
+                }
+            }, userCounters: {
+                type: "object",
+                value: {},
+                optional: true,
+                _inputex: {
+                    type: "hidden"
                 }
             }
         }

@@ -50,12 +50,13 @@ var ReviewHelper = (function() {
      *  ]
      * }
      */
-    function getGradeSummary(values, descriptor) {
+    function getGradeSummary(values, descriptor, includeData) {
         var stats = StatisticHelper.getNumericStatistics(values, descriptor.getMinValue(), descriptor.getMaxValue());
 
         stats.type = "GradeSummary";
         stats.id = descriptor.getId();
         stats.name = descriptor.getName();
+        stats.data = (includeData ? values : []);
 
         return stats;
     }
@@ -71,7 +72,7 @@ var ReviewHelper = (function() {
      *  }
      * }
      */
-    function getCategorizationSummary(values, descriptor) {
+    function getCategorizationSummary(values, descriptor, includeData) {
         var cats, i, histogram = {},
             numberOfValues = values.length;
         cats = Java.from(descriptor.getCategories());
@@ -93,7 +94,8 @@ var ReviewHelper = (function() {
             name: descriptor.getName(),
             id: descriptor.getId(),
             numberOfValues: numberOfValues,
-            histogram: histogram
+            histogram: histogram,
+            data: (includeData ? values : [])
         };
     }
 
@@ -104,8 +106,9 @@ var ReviewHelper = (function() {
      *  averageNumberOfCharacters: ~y
      * }
      */
-    function getTextSummary(values, descriptor) {
+    function getTextSummary(values, descriptor, includeData) {
         var i, wc = 0, cc = 0, r;
+
         for (i = 0; i < values.length; i += 1) {
             r = StatisticHelper.getTextStatistics(values[i]);
             wc += r.wc;
@@ -120,7 +123,8 @@ var ReviewHelper = (function() {
             id: descriptor.getId(),
             numberOfValues: values.length,
             averageNumberOfWords: wc,
-            averageNumberOfCharacters: cc
+            averageNumberOfCharacters: cc,
+            data: (includeData ? values : [])
         };
     }
 
@@ -151,16 +155,16 @@ var ReviewHelper = (function() {
     function mergeEvSummary(entry, values, evDescriptor) {
         var summary, k;
         if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.TextEvaluationDescriptor) {
-            summary = getTextSummary(values, evDescriptor);
+            summary = getTextSummary(values, evDescriptor, true);
             entry[summary.id + "-wc"] = summary.averageNumberOfWords;
             entry[summary.id + "-cc"] = summary.averageNumberOfCharacters;
         } else if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.GradeDescriptor) {
-            summary = getGradeSummary(values, evDescriptor);
+            summary = getGradeSummary(values, evDescriptor, true);
             entry[summary.id + "-mean"] = summary.mean;
             entry[summary.id + "-median"] = summary.median;
             entry[summary.id + "-sd"] = summary.sd;
         } else if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.CategorizedEvaluationDescriptor) {
-            summary = getCategorizationSummary(values, evDescriptor);
+            summary = getCategorizationSummary(values, evDescriptor, true);
             for (k in summary.histogram) {
                 entry[summary.id + "-" + k] = summary.histogram[k];
             }
@@ -169,7 +173,7 @@ var ReviewHelper = (function() {
 
     function getEvSummary(values, evDescriptor) {
         if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.TextEvaluationDescriptor) {
-            return getTextSummary(values, evDescriptor);
+            return getTextSummary(values, evDescriptor, true);
         } else if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.GradeDescriptor) {
             return getGradeSummary(values, evDescriptor);
         } else if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.CategorizedEvaluationDescriptor) {
@@ -190,7 +194,6 @@ var ReviewHelper = (function() {
             instanceFacade = lookupBean("VariableInstanceFacade"),
             maxNumberOfReview = Math.min(prd.getMaxNumberOfReview(), teams.size() - 2), // Assume team scoped review. !~_~! 
             aPlayer,
-
             monitoring = {
                 structure: {
                     overview: [{
@@ -200,18 +203,14 @@ var ReviewHelper = (function() {
                                 {id: "done", label: "Review Done", formatter: null},
                                 {id: "commented", label: "Review Commented", formatter: null}
                             ]
-                        }, {
-                            title: "Reviewed Data",
-                            items: [
-                                {id: "data", label: "Data", formatter: null}
-                            ]
                         }
                     ],
                     reviews: [],
                     comments: []
                 },
                 data: {},
-                extra: {}
+                extra: {},
+                variable: {}
             };
 
         evaluationsR = Java.from(prd.getFeedback().getEvaluations());
@@ -247,8 +246,6 @@ var ReviewHelper = (function() {
                 reviews: {},
                 comments: {}
             };
-
-            entry.overview.data = prd.getToReview().getInstance(aPlayer).getValue();
 
             reviews = Java.from(pri.getToReview());
             maxNumberOfValue += reviews.length;
@@ -349,6 +346,7 @@ var ReviewHelper = (function() {
             }
 
             monitoring.data[teamId] = entry;
+            monitoring.variable[teamId] = prd.getToReview().getInstance(aPlayer).getValue();
         }
 
         for (i = 0; i < evaluationsAll.length; i += 1) {

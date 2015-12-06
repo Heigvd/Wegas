@@ -844,6 +844,7 @@ YUI().use(function(Y) {
                 requires: ["wegas-review-css",
                     "wegas-reviewing-entities",
                     "datatable",
+                    "overlay",
                     "slider",
                     "wegas-teams-dashboard",
                     "chartist",
