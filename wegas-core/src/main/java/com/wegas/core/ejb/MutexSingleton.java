@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 @LocalBean
 public class MutexSingleton {
 
-    private class RefCounterLock {
+    public class RefCounterLock {
 
         public int counter;
         public ReentrantLock sem;
