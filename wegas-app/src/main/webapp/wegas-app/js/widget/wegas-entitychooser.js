@@ -43,12 +43,12 @@ YUI.add("wegas-entitychooser", function(Y) {
 
                 for (i = 0; i < length; i += 1) {
                     if (filter.length === 0 || filter.find(function(item) {
-                            return item === items[i].get("@class");
-                        })) {
+                        return item === items[i].get("@class");
+                    })) {
                         if ((!items[i].getInstance().getAttrs().hasOwnProperty("active") ||
                             items[i].getInstance().get("active")) &&
                             (!items[i].getInstance().getAttrs().hasOwnProperty("enabled") ||
-                            items[i].getInstance().get("enabled"))) {
+                                items[i].getInstance().get("enabled"))) {
                             entityBox.append("<li class='chooser-entity' data-name='" + items[i].get("name") + "'>" +
                                 (items[i].get("title") || items[i].get("label")) + "</li>");
                         }
@@ -111,10 +111,10 @@ YUI.add("wegas-entitychooser", function(Y) {
                     _inputex: {
                         _type: "group",
                         fields: [{
-                            type: "string",
-                            name: "type",
-                            label: "Type"
-                        }]
+                                type: "string",
+                                name: "type",
+                                label: "Type"
+                            }]
                     }
                 },
                 widgetAttr: {
@@ -159,12 +159,12 @@ YUI.add("wegas-entitychooser", function(Y) {
 
                 for (i = 0; i < length; i += 1) {
                     if (filter.find(function(item) {
-                            return item === items[i].get("@class");
-                        })) {
+                        return item === items[i].get("@class");
+                    })) {
                         if ((!items[i].getInstance().getAttrs().hasOwnProperty("active") ||
                             items[i].getInstance().get("active")) &&
                             (!items[i].getInstance().getAttrs().hasOwnProperty("enabled") ||
-                            items[i].getInstance().get("enabled"))) {
+                                items[i].getInstance().get("enabled"))) {
                             entityBox.append("<li class='chooser-entity' data-type='" + items[i].get("@class") + "'data-name='" + items[i].get("name") + "'>" +
                                 (items[i].get("title") || items[i].get("label")) + "</li>");
                         }
@@ -173,10 +173,10 @@ YUI.add("wegas-entitychooser", function(Y) {
             },
             bindUI: function() {
                 this.get(CONTENTBOX).delegate("click", function(e) {
-                     if (e.target.hasClass(CLASSES.CHOOSEN)) { // I'm the choosen one
+                    if (e.target.hasClass(CLASSES.CHOOSEN)) { // I'm the choosen one
                         return;
                     }
-                    this.genWidget(e.target.getData("name"));
+                    this.genWidget(e.target.getData("type"), e.target.getData("name"));
                     this.get(CONTENTBOX).all("." + CLASSES.CHOOSEN).removeClass(CLASSES.CHOOSEN);
                     e.target.addClass(CLASSES.CHOOSEN);
                 }, ".chooser-entities .chooser-entity", this);
@@ -231,30 +231,30 @@ YUI.add("wegas-entitychooser", function(Y) {
                         elementType: {
                             type: "combine",
                             fields: [{
-                                name: "dataType",
-                                type: "select",
-                                value: "DialogueDescriptor",
-                                choices: Y.Wegas.persistence.AVAILABLE_TYPES
-                            }, {
-                                name: "config",
-                                type: "group",
-                                fields: [{
-                                    name: "widget",
-                                    type: "group",
-                                    value: {
-                                        type: "HistoryDialogue"
-                                    },
-                                    fields: [{
-                                        type: "string",
-                                        name: "type",
-                                        label: "Type"
-                                    }]
+                                    name: "dataType",
+                                    type: "select",
+                                    value: "DialogueDescriptor",
+                                    choices: Y.Wegas.persistence.AVAILABLE_TYPES
                                 }, {
-                                    name: "widgetAttr",
-                                    value: "dialogueVariable",
-                                    type: "string"
-                                }]
-                            }
+                                    name: "config",
+                                    type: "group",
+                                    fields: [{
+                                            name: "widget",
+                                            type: "group",
+                                            value: {
+                                                type: "HistoryDialogue"
+                                            },
+                                            fields: [{
+                                                    type: "string",
+                                                    name: "type",
+                                                    label: "Type"
+                                                }]
+                                        }, {
+                                            name: "widgetAttr",
+                                            value: "dialogueVariable",
+                                            type: "string"
+                                        }]
+                                }
                             ]
                         }
                     }
