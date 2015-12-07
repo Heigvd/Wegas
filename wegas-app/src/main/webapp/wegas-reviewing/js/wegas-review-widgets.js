@@ -143,20 +143,23 @@ YUI.add("wegas-review-widgets", function(Y) {
             //this.datatable.after("synched", this.syncSummary, this);
         },
         onTextEvalClick: function(e) {
-            var cell, teamId, data, title, body, i, dt, evId;
+            var cell, teamId, data, title, body, i, dt, evId, token;
             for (dt in this.datatables) {
                 cell = this.datatables[dt].getRecord(e.currentTarget);
                 if (cell) {
                     break;
                 }
             }
-            
+
             teamId = cell.get("team-id");
-            if (teamId !== this.currentTeamId || !this.detailsOverlay.get("visible")) {
-                evId = "ev-" + e.target.getAttribute("data-ref").match(/\d+/)[0];
+            evId = "ev-" + e.target.getAttribute("data-ref").match(/\d+/)[0];
+            token = teamId + "-" + evId;
+            if (this.currentTarget !== token || !this.detailsOverlay.get("visible")) {
                 data = cell.get(e.target.getAttribute("data-ref"));
-                title = this._monitoredData.structure[dt].find(function(item){return item.id === evId}).title;
-                
+                title = this._monitoredData.structure[dt].find(function(item) {
+                    return item.id === evId;
+                }).title;
+
                 if (data) {
                     body = "";
                     for (i = data.length - 1; i >= 0; i -= 1) {
@@ -168,33 +171,40 @@ YUI.add("wegas-review-widgets", function(Y) {
                 } else {
                     body = "Not available yet";
                 }
-                this.currentTeamId = teamId;
+                this.currentTarget = token;
                 this.currentPos = [e.pageX + 10, e.pageY + 20];
                 this.display(title, body);
             } else {
                 this.detailsOverlay.hide();
-                this.currentTeamId = null;
+                this.currentTarget = null;
             }
             e.halt(true);
         },
         onTeamNameClick: function(e) {
-            var cell, teamId;
-            cell = this.datatables.overview.getRecord(e.currentTarget) ||
-                this.datatables.reviews.getRecord(e.currentTarget) ||
-                this.datatables.comments.getRecord(e.currentTarget);
+            var cell, teamId, dt, token;
+
+            for (dt in this.datatables) {
+                cell = this.datatables[dt].getRecord(e.currentTarget);
+                if (cell) {
+                    break;
+                }
+            }
+
             teamId = cell.get("team-id");
-            if (teamId !== this.currentTeamId || !this.detailsOverlay.get("visible")) {
-                this.currentTeamId = teamId;
+            token = dt + "-" + teamId;
+
+            if (this.currentTarget !== token || !this.detailsOverlay.get("visible")) {
+                this.currentTarget = token;
                 this.currentPos = [e.pageX + 10, e.pageY + 20];
                 // TODO Individual ?
-                if (this._freeForAll){
+                if (this._freeForAll) {
                     this.display("Data reviewed by peers for player \"" + cell.get("team-name") + "\"", this._monitoredData.variable[teamId]);
                 } else {
                     this.display("Data reviewed by peers for team \"" + cell.get("team-name") + "\"", this._monitoredData.variable[teamId]);
                 }
             } else {
                 this.detailsOverlay.hide();
-                this.currentTeamId = null;
+                this.currentTarget = null;
             }
             e.halt(true);
         },
@@ -229,7 +239,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                 if (!columns[section]) {
                     // TODO Individual ?
                     this;
-                    columns[section] = [{key: "team-name", label: (this._freeForAll ? "Player": "Team"), formatter: "{value} <i class=\"fa fa-info-circle\"></i>"}];
+                    columns[section] = [{key: "team-name", label: (this._freeForAll ? "Player" : "Team"), formatter: "{value} <i class=\"fa fa-info-circle\"></i>"}];
                 }
                 for (i = 0; i < this._monitoredData.structure[section].length; i++) {
                     group = this._monitoredData.structure[section][i];
