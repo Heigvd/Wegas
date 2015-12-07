@@ -153,14 +153,23 @@ YUI.add("wegas-button", function(Y) {
                     return instance.get("unreadCount");
                 },
                 "DialogueDescriptor": function(descriptor, instance) {
-                    if (instance.get("enabled") && false) {
-                        return 1;
-                    }
+                    return 0;
+                    /*var state = descriptor.getCurrentState(),
+                     actions = state.getAvailableActions(function(availableActions) {
+                     
+                     });
+                     
+                     if (instance.get("enabled") && false) {
+                     return 1;
+                     } else {
+                     return 0;
+                     }*/
                 },
                 "QuestionDescriptor": function(descriptor, instance) {
                     if (instance.get("replies")) {
                         return instance.get("replies").length === 0 && instance.get("active") ? 1 : 0; // only count if it is active
                     }
+                    return 0;
                 },
                 "PeerReviewDescriptor": function(descriptor, instance) {
                     var i, j, k, types = ["toReview", "reviewed"],
@@ -178,12 +187,9 @@ YUI.add("wegas-button", function(Y) {
                         }
                     }
                     return counter;
-                },
-                "BooleanDescriptor": function(descriptor, instance) {
-                    return instance.getValue() ? 1 : 0;
                 }
             };
-            for (k in this.get("userCounters")){
+            for (k in this.get("userCounters")) {
                 this._counters[k] = eval("(" + this.get("userCounters")[k] + ")");
             }
             this.bindUI();
