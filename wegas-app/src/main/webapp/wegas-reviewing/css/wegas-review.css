@@ -231,10 +231,12 @@
     color: rgb(28, 28, 28);
 }
 
+.wegas-review-orchestrator .yui3-datatable-cell span.texteval-data,
 .wegas-review-orchestrator .yui3-datatable-col-team-name {
     cursor: pointer;
 }
-.wegas-review-orchestrator td.yui3-datatable-col-team-name i:before {
+
+.wegas-review-orchestrator td.yui3-datatable-cell i:before {
 color: #6262A7;    
 }
 

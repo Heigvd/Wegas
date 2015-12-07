@@ -132,6 +132,7 @@ var ReviewHelper = (function() {
         var i, cats, structure;
 
         structure = {
+            id: "ev-" + evDescriptor.getId(),
             title: evDescriptor.getName(),
             items: []
         };
@@ -139,6 +140,7 @@ var ReviewHelper = (function() {
         if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.TextEvaluationDescriptor) {
             structure.items.push({"id": evDescriptor.getId() + "-wc", "label": "Word Count", formatter: null});
             structure.items.push({"id": evDescriptor.getId() + "-cc", "label": "Char Count", formatter: null});
+            structure.items.push({"id": evDescriptor.getId() + "-data", "label": "Data", formatter: '<span class="texteval-data"><i data-ref="' + evDescriptor.getId() + '-data" class="fa fa-info-circle"></i></span>'});
         } else if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.GradeDescriptor) {
             structure.items.push({"id": evDescriptor.getId() + "-mean", "label": "mean", formatter: null});
             //structure.items.push({"id": evDescriptor.getId() + "-median", "label": "median", formatter: null});
@@ -158,6 +160,7 @@ var ReviewHelper = (function() {
             summary = getTextSummary(values, evDescriptor, true);
             entry[summary.id + "-wc"] = summary.averageNumberOfWords;
             entry[summary.id + "-cc"] = summary.averageNumberOfCharacters;
+            entry[summary.id + "-data"] = values;
         } else if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.GradeDescriptor) {
             summary = getGradeSummary(values, evDescriptor, true);
             entry[summary.id + "-mean"] = summary.mean;
@@ -173,7 +176,7 @@ var ReviewHelper = (function() {
 
     function getEvSummary(values, evDescriptor) {
         if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.TextEvaluationDescriptor) {
-            return getTextSummary(values, evDescriptor, true);
+            return getTextSummary(values, evDescriptor);
         } else if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.GradeDescriptor) {
             return getGradeSummary(values, evDescriptor);
         } else if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.CategorizedEvaluationDescriptor) {

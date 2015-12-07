@@ -63,6 +63,7 @@ YUI.add("wegas-review-widgets", function(Y) {
         initializer: function() {
             this.handlers = [];
             this.datatables = {};
+            this._freeForAll = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties.freeForAll");
 
             this.detailsOverlay = new Y.Overlay({
                 zIndex: 100,
@@ -70,7 +71,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                 constrain: true,
                 visible: false
             }).render(this.get("contentBox"));
-            
+
             this.detailsOverlay.get("contentBox").addClass("wegas-review-orchestrator--popup-overlay");
 
         },
@@ -135,22 +136,41 @@ YUI.add("wegas-review-widgets", function(Y) {
             this.handlers.push(Y.one("body").on("click", this.detailsOverlay.hide, this.detailsOverlay));
             this.get(CONTENTBOX).delegate("click", this.onTeamNameClick, ".yui3-datatable-col-team-name", this);
 
-            //this.get(CONTENTBOX).delegate("click", this.onTextEvalClick, ".yui3-datatable-cell span.wc, .yui3-datatable-cell span.cc", this);
+            this.get(CONTENTBOX).delegate("click", this.onTextEvalClick, ".yui3-datatable-cell span.texteval-data", this);
 
 
             this.refreshButton.on("click", this.syncUI, this);
             //this.datatable.after("synched", this.syncSummary, this);
         },
         onTextEvalClick: function(e) {
-            var cell, teamId;
-            cell = this.datatables.overview.getRecord(e.currentTarget) || 
-                   this.datatables.reviews.getRecord(e.currentTarget) ||
-                   this.datatables.comments.getRecord(e.currentTarget);
+            var cell, teamId, data, title, body, i, dt, evId;
+            for (dt in this.datatables) {
+                cell = this.datatables[dt].getRecord(e.currentTarget);
+                if (cell) {
+                    break;
+                }
+            }
+            
             teamId = cell.get("team-id");
             if (teamId !== this.currentTeamId || !this.detailsOverlay.get("visible")) {
+                evId = "ev-" + e.target.getAttribute("data-ref").match(/\d+/)[0];
+                data = cell.get(e.target.getAttribute("data-ref"));
+                title = this._monitoredData.structure[dt].find(function(item){return item.id === evId}).title;
+                
+                if (data) {
+                    body = "";
+                    for (i = data.length - 1; i >= 0; i -= 1) {
+                        body += data[i];
+                        if (i > 0) {
+                            body += "<hr />";
+                        }
+                    }
+                } else {
+                    body = "Not available yet";
+                }
                 this.currentTeamId = teamId;
                 this.currentPos = [e.pageX + 10, e.pageY + 20];
-                this.display( "Data \"" + cell.get("team-name") + "\"", this._monitoredData.variable[teamId]);
+                this.display(title, body);
             } else {
                 this.detailsOverlay.hide();
                 this.currentTeamId = null;
@@ -159,14 +179,19 @@ YUI.add("wegas-review-widgets", function(Y) {
         },
         onTeamNameClick: function(e) {
             var cell, teamId;
-            cell = this.datatables.overview.getRecord(e.currentTarget) || 
-                   this.datatables.reviews.getRecord(e.currentTarget) ||
-                   this.datatables.comments.getRecord(e.currentTarget);
+            cell = this.datatables.overview.getRecord(e.currentTarget) ||
+                this.datatables.reviews.getRecord(e.currentTarget) ||
+                this.datatables.comments.getRecord(e.currentTarget);
             teamId = cell.get("team-id");
             if (teamId !== this.currentTeamId || !this.detailsOverlay.get("visible")) {
                 this.currentTeamId = teamId;
                 this.currentPos = [e.pageX + 10, e.pageY + 20];
-                this.display( "Data reviewed by peers for team \"" + cell.get("team-name") + "\"", this._monitoredData.variable[teamId]);
+                // TODO Individual ?
+                if (this._freeForAll){
+                    this.display("Data reviewed by peers for player \"" + cell.get("team-name") + "\"", this._monitoredData.variable[teamId]);
+                } else {
+                    this.display("Data reviewed by peers for team \"" + cell.get("team-name") + "\"", this._monitoredData.variable[teamId]);
+                }
             } else {
                 this.detailsOverlay.hide();
                 this.currentTeamId = null;
@@ -202,8 +227,9 @@ YUI.add("wegas-review-widgets", function(Y) {
 
             for (section in this._monitoredData.structure) {
                 if (!columns[section]) {
-                    // TODO Add team ID !!
-                    columns[section] = [{key: "team-name", label: "Team", formatter: "{value} <i class=\"fa fa-info-circle\"></i>"}];
+                    // TODO Individual ?
+                    this;
+                    columns[section] = [{key: "team-name", label: (this._freeForAll ? "Player": "Team"), formatter: "{value} <i class=\"fa fa-info-circle\"></i>"}];
                 }
                 for (i = 0; i < this._monitoredData.structure[section].length; i++) {
                     group = this._monitoredData.structure[section][i];
@@ -211,7 +237,7 @@ YUI.add("wegas-review-widgets", function(Y) {
 
                     for (j = 0; j < group.items.length; j++) {
                         item = group.items[j];
-                        entry.children.push({key: item.id, label: item.label, formatter: "<span class=\"" + item.id.replace(/[0-9]+-/, "") + "\">{value}</span>"});
+                        entry.children.push({key: item.id, label: item.label, formatter: (item.formatter === "null" ? "<span class=\"" + item.id.replace(/[0-9]+-/, "") + "\">{value}</span>" : item.formatter)});
                     }
                     columns[section].push(entry);
                 }
@@ -247,7 +273,7 @@ YUI.add("wegas-review-widgets", function(Y) {
 
                     for (section in this._monitoredData.data[teamId]) {
                         entry = {
-                            "team-name": team.get("name"),
+                            "team-name": (this._freeForAll ? team.get("players")[0].get("name") : team.get("name")),
                             "team-id": teamId
                         };
                         for (key in this._monitoredData.data[teamId][section]) {
