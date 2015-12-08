@@ -45,4 +45,28 @@ angular.module('private.admin.groups.edit.directives', ['wegas.directive.permiss
                 }
             });
         };
+    })
+    .directive("adminGroupsMembersIndex", function() {
+        "use strict";
+        return {
+            scope: {
+                close: "&"
+            },
+            templateUrl: "app/private/admin/groups/edit/directives.tmpl/members.html",
+            controller: "AdminGroupsEditMemberIndexController as adminGroupsMemberIndexCtrl"
+        };
+    })
+    .controller("AdminGroupsEditMemberIndexController", function($state, $stateParams, GroupsModel) {
+        "use strict";
+        this.users = [];
+        GroupsModel.getGroup($stateParams.id).then(function(response) {
+            if (!response.isErroneous()) {
+                this.group = response.data;
+            } else {
+                $state.go("^");
+            }
+        }.bind(this));
+        GroupsModel.getMembers($stateParams.id).then(function(data) {
+            this.users = data;
+        }.bind(this));
     });

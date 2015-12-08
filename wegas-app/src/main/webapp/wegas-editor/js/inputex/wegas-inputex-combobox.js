@@ -1,7 +1,7 @@
-/* 
+/*
  * Wegas
  * http://wegas.albasim.ch
- 
+
  * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
@@ -45,6 +45,14 @@ YUI.add("wegas-inputex-combobox", function(Y) {
                         return r.raw.label.toLowerCase().indexOf(q) === 0 || r.raw.value.toLowerCase().indexOf(q) === 0;
                     });
                 },
+                resultFormatter: function(query, results) {
+                    return Y.Array.map(results, function(result) {
+                        if (result.raw.display) {
+                            return result.raw.display;
+                        }
+                        return result.text;
+                    });
+                },
                 resultTextLocator: 'label'
             });
             options.returnValue = function(v) {
@@ -55,40 +63,41 @@ YUI.add("wegas-inputex-combobox", function(Y) {
         },
         renderComponent: function() {
             inputEx.Wegas.Combobox.superclass.renderComponent.call(this);
-            Y.one(this.el).ancestor().setStyle("position", "relative")
-                .appendChild("<span class='inputex-combobox-select'></span>")
-                .on("click", function(e) {
-                    e.stopPropagation();
-                    if (!this.yEl) {
-                        return;
-                    }
-                    if (this.yEl.ac.get("visible")) {
-                        this.yEl.ac.hide();
-                    } else {
-                        this.yEl.ac.sendRequest("");
-                        this.yEl.ac.show();
-                    }
-                }, this);
+            Y.one(this.el).on(["click"], function(event) {
+                event.stopPropagation();
+                if (!this.yEl) {
+                    return;
+                }
+                this.yEl.ac.sendRequest(this.yEl.get("value"));
+                this.yEl.ac.show();
+            }, this);
+            Y.one(this.el).on("change", function(event) {
+                this.setValue(event.target.get("value"));
+            }, this);
         },
         itemSelectHandler: function(o) {
             o.halt(true);
             var aData = o.result.raw;
             this.setValue(this.options.returnValue ? this.options.returnValue(aData) : aData.label);
-            //This is YUI autocompletelist default select function. Value has been altered
-            this.yEl.ac._inputNode.focus();
-            this.yEl.ac._updateValue(this.getValue());
-            this.yEl.ac._ariaSay('item_selected', {item: this.getValue()});
             this.yEl.ac.hide();
         },
         onBlur: function() {
             Y.inputEx.StringField.prototype.onBlur.call(this);
         },
-//        getValue: function(value) {
-//            return inputEx.Wegas.Combobox.superclass.getValue.call(this, value);
-//        },
-//        validate: function() {
-//            return inputEx.Wegas.Combobox.superclass.validate.apply(this, arguments);
-//        },
+        // setValue: function() {
+        //     var sup = inputEx.Wegas.Combobox.superclass.setValue.apply(this, arguments);
+        //     if (this.yEl) {
+        //         this.yEl.ac._inputNode.focus();
+        //         this.yEl.ac._updateValue(this.getValue());
+        //     }
+        //     return sup;
+        // },
+        //        getValue: function(value) {
+        //            return inputEx.Wegas.Combobox.superclass.getValue.call(this, value);
+        //        },
+        //        validate: function() {
+        //            return inputEx.Wegas.Combobox.superclass.validate.apply(this, arguments);
+        //        },
         /**
          * build object(label, value) for source Array.
          * @private
@@ -97,7 +106,10 @@ YUI.add("wegas-inputex-combobox", function(Y) {
         _buildSource: function() {
             Y.Array.each(this.options.autoComp.source, function(item, i, a) {
                 if (Y.Lang.isString(item)) {
-                    item = {value: item, label: item};
+                    item = {
+                        value: item,
+                        label: item
+                    };
                 } else {
                     item.label = Y.Lang.isUndefined(item.label) ? item.value : item.label;
                 }
@@ -108,4 +120,3 @@ YUI.add("wegas-inputex-combobox", function(Y) {
 
     inputEx.registerType("combobox", inputEx.Wegas.Combobox);
 });
-

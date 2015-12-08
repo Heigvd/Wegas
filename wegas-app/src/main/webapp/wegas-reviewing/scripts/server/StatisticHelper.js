@@ -117,18 +117,32 @@ var StatisticHelper = (function() {
     }
 
     function getTextStatistics(text) {
-        var wc = 0, cc = 0;
+        var stats,
+            countEmpty = true;
+        stats = {
+            wc: 0,
+            cc: 0
+        };
 
         if (text) {
-            text.split();
-            cc = text.replace(/\s+/g, "").length;
-            wc = text.replace(/(^\s*)|(\s*$)/gi, "").split(/\s+/).length;
+            // Remove ML tags
+            text = text.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").replace(/&[a-zA-Z]*;/g, "X");
+
+            if (countEmpty) {
+                stats.cc = text.length;
+            } else {
+                stats.cc = text.replace(/\s+/g, "").length;
+            }
+            text = text.replace(/\s+/g, " ").trim(); // TRIMLIKE
+            if (text === "") {
+                stats.wc = 0;
+            } else {
+                stats.wc = text.split(" ").length;
+            }
+
         }
 
-        return {
-            wc: wc,
-            cc: cc
-        };
+        return stats;
     }
 
 

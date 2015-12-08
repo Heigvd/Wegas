@@ -253,8 +253,10 @@ YUI.add('wegas-inbox', function(Y) {
                 if (tab.msg.get("unread")) {                                    // If the message is currently unread,
                     this.timer = Y.later(this.get("setToReadAfter") * 1000, this,
                         function(tab) {                                     // Send a request to mark it as read
+                            var node;
                             Y.log("Sending message read update", "info", "InboxDisplay");
-                            tab.get(CONTENTBOX).one(".unread").removeClass("unread").addClass("read"); // Immediately update view (before request)
+                            node = tab.get(CONTENTBOX).one(".unread");
+                            node && node.removeClass("unread").addClass("read"); // Immediately update view (before request)
                             tab.msg.set("unread", false);                   // Update the message (since there wont be no sync?)
                             this.readRequestTid = this.dataSource.sendRequest({// Send reqest to mark as read
                                 request: "/Inbox/Message/Read/" + tab.msg.get("id"),

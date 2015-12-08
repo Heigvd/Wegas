@@ -1,5 +1,6 @@
 # Build files #
 target/*
+.vscode
 wegas-app/target
 wegas-core/target
 wegas-resources/target

@@ -51,10 +51,10 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
         final String managedMode = request.getHeaderString("managed-mode");
         String id = request.getHeaderString("INTERNAL-ID");
         long duration = System.currentTimeMillis()
-                - Long.parseLong(request.getHeaderString("INTERNAL-DATE"), 10);
+            - Long.parseLong(request.getHeaderString("INTERNAL-DATE"), 10);
 
         logger.info("Request [" + id + "] Processed in " + duration
-                + " [ms] => " + response.getStatusInfo());
+            + " [ms] => " + response.getStatusInfo());
         if (response.getStatusInfo().getStatusCode() >= 400) {
             logger.warn("Problem : " + response.getEntity());
         }
@@ -102,7 +102,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                     }
                     //entities = (List<Object>) response.getEntity();
                 } else if (response.getEntity() instanceof ScriptObjectMirror
-                        && ((ScriptObjectMirror) response.getEntity()).isArray()) {
+                    && ((ScriptObjectMirror) response.getEntity()).isArray()) {
                     entities = new ArrayList(((ScriptObjectMirror) response.getEntity()).values());
                 } else if (response.getEntity() != null) {
                     entities = new ArrayList<>();
@@ -136,7 +136,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                     }
 
                     websocketFacade.onRequestCommit(updatedEntities, destroyedEntities, outdatedEntities,
-                            (managedMode.matches("^[\\d\\.]+$") ? managedMode : null));
+                        (managedMode.matches("^[\\d\\.]+$") ? managedMode : null));
                 } catch (NamingException | NoPlayerException ex) {
                     java.util.logging.Logger.getLogger(ManagedModeResponseFilter.class.getName()).log(Level.SEVERE, null, ex);
                 }

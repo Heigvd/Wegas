@@ -8,8 +8,9 @@
 YUI.add('wegas-scripteval', function(Y) {
     "use strict";
 
-    var ScriptEval, Variable, Wegas = Y.Wegas,
-        buildItems = function(entity, acc) {                                     // Recursively build items lists
+    var ScriptEval, Variable,
+        Wegas = Y.Wegas,
+        buildItems = function(entity, acc) { // Recursively build items lists
             var j, items;
             if (entity instanceof Wegas.persistence.ListDescriptor) {
                 items = entity.get("items");
@@ -33,7 +34,6 @@ YUI.add('wegas-scripteval', function(Y) {
             this.afterHostEvent("response", function(e) {
                 this.upToDate = false;
             }, this);
-            this.publish("evaluated");
             this.publish("failure");
         },
         /**
@@ -46,7 +46,7 @@ YUI.add('wegas-scripteval', function(Y) {
         eval: function(script, cfg, player, contextId) {
             var result;
 
-            if (cfg instanceof Function) {                                      // Normalize callback argument
+            if (cfg instanceof Function) { // Normalize callback argument
                 cfg = {
                     on: {
                         success: cfg
@@ -55,15 +55,14 @@ YUI.add('wegas-scripteval', function(Y) {
             }
 
             try {
-                result = this.localEval(script, player);                        // Try to do local eval
-            } catch (error) {                                                   // And if there is an error  
-                this.remoteEval(script, cfg, player, contextId);                // Use server fallback
-                return;                                                         // and stop the method
+                result = this.localEval(script, player); // Try to do local eval
+            } catch (error) { // And if there is an error
+                this.remoteEval(script, cfg, player, contextId); // Use server fallback
+                return; // and stop the method
             }
 
-            this.fire("evaluated", result);
             if (cfg && cfg.on && cfg.on.success instanceof Function) {
-                cfg.on.success({//                                              // Make the result from the local eval look like a server response
+                cfg.on.success({ //                                              // Make the result from the local eval look like a server response
                     response: {
                         entity: result
                     }
@@ -77,10 +76,10 @@ YUI.add('wegas-scripteval', function(Y) {
          */
         remoteEval: function(script, cfg, player, contextId) {
             var playerId;
-            if(player){
+            if (player) {
                 playerId = player.get("id");
             }
-            if (Y.Lang.isString(script)) {                                      // Normalize script argument
+            if (Y.Lang.isString(script)) { // Normalize script argument
                 script = {
                     "@class": "Script",
                     content: script
@@ -108,11 +107,11 @@ YUI.add('wegas-scripteval', function(Y) {
          */
         localEval: function(script, player) {
             var p = player || Wegas.Facade.Game.cache.getCurrentPlayer();
-            if (!this.upToDate || this.context.self !== p) {                                               //Only compute if new value
+            if (!this.upToDate || this.context.self !== p) { //Only compute if new value
                 this._buildContext(p);
             }
 
-            if (Y.Lang.isObject(script) && script.content) {                                      // Normalize script argument
+            if (Y.Lang.isObject(script) && script.content) { // Normalize script argument
                 script = script.content;
             }
             /*jslint evil: true */
@@ -131,7 +130,8 @@ YUI.add('wegas-scripteval', function(Y) {
          * @returns {undefined}
          */
         _buildContext: function(player) {
-            var i, data = this.get("host").data, j;
+            var i,
+                data = this.get("host").data, j;
             this.upToDate = true;
             this.context = {};
 
@@ -139,14 +139,14 @@ YUI.add('wegas-scripteval', function(Y) {
                 if (data.hasOwnProperty(i)) {
                     this.context[data[i].get('name')] = Y.JSON.parse(Y.JSON.stringify(data[i].getInstance(player)));
                     buildItems(data[i], this.context[data[i].get('name')]);
-//                    if (data[i] instanceof Wegas.persistence.ListDescriptor) {
-//                        this.context[data[i].get('name')].items = [];
-//                        for (j in data[i].get("items")) {
-//                            if (data[i].get("items").hasOwnProperty(j)) {
-//                                this.context[data[i].get('name')].items.push(JSON.parse(JSON.stringify(data[i].get("items")[j].getInstance(player))));
-//                            }
-//                        }
-//                    }
+                //                    if (data[i] instanceof Wegas.persistence.ListDescriptor) {
+                //                        this.context[data[i].get('name')].items = [];
+                //                        for (j in data[i].get("items")) {
+                //                            if (data[i].get("items").hasOwnProperty(j)) {
+                //                                this.context[data[i].get('name')].items.push(JSON.parse(JSON.stringify(data[i].get("items")[j].getInstance(player))));
+                //                            }
+                //                        }
+                //                    }
                 }
             }
             /*SANDBOX*/

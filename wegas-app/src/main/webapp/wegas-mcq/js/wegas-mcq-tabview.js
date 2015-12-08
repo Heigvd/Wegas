@@ -12,7 +12,8 @@
 YUI.add('wegas-mcq-tabview', function(Y) {
     "use strict";
 
-    var CONTENTBOX = 'contentBox', Wegas = Y.Wegas,
+    var CONTENTBOX = 'contentBox',
+        Wegas = Y.Wegas,
         MCQTabView;
 
     /**
@@ -122,7 +123,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                                 + "/Player/" + Wegas.Facade.Game.get('currentPlayerId')
                                 + "/StartTime/0",
                             cfg: {
-                                method: "GET"  // initially: POST
+                                method: "GET" // initially: POST
                             },
                             on: {
                                 success: Y.bind(this.hideOverlay, this),
@@ -176,11 +177,11 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                         cfg: {
                             method: "GET"
                         }
-                        /* ,
-                         on: {
-                         success: {},
-                         failure: {}
-                         } */
+                    /* ,
+                     on: {
+                     success: {},
+                     failure: {}
+                     } */
                     });
                 }
             }
@@ -198,7 +199,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 lastSelection = (selectedTab) ? selectedTab.get('index') : 0;
 
             this.isRemovingTabs = true;
-            this.tabView.destroyAll();                                          // Empty the tabview
+            this.tabView.destroyAll(); // Empty the tabview
             this.isRemovingTabs = false;
 
             if (this.gallery) {
@@ -225,7 +226,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 this.tabView.selectChild(0);
             } else {
                 this.get("contentBox").removeClass("empty");
-                if (lastSelection >= this.tabView.size()) {                     // Can occur when questions list has changed during event
+                if (lastSelection >= this.tabView.size()) { // Can occur when questions list has changed during event
                     lastSelection = 0;
                 }
                 this.tabView.selectChild(lastSelection);
@@ -241,16 +242,16 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 cQuestionInstance = cQuestion.getInstance();
                 cReplyLabel = null;
                 if (cQuestion instanceof Wegas.persistence.QuestionDescriptor
-                    && cQuestionInstance.get("active")) {                   // If current question is active
+                    && cQuestionInstance.get("active")) { // If current question is active
 
                     var cbxType = cQuestion.get("cbx"),
                         validatedCbx = (cbxType ? cQuestionInstance.get('validated') : false);
 
-                    if ((cQuestionInstance.get("replies").length > 0 && !cbxType) || validatedCbx) {          // Find the last selected replies
+                    if ((cQuestionInstance.get("replies").length > 0 && !cbxType) || validatedCbx) { // Find the last selected replies
                         if (cQuestion.get("allowMultipleReplies") || cbxType) {
                             cReplyLabel = cQuestionInstance.get("replies").length + "x";
                         } else {
-                            choiceDescriptor = cQuestionInstance.get("replies")[cQuestionInstance.get("replies").length - 1 ].getChoiceDescriptor();
+                            choiceDescriptor = cQuestionInstance.get("replies")[cQuestionInstance.get("replies").length - 1].getChoiceDescriptor();
                             cReplyLabel = choiceDescriptor.get("title") || "";
                             cReplyLabel = (cReplyLabel.length >= 15) ? cReplyLabel.substr(0, 15) + "..." : cReplyLabel;
                         }
@@ -284,7 +285,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             if (e.newVal && e.newVal.cQuestion
                 && !this.isRemovingTabs && !e.newVal.loaded) {
                 e.newVal.loaded = true;
-                Wegas.Facade.Variable.cache.getWithView(e.newVal.cQuestion, "Extended", {// Retrieve the question/choice description from the server
+                Wegas.Facade.Variable.cache.getWithView(e.newVal.cQuestion, "Extended", { // Retrieve the question/choice description from the server
                     on: {
                         success: Y.bind(function(tab, e) {
                             var question = e.response.entity;
@@ -304,7 +305,8 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             }
         },
         renderTab: function(tab, question) {
-            var i, ret, allowMultiple = question.get("allowMultipleReplies"),
+            var i, ret,
+                allowMultiple = question.get("allowMultipleReplies"),
                 cbxType = question.get("cbx"),
                 cQuestion = tab.cQuestion,
                 choices = cQuestion.get("items"), choiceD, choiceI,
@@ -424,7 +426,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
 
             if (!cbxType) {
                 if (totalNumberOfReplies > 0) {
-                    ret.push('<div class="mcq-replies-title">', (totalNumberOfReplies > 1 ? Y.Wegas.I18n.t('mcq.result').pluralize() : Y.Wegas.I18n.t('mcq.result')), '</div>');
+                    ret.push('<div class="mcq-replies-title">', (totalNumberOfReplies > 1 ? Y.Wegas.I18n.t('mcq.result').pluralize().capitalize() : Y.Wegas.I18n.t('mcq.result').capitalize()), '</div>');
                     ret.push('<div class="mcq-replies">');
                     for (i = totalNumberOfReplies - 1; i >= 0; i -= 1) {
                         reply = allReplies[i];
@@ -500,7 +502,8 @@ YUI.add('wegas-mcq-tabview', function(Y) {
          * @description Return the number of replies corresponding to the given choice.
          */
         getNumberOfReplies: function(questionInstance, choice) {
-            var i, occurrence = 0;
+            var i,
+                occurrence = 0;
             for (i = 0; i < questionInstance.get("replies").length; i++) {
                 if (questionInstance.get("replies")[i].getChoiceDescriptor().get("id") === choice.get("id")) { //can be buggy
                     occurrence++;
@@ -510,10 +513,10 @@ YUI.add('wegas-mcq-tabview', function(Y) {
         },
         getEditorLabel: function() {
             var variable = this.get("variable.evaluated");
-            if (variable) {
+            if (variable && variable.getEditorLabel) {
                 return variable.getEditorLabel();
             }
-            return null;
+            return Wegas.MCQTabView.EDITORNAME;
         },
         /**
          * @function
@@ -564,11 +567,6 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                     label: "Higlight Unanswered",
                     wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
                 }
-            },
-            readonly: {
-                type: "boolean",
-                value: false,
-                optional: true
             }
         }
     });

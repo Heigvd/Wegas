@@ -552,20 +552,10 @@ div.inputEx-RadioField-choice input[type="radio"] {
 }
 
 /* ComboBox field */
-.inputEx-ComboBox .inputex-combobox-select {
-    position: absolute;
-    cursor: pointer;
-    display: none;
-    height: 15px;
-    width: 15px;
-    background: url("../../wegas-app/images/wegas-icon-toggle.png") 4px 7px;
-    right: 0px;
-    top: 3px;
-}
-
-.inputEx-focused .inputEx-ComboBox .inputex-combobox-select,
-.inputEx-ComboBox:hover .inputex-combobox-select {
-    display: inline;
+.inputEx-ComboBox input[type="text"]{
+    padding-right: 20px;
+    background: url("../../wegas-app/images/wegas-icon-toggle.png") 4px 7px no-repeat;
+    background-position-x: 100%;
 }
 
 /* Uneditable field */
