@@ -28,54 +28,53 @@ angular.module('wegas.models.sessions', [])
                     return deferred.promise;
                 }
             },
-            /* Cache all scenarios in a list */
-            cacheSessions = function(status) {
-                var deferred = $q.defer();
-                if (sessions.cache[status]) {
-                    $http.get(sessions.getPath(status), {
-                        "headers": {
-                            "managed-mode": "true"
-                        }
-                    }).success(function(data) {
-                        if (data.events !== undefined && data.events.length === 0) {
-                            sessions.cache[status].data = data.entities;
-                            $translate('COMMONS-SESSIONS-FIND-FLASH-SUCCESS').then(function(message) {
-                                deferred.resolve(Responses.success(message, sessions.cache[status]));
-                            });
-                        } else if (data.events !== undefined) {
-                            sessions.cache[status].data = [];
-                            console.log("WEGAS LOBBY : Error while loading sessions : ");
-                            console.log(Responses.danger(data.events[0].exceptions));
-                            $translate('COMMONS-SESSIONS-FIND-FLASH-ERROR').then(function(message) {
-                                deferred.resolve(Responses.danger(message, false));
-                            });
-                        } else {
-                            sessions.cache[status].data = [];
-                            $translate('COMMONS-SESSIONS-FIND-FLASH-ERROR').then(function(message) {
-                                deferred.resolve(Responses.danger(message, false));
-                            });
-                        }
-                    }).error(function(data) {
+        /* Cache all scenarios in a list */
+        cacheSessions = function(status) {
+            var deferred = $q.defer();
+            if (sessions.cache[status]) {
+                $http.get(sessions.getPath(status), {
+                    "headers": {
+                        "managed-mode": "true"
+                    }
+                }).success(function(data) {
+                    if (data.events !== undefined && data.events.length === 0) {
+                        sessions.cache[status].data = data.entities;
+                        $translate('COMMONS-SESSIONS-FIND-FLASH-SUCCESS').then(function(message) {
+                            deferred.resolve(Responses.success(message, sessions.cache[status]));
+                        });
+                    } else if (data.events !== undefined) {
                         sessions.cache[status].data = [];
-                        if (data.events !== undefined && data.events.length > 0) {
-                            console.log("WEGAS LOBBY : Error while loading sessions : ");
-                            console.log(Responses.danger(data.events[0].exceptions));
-                            $translate('COMMONS-SESSIONS-FIND-FLASH-ERROR').then(function(message) {
-                                deferred.resolve(Responses.danger(message, false));
-                            });
-                        } else {
-                            $translate('COMMONS-SESSIONS-FIND-FLASH-ERROR').then(function(message) {
-                                deferred.resolve(Responses.danger(message, false));
-                            });
-                        }
-                    });
-                } else {
-                    sessions.cache[status] = [];
-                    deferred.resolve(sessions.cache[status]);
-                }
-                return deferred.promise;
-            },
-
+                        console.log("WEGAS LOBBY : Error while loading sessions : ");
+                        console.log(Responses.danger(data.events[0].exceptions));
+                        $translate('COMMONS-SESSIONS-FIND-FLASH-ERROR').then(function(message) {
+                            deferred.resolve(Responses.danger(message, false));
+                        });
+                    } else {
+                        sessions.cache[status].data = [];
+                        $translate('COMMONS-SESSIONS-FIND-FLASH-ERROR').then(function(message) {
+                            deferred.resolve(Responses.danger(message, false));
+                        });
+                    }
+                }).error(function(data) {
+                    sessions.cache[status].data = [];
+                    if (data.events !== undefined && data.events.length > 0) {
+                        console.log("WEGAS LOBBY : Error while loading sessions : ");
+                        console.log(Responses.danger(data.events[0].exceptions));
+                        $translate('COMMONS-SESSIONS-FIND-FLASH-ERROR').then(function(message) {
+                            deferred.resolve(Responses.danger(message, false));
+                        });
+                    } else {
+                        $translate('COMMONS-SESSIONS-FIND-FLASH-ERROR').then(function(message) {
+                            deferred.resolve(Responses.danger(message, false));
+                        });
+                    }
+                });
+            } else {
+                sessions.cache[status] = [];
+                deferred.resolve(sessions.cache[status]);
+            }
+            return deferred.promise;
+        },
             /* Cache a session, passing the status of the session and the session to add in parameter */
             cacheSession = function(status, sessionToCache) {
                 if (status && sessionToCache && sessions.cache[status]) {
@@ -84,7 +83,6 @@ angular.module('wegas.models.sessions', [])
                     }
                 }
             },
-
             /* Uncache a scenario, passing a scenario list and the scenario to remove in parameter */
             uncacheSession = function(status, sessionToUncache) {
                 if (sessions.cache[status]) {
@@ -93,7 +91,6 @@ angular.module('wegas.models.sessions', [])
                     }
                 }
             },
-
             updateGameSession = function(sessionInfos, sessionBeforeChange) {
                 var deferred = $q.defer(),
                     gameSetted = false;
@@ -116,7 +113,6 @@ angular.module('wegas.models.sessions', [])
                 }
                 return deferred.promise;
             },
-
             updateGameModelSession = function(sessionInfos, sessionBeforeChange) {
                 var deferred = $q.defer(),
                     gameModelSetted = false,
@@ -148,7 +144,6 @@ angular.module('wegas.models.sessions', [])
                 }
                 return deferred.promise;
             },
-
             /* Update status of session (OPENED, LIVE, BIN, DELETE, SUPPRESSED) */
             setSessionStatus = function(sessionId, status) {
                 var deferred = $q.defer();
@@ -170,7 +165,11 @@ angular.module('wegas.models.sessions', [])
                     return +t.id === +teamId;
                 });
                 if (team) {
-                    $http.delete(ServiceURL + "rest/GameModel/Game/Team/" + team.id).success(function(data) {
+                    $http.delete(ServiceURL + "rest/GameModel/Game/Team/" + team.id, {
+                        "headers": {
+                            "managed-mode": "true"
+                        }
+                    }).success(function(data) {
                         session.teams = _.without(session.teams, team);
                         $translate('COMMONS-SESSIONS-TEAM-REMOVE-FLASH-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, team));
@@ -208,7 +207,11 @@ angular.module('wegas.models.sessions', [])
                         return +p.id === +playerId;
                     });
                     if (player) {
-                        $http.delete(ServiceURL + "rest/GameModel/Game/Team/" + player.teamId + "/Player/" + player.id).success(function(data) {
+                        $http.delete(ServiceURL + "rest/GameModel/Game/Team/" + player.teamId + "/Player/" + player.id, {
+                            "headers": {
+                                "managed-mode": "true"
+                            }
+                        }).success(function(data) {
                             if (team.players.length < 2) {
                                 session.teams = _.without(session.teams, team);
                             } else {
