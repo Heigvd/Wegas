@@ -115,9 +115,10 @@ public class RequestManager {
             container.put(audience, new ArrayList<>());
         }
         List<AbstractEntity> entities = container.get(audience);
-        if (!entities.contains(updated)) {
-            entities.add(updated);
+        if (entities.contains(updated)) {
+            entities.remove(updated);
         }
+        entities.add(updated);
     }
 
     /**

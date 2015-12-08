@@ -16,8 +16,10 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -30,7 +32,7 @@ import java.util.List;
     @NamedQuery(name = "findPlayerByTeamIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.id = :teamId")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Player extends AbstractEntity {
+public class Player extends AbstractEntity implements Broadcastable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -284,5 +286,10 @@ public class Player extends AbstractEntity {
         hash = 83 * hash + Objects.hashCode(this.team);
         hash = 83 * hash + Objects.hashCode(this.teamId);
         return hash;
+    }
+
+    @Override
+    public Map<String, List<AbstractEntity>> getEntities() {
+        return this.getTeam().getEntities();
     }
 }

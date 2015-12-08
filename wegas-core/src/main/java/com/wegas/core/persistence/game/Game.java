@@ -11,7 +11,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
@@ -36,7 +38,7 @@ import java.util.*;
     @NamedQuery(name = "game.findByToken", query = "SELECT DISTINCT g FROM Game g WHERE  g.status = :status AND g.token = :token")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Game extends NamedEntity {
+public class Game extends NamedEntity implements Broadcastable {
 
     private static final long serialVersionUID = 1L;
 
@@ -456,5 +458,20 @@ public class Game extends NamedEntity {
          * Used internally as game's missing.
          */
         SUPPRESSED
+    }
+
+
+    /*
+     * Broadcastable mechanism
+     */
+    @Override
+    public Map<String, List<AbstractEntity>> getEntities() {
+        String audience = Helper.getAudienceTokenForGame(this.getId());
+
+        Map<String, List<AbstractEntity>> map = new HashMap<>();
+        ArrayList<AbstractEntity> entities = new ArrayList<>();
+        entities.add(this);
+        map.put(audience, entities);
+        return map;
     }
 }
