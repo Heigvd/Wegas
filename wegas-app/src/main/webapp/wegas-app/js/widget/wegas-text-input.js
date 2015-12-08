@@ -229,6 +229,7 @@ YUI.add("wegas-text-input", function(Y) {
             return "TextInput";
         },
         destructor: function() {
+            this.editor && this.editor.destroy();
             Y.Array.each(this.handlers, function(h) {
                 h.detach();
             });
