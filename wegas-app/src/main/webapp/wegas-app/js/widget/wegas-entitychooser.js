@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Wegas
  * http://wegas.albasim.ch
  *
@@ -11,6 +11,7 @@
  * @fileoverview
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
+/*global YUI*/
 YUI.add("wegas-entitychooser", function(Y) {
     "use strict";
     var CONTENTBOX = "contentBox", EntityChooser, EntityChooser2,
@@ -25,14 +26,25 @@ YUI.add("wegas-entitychooser", function(Y) {
             Y.Wegas.Editable],
         {
             CONTENT_TEMPLATE: "<div><ul class='chooser-entities'></ul><div class='chooser-widget'></div></div>",
-            renderUI: function() {
-                var items = (this.get("variable.evaluated") ? (this.get("flatten") ? this.get("variable.evaluated").flatten() : this.get("variable.evaluated").get("items")) : []),
-                    i,
+            initializer: function() {
+                this._handlers = [];
+                /**
+                 * hold a ref to the currently selected name
+                 */
+                this.currentTarget = null;
+            },
+            syncUI: function() {
+                var items = (this.get("variable.evaluated") ?
+                        (this.get("flatten") ?
+                            this.get("variable.evaluated").flatten() :
+                            this.get("variable.evaluated").get("items")) :
+                        []),
+                    i, tmp,
                     entityBox = this.get(CONTENTBOX).one(".chooser-entities"),
                     length = items.length,
                     filter = [];
 
-
+                entityBox.empty();
                 if (this.get("classFilter")) {
                     if (!Y.Lang.isArray(this.get("classFilter"))) {
                         filter.push(this.get("classFilter"));
@@ -42,28 +54,42 @@ YUI.add("wegas-entitychooser", function(Y) {
                 }
 
                 for (i = 0; i < length; i += 1) {
-                    if (filter.length === 0 || filter.find(function(item) {
-                        return item === items[i].get("@class");
-                    })) {
+                    if (filter.length === 0 || Y.Array.find(filter, function(item) {
+                            return item === items[i].get("@class");
+                        })) {
                         if ((!items[i].getInstance().getAttrs().hasOwnProperty("active") ||
                             items[i].getInstance().get("active")) &&
                             (!items[i].getInstance().getAttrs().hasOwnProperty("enabled") ||
-                                items[i].getInstance().get("enabled"))) {
+                            items[i].getInstance().get("enabled"))) {
                             entityBox.append("<li class='chooser-entity' data-name='" + items[i].get("name") + "'>" +
                                 (items[i].get("title") || items[i].get("label")) + "</li>");
                         }
                     }
                 }
+                if (this.currentTarget) {
+                    tmp = entityBox.all("[data-name='" + this.currentTarget + "']");
+                    tmp.addClass(CLASSES.CHOOSEN);
+                    if (!tmp.size()) { //current target exists but is not rendered anymore
+                        Y.later(200, this, function() {
+                            this.widget.destroy();
+                            this.widget = null;
+                        });
+                        this.currentTarget = null;
+                    }
+                }
             },
             bindUI: function() {
                 this.get(CONTENTBOX).delegate("click", function(e) {
-                    if (e.target.hasClass(CLASSES.CHOOSEN)) { // I'm the choosen one
+                    var targetName = e.target.getData("name");
+                    if (this.currentTarget === targetName) { // I'm the choosen one
                         return;
                     }
-                    this.genWidget(e.target.getData("name"));
+                    this.genWidget(targetName);
                     this.get(CONTENTBOX).all("." + CLASSES.CHOOSEN).removeClass(CLASSES.CHOOSEN);
                     e.target.addClass(CLASSES.CHOOSEN);
+                    this.currentTarget = targetName;
                 }, ".chooser-entities .chooser-entity", this);
+                this._handlers.push(Y.Wegas.Facade.Variable.after("update", this.syncUI, this));
             },
             genWidget: function(name) {
                 var cfg = this.get("widget"),
@@ -85,9 +111,11 @@ YUI.add("wegas-entitychooser", function(Y) {
                     }
                 });
             },
-            syncUI: function() {},
             destructor: function() {
                 this.widget && this.widget.destroy();
+                Y.Array.each(this._handlers, function(handle) {
+                    handle.detach();
+                });
             }
 
         },
@@ -111,10 +139,10 @@ YUI.add("wegas-entitychooser", function(Y) {
                     _inputex: {
                         _type: "group",
                         fields: [{
-                                type: "string",
-                                name: "type",
-                                label: "Type"
-                            }]
+                            type: "string",
+                            name: "type",
+                            label: "Type"
+                        }]
                     }
                 },
                 widgetAttr: {
@@ -149,37 +177,58 @@ YUI.add("wegas-entitychooser", function(Y) {
             Y.Wegas.Editable],
         {
             CONTENT_TEMPLATE: "<div><ul class='chooser-entities'></ul><div class='chooser-widget'></div></div>",
-            initializer: function() {},
-            renderUI: function() {
+            initializer: function() {
+                this._handlers = [];
+                /**
+                 * hold a ref to the currently selected name
+                 */
+                this.currentTarget = null;
+            },
+            syncUI: function() {
                 var items = (this.get("variable.evaluated") ? (this.get("flatten") ? this.get("variable.evaluated").flatten() : this.get("variable.evaluated").get("items")) : []),
-                    i,
+                    i, tmp,
                     entityBox = this.get(CONTENTBOX).one(".chooser-entities"),
                     length = items.length,
                     filter = Y.Object.keys(this.get("widgets"));
-
+                entityBox.empty();
                 for (i = 0; i < length; i += 1) {
-                    if (filter.find(function(item) {
-                        return item === items[i].get("@class");
-                    })) {
+                    if (Y.Array.find(filter, function(item) {
+                            return item === items[i].get("@class");
+                        })) {
                         if ((!items[i].getInstance().getAttrs().hasOwnProperty("active") ||
                             items[i].getInstance().get("active")) &&
                             (!items[i].getInstance().getAttrs().hasOwnProperty("enabled") ||
-                                items[i].getInstance().get("enabled"))) {
+                            items[i].getInstance().get("enabled"))) {
                             entityBox.append("<li class='chooser-entity' data-type='" + items[i].get("@class") + "'data-name='" + items[i].get("name") + "'>" +
                                 (items[i].get("title") || items[i].get("label")) + "</li>");
                         }
                     }
                 }
+                if (this.currentTarget) {
+                    tmp = entityBox.all("[data-name='" + this.currentTarget + "']");
+                    tmp.addClass(CLASSES.CHOOSEN);
+                    if (!tmp.size()) { //current target exists but is not rendered anymore
+                        Y.later(200, this, function() {
+                            this._currentWidget.destroy();
+                            this._currentWidget = null;
+                            this._currentWidgetType = null;
+                        });
+                        this.currentTarget = null;
+                    }
+                }
             },
             bindUI: function() {
                 this.get(CONTENTBOX).delegate("click", function(e) {
-                    if (e.target.hasClass(CLASSES.CHOOSEN)) { // I'm the choosen one
+                    var targetName = e.target.getData("name");
+                    if (this.currentTarget === targetName) { // I'm the choosen one
                         return;
                     }
-                    this.genWidget(e.target.getData("type"), e.target.getData("name"));
+                    this.genWidget(e.target.getData("type"), targetName);
                     this.get(CONTENTBOX).all("." + CLASSES.CHOOSEN).removeClass(CLASSES.CHOOSEN);
                     e.target.addClass(CLASSES.CHOOSEN);
+                    this.currentTarget = targetName;
                 }, ".chooser-entities .chooser-entity", this);
+                this._handlers.push(Y.Wegas.Facade.Variable.after("update", this.syncUI, this));
             },
             genWidget: function(type, name) {
                 var widgetConfig = this.get("widgets")[type],
@@ -207,9 +256,11 @@ YUI.add("wegas-entitychooser", function(Y) {
                     }
                 });
             },
-            syncUI: function() {},
             destructor: function() {
                 this._currentWidget && this._currentWidget.destroy();
+                Y.Array.each(this._handlers, function(handle) {
+                    handle.detach();
+                });
             }
         },
         {
@@ -231,30 +282,30 @@ YUI.add("wegas-entitychooser", function(Y) {
                         elementType: {
                             type: "combine",
                             fields: [{
-                                    name: "dataType",
-                                    type: "select",
-                                    value: "DialogueDescriptor",
-                                    choices: Y.Wegas.persistence.AVAILABLE_TYPES
-                                }, {
-                                    name: "config",
+                                name: "dataType",
+                                type: "select",
+                                value: "DialogueDescriptor",
+                                choices: Y.Wegas.persistence.AVAILABLE_TYPES
+                            }, {
+                                name: "config",
+                                type: "group",
+                                fields: [{
+                                    name: "widget",
                                     type: "group",
+                                    value: {
+                                        type: "HistoryDialogue"
+                                    },
                                     fields: [{
-                                            name: "widget",
-                                            type: "group",
-                                            value: {
-                                                type: "HistoryDialogue"
-                                            },
-                                            fields: [{
-                                                    type: "string",
-                                                    name: "type",
-                                                    label: "Type"
-                                                }]
-                                        }, {
-                                            name: "widgetAttr",
-                                            value: "dialogueVariable",
-                                            type: "string"
-                                        }]
-                                }
+                                        type: "string",
+                                        name: "type",
+                                        label: "Type"
+                                    }]
+                                }, {
+                                    name: "widgetAttr",
+                                    value: "dialogueVariable",
+                                    type: "string"
+                                }]
+                            }
                             ]
                         }
                     }
