@@ -39,9 +39,11 @@ YUI.add('wegas-cards-resizable', function(Y) {
         _initValues: function() {
             var host = this.get(HOST),
                 size = this.size,
-                card = host.get("cardsData")[0],
-                smallTop, smallBottom;
-            size.illustration = host.get(CONTENT_BOX).one(".card").hasClass("card--illustred") ? 80 : 0;
+                card = host.get("cardsData")[0] || [],
+                smallTop, smallBottom,
+                cardNode;
+            cardNode = host.get(CONTENT_BOX).one(".card");
+            size.illustration = (cardNode && cardNode.hasClass("card--illustred")) ? 80 : 0;
             Y.Array.each(card.blocs, function(bloc) {
                 var blocs = size.blocs;
                 blocs[bloc.type].large += 2;
@@ -115,7 +117,11 @@ YUI.add('wegas-cards-resizable', function(Y) {
             });
         },
         resize: function() {
-            var cardsWidth = this.get(HOST).get(CONTENT_BOX).one(".card").get("offsetWidth");
+            var cardNode, cardsWidth;
+            cardNode = this.get(HOST).get(CONTENT_BOX).one(".card");
+            if (cardNode) {
+                cardsWidth = cardNode.get("offsetWidth");
+            }
             this._checkResize(cardsWidth, 0);
         },
         initializer: function() {
@@ -130,7 +136,7 @@ YUI.add('wegas-cards-resizable', function(Y) {
         },
         destructor: function() {
             this.resizeHandle.detach();
-            this.get(CONTENT_BOX).removeClass("resizable");
+            this.get(CONTENT_BOX) && this.get(CONTENT_BOX).removeClass("resizable");
         }
     });
     Y.Wegas.CardsResizable.NS = "CardsResizable";
