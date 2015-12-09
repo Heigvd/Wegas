@@ -1,6 +1,5 @@
 # Build files #
 target/*
-.vscode
 wegas-app/target
 wegas-core/target
 wegas-resources/target
@@ -36,3 +35,6 @@ settings.xml
 ehthumbs.db
 Icon?
 Thumbs.db
+
+typings/
+.vscode

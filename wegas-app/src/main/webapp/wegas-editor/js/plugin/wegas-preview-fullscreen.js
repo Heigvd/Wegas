@@ -28,8 +28,13 @@ YUI.add("wegas-preview-fullscreen", function(Y) {
                     label: "<span class='wegas-icon wegas-icon-fullscreen'></span>Fullscreen"
                 }).item(0);
 
-                fullScreenButton.after("pressedChange", function() {
+                fullScreenButton.after("pressedChange", function(event) {
                     host.get("boundingBox").swap(this.swapNode);
+                    if (event.newVal) {
+                        Y.all("body > .wegas-editview").hide();
+                    } else {
+                        Y.all("body > .wegas-editview").show();
+                    }
                 }, this);
             }
         },
