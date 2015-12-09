@@ -35,21 +35,21 @@ public class EntityListener {
 
     @PostPersist
     void onPostPersist(Object o) {
-        logger.error("Post Persist: " + o);
+        logger.trace("Post Persist: " + o);
         if (o instanceof Broadcastable) {
             Broadcastable b = (Broadcastable) o;
             Map<String, List<AbstractEntity>> entities = b.getEntities();
             if (b instanceof Team || b instanceof Player){
                 requestManager.addUpdatedEntities(entities);
             } else {
-                logger.warn("Unhandled new broadcastable entity: " + b);
+                logger.debug("Unhandled new broadcastable entity: " + b);
             }
         }
     }
 
     @PostUpdate
     void onPostUpdate(Object o) {
-        logger.error("POST UPDATE: " + o);
+        logger.trace("POST UPDATE: " + o);
         if (o instanceof Broadcastable) {
             Broadcastable b = (Broadcastable) o;
             if (b instanceof GameModel) {
@@ -57,7 +57,7 @@ public class EntityListener {
                  it's not possible to broadcast the new version -> Outdate it */
                 requestManager.addOutofdateEntities(b.getEntities());
             } else if (b instanceof AbstractEntity) {
-                logger.error("Propagate: " + b);
+                logger.debug("Propagate: " + b);
                 Map<String, List<AbstractEntity>> entities = b.getEntities();
                 requestManager.addUpdatedEntities(entities);
             }
@@ -66,17 +66,18 @@ public class EntityListener {
 
     @PreRemove
     void onPreRemove(Object o) {
-        logger.error("Pre Remove: " + o);
+        logger.trace("Pre Remove: " + o);
         if (o instanceof Broadcastable) {
             Broadcastable b = (Broadcastable) o;
             Map<String, List<AbstractEntity>> entities = b.getEntities();
             if (b instanceof VariableDescriptor || b instanceof Game){
-                //logger.error(("Entities: " + entities.size()));
+                logger.debug(("#Entities: " + entities.size()));
                 requestManager.addDestroyedEntities(entities);
             } else if (b instanceof Team || b instanceof Player){
+                logger.debug(("#Entities: " + entities.size()));
                 requestManager.addUpdatedEntities(entities);
             } else {
-                logger.warn("Unhandled destroyed broadcastable entity: " + b);
+                logger.debug("Unhandled destroyed broadcastable entity: " + b);
             }
         }
     }
