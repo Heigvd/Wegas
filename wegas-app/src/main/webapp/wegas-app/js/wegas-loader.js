@@ -929,6 +929,9 @@ YUI().use(function(Y) {
             },
             json_patch: {
                 path: "jsonpatch/json-patch-duplex-min.js"
+            },
+            wikEdDiff: {
+                path: "wikEdDiff-min.js"
             }
         }
     });
