@@ -344,7 +344,7 @@ YUI.add('wegas-proggame-display', function(Y) {
                 this._endTimer && this._endTimer.cancel();
             });
             this.attach(textE);
-            textE._endTimer = Y.later(delay || 3500, textE, function() {
+            textE._endTimer = Y.later(delay || 2000, textE, function() {
                 this.destroy();
                 if (!preventEvent) {
                     Crafty.trigger(COMMANDEXECUTED);
