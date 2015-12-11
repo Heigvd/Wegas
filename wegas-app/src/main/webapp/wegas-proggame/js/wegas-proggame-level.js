@@ -243,8 +243,11 @@ YUI.add('wegas-proggame-level', function(Y) {
             if (this.get(STATE) === "run" || this.get(STATE) === "debugrun") {
                 this.set(STATE, IDLE); // toggle between idle
             } else {
-                this.set(STATE, "debugrun"); // and run mode
-            //this.set(STATE, "run");
+                if (Y.Object.keys(this.mainEditorTab.aceField.editor.getSession().getBreakpoints()).length || this.get(STATE) === "breaking") {
+                    this.set(STATE, "debugrun"); // and run mode
+                } else {
+                    this.set(STATE, "run");
+                }
             }
         },
         run: function() {
@@ -287,7 +290,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                 cfg: {
                     method: "POST",
                     data: "run(" +
-                        "function (name) {with(this) {" + code + "\n}}, " + // Player's code
+                        "function (name) {" + code + "\n}, " + // Player's code
                         Y.JSON.stringify(this.toObject()) +
                         ", " + // the current level
                         Y.JSON.stringify(interpreterCfg) +
@@ -485,7 +488,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                 if (e.domEvent.target.className.indexOf("ace_gutter-cell") === -1 || this.disableBreakpoint) { // Check if breakpoint has been bought from the shop
                     return;
                 }
-                if (tab.get(LABEL) !== "Main") { // Breakpoints are not implemented in files yet
+                if (tab.get(LABEL) !== "Code") { // Breakpoints are not implemented in files yet
                     alert("Breakpoints are only available in the Main code");
                     return;
                 }
@@ -812,11 +815,101 @@ YUI.add('wegas-proggame-level', function(Y) {
             map: {
                 type: ARRAY,
                 value: [
-                    [{x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}],
-                    [{x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}],
-                    [{x: 0, y: 0}, {x: 0, y: 1}, {x: 0, y: 1}, {x: 0, y: 1}, {x: 0, y: 1}, {x: 0, y: 0}],
-                    [{x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}],
-                    [{x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}]
+                    [{
+                        x: 0,
+                        y: 0
+                    }, {
+                        x: 0,
+                        y: 0
+                    }, {
+                        x: 0,
+                        y: 0
+                    }, {
+                        x: 0,
+                        y: 0
+                    }, {
+                        x: 0,
+                        y: 0
+                    }, {
+                        x: 0,
+                        y: 0
+                    }],
+                    [{
+                        x: 0,
+                        y: 0
+                    }, {
+                        x: 0,
+                        y: 0
+                    }, {
+                        x: 0,
+                        y: 0
+                    }, {
+                        x: 0,
+                        y: 0
+                    }, {
+                        x: 0,
+                        y: 0
+                    }, {
+                        x: 0,
+                        y: 0
+                    }],
+                    [{
+                        x: 0,
+                        y: 0
+                    }, {
+                        x: 0,
+                        y: 1
+                    }, {
+                        x: 0,
+                        y: 1
+                    }, {
+                        x: 0,
+                        y: 1
+                    }, {
+                        x: 0,
+                        y: 1
+                    }, {
+                        x: 0,
+                        y: 0
+                    }],
+                    [{
+                        x: 0,
+                        y: 0
+                    }, {
+                        x: 0,
+                        y: 0
+                    }, {
+                        x: 0,
+                        y: 0
+                    }, {
+                        x: 0,
+                        y: 0
+                    }, {
+                        x: 0,
+                        y: 0
+                    }, {
+                        x: 0,
+                        y: 0
+                    }],
+                    [{
+                        x: 0,
+                        y: 0
+                    }, {
+                        x: 0,
+                        y: 0
+                    }, {
+                        x: 0,
+                        y: 0
+                    }, {
+                        x: 0,
+                        y: 0
+                    }, {
+                        x: 0,
+                        y: 0
+                    }, {
+                        x: 0,
+                        y: 0
+                    }]
                 ],
                 validator: Y.Lang.isArray,
                 _inputex: {
@@ -1088,36 +1181,36 @@ YUI.add('wegas-proggame-level', function(Y) {
         //}
         },
         API: {
-            say: {
+            "say": {
                 label: "say(text:String)",
                 tooltip: "say(text: String)\n" +
                     "Your avatar will loudly say the content of the text parameter.\n\n" +
-                    "Parameters\ntext:String - The text you want to say out lout"
+                    "Parameters\ntext:String - The text you want to say out loud"
             },
-            read: {
+            "read": {
                 label: "read():Number",
                 tooltip: "read():Number\n" +
                     "Your avatar will read any panel on the same case as he is and return it.\n\n" +
                     "Returns\nNumber - The text on the panel"
             },
-            move: {
+            "move": {
                 label: "move()",
                 tooltip: "move()\n" +
                     "Using this function, your avatar will move one tile\nin the direction he is currently facing."
             },
-            left: {
+            "left": {
                 label: "left()",
                 tooltip: "left()\n" +
                     "Your avatar turns to the left without moving."
             },
-            right: {
+            "right": {
                 label: "right()",
                 tooltip: "right()\n" +
                     "Your avatar turns to the right without moving."
             },
             "Math.PI": {
                 pkg: "Math",
-                tooltip: "Math:PI:Number\n\nContante containing the value of PI (approx. 3.14)",
+                tooltip: "Math:PI:Number\n\nConstant containing the value of PI (approx. 3.14)",
                 label: "PI:Number"
             },
             "Math.floor": {
@@ -1144,7 +1237,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                     "Returns\n" +
                     "Number - the value of x rounded to the nearest integer"
             },
-            include: {
+            "include": {
                 label: "include(name:String)",
                 tooltip: "include(name:String)\n\n" +
                     "Allows to include a file from your file library. This way you can reuse your code multiple times."
