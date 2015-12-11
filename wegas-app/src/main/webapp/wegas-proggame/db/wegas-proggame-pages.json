@@ -4678,6 +4678,18 @@
                         }
                     },
                     {
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "subpageId": "2",
+                            "targetPageLoaderId": "maindisplayarea",
+                            "variable": {
+                                "@class": "Script",
+                                "content": ""
+                            }
+                        }
+                    },
+                    {
                         "fn": "ExecuteScriptAction",
                         "cfg": {
                             "targetEvent": "click",
@@ -4700,7 +4712,7 @@
                         "cfg": {
                             "condition": {
                                 "@class": "Script",
-                                "content": "Variable.find(gameModel, \"currentLevel\").getValue(self)<24;\n"
+                                "content": "Variable.find(gameModel, \"maxLevel\").getValue(self)<24;\n"
                             },
                             "attribute": "disabled",
                             "value": ""
@@ -4821,7 +4833,7 @@
                         "cfg": {
                             "targetEvent": "click",
                             "subpageId": "2",
-                            "targetPageLoaderId": "maindisplayare",
+                            "targetPageLoaderId": "maindisplayarea",
                             "variable": {
                                 "@class": "Script",
                                 "content": ""
@@ -5156,6 +5168,18 @@
                             "styles": {
                                 "width": "60px",
                                 "height": "60px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "subpageId": "2",
+                            "targetPageLoaderId": "maindisplayarea",
+                            "variable": {
+                                "@class": "Script",
+                                "content": ""
                             }
                         }
                     },
