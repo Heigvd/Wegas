@@ -188,7 +188,7 @@ var ReviewHelper = (function() {
 
     function summarize(peerReviewDescriptorName) {
         var prd = Variable.findByName(gameModel, peerReviewDescriptorName),
-            game = self.getGame(), teams = game.getTeams(), t, teamId,
+            game = self.getGame(), teams = game.getTeams(), t, teamId, team,
             pris, pri, reviews, review, evs, ev, evK, i, j, k,
             entry, nbRDone, nbRTot, nbRCom, nbRComClosed, nbRComTotal,
             evaluationsR, evaluationsC, evaluationsAll, evaluationsValues = {}, evDescriptor,
@@ -236,11 +236,17 @@ var ReviewHelper = (function() {
         pris = prd.getScope().getVariableInstances();
 
         for (t = 0; t < teams.size(); t += 1) {
-            teamId = new Long(teams.get(t).getId());
+            team = teams.get(t);
+            teamId = new Long(team.getId());
             pri = pris[teamId];
-            aPlayer = instanceFacade.findAPlayer(pri);
-            if (pris.length > 1 && aPlayer.getTeam() instanceof  com.wegas.core.persistence.game.DebugTeam) {
-                // Skip Debug Team
+
+            if (team.getPlayers().size() > 0) {
+                aPlayer = instanceFacade.findAPlayer(pri);
+            } else {
+                aPlayer = null;
+            }
+            if (aPlayer === null || (pris.length > 1 && aPlayer.getTeam() instanceof  com.wegas.core.persistence.game.DebugTeam)) {
+                // Skip Debug & empty Teams
                 continue;
             }
 
@@ -375,7 +381,7 @@ var ReviewHelper = (function() {
                 });
             });
         }
-        ;
+
         return JSON.stringify(monitoring);
     }
 
