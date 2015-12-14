@@ -64,7 +64,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
      *
      */
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "transition_id", referencedColumnName = "state_id")
+    @JoinColumn(name = "state_id", referencedColumnName = "state_id")
     @OrderBy("index")
     private List<Transition> transitions = new ArrayList<>();
 
@@ -156,7 +156,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     public List<Script> getScripts() {
         List<Script> ret = new ArrayList<>();
         ret.add(this.onEnterEvent);
-        for(Transition transition: this.getTransitions()){
+        for (Transition transition : this.getTransitions()) {
             ret.addAll(transition.getScripts());
         }
         return ret;
