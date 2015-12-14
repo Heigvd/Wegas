@@ -44,7 +44,9 @@ YUI.add("wegas-inputex-rte", function(Y) {
          * @returns {undefined}
          */
         destroy: function() {
-            tinyMCE.remove(this.el.id);
+            if (this.editor) {
+                tinyMCE.remove(this.editor);
+            }
             this.editor = null;
             RTEField.superclass.destroy.call(this);
         },
@@ -78,7 +80,7 @@ YUI.add("wegas-inputex-rte", function(Y) {
                     hidden_tootlbar: [2, 3],
                     file_browser_callback: this.onFileBrowserClick,
                     setup: Y.bind(function(editor) {
-                        editor.on('change', Y.bind(this.fireUpdatedEvt, this));
+                        editor.on('change', Y.bind(this.fireUpdatedEvt, this)); // Fire update on editor updates
                         this.editor = editor;
                     }, this),
                     image_advtab: true,
@@ -109,10 +111,6 @@ YUI.add("wegas-inputex-rte", function(Y) {
                             block: "code"
                         }]
                 });
-
-                //this.editor.on('change', Y.bind(this.sendUpdatedEvt, this));    // Update on editor update
-                //    this.editor.render();
-
                 Y.one(this.wrapEl).delegate("click", function(e) {
                     Y.one(this.wrapEl).one(".mce-tinymce").toggleClass("mce--more");
                 }, ".mce-btn[aria-label='More options']", this);
@@ -168,7 +166,7 @@ YUI.add("wegas-inputex-rte", function(Y) {
             }
             RTEField.superclass.setValue.call(this, value, sendUpdatedEvent);
 
-            if (this.editor && Y.Lang.isString(value)) {
+            if (this.editor && this.editor.initialized && Y.Lang.isString(value)) {
                 this.editor.setContent(value);
             }
         },
