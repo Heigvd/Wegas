@@ -532,7 +532,7 @@ YUI.add("wegas-review-widgets", function(Y) {
         onAction: function(action) {
             var prd = this.get("variable.evaluated");
 
-            Wegas.Panel.confirmPlayerAction(Y.bind(function() {
+            Wegas.Panel.confirm("This action cannot be undone.<br />\nDo you really want to enter the next step of the peer reviewing process?", Y.bind(function() {
                 this.showOverlay();
                 Y.Wegas.Facade.Variable.sendRequest({
                     request: "/PeerReviewController/" + prd.get("id") + "/" + action + "/" + Y.Wegas.Facade.Game.cache.getCurrentGame().get("id"),
