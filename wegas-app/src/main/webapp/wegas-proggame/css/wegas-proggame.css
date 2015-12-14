@@ -73,6 +73,22 @@ html, .editor-preview {
     border: none;
     background-color: rgba(0,0,0, 0.2);
 }
+/*.progggame-button-map{
+    background: url(../../wegas-proggame/images/src/iconMap.png); 
+    background-size: 36px 26px;
+    background-repeat: no-repeat;
+    padding-left: 31px;
+    font-size: 1.2em;
+    font-weight: bold;
+    padding: 0px 9px 0 39px;
+    border-radius: 12px;
+    line-height: 2.2em;
+    height: 32px;
+}
+
+.proggame-button-map:hover {
+    box-shadow: 0px 0px 3px black inset,0px 0px 3px black;
+}*/
 .proggame-button-levels:hover,
 .proggame-button-shop:hover,
 .proggame-button-courses:hover,
@@ -92,7 +108,9 @@ html, .editor-preview {
     background-position: 7px -143px;
 }
 .wegas-unreadcount .value {
-    background-color: transparent;
+    background-color: #FF9514;
+    /*        #ED2A07;*/
+    box-shadow: none;
     margin: 0 0px 0 2px;
     padding: 2px 5px 1px 5px;
     font-size: 0.8em;
@@ -162,7 +180,7 @@ html, .editor-preview {
     background: transparent;
     text-transform: uppercase;
     color: white;
-    font-size: 1.8em;
+    font-size: 1.9em;
     padding: 0;
     padding-top: 4px;
     line-height: 0.9;
@@ -174,6 +192,9 @@ html, .editor-preview {
     -o-border-image: url(../../wegas-proggame/images/dialog.png) 7 stretch;
     border-image: url(../../wegas-proggame/images/dialog.png) 7 stretch;
     opacity: 0.8;
+}
+.yui3-skin-sam .proggame-levelselection-button{
+    font-size: 1.2em !important;
 }
 .yui3-skin-sam .proggame-levelselection-button:hover,
 .yui3-skin-sam .proggame-button:hover,
@@ -210,7 +231,7 @@ html, .editor-preview {
 }
 /* Levels style */
 .wegas-proggame-level {
-    background: url(../../wegas-proggame/images/blackboard2-withline.png) no-repeat;
+    background: url(../../wegas-proggame/images/blackboardEntier.png) no-repeat;
     height: 708px;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -234,6 +255,8 @@ html, .editor-preview {
     line-height: 22px;
     padding-left: 35px;
     letter-spacing: 3px;
+    cursor: default;
+    
 }
 .proggame-title h1 {
     padding-top: 36px;
@@ -258,9 +281,9 @@ html, .editor-preview {
     background-position: 0 -32px;
 }
 .proggame-title .proggame-level {
-    left: 212px;
-    top: 27px;
-    background-position: 0 -69px;
+    left: 860000px;
+    top: -60000px;
+    /*    background-position: 0 -69px;*/
 }
 
 .proggame-title .proggame-level:hover {
@@ -274,8 +297,8 @@ html, .editor-preview {
 }
 /* Level: Run code buttons */
 .proggame-buttons {
-    position: absolute;
-    top: 529px;
+    position: relative;
+    top: 105px;
     left: 636px;
     z-index: 10;   
 }
@@ -311,6 +334,7 @@ html, .editor-preview {
     overflow: auto;
     background: none;
     border: none;
+    height: 100%
 }
 .wegas-proggame-level .yui3-tab-label {
     text-transform: uppercase;
@@ -346,6 +370,7 @@ html, .editor-preview {
     opacity: 1;
     color: white;
     background: none;
+    cursor: default;
 }
 .wegas-proggame-level .yui3-tab-label:hover,
 .wegas-proggame-level .yui3-tab-label:focus  {
@@ -368,7 +393,7 @@ html, .editor-preview {
     position: absolute;
     top: 99px;
     left: 46px;
-    max-width: 180px;
+    width: 180px;
 } 
 .proggame-api .selected>div>.yui3-treeleaf-content-header,
 .proggame-api .selected>.yui3-treenode-content-header {
@@ -395,12 +420,18 @@ html, .editor-preview {
 
 /* Level: Debugger */
 .proggame-debugger {
-    position: absolute;
+    position: relative;
     left: 673px;
-    top: 449px;
+    top: -25px;
+    width: 200px;
+    height: 100%;
+}
+.proggame-debugger .yui3-tabview-content{
+    height: 100%;
 }
 .proggame-debugger .yui3-tabview-panel {
-    height: 168px;
+    min-height: 168px;
+    height: 100%;
     width: 213px;   
 }
 .proggame-debugger .selected>div>.yui3-treeleaf-content-header,
@@ -448,15 +479,61 @@ html, .editor-preview {
 #cr-stage > div {
     width: 400px;
 }
+.movable{
+    position: absolute;
+    top: 360px;
+    /*    min-height: 360px;*/
+    /*    background: url(../../wegas-proggame/images/blackboard_Game.png);*/
+}
+.movable2{
+    position: relative;
+    height: 100%;
+}
+.barre{
+    background: url(../../wegas-proggame/images/ligneBoisFinal.png);
+    height: 22px;
+    width: 900px;
+}
 /* Level: Code */
 .code {
     position: absolute;
-    top: 446px;
+    top: 30px;
+    bottom: -18px;
     left: 7px;
     font-size: 5pt;
     color:  #fefefe;
     right: 277px;
+    width: 655px;
+    overflow: hidden;
+}
+.wegas-proggame-level .yui3-tabview{
+    height: 100%;
+}
+.code .yui3-tabview-content{
+    height: 100%;
+    position: relative;
+}
+.wegas-proggame-level .code .yui3-tabview-panel{
+    position: absolute;
+    top: 32px;
+    bottom: 0px;
     width: 653px;
+    overflow: hidden;
+}
+.code .yui3-tab-panel{
+    height: inherit;
+}
+.code .yui3-tabview{
+    height: 100%;
+}
+.code .inputEx-fieldWrapper{
+    height: inherit;
+}
+.code .inputEx-Field{
+    height: inherit;
+}
+.wegas-proggame-level-content .inputEx-Field .ace_editor {
+    height: 100%;
 }
 .code .inputEx-Field {
     float: none; /* Prevent inputex default to preserve width*/
@@ -476,9 +553,25 @@ html, .editor-preview {
     outline-color: transparent;
 }
 /* Ace styles */
-.wegas-proggame-level-content .inputEx-Field .ace_editor {
-    height: 170px !important;
+.ace-twilight .ace_gutter {
+    height: 100% !important;
 }
+
+.ace_scroller {
+    height: 100% !important;
+}
+
+.ace_gutter-layer{
+    height: 100% !important;
+}
+
+.ace_content{
+    height: 100% !important;
+}
+.ace_text-input{
+    height: 100% !important;
+}
+
 .ace_gutter-cell.ace_breakpoint {
     /*border-radius: 20px 0px 0px 20px;*/
     /*box-shadow: 0px 0px 1px 1px red inset;*/
@@ -503,7 +596,7 @@ html, .editor-preview {
 }
 .proggame-panel .wegas-panel-content {
     background: url(../../wegas-proggame/images/blackboard1.png);
-    /*width: 800px;*/
+    /*    width: 800px;*/
     border: none;
     box-shadow: none;
     color: white;
@@ -603,13 +696,16 @@ html, .editor-preview {
     background: url(../../wegas-proggame/images/proggame-levelend-win.png) 30px 0;
     width: 833px;
     height: 168px;
+    /*    width: 833px;
+        height: 168px;*/
     position: absolute;
-    top: 0;
+    top: -45px;
 }
 .wegas-proggame-level .proggame-levelend-star {
     background: url(../../wegas-proggame/images/proggame-levelend-star.png);
     width: 49px;
     height: 49px;
+    top: 150px;
     position: absolute;
 }
 .wegas-proggame-level .proggame-levelend-staractive {
@@ -628,14 +724,14 @@ html, .editor-preview {
     left: 494px;
 }
 .proggame-levelend-money {
-    background: url(../../wegas-proggame/images/proggame-icons.png) no-repeat 0 -51px;
+    background: url(../../wegas-proggame/images/proggame-icons) no-repeat 0 -51px;
     padding-left: 41px;
     font-size: 1.7em;
     color: #faff46;
     text-shadow: 1px 2px 1px black;
     position: absolute;
-    top: 262px;
-    left: 405px;
+    top: 220px;
+    left: 385px;
 }
 .proggame-levelend-restart, 
 .proggame-levelend-nextlevel {
@@ -651,13 +747,13 @@ html, .editor-preview {
 .proggame-levelend-restart {
     background: url(../../wegas-proggame/images/proggame-levelend-restart.png) no-repeat top center;
     width: 75px;
-    top: 312px;
+    top: 255px;
     left: 304px;
 }
 .proggame-levelend-nextlevel {
     background: url(../../wegas-proggame/images/proggame-levelend-next.png) no-repeat top center;
     width: 87px;
-    top: 312px;
+    top: 255px;
     left: 514px;
 }
 .proggame-levelend-restart:hover, 
@@ -701,3 +797,11 @@ html, .editor-preview {
     left: 0px;
     z-index: 1002;
 }
+
+.questionMark {
+/*    pointer-events: none;*/
+    cursor: default;
+    text-decoration: none; 
+    float: right;
+}
+

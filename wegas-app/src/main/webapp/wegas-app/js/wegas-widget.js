@@ -22,11 +22,12 @@ YUI.add("wegas-widget", function(Y) {
      * @class Extension common to all wegas widgets
      */
     function Widget() {
-        /*this.before("destroy", function() {
-            while (this.overlayCounter){
+        this.before("destroy", function() {
+            while (this.overlayCounter > 0) {
                 this.hideOverlay();
+                this.overlayCounter -= 1;
             }
-        });*/
+        });
         this.after("render", function() {
             this.overlayCounter = 0;
             this.get(BOUNDING_BOX)

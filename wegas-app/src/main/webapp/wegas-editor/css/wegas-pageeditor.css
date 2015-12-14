@@ -14,6 +14,9 @@
 .wegas-choicelist,
 .wegas-pageloader{
     -webkit-transition: padding-top 0.7s;
+    -o-transition: padding-top 0.7s;
+    -moz-transition: padding-top 0.7s;
+    transition: padding-top 0.7s;
 }
 .wegas-pageeditor-designmode > .wegas-pageloader-content > .wegas-widget-editable {
     box-shadow: 1px 0 0 darkgray, -1px 0 0 darkgray;
@@ -196,7 +199,6 @@
 }
 body > .wegas-pageloader {
     position: absolute;
-    background: white;
     overflow: auto;
     width: 100%;
     height: 100%;
