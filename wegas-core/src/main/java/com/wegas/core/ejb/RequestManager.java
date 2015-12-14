@@ -24,6 +24,8 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
 import javax.script.ScriptEngine;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 //import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -266,6 +268,15 @@ public class RequestManager {
         this.locale = local;
     }
 
+    public boolean tryLock(String token) {
+        boolean tryLock = mutexSingleton.tryLock(token);
+        if (tryLock) {
+            // Only register token if successfully locked
+            lockedToken.add(token);
+        }
+        return tryLock;
+    }
+
     public void lock(String token) {
         mutexSingleton.lock(token);
         lockedToken.add(token);
@@ -295,4 +306,16 @@ public class RequestManager {
         }
     }
 
+    /**
+     *
+     * @param millis
+     */
+    public void pleaseWait(long millis) {
+        if (millis > 0) {
+            try {
+                TimeUnit.MILLISECONDS.sleep(millis);
+            } catch (InterruptedException ex) {
+            }
+        }
+    }
 }
