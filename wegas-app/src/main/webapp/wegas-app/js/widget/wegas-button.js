@@ -149,29 +149,22 @@ YUI.add("wegas-button", function(Y) {
             var k;
             this.handlers = {};
             this._counters = {
-                "InboxDescriptor": function(descriptor, instance) {
-                    return instance.get("unreadCount");
+                "InboxDescriptor": function(descriptor, instance, resolve) {
+                    resolve(instance.get("unreadCount"));
                 },
-                "DialogueDescriptor": function(descriptor, instance) {
-                    return 0;
-                    /*var state = descriptor.getCurrentState(),
-                     actions = state.getAvailableActions(function(availableActions) {
-                     
-                     });
-                     
-                     if (instance.get("enabled") && false) {
-                     return 1;
-                     } else {
-                     return 0;
-                     }*/
+                "DialogueDescriptor": function(descriptor, instance, resolve) {
+                    var state = descriptor.getCurrentState();
+                      state.getAvailableActions(function(availableActions){
+                          resolve(availableActions.length > 0 ? 1 : 0);
+                      });
                 },
-                "QuestionDescriptor": function(descriptor, instance) {
+                "QuestionDescriptor": function(descriptor, instance, resolve) {
                     if (instance.get("replies")) {
-                        return instance.get("replies").length === 0 && instance.get("active") ? 1 : 0; // only count if it is active
+                        resolve(instance.get("replies").length === 0 && instance.get("active") ? 1 : 0); // only count if it is active
                     }
-                    return 0;
+                    resolve(0);
                 },
-                "PeerReviewDescriptor": function(descriptor, instance) {
+                "PeerReviewDescriptor": function(descriptor, instance, resolve) {
                     var i, j, k, types = ["toReview", "reviewed"],
                         reviews, review,
                         counter = 0;
@@ -186,7 +179,7 @@ YUI.add("wegas-button", function(Y) {
                             }
                         }
                     }
-                    return counter;
+                    resolve(counter);
                 }
             };
             for (k in this.get("userCounters")) {
@@ -212,9 +205,11 @@ YUI.add("wegas-button", function(Y) {
          * unread on the host.
          */
         syncUI: function() {
+            this.updateCounter();
+        },
+        setCounterValue: function(unreadCount) {
             var bb = this.get('host').get(BOUNDINGBOX),
-                target = bb.one(".wegas-unreadcount"),
-                unreadCount = this.getUnreadCount();
+                target = bb.one(".wegas-unreadcount");
 
             if (!target) {                                                      // If the counter span has not been rendered, do it
                 bb.append('<span class="wegas-unreadcount"></span>');
@@ -245,9 +240,9 @@ YUI.add("wegas-button", function(Y) {
          * @return Number of unread.
          * @description Count the number of unread reply in given variable.
          */
-        getUnreadCount: function() {
+        updateCounter: function() {
             var i, instance, /*messages,*/ items, count = 0, klass,
-                list = this.get('variable.evaluated'), descriptor;
+                list = this.get('variable.evaluated'), descriptor, context = this, promises = [];
 
             if (!list) {
                 return 0;
@@ -267,14 +262,24 @@ YUI.add("wegas-button", function(Y) {
                     }
                 } else {
                     if (this._counters[klass]) {
-                        count += this._counters[klass](descriptor, descriptor.getInstance());
+                        promises.push(new Y.Promise(function(resolve, reject) {
+                            context._counters[klass](descriptor, descriptor.getInstance(), function(count) {
+                                resolve(count);
+                            });
+                        }));
                     }
                 }
 
                 descriptor = list.pop();
             }
 
-            return count;
+            Y.Promise.all(promises).then(function(allCounts) {
+                var total = 0, i;
+                for (i = 0; i < allCounts.length; i += 1) {
+                    total += allCounts[i];
+                }
+                context.setCounterValue(total);
+            });
         }
     }, {
         NS: "UnreadCount",
@@ -304,7 +309,8 @@ YUI.add("wegas-button", function(Y) {
                     label: "Unread count",
                     classFilter: ["ListDescriptor", "InboxDescriptor"]
                 }
-            }, userCounters: {
+            }, 
+            userCounters: {
                 type: "object",
                 value: {},
                 optional: true,
