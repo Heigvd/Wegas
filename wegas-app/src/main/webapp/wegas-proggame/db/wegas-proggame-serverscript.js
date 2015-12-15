@@ -542,10 +542,10 @@ function run(playerFn, level, cfg) {
     return JSON.stringify(simulation.getCommands());
 }
 //node debug
-var exports;
-if (exports) {
-    exports.run = run;
-    function print() {
-        console.log(arguments);
-    }
-}
+// var exports;
+// if (exports) {
+//     exports.run = run;
+//     function print() {
+//         console.log(arguments);
+//     }
+// }
