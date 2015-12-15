@@ -62,6 +62,7 @@ YUI.add('wegas-dashboard', function(Y) {
          * @returns {undefined}
          */
         phenixize: function() {
+            return;
             var parent, childIndex, cfg = {
                 "name": "overview",
                 "type": "TeamsOverviewDashboard",
