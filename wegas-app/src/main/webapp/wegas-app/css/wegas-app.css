@@ -159,9 +159,13 @@ font {
     -moz-animation: fadein 0.2s 0.1s 1;
     animation: fadein 0.2s 0.1s 1;
 }
+
 .wegas-loading-overlay:after {
-    /*content: "A long-running process has been\a detected. Please wait...";*/
     content: "Please wait...";
+}
+
+.wegas-loading-overlay:before,
+.wegas-loading-overlay:after {
     text-shadow: 0 0 3px white;
     font-style: italic;
     position:absolute;
@@ -182,14 +186,23 @@ font {
     background: rgba(0, 0, 0, 0.5);
 }
 
-.wegas-loading.maintenance .wegas-loading-overlay:after {
-    content: "Temporarily Down For Maintenance. Please Wait";
-    opacity: 1;
+.wegas-loading.maintenance .wegas-loading-overlay:before {
+    content: "Upgrade in progress.\A\A";
     margin-left : -11em;
-    color: rgb(176, 16, 16);
-    text-shadow: 0 0 2px #D78B8B;
     font-weight: 900;
     font-size: 1.5em;
+}
+.wegas-loading.maintenance .wegas-loading-overlay:before,
+.wegas-loading.maintenance .wegas-loading-overlay:after {
+    color: #FFFFFF;
+    text-shadow: 0 0 2px #0C0C0C;
+    opacity: 1;
+}
+.wegas-loading.maintenance .wegas-loading-overlay:after {
+    content: "\A\AYou may consider to refresh the page once this message has disappeared.";
+    margin-left : -11em;
+    font-weight: 800;
+    font-size: 1.3em;
 }
 .wegas-loading-overlay.wegas-loading-long:after {
     opacity: 1;
