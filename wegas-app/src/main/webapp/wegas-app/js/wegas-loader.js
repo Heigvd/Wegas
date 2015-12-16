@@ -958,7 +958,7 @@ YUI().use(function(Y) {
                 path: "excanvas/excanvas.compiled.js"
             },
             crafty: {
-                path: "crafty/0.6.2/crafty-min.js"
+                path: "crafty/0.7.0/crafty.js"
             },
             ace: {
                 async: false,

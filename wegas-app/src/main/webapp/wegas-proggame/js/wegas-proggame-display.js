@@ -45,7 +45,7 @@ YUI.add('wegas-proggame-display', function(Y) {
             Crafty.init(TILESIZE * gridW, TILESIZE * gridH); // Init crafty
 
             if (Crafty.support.canvas) {
-                Crafty.canvas.init(); // Init crafty's canvas support
+                Crafty.canvasLayer.init(); // Init crafty's canvas support
             }
 
             for (i = 0; i < gridH; i += 1) { // Render tiles
@@ -363,7 +363,7 @@ YUI.add('wegas-proggame-display', function(Y) {
     Crafty.c("NPC", {
         init: function() {
             this.requires("TintSprite, Character")
-                .tintSprite("D6D600", 1);
+                .tintSprite("#D6D600", 1);
         }
     });
     Crafty.c("Tile", {
@@ -581,7 +581,7 @@ YUI.add('wegas-proggame-display', function(Y) {
      */
     var tmp_canvas = document.createElement("canvas");
     Crafty.c("TintSprite", {
-        _color: Crafty.toRGB("FFFFFF"),
+        _color: "rgba(255,255,255,1)",
         init: function() {
             this.bind("Draw", this.draw)
                 .bind("RemoveComponent", function(e) {
@@ -591,8 +591,13 @@ YUI.add('wegas-proggame-display', function(Y) {
                 });
         },
         tintSprite: function(color, opacity) {
+            var col = {};
+            Crafty.assignColor(color, col);
+            if (opacity === undefined) {
+                opacity = 1;
+            }
             this.__newColor = true;
-            this._color = Crafty.toRGB(color, opacity);
+            this._color = "rgba(" + col._red + "," + col._green + "," + col._blue + "," + opacity + ")";
             this.trigger("Change");
             return this;
         },
