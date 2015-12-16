@@ -173,8 +173,8 @@ YUI.add("wegas-button", function(Y) {
                         reviews = instance.get(types[i]);
                         for (j = 0; j < reviews.length; j++) {
                             review = reviews[j];
-                            if ((i === 0 && review.get("reviewState") !== "DISPATCHED") ||
-                                (i === 1 && review.get("reviewState") !== "NOTIFIED")) {
+                            if ((i === 0 && review.get("reviewState") === "DISPATCHED") ||
+                                (i === 1 && review.get("reviewState") === "NOTIFIED")) {
                                 counter++;
                             }
                         }
