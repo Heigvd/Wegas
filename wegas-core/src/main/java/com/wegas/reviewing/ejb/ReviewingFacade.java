@@ -7,6 +7,7 @@
  */
 package com.wegas.reviewing.ejb;
 
+import com.wegas.core.Helper;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
@@ -14,6 +15,7 @@ import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.event.internal.DescriptorRevivedEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
@@ -22,6 +24,8 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.primitive.StringInstance;
+import com.wegas.core.persistence.variable.primitive.TextInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.GameScope;
@@ -33,7 +37,9 @@ import com.wegas.reviewing.persistence.evaluation.EvaluationInstance;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -224,8 +230,35 @@ public class ReviewingFacade {
                     }
                 }
             }
+
+            VariableDescriptor toReview = prd.getToReview();
+            for (Iterator<PeerReviewInstance> it = pris.iterator(); it.hasNext();) {
+                PeerReviewInstance pri = it.next();
+                try {
+                    Player findAPlayer = variableInstanceFacade.findAPlayer(pri);
+                    VariableInstance toReviewInstance = toReview.getInstance(findAPlayer);
+                    boolean reject = false;
+                    if (toReviewInstance instanceof TextInstance) {
+                        TextInstance primitive = (TextInstance) toReviewInstance;
+                        reject = Helper.isNullOrEmpty(primitive.getValue());
+                    } else if (toReviewInstance instanceof StringInstance) {
+                        StringInstance primitive = (StringInstance) toReviewInstance;
+                        reject = Helper.isNullOrEmpty(primitive.getValue());
+                    }
+                    if (reject) {
+                        pri.setReviewState(PeerReviewDescriptor.ReviewingState.EVICTED);
+                        variableInstanceFacade.merge(pri);
+                        touched.add(pri);
+                        it.remove();
+                    }
+                } catch (NoPlayerException ex) {
+                    // Evict
+                }
+            }
             numberOfReview = Math.min(prd.getMaxNumberOfReview(), pris.size() - 1);
-            //throw WegasErrorMessage.error("Unable to dispatch reviews: there is not enough players");
+            if (numberOfReview < 1) {
+                throw WegasErrorMessage.error("Unable to dispatch reviews: there is not enough players");
+            }
         }
 
         Collections.shuffle(pris);

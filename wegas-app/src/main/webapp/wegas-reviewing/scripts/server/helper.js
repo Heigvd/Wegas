@@ -256,102 +256,106 @@ var ReviewHelper = (function() {
                 comments: {}
             };
 
-            reviews = Java.from(pri.getToReview());
-            maxNumberOfValue += reviews.length;
-
-            nbRDone = nbRTot = reviews.length;
-            tmp = {};
-            for (j in reviews) {
-                if (reviews.hasOwnProperty(j)) {
-                    review = reviews[j];
-                    switch (review.getReviewState().toString()) {
-                        case "DISPATCHED":
-                            nbRDone -= 1;
-                            break;
-                        case "CLOSED":
-                        case "COMPLETED":
-                            // Comments about reviews
-                            evs = Java.from(review.getComments());
-                            for (k in evs) {
-                                if (evs.hasOwnProperty(k)) {
-                                    ev = evs[k];
-                                    evK = ev.getDescriptor().getId();
-                                    evDescriptors[evK] = ev.getDescriptor();
-                                    tmp[evK] = tmp[evK] || [];
-                                    tmp[evK].push(ev.getValue());
-                                    evaluationsValues[evK].push(ev.getValue());
-                                }
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-            entry.overview.done = nbRDone + " / " + (nbRTot > 0 ? nbRTot : maxNumberOfReview);
-            for (evK in tmp) {
-                mergeEvSummary(entry.comments, tmp[evK], evDescriptors[evK]);
-            }
-
-            reviews = Java.from(pri.getReviewed());
-            nbRComClosed = nbRCom = nbRComTotal = 0;
-            tmp = {};
-            for (j in reviews) {
-                if (reviews.hasOwnProperty(j)) {
-                    review = reviews[j];
-                    evs = Java.from(review.getFeedback());
-
-                    switch (review.getReviewState().toString()) {
-                        case "CLOSED":
-                            nbRComClosed += 1;
-                        case "COMPLETED":
-                            nbRCom += 1;
-                            /*falls through*/
-                        case "NOTIFIED":
-                            nbRComTotal += 1;
-                        case "REVIEWED":
-                            for (k in evs) {
-                                if (evs.hasOwnProperty(k)) {
-                                    ev = evs[k];
-                                    evK = ev.getDescriptor().getId();
-                                    evDescriptors[evK] = ev.getDescriptor();
-                                    tmp[evK] = tmp[evK] || [];
-                                    tmp[evK].push(ev.getValue());
-                                    evaluationsValues[evK].push(ev.getValue());
-                                }
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-            entry.overview.commented = nbRCom + " / " + (nbRComTotal > 0 ? nbRComTotal : maxNumberOfReview);
-            for (evK in tmp) {
-                mergeEvSummary(entry.reviews, tmp[evK], evDescriptors[evK]);
-            }
-
-            // Set status
-            if (nbRComTotal > 0) {
-                if (nbRComTotal === nbRComClosed) {
-                    entry.overview.status = "Closed";
-                } else if (nbRComTotal === nbRCom) {
-                    entry.overview.status = "Completed";
-                } else {
-                    entry.overview.status = "Commenting";
-                }
-            } else if (nbRTot > 0) {
-                if (nbRTot === nbRDone) {
-                    entry.overview.status = "Review done";
-                } else {
-                    entry.overview.status = "Reviewing";
-                }
-            } else if (pri.getReviewState().toString() === "NOT_STARTED") {
-                entry.overview.status = "Editing";
-            } else if (pri.getReviewState().toString() === "SUBMITTED") {
-                entry.overview.status = "Ready to review";
+            if (pri.getReviewState().toString() === "EVICTED") {
+                entry.overview.status = "Evicted";
             } else {
-                entry.overview.status = "N/A";
+                reviews = Java.from(pri.getToReview());
+                maxNumberOfValue += reviews.length;
+
+                nbRDone = nbRTot = reviews.length;
+                tmp = {};
+                for (j in reviews) {
+                    if (reviews.hasOwnProperty(j)) {
+                        review = reviews[j];
+                        switch (review.getReviewState().toString()) {
+                            case "DISPATCHED":
+                                nbRDone -= 1;
+                                break;
+                            case "CLOSED":
+                            case "COMPLETED":
+                                // Comments about reviews
+                                evs = Java.from(review.getComments());
+                                for (k in evs) {
+                                    if (evs.hasOwnProperty(k)) {
+                                        ev = evs[k];
+                                        evK = ev.getDescriptor().getId();
+                                        evDescriptors[evK] = ev.getDescriptor();
+                                        tmp[evK] = tmp[evK] || [];
+                                        tmp[evK].push(ev.getValue());
+                                        evaluationsValues[evK].push(ev.getValue());
+                                    }
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+                entry.overview.done = nbRDone + " / " + (nbRTot > 0 ? nbRTot : maxNumberOfReview);
+                for (evK in tmp) {
+                    mergeEvSummary(entry.comments, tmp[evK], evDescriptors[evK]);
+                }
+
+                reviews = Java.from(pri.getReviewed());
+                nbRComClosed = nbRCom = nbRComTotal = 0;
+                tmp = {};
+                for (j in reviews) {
+                    if (reviews.hasOwnProperty(j)) {
+                        review = reviews[j];
+                        evs = Java.from(review.getFeedback());
+
+                        switch (review.getReviewState().toString()) {
+                            case "CLOSED":
+                                nbRComClosed += 1;
+                            case "COMPLETED":
+                                nbRCom += 1;
+                                /*falls through*/
+                            case "NOTIFIED":
+                                nbRComTotal += 1;
+                            case "REVIEWED":
+                                for (k in evs) {
+                                    if (evs.hasOwnProperty(k)) {
+                                        ev = evs[k];
+                                        evK = ev.getDescriptor().getId();
+                                        evDescriptors[evK] = ev.getDescriptor();
+                                        tmp[evK] = tmp[evK] || [];
+                                        tmp[evK].push(ev.getValue());
+                                        evaluationsValues[evK].push(ev.getValue());
+                                    }
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+                entry.overview.commented = nbRCom + " / " + (nbRComTotal > 0 ? nbRComTotal : maxNumberOfReview);
+                for (evK in tmp) {
+                    mergeEvSummary(entry.reviews, tmp[evK], evDescriptors[evK]);
+                }
+
+                // Set status
+                if (nbRComTotal > 0) {
+                    if (nbRComTotal === nbRComClosed) {
+                        entry.overview.status = "Closed";
+                    } else if (nbRComTotal === nbRCom) {
+                        entry.overview.status = "Completed";
+                    } else {
+                        entry.overview.status = "Commenting";
+                    }
+                } else if (nbRTot > 0) {
+                    if (nbRTot === nbRDone) {
+                        entry.overview.status = "Review done";
+                    } else {
+                        entry.overview.status = "Reviewing";
+                    }
+                } else if (pri.getReviewState().toString() === "NOT_STARTED") {
+                    entry.overview.status = "Editing";
+                } else if (pri.getReviewState().toString() === "SUBMITTED") {
+                    entry.overview.status = "Ready to review";
+                } else {
+                    entry.overview.status = "N/A";
+                }
             }
 
             monitoring.data[teamId] = entry;

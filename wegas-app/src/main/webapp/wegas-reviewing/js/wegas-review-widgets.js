@@ -272,13 +272,18 @@ YUI.add("wegas-review-widgets", function(Y) {
                         case "Closed":
                             teamStatus = "CLOSED";
                             break;
+                        case "Evicted":
+                            teamStatus = "EVICTED";
+                            break;
                         default:
                             teamStatus = "N/A";
                     }
-                    if (!globalStatus) {
-                        globalStatus = teamStatus;
-                    } else if (globalStatus !== teamStatus) {
-                        globalStatus = "N/A";
+                    if (teamStatus !== "EVICTED") {
+                        if (!globalStatus) {
+                            globalStatus = teamStatus;
+                        } else if (globalStatus !== teamStatus) {
+                            globalStatus = "N/A";
+                        }
                     }
 
                     for (section in this._monitoredData.data[teamId]) {
