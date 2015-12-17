@@ -161,6 +161,18 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      * @return
      */
     public Reply selectChoice(Long choiceId, Player player, Long startTime) {
+
+        ChoiceDescriptor choice = getEntityManager().find(ChoiceDescriptor.class, choiceId);
+        QuestionDescriptor questionDescriptor = choice.getQuestion();
+        // Verify if mutually exclusive replies must be cancelled:
+        if (questionDescriptor.getCbx() && !questionDescriptor.getAllowMultipleReplies()){
+            for (Reply r : questionDescriptor.getInstance(player).getReplies()) {
+                if (!r.getResult().getChoiceDescriptor().equals(choice)) {
+                    this.cancelReply(player.getId(), r.getId());
+                }
+            }
+        }
+        
         Reply reply = questionSingleton.createReply(choiceId, player, startTime);
         try {
             scriptEvent.fire(player, "replySelect", new ReplyValidate(reply));
@@ -336,10 +348,12 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
             return;
         }
         
-        // Should this be done as a final step, considering the whole validation as a transaction?
-        validateQuestion.setValidated(true);
-        
-        // Loop on all choices: validate all replies (checked choices) and "ignore()" all unchecked choices.
+        // Don't validate questions with no replies
+        if (validateQuestion.getReplies().isEmpty()){
+            throw new WegasErrorMessage(WegasErrorMessage.ERROR, "Please select a reply");
+        }
+
+        // Loop on all choices: validate all replies (checked choices) and "ignore" all unchecked choices.
         // NB: there should be only one reply per choice for each player.
        
         for (ChoiceDescriptor choice : questionDescriptor.getItems()){
@@ -355,10 +369,12 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
             }
             if (!selected){
                 // There is no reply for this choice, execute its ignoration impact:
-                logger.warn("validateQuestion() evaluates ignoration impact for choice \""+choice.getName()+"\"");
                 scriptManager.eval(player, choice.getInstance(player).getResult().getIgnorationImpact(), choice);
             }
         }
+
+        validateQuestion.setValidated(true);
+
     }
 
     /**

@@ -18,8 +18,9 @@ YUI.add("wegas-i18n-mcq-en", function(Y) {
             result: "result",
             empty: "No questions available yet",
             submit: "submit",
-            unanswered : "unanswered",
-            notDone: "not done"
+            unanswered : "",    // Customizable per scenario
+            notDone: "",        // Customizable per scenario
+            noReply: "Please select an answer first."
         }
     });
 });

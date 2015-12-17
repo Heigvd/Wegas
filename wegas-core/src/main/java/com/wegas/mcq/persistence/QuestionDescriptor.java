@@ -211,7 +211,10 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      */
     public boolean isReplied(Player p) {
         QuestionInstance instance = (QuestionInstance) this.getInstance(p);
-        return !instance.getReplies().isEmpty();
+        if (this.getCbx())
+            return instance.getValidated();
+        else
+            return !instance.getReplies().isEmpty();
     }
 
     /**
