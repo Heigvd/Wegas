@@ -70,6 +70,11 @@
 .wegas-mcqtabview .mcq-choices {
     /* padding : 10px; */
 }
+
+.wegas-mcqtabview .mcq-choices-horizontal {
+    width:100%;
+    text-align: center;
+}
 .wegas-mcqtabview .mcq-choice{
     margin: 0 10px 6px 10px;
 }
@@ -94,11 +99,18 @@
     color: #757575;
 }
 
-.wegas-mcqtabview .mcq-checkbox { /* For checkboxes and radio boxes */
-    float: right !important;
+.wegas-mcqtabview .mcq-choices .mcq-checkbox { /* For checkboxes and radio boxes presented vertically */
+    float: right;
     margin-right: 30px;
     width:15px;
     height:15px;
+}
+
+.wegas-mcqtabview .mcq-choices-horizontal .mcq-checkbox { /* For checkboxes and radio boxes presented horizontally (tabular) */
+    text-align: center;
+    width:15px;
+    height:15px;
+    margin-top: 5px;
 }
 /**
  * Choice replies

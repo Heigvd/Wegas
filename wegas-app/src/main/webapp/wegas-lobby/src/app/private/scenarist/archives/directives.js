@@ -32,6 +32,7 @@ angular.module('private.scenarist.archives.directives', [])
                 ScenariosModel.unarchiveScenario(scenarioToUnarchive).then(function(response) {
                     if (!response.isErroneous()) {
                         $rootScope.$emit('changeLimit', true);
+                        ctrl.updateScenarios();
                     } else {
                         response.flash();
                     }

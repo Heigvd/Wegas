@@ -12,7 +12,8 @@
 YUI.add('wegas-mcq-view', function(Y) {
     "use strict";
 
-    var CONTENTBOX = 'contentBox', Wegas = Y.Wegas,
+    var CONTENTBOX = 'contentBox',
+        Wegas = Y.Wegas,
         MCQView;
 
     /**
@@ -142,8 +143,11 @@ YUI.add('wegas-mcq-view', function(Y) {
             });
         },
         genMarkup: function(question) {
-            var i, ret, allowMultiple = question.get("allowMultipleReplies"), cachedQuestion = this.dataSource.cache.find("id",
-                question.get("id")),
+            var i, ret,
+                readonly = this.get("readonly.evaluated"),
+                allowMultiple = question.get("allowMultipleReplies"),
+                cachedQuestion = this.dataSource.cache.find("id",
+                    question.get("id")),
                 choices = cachedQuestion.get("items"), choiceD, choiceI,
                 questionInstance = cachedQuestion.getInstance(),
                 numberOfReplies = questionInstance.get("replies").length,
@@ -164,7 +168,7 @@ YUI.add('wegas-mcq-view', function(Y) {
             ret.push('<div class="mcq-choices">');
             for (i = 0; i < choices.length; i += 1) {
                 choiceD = choices[i];
-                choiceI = choiceD.getInstance();                
+                choiceI = choiceD.getInstance();
                 if (choiceI.get("active")) {
                     if (answerable ||
                         questionInstance.get("replies")[0].getChoiceDescriptor().get("id") === choiceD.get("id")) {
@@ -183,7 +187,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                             '<span class="symbole">x</span></span>');
                     }
 
-                    if (answerable) {
+                    if (answerable && !readonly) {
                         ret.push('<button class="yui3-button" id="', choiceD.get("id"), '">', Y.Wegas.I18n.t('mcq.submit'), '</button>');
                     } else {
                         ret.push('<button class="yui3-button" disabled id="',
@@ -199,7 +203,7 @@ YUI.add('wegas-mcq-view', function(Y) {
             ret.push('</div>'); // end mcq-choices
 
             if (numberOfReplies > 0) {
-                ret.push('<div class="mcq-replies-title">', (numberOfReplies > 1 ? Y.Wegas.I18n.t('mcq.result').pluralize() : Y.Wegas.I18n.t('mcq.result')), '</div>');
+                ret.push('<div class="mcq-replies-title">', (numberOfReplies > 1 ? Y.Wegas.I18n.t('mcq.result').pluralize().capitalize() : Y.Wegas.I18n.t('mcq.result').capitalize()), '</div>');
                 ret.push('<div class="mcq-replies">');
                 for (i = numberOfReplies - 1; i >= 0; i -= 1) {
                     reply = questionInstance.get("replies")[i];
@@ -225,7 +229,8 @@ YUI.add('wegas-mcq-view', function(Y) {
          * @description Return the number of replies corresponding to the given choice.
          */
         getNumberOfReplies: function(questionInstance, choice) {
-            var i, occurrence = 0;
+            var i,
+                occurrence = 0;
             for (i = 0; i < questionInstance.get("replies").length; i++) {
                 if (questionInstance.get("replies")[i].getChoiceDescriptor().get("id") === choice.get("id")) { //can be buggy
                     occurrence++;
@@ -247,7 +252,8 @@ YUI.add('wegas-mcq-view', function(Y) {
          *  by this widget
          */
         destructor: function() {
-            var i, length = this.handlers.length;
+            var i,
+                length = this.handlers.length;
             if (this.gallery) {
                 this.gallery.destroy();
             }
@@ -280,6 +286,16 @@ YUI.add('wegas-mcq-view', function(Y) {
                     _type: "variableselect",
                     label: "Question",
                     classFilter: ["QuestionDescriptor"]
+                }
+            },
+            readonly: {
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                type: "boolean",
+                value: false,
+                optional: true,
+                _inputex: {
+                    _type: "script",
+                    expects: "condition"
                 }
             }
         }

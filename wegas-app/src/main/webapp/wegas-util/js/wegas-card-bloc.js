@@ -7,30 +7,37 @@
  */
 /**
  * @author Raphaël Schmutz
- */        
+ */
 
-YUI.add('wegas-card-bloc', function(Y) {  
-    Y.Wegas.CardBloc = Y.Base.create("wegas-card-bloc", Y.Widget, [Y.Wegas.Widget, Y.Wegas.Editable, Y.WidgetParent, Y.WidgetChild], { 
+YUI.add('wegas-card-bloc', function(Y) {
+    "use strict";
+    Y.Wegas.CardBloc = Y.Base.create("wegas-card-bloc", Y.Widget, [Y.Wegas.Widget, Y.Wegas.Editable, Y.WidgetParent, Y.WidgetChild], {
         BOUNDING_TEMPLATE: "<div class='card__blocs'></div>",
-        CONTENT_TEMPLATE:  null,
+        CONTENT_TEMPLATE: null,
         TITLE_TEMPLATE: "<span class='title' />",
-        renderUI: function(){
+        renderUI: function() {
             this.get("boundingBox")
                 .addClass("card__blocs--" + this.get("type"));
-            (!this._hasTitle()) ? this.get("boundingBox").addClass("card__blocs--untitled") : this.get("boundingBox").append(this.TITLE_TEMPLATE);
+            if (this._hasTitle()) {
+                this.get("boundingBox").append(this.TITLE_TEMPLATE);
+            } else {
+                this.get("boundingBox").addClass("card__blocs--untitled");
+            }
         },
-        syncUI: function(){
+        syncUI: function() {
             var context = this;
-            (this._hasTitle()) ? this.get("boundingBox").one(".title").setContent(this.get("title")) : null;
-            this.get("items").forEach(function(item){
+            if (this._hasTitle()) {
+                this.get("boundingBox").one(".title").setContent(this.get("title"));
+            }
+            this.get("items").forEach(function(item) {
                 context.add(new Y.Wegas["CardBloc" + context.get("type").charAt(0).toUpperCase() + context.get("type").slice(1)](item));
             });
         },
-        _hasTitle : function(){
-            return (this.get("title") !== null);
+        _hasTitle: function() {
+            return !!this.get("title");
         }
-    },{
-        "ATTRS":{
+    }, {
+        "ATTRS": {
             title: {
                 value: null
             },
@@ -40,48 +47,49 @@ YUI.add('wegas-card-bloc', function(Y) {
             }
         }
     });
-    
-    Y.Wegas.CardBlocAction = Y.Base.create("wegas-bloc-action", Y.Widget, [Y.Wegas.Widget, Y.Wegas.Editable, Y.WidgetChild], { 
+
+    Y.Wegas.CardBlocAction = Y.Base.create("wegas-bloc-action", Y.Widget, [Y.Wegas.Widget, Y.Wegas.Editable, Y.WidgetChild], {
         BOUNDING_TEMPLATE: "<a href='#' class='bloc bloc--action bloc--icon'></a>",
         CONTENT_TEMPLATE: null,
-        renderUI: function(){
-            this.get("boundingBox").addClass("bloc--"+ this.get("icon"));
+        renderUI: function() {
+            this.get("boundingBox").addClass("bloc--" + this.get("icon"));
         },
-        bindUI: function(){
-            this.get("boundingBox").on("click", function(event){
-                event.preventDefault();
-                event.stopPropagation();
+        bindUI: function() {
+            this.get("boundingBox").on("click", function(event) {
+                event.halt(true);
                 this.get("do")();
             }, this);
         },
-        syncUI: function(){
+        syncUI: function() {
             this.get("boundingBox").setAttribute("title", this.get("label"));
             this.get("boundingBox").setContent(this.get("label"));
         }
-    },{
-        "ATTRS":{
+    }, {
+        "ATTRS": {
             "label": {},
-            "icon" : {}, 
+            "icon": {},
             "do": {}
         }
     });
-    
-    Y.Wegas.CardBlocMonitoring = Y.Base.create("wegas-bloc-monitoring", Y.Widget, [Y.Wegas.Widget, Y.Wegas.Editable, Y.WidgetChild], { 
+
+    Y.Wegas.CardBlocMonitoring = Y.Base.create("wegas-bloc-monitoring", Y.Widget, [Y.Wegas.Widget, Y.Wegas.Editable, Y.WidgetChild], {
         BOUNDING_TEMPLATE: "<div class='bloc bloc--monitoring'></div>",
         CONTENT_TEMPLATE: "<span class='bloc__value' />",
-        renderUI: function(){
+        renderUI: function() {
             this.get("boundingBox").prepend(Y.Node.create("<span class='bloc__label' />"));
-            this.get("formatter") !== null ? this.get("formatter")(this.get("boundingBox"), this.get("value")) : null;
+            if (Y.Lang.isFunction(this.get("formatter"))) {
+                this.get("formatter")(this.get("boundingBox"), this.get("value"));
+            }
         },
-        syncUI: function(){
+        syncUI: function() {
             this.get("contentBox").setContent(this.get("value"));
             this.get("boundingBox").one(".bloc__label").setContent(this.get("label"));
         }
-    },{
-        "ATTRS":{
+    }, {
+        "ATTRS": {
             "label": {},
-            "value" : {}, 
+            "value": {},
             "formatter": {}
         }
     });
-});     
+});

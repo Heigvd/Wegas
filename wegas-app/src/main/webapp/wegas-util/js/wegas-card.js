@@ -7,43 +7,49 @@
  */
 /**
  * @author Raphaël Schmutz
- */        
+ */
 YUI.add('wegas-card', function(Y) {
-    Y.Wegas.Card = Y.Base.create("wegas-card", Y.Widget, [Y.Wegas.Widget, Y.Wegas.Editable, Y.WidgetParent, Y.WidgetChild], { 
-        BOUNDING_TEMPLATE:  "<div class='wrapper wrapper--card' />",
-        CONTENT_TEMPLATE:   "<div class='card'></div>",
-        renderUI: function(){
-            if(this.get("icon") !== null){
+    "use strict";
+    Y.Wegas.Card = Y.Base.create("wegas-card", Y.Widget, [Y.Wegas.Widget, Y.Wegas.Editable, Y.WidgetParent, Y.WidgetChild], {
+        BOUNDING_TEMPLATE: "<div class='wrapper wrapper--card' />",
+        CONTENT_TEMPLATE: "<div class='card'><div class='card__title'></div></div>",
+        renderUI: function() {
+            if (this.get("icon")) {
                 this.get("contentBox")
                     .addClass("card--illustred")
-                    .prepend("<div class='card__icon'><i class='fa fa-"+ this.get("icon") +"'></i></div>");
-            }            
-        },
-        syncUI: function(){
-            var contentBox = this.get("contentBox");
-            this.get("contentBox").append("<div class='card__title'>"+ this.get("title") +"</div>");
-            if(this.get("blocs") && this.get("blocs").length > 0){
-                this.get("blocs").forEach(function(bloc){
-                    contentBox.append(new Y.Wegas.CardBloc(bloc).render().get("boundingBox"));
-                });
+                    .prepend("<div class='card__icon'><i class='fa fa-" + this.get("icon") + "'></i></div>");
             }
-            
         }
-    },{
-        'ATTRS':{
-            'id':{
+    }, {
+        'ATTRS': {
+            'id': {
                 value: null
             },
-            'title':{
-                value: "Empty card"
+            'title': {
+                lazyAdd: false,
+                value: "Empty card",
+                setter: function(value) {
+                    this.get("contentBox").one(".card__title").set("text", value);
+                    return value;
+                }
             },
-            'icon':{
+            'icon': {
                 value: null
             },
-            'blocs':{
-                value: null
+            'defaultChildType': {
+                value: Y.Wegas.CardBloc
+            },
+            'blocs': {
+                lazyAdd: false,
+                value: [],
+                setter: function(value) {
+                    this.destroyAll();
+                    Y.Array.each(value, function(bloc) {
+                        this.add(new Y.Wegas.CardBloc(bloc));
+                    }, this);
+                    return value;
+                }
             }
         }
     });
 });
-

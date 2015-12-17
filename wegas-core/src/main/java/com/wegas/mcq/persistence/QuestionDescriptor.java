@@ -29,6 +29,9 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 
 /**
  *
@@ -36,6 +39,11 @@ import static java.lang.Boolean.FALSE;
  */
 @Entity
 @Table(name = "MCQQuestionDescriptor")
+
+@NamedQueries({
+    @NamedQuery(name = "QuestionDescriptor.findDistinctChildrenLabels", query = "SELECT DISTINCT(cd.label) FROM ChoiceDescriptor cd WHERE cd.question = :container")
+})
+
 public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> implements DescriptorListI<ChoiceDescriptor> {
 
     private static final long serialVersionUID = 1L;
@@ -51,9 +59,14 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      */
     private boolean allowMultipleReplies = false;
     /**
-     * Set this to true when the choice is to be selected with an HTML radio/checkbox
+     * Set this to true when the choice is to be selected with an HTML
+     * radio/checkbox
      */
     private Boolean cbx = FALSE;
+    /**
+     * Determines if choices are presented horizontally in a tabular fashion
+     */
+    private Boolean tabular = FALSE;
     /**
      *
      */
@@ -81,9 +94,9 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
         QuestionDescriptor other = (QuestionDescriptor) a;
         this.setDescription(other.getDescription());
         this.setAllowMultipleReplies(other.getAllowMultipleReplies());
+        this.setCbx(other.getCbx());
+        this.setTabular(other.getTabular());
         this.setPictures(other.getPictures());
-        Boolean tmpl = other.getCbx();
-        this.setCbx(tmpl);
     }
 // *** Sugar for scripts *** //
 
@@ -149,7 +162,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     public void setAllowMultipleReplies(boolean allowMultipleReplies) {
         this.allowMultipleReplies = allowMultipleReplies;
     }
-    
+
     /**
      * @return the checkbox flag
      */
@@ -163,7 +176,21 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     public void setCbx(Boolean cb) {
         this.cbx = cb;
     }
-    
+
+    /**
+     * @return the tabular flag
+     */
+    public Boolean getTabular() {
+        return tabular;
+    }
+
+    /**
+     * @param tab: if the tabular layout mode is set
+     */
+    public void setTabular(Boolean tab) {
+        this.tabular = tab;
+    }
+
     /**
      * @return the pictures
      */
@@ -266,6 +293,6 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     @Override
     public Boolean containsAll(List<String> criterias) {
         return Helper.insensitiveContainsAll(this.getDescription(), criterias)
-                || super.containsAll(criterias);
+            || super.containsAll(criterias);
     }
 }

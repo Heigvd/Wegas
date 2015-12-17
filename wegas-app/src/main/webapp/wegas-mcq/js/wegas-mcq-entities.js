@@ -64,7 +64,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 type: BOOLEAN,
                 _inputex: {
                     label: 'Allow multiple replies',
-                    index: 9
+                    index: 8
                 }
             },
             cbx : {
@@ -73,6 +73,16 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 _inputex: {
                     label: "Checkbox selection",
                     description: "Pour QCM standard",
+                    index: 9
+                }
+            },
+            tabular : {
+                type: BOOLEAN,
+                value: false,
+                _inputex: {
+                    label: "Tabular layout",
+                    description: "Replies are presented horizontally",
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
                     index: 10
                 }
             },
@@ -141,7 +151,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                                         }]
                                 }, {
                                     type: BUTTON,
-                                    label: "Conditionnal results",
+                                    label: "Conditional results",
                                     plugins: [{
                                             fn: "AddEntityChildAction",
                                             cfg: {
@@ -498,14 +508,42 @@ YUI.add('wegas-mcq-entities', function(Y) {
                             optional: true,
                             format: HTML,
                             _inputex: {
-                                label: "Impact text"
+                                label: "Feedback",
+                                index: 1
                             }
                         },
                         impact: {
                             optional: true,
                             _inputex: {
                                 _type: SCRIPT,
-                                label: "Impact"
+                                label: "Impact on variables",
+                                index: 2
+                            }
+                        },
+                        "": {
+                            optional: true,
+                            type: "uneditable",
+                            transient: true,
+                            _inputex: {
+                                label: "<div style=\"height:60px\"><div style=\"position:absolute;margin-top:10px;\"><b>IMPACT&nbsp;WHEN&nbsp;IGNORED:</b><div style=\"font-size:85%\">For checkbox-type questions</div></div></div>",
+                                index: 3
+                            }
+                        },
+                        ignorationAnswer: {
+                            type: STRING,
+                            optional: true,
+                            format: HTML,
+                            _inputex: {
+                                label: "Feedback",
+                                index: 4
+                            }
+                        },
+                        ignorationImpact: {
+                            optional: true,
+                            _inputex: {
+                                _type: SCRIPT,
+                                label: "Impact on variables",
+                                index: 5
                             }
                         },
                         choiceDescriptorId: {
@@ -646,14 +684,29 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 optional: true,
                 format: HTML,
                 _inputex: {
-                    label: "Impact text"
+                    label: "Feedback when selected"
                 }
             },
             impact: {
                 optional: true,
                 _inputex: {
                     _type: SCRIPT,
-                    label: "Impact"
+                    label: "Impact when selected"
+                }
+            },
+            ignorationAnswer: {
+                type: STRING,
+                optional: true,
+                format: HTML,
+                _inputex: {
+                    label: "Feedback when ignored"
+                }
+            },
+            ignorationImpact: {
+                optional: true,
+                _inputex: {
+                    _type: SCRIPT,
+                    label: "Impact on variables when ignored"
                 }
             },
             choiceDescriptorId: {

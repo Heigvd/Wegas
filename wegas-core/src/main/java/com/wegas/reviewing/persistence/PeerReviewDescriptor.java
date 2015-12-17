@@ -68,7 +68,8 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
         NOT_STARTED, // author can edit toReview
         SUBMITTED, // authors can't edit toReview anymore
         DISPATCHED, // toReview are dispatched, state became review dependent
-        DISCARDED    // completely out of reviewing process (debug team for instance)
+        DISCARDED,    // completely out of reviewing process (debug team for instance)
+        EVICTED // partilly out of reviewing process -> nothing to review
     }
 
     /**

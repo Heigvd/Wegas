@@ -163,6 +163,9 @@ YUI.add('wegas-datasource', function(Y) {
                 }
             }
             Wegas.DataSource.superclass.plug.call(this, Plugin, config);
+        },
+        forceUpdateEvent : function(){
+            this.fire("update");
         }
     }, {
         /** @lends Y.Wegas.DataSource */

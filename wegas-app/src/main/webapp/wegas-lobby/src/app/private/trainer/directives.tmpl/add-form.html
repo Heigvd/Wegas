@@ -4,12 +4,12 @@
     </div>
     <div class="form__row fade" ng-if="newSession.name != ''">
         <select ng-disabled="loadingScenarios" class="input input--small" id="scenario-template" ng-model="newSession.scenarioId">
-            <option ng-if="!loadingScenarios" value="0">{{'TRAINER-INDEX-ADD-SCENARIO-INPUT' | translate}}</option>
-            <option ng-if="loadingScenarios" value="0">{{'TRAINER-INDEX-ADD-SCENARIO-LOADING' | translate}}</option>
+            <option ng-if="!loadingScenarios" value="0" disabled>{{'TRAINER-INDEX-ADD-SCENARIO-INPUT' | translate}}</option>
+            <option ng-if="loadingScenarios" value="0" disabled>{{'TRAINER-INDEX-ADD-SCENARIO-LOADING' | translate}} ...</option>
             <option ng-repeat="scenario in scenarios | filter: { canInstantiate: true }" value="{{scenario.id}}">{{scenario.name}}</option>
         </select>
     </div>
-    <div class="form__row form__row--right">
+    <div class="form__row form__row--right fade" ng-if="newSession.scenarioId && newSession.name != ''">
         <a ng-click="addSession()" class="form__row__btn form__submit button button--default">
             <span class="button__label">{{'TRAINER-INDEX-ADD-BTN' | translate}}</span>
         </a>

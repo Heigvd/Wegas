@@ -7,6 +7,7 @@
  */
 package com.wegas.reviewing.ejb;
 
+import com.wegas.core.Helper;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
@@ -14,6 +15,7 @@ import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.event.internal.DescriptorRevivedEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
@@ -22,6 +24,12 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.primitive.StringInstance;
+import com.wegas.core.persistence.variable.primitive.TextInstance;
+import com.wegas.core.persistence.variable.scope.AbstractScope;
+import com.wegas.core.persistence.variable.scope.GameModelScope;
+import com.wegas.core.persistence.variable.scope.GameScope;
+import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.reviewing.persistence.PeerReviewInstance;
 import com.wegas.reviewing.persistence.Review;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptor;
@@ -29,7 +37,9 @@ import com.wegas.reviewing.persistence.evaluation.EvaluationInstance;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -171,9 +181,15 @@ public class ReviewingFacade {
      * @param prd peer review descriptor to dispatch
      */
     public List<PeerReviewInstance> dispatch(PeerReviewDescriptor prd) {
-        Collection<VariableInstance> values = prd.getScope().getVariableInstances().values();
+        AbstractScope scope = prd.getScope();
+        Collection<VariableInstance> values = scope.getVariableInstances().values();
         List<PeerReviewInstance> pris = new ArrayList(values);
         List<PeerReviewInstance> touched = new ArrayList<>();
+
+        if (scope instanceof GameModelScope || scope instanceof GameScope) {
+            throw WegasErrorMessage.error("Invalid Scope for PeerReview descriptor. GameScope or GameModelScope does not make any sense for this kind of data");
+        }
+
         int numberOfReview;
 
         if (prd.getGameModel().getTemplate()) {
@@ -182,7 +198,7 @@ public class ReviewingFacade {
             numberOfReview = 1;
         } else {
             /*
-             * Real Game: evict test instance(s)
+             * Real Game: evict test or "ghost" instance(s)
              *
              * In case peerreview variable is game/gameModel scoped, there will be only one 
              * instance for the whole game and such an instance will be evicted.... For the 
@@ -190,7 +206,19 @@ public class ReviewingFacade {
              */
             for (Game game : prd.getGameModel().getGames()) {
                 for (Team team : game.getTeams()) {
-                    if (team instanceof DebugTeam) {
+                    if (scope instanceof TeamScope) {
+                        // 1 instance per team: evict empty team instances
+                        if (team.getPlayers().isEmpty() || team instanceof DebugTeam) {
+                            TeamScope tScope = (TeamScope) scope;
+                            PeerReviewInstance instance = (PeerReviewInstance) tScope.getVariableInstances().get(team.getId());
+                            // Discared instance
+                            instance.setReviewState(PeerReviewDescriptor.ReviewingState.DISCARDED);
+                            pris.remove(instance);
+                            variableInstanceFacade.merge(instance);
+                            touched.add(instance);
+                        }
+                    } else if (team instanceof DebugTeam) {
+                        // 1 instance per player: evict test player instance
                         for (Player p : team.getPlayers()) {
                             PeerReviewInstance instance = prd.getInstance(p);
                             // Discared instance
@@ -202,18 +230,44 @@ public class ReviewingFacade {
                     }
                 }
             }
+
+            VariableDescriptor toReview = prd.getToReview();
+            for (Iterator<PeerReviewInstance> it = pris.iterator(); it.hasNext();) {
+                PeerReviewInstance pri = it.next();
+                try {
+                    Player findAPlayer = variableInstanceFacade.findAPlayer(pri);
+                    VariableInstance toReviewInstance = toReview.getInstance(findAPlayer);
+                    boolean reject = false;
+                    if (toReviewInstance instanceof TextInstance) {
+                        TextInstance primitive = (TextInstance) toReviewInstance;
+                        reject = Helper.isNullOrEmpty(primitive.getValue());
+                    } else if (toReviewInstance instanceof StringInstance) {
+                        StringInstance primitive = (StringInstance) toReviewInstance;
+                        reject = Helper.isNullOrEmpty(primitive.getValue());
+                    }
+                    if (reject) {
+                        pri.setReviewState(PeerReviewDescriptor.ReviewingState.EVICTED);
+                        variableInstanceFacade.merge(pri);
+                        touched.add(pri);
+                        it.remove();
+                    }
+                } catch (NoPlayerException ex) {
+                    // Evict
+                }
+            }
             numberOfReview = Math.min(prd.getMaxNumberOfReview(), pris.size() - 1);
-            //throw WegasErrorMessage.error("Unable to dispatch reviews: there is not enough players");
+            if (numberOfReview < 1) {
+                throw WegasErrorMessage.error("Unable to dispatch reviews: there is not enough players");
+            }
         }
 
-        // Todo: evict dispatched instances
         Collections.shuffle(pris);
 
         int i, j;
         for (i = 0; i < pris.size(); i++) {
             PeerReviewInstance author = pris.get(i);
             if (author.getReviewState() == PeerReviewDescriptor.ReviewingState.SUBMITTED
-                    || author.getReviewState() == PeerReviewDescriptor.ReviewingState.NOT_STARTED) {
+                || author.getReviewState() == PeerReviewDescriptor.ReviewingState.NOT_STARTED) {
                 logger.warn("Dispatch Author");
                 List<Review> reviewed = author.getReviewed();
                 for (j = 1; j <= numberOfReview; j++) {
@@ -401,7 +455,7 @@ public class ReviewingFacade {
         for (PeerReviewInstance pri : pris) {
             for (Review review : pri.getReviewed()) {
                 if (review.getReviewState() == Review.ReviewState.NOTIFIED
-                        || review.getReviewState() == Review.ReviewState.COMPLETED) {
+                    || review.getReviewState() == Review.ReviewState.COMPLETED) {
                     review.setReviewState(Review.ReviewState.CLOSED);
                 }
             }

@@ -15,6 +15,7 @@ import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.mcq.persistence.*;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -353,10 +354,9 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
                 }
             }
             if (!selected){
-                // There is no reply, we have to create one (and/or a Result) for executing the ignoration impact...
-                //Reply pseudoReply = questionSingleton.createReply(choice.getId(), player, 0L);
-                //pseudoReply.setResult(choice.getInstance(player).getResult());// Refresh the current result
-                // scriptManager.eval(player, validateReply.getResult().getIgnorationImpact());
+                // There is no reply for this choice, execute its ignoration impact:
+                logger.warn("validateQuestion() evaluates ignoration impact for choice \""+choice.getName()+"\"");
+                scriptManager.eval(player, choice.getInstance(player).getResult().getIgnorationImpact(), choice);
             }
         }
     }

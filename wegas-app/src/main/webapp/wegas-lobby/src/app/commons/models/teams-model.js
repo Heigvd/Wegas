@@ -4,11 +4,11 @@ angular.module('wegas.models.teams', [])
         /* Namespace for model accessibility. */
         var model = this,
             ServiceURL = window.ServiceURL,
-        /* Cache for data */
+            /* Cache for data */
             teams = {
                 cache: null,
                 findTeam: function(id) {
-                    if (teams.cache &&teams.cache.data) {
+                    if (teams.cache && teams.cache.data) {
                         return _.find(teams.cache.data, function(t) {
                             return t.id === +id;
                         });
@@ -35,36 +35,34 @@ angular.module('wegas.models.teams', [])
                     return deferred.promise;
                 }
             },
-            /* Cache all teams in a list */
-            cacheTeams = function() {
-                var deferred = $q.defer();
-                if (teams.cache !== null) {
-                    $http.get(ServiceURL + "rest/Extended/User/Current/Team").success(function(data) {
-                        teams.cache.data = data || [];
-                        deferred.resolve(teams.cache.data);
-                    }).error(function(data) {
-                        teams.cache.data = [];
-                        deferred.resolve(teams.cache.data);
-                    });
-                } else {
+        /* Cache all teams in a list */
+        cacheTeams = function() {
+            var deferred = $q.defer();
+            if (teams.cache !== null) {
+                $http.get(ServiceURL + "rest/Extended/User/Current/Team").success(function(data) {
+                    teams.cache.data = data || [];
+                    deferred.resolve(teams.cache.data);
+                }).error(function(data) {
                     teams.cache.data = [];
                     deferred.resolve(teams.cache.data);
-                }
-                return deferred.promise;
-            },
-
-        /* Cache a team in the cached teams */
+                });
+            } else {
+                teams.cache.data = [];
+                deferred.resolve(teams.cache.data);
+            }
+            return deferred.promise;
+        },
+            /* Cache a team in the cached teams */
             cacheTeam = function(teamToCache) {
                 if (teamToCache) {
                     if (teams.cache) {
                         teams.cache.data.push(teamToCache);
-                    }else{
-                        teams.cache={data: [teamToCache]};
+                    } else {
+                        teams.cache = {data: [teamToCache]};
                     }
                 }
             },
-
-        /* Uncache a team in the cached teams */
+            /* Uncache a team in the cached teams */
             uncacheTeam = function(team) {
                 if (team) {
                     var teamToRemove = teams.findTeam(team.id);
@@ -296,8 +294,20 @@ angular.module('wegas.models.teams', [])
                                 deferred.resolve(Responses.info(message, false));
                             });
                         } else {
-                            $http.post(ServiceURL + "rest/Extended/GameModel/Game/Team/" + teamId + "/Player").success(
-                                function(team) {
+                            $http.post(ServiceURL + "rest/Extended/GameModel/Game/Team/" + teamId + "/Player", {}, {
+                                "headers": {
+                                    "managed-mode": "true"
+                                }
+                            }).success(
+                                function(data) {
+                                    var i, team;
+                                    for (i = 0; i < data.entities.length; i += 1) {
+                                        if (data.entities[i]["@class"] === "Team") {
+                                            team = data.entities[i];
+                                            break;
+                                        }
+                                    }
+
                                     if (team) {
                                         cacheTeam(team);
                                         $translate('COMMONS-TEAMS-JOIN-FLASH-SUCCESS').then(function(message) {
@@ -354,11 +364,28 @@ angular.module('wegas.models.teams', [])
                             });
                         } else {
                             $http.post(ServiceURL + "rest/Extended/GameModel/Game/" + sessionToJoin.id +
-                                       "/Player").success(function(individualTeamJoined) {
-                                cacheTeam(individualTeamJoined);
-                                $translate('COMMONS-TEAMS-JOIN-INDIVIDUALLY-FLASH-SUCCESS').then(function(message) {
-                                    deferred.resolve(Responses.success(message, individualTeamJoined));
-                                });
+                                "/Player", {}, {
+                                "headers": {
+                                    "managed-mode": "true"
+                                }
+                            }).success(function(data) {
+                                var i, team;
+                                for (i = 0; i < data.entities.length; i += 1) {
+                                    if (data.entities[i]["@class"] === "Team") {
+                                        team = data.entities[i];
+                                        break;
+                                    }
+                                }
+                                if (team) {
+                                    cacheTeam(team);
+                                    $translate('COMMONS-TEAMS-JOIN-INDIVIDUALLY-FLASH-SUCCESS').then(function(message) {
+                                        deferred.resolve(Responses.success(message, team));
+                                    });
+                                } else {
+                                    $translate('COMMONS-TEAMS-JOIN-FLASH-ERROR').then(function(message) {
+                                        deferred.resolve(Responses.danger(message, false));
+                                    });
+                                }
                             }).error(function(data) {
                                 $translate('COMMONS-TEAMS-JOIN-INDIVIDUALLY-FLASH-ERROR').then(function(message) {
                                     deferred.resolve(Responses.danger(message, false));
@@ -392,7 +419,11 @@ angular.module('wegas.models.teams', [])
                         });
                         if (player) {
                             $http.delete(ServiceURL + "rest/GameModel/Game/Team/" + player.teamId + "/Player/" +
-                                         player.id).success(function(data) {
+                                player.id, {
+                                    "headers": {
+                                        "managed-mode": "true"
+                                    }
+                                }).success(function(data) {
                                 uncacheTeam(cachedTeam);
                                 $translate('COMMONS-TEAMS-LEAVE-FLASH-SUCCESS').then(function(message) {
                                     deferred.resolve(Responses.success(message, teams.cache.data));

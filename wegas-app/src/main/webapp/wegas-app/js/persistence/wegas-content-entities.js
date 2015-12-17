@@ -49,6 +49,15 @@ YUI.add("wegas-content-entities", function(Y) {
                     _type: "uneditable"
                 }
             },
+            fullPath: {
+                type: "string",
+                valueFn: function() {
+                    return this.get("path") + (this.get("path").match(/\/$/) ? "" : "/") + this.get("name");
+                },
+                _inputex: {
+                    _type: "uneditable"
+                }
+            },
             note: {
                 type: "string",
                 optional: true,

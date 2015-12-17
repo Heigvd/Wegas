@@ -8,11 +8,9 @@
 package com.wegas.core.persistence.variable;
 
 import com.wegas.core.persistence.game.GameModel;
-import com.wegas.mcq.persistence.QuestionDescriptor;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
 import org.slf4j.Logger;
@@ -23,11 +21,8 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@NamedQuery(name = "findListDescriptorByChildId",
-        query = "SELECT DISTINCT listDescriptor FROM ListDescriptor listDescriptor LEFT JOIN listDescriptor.items AS item WHERE item.id = :itemId")
-@JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "QuestionDescriptor", value = QuestionDescriptor.class)
-})
+@NamedQuery(name = "ListDescriptor.findDistinctChildrenLabels",
+    query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.parentList = :container")
 public class ListDescriptor extends VariableDescriptor<VariableInstance> implements DescriptorListI<VariableDescriptor> {
 
     private static final long serialVersionUID = 1L;
@@ -37,7 +32,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
      */
     @OneToMany(cascade = {CascadeType.ALL})
     //@BatchFetch(BatchFetchType.IN)
-    @JoinColumn(referencedColumnName = "variabledescriptor_id")
+    @JoinColumn(referencedColumnName = "variabledescriptor_id", name = "items_variabledescriptor_id")
     //@OrderBy("id")
     @OrderColumn
     private List<VariableDescriptor> items = new ArrayList<>();

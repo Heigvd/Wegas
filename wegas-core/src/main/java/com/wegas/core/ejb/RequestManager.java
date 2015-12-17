@@ -24,6 +24,13 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
 import javax.script.ScriptEngine;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+//import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -31,6 +38,12 @@ import java.util.*;
 @Named("RequestManager")
 @RequestScoped
 public class RequestManager {
+
+    @Inject
+    MutexSingleton mutexSingleton;
+
+    @PersistenceContext(unitName = "wegasPU")
+    private EntityManager em;
 
     private static Logger logger = LoggerFactory.getLogger(RequestManager.class);
 
@@ -52,6 +65,11 @@ public class RequestManager {
     private Map<String, List<AbstractEntity>> outdatedEntities = new HashMap<>();
 
     private Map<String, List<AbstractEntity>> destroyedEntities = new HashMap<>();
+
+    /**
+     *
+     */
+    private List<String> lockedToken = new ArrayList<>();
 
     /**
      *
@@ -99,9 +117,10 @@ public class RequestManager {
             container.put(audience, new ArrayList<>());
         }
         List<AbstractEntity> entities = container.get(audience);
-        if (!entities.contains(updated)) {
-            entities.add(updated);
+        if (entities.contains(updated)) {
+            entities.remove(updated);
         }
+        entities.add(updated);
     }
 
     /**
@@ -249,4 +268,54 @@ public class RequestManager {
         this.locale = local;
     }
 
+    public boolean tryLock(String token) {
+        boolean tryLock = mutexSingleton.tryLock(token);
+        if (tryLock) {
+            // Only register token if successfully locked
+            lockedToken.add(token);
+        }
+        return tryLock;
+    }
+
+    public void lock(String token) {
+        mutexSingleton.lock(token);
+        lockedToken.add(token);
+    }
+
+    public void unlock(String token) {
+        mutexSingleton.unlock(token);
+        if (lockedToken.contains(token)) {
+            lockedToken.remove(token);
+        }
+    }
+
+    /**
+     * Lifecycle
+     */
+    /*@PostConstruct
+    public void postConstruct() {
+        logger.error("Request Manager: PostConstruct: " + this);
+    }*/
+    @PreDestroy
+    public void preDestroy() {
+        //logger.error("Request Manager: PreDestroy: " + this);
+        while (!lockedToken.isEmpty()) {
+            logger.info("Remove lock : " + this);
+            String remove = lockedToken.remove(0);
+            mutexSingleton.unlockFull(remove);
+        }
+    }
+
+    /**
+     *
+     * @param millis
+     */
+    public void pleaseWait(long millis) {
+        if (millis > 0) {
+            try {
+                TimeUnit.MILLISECONDS.sleep(millis);
+            } catch (InterruptedException ex) {
+            }
+        }
+    }
 }

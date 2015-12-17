@@ -13,11 +13,10 @@ YUI.add('wegas-resetter', function(Y) {
     "use strict";
 
     /**
-     * @name Y.Wegas.Dashboard
+     * @name Y.Wegas.Resetter
      * @extends Y.Widget
      * @augments Y.WidgetChild
      * @augments Y.Wegas.Widget
-     * @class class for join a team
      * @constructor
      */
     var CONTENTBOX = "contentBox", NAME = "name", Wegas = Y.Wegas, Resetter;

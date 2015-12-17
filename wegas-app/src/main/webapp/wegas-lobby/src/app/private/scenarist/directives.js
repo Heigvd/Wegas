@@ -31,7 +31,7 @@ angular.module('private.scenarist.directives', [
 
         ctrl.updateScenarios = function(updateDisplay) {
             ctrl.loading = true;
-            if(!updateDisplay){
+            if (updateDisplay) {
                 ScenariosModel.countArchivedScenarios().then(function(response) {
                     ctrl.nbArchives = response.data;
                 });
@@ -55,7 +55,7 @@ angular.module('private.scenarist.directives', [
             });
         };
 
-        ctrl.createScenario = function(name, templateId) { 
+        ctrl.createScenario = function(name, templateId) {
             var deferred = $q.defer();
             ScenariosModel.createScenario(name, templateId).then(function(response) {
                 if (!response.isErroneous()) {
@@ -78,12 +78,12 @@ angular.module('private.scenarist.directives', [
         /* Listen for scenario update */
         $rootScope.$on('changeScenarios', function(e, hasNewData) {
             if (hasNewData) {
-                ctrl.updateScenarios();
+                ctrl.updateScenarios(true);
             }
         });
 
         ctrl.updateScenarios(true);
-        
+
         ScenariosModel.countArchivedScenarios().then(function(response) {
             ctrl.nbArchives = response.data;
         });
@@ -115,20 +115,20 @@ angular.module('private.scenarist.directives', [
 
                     if (scope.newScenario.name !== '') {
                         if (scope.newScenario.templateId !== 0) {
-                            if(!button.hasClass("button--disable")){
+                            if (!button.hasClass("button--disable")) {
                                 button.addClass("button--disable button--spinner button--rotate");
-                                scope.create(scope.newScenario.name, scope.newScenario.templateId).then(function(){
+                                scope.create(scope.newScenario.name, scope.newScenario.templateId).then(function() {
                                     button.removeClass("button--disable button--spinner button--rotate");
                                     resetNewScenario();
                                 });
                             }
                         } else {
-                            $translate('COMMONS-SCENARIOS-NO-TEMPLATE-FLASH-ERROR').then(function (message) {
+                            $translate('COMMONS-SCENARIOS-NO-TEMPLATE-FLASH-ERROR').then(function(message) {
                                 Flash.danger(message);
                             });
                         }
                     } else {
-                        $translate('COMMONS-SCENARIOS-EMPTY-NAME-FLASH-ERROR').then(function (message) {
+                        $translate('COMMONS-SCENARIOS-EMPTY-NAME-FLASH-ERROR').then(function(message) {
                             Flash.danger(message);
                         });
                     }

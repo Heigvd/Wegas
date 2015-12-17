@@ -12,7 +12,8 @@
 YUI.add('wegas-mcq-tabview', function(Y) {
     "use strict";
 
-    var CONTENTBOX = 'contentBox', Wegas = Y.Wegas,
+    var CONTENTBOX = 'contentBox',
+        Wegas = Y.Wegas,
         MCQTabView;
 
     /**
@@ -75,11 +76,11 @@ YUI.add('wegas-mcq-tabview', function(Y) {
 
                 Wegas.Panel.confirmPlayerAction(Y.bind(function() {
                     this.showOverlay();
-                    
+
                     // Determine if the submit concerns a question or a choice:
                     // If it's a question then call validateQuestion() else call selectAndValidateChoice()
                     var receiver = Wegas.Facade.Variable.cache.findById(e.target.get('id'));
-                    if (receiver instanceof Wegas.persistence.QuestionDescriptor){
+                    if (receiver instanceof Wegas.persistence.QuestionDescriptor) {
                         this.dataSource.sendRequest({
                             request: "/QuestionDescriptor/ValidateQuestion/" + receiver.getInstance().get('id')
                                 + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
@@ -91,7 +92,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                                 failure: Y.bind(this.hideOverlay, this)
                             }
                         });
-                    
+
                     } else { // The user is validating a choice:
 
                         this.dataSource.sendRequest({
@@ -113,8 +114,8 @@ YUI.add('wegas-mcq-tabview', function(Y) {
 
                 Wegas.Panel.confirmPlayerAction(Y.bind(function() {
                     this.showOverlay();
-                    if (e.target.get('checked')){
-                        var question = Wegas.Facade.Variable.cache.find('name',e.target.get('name'));
+                    if (e.target.get('checked')) {
+                        var question = Wegas.Facade.Variable.cache.find('name', e.target.get('name'));
                         if (!question.get("allowMultipleReplies"))
                             this.cancelAllOtherReplies(question, +e.target.get('id'));
                         this.dataSource.sendRequest({
@@ -122,7 +123,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                                 + "/Player/" + Wegas.Facade.Game.get('currentPlayerId')
                                 + "/StartTime/0",
                             cfg: {
-                                method: "GET"  // initially: POST
+                                method: "GET" // initially: POST
                             },
                             on: {
                                 success: Y.bind(this.hideOverlay, this),
@@ -132,11 +133,11 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                     } else {
                         var choiceId = +e.target.get('id');
                         // e.target.get('name') = scriptAlias de la question => questionInstance.get("replies") => CancelReply()
-                        var question = Wegas.Facade.Variable.cache.find('name',e.target.get('name'));
+                        var question = Wegas.Facade.Variable.cache.find('name', e.target.get('name'));
                         var replies = question.getInstance().get('replies'),
                             numberOfReplies = replies.length, i;
                         for (i = numberOfReplies - 1; i >= 0; i -= 1) {
-                            if (replies[i].getChoiceDescriptor().get("id")===choiceId){
+                            if (replies[i].getChoiceDescriptor().get("id") === choiceId) {
                                 this.dataSource.sendRequest({
                                     request: "/QuestionDescriptor/CancelReply/" + replies[i].get('id')
                                         + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
@@ -150,7 +151,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                                 });
                             }
                         }
-    }
+                    }
                 }, this));
             }, "input.mcq-checkbox", this);
 
@@ -164,21 +165,23 @@ YUI.add('wegas-mcq-tabview', function(Y) {
          * @description When a checkbox-type question allows only one answer (mutually exclusive choices),
          * selecting one choice requires cancelling all other choices/replies of the question.
          */
+        // NB:  Move this logic to server side !!
         cancelAllOtherReplies: function(question, choiceId) {
             var replies = question.getInstance().get('replies'),
                 numberOfReplies = replies.length, i;
             for (i = numberOfReplies - 1; i >= 0; i -= 1) {
-                if (replies[i].getChoiceDescriptor().get("id")!==choiceId){
+                if (replies[i].getChoiceDescriptor().get("id") !== choiceId) {
                     this.dataSource.sendRequest({
                         request: "/QuestionDescriptor/CancelReply/" + replies[i].get('id')
-                               + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
+                            + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
                         cfg: {
                             method: "GET"
-                        },
-                        on: {
-                            success: {},
-                            failure: {}
                         }
+                    /* ,
+                     on: {
+                     success: {},
+                     failure: {}
+                     } */
                     });
                 }
             }
@@ -196,7 +199,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 lastSelection = (selectedTab) ? selectedTab.get('index') : 0;
 
             this.isRemovingTabs = true;
-            this.tabView.destroyAll();                                          // Empty the tabview
+            this.tabView.destroyAll(); // Empty the tabview
             this.isRemovingTabs = false;
 
             if (this.gallery) {
@@ -218,12 +221,12 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 this.get("contentBox").addClass("empty");
                 this.tabView.add(new Y.Tab({
                     label: "",
-                    content: "<center><i><br /><br /><br />" +  Y.Wegas.I18n.t('mcq.empty') + "</i></center>"
+                    content: "<center><i><br /><br /><br />" + Y.Wegas.I18n.t('mcq.empty') + "</i></center>"
                 }));
                 this.tabView.selectChild(0);
             } else {
                 this.get("contentBox").removeClass("empty");
-                if (lastSelection >= this.tabView.size()) {                     // Can occur when questions list has changed during event
+                if (lastSelection >= this.tabView.size()) { // Can occur when questions list has changed during event
                     lastSelection = 0;
                 }
                 this.tabView.selectChild(lastSelection);
@@ -239,16 +242,16 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 cQuestionInstance = cQuestion.getInstance();
                 cReplyLabel = null;
                 if (cQuestion instanceof Wegas.persistence.QuestionDescriptor
-                    && cQuestionInstance.get("active")) {                   // If current question is active
-                
-                    var useCbx = cQuestion.get("cbx"),
-                        validatedCbx = (useCbx ? cQuestionInstance.get('validated') : false);
-                
-                    if ((cQuestionInstance.get("replies").length > 0 && !useCbx) || validatedCbx) {          // Find the last selected replies
-                        if (cQuestion.get("allowMultipleReplies") || useCbx) {
+                    && cQuestionInstance.get("active")) { // If current question is active
+
+                    var cbxType = cQuestion.get("cbx"),
+                        validatedCbx = (cbxType ? cQuestionInstance.get('validated') : false);
+
+                    if ((cQuestionInstance.get("replies").length > 0 && !cbxType) || validatedCbx) { // Find the last selected replies
+                        if (cQuestion.get("allowMultipleReplies") || cbxType) {
                             cReplyLabel = cQuestionInstance.get("replies").length + "x";
                         } else {
-                            choiceDescriptor = cQuestionInstance.get("replies")[cQuestionInstance.get("replies").length - 1 ].getChoiceDescriptor();
+                            choiceDescriptor = cQuestionInstance.get("replies")[cQuestionInstance.get("replies").length - 1].getChoiceDescriptor();
                             cReplyLabel = choiceDescriptor.get("title") || "";
                             cReplyLabel = (cReplyLabel.length >= 15) ? cReplyLabel.substr(0, 15) + "..." : cReplyLabel;
                         }
@@ -256,7 +259,6 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                     if (Y.Lang.isNull(cReplyLabel)) {
                         cReplyLabel = (!cQuestion.get("allowMultipleReplies")) ? Y.Wegas.I18n.t('mcq.unanswered') : Y.Wegas.I18n.t('mcq.notDone');
                     }
-
                     tab = new Y.Tab({
                         label: '<div class="'
                             + ((this.get("highlightUnanswered") && cQuestionInstance.get("replies").length === 0) ? "unread" : "")
@@ -283,7 +285,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             if (e.newVal && e.newVal.cQuestion
                 && !this.isRemovingTabs && !e.newVal.loaded) {
                 e.newVal.loaded = true;
-                Wegas.Facade.Variable.cache.getWithView(e.newVal.cQuestion, "Extended", {// Retrieve the question/choice description from the server
+                Wegas.Facade.Variable.cache.getWithView(e.newVal.cQuestion, "Extended", { // Retrieve the question/choice description from the server
                     on: {
                         success: Y.bind(function(tab, e) {
                             var question = e.response.entity;
@@ -303,14 +305,17 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             }
         },
         renderTab: function(tab, question) {
-            var i, ret, allowMultiple = question.get("allowMultipleReplies"),
-                useCbx = question.get("cbx"),
+            var i, ret,
+                allowMultiple = question.get("allowMultipleReplies"),
+                cbxType = question.get("cbx"),
                 cQuestion = tab.cQuestion,
                 choices = cQuestion.get("items"), choiceD, choiceI,
                 questionInstance = cQuestion.getInstance(),
                 questionScriptAlias = cQuestion.get("name"),
-                numberOfReplies = questionInstance.get("replies").length,
-                answerable = (useCbx ? !questionInstance.get('validated') : allowMultiple || numberOfReplies === 0),
+                allReplies = questionInstance.get("replies"),
+                totalNumberOfReplies = allReplies.length,
+                answerable = (cbxType ? !questionInstance.get('validated') : allowMultiple || totalNumberOfReplies === 0),
+                tabularMCQ = cbxType && question.get("tabular"),
                 checked, reply;
 
             Y.log("RENDER TAB");
@@ -322,73 +327,166 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 '</div>'];
 
             // Display choices
-            ret.push('<div class="mcq-choices">');
-            for (i = 0; i < choices.length; i += 1) {
-                choiceD = choices[i];
-                choiceI = choiceD.getInstance();
-                if (choiceI.get("active")) {
-                    if (useCbx){
+            if (tabularMCQ) {
+                // First find how many choices are active and if there is any description field to be displayed:
+                var hasDescription = false;
+                var nbActiveChoices = 0;
+                for (i = 0; i < choices.length; i += 1) {
+                    if (choices[i].getInstance().get("active")) {
+                        nbActiveChoices++;
+                        if (question.get("items")[i].get("description").length !== 0) {
+                            hasDescription = true;
+                        }
+                    }
+                }
+                ret.push('<div class="mcq-choices-horizontal">');
+                ret.push('<div style="display:table; width:100%">');
+                ret.push('<div style="display:table-row; width:100%">');
+                var cellWidth = (nbActiveChoices !== 0 ? Math.floor(100 / nbActiveChoices) : 100);
+                for (i = 0; i < choices.length; i += 1) {
+                    choiceD = choices[i];
+                    choiceI = choiceD.getInstance();
+                    if (choiceI.get("active")) {
                         checked = this.getNumberOfReplies(questionInstance, choiceD) > 0;
-                        if (answerable){
-                            ret.push('<div class="mcq-choice">');
-                        } else {
-                            ret.push('<div class="mcq-choice spurned" style="text-decoration:none">'); // Display as spurned (gray, italic) but without ugly strikethrough
-                        }
-                        ret.push('<div class="mcq-choice-name">', choiceD.get("title"), '</div>');
-                        ret.push('<div class="mcq-choice-description">', question.get("items")[i].get("description"), '</div>');
-                        ret.push('<input class="mcq-checkbox"', (allowMultiple ? ' type="checkbox"' : ' type="radio"'), (checked ? ' checked' : ''), (answerable ? '' : ' disabled'), ' id="', choiceD.get("id"), '" name="', questionScriptAlias, '">');
-                    } else { // This is not a checkbox-type question:
-                        if (answerable || questionInstance.get("replies")[0].getChoiceDescriptor().get("id") === choiceD.get("id")) {
-                            ret.push('<div class="mcq-choice">');
-                        } else {
-                            ret.push('<div class="mcq-choice spurned">');
-                        }
-                        ret.push('<div class="mcq-choice-name">', choiceD.get("title"), '</div>');
-                        ret.push('<div class="mcq-choice-description">', question.get("items")[i].get("description"), '</div>');
-
-                        if (allowMultiple) {
-                            ret.push('<span class="numberOfReplies">',
-                                "" + this.getNumberOfReplies(questionInstance, choiceD),
-                                '<span class="symbole">x</span></span>');
-                        }
-
                         if (answerable) {
-                            ret.push('<button class="yui3-button" id="', choiceD.get("id"), '">', Y.Wegas.I18n.t('mcq.submit'), '</button>');
+                            ret.push('<div class="mcq-choice" style="display:table-cell; width:', cellWidth, '%">');
                         } else {
-                            ret.push('<button class="yui3-button" disabled id="', choiceD.get("id"), '">', Y.Wegas.I18n.t('mcq.submit')
+                            ret.push('<div class="mcq-choice spurned" style="text-decoration:none; display:table-cell; width:', cellWidth, '%">'); // Display as spurned (gray, italic) but without ugly strikethrough
+                        }
+                        ret.push('<div class="mcq-choice-name" style="text-align:center">', choiceD.get("title"), '</div>');
+                        var currDescr = '';
+                        if (hasDescription) {
+                            currDescr = question.get("items")[i].get("description");
+                            if (currDescr.length === 0)
+                                currDescr = "&nbsp;";
+                        }
+                        ret.push('<div class="mcq-choice-description" style="text-align:center">', currDescr, '</div>');
+                        ret.push('<input class="mcq-checkbox"', (allowMultiple ? ' type="checkbox"' : ' type="radio"'), (checked ? ' checked' : ''), (answerable ? '' : ' disabled'), ' id="', choiceD.get("id"), '" name="', questionScriptAlias, '">');
+                        ret.push('</div>'); // end mcq-choice
+                    }
+                }
+                ret.push('</div>'); // end row of mcq-choices
+                ret.push('</div>'); // end table with all mcq-choices
+                ret.push('<div style="display:block; width:100%; text-align: right">');
+                ret.push('<button class="yui3-button"', (answerable ? '' : ' disabled'), ' id="', cQuestion.get("id"), '" style="margin: 40px 30px 10px;">', Y.Wegas.I18n.t('mcq.submit'), '</button>');
+                ret.push('</div>'); // end button container
+                ret.push('</div>'); // end mcq-choices-horizontal
+
+            } else {
+                ret.push('<div class="mcq-choices">');
+                for (i = 0; i < choices.length; i += 1) {
+                    choiceD = choices[i];
+                    choiceI = choiceD.getInstance();
+                    if (choiceI.get("active")) {
+                        if (cbxType) {
+                            checked = this.getNumberOfReplies(questionInstance, choiceD) > 0;
+                            if (answerable) {
+                                ret.push('<div class="mcq-choice">');
+                            } else {
+                                ret.push('<div class="mcq-choice spurned" style="text-decoration:none">'); // Display as spurned (gray, italic) but without ugly strikethrough
+                            }
+                            ret.push('<div class="mcq-choice-name">', choiceD.get("title"), '</div>');
+                            ret.push('<div class="mcq-choice-description">', question.get("items")[i].get("description"), '</div>');
+                            ret.push('<input class="mcq-checkbox"', (allowMultiple ? ' type="checkbox"' : ' type="radio"'), (checked ? ' checked' : ''), (answerable ? '' : ' disabled'), ' id="', choiceD.get("id"), '" name="', questionScriptAlias, '">');
+                        } else { // This is not a checkbox-type question:
+                            if (answerable || questionInstance.get("replies")[0].getChoiceDescriptor().get("id") === choiceD.get("id")) {
+                                ret.push('<div class="mcq-choice' + (choices.length > 1 ? " mcq-multiple-choice" : "") + '">');
+                            } else {
+                                ret.push('<div class="mcq-choice' + (choices.length > 1 ? " mcq-multiple-choice" : "") + ' spurned" style="text-decoration:none">');
+                            }
+                            ret.push('<div class="mcq-choice-name">', choiceD.get("title"), '</div>');
+                            ret.push('<div class="mcq-choice-description">', question.get("items")[i].get("description"), '</div>');
+
+                            if (allowMultiple) {
+                                ret.push('<span class="numberOfReplies">',
+                                    "" + this.getNumberOfReplies(questionInstance, choiceD),
+                                    '<span class="symbole">x</span></span>');
+                            }
+
+                            if (answerable) {
+                                ret.push('<button class="yui3-button" id="', choiceD.get("id"), '">', Y.Wegas.I18n.t('mcq.submit'), '</button>');
+                            } else {
+                                ret.push('<button class="yui3-button" disabled id="', choiceD.get("id"), '">', Y.Wegas.I18n.t('mcq.submit')
                                     //questionInstance.get("replies")[0].getChoiceDescriptor().get("id") === choiceD.get("id") ? "Made" : "Spurned"
                                     , '</button>');
-                        }                        
+                            }
+                        }
+                        ret.push('<div style="clear:both"></div>');
+                        ret.push('</div>'); // end mcq-choice
                     }
+                }
+                // Global submit button in case of checkbox-type question:
+                if (cbxType) {
+                    ret.push('<button class="yui3-button"', (answerable ? '' : ' disabled'), ' id="', cQuestion.get("id"), '" style="float: right; margin: 20px 20px;">', Y.Wegas.I18n.t('mcq.submit'), '</button>');
                     ret.push('<div style="clear:both"></div>');
-                    ret.push('</div>'); // end mcq-choice
                 }
-            }          
-            // Global submit button in case of checkbox-type question:
-            if (useCbx){
-                if (answerable) {
-                    ret.push('<button class="yui3-button" id="', cQuestion.get("id"), '" style="float: right; margin: 20px 20px;">', Y.Wegas.I18n.t('mcq.submit'), '</button>');
-                } else {
-                    ret.push('<button class="yui3-button" disabled id="', cQuestion.get("id"), '" style="float: right; margin: 10px 20px;">', Y.Wegas.I18n.t('mcq.submit'), '</button>');
-                }
-                ret.push('<div style="clear:both"></div>');
+
+                ret.push('</div>'); // end mcq-choices
             }
 
-            ret.push('</div>'); // end mcq-choices
-            
-            var notValidatedMCQ = useCbx && !questionInstance.get("validated");
-            if (numberOfReplies > 0 && !notValidatedMCQ) {
-                ret.push('<div class="mcq-replies-title">', (numberOfReplies > 1 ? Y.Wegas.I18n.t('mcq.result').pluralize() : Y.Wegas.I18n.t('mcq.result')), '</div>');
-                ret.push('<div class="mcq-replies">');
-                for (i = numberOfReplies - 1; i >= 0; i -= 1) {
-                    reply = questionInstance.get("replies")[i];
-                    choiceD = reply.getChoiceDescriptor();
-                    ret.push('<div class="mcq-reply"', useCbx ? ' style="font-style:normal; color:inherit"' : '', '>');
-                    ret.push('<div class="mcq-reply-title">', choiceD.get("title"), '</div>');
-                    ret.push('<div class="mcq-reply-content">', reply.get("result").get("answer"), '</div>');
-                    ret.push('</div>'); // end mcq-reply
+            if (!cbxType) {
+                if (totalNumberOfReplies > 0) {
+                    ret.push('<div class="mcq-replies-title">', (totalNumberOfReplies > 1 ? Y.Wegas.I18n.t('mcq.result').pluralize().capitalize() : Y.Wegas.I18n.t('mcq.result').capitalize()), '</div>');
+                    ret.push('<div class="mcq-replies">');
+                    for (i = totalNumberOfReplies - 1; i >= 0; i -= 1) {
+                        reply = allReplies[i];
+                        choiceD = reply.getChoiceDescriptor();
+                        ret.push('<div class="mcq-reply">');
+                        ret.push('<div class="mcq-reply-title">', choiceD.get("title"), '</div>');
+                        ret.push('<div class="mcq-reply-content">', reply.get("result").get("answer"), '</div>');
+                        ret.push('</div>'); // end mcq-reply
+                    }
+                    ret.push('</div>'); // end mcq-replies
                 }
-                ret.push('</div>'); // end mcq-replies
+            } else {
+                // It's a CBX-type question:
+                // For each defined choice, see if it's checked, i.e. if there is a reply. If not, display the ignorationAnswer.
+                if (questionInstance.get("validated")) {
+                    ret.push('<div class="mcq-replies-title">', Y.Wegas.I18n.t('mcq.result').pluralize(), '</div>');
+                    ret.push('<div class="mcq-replies">');
+                    for (i = 0; i < choices.length; i += 1) {
+                        choiceD = choices[i];
+                        choiceI = choiceD.getInstance();
+                        if (!choiceI.get("active"))
+                            continue;
+                        /*              
+                         For each choice, there are 3 cases:
+                         1. checked => display title and answer (if any).
+                         2. unchecked and no ignorationAnswer => display nothing.
+                         3. New case: unchecked and there is an ignorationAnswer => display title and any ignorationAnswer.
+                         */
+                        var checked = false,
+                            answer = "",
+                            ignorationAnswer = "";
+                        for (var j = totalNumberOfReplies - 1; j >= 0; j -= 1) {
+                            reply = allReplies[j];
+                            if (reply.getChoiceDescriptor().get("id") === choiceD.get("id")) {
+                                checked = true;
+                                answer = reply.get("result").get("answer");
+                                break;
+                            }
+                        }
+                        if (!checked) {
+                            var results = choiceD.get("results")[0];
+                            if (results !== undefined)
+                                ignorationAnswer = results.get("ignorationAnswer");
+                            // Empty (invisible) ignoration answers would be confusing and must not be displayed:
+                            if (ignorationAnswer === null || ignorationAnswer === undefined || ignorationAnswer.replace(/(\r\n|\n|\r)/gm, "").trim().length === 0)
+                                ignorationAnswer = "";
+                        }
+                        if (checked || ignorationAnswer.length !== 0) {
+                            ret.push('<div class="mcq-reply" style="font-style:normal; color:inherit">');
+                            ret.push('<div class="mcq-reply-title">', choiceD.get("title"), '</div>');
+                            if (checked) {
+                                ret.push('<div class="mcq-reply-content">', answer, '</div>');
+                            } else {
+                                ret.push('<div class="mcq-reply-content">', ignorationAnswer, '</div>');
+                            }
+                            ret.push('</div>'); // end mcq-reply
+                        }
+                    }
+                    ret.push('</div>'); // end mcq-replies                        
+                }
             }
             ret.push('</div>'); // end mcq-question
 
@@ -404,7 +502,8 @@ YUI.add('wegas-mcq-tabview', function(Y) {
          * @description Return the number of replies corresponding to the given choice.
          */
         getNumberOfReplies: function(questionInstance, choice) {
-            var i, occurrence = 0;
+            var i,
+                occurrence = 0;
             for (i = 0; i < questionInstance.get("replies").length; i++) {
                 if (questionInstance.get("replies")[i].getChoiceDescriptor().get("id") === choice.get("id")) { //can be buggy
                     occurrence++;
@@ -414,10 +513,10 @@ YUI.add('wegas-mcq-tabview', function(Y) {
         },
         getEditorLabel: function() {
             var variable = this.get("variable.evaluated");
-            if (variable) {
+            if (variable && variable.getEditorLabel) {
                 return variable.getEditorLabel();
             }
-            return null;
+            return Wegas.MCQTabView.EDITORNAME;
         },
         /**
          * @function

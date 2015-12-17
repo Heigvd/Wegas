@@ -12,14 +12,18 @@
 YUI.add("wegas-plugin", function(Y) {
     "use strict";
 
-    var HOST = "host", Plugin = Y.Plugin, Wegas = Y.namespace("Wegas"),
+    var HOST = "host",
+        Plugin = Y.Plugin,
+        Wegas = Y.namespace("Wegas"),
         PREVIEW_PAGELOADER_ID = "previewPageLoader",
         PAGELOADER_CONFIG = {
             FULL_PAGE: {
+                display: "<i>Entire page</i>",
                 label: "Entire page",
                 value: "Entire page"
             },
             CURRENT_PAGE_LOADER: {
+                display: "<i>Current page display</i>",
                 label: "Current page display",
                 value: "Current page display"
             }
@@ -31,8 +35,7 @@ YUI.add("wegas-plugin", function(Y) {
      *  @extends Y.Plugin
      *  @constructor
      */
-    Wegas.Plugin = function() {
-    };
+    Wegas.Plugin = function() {};
     Y.mix(Wegas.Plugin.prototype, {
         showMessage: function() {
             return this.get(HOST).showMessage.apply(this.get(HOST), arguments);
@@ -152,14 +155,14 @@ YUI.add("wegas-plugin", function(Y) {
                 type: "string",
                 value: "GET",
                 choices: [{
-                        value: "GET"
-                    }, {
-                        value: "POST"
-                    }, {
-                        value: "DELETE"
-                    }, {
-                        value: "PUT"
-                    }
+                    value: "GET"
+                }, {
+                    value: "POST"
+                }, {
+                    value: "DELETE"
+                }, {
+                    value: "PUT"
+                }
                 ],
                 _inputex: {
                     label: ""
@@ -207,12 +210,12 @@ YUI.add("wegas-plugin", function(Y) {
                 type: "string",
                 value: "blank",
                 choices: [{
-                        value: "blank",
-                        label: "In a new page"
-                    }, {
-                        value: "self",
-                        label: "In the same page"
-                    }],
+                    value: "blank",
+                    label: "In a new page"
+                }, {
+                    value: "self",
+                    label: "In the same page"
+                }],
                 _inputex: {
                     label: ""
                 }
@@ -329,7 +332,7 @@ YUI.add("wegas-plugin", function(Y) {
             if (!targetPageLoader || this.get(HOST).get("disabled")) {
                 return;
             }
-            /* 
+            /*
              * Changing a page may call a page destructor and thus destroying other Action assossiated with this 'targetEvent'
              * in case this' host belongs to destructed page. That's the reason to delay a page change
              */
@@ -339,7 +342,8 @@ YUI.add("wegas-plugin", function(Y) {
                 }, this, targetPageLoader)));
         },
         _getTargetPageLoader: function() {
-            var targetPageLoader, plID = this.get("targetPageLoaderId");
+            var targetPageLoader,
+                plID = this.get("targetPageLoaderId");
             switch (plID) {
                 case PAGELOADER_CONFIG.FULL_PAGE.value:
                     targetPageLoader = Wegas.PageLoader.find(PREVIEW_PAGELOADER_ID);

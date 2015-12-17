@@ -32,14 +32,14 @@ YUI.add("wegas-simpledialogue", function(Y) {
         },
         syncUI: function() {
             this.currentDialogue = this.get("dialogueVariable.evaluated");
-
+            this.get(CONTENTBOX).one('.dialogue .response .responseElements').empty();
             if (!this.currentDialogue) {
                 this.get(CONTENTBOX).one('.dialogue .talk').insert("Dialog variable could not be found");
                 return;
             }
             var state = this.currentDialogue.getCurrentState();
             this.displayText(state.get('text'));
-            if (!state instanceof Y.Wegas.persistence.DialogueDescriptor) {
+            if (!(state instanceof Y.Wegas.persistence.DialogueState)) {
                 Y.log("State isn't a dialogue state.", 'error', 'SimpleDialogue');
                 return;
             }
@@ -59,9 +59,10 @@ YUI.add("wegas-simpledialogue", function(Y) {
             this.get(CONTENTBOX).one('.dialogue .talk').setHTML("<p>" + textParts + "</p>");
         },
         displayResponse: function(availableActions) {
-            var i, responseNode = this.get(CONTENTBOX).one('.dialogue .response .responseElements');
-            responseNode.setContent("");
-            if (!availableActions) {
+            var i,
+                responseNode = this.get(CONTENTBOX).one('.dialogue .response .responseElements');
+            responseNode.empty();
+            if (!availableActions || this.get("readonly")) {
                 return;
             }
             for (i = 0; i < availableActions.length; i++) {
@@ -69,6 +70,7 @@ YUI.add("wegas-simpledialogue", function(Y) {
             }
         }
     }, {
+        EDITORNAME: "Simple Dialogue",
         ATTRS: {
             dialogueVariable: {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
@@ -77,6 +79,11 @@ YUI.add("wegas-simpledialogue", function(Y) {
                     label: "Dialogue",
                     classFilter: ["DialogueDescriptor"]
                 }
+            },
+            readonly: {
+                type: "boolean",
+                value: false,
+                optional: true
             }
         }
     });

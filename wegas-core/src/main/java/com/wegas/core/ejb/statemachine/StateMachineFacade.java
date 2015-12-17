@@ -36,6 +36,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 /**
  * Run state machines.
@@ -53,6 +55,9 @@ public class StateMachineFacade {
      * {@value #EVENT_PARAMETER_NAME}
      */
     static final private String EVENT_PARAMETER_NAME = "param";
+
+    @PersistenceContext(unitName = "wegasPU")
+    private EntityManager em;
 
     @EJB
     private VariableDescriptorFacade variableDescriptorFacade;
@@ -78,6 +83,10 @@ public class StateMachineFacade {
      *
      */
     public StateMachineFacade() {
+    }
+
+    public Transition findTransition(Long transitionId) {
+        return em.find(Transition.class, transitionId);
     }
 
     /**
@@ -148,8 +157,8 @@ public class StateMachineFacade {
                     break; // already have a valid transition
                 }
                 if (transition instanceof DialogueTransition
-                        && ((DialogueTransition) transition).getActionText() != null
-                        && !((DialogueTransition) transition).getActionText().isEmpty()) {                 // Dialogue, don't eval if not null or empty
+                    && ((DialogueTransition) transition).getActionText() != null
+                    && !((DialogueTransition) transition).getActionText().isEmpty()) {                 // Dialogue, don't eval if not null or empty
                     continue;
                 } else if (this.isNotDefined(transition.getTriggerCondition())) {
                     validTransition = true;
@@ -185,7 +194,7 @@ public class StateMachineFacade {
                 }
                 if (validTransition == null) {
                     throw WegasErrorMessage.error("Please review condition [" + sm.getLabel() + "]:\n"
-                            + transition.getTriggerCondition().getContent());
+                        + transition.getTriggerCondition().getContent());
                 } else if (validTransition) {
                     if (passedTransitions.contains(transition)) {
                         /*
@@ -287,7 +296,7 @@ public class StateMachineFacade {
         final Object impactFunc;
         if (script.getLanguage().toLowerCase().equals("javascript")) {
             impactFunc = scriptManager.eval(player, new Script(script.getLanguage(),
-                    String.format("function(%s){%s}", EVENT_PARAMETER_NAME, script.getContent()) // A JavaScript Function. should check for engine type
+                String.format("function(%s){%s}", EVENT_PARAMETER_NAME, script.getContent()) // A JavaScript Function. should check for engine type
             ), context);
         } else {
             return; // define other language here
@@ -317,7 +326,7 @@ public class StateMachineFacade {
      */
     private Boolean isNotDefined(Script script) {
         return script == null || script.getContent() == null
-                || script.getContent().equals("");
+            || script.getContent().equals("");
     }
 
     /**

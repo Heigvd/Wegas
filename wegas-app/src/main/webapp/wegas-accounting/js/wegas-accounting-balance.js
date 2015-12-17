@@ -61,6 +61,9 @@ YUI.add("wegas-accounting-balance", function(Y) {
         syncUI: function() {
             var root = this.get("variable.evaluated"),
                 balance;
+            if (this._editable !== this.isEditable()) {
+                this.renderUI();
+            }
             if (root && root.get("@class") === "ListDescriptor") {
                 if (root.size() >= 2) {
                     balance = this.generateBalance(root.item(0), root.item(1));
@@ -71,10 +74,11 @@ YUI.add("wegas-accounting-balance", function(Y) {
         renderUI: function() {
             var root = this.get("variable.evaluated"),
                 balance;
+            this._editable = this.isEditable();
             if (root && root.get("@class") === "ListDescriptor") {
                 if (root.size() >= 2) {
                     balance = this.generateBalance(root.item(0), root.item(1));
-                    this.renderBalance(balance);
+                    this.renderBalance(balance, this._editable);
                 } else {
                     /* Usage:
                      * Rootdir:
@@ -90,23 +94,27 @@ YUI.add("wegas-accounting-balance", function(Y) {
             this.updateHandler.detach();
             this.changeHandler.detach();
         },
+        isEditable: function() {
+            // editable if attr not set or according to its value
+            return (!this.get("userEditable.evaluated") || this.get("userEditable.evaluated").getValue());
+        },
         generateBalance: function(assetsDir, liabilitiesDir) {
             return {
                 "assets": this.sumDirectory(assetsDir),
                 "liabilities": this.sumDirectory(liabilitiesDir)
             };
         },
-        renderCategory: function(category) {
-            var html, i, klass, editionEnabled;
+        renderCategory: function(category, editionEnabled) {
+            var html, i, klass, localEditionEnabled;
 
             klass = "wegas-balance-" + (category.editable ? "item" : "category");
 
-            editionEnabled = category.editable && (!this.get("userEditable.evaluated") || this.get("userEditable.evaluated").getValue());
+            localEditionEnabled = category.editable && editionEnabled;
 
             html = "<div class=\"" + klass + "\">"
                 + "<div class=\"wegas-balance-title\"><span>" + category.label + "</span></div>";
 
-            if (editionEnabled) {
+            if (localEditionEnabled) {
                 html += "<input class='wegas-balance-input wegas-balance-amount' "
                     + " name='" + category.name + "' "
                     + " value='" + category.amount + "'></input>";
@@ -118,7 +126,7 @@ YUI.add("wegas-accounting-balance", function(Y) {
             if (category.children.length > 0) {
                 html += "<div class=\"wegas-balance-category-items\">";
                 for (i = 0; i < category.children.length; i += 1) {
-                    html += this.renderCategory(category.children[i]);
+                    html += this.renderCategory(category.children[i], editionEnabled);
                 }
                 html += "</div>";
             }
@@ -149,7 +157,7 @@ YUI.add("wegas-accounting-balance", function(Y) {
             }
             sumDiv.setContent("<div class=\"wegas-balance-amount\"><span>" + category.amount + "</span></div>");
         },
-        renderColumn: function(category, aKlass) {
+        renderColumn: function(category, aKlass, editionEnabled) {
             var i;
             var titleDiv = Y.one(".wegas-balance-titles " + aKlass),
                 contentDiv = Y.one(".wegas-balance-contents " + aKlass),
@@ -158,7 +166,7 @@ YUI.add("wegas-accounting-balance", function(Y) {
             titleDiv.setContent("<div class=\"wegas-balance-title\"><span>" + category.label + "</span></div>");
             contentDiv.setContent("");
             for (i = 0; i < category.children.length; i += 1) {
-                contentDiv.append(this.renderCategory(category.children[i]));
+                contentDiv.append(this.renderCategory(category.children[i], editionEnabled));
             }
             sumDiv.setContent("<div class=\"wegas-balance-amount\"><span>" + category.amount + "</span></div>");
         },
@@ -169,12 +177,12 @@ YUI.add("wegas-accounting-balance", function(Y) {
             this.syncColumn(balance.assets, aKlass);
             this.syncColumn(balance.liabilities, lKlass);
         },
-        renderBalance: function(balance) {
+        renderBalance: function(balance, editionEnabled) {
             var aKlass, lKlass;
             aKlass = ".wegas-balance-assets";
             lKlass = ".wegas-balance-liabilities";
-            this.renderColumn(balance.assets, aKlass);
-            this.renderColumn(balance.liabilities, lKlass);
+            this.renderColumn(balance.assets, aKlass, editionEnabled);
+            this.renderColumn(balance.liabilities, lKlass, editionEnabled);
         },
         sumDirectory: function(directory, level) {
             var sum = 0, children = [], item, child, i;

@@ -11,30 +11,34 @@
  */
 YUI.add("wegas-widget", function(Y) {
     "use strict";
-    var Lang = Y.Lang, Wegas = Y.Wegas,
-        BOUNDING_BOX = "boundingBox", BUTTON = "Button", PARENT = "parent";
+    var Lang = Y.Lang,
+        Wegas = Y.Wegas,
+        BOUNDING_BOX = "boundingBox",
+        BUTTON = "Button",
+        PARENT = "parent";
 
     /**
      * @name Y.Wegas.Widget
      * @class Extension common to all wegas widgets
      */
     function Widget() {
-        /*this.before("destroy", function() {
-            while (this.overlayCounter){
+        this.before("destroy", function() {
+            while (this.overlayCounter > 0) {
                 this.hideOverlay();
+                this.overlayCounter -= 1;
             }
-        });*/
+        });
         this.after("render", function() {
             this.overlayCounter = 0;
             this.get(BOUNDING_BOX)
                 .addClass("wegas-widget")
-                .toggleClass(this.get("cssClass"), this.get("cssClass"))        // Add cssClass atrribute if the widget has one
+                .toggleClass(this.get("cssClass"), this.get("cssClass")) // Add cssClass atrribute if the widget has one
                 .toggleClass("wegas-widget-editable", this.isEditable());
         });
-        this._cssPrefix = this.constructor.CSS_PREFIX = this.constructor.CSS_PREFIX// If no prefix is set, use the name (without
-            || this.constructor.NAME.toLowerCase();                             // the usual "yui3-" prefix)
+        this._cssPrefix = this.constructor.CSS_PREFIX = this.constructor.CSS_PREFIX // If no prefix is set, use the name (without
+            || this.constructor.NAME.toLowerCase(); // the usual "yui3-" prefix)
 
-        this.publish("showOverlay", {// Add custom event
+        this.publish("showOverlay", { // Add custom event
             emitFacade: true
         });
         this.publish("hideOverlay", {
@@ -47,7 +51,7 @@ YUI.add("wegas-widget", function(Y) {
             bubbles: false,
             defaultFn: function() {
                 var widget = this.rebuild();
-                if (Y.Plugin.EditEntityAction.currentEntity === this) {         // @FIXME @fx wtf?
+                if (Y.Plugin.EditEntityAction.currentEntity === this) { // @FIXME @fx wtf?
                     Y.Plugin.EditEntityAction.currentEntity = widget;
                 }
             }
@@ -102,7 +106,7 @@ YUI.add("wegas-widget", function(Y) {
             if (this.isRoot()) {
                 parent = Y.Widget.getByNode(this.get(BOUNDING_BOX).get("parentNode"));
                 parent.reload();
-                return parent.get("widget");                                    // dependencies should (and must) be loaded by now that way we obtain the new widget
+                return parent.get("widget"); // dependencies should (and must) be loaded by now that way we obtain the new widget
             }
             parent = this.get(PARENT);
             index = parent.indexOf(this);
@@ -112,7 +116,7 @@ YUI.add("wegas-widget", function(Y) {
             return parent.add(cfg, index).item(0);
         },
         isEditable: function() {
-            return this.get("editable") || (this.get(PARENT) && this.get(PARENT).isEditable && this.get(PARENT).isEditable());
+            return this.get("editable") || !!(this.get(PARENT) && this.get(PARENT).isEditable && this.get(PARENT).isEditable());
         }
     });
     Y.mix(Widget, {
@@ -121,24 +125,24 @@ YUI.add("wegas-widget", function(Y) {
          *  Defines edition menu to be used in editor
          */
         EDITMENU: [{
-                type: BUTTON,
-                label: "Edit",
-                plugins: [{
-                        fn: "EditWidgetAction"
-                    }]
-            }, {
-                type: BUTTON,
-                label: "Copy",
-                plugins: [{
-                        fn: "DuplicateWidgetAction"
-                    }]
-            }, {
-                type: BUTTON,
-                label: "Delete",
-                plugins: [{
-                        fn: "DeleteWidgetAction"
-                    }]
-            }],
+            type: BUTTON,
+            label: "Edit",
+            plugins: [{
+                fn: "EditWidgetAction"
+            }]
+        }, {
+            type: BUTTON,
+            label: "Copy",
+            plugins: [{
+                fn: "DuplicateWidgetAction"
+            }]
+        }, {
+            type: BUTTON,
+            label: "Delete",
+            plugins: [{
+                fn: "DeleteWidgetAction"
+            }]
+        }],
         /**
          * @field
          * @static
@@ -175,6 +179,12 @@ YUI.add("wegas-widget", function(Y) {
          * </ul>
          */
         ATTRS: {
+            /**
+             * editable specify if this widget may be edited in the scenarist's UI
+             * If it was added as a child and it's parent is editable, this parameter is useless
+             * Usefull if this widget is rendered by an other widget.
+             * @type {Boolean} default to false
+             */
             editable: {
                 "transient": true,
                 value: false
@@ -373,9 +383,10 @@ YUI.add("wegas-widget", function(Y) {
             /**
              * Plugins attached to the widget
              */
-            plugins: {//For serialization purpose, get plugin configs
+            plugins: { //For serialization purpose, get plugin configs
                 getter: function() {
-                    var i, p = [], plg;
+                    var i,
+                        p = [], plg;
                     for (i in this._plugins) {
                         plg = this[this._plugins[i].NS];
                         if (plg.toObject) {
@@ -395,124 +406,124 @@ YUI.add("wegas-widget", function(Y) {
                     _type: "pluginlist",
                     legend: "Plugins",
                     items: [{
-                            type: BUTTON,
-                            label: "On click",
-                            plugins: [{
-                                    fn: "WidgetMenu",
-                                    cfg: {
-                                        menuCfg: {
-                                            points: ["tl", "tr"]
-                                        },
-                                        event: "mouseenter",
-                                        children: [{
-                                                type: BUTTON,
-                                                label: "Open page",
-                                                data: "OpenPageAction"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Open url",
-                                                data: "OpenUrlAction"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Impact variables",
-                                                data: "ExecuteScriptAction"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Open Popup page",
-                                                data: "OpenPanelPageloader"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Play sound",
-                                                data: "PlaySoundAction"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Print Variables",
-                                                data: "PrintActionPlugin"
-                                            }
-                                        ]
-                                    }
-                                }]
-
-                        }, {
-                            type: BUTTON,
-                            label: "Styles",
-                            plugins: [{
-                                    fn: "WidgetMenu",
-                                    cfg: {
-                                        menuCfg: {
-                                            points: ["tl", "tr"]
-                                        },
-                                        event: "mouseenter",
-                                        children: [{
-                                                type: BUTTON,
-                                                label: "Tooltip",
-                                                data: "Tooltip"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Background",
-                                                data: "CSSBackground"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Position",
-                                                data: "CSSPosition"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Size",
-                                                data: "CSSSize"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Text",
-                                                data: "CSSText"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Other styles",
-                                                data: "CSSStyles"
-                                            }]
-                                    }
-                                }]
-                        }, {
-                            type: BUTTON,
-                            label: "Animations",
-                            plugins: [{
-                                    fn: "WidgetMenu",
-                                    cfg: {
-                                        menuCfg: {
-                                            points: ["tl", "tr"]
-                                        },
-                                        event: "mouseenter",
-                                        children: [{
-                                                type: BUTTON,
-                                                label: "Show after",
-                                                data: "ShowAfter"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Hide after",
-                                                data: "HideAfter"
-                                            }]
-                                    }
-                                }]
-                        }, {
-                            type: BUTTON,
-                            label: "Variables",
-                            plugins: [{
-                                    fn: "WidgetMenu",
-                                    cfg: {
-                                        menuCfg: {
-                                            points: ["tl", "tr"]
-                                        },
-                                        event: "mouseenter",
-                                        children: [{
-                                                type: BUTTON,
-                                                label: "Conditional disable",
-                                                data: "ConditionalDisable"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Unread count",
-                                                data: "UnreadCount"
-                                            }]
-                                    }
-                                }]
+                        type: BUTTON,
+                        label: "On click",
+                        plugins: [{
+                            fn: "WidgetMenu",
+                            cfg: {
+                                menuCfg: {
+                                    points: ["tl", "tr"]
+                                },
+                                event: "mouseenter",
+                                children: [{
+                                    type: BUTTON,
+                                    label: "Open page",
+                                    data: "OpenPageAction"
+                                }, {
+                                    type: BUTTON,
+                                    label: "Open url",
+                                    data: "OpenUrlAction"
+                                }, {
+                                    type: BUTTON,
+                                    label: "Impact variables",
+                                    data: "ExecuteScriptAction"
+                                }, {
+                                    type: BUTTON,
+                                    label: "Open Popup page",
+                                    data: "OpenPanelPageloader"
+                                }, {
+                                    type: BUTTON,
+                                    label: "Play sound",
+                                    data: "PlaySoundAction"
+                                }, {
+                                    type: BUTTON,
+                                    label: "Print Variables",
+                                    data: "PrintActionPlugin"
+                                }
+                                ]
+                            }
                         }]
+
+                    }, {
+                        type: BUTTON,
+                        label: "Styles",
+                        plugins: [{
+                            fn: "WidgetMenu",
+                            cfg: {
+                                menuCfg: {
+                                    points: ["tl", "tr"]
+                                },
+                                event: "mouseenter",
+                                children: [{
+                                    type: BUTTON,
+                                    label: "Tooltip",
+                                    data: "Tooltip"
+                                }, {
+                                    type: BUTTON,
+                                    label: "Background",
+                                    data: "CSSBackground"
+                                }, {
+                                    type: BUTTON,
+                                    label: "Position",
+                                    data: "CSSPosition"
+                                }, {
+                                    type: BUTTON,
+                                    label: "Size",
+                                    data: "CSSSize"
+                                }, {
+                                    type: BUTTON,
+                                    label: "Text",
+                                    data: "CSSText"
+                                }, {
+                                    type: BUTTON,
+                                    label: "Other styles",
+                                    data: "CSSStyles"
+                                }]
+                            }
+                        }]
+                    }, {
+                        type: BUTTON,
+                        label: "Animations",
+                        plugins: [{
+                            fn: "WidgetMenu",
+                            cfg: {
+                                menuCfg: {
+                                    points: ["tl", "tr"]
+                                },
+                                event: "mouseenter",
+                                children: [{
+                                    type: BUTTON,
+                                    label: "Show after",
+                                    data: "ShowAfter"
+                                }, {
+                                    type: BUTTON,
+                                    label: "Hide after",
+                                    data: "HideAfter"
+                                }]
+                            }
+                        }]
+                    }, {
+                        type: BUTTON,
+                        label: "Variables",
+                        plugins: [{
+                            fn: "WidgetMenu",
+                            cfg: {
+                                menuCfg: {
+                                    points: ["tl", "tr"]
+                                },
+                                event: "mouseenter",
+                                children: [{
+                                    type: BUTTON,
+                                    label: "Conditional disable",
+                                    data: "ConditionalDisable"
+                                }, {
+                                    type: BUTTON,
+                                    label: "Unread count",
+                                    data: "UnreadCount"
+                                }]
+                            }
+                        }]
+                    }]
                 }
             }
         },
@@ -525,7 +536,8 @@ YUI.add("wegas-widget", function(Y) {
          *  configuration. Log an exception if creation isn't possible.
          */
         create: function(config) {
-            var child, Fn, type = config.childType || config.type;
+            var child, Fn,
+                type = config.childType || config.type;
             if (type) {
                 Fn = Lang.isString(type) ? Wegas[type] || Y[type] : type;
             }
@@ -565,21 +577,21 @@ YUI.add("wegas-widget", function(Y) {
          */
         VARIABLEDESCRIPTORGETTER: function(val, fullName) {
             var ds = Wegas.Facade.Variable, toEval;
-            if (val && fullName.split(".")[1] === "evaluated") {                // If evaluated value is required
+            if (val && fullName.split(".")[1] === "evaluated") { // If evaluated value is required
 
-                if (val.content) {                                              // Eval based on the field (new pattern)
+                if (val.content) { // Eval based on the field (new pattern)
                     try {
 
                         if (val["@class"] === "ParentArgument") {
                             val.evaluated = this.get("parent").get(val.content);
-                            if (val.evaluated["@class"] === "Script"){
+                            if (val.evaluated["@class"] === "Script") {
                                 toEval = val.evaluated;
                             }
                         } else {
                             toEval = val.content;
                         }
 
-                        if (toEval){
+                        if (toEval) {
                             val.evaluated = ds.script.localEval(toEval);
                         }
                     } catch (e) {
@@ -587,10 +599,10 @@ YUI.add("wegas-widget", function(Y) {
                         val.evaluated = null;
                     }
 
-                } else if (val.name) {                                          // @backwardcompatibility
+                } else if (val.name) { // @backwardcompatibility
                     val.evaluated = ds.cache.find("name", val.name);
 
-                } else if (val.expr) {                                          // @backwardcompatibility if absent evaluate the expr field
+                } else if (val.expr) { // @backwardcompatibility if absent evaluate the expr field
                     try {
                         val.evaluated = ds.cache.findById(ds.script.localEval(val.expr));
                     } catch (e) {
@@ -600,7 +612,7 @@ YUI.add("wegas-widget", function(Y) {
                 }
             }
 
-            if (val && fullName.indexOf(".") < 0) {                             // If the getter requires the full object (e.g. serialisation)
+            if (val && fullName.indexOf(".") < 0) { // If the getter requires the full object (e.g. serialisation)
                 delete val.evaluated; // Remove the ref to the evaluated descriptor
             }
 
@@ -621,10 +633,10 @@ YUI.add("wegas-widget", function(Y) {
         if (altType) {
             config.childType = Y.Lang.isString(altType) ? Wegas[altType] || Y[altType] : altType;
         }
-        return Y.WidgetParent.prototype.o_createChild.call(this, config);       //reroute
+        return Y.WidgetParent.prototype.o_createChild.call(this, config); //reroute
     };
     /**
-     * 
+     *
      */
     Y.WidgetParent.ATTRS.defaultChildType = {
         setter: function(val) {
@@ -637,20 +649,20 @@ YUI.add("wegas-widget", function(Y) {
         }
     };
     /**
-     * 
+     *
      */
     Y.WidgetParent.prototype.destroyAll = function() {
         this.removeAll().each(function() {
             this.destroy();
         });
-        // Optim delay object destruction
-        //Y.soon(Y.bind(function(widgets) {
-        //    widgets.each(function() {
-        //        this.destroy();
-        //    });
-        //}, this, this.removeAll()));
+    // Optim delay object destruction
+    //Y.soon(Y.bind(function(widgets) {
+    //    widgets.each(function() {
+    //        this.destroy();
+    //    });
+    //}, this, this.removeAll()));
     };
-    /** 
+    /**
      * @hack
      */
     Y.Widget.prototype.oPlug = Y.Widget.prototype.plug;
@@ -660,14 +672,14 @@ YUI.add("wegas-widget", function(Y) {
                 config = Plugin.cfg;
                 Plugin = Plugin.fn;
             }
-            if (Plugin && !Lang.isFunction(Plugin)) {                           // @hacked to allow string plug definition
+            if (Plugin && !Lang.isFunction(Plugin)) { // @hacked to allow string plug definition
                 Plugin = Y.Plugin[Plugin];
             }
         }
         Y.Widget.prototype.oPlug.call(this, Plugin, config); //reroute
     };
     /**
-     * 
+     *
      */
     Widget.prototype.renderer = function() {
         try {
@@ -676,8 +688,8 @@ YUI.add("wegas-widget", function(Y) {
             this.get(BOUNDING_BOX).setHTML("<div class='wegas-widget-errored'><i>Failed to render<br>" + e.message + "</i></div>");
 
             Y.log("error", "Failed to render " + this.getType() + ": " + (e.message || ""), this.constructor.NAME);
-            //Y.error("Failed to render " + this.getType() + ": " + (e.message || ""), e, this.constructor.NAME);//do crash parent widget in debug mode
-            //throw e;
+        //Y.error("Failed to render " + this.getType() + ": " + (e.message || ""), e, this.constructor.NAME);//do crash parent widget in debug mode
+        //throw e;
         }
     };
 });

@@ -89,13 +89,15 @@ YUI.add('wegas-websocketlistener', function(Y) {
                     datasource.cache.fire("EntityUpdatedEvent", {
                         "@class": "EntityUpdatedEvent",
                         updatedEntities: [entity]
-                    })
+                    });
                 }
             }
         },
         getDatasourceFromEntity: function(entity) {
             if (entity instanceof Y.Wegas.persistence.VariableInstance || entity instanceof Y.Wegas.persistence.VariableDescriptor) {
                 return Y.Wegas.Facade.Variable;
+            } else if (entity instanceof Y.Wegas.persistence.Game) {
+                return Y.Wegas.Facade.Game;
             } else {
                 return null;
             }

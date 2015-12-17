@@ -14,6 +14,8 @@ import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterInjector;
 import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterModifier;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.exception.client.WegasNotFoundException;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import java.io.IOException;
@@ -64,26 +66,19 @@ public class ViewRequestFilter implements ContainerRequestFilter {
         cr.getHeaders().add("INTERNAL-ID", uniqueIdentifier);
         cr.getHeaders().add("INTERNAL-DATE", date);
 
-        String userAgent = cr.getHeaderString("user-agent");
-
+        //String userAgent = cr.getHeaderString("user-agent");
         User currentUser = null;
         try {
             currentUser = userFacade.getCurrentUser();
         } catch (WegasNotFoundException e) {
         }
 
-        logger.info("Start Request Processing [" + uniqueIdentifier
-                + "] for user(" + (currentUser != null
-                        ? userFacade.getCurrentUser().getId() : "anonymous")
-                + "): " + userAgent + " " + cr.getMethod() + ": "
-                + cr.getUriInfo().getPath());
-
         RequestFacade rmf = RequestFacade.lookup();
         Class<?> view;
 
         // Handle language parameter
         if (cr.getHeaderString("lang") != null
-                && !cr.getHeaderString("lang").isEmpty()) {
+            && !cr.getHeaderString("lang").isEmpty()) {
             rmf.setLocale(new Locale(cr.getHeaderString("lang")));
         } else if (cr.getHeaderString("Accept-Language") != null && !cr.getHeaderString("Accept-Language").isEmpty()) {
             rmf.setLocale(new Locale(cr.getHeaderString("Accept-Language")));
@@ -120,6 +115,20 @@ public class ViewRequestFilter implements ContainerRequestFilter {
                 view = Views.Public.class;
                 break;
         }
+
+        Player currentPlayer = rmf.getPlayer();
+        Team currentTeam = null;
+        if (currentPlayer != null) {
+            currentTeam = currentPlayer.getTeam();
+        }
+
+        logger.info("Start Request Processing [" + uniqueIdentifier
+            + "] for user::player::team("
+            + (currentUser != null ? userFacade.getCurrentUser().getId() : "anonymous") + "::"
+            + (currentPlayer != null ? currentPlayer.getId() : "n/a") + "::"
+            + (currentTeam != null ? currentTeam.getId() : "n/a") + "::"
+            + "): " /* + userAgent */ + " " + cr.getMethod() + ": "
+            + cr.getUriInfo().getPath());
 
         try {
             cr.setRequestUri(new URI(newUri));

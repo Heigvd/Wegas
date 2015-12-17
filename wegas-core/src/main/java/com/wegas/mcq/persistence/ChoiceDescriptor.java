@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.Scripted;
 
 /**
@@ -64,7 +65,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     @Lob
     @JsonView(Views.ExtendedI.class)
     private String description;
-    
+
     /**
      *
      */
@@ -96,7 +97,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
         super.merge(a);
         this.setDuration(other.getDuration());
         this.setCost(other.getCost());
-        
+
         ListUtils.mergeReplace(this.getResults(), other.getResults());
 
         // Has currentResult been removed ?
@@ -298,6 +299,16 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
         return question;
     }
 
+    @JsonIgnore
+    @Override
+    public DescriptorListI getParent() {
+        if (this.getQuestion() != null) {
+            return this.getQuestion();
+        } else {
+            return super.getParent();
+        }
+    }
+
     /**
      * @param question the question to set
      */
@@ -309,7 +320,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     @Override
     public Boolean containsAll(List<String> criterias) {
         if (Helper.insensitiveContainsAll(this.getDescription(), criterias)
-                || super.containsAll(criterias)) {
+            || super.containsAll(criterias)) {
             return true;
         }
         for (Result r : this.getResults()) {

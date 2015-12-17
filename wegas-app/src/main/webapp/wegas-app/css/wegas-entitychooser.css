@@ -8,6 +8,7 @@
 
 .chooser-entities {
     float: left;
+    box-sizing: border-box;
     border-right: 1px solid lightgray;
     border-left: 1px solid lightgray;
     border-top: 1px solid lightgray;
@@ -15,6 +16,7 @@
 
 .chooser-widget {
     float: left;
+    box-sizing: border-box;
 }
 
 .chooser-entity {

@@ -14,11 +14,11 @@
     height:auto;
     overflow:hidden;
     @include material-shadow(1);
-    
+
     &:hover{
         @include material-shadow(2);
     }
-    
+
     .card__illustration{
         display:block;
         float:left;
@@ -28,10 +28,10 @@
         float:left;
         padding:0px ($card-base-padding*3);
         .line{
-            line-height: $card-text-size; 
-            font-size: $card-text-size; 
+            line-height: $card-text-size;
+            font-size: $card-text-size;
             margin: 0px;
-            padding: 0px; 
+            padding: 0px;
             padding-bottom:$card-base-padding;
             color: #555555;
             box-sizing: border-box;
@@ -39,7 +39,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            
+
             &.line--primary{
                 font-size:$card-text-size + 1;
                 line-height: $card-text-size + 1;
@@ -47,8 +47,8 @@
                 padding-top: 0px;
                 font-weight:500;
             }
-            
-            
+
+
             &.line--optionnal{
                 font-style:italic;
             }
@@ -74,14 +74,14 @@
             }
         }
     }
-    
-    &.ng-enter, 
-    &.ng-leave
-    { 
-        transition: .6s;
-    } 
 
-    &.ng-enter.ng-enter-active, 
+    &.ng-enter,
+    &.ng-leave
+    {
+        transition: .6s;
+    }
+
+    &.ng-enter.ng-enter-active,
     &.ng-leave {
         visibility: visible;
         opacity: 1;
@@ -92,13 +92,13 @@
     &.ng-enter {
         visibility: hidden;
         opacity: 0;
-        height: 1px;       
+        height: 1px;
     }
 
     .card__actions{
         float: right;
         padding: 16px;
-        
+
         .button{
             display: block;
             float: left;
@@ -113,48 +113,48 @@
             font-weight:500;
             font-size:14px;
             padding-top:8px;
-            margin-bottom:4px; 
+            margin-bottom:4px;
         }
         p{
             font-size:14px;
         }
 
-        &.ng-enter, 
-        &.ng-leave{ 
+        &.ng-enter,
+        &.ng-leave{
             transition: .2s;
-        } 
-             
-        &.ng-enter.ng-enter-active, 
+        }
+
+        &.ng-enter.ng-enter-active,
         &.ng-leave {
             max-height:400px;
             transition: .4s;
         }
-             
+
         &.ng-leave.ng-leave-active,
         &.ng-enter {
-            max-height: 1px;       
+            max-height: 1px;
             transition: .4s;
         }
-        
+
         .card__list__player{
             &:after{
                 display:inline;
                 position:relative;
                 content:",";
                 margin-right:12px;
-            }  
+            }
         }
         .card__list__player:last-child{
             &:after{
                 display:none;
             }
         }
-        
+
         @media screen and (max-width: 619px) {
             margin-left:24px;
         }
     }
-    
+
     &.card--scenario {
         &.card--big {
             height: inherit;
@@ -178,7 +178,7 @@
             }
         }
     }
-    
+
     &.card--coscenarist-permission {
         &.ng-leave {
           animation: bounceOut 1s;
@@ -196,18 +196,18 @@
                 list-style-type: none;
             }
         }
-        
+
         @media screen and (max-width: 620px) {
             .card__description{
                 width: calc(100% - 80px);
             }
-            
+
             .card__detailled-actions{
                 width: calc(100% - 82px);
                 border-top:solid 1px $border;
                 box-sizing:border-box;
             }
-            
+
             .card__actions{
                 width:82px;
                 border-top:solid 1px $border;
@@ -221,7 +221,7 @@
             width:calc(100% - 262px);
             box-sizing:border-box;
         }
-        
+
         @media screen and (max-width: 579px) {
             .card__description{
                 width: calc(100% - 80px);
@@ -236,13 +236,13 @@
             }
 	}
     }
-    
+
     &.card--trainer-session{
         .card__description{
             width:calc(100% - 502px);
             box-sizing:border-box;
         }
-       
+
         .card__actions{
             user-select:none;
             .card__actions__access{
@@ -255,21 +255,21 @@
                 .line{
                     font-size:13px;
                     padding:2px;
-                    
+
                     &.line--title-open{
                         display:none;
                     }
-                    
+
                     &.line--title-close{
                         display:none;
                     }
-                }  
-                
+                }
+
                 .choice{
                     float:left;
                 }
                 .key-label{
-                    width:142px; 
+                    width:142px;
                     height:24px;
                     padding-left:8px;
                     box-sizing: border-box;
@@ -326,7 +326,7 @@
                 }
             }
         }
-        
+
         @media screen and (max-width: 1116px) {
             .card__description{
                 width: calc(100% - 412px);
@@ -364,7 +364,7 @@
                 }
             }
         }
-        
+
         @media screen and (max-width: 700px) {
             .card__description{
                 width: calc(100% - 80px);
@@ -375,7 +375,7 @@
             }
         }
     }
-    
+
     &.card--scenarist-scenario{
         .card__description{
             width:calc(100% - 362px);
@@ -396,7 +396,7 @@
                         float:right;
                     }
                 }
-                
+
             }
         }
         @media screen and (max-width: 460px) {
@@ -468,7 +468,7 @@
     }
     &.card--group{
         .card__description{
-            width:calc(100% - 212px);
+            width:calc(100% - 262px);
             box-sizing:border-box;
         }
         @media screen and (max-width: 420px) {

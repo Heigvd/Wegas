@@ -7,6 +7,7 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Searchable;
@@ -53,15 +54,20 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
      */
     private Long nextStateId;
 
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {})
+    @JoinColumn(name = "state_id", referencedColumnName = "state_id")
+    private State state;
+
     /**
      *
      */
     @Embedded
     @AttributeOverrides({
         @AttributeOverride(name = "content", column
-                = @Column(name = "onTransition_content")),
+            = @Column(name = "onTransition_content")),
         @AttributeOverride(name = "lang", column
-                = @Column(name = "onTransition_language"))
+            = @Column(name = "onTransition_language"))
     })
     @JsonView(Views.EditorExtendedI.class)
     private Script preStateImpact;
@@ -106,6 +112,14 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
      */
     public void setIndex(Integer index) {
         this.index = index;
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
     }
 
     /**
