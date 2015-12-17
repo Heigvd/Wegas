@@ -7,7 +7,9 @@
  */
 package com.wegas.messaging.rest;
 
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.util.SecurityHelper;
@@ -45,6 +47,10 @@ public class InboxDescriptorController {
      */
     @EJB
     private PlayerFacade playerFacade;
+
+
+    @EJB
+    private RequestFacade requestFacade;
 
     /**
      *
@@ -85,7 +91,7 @@ public class InboxDescriptorController {
     @PUT
     @Path("Message/{messageId : [1-9][0-9]*}")
     public InboxInstance editMessage(@PathParam("messageId") Long messageId,
-            Message message) {
+        Message message) {
 
         Message update = messageFacade.update(messageId, message);
         checkPermissions(update);
@@ -106,6 +112,9 @@ public class InboxDescriptorController {
         checkPermissions(update);
 
         update.setUnread(false);
+        if (!Helper.isNullOrEmpty(update.getToken())) {
+            requestFacade.commit();
+        }
         return update.getInboxInstance();
     }
 

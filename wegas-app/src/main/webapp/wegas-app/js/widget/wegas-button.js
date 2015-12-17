@@ -146,7 +146,45 @@ YUI.add("wegas-button", function(Y) {
          * @description Set variable with initials values.
          */
         initializer: function() {
+            var k;
             this.handlers = {};
+            this._counters = {
+                "InboxDescriptor": function(descriptor, instance, resolve) {
+                    resolve(instance.get("unreadCount"));
+                },
+                "DialogueDescriptor": function(descriptor, instance, resolve) {
+                    var state = descriptor.getCurrentState();
+                      state.getAvailableActions(function(availableActions){
+                          resolve(availableActions.length > 0 ? 1 : 0);
+                      });
+                },
+                "QuestionDescriptor": function(descriptor, instance, resolve) {
+                    if (instance.get("replies")) {
+                        resolve(instance.get("replies").length === 0 && instance.get("active") ? 1 : 0); // only count if it is active
+                    }
+                    resolve(0);
+                },
+                "PeerReviewDescriptor": function(descriptor, instance, resolve) {
+                    var i, j, k, types = ["toReview", "reviewed"],
+                        reviews, review,
+                        counter = 0;
+
+                    for (i = 0; i < 2; i++) {
+                        reviews = instance.get(types[i]);
+                        for (j = 0; j < reviews.length; j++) {
+                            review = reviews[j];
+                            if ((i === 0 && review.get("reviewState") === "DISPATCHED") ||
+                                (i === 1 && review.get("reviewState") === "NOTIFIED")) {
+                                counter++;
+                            }
+                        }
+                    }
+                    resolve(counter);
+                }
+            };
+            for (k in this.get("userCounters")) {
+                this._counters[k] = eval("(" + this.get("userCounters")[k] + ")");
+            }
             this.bindUI();
         },
         /**
@@ -167,9 +205,11 @@ YUI.add("wegas-button", function(Y) {
          * unread on the host.
          */
         syncUI: function() {
+            this.updateCounter();
+        },
+        setCounterValue: function(unreadCount) {
             var bb = this.get('host').get(BOUNDINGBOX),
-                target = bb.one(".wegas-unreadcount"),
-                unreadCount = this.getUnreadCount();
+                target = bb.one(".wegas-unreadcount");
 
             if (!target) {                                                      // If the counter span has not been rendered, do it
                 bb.append('<span class="wegas-unreadcount"></span>');
@@ -200,9 +240,9 @@ YUI.add("wegas-button", function(Y) {
          * @return Number of unread.
          * @description Count the number of unread reply in given variable.
          */
-        getUnreadCount: function() {
-            var i, instance, /*messages,*/ items, count = 0,
-                list = this.get('variable.evaluated'), descriptor;
+        updateCounter: function() {
+            var i, instance, /*messages,*/ items, count = 0, klass,
+                list = this.get('variable.evaluated'), descriptor, context = this, promises = [];
 
             if (!list) {
                 return 0;
@@ -214,31 +254,32 @@ YUI.add("wegas-button", function(Y) {
 
             descriptor = list.pop();
             while (descriptor) {
-                if (Wegas.persistence.QuestionDescriptor && descriptor instanceof Wegas.persistence.QuestionDescriptor) {
-                    instance = descriptor.getInstance();
-                    if (instance.get("replies")) {
-                        count += instance.get("replies").length === 0 && instance.get("active") ? 1 : 0; // only count if it is active
-                    }
-                }
-                else if (descriptor instanceof Wegas.persistence.ListDescriptor) {
+                klass = descriptor.get("@class");
+                if (klass === "ListDescriptor") {
                     items = descriptor.flatten();
                     for (i = 0; i < items.length; i = i + 1) {
                         list.push(items[i]);
                     }
-                } /*else if (Wegas.persistence.FSMDescriptor && descriptor instanceof Wegas.persistence.FSMDescriptor) {
-                    instance = descriptor.getInstance();
-                    if (instance.get("enabled")) {
-                        count += 1;
+                } else {
+                    if (this._counters[klass]) {
+                        promises.push(new Y.Promise(function(resolve, reject) {
+                            context._counters[klass](descriptor, descriptor.getInstance(), function(count) {
+                                resolve(count);
+                            });
+                        }));
                     }
-                } */else if (Wegas.persistence.InboxDescriptor && descriptor instanceof Wegas.persistence.InboxDescriptor) {
-                    //messages = descriptor.getInstance().get("messages");
-                    count += descriptor.getInstance().get("unreadCount");
                 }
 
                 descriptor = list.pop();
             }
 
-            return count;
+            Y.Promise.all(promises).then(function(allCounts) {
+                var total = 0, i;
+                for (i = 0; i < allCounts.length; i += 1) {
+                    total += allCounts[i];
+                }
+                context.setCounterValue(total);
+            });
         }
     }, {
         NS: "UnreadCount",
@@ -267,6 +308,14 @@ YUI.add("wegas-button", function(Y) {
                     _type: "variableselect",
                     label: "Unread count",
                     classFilter: ["ListDescriptor", "InboxDescriptor"]
+                }
+            }, 
+            userCounters: {
+                type: "object",
+                value: {},
+                optional: true,
+                _inputex: {
+                    type: "hidden"
                 }
             }
         }

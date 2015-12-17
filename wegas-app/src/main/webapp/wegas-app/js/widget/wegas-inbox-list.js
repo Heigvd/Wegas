@@ -105,23 +105,58 @@ YUI.add('wegas-inbox-list', function(Y) {
          * @returns {undefined}
          */
         updateView: function(entities) {
-            var cb = this.get(CONTENTBOX);
+            var cb = this.get(CONTENTBOX),
+                promises = [];
 
-            cb.setContent("");                                                  // Update the view
+            cb.setContent("");
 
             if (entities.length === 0) {
-                cb.setHTML("<center><em>Empty</em></center>");                  // Empty message
+                cb.setHTML("<center><em>Empty</em></center>");
             }
-            Y.Array.each(entities, function(entity) {                           // For each message,
-                cb.append(this.TEMPLATES[this.get("template")](entity));        // render content
+            Y.Array.each(entities, function(entity) {
+                cb.append(this.TEMPLATES[this.get("template")](entity));
+
+                if (entity.get("unread")) {
+                    promises.push(this._read(entity));
+                }
             }, this);
 
+            if (promises.length > 0) {
+                Y.Promise.all(promises).then(function() {
+                    Y.Wegas.Facade.Variable.forceUpdateEvent();
+                });
+            }
             cb.all(".msg").each(function(m) {
-                if (parseInt(m.one(".msg-body").getStyle("maxHeight"))          // If the content is bigger than the available height (max-height style)
+                /*
+                 * If the content is bigger than the available height (max-height style)
+                 *  add msg-body-toggled class and content of the read more menu
+                 */
+                if (parseInt(m.one(".msg-body").getStyle("maxHeight"))
                     > parseInt(m.one(".msg-body-content").getComputedStyle("height"))) {
-                    m.removeClass("msg-toggled");                               // add msg-body-toggled class and content of the read more menu
+                    m.removeClass("msg-toggled");
                 }
             });
+        },
+        _read: function(message) {
+            var ctx = this, promise = new Y.Promise(function(resolve, reject) {
+                message.set("unread", false);
+                Y.Wegas.Facade.Variable.sendRequest({// Send reqest to mark as read
+                    request: "/Inbox/Message/Read/" + message.get("id"),
+                    cfg: {
+                        method: "PUT",
+                        updateEvent: true
+                    },
+                    on: {
+                        success: Y.bind(function(e) {
+                            resolve(e.response.entity);
+                        }, ctx),
+                        failure: Y.bind(function(e) {
+                            reject();
+                        }, ctx)
+                    }
+                });
+            });
+            return promise;
         },
         getEditorLabel: function() {
             var variable = this.get("variable.evaluated");

@@ -20,6 +20,8 @@ import javax.persistence.OrderBy;
 //import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.Helper;
+import javax.persistence.NamedQuery;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -28,6 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 @Entity
 //@XmlType(name = "InboxInstance")
+
 public class InboxInstance extends VariableInstance {
 
     /**
@@ -96,10 +99,10 @@ public class InboxInstance extends VariableInstance {
      * @param from
      * @param subject
      * @param body
-     * @return 
+     * @return
      */
     public Message sendMessage(String from, String subject, String body) {
-        Message msg = new Message(from, subject, body);
+        Message msg = new Message(from, subject, body, null, null, null);
         this.sendMessage(msg);
         return msg;
     }
@@ -109,25 +112,40 @@ public class InboxInstance extends VariableInstance {
      * @param from
      * @param subject
      * @param body
-     * @return 
+     * @param date
+     * @return
      */
-    public Message sendMessage(String from, String subject, String body, String date) {
-        Message msg = new Message(from, subject, body, date);
+    public Message sendWithToken(String from, String subject, String body, String token) {
+        Message msg = new Message(from, subject, body, null, token, null);
         this.sendMessage(msg);
         return msg;
     }
 
     /**
+     *
+     * @param from
+     * @param subject
+     * @param body
+     * @param date
+     * @return
+     */
+    public Message sendMessage(String from, String subject, String body, String date) {
+        Message msg = new Message(from, subject, body, date, null, null);
+        this.sendMessage(msg);
+        return msg;
+    }
+
     /**
+     * /**
      *
      * @param from
      * @param subject
      * @param body
      * @param attachements
-     * @return 
+     * @return
      */
     public Message sendMessage(final String from, final String subject, final String body, final List<String> attachements) {
-        final Message msg = new Message(from, subject, body, attachements);
+        final Message msg = new Message(from, subject, body, null, null, attachements);
         this.sendMessage(msg);
         return msg;
     }
@@ -139,7 +157,7 @@ public class InboxInstance extends VariableInstance {
      * @param body
      * @param date
      * @param attachements
-     * @return 
+     * @return
      */
     public Message sendMessage(final String from, final String subject, final String body, final String date, final List<String> attachements) {
         final Message msg = new Message(from, subject, body, date, attachements);
@@ -147,6 +165,21 @@ public class InboxInstance extends VariableInstance {
         return msg;
     }
 
+    /**
+     *
+     * @param from
+     * @param subject
+     * @param body
+     * @param date
+     * @param token
+     * @param attachements
+     * @return
+     */
+    public Message sendMessage(final String from, final String subject, final String body, final String date, String token, final List<String> attachements) {
+        final Message msg = new Message(from, subject, body, date, token, attachements);
+        this.sendMessage(msg);
+        return msg;
+    }
 
     /**
      *
@@ -177,12 +210,40 @@ public class InboxInstance extends VariableInstance {
      * @return
      */
     public Message getMessageBySubject(String subject) {
-        for (Message m: this.getMessages()) {
+        for (Message m : this.getMessages()) {
             if (m.getSubject().equals(subject)) {
                 return m;
             }
         }
         return null;
+    }
+
+    /**
+     * get the first message identified by "token"
+     *
+     * @param token
+     * @return
+     */
+    public Message getMessageByToken(String token) {
+        if (!Helper.isNullOrEmpty(token)) {
+            for (Message m : this.getMessages()) {
+                if (token.equals(m.getToken())) {
+                    return m;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Return true is a message identified by the token exists and has been read
+     *
+     * @param token
+     * @return
+     */
+    public boolean isTokenMarkedAsRead(String token) {
+        Message message = this.getMessageByToken(token);
+        return message != null && !message.getUnread();
     }
 
     @Override

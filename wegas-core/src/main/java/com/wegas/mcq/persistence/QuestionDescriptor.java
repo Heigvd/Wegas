@@ -30,6 +30,8 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 
 /**
  *
@@ -37,6 +39,11 @@ import static java.lang.Boolean.TRUE;
  */
 @Entity
 @Table(name = "MCQQuestionDescriptor")
+
+@NamedQueries({
+    @NamedQuery(name = "QuestionDescriptor.findDistinctChildrenLabels", query = "SELECT DISTINCT(cd.label) FROM ChoiceDescriptor cd WHERE cd.question = :container")
+})
+
 public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> implements DescriptorListI<ChoiceDescriptor> {
 
     private static final long serialVersionUID = 1L;
@@ -52,7 +59,8 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      */
     private boolean allowMultipleReplies = false;
     /**
-     * Set this to true when the choice is to be selected with an HTML radio/checkbox
+     * Set this to true when the choice is to be selected with an HTML
+     * radio/checkbox
      */
     private Boolean cbx = FALSE;
     /**
@@ -154,7 +162,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     public void setAllowMultipleReplies(boolean allowMultipleReplies) {
         this.allowMultipleReplies = allowMultipleReplies;
     }
-    
+
     /**
      * @return the checkbox flag
      */
@@ -168,7 +176,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     public void setCbx(Boolean cb) {
         this.cbx = cb;
     }
-    
+
     /**
      * @return the tabular flag
      */
@@ -182,6 +190,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     public void setTabular(Boolean tab) {
         this.tabular = tab;
     }
+
     /**
      * @return the pictures
      */
@@ -287,6 +296,6 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     @Override
     public Boolean containsAll(List<String> criterias) {
         return Helper.insensitiveContainsAll(this.getDescription(), criterias)
-                || super.containsAll(criterias);
+            || super.containsAll(criterias);
     }
 }

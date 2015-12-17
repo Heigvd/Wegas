@@ -50,12 +50,13 @@ var ReviewHelper = (function() {
      *  ]
      * }
      */
-    function getGradeSummary(values, descriptor) {
+    function getGradeSummary(values, descriptor, includeData) {
         var stats = StatisticHelper.getNumericStatistics(values, descriptor.getMinValue(), descriptor.getMaxValue());
 
         stats.type = "GradeSummary";
         stats.id = descriptor.getId();
         stats.name = descriptor.getName();
+        stats.data = (includeData ? values : []);
 
         return stats;
     }
@@ -71,7 +72,7 @@ var ReviewHelper = (function() {
      *  }
      * }
      */
-    function getCategorizationSummary(values, descriptor) {
+    function getCategorizationSummary(values, descriptor, includeData) {
         var cats, i, histogram = {},
             numberOfValues = values.length;
         cats = Java.from(descriptor.getCategories());
@@ -93,7 +94,8 @@ var ReviewHelper = (function() {
             name: descriptor.getName(),
             id: descriptor.getId(),
             numberOfValues: numberOfValues,
-            histogram: histogram
+            histogram: histogram,
+            data: (includeData ? values : [])
         };
     }
 
@@ -104,8 +106,9 @@ var ReviewHelper = (function() {
      *  averageNumberOfCharacters: ~y
      * }
      */
-    function getTextSummary(values, descriptor) {
+    function getTextSummary(values, descriptor, includeData) {
         var i, wc = 0, cc = 0, r;
+
         for (i = 0; i < values.length; i += 1) {
             r = StatisticHelper.getTextStatistics(values[i]);
             wc += r.wc;
@@ -120,7 +123,8 @@ var ReviewHelper = (function() {
             id: descriptor.getId(),
             numberOfValues: values.length,
             averageNumberOfWords: wc,
-            averageNumberOfCharacters: cc
+            averageNumberOfCharacters: cc,
+            data: (includeData ? values : [])
         };
     }
 
@@ -128,6 +132,7 @@ var ReviewHelper = (function() {
         var i, cats, structure;
 
         structure = {
+            id: "ev-" + evDescriptor.getId(),
             title: evDescriptor.getName(),
             items: []
         };
@@ -135,6 +140,7 @@ var ReviewHelper = (function() {
         if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.TextEvaluationDescriptor) {
             structure.items.push({"id": evDescriptor.getId() + "-wc", "label": "Word Count", formatter: null});
             structure.items.push({"id": evDescriptor.getId() + "-cc", "label": "Char Count", formatter: null});
+            structure.items.push({"id": evDescriptor.getId() + "-data", "label": "Data", formatter: '<span class="texteval-data"><i data-ref="' + evDescriptor.getId() + '-data" class="fa fa-info-circle"></i></span>'});
         } else if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.GradeDescriptor) {
             structure.items.push({"id": evDescriptor.getId() + "-mean", "label": "mean", formatter: null});
             //structure.items.push({"id": evDescriptor.getId() + "-median", "label": "median", formatter: null});
@@ -151,16 +157,17 @@ var ReviewHelper = (function() {
     function mergeEvSummary(entry, values, evDescriptor) {
         var summary, k;
         if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.TextEvaluationDescriptor) {
-            summary = getTextSummary(values, evDescriptor);
-            entry[summary.id + "-wc"] = summary.averageNumberOfCharacters;
-            entry[summary.id + "-cc"] = summary.averageNumberOfWords;
+            summary = getTextSummary(values, evDescriptor, true);
+            entry[summary.id + "-wc"] = summary.averageNumberOfWords;
+            entry[summary.id + "-cc"] = summary.averageNumberOfCharacters;
+            entry[summary.id + "-data"] = values;
         } else if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.GradeDescriptor) {
-            summary = getGradeSummary(values, evDescriptor);
+            summary = getGradeSummary(values, evDescriptor, true);
             entry[summary.id + "-mean"] = summary.mean;
             entry[summary.id + "-median"] = summary.median;
             entry[summary.id + "-sd"] = summary.sd;
         } else if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.CategorizedEvaluationDescriptor) {
-            summary = getCategorizationSummary(values, evDescriptor);
+            summary = getCategorizationSummary(values, evDescriptor, true);
             for (k in summary.histogram) {
                 entry[summary.id + "-" + k] = summary.histogram[k];
             }
@@ -181,7 +188,7 @@ var ReviewHelper = (function() {
 
     function summarize(peerReviewDescriptorName) {
         var prd = Variable.findByName(gameModel, peerReviewDescriptorName),
-            game = self.getGame(), teams = game.getTeams(), t, teamId,
+            game = self.getGame(), teams = game.getTeams(), t, teamId, team,
             pris, pri, reviews, review, evs, ev, evK, i, j, k,
             entry, nbRDone, nbRTot, nbRCom, nbRComClosed, nbRComTotal,
             evaluationsR, evaluationsC, evaluationsAll, evaluationsValues = {}, evDescriptor,
@@ -189,7 +196,7 @@ var ReviewHelper = (function() {
             maxNumberOfValue = 0,
             instanceFacade = lookupBean("VariableInstanceFacade"),
             maxNumberOfReview = Math.min(prd.getMaxNumberOfReview(), teams.size() - 2), // Assume team scoped review. !~_~! 
-
+            aPlayer,
             monitoring = {
                 structure: {
                     overview: [{
@@ -199,12 +206,14 @@ var ReviewHelper = (function() {
                                 {id: "done", label: "Review Done", formatter: null},
                                 {id: "commented", label: "Review Commented", formatter: null}
                             ]
-                        }],
+                        }
+                    ],
                     reviews: [],
                     comments: []
                 },
                 data: {},
-                extra: {}
+                extra: {},
+                variable: {}
             };
 
         evaluationsR = Java.from(prd.getFeedback().getEvaluations());
@@ -227,10 +236,17 @@ var ReviewHelper = (function() {
         pris = prd.getScope().getVariableInstances();
 
         for (t = 0; t < teams.size(); t += 1) {
-            teamId = new Long(teams.get(t).getId());
+            team = teams.get(t);
+            teamId = new Long(team.getId());
             pri = pris[teamId];
-            if (pris.length > 1 && instanceFacade.findAPlayer(pri).getTeam() instanceof  com.wegas.core.persistence.game.DebugTeam) {
-                // Skip Debug Team
+
+            if (team.getPlayers().size() > 0) {
+                aPlayer = instanceFacade.findAPlayer(pri);
+            } else {
+                aPlayer = null;
+            }
+            if (aPlayer === null || (pris.length > 1 && aPlayer.getTeam() instanceof  com.wegas.core.persistence.game.DebugTeam)) {
+                // Skip Debug & empty Teams
                 continue;
             }
 
@@ -240,105 +256,110 @@ var ReviewHelper = (function() {
                 comments: {}
             };
 
-            reviews = Java.from(pri.getToReview());
-            maxNumberOfValue += reviews.length;
-
-            nbRDone = nbRTot = reviews.length;
-            tmp = {};
-            for (j in reviews) {
-                if (reviews.hasOwnProperty(j)) {
-                    review = reviews[j];
-                    switch (review.getReviewState().toString()) {
-                        case "DISPATCHED":
-                            nbRDone -= 1;
-                            break;
-                        case "CLOSED":
-                        case "COMPLETED":
-                            // Comments about reviews
-                            evs = Java.from(review.getComments());
-                            for (k in evs) {
-                                if (evs.hasOwnProperty(k)) {
-                                    ev = evs[k];
-                                    evK = ev.getDescriptor().getId();
-                                    evDescriptors[evK] = ev.getDescriptor();
-                                    tmp[evK] = tmp[evK] || [];
-                                    tmp[evK].push(ev.getValue());
-                                    evaluationsValues[evK].push(ev.getValue());
-                                }
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-            entry.overview.done = nbRDone + " / " + (nbRTot > 0 ? nbRTot : maxNumberOfReview);
-            for (evK in tmp) {
-                mergeEvSummary(entry.comments, tmp[evK], evDescriptors[evK]);
-            }
-
-            reviews = Java.from(pri.getReviewed());
-            nbRComClosed = nbRCom = nbRComTotal = 0;
-            tmp = {};
-            for (j in reviews) {
-                if (reviews.hasOwnProperty(j)) {
-                    review = reviews[j];
-                    evs = Java.from(review.getFeedback());
-
-                    switch (review.getReviewState().toString()) {
-                        case "CLOSED":
-                            nbRComClosed += 1;
-                        case "COMPLETED":
-                            nbRCom += 1;
-                            /*falls through*/
-                        case "NOTIFIED":
-                            nbRComTotal += 1;
-                        case "REVIEWED":
-                            for (k in evs) {
-                                if (evs.hasOwnProperty(k)) {
-                                    ev = evs[k];
-                                    evK = ev.getDescriptor().getId();
-                                    evDescriptors[evK] = ev.getDescriptor();
-                                    tmp[evK] = tmp[evK] || [];
-                                    tmp[evK].push(ev.getValue());
-                                    evaluationsValues[evK].push(ev.getValue());
-                                }
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-            entry.overview.commented = nbRCom + " / " + (nbRComTotal > 0 ? nbRComTotal : maxNumberOfReview);
-            for (evK in tmp) {
-                mergeEvSummary(entry.reviews, tmp[evK], evDescriptors[evK]);
-            }
-
-            // Set status
-            if (nbRComTotal > 0) {
-                if (nbRComTotal === nbRComClosed) {
-                    entry.overview.status = "Closed";
-                } else if (nbRComTotal === nbRCom) {
-                    entry.overview.status = "Completed";
-                } else {
-                    entry.overview.status = "Commenting";
-                }
-            } else if (nbRTot > 0) {
-                if (nbRTot === nbRDone) {
-                    entry.overview.status = "Review done";
-                } else {
-                    entry.overview.status = "Reviewing";
-                }
-            } else if (pri.getReviewState().toString() === "NOT_STARTED") {
-                entry.overview.status = "Editing";
-            } else if (pri.getReviewState().toString() === "SUBMITTED") {
-                entry.overview.status = "Ready to review";
+            if (pri.getReviewState().toString() === "EVICTED") {
+                entry.overview.status = "Evicted";
             } else {
-                entry.overview.status = "N/A";
+                reviews = Java.from(pri.getToReview());
+                maxNumberOfValue += reviews.length;
+
+                nbRDone = nbRTot = reviews.length;
+                tmp = {};
+                for (j in reviews) {
+                    if (reviews.hasOwnProperty(j)) {
+                        review = reviews[j];
+                        switch (review.getReviewState().toString()) {
+                            case "DISPATCHED":
+                                nbRDone -= 1;
+                                break;
+                            case "CLOSED":
+                            case "COMPLETED":
+                                // Comments about reviews
+                                evs = Java.from(review.getComments());
+                                for (k in evs) {
+                                    if (evs.hasOwnProperty(k)) {
+                                        ev = evs[k];
+                                        evK = ev.getDescriptor().getId();
+                                        evDescriptors[evK] = ev.getDescriptor();
+                                        tmp[evK] = tmp[evK] || [];
+                                        tmp[evK].push(ev.getValue());
+                                        evaluationsValues[evK].push(ev.getValue());
+                                    }
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+                entry.overview.done = nbRDone + " / " + (nbRTot > 0 ? nbRTot : maxNumberOfReview);
+                for (evK in tmp) {
+                    mergeEvSummary(entry.comments, tmp[evK], evDescriptors[evK]);
+                }
+
+                reviews = Java.from(pri.getReviewed());
+                nbRComClosed = nbRCom = nbRComTotal = 0;
+                tmp = {};
+                for (j in reviews) {
+                    if (reviews.hasOwnProperty(j)) {
+                        review = reviews[j];
+                        evs = Java.from(review.getFeedback());
+
+                        switch (review.getReviewState().toString()) {
+                            case "CLOSED":
+                                nbRComClosed += 1;
+                            case "COMPLETED":
+                                nbRCom += 1;
+                                /*falls through*/
+                            case "NOTIFIED":
+                                nbRComTotal += 1;
+                            case "REVIEWED":
+                                for (k in evs) {
+                                    if (evs.hasOwnProperty(k)) {
+                                        ev = evs[k];
+                                        evK = ev.getDescriptor().getId();
+                                        evDescriptors[evK] = ev.getDescriptor();
+                                        tmp[evK] = tmp[evK] || [];
+                                        tmp[evK].push(ev.getValue());
+                                        evaluationsValues[evK].push(ev.getValue());
+                                    }
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+                entry.overview.commented = nbRCom + " / " + (nbRComTotal > 0 ? nbRComTotal : maxNumberOfReview);
+                for (evK in tmp) {
+                    mergeEvSummary(entry.reviews, tmp[evK], evDescriptors[evK]);
+                }
+
+                // Set status
+                if (nbRComTotal > 0) {
+                    if (nbRComTotal === nbRComClosed) {
+                        entry.overview.status = "Closed";
+                    } else if (nbRComTotal === nbRCom) {
+                        entry.overview.status = "Completed";
+                    } else {
+                        entry.overview.status = "Commenting";
+                    }
+                } else if (nbRTot > 0) {
+                    if (nbRTot === nbRDone) {
+                        entry.overview.status = "Review done";
+                    } else {
+                        entry.overview.status = "Reviewing";
+                    }
+                } else if (pri.getReviewState().toString() === "NOT_STARTED") {
+                    entry.overview.status = "Editing";
+                } else if (pri.getReviewState().toString() === "SUBMITTED") {
+                    entry.overview.status = "Ready to review";
+                } else {
+                    entry.overview.status = "N/A";
+                }
             }
 
             monitoring.data[teamId] = entry;
+            monitoring.variable[teamId] = prd.getToReview().getInstance(aPlayer).getValue();
         }
 
         for (i = 0; i < evaluationsAll.length; i += 1) {
@@ -364,7 +385,7 @@ var ReviewHelper = (function() {
                 });
             });
         }
-        ;
+
         return JSON.stringify(monitoring);
     }
 

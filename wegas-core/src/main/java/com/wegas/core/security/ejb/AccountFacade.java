@@ -18,28 +18,25 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Role;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import org.apache.shiro.SecurityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.*;
+import javax.persistence.NoResultException;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import org.apache.shiro.SecurityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.*;
 
 /**
- *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
@@ -49,6 +46,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     Logger logger = LoggerFactory.getLogger(AccountFacade.class);
 
     private static final int MAXRESULT = 30;
+
     /**
      *
      */
@@ -72,14 +70,13 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     }
 
     /**
-     *
      * @param entityId
      * @param account
      * @return
      */
     @Override
     public AbstractAccount update(final Long entityId, final AbstractAccount account) {
-        if (!account.getUsername().equals("") && account.getUsername() != null) {// If the provided username is not null
+        if (account.getUsername() != null && !account.getUsername().equals("")) {// If the provided username is not null
             try {
                 AbstractAccount a = this.findByUsername(account.getUsername());
                 if (!a.getId().equals(account.getId())) {                       // and we can find an account with the username which is not the one we are editing,
@@ -109,7 +106,6 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     }
 
     /**
-     *
      * @param entity
      */
     @Override
@@ -118,7 +114,6 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     }
 
     /**
-     *
      * @return
      */
     public List<JpaAccount> findAllRegistered() {
@@ -148,7 +143,6 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     }
 
     /**
-     *
      * @param email
      * @return
      * @throws WegasNoResultException
@@ -194,7 +188,6 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     }
 
     /**
-     *
      * @param name
      * @param withEmail
      * @return
@@ -273,7 +266,6 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     }
 
     /**
-     *
      * @param team
      * @return
      */

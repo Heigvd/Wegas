@@ -85,9 +85,9 @@ public class UIGameModel extends UIComponentBase {
 
         // editor mode and default values only allowedif current user has edit permission on gamemodel
         defaultValues = "true".equals(defVal)
-                && SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + gm.getId());
+            && SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + gm.getId());
         editorMode = "editor".equals(modeParam)
-                && SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + gm.getId());
+            && SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + gm.getId());
 
         ResponseWriter writer = context.getResponseWriter();
 
@@ -162,7 +162,7 @@ public class UIGameModel extends UIComponentBase {
                     // TODO extract common path
                     VariableDescriptor current = lookup.find(gm, root);
                     DescriptorListI parent;
-                    while ((parent = lookup.findParentList(current)) != null) {
+                    while ((parent = current.getParent()) != null) {
                         if (parent instanceof GameModel) {
                             break;
                         } else {

@@ -524,7 +524,12 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                                 return Y.Array.indexOf(idBack, e.get(ID)) === -1;
                             });
                         }
-                        EditEntityAction.showUpdateForm(entity, this.get(DATASOURCE));
+                        //EditEntityAction.showUpdateForm(entity, this.get(DATASOURCE));
+
+
+                        var button = Wegas.Widget.create(entity.getMenuCfg({dataSource: dataSource})[0]);
+                        button.render().fire("click");
+                        button.destroy();
                     }, this),
                     failure: Y.bind(this.hideOverlay, this)
                 });
@@ -694,14 +699,6 @@ YUI.add("wegas-editor-entityaction", function(Y) {
             label: {
                 value: "<span class='wegas-icon wegas-icon-refresh'></span>Refresh"
             }
-        }
-    });
-    /**
-     * Shortcut to create a Button with an AddEntityChildAction plugin
-     */
-    Wegas.AddEntityChildButton = Y.Base.create(BUTTON, Wegas.Button, [], {
-        initializer: function(cfg) {
-            this.plug(AddEntityChildAction, cfg);
         }
     });
 

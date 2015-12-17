@@ -9,73 +9,74 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-mcq-tabview', function (Y) {
-	"use strict";
+YUI.add('wegas-mcq-tabview', function(Y) {
+    "use strict";
 
-	var CONTENTBOX = 'contentBox', Wegas = Y.Wegas,
-		MCQTabView;
+    var CONTENTBOX = 'contentBox',
+        Wegas = Y.Wegas,
+        MCQTabView;
 
-	/**
-	 * @name Y.Wegas.MCQTabView
-	 * @extends Y.Widget
-	 * @borrows Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable
-	 * @class Class to view and reply to questions and choices.
-	 * @constructor
-	 * @description  Display and allow to reply at questions and choice sent
-	 *  to the current player
-	 */
-	MCQTabView = Y.Base.create("wegas-mcqtabview", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
-		/** @lends Y.Wegas.MCQTabView# */
-		// *** Lifecycle Methods *** //
-		CONTENT_TEMPLATE: null,
-		/**
-		 * @function
-		 * @private
-		 * @description Set variable with initials values.
-		 */
-		initializer: function () {
-			/**
-			 * datasource from Y.Wegas.Facade.Variable
-			 */
-			this.dataSource = Wegas.Facade.Variable;
-			this.tabView = new Y.TabView();
-			/**
-			 * TabView widget used to display question/choices and corresponding reply
-			 */
-			this.gallery = null;
-			/**
-			 * Reference to each used functions
-			 */
-			this.handlers = {};
-			this.isRemovingTabs = false;
-		},
-		/**
-		 * @function
-		 * @private
-		 * @description Render the TabView widget in the content box.
-		 */
-		renderUI: function () {
-			var cb = this.get(CONTENTBOX);
-			this.tabView.render(cb);
-			this.tabView.get("boundingBox").addClass("horizontal-tabview");
-			cb.append("<div style='clear:both'></div>");
-		},
-		/**
-		 * @function
-		 * @private
-		 * @description bind function to events.
-		 * When submit button is clicked, send the selected choice
-		 * When datasource is updated, do syncUI;
-		 */
-		bindUI: function () {
+    /**
+     * @name Y.Wegas.MCQTabView
+     * @extends Y.Widget
+     * @borrows Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable
+     * @class Class to view and reply to questions and choices.
+     * @constructor
+     * @description  Display and allow to reply at questions and choice sent
+     *  to the current player
+     */
+    MCQTabView = Y.Base.create("wegas-mcqtabview", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
+        /** @lends Y.Wegas.MCQTabView# */
+        // *** Lifecycle Methods *** //
+        CONTENT_TEMPLATE: null,
+        /**
+         * @function
+         * @private
+         * @description Set variable with initials values.
+         */
+        initializer: function() {
+            /**
+             * datasource from Y.Wegas.Facade.Variable
+             */
+            this.dataSource = Wegas.Facade.Variable;
+            this.tabView = new Y.TabView();
+            /**
+             * TabView widget used to display question/choices and corresponding reply
+             */
+            this.gallery = null;
+            /**
+             * Reference to each used functions
+             */
+            this.handlers = {};
+            this.isRemovingTabs = false;
+        },
+        /**
+         * @function
+         * @private
+         * @description Render the TabView widget in the content box.
+         */
+        renderUI: function() {
+            var cb = this.get(CONTENTBOX);
+            this.tabView.render(cb);
+            this.tabView.get("boundingBox").addClass("horizontal-tabview");
+            cb.append("<div style='clear:both'></div>");
+        },
+        /**
+         * @function
+         * @private
+         * @description bind function to events.
+         * When submit button is clicked, send the selected choice
+         * When datasource is updated, do syncUI;
+         */
+        bindUI: function() {
 
-			this.tabView.after("selectionChange", this.onTabSelected, this);
+            this.tabView.after("selectionChange", this.onTabSelected, this);
 
-			this.get(CONTENTBOX).delegate("click", function (e) {
+            this.get(CONTENTBOX).delegate("click", function(e) {
 
                 Wegas.Panel.confirmPlayerAction(Y.bind(function() {
                     this.showOverlay();
-                    
+
                     // Determine if the submit concerns a question or a choice:
                     // If it's a question then call validateQuestion() else call selectAndValidateChoice()
                     var receiver = Wegas.Facade.Variable.cache.findById(e.target.get('id'));
@@ -102,7 +103,7 @@ YUI.add('wegas-mcq-tabview', function (Y) {
                                 failure: Y.bind(this.hideOverlay, this)
                             }
                         });
-                    
+
                     } else { // The user is validating a choice:
 
                         this.dataSource.sendRequest({
@@ -130,7 +131,7 @@ YUI.add('wegas-mcq-tabview', function (Y) {
                                 + "/Player/" + Wegas.Facade.Game.get('currentPlayerId')
                                 + "/StartTime/0",
                             cfg: {
-                                method: "GET"  // initially: POST
+                                method: "GET" // initially: POST
                             },
                             on: {
                                 success: Y.bind(this.hideOverlay, this),
@@ -138,13 +139,13 @@ YUI.add('wegas-mcq-tabview', function (Y) {
                             }
                         });
                     } else {
-                        var choiceId = +e.target.get('id');
+                        var choiceID = +e.target.get('id');
                         // e.target.get('name') = scriptAlias of question => questionInstance.get("replies") => CancelReply()
                         var question = Wegas.Facade.Variable.cache.find('name',e.target.get('name'));
                         var replies = question.getInstance().get('replies'),
                             numberOfReplies = replies.length, i;
                         for (i = numberOfReplies - 1; i >= 0; i -= 1) {
-                            if (replies[i].getChoiceDescriptor().get("id")===choiceId){
+                            if (replies[i].getChoiceDescriptor().get("id") === choiceID) {
                                 this.dataSource.sendRequest({
                                     request: "/QuestionDescriptor/CancelReply/" + replies[i].get('id')
                                         + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
@@ -158,7 +159,7 @@ YUI.add('wegas-mcq-tabview', function (Y) {
                                 });
                             }
                         }
-    }
+                    }
                 }, this));
             }, "input.mcq-checkbox", this);
 
@@ -177,52 +178,52 @@ YUI.add('wegas-mcq-tabview', function (Y) {
                 selectedTab = this.tabView.get('selection'),
                 lastSelection = (selectedTab) ? selectedTab.get('index') : 0;
 
-			this.isRemovingTabs = true;
-			this.tabView.destroyAll();                                          // Empty the tabview
-			this.isRemovingTabs = false;
+            this.isRemovingTabs = true;
+            this.tabView.destroyAll(); // Empty the tabview
+            this.isRemovingTabs = false;
 
-			if (this.gallery) {
-				this.gallery.destroy();
-				this.gallery = null;
-			}
-			if (!Y.Lang.isArray(questions)) {
-				questions = [questions];
-			}
+            if (this.gallery) {
+                this.gallery.destroy();
+                this.gallery = null;
+            }
+            if (!Y.Lang.isArray(questions)) {
+                questions = [questions];
+            }
 
-			this.addQuestions(questions);
+            this.addQuestions(questions);
 
-			if (this.gallery) {
-				this.gallery.syncUI();
-			}
-			this.hideOverlay();
+            if (this.gallery) {
+                this.gallery.syncUI();
+            }
+            this.hideOverlay();
 
-			if (this.tabView.isEmpty()) {
-				this.get("contentBox").addClass("empty");
-				this.tabView.add(new Y.Tab({
-					label: "",
-					content: "<center><i><br /><br /><br />" + Y.Wegas.I18n.t('mcq.empty') + "</i></center>"
-				}));
-				this.tabView.selectChild(0);
-			} else {
-				this.get("contentBox").removeClass("empty");
-				if (lastSelection >= this.tabView.size()) {                     // Can occur when questions list has changed during event
-					lastSelection = 0;
-				}
-				this.tabView.selectChild(lastSelection);
-			}
-		},
-		addQuestions: function (questions) {
+            if (this.tabView.isEmpty()) {
+                this.get("contentBox").addClass("empty");
+                this.tabView.add(new Y.Tab({
+                    label: "",
+                    content: "<center><i><br /><br /><br />" + Y.Wegas.I18n.t('mcq.empty') + "</i></center>"
+                }));
+                this.tabView.selectChild(0);
+            } else {
+                this.get("contentBox").removeClass("empty");
+                if (lastSelection >= this.tabView.size()) { // Can occur when questions list has changed during event
+                    lastSelection = 0;
+                }
+                this.tabView.selectChild(lastSelection);
+            }
+        },
+        addQuestions: function(questions) {
 
-			var i, cReplyLabel, cQuestion, cQuestionInstance,
-				tab, choiceDescriptor;
+            var i, cReplyLabel, cQuestion, cQuestionInstance,
+                tab, choiceDescriptor;
 
             for (i = 0; i < questions.length; i += 1) {
                 cQuestion = questions[i];
                 cQuestionInstance = cQuestion.getInstance();
                 cReplyLabel = null;
                 if (cQuestion instanceof Wegas.persistence.QuestionDescriptor
-                    && cQuestionInstance.get("active")) {                   // If current question is active
-                
+                    && cQuestionInstance.get("active")) { // If current question is active
+
                     var cbxType = cQuestion.get("cbx"),
                         validatedCbx = (cbxType ? cQuestionInstance.get('validated') : false),
                         nbReplies = cQuestionInstance.get("replies").length,
@@ -274,7 +275,6 @@ YUI.add('wegas-mcq-tabview', function (Y) {
 							var question = e.response.entity;
 
 							this.renderTab(tab, question);
-
                             if (question.get("pictures").length > 0) {
                                 this.gallery = new Wegas.util.FileLibraryGallery({
                                     selectedHeight: 150,
@@ -288,7 +288,8 @@ YUI.add('wegas-mcq-tabview', function (Y) {
             }
         },
         renderTab: function(tab, question) {
-            var i, ret, allowMultiple = question.get("allowMultipleReplies"),
+            var i, ret,
+                allowMultiple = question.get("allowMultipleReplies"),
                 cbxType = question.get("cbx"),
                 cQuestion = tab.cQuestion,
                 choices = cQuestion.get("items"), choiceD, choiceI, choiceID,
@@ -300,13 +301,13 @@ YUI.add('wegas-mcq-tabview', function (Y) {
                 tabularMCQ = cbxType && question.get("tabular"),
                 checked, reply;
 
-			Y.log("RENDER TAB");
+            Y.log("RENDER TAB");
 
-			ret = ['<div class="mcq-question">',
-				'<div class="mcq-question-details">',
-				'<div class="mcq-question-title">', question.get("title") || question.get("label") || "undefined", '</div>',
-				'<div class="mcq-question-description">', question.get("description"), '</div>',
-				'</div>'];
+            ret = ['<div class="mcq-question">',
+                '<div class="mcq-question-details">',
+                '<div class="mcq-question-title">', question.get("title") || question.get("label") || "undefined", '</div>',
+                '<div class="mcq-question-description">', question.get("description"), '</div>',
+                '</div>'];
 
             // Display choices
         if (cbxType){
@@ -317,10 +318,10 @@ YUI.add('wegas-mcq-tabview', function (Y) {
                 for (i = 0; i < choices.length; i += 1) {
                     if (choices[i].getInstance().get("active")) {
                         nbActiveChoices++;
-                        if (question.get("items")[i].get("description").length !== 0){
+                        if (question.get("items")[i].get("description").length !== 0) {
                             hasDescription = true;
                         }
-                    }        
+                    }
                 }
                 ret.push('<div class="mcq-choices-horizontal">');
                 ret.push('<div class="mcq-choice-horizontal">');
@@ -331,19 +332,16 @@ YUI.add('wegas-mcq-tabview', function (Y) {
                     choiceID = choiceD.get("id");
                     if (choiceI.get("active")) {
                         checked = this.getNumberOfReplies(questionInstance, choiceD) > 0;
-                        if (answerable){
-                            ret.push('<div class="mcq-choice" style="width:', cellWidth, '% !important">');
-                        } else {
-                            ret.push('<div class="mcq-choice spurned" style="text-decoration:none; width:', cellWidth, '% !important">'); // Display as spurned (gray, italic) but without ugly strikethrough
-                        }
+                        ret.push('<div class="mcq-choice', (answerable ? '': ' spurned'), '" style="width:', cellWidth, '% !important">');
                         ret.push('<div class="mcq-choice-name" style="text-align:center"><label for="', choiceID, '">', choiceD.get("title"), '</label></div>');
                         var currDescr = '';
-                        if (hasDescription){
+                        if (hasDescription) {
                             currDescr = question.get("items")[i].get("description");
-                            if (currDescr.length === 0) currDescr="&nbsp;";
+                            if (currDescr.length === 0)
+                                currDescr = "&nbsp;";
                         }
                         ret.push('<div class="mcq-choice-description" style="text-align:center"><label for="', choiceID, '">', currDescr, '</label></div>');
-                        ret.push('<input class="mcq-checkbox"', (allowMultiple ? ' type="checkbox"' : ' type="radio"'), (checked ? ' checked' : ''), (answerable ? '' : ' disabled'), ' id="', choiceID, '" name="', questionScriptAlias, '">');
+                        ret.push('<input class="mcq-checkbox"', (allowMultiple ? ' type="checkbox"' : ' type="radio"'), (checked ? ' checked' : ''), (answerable ? '' : ' disabled style="cursor:default"'), ' id="', choiceID, '" name="', questionScriptAlias, '">');
                         ret.push('</div>'); // end mcq-choice
                     }
                 }
@@ -370,16 +368,12 @@ YUI.add('wegas-mcq-tabview', function (Y) {
                     if (choiceI.get("active")) {
                         ret.push('<div class="mcq-choice-vertical">');
                         checked = this.getNumberOfReplies(questionInstance, choiceD) > 0;
-                        if (answerable){
-                            ret.push('<div class="mcq-choice">');
-                        } else {
-                            ret.push('<div class="mcq-choice spurned" style="text-decoration:none;">'); // Display as spurned (gray, italic) but without ugly strikethrough
-                        }
+                        ret.push('<div class="mcq-choice', (answerable ? '': ' spurned'), '">');
                         ret.push('<div class="mcq-choice-name"><label for="', choiceID, '">', choiceD.get("title"), '</label></div>');
                         ret.push('<div class="mcq-choice-description"><label for="', choiceID, '">', question.get("items")[i].get("description"), '</label></div>');
                         ret.push('</div>'); // end column/cell mcq-choice
                         ret.push('<div class="mcq-choices-vertical-checkbox">');                        
-                        ret.push('<input class="mcq-checkbox"', (allowMultiple ? ' type="checkbox"' : ' type="radio"'), (checked ? ' checked' : ''), (answerable ? '' : ' disabled'),
+                        ret.push('<input class="mcq-checkbox"', (allowMultiple ? ' type="checkbox"' : ' type="radio"'), (checked ? ' checked' : ''), (answerable ? '' : ' disabled style="cursor:default"'),
                                  ' id="', choiceID, '" name="', questionScriptAlias, '">');
                         ret.push('</div>'); // end cell mcq-choices-vertical-checkbox
                         ret.push('</div>'); // end table-row
@@ -438,7 +432,7 @@ YUI.add('wegas-mcq-tabview', function (Y) {
             if (!cbxType){
                 if (totalNumberOfReplies > 0) {
                     ret.push('<div class="mcq-replies-section">');
-                    ret.push('<div class="mcq-replies-title">', (totalNumberOfReplies > 1 ? Y.Wegas.I18n.t('mcq.result').pluralize() : Y.Wegas.I18n.t('mcq.result')), '</div>');
+                    ret.push('<div class="mcq-replies-title">', (totalNumberOfReplies > 1 ? Y.Wegas.I18n.t('mcq.result').pluralize().capitalize() : Y.Wegas.I18n.t('mcq.result').capitalize()), '</div>');
                     ret.push('<div class="mcq-replies">');
                     for (i = totalNumberOfReplies - 1; i >= 0; i -= 1) {
                         reply = allReplies[i];
@@ -461,39 +455,40 @@ YUI.add('wegas-mcq-tabview', function (Y) {
                     for (i = 0; i < choices.length; i += 1) {
                         choiceD = choices[i];
                         choiceI = choiceD.getInstance();
-                        if (!choiceI.get("active")) continue;
+                        if (!choiceI.get("active"))
+                            continue;
                         /*              
-                           For each choice, there are 3 cases:
-                               1. checked => display title and answer (if any).
-                               2. unchecked and no ignorationAnswer => display nothing.
-                               3. New case: unchecked and there is an ignorationAnswer => display title and any ignorationAnswer.
-                        */
+                         For each choice, there are 3 cases:
+                         1. checked => display title and answer (if any).
+                         2. unchecked and no ignorationAnswer => display nothing.
+                         3. New case: unchecked and there is an ignorationAnswer => display title and any ignorationAnswer.
+                         */
                         var checked = false,
                             answer = "",
                             ignorationAnswer = "";
                         for (var j = totalNumberOfReplies - 1; j >= 0; j -= 1) {
                             reply = allReplies[j];
-                            if (reply.getChoiceDescriptor().get("id")===choiceD.get("id")){
+                            if (reply.getChoiceDescriptor().get("id") === choiceD.get("id")) {
                                 checked = true;
                                 answer = reply.get("result").get("answer");
                                 break;
                             }
                         }
-                        if (!checked){
+                        if (!checked) {
                             var results = choiceD.get("results")[0];
-                            if (results!==undefined)
+                            if (results !== undefined)
                                 ignorationAnswer = results.get("ignorationAnswer");
                             // Empty (invisible) ignoration answers would be confusing and must not be displayed:
-                            if (ignorationAnswer===null || ignorationAnswer===undefined || ignorationAnswer.replace(/(\r\n|\n|\r)/gm,"").trim().length===0)
+                            if (ignorationAnswer === null || ignorationAnswer === undefined || ignorationAnswer.replace(/(\r\n|\n|\r)/gm, "").trim().length === 0)
                                 ignorationAnswer = "";
                         }
                         if (checked || ignorationAnswer.length!==0){
                             ret.push('<div class="mcq-reply" data-choice-id="', choiceD.get("id"), '" style="font-style:normal; color:inherit">');
                             ret.push('<div class="mcq-reply-title">', choiceD.get("title"), '</div>');
-                            if (checked){
+                            if (checked) {
                                 ret.push('<div class="mcq-reply-content">', answer, '</div>');
                             } else {
-                                ret.push('<div class="mcq-reply-content">',  ignorationAnswer, '</div>');
+                                ret.push('<div class="mcq-reply-content">', ignorationAnswer, '</div>');
                             }
                             ret.push('</div>'); // end mcq-reply
                         }
@@ -506,87 +501,83 @@ YUI.add('wegas-mcq-tabview', function (Y) {
 
             tab.set("content", ret.join(""));
 
-		},
-		/**
-		 * @function
-		 * @private
-		 * @param {type} questionInstance
-		 * @param {type} choice
-		 * @returns {integer} a number
-		 * @description Return the number of replies corresponding to the given choice.
-		 */
-		getNumberOfReplies: function (questionInstance, choice) {
-			var i, occurrence = 0;
-			for (i = 0; i < questionInstance.get("replies").length; i++) {
-				if (questionInstance.get("replies")[i].getChoiceDescriptor().get("id") === choice.get("id")) { //can be buggy
-					occurrence++;
-				}
-			}
-			return occurrence;
-		},
-		getEditorLabel: function () {
-			var variable = this.get("variable.evaluated");
-			if (variable) {
-				return variable.getEditorLabel();
-			}
-			return null;
-		},
-		/**
-		 * @function
-		 * @private
-		 * @description Destroy TabView and detach all functions created
-		 *  by this widget
-		 */
-		destructor: function () {
-			var i;
-			if (this.gallery) {
-				this.gallery.destroy();
-			}
-			this.tabView.destroy();
-			for (i in this.handlers) {
-				this.handlers[i].detach();
-			}
-		}
-	}, {
-		EDITORNAME: "Question display",
-		/** @lends Y.Wegas.MCQTabView */
-		/**
-		 * @field
-		 * @static
-		 * @description
-		 * <p><strong>Attributes</strong></p>
-		 * <ul>
-		 *    <li>variable: The target variable, returned either based on the name
-		 *     attribute, and if absent by evaluating the expr attribute.</li>
-		 * </ul>
-		 */
-		ATTRS: {
-			variable: {
-				/**
-				 * The target variable, returned either based on the name attribute,
-				 * and if absent by evaluating the expr attribute.
-				 */
-				getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-				_inputex: {
-					_type: "variableselect",
-					label: "Question folder",
-					classFilter: ["ListDescriptor"]
-				}
-			},
-			highlightUnanswered: {
-				type: "boolean",
-				value: true,
-				_inputex: {
-					label: "Higlight Unanswered",
-					wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
-				}
-			},
-			readonly: {
-				type: "boolean",
-				value: false,
-				optional: true
-			}
-		}
-	});
-	Wegas.MCQTabView = MCQTabView;
+        },
+        /**
+         * @function
+         * @private
+         * @param {type} questionInstance
+         * @param {type} choice
+         * @returns {integer} a number
+         * @description Return the number of replies corresponding to the given choice.
+         */
+        getNumberOfReplies: function(questionInstance, choice) {
+            var i,
+                occurrence = 0;
+            for (i = 0; i < questionInstance.get("replies").length; i++) {
+                if (questionInstance.get("replies")[i].getChoiceDescriptor().get("id") === choice.get("id")) { //can be buggy
+                    occurrence++;
+                }
+            }
+            return occurrence;
+        },
+        getEditorLabel: function() {
+            var variable = this.get("variable.evaluated");
+            if (variable && variable.getEditorLabel) {
+                return variable.getEditorLabel();
+            }
+            return Wegas.MCQTabView.EDITORNAME;
+        },
+        /**
+         * @function
+         * @private
+         * @description Destroy TabView and detach all functions created
+         *  by this widget
+         */
+        destructor: function() {
+            var i;
+            if (this.gallery) {
+                this.gallery.destroy();
+            }
+            this.tabView.destroy();
+            for (i in this.handlers) {
+                this.handlers[i].detach();
+            }
+        }
+    }, {
+        EDITORNAME: "Question display",
+        /** @lends Y.Wegas.MCQTabView */
+        /**
+         * @field
+         * @static
+         * @description
+         * <p><strong>Attributes</strong></p>
+         * <ul>
+         *    <li>variable: The target variable, returned either based on the name
+         *     attribute, and if absent by evaluating the expr attribute.</li>
+         * </ul>
+         */
+        ATTRS: {
+            variable: {
+                /**
+                 * The target variable, returned either based on the name attribute,
+                 * and if absent by evaluating the expr attribute.
+                 */
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                _inputex: {
+                    _type: "variableselect",
+                    label: "Question folder",
+                    classFilter: ["ListDescriptor"]
+                }
+            },
+            highlightUnanswered: {
+                type: "boolean",
+                value: true,
+                _inputex: {
+                    label: "Higlight Unanswered",
+                    wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
+                }
+            }
+        }
+    });
+    Wegas.MCQTabView = MCQTabView;
 });

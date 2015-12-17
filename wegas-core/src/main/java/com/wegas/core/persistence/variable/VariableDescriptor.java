@@ -37,6 +37,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Team;
@@ -47,7 +48,6 @@ import java.util.HashMap;
 import java.util.Map;
 import com.wegas.resourceManagement.persistence.BurndownDescriptor;
 import org.eclipse.persistence.annotations.JoinFetch;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -86,8 +86,6 @@ import org.slf4j.LoggerFactory;
 })
 abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity implements Searchable, LabelledEntity, Broadcastable {
 
-    static final private org.slf4j.Logger logger = LoggerFactory.getLogger(VariableDescriptor.class);
-
     private static final long serialVersionUID = 1L;
 
     /**
@@ -119,6 +117,17 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     @GeneratedValue
     @JsonView(Views.IndexI.class)
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "items_variabledescriptor_id")
+    @JsonIgnore
+    private ListDescriptor parentList;
+
+    @ManyToOne
+    @JoinColumn(name = "rootgamemodel_id")
+    @JsonIgnore
+    private GameModel rootGameModel;
+
     /**
      *
      */
@@ -237,6 +246,21 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      */
     public void setGameModel(GameModel gameModel) {
         this.gameModel = gameModel;
+    }
+
+    public ListDescriptor getParentList() {
+        return parentList;
+    }
+
+    @JsonIgnore
+    public DescriptorListI getParent() {
+        if (parentList != null) {
+            return parentList;
+        } else if (rootGameModel != null) {
+            return rootGameModel;
+        } else {
+            throw new WegasNotFoundException("ORPHAN DESCRIPTOR");
+        }
     }
 
     /**
@@ -415,10 +439,10 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         }
 
         if ((context == null) // no-context
-                || (context instanceof GameModel) // gm ctx -> do not skip anything
-                || (context instanceof Game && sFlag < 4) // g ctx -> skip gms
-                || (context instanceof Team && sFlag < 3) // t ctx -> skip gms, gs
-                || (context instanceof Player && sFlag < 2)) { // p ctx -> skip gms, gs, ts
+            || (context instanceof GameModel) // gm ctx -> do not skip anything
+            || (context instanceof Game && sFlag < 4) // g ctx -> skip gms
+            || (context instanceof Team && sFlag < 3) // t ctx -> skip gms, gs
+            || (context instanceof Player && sFlag < 2)) { // p ctx -> skip gms, gs, ts
             scope.propagateDefaultInstance(context);
         }
     }
@@ -442,9 +466,9 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     @Override
     public Boolean containsAll(final List<String> criterias) {
         return Helper.insensitiveContainsAll(this.getName(), criterias)
-                || Helper.insensitiveContainsAll(this.getLabel(), criterias)
-                || Helper.insensitiveContainsAll(this.getTitle(), criterias)
-                || Helper.insensitiveContainsAll(this.getComments(), criterias);
+            || Helper.insensitiveContainsAll(this.getLabel(), criterias)
+            || Helper.insensitiveContainsAll(this.getTitle(), criterias)
+            || Helper.insensitiveContainsAll(this.getComments(), criterias);
     }
 
     @Override

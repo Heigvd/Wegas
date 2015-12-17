@@ -19,19 +19,16 @@
     height:100%;
 }
 
-.wegas-text-input .status{
-    width:calc(100% - 40px);
-    float:right;
+.wegas-text-input span{
     height: 24px;
+    float: right;
+    padding-left: 10px;
 }
 
-.wegas-text-input .status p{
-    width:100%;
-    height: 24px;
-    line-height: 24px;
-    margin:0px;
-    padding:0px;
+.wegas-text-input span p.invalid{
+    color: red;
 }
+
 
 .wegas-text-input .mce-tinymce > .mce-container-body, .wegas-review-evaluation-content .mce-tinymce > .mce-container-body {
     height:100%;

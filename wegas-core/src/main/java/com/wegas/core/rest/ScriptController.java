@@ -29,6 +29,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.UnauthorizedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -39,6 +41,8 @@ import org.apache.shiro.authz.UnauthorizedException;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class ScriptController {
+
+    private static final Logger logger = LoggerFactory.getLogger(ScriptController.class);
 
     /**
      *
@@ -88,18 +92,20 @@ public class ScriptController {
     @POST
     @Path("Run/{playerId : [1-9][0-9]*}{sep: /?}{variableDescriptorId : ([1-9][0-9]*)?}")
     public Object run(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("playerId") Long playerId,
-            @PathParam("variableDescriptorId") Long variableDescritptorId,
-            Script script) {
+        @PathParam("playerId") Long playerId,
+        @PathParam("variableDescriptorId") Long variableDescritptorId,
+        Script script) {
 
         if (SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + gameModelId)
-                || userFacade.matchCurrentUser(playerId)) {
+            || userFacade.matchCurrentUser(playerId)) {
             VariableDescriptor context;
             if (variableDescritptorId != null && variableDescritptorId > 0) {
                 context = variableDescriptorFacade.find(variableDescritptorId);
             } else {
                 context = null;
             }
+            logger.info("script for player " + playerId + ": " + script.getContent());
+
             Object r = scriptManager.eval(playerId, script, context);
             requestFacade.commit();
             return r;
@@ -117,8 +123,8 @@ public class ScriptController {
     @POST
     @Path("Multirun{sep: /?}{variableDescriptorId : ([1-9][0-9]*)?}")
     public List<Object> multirun(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("variableDescriptorId") Long variableDescritptorId,
-            HashMap<String, Object> multiplayerScripts) throws WegasScriptException {
+        @PathParam("variableDescriptorId") Long variableDescritptorId,
+        HashMap<String, Object> multiplayerScripts) throws WegasScriptException {
 
         Script script = new Script();
         ArrayList<Integer> playerIdList = (ArrayList<Integer>) multiplayerScripts.get("playerIdList");
@@ -158,8 +164,8 @@ public class ScriptController {
         Player player = gmf.find(gameModelId).getPlayers().get(0);
         Map<Long, WegasScriptException> ret = new HashMap<>();
         findAll.stream().filter((descriptor) -> (descriptor instanceof Scripted))
-                .forEach((VariableDescriptor vd) -> {
-                    ((Scripted) vd).getScripts().stream().filter(script -> script != null)
+            .forEach((VariableDescriptor vd) -> {
+                ((Scripted) vd).getScripts().stream().filter(script -> script != null)
                     .anyMatch((Script script) -> {
                         WegasScriptException validate = scriptCheck.validate(script, player, vd);
                         if (validate != null) {
@@ -168,7 +174,7 @@ public class ScriptController {
                         }
                         return false;
                     });
-                });
+            });
 
         return ret;
     }

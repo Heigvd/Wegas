@@ -14,7 +14,7 @@ YUI.add('wegas-card', function(Y) {
         BOUNDING_TEMPLATE: "<div class='wrapper wrapper--card' />",
         CONTENT_TEMPLATE: "<div class='card'><div class='card__title'></div></div>",
         renderUI: function() {
-            if (this.get("icon") !== null) {
+            if (this.get("icon")) {
                 this.get("contentBox")
                     .addClass("card--illustred")
                     .prepend("<div class='card__icon'><i class='fa fa-" + this.get("icon") + "'></i></div>");

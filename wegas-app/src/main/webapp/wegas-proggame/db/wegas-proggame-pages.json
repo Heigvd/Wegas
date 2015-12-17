@@ -1,0 +1,5546 @@
+{
+    "1": {
+        "type": "AbsoluteLayout",
+        "plugins": [
+            {
+                "fn": "CSSSize",
+                "cfg": {
+                    "styles": {
+                        "position": "absolute",
+                        "width": "940px",
+                        "height": "400px"
+                    }
+                }
+            }
+        ],
+        "children": [
+            {
+                "type": "Box",
+                "cssClass": "proggame-splash",
+                "plugins": [
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "40px",
+                                "left": "148px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "962px",
+                                "height": "709px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSStyles",
+                        "cfg": {
+                            "styles": {
+                                "background": "url(wegas-proggame/images/blackboard_Start.png)"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Box",
+                "plugins": [
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "646px",
+                                "left": "780px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "168px",
+                                "height": "56px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSStyles",
+                        "cfg": {
+                            "styles": {
+                                "background": "url(wegas-proggame/images/proggame-logo.png)",
+                                "cursor": "pointer"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "OpenUrlAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "url": "http://www.heig-vd.ch/",
+                            "target": "blank"
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Box",
+                "plugins": [
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "651px",
+                                "left": "953px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "114px",
+                                "height": "47px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSStyles",
+                        "cfg": {
+                            "styles": {
+                                "background": "url(wegas-proggame/images/proggame-logo.png) 0 -397px",
+                                "cursor": "pointer"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "OpenUrlAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "url": "http://www.hes-so.ch/",
+                            "target": "blank"
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Box",
+                "plugins": [
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "646px",
+                                "left": "202px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "63px",
+                                "height": "53px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "OpenUrlAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "url": "http://www.albasim.ch",
+                            "target": "blank"
+                        }
+                    },
+                    {
+                        "fn": "CSSStyles",
+                        "cfg": {
+                            "styles": {
+                                "background": "url(wegas-proggame/images/proggame-logo.png)0 -286px",
+                                "cursor": "pointer"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Box",
+                "plugins": [
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "656px",
+                                "left": "306px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "234px",
+                                "height": "73px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSStyles",
+                        "cfg": {
+                            "styles": {
+                                "background": "url(wegas-proggame/images/proggame-logo.png) 0 -192px",
+                                "cursor": "pointer"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "OpenUrlAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "url": "http://www.cyberlearn.ch/",
+                            "target": "blank"
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Box",
+                "plugins": [
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "647px",
+                                "left": "538px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "211px",
+                                "height": "47px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSStyles",
+                        "cfg": {
+                            "styles": {
+                                "background": "url(wegas-proggame/images/proggame-logo.png) 0 -97px",
+                                "cursor": "pointer"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "OpenUrlAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "url": "http://www.comem.ch/",
+                            "target": "blank"
+                        }
+                    }
+                ]
+            },
+            {
+                "label": "START PLAYING",
+                "type": "Button",
+                "cssClass": "proggame-button",
+                "plugins": [
+                    {
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "subpageId": "5",
+                            "targetPageLoaderId": "previewPageLoader",
+                            "subpageVariable": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"money\")"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "536px",
+                                "left": "534px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "200px",
+                                "height": "70px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSText",
+                        "cfg": {
+                            "styles": {
+                                "color": "white",
+                                "fontSize": "2em",
+                                "fontStyle": "",
+                                "textAlign": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSStyles",
+                        "cfg": {
+                            "styles": {
+                                "background": "transparent",
+                                "fontFamily": "KG Ways to Say Goodbye",
+                                "lineHeight": "0.8em",
+                                "padding": "5px 0 0"
+                            }
+                        }
+                    }
+                ],
+                "data": {}
+            }
+        ],
+        "@name": "Splash screen",
+        "@index": 0
+    },
+    "2": {
+        "type": "PageLoader",
+        "plugins": [
+            {
+                "fn": "CSSSize",
+                "cfg": {
+                    "styles": {
+                        "width": "",
+                        "height": "712px"
+                    }
+                }
+            }
+        ],
+        "pageLoaderId": "leveldisplay",
+        "defaultPageId": "4",
+        "variable": {},
+        "page": {
+            "@class": "Script",
+            "content": "Variable.find(gameModel, \"currentLevel\")"
+        },
+        "@name": "Current level page",
+        "@index": 0
+    },
+    "3": {
+        "type": "AbsoluteLayout",
+        "plugins": [
+            {
+                "fn": "CSSSize",
+                "cfg": {
+                    "styles": {
+                        "position": "absolute",
+                        "width": "800px",
+                        "height": "400px"
+                    }
+                }
+            }
+        ],
+        "children": [
+            {
+                "type": "Box",
+                "plugins": [
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "0px",
+                                "left": "124px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "962px",
+                                "height": "709px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSStyles",
+                        "cfg": {
+                            "styles": {
+                                "background": "url(wegas-proggame/images/blackboard1.png)"
+                            }
+                        }
+                    }
+                ],
+                "name": "folder"
+            },
+            {
+                "label": "<b>BUY<br />BREAKPOINTS</b><br /><br />200 GOLD",
+                "type": "Button",
+                "cssClass": "proggame-button",
+                "plugins": [
+                    {
+                        "fn": "Tooltip",
+                        "cfg": {
+                            "content": "<p>With this upgrade, you will be able to add breakpoints in your code by clicking<br /> on the left margin of the code editor. <br />When you run your code again, it will stop executing at your breakpoint.</p>"
+                        }
+                    },
+                    {
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"inventory\").getProperty(self, \"debugger\")===\"true\";\n"
+                            },
+                            "attribute": "disabled",
+                            "value": ""
+                        }
+                    },
+                    {
+                        "fn": "ExecuteScriptAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "onClick": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"money\").sub(self, 200);\nVariable.find(gameModel, \"test\").enable(self);\n"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "100px",
+                                "left": "190px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "120px",
+                                "height": "120px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSText",
+                        "cfg": {
+                            "styles": {
+                                "color": "white",
+                                "fontSize": "2em",
+                                "fontStyle": "",
+                                "textAlign": "",
+                                "fontVariant": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSStyles",
+                        "cfg": {
+                            "styles": {
+                                "background": "transparent",
+                                "fontFamily": "KG Ways to Say Goodbye",
+                                "lineHeight": "0.8em",
+                                "padding": "5px 0 0"
+                            }
+                        }
+                    }
+                ],
+                "data": {}
+            },
+            {
+                "label": "<b>BUY <br />VARIABLE<br />WATCHES</b><br />300 GOLD",
+                "type": "Button",
+                "cssClass": "proggame-button",
+                "plugins": [
+                    {
+                        "fn": "Tooltip",
+                        "cfg": {
+                            "content": "With watches, you can check the value of any variable while executing. <br />You can see their value changing at each step of the execution."
+                        }
+                    },
+                    {
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"inventory\").getProperty(self, \"watches\") == \"true\"",
+                                "language": "JavaScript"
+                            },
+                            "attribute": "disabled",
+                            "value": ""
+                        }
+                    },
+                    {
+                        "fn": "ExecuteScriptAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "onClick": {
+                                "@class": "Script",
+                                "language": "JavaScript",
+                                "content": "Variable.find(gameModel, \"money\").add(self, -300);\nVariable.find(gameModel, \"inventory\").setProperty(self, \"watches\", \"true\");"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "100px",
+                                "left": "330px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "width": "120px",
+                                "height": "120px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSText",
+                        "cfg": {
+                            "styles": {
+                                "color": "white",
+                                "fontSize": "2em"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSStyles",
+                        "cfg": {
+                            "styles": {
+                                "background": "transparent",
+                                "fontFamily": "KG Ways to Say Goodbye",
+                                "lineHeight": "0.8em",
+                                "padding": "5px 0 0"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "label": "<b>BUY <br />FILE LIBRARY</b><br /><br />500 GOLD",
+                "type": "Button",
+                "cssClass": "proggame-button",
+                "plugins": [
+                    {
+                        "fn": "Tooltip",
+                        "cfg": {
+                            "content": "<p>The file library let you to store your code in files, in order to use it again.</p>"
+                        }
+                    },
+                    {
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"inventory\").getProperty(self, \"filelibrary\")===\"true\""
+                            },
+                            "attribute": "disabled",
+                            "value": ""
+                        }
+                    },
+                    {
+                        "fn": "ExecuteScriptAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "onClick": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"money\").sub(self, 500);\nVariable.find(gameModel, \"inventory\").setProperty(self, \"filelibrary\", \"true\")"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "100px",
+                                "left": "470px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "120px",
+                                "height": "120px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSText",
+                        "cfg": {
+                            "styles": {
+                                "color": "white",
+                                "fontSize": "2em",
+                                "fontStyle": "",
+                                "textAlign": ""
+                            }
+                        }
+                    }
+                ],
+                "data": {}
+            }
+        ],
+        "@name": "Shop",
+        "@index": 0
+    },
+    "4": {
+        "type": "AbsoluteLayout",
+        "plugins": [
+            {
+                "fn": "CSSSize",
+                "cfg": {
+                    "styles": {
+                        "position": "absolute",
+                        "width": "800px",
+                        "height": "400px"
+                    }
+                }
+            }
+        ],
+        "children": [
+            {
+                "type": "Box",
+                "plugins": [
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "0px",
+                                "left": "124px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "962px",
+                                "height": "709px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSStyles",
+                        "cfg": {
+                            "styles": {
+                                "background": "url(wegas-proggame/images/blackboard1.png)"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "label": "Level 1: Sequence d'instruction",
+                "type": "Button",
+                "cssClass": "proggame-levelselection-button",
+                "plugins": [
+                    {
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "subpageId": "401",
+                            "targetPageLoaderId": "levelselectionsubpage"
+                        }
+                    },
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "67px",
+                                "left": "174px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "height": "40px",
+                                "width": "310px"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "label": "Level 2: Variables",
+                "type": "Button",
+                "cssClass": "proggame-levelselection-button",
+                "plugins": [
+                    {
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"maxLevel\").getValue(self)<20"
+                            },
+                            "attribute": "disabled",
+                            "value": ""
+                        }
+                    },
+                    {
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "subpageId": "402",
+                            "targetPageLoaderId": "levelselectionsubpage"
+                        }
+                    },
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "112px",
+                                "left": "174px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "310px",
+                                "height": "40px"
+                            }
+                        }
+                    }
+                ],
+                "data": {}
+            },
+            {
+                "label": "Level 3: Conditions & logique",
+                "type": "Button",
+                "cssClass": "proggame-levelselection-button",
+                "plugins": [
+                    {
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"maxLevel\").getValue(self)<30"
+                            },
+                            "attribute": "disabled",
+                            "value": ""
+                        }
+                    },
+                    {
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "subpageId": "403",
+                            "targetPageLoaderId": "levelselectionsubpage"
+                        }
+                    },
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "157px",
+                                "left": "174px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "310px",
+                                "height": "40px"
+                            }
+                        }
+                    }
+                ],
+                "data": {}
+            },
+            {
+                "label": "Level 4: Itérations",
+                "type": "Button",
+                "cssClass": "proggame-levelselection-button",
+                "plugins": [
+                    {
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"maxLevel\").getValue(self)<40"
+                            },
+                            "attribute": "disabled",
+                            "value": ""
+                        }
+                    },
+                    {
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "subpageId": "404",
+                            "targetPageLoaderId": "levelselectionsubpage",
+                            "variable": {
+                                "@class": "Script",
+                                "content": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "202px",
+                                "left": "174px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "310px",
+                                "height": "40px"
+                            }
+                        }
+                    }
+                ],
+                "data": {}
+            },
+            {
+                "label": "Level 5: Procédures <em>(Pas encore disponible)</em>",
+                "type": "Button",
+                "cssClass": "proggame-levelselection-button",
+                "plugins": [
+                    {
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"maxLevel\").getValue(self)<50"
+                            },
+                            "attribute": "disabled",
+                            "value": ""
+                        }
+                    },
+                    {
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "subpageId": "1",
+                            "targetPageLoaderId": "levelselectionsubpage"
+                        }
+                    },
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "247px",
+                                "left": "174px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "310px",
+                                "height": "40px"
+                            }
+                        }
+                    }
+                ],
+                "data": {}
+            },
+            {
+                "label": "Level 6: Tableaux <em>(Pas encore disponible)</em>",
+                "type": "Button",
+                "cssClass": "proggame-levelselection-button",
+                "plugins": [
+                    {
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"maxLevel\").getValue(self)<60"
+                            },
+                            "attribute": "disabled",
+                            "value": ""
+                        }
+                    },
+                    {
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "subpageId": "1",
+                            "targetPageLoaderId": "levelselectionsubpage"
+                        }
+                    },
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "292px",
+                                "left": "174px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "310px",
+                                "height": "40px"
+                            }
+                        }
+                    }
+                ],
+                "data": {}
+            },
+            {
+                "label": "Level 7: Récursivité <em>(Pas encore disponible)</em>",
+                "type": "Button",
+                "cssClass": "proggame-levelselection-button",
+                "plugins": [
+                    {
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"maxLevel\").getValue(self)<60"
+                            },
+                            "attribute": "disabled",
+                            "value": ""
+                        }
+                    },
+                    {
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "subpageId": "1",
+                            "targetPageLoaderId": "levelselectionsubpage"
+                        }
+                    },
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "334px",
+                                "left": "173px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "310px",
+                                "height": "40px"
+                            }
+                        }
+                    }
+                ],
+                "data": {}
+            },
+            {
+                "type": "PageLoader",
+                "cssClass": "proggame-levelselection",
+                "plugins": [
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "39px",
+                                "left": "485px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "550px",
+                                "height": "634px"
+                            }
+                        }
+                    }
+                ],
+                "pageLoaderId": "levelselectionsubpage",
+                "defaultPageId": "1",
+                "variable": "",
+                "page": {
+                    "@class": "Script",
+                    "content": "\"40\"+(Math.floor(maxLevel.value/10))"
+                }
+            }
+        ],
+        "@name": "Levels",
+        "@index": 0
+    },
+    "5": {
+        "type": "AbsoluteLayout",
+        "plugins": [
+            {
+                "fn": "CSSSize",
+                "cfg": {
+                    "styles": {
+                        "width": "1200px",
+                        "height": ""
+                    }
+                }
+            }
+        ],
+        "children": [
+            {
+                "type": "Box",
+                "plugins": [
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "0px",
+                                "left": "0px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "339px",
+                                "height": "125px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSStyles",
+                        "cfg": {
+                            "styles": {
+                                "background": "url(wegas-proggame/images/proggame-title.png)"
+                            }
+                        }
+                    }
+                ],
+                "name": "folder"
+            },
+            {
+                "type": "Box",
+                "cssClass": "proggame-menu",
+                "plugins": [
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "",
+                                "top": "0px",
+                                "left": "566px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "",
+                                "height": ""
+                            }
+                        }
+                    }
+                ],
+                "name": "folder"
+            },
+            {
+                "type": "Template",
+                "cssClass": "proggame-money",
+                "plugins": [
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "27px",
+                                "left": "583px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute"
+                            }
+                        }
+                    }
+                ],
+                "variable": {
+                    "name": "money"
+                },
+                "data": {},
+                "custom": "<%= this.value || 0 %>"
+            },
+            {
+                "label": "Play",
+                "type": "Button",
+                "cssClass": "proggame-button-levels",
+                "plugins": [
+                    {
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "subpageId": "2",
+                            "targetPageLoaderId": "maindisplayarea",
+                            "variable": {
+                                "@class": "Script",
+                                "content": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "",
+                                "top": "27px",
+                                "left": "680.467px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "",
+                                "height": ""
+                            }
+                        }
+                    }
+                ],
+                "data": {}
+            },
+            {
+                "label": "Map",
+                "type": "Button",
+                "cssClass": "proggame-button-shop",
+                "plugins": [
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "",
+                                "top": "26px",
+                                "left": "966.467px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "",
+                                "height": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "subpageId": "4",
+                            "targetPageLoaderId": "maindisplayarea",
+                            "variable": {
+                                "@class": "Script",
+                                "content": ""
+                            }
+                        }
+                    }
+                ],
+                "data": {}
+            },
+            {
+                "label": "Theory",
+                "type": "Button",
+                "cssClass": "proggame-button-courses",
+                "plugins": [
+                    {
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "subpageId": "6",
+                            "targetPageLoaderId": "maindisplayarea",
+                            "variable": {
+                                "@class": "Script",
+                                "content": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "UnreadCount",
+                        "cfg": {
+                            "variable": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"inbox\");\n"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "",
+                                "top": "26px",
+                                "left": "772.467px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "",
+                                "height": ""
+                            }
+                        }
+                    }
+                ],
+                "data": {}
+            },
+            {
+                "type": "LoginButton",
+                "cssClass": "proggame-button-account",
+                "plugins": [
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "27px",
+                                "left": "1043px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {}
+                        }
+                    }
+                ],
+                "targetPageLoader": "maindisplayarea"
+            },
+            {
+                "type": "PageLoader",
+                "cssClass": "proggame-body",
+                "plugins": [
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "",
+                                "top": "95px",
+                                "left": "13.9667px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "1186px",
+                                "height": "710px"
+                            }
+                        }
+                    }
+                ],
+                "pageLoaderId": "maindisplayarea",
+                "defaultPageId": "2",
+                "variable": "",
+                "page": {
+                    "@class": "Script",
+                    "content": ""
+                }
+            }
+        ],
+        "@name": "Main page",
+        "@index": 0
+    },
+    "6": {
+        "type": "AbsoluteLayout",
+        "plugins": [
+            {
+                "fn": "CSSSize",
+                "cfg": {
+                    "styles": {
+                        "position": "absolute",
+                        "width": "800px",
+                        "height": "400px"
+                    }
+                }
+            }
+        ],
+        "children": [
+            {
+                "type": "Box",
+                "plugins": [
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "0px",
+                                "left": "124px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "962px",
+                                "height": "709px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSStyles",
+                        "cfg": {
+                            "styles": {
+                                "background": "url(wegas-proggame/images/blackboard1.png)"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "InboxDisplay",
+                "plugins": [
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "51px",
+                                "left": "171px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "868px",
+                                "height": "618px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSStyles",
+                        "cfg": {
+                            "styles": {
+                                "color": "white"
+                            }
+                        }
+                    }
+                ],
+                "variable": {
+                    "@class": "Script",
+                    "content": "Variable.find(gameModel, \"inbox\")"
+                },
+                "template": "inbox",
+                "setToReadAfter": 1,
+                "autoOpenFirstMail": true
+            }
+        ],
+        "@name": "Mails",
+        "@index": 0
+    },
+    "11": {
+        "type": "ProgGameLevel",
+        "plugins": [],
+        "intro": "<p>&nbsp;</p>\n<p>&nbsp;&nbsp;</p>\n<p>Aidez votre personnage blanc &agrave; rejoindre son ami jaune.</p>\n<p>&nbsp;</p>\n<p>Votre seul moyen pour le d&eacute;placer&nbsp;est de programmer la s&eacute;quence d'instructions n&eacute;cessaire dans le langage <strong>Javascript</strong>!</p>",
+        "label": "Level 1.1 - First moves",
+        "map": [
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ]
+        ],
+        "objects": [
+            {
+                "id": "Player",
+                "x": 0,
+                "y": 2,
+                "direction": 2,
+                "collides": "",
+                "components": "PC"
+            },
+            {
+                "id": "Enemy",
+                "x": 5,
+                "y": 2,
+                "direction": 4,
+                "collides": false,
+                "components": "NPC"
+            }
+        ],
+        "api": [
+            "move"
+        ],
+        "winningCondition": "objects[0].x===objects[1].x && objects[0].y===objects[1].y",
+        "onStart": "",
+        "onAction": "",
+        "onWin": "currentLevel.value=12",
+        "defaultCode": "// Ecrivez votre code ici ",
+        "invites": [],
+        "maxTurns": "1",
+        "@name": "Level 1.1",
+        "@index": 0
+    },
+    "12": {
+        "type": "ProgGameLevel",
+        "plugins": [],
+        "intro": "<p>Le parcours a chang&eacute;, mais deux nouvelles fonctions<em> right()</em> et <em>left()</em> vous permettent maintenant de faire tourner votre personnage.</p>\n<p>&nbsp;</p>\n<p>Rejoignez votre ami avec ces nouvelles fonctions.</p>",
+        "label": "Level 1.2",
+        "map": [
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ]
+        ],
+        "objects": [
+            {
+                "id": "Player",
+                "x": 0,
+                "y": 2,
+                "direction": 2,
+                "collides": "",
+                "components": "PC"
+            },
+            {
+                "id": "Enemy",
+                "x": 4,
+                "y": 1,
+                "direction": 4,
+                "collides": false,
+                "components": "NPC"
+            }
+        ],
+        "api": [
+            "move",
+            "left",
+            "right"
+        ],
+        "winningCondition": "objects[0].x===objects[1].x && objects[0].y===objects[1].y",
+        "onStart": "",
+        "onAction": "",
+        "onWin": "currentLevel.value=13",
+        "defaultCode": "//Put your code here...\n",
+        "invites": [],
+        "maxTurns": "1",
+        "@name": "Level 1.2",
+        "@index": 0
+    },
+    "13": {
+        "type": "ProgGameLevel",
+        "plugins": [],
+        "intro": "<p>Pas de nouvelles fonctions dans l'API pour cette fois.</p>\n<p>&nbsp;</p>\n<p>Confirmez seulement votre ma&icirc;trise&nbsp;avec cette s&eacute;quence un peu plus longue.</p>",
+        "label": "Level 1.3 - Getting harder",
+        "objects": [
+            {
+                "id": "Player",
+                "x": 0,
+                "y": 2,
+                "direction": 2,
+                "collides": "",
+                "components": "PC"
+            },
+            {
+                "id": "Enemy",
+                "x": 6,
+                "y": 2,
+                "direction": 4,
+                "collides": false,
+                "components": "NPC"
+            }
+        ],
+        "api": [
+            "move",
+            "left",
+            "right"
+        ],
+        "winningCondition": "objects[0].x===objects[1].x && objects[0].y===objects[1].y",
+        "onStart": "",
+        "onAction": "",
+        "onWin": "currentLevel.value=21",
+        "defaultCode": "\n",
+        "map": [
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ]
+        ],
+        "invites": [],
+        "maxTurns": "1",
+        "@name": "Level 1.3",
+        "@index": 0
+    },
+    "21": {
+        "type": "ProgGameLevel",
+        "plugins": [],
+        "intro": "<p>Une porte vous emp&ecirc;che de rejoindre votre ami. Mais la porte&nbsp;s'ouvrira si vous lui annoncez le&nbsp;bon mot de passe, qui&nbsp;est \"1234\".</p>\n<p>&nbsp;</p>\n<p>Utilisez votre nouvelle fonction&nbsp;<span style=\"font-family: 'courier new', courier;\">say(text)</span><span style=\"font-family: 'courier new', courier;\"><em>.</em></span> Cette fonction&nbsp;poss&egrave;de un <strong>param&egrave;tre </strong><em>text</em>, qui&nbsp;repr&eacute;sente ce que va dire votre avatar. Placez vous devant la porte et utilisez cette fonction&nbsp;pour dire le mot de passe.</p>",
+        "label": "Level 2.1",
+        "map": [
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ]
+        ],
+        "objects": [
+            {
+                "id": "Door",
+                "x": 2,
+                "y": 2,
+                "open": false,
+                "components": "Door"
+            },
+            {
+                "id": "Player",
+                "x": 0,
+                "y": 2,
+                "direction": 2,
+                "collides": "",
+                "components": "PC"
+            },
+            {
+                "id": "Enemy",
+                "x": 4,
+                "y": 2,
+                "direction": 4,
+                "collides": false,
+                "components": "NPC"
+            }
+        ],
+        "api": [
+            "move",
+            "left",
+            "right",
+            "say"
+        ],
+        "winningCondition": "comparePos(find('Player'), find('Enemy'))",
+        "onStart": "",
+        "onAction": "\nif((\"\"+said).indexOf(\"1234\")>=0 && find(\"Player\").x === 1) {\n    doOpen(find('Door'));\n}",
+        "onWin": "currentLevel.value=22",
+        "defaultCode": "",
+        "invites": [
+            "He! Le password c'est 1234 !",
+            "Tu m'écoutes? 1234 je te dis !"
+        ],
+        "maxTurns": "1",
+        "@name": "Level 2.1",
+        "@index": 0
+    },
+    "22": {
+        "id": 7,
+        "type": "ProgGameLevel",
+        "plugins": [],
+        "intro": "<p>Dans ce niveau, la mot de passe est &eacute;crit sur le panneau. D&eacute;placez votre personnage&nbsp;jusqu'au panneau, lisez ce qui est &eacute;crit&nbsp;avec la fonction <span style=\"font-family: 'courier new', courier;\">read():Number</span> et stockez l'information dans une variable. D&eacute;placez-vous ensuite jusqu'&agrave; la porte et dites&nbsp;le mot de passe pour ouvrir la porte.</p>\n<p>&nbsp;</p>\n<p>Si vous n'arrivez pas &agrave; r&eacute;soudre cette &eacute;nigme, n'h&eacute;sitez pas &agrave; consulter la th&eacute;orie.</p>\n<p>&nbsp;</p>",
+        "label": "Level 2.2",
+        "map": [
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ]
+        ],
+        "objects": [
+            {
+                "id": "Door",
+                "x": 4,
+                "y": 2,
+                "open": false,
+                "components": "Door"
+            },
+            {
+                "id": "Panel",
+                "value": "panelValue",
+                "x": 2,
+                "y": 2,
+                "collides": false,
+                "components": "Panel"
+            },
+            {
+                "id": "Enemy",
+                "x": 5,
+                "y": 2,
+                "direction": 4,
+                "collides": false,
+                "components": "NPC"
+            },
+            {
+                "id": "Player",
+                "x": 0,
+                "y": 2,
+                "direction": 2,
+                "collides": "",
+                "components": "PC"
+            }
+        ],
+        "api": [
+            "move",
+            "left",
+            "right",
+            "say",
+            "read"
+        ],
+        "winningCondition": "comparePos(find('Player'), find('Enemy'))",
+        "onStart": "panelValue = Math.round(Math.random()*100)",
+        "onAction": "if(said === panelValue && find('Player').x ===3) {\n    doOpen(find('Door'));\n}",
+        "onWin": "currentLevel.value=23",
+        "defaultCode": "",
+        "invites": [],
+        "maxTurns": "1",
+        "@name": "Level 2.2",
+        "@index": 0
+    },
+    "23": {
+        "type": "ProgGameLevel",
+        "plugins": [],
+        "intro": "<p>Cette fois, le mot de passe est&nbsp;la somme des nombres&nbsp;inscrits sur les deux panneaux.</p>\n<p>Bonne chance !</p>\n<p>&nbsp;</p>\n<p>Indice: stocker dans des variables&nbsp;les valeurs &eacute;crites sur les panneaux.</p>",
+        "label": "Level 2.3",
+        "map": [
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ]
+        ],
+        "objects": [
+            {
+                "id": "Enemy",
+                "x": 5,
+                "y": 2,
+                "direction": 4,
+                "collides": false,
+                "components": "NPC"
+            },
+            {
+                "id": "Door",
+                "x": 4,
+                "y": 2,
+                "open": false,
+                "components": "Door"
+            },
+            {
+                "id": "Panel",
+                "value": "panelValue1",
+                "x": 1,
+                "y": 2,
+                "collides": false,
+                "components": "Panel"
+            },
+            {
+                "id": "Panel",
+                "value": "panelValue2",
+                "x": 2,
+                "y": 2,
+                "collides": false,
+                "components": "Panel"
+            },
+            {
+                "id": "Player",
+                "x": 0,
+                "y": 2,
+                "direction": 2,
+                "collides": "",
+                "components": "PC"
+            }
+        ],
+        "api": [
+            "move",
+            "left",
+            "right",
+            "say",
+            "read"
+        ],
+        "winningCondition": "comparePos(find('Player'), find('Enemy'))",
+        "onStart": "panelValue1 = Math.round(Math.random()*10);panelValue2 = Math.round(Math.random()*10);",
+        "onAction": "if(said === (panelValue1 + panelValue2) && find('Player').x === 3) {\n        doOpen(find('Door'));\n}",
+        "onWin": "currentLevel.value=24",
+        "defaultCode": "",
+        "invites": [],
+        "maxTurns": "1",
+        "@name": "Level 2.3",
+        "@index": 0
+    },
+    "24": {
+        "type": "ProgGameLevel",
+        "plugins": [],
+        "intro": "<p>L'API poss&egrave;de maintenant sa premi&egrave;re fonction math&eacute;matique: la&nbsp;fonction <span style=\"font-family: 'courier new', courier;\">Math.round(x:Number):Number</span><em><span style=\"font-family: 'courier new', courier;\">,</span> </em>qui&nbsp;permet d'arrondir un nombre au&nbsp;nombre entier le plus proche.</p>\n<p>&nbsp;</p>\n<p>Cette fonction poss&egrave;de donc un param&egrave;tre d'entr&eacute;e x (le nombre &agrave; arrondir) et retourne un nombre.</p>\n<p>&nbsp;</p>\n<p>Sur le panneau est inscrit un nombre avec 2 d&eacute;cimales. Le mot de passe pour ouvrir la porte est le nombre&nbsp;entier le plus proche.</p>",
+        "label": "Level 2.4",
+        "map": [
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ]
+        ],
+        "objects": [
+            {
+                "id": "Enemy",
+                "x": 5,
+                "y": 2,
+                "direction": 4,
+                "collides": false,
+                "components": "NPC"
+            },
+            {
+                "id": "Door",
+                "x": 4,
+                "y": 2,
+                "open": false,
+                "components": "Door"
+            },
+            {
+                "id": "Panel",
+                "value": "panelValue1",
+                "x": 1,
+                "y": 2,
+                "collides": false,
+                "components": "Panel"
+            },
+            {
+                "id": "Player",
+                "x": 0,
+                "y": 2,
+                "direction": 2,
+                "collides": "",
+                "components": "PC"
+            }
+        ],
+        "api": [
+            "move",
+            "left",
+            "right",
+            "say",
+            "read",
+            "Math.round"
+        ],
+        "winningCondition": "comparePos(find('Player'), find('Enemy'))",
+        "onStart": "panelValue1 = (Math.round(Math.random()*10000))/100;",
+        "onAction": "if(said === Math.round(panelValue1) && find('Player').x === 3) {\n        doOpen(find('Door'));\n}",
+        "onWin": "currentLevel.value=31",
+        "defaultCode": "",
+        "invites": [],
+        "maxTurns": "1",
+        "@name": "Level 2.4",
+        "@index": 0
+    },
+    "31": {
+        "type": "ProgGameLevel",
+        "plugins": [],
+        "intro": "<p>Deux chemins s'offrent &agrave; vous, mais un des deux est pi&eacute;g&eacute;.</p>\n<p>&nbsp;</p>\n<p>Lisez la valeur contenue sur le panneau et si elle est sup&eacute;rieure &agrave; 1, cela signifie c'est&nbsp;le chemin du haut qui est pi&eacute;g&eacute;. Sinon c'est le chemin du bas qui l'est.</p>\n<p>&nbsp;</p>\n<p>Vous allez donc devoir faire un choix. Les informations relatives aux choix se trouve dans la th&eacute;orie.</p>",
+        "label": "Level 3.1",
+        "map": [
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ]
+        ],
+        "objects": [
+            {
+                "id": "Enemy",
+                "x": 4,
+                "y": 2,
+                "direction": 4,
+                "collides": false,
+                "components": "NPC"
+            },
+            {
+                "id": "Trap1",
+                "x": 3,
+                "y": 3,
+                "enabled": true,
+                "components": "Trap"
+            },
+            {
+                "id": "Panel",
+                "value": "panelValue1",
+                "x": 1,
+                "y": 2,
+                "collides": false,
+                "components": "Panel"
+            },
+            {
+                "id": "Trap2",
+                "x": 3,
+                "y": 1,
+                "enabled": true,
+                "components": "Trap"
+            },
+            {
+                "id": "Player",
+                "x": 0,
+                "y": 2,
+                "direction": 2,
+                "collides": "",
+                "components": "PC"
+            }
+        ],
+        "api": [
+            "move",
+            "left",
+            "right",
+            "say",
+            "read",
+            "Math.round"
+        ],
+        "winningCondition": "comparePos(find('Player'), find('Enemy'))",
+        "onStart": "panelValue1 = Math.random() * 2;\nif (panelValue1>1) {\n    find('Trap1').enabled = false;\n} else {\n    find('Trap2').enabled = false;\n}",
+        "onAction": "",
+        "onWin": "currentLevel.value=32",
+        "defaultCode": "//Put your code here...\n",
+        "invites": [],
+        "maxTurns": "1",
+        "@name": "Level 3.1",
+        "@index": 0
+    },
+    "32": {
+        "type": "ProgGameLevel",
+        "plugins": [],
+        "intro": "<p>Cette fois le pi&egrave;ge du haut est&nbsp;activ&eacute; si la valeur &eacute;crite sur le panneau est paire, sinon c'est le pi&egrave;ge du bas.</p>\n<p>&nbsp;</p>\n<p>Blanc&nbsp;a d&eacute;j&agrave; essay&eacute; de trouver la solution en utilisant l'op&eacute;rateur <strong>modulo (%)</strong>, mais il s'est arr&ecirc;t&eacute; au millieu. A toi de corriger son code!</p>",
+        "label": "Level 3.2",
+        "map": [
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ]
+        ],
+        "objects": [
+            {
+                "id": "Enemy",
+                "x": 4,
+                "y": 2,
+                "direction": 4,
+                "collides": false,
+                "components": "NPC"
+            },
+            {
+                "id": "Trap1",
+                "x": 3,
+                "y": 4,
+                "enabled": true,
+                "components": "Trap"
+            },
+            {
+                "id": "Panel",
+                "value": "panelValue1",
+                "x": 1,
+                "y": 2,
+                "collides": false,
+                "components": "Panel"
+            },
+            {
+                "id": "Trap2",
+                "x": 3,
+                "y": 2,
+                "enabled": true,
+                "components": "Trap"
+            },
+            {
+                "id": "Player",
+                "x": 0,
+                "y": 2,
+                "direction": 2,
+                "collides": "",
+                "components": "PC"
+            }
+        ],
+        "api": [
+            "move",
+            "left",
+            "right",
+            "say",
+            "read",
+            "Math.round"
+        ],
+        "winningCondition": "comparePos(find('Player'), find('Enemy'))",
+        "onStart": "panelValue1 = Math.round(Math.random() * 100);\nif (panelValue1%2 === 0) {\n    find('Trap1').enabled = false;\n} else {\n    find('Trap2').enabled = false;\n}",
+        "onAction": "",
+        "onWin": "currentLevel.value=33",
+        "defaultCode": "move();\nvar num = read();\nsay(num % 2);              // @blanc Ca retourne le reste de la division",
+        "invites": [],
+        "maxTurns": "1",
+        "@name": "Level 3.2",
+        "@index": 0
+    },
+    "33": {
+        "type": "ProgGameLevel",
+        "plugins": [],
+        "intro": "<p>Cette fois, blanc doit prendre le chemin du haut si la valeur du panneau est plus grande que 10, celui du millieu si elle est comprise entre 5 et 10 et celui du bas si elle est inf&eacute;rieure &agrave; 10.</p>",
+        "label": "Level 3.3",
+        "map": [
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ]
+        ],
+        "objects": [
+            {
+                "id": "Enemy",
+                "x": 6,
+                "y": 1,
+                "direction": 4,
+                "collides": false,
+                "components": "NPC"
+            },
+            {
+                "id": "Trap1",
+                "x": 3,
+                "y": 1,
+                "enabled": true,
+                "components": "Trap"
+            },
+            {
+                "id": "Panel",
+                "value": "panelValue1",
+                "x": 1,
+                "y": 1,
+                "collides": false,
+                "components": "Panel"
+            },
+            {
+                "id": "Trap2",
+                "x": 3,
+                "y": 3,
+                "enabled": true,
+                "components": "Trap"
+            },
+            {
+                "id": "Player",
+                "x": 0,
+                "y": 1,
+                "direction": 2,
+                "collides": "",
+                "components": "PC"
+            },
+            {
+                "id": "Trap3",
+                "x": 3,
+                "y": 5,
+                "enabled": true,
+                "components": "Trap"
+            }
+        ],
+        "api": [
+            "move",
+            "left",
+            "right",
+            "say",
+            "read",
+            "Math.round"
+        ],
+        "winningCondition": "comparePos(find('Player'), find('Enemy'))",
+        "onStart": "panelValue1 = Math.round(Math.random() * 160)/10;\nif (panelValue1>10) {\n    find('Trap1').enabled = false;\n} else if (panelValue1 < 5) {\n    find('Trap3').enabled = false;\n} else {\n    find('Trap2').enabled = false;\n}\n",
+        "onAction": "",
+        "onWin": "currentLevel.value=34",
+        "defaultCode": "//Put your code here...\n",
+        "invites": [],
+        "maxTurns": "1",
+        "@name": "Level 3.3",
+        "@index": 0
+    },
+    "34": {
+        "type": "ProgGameLevel",
+        "plugins": [],
+        "intro": "<p>Blanc devra emprunter le chemin du haut si la valeur du premier panneau est plus grande&nbsp;que celle du deuxi&egrave;me.</p>\n<p>&nbsp;</p>\n<p>Pour le second embranchement, il devra comparer la valeur du troisi&egrave;me panneau &agrave; la moyenne des deux premi&egrave;res. Si la troisi&egrave;me valeur est plus grande il passera en haut, sinon en bas.</p>\n<p>&nbsp;</p>\n<p>&nbsp;</p>",
+        "label": "Level 3.4",
+        "map": [
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ]
+        ],
+        "objects": [
+            {
+                "id": "Player",
+                "x": 0,
+                "y": 4,
+                "direction": 2,
+                "collides": "",
+                "components": "PC"
+            },
+            {
+                "id": "Enemy",
+                "x": 8,
+                "y": 4,
+                "direction": 4,
+                "collides": false,
+                "components": "NPC"
+            },
+            {
+                "id": "Panel",
+                "value": "panelValue1",
+                "x": 2,
+                "y": 4,
+                "collides": false,
+                "components": "Panel"
+            },
+            {
+                "id": "Panel2",
+                "value": "panelValue2",
+                "x": 1,
+                "y": 4,
+                "collides": false,
+                "components": "Panel"
+            },
+            {
+                "id": "Panel3",
+                "value": "panelValue3",
+                "x": 3,
+                "y": 2,
+                "collides": false,
+                "components": "Panel"
+            },
+            {
+                "id": "Panel4",
+                "value": "panelValue4",
+                "x": 3,
+                "y": 6,
+                "collides": false,
+                "components": "Panel"
+            },
+            {
+                "id": "Trap1",
+                "x": 5,
+                "y": 1,
+                "enabled": true,
+                "components": "Trap"
+            },
+            {
+                "id": "Trap2",
+                "x": 5,
+                "y": 3,
+                "enabled": true,
+                "components": "Trap"
+            },
+            {
+                "id": "Trap3",
+                "x": 5,
+                "y": 5,
+                "enabled": true,
+                "components": "Trap"
+            },
+            {
+                "id": "Trap4",
+                "x": 5,
+                "y": 7,
+                "enabled": true,
+                "components": "Trap"
+            }
+        ],
+        "api": [
+            "move",
+            "left",
+            "right",
+            "say",
+            "read",
+            "Math.round"
+        ],
+        "winningCondition": "comparePos(find('Player'), find('Enemy'))",
+        "onStart": "panelValue1 = Math.round(Math.random() * 10);\npanelValue2 = Math.round(Math.random() * 10);\npanelValue3 = Math.round(Math.random() * 10);\npanelValue4 = Math.round(Math.random() * 10);\n\nmean = (panelValue1 + panelValue2)/2;\n\nif (panelValue2>panelValue1) {\n    \n    if (panelValue3>mean) {\n        find('Trap1').enabled = false;\n    }else {\n        find('Trap2').enabled = false;\n    }\n} else {\n   if (panelValue4>mean) {\n        find('Trap3').enabled = false;\n    } else {\n        find('Trap4').enabled = false;\n    }\n}",
+        "onAction": "",
+        "onWin": "currentLevel.value=41",
+        "defaultCode": "//Put your code here...\n",
+        "invites": [],
+        "maxTurns": "1",
+        "@name": "Level 3.4",
+        "@index": 0
+    },
+    "41": {
+        "type": "ProgGameLevel",
+        "plugins": [],
+        "intro": "",
+        "label": "Level 4.1",
+        "map": [
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 1
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            [
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "x": 0,
+                    "y": 0
+                }
+            ]
+        ],
+        "objects": [
+            {
+                "id": "Enemy",
+                "x": 5,
+                "y": 2,
+                "direction": 4,
+                "collides": false,
+                "components": "NPC"
+            },
+            {
+                "id": "Player",
+                "x": 0,
+                "y": 2,
+                "direction": 2,
+                "collides": "",
+                "components": "PC"
+            },
+            {
+                "id": "pannel1",
+                "value": "pannelValue1",
+                "x": 1,
+                "y": 2,
+                "collides": false,
+                "components": "Panel"
+            },
+            {
+                "id": "Trap",
+                "x": 3,
+                "y": 2,
+                "enabled": true,
+                "components": "Trap"
+            }
+        ],
+        "api": [
+            "move",
+            "left",
+            "right",
+            "say",
+            "read",
+            "Math.round"
+        ],
+        "winningCondition": "comparePos(find('Player'), find('Enemy'))",
+        "onStart": "pannelValue1 = Math.round(Math.random()*15);",
+        "onAction": " if (lastCommand().type === \"say\") {\r\n     find('Trap').enabled = pannelValue1 < 10\r\n     pannelValue1 = Math.round(Math.random()*15);\r\n}",
+        "onWin": "currentLevel.value=42",
+        "defaultCode": "// Your code here",
+        "invites": [],
+        "maxTurns": "1",
+        "@name": "Level 4.1",
+        "@index": 0
+    },
+    "42": {
+        "type": "AbsoluteLayout",
+        "plugins": [
+            {
+                "fn": "CSSSize",
+                "cfg": {
+                    "styles": {
+                        "width": "800px",
+                        "height": "400px"
+                    }
+                }
+            }
+        ],
+        "children": [
+            {
+                "type": "Box",
+                "plugins": [
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "0px",
+                                "left": "124px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "962px",
+                                "height": "709px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSStyles",
+                        "cfg": {
+                            "styles": {
+                                "background": "url(wegas-proggame/images/blackboard1.png)",
+                                "textTransform": "uppercase"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Text",
+                "plugins": [
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "134px",
+                                "left": "200px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "821px",
+                                "height": "366px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSText",
+                        "cfg": {
+                            "styles": {
+                                "color": "#ffffff",
+                                "fontSize": "3em",
+                                "fontStyle": "",
+                                "textAlign": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSStyles",
+                        "cfg": {
+                            "styles": {
+                                "fontFamily": "KG Ways to Say Goodbye",
+                                "textTransform": "uppercase"
+                            }
+                        }
+                    }
+                ],
+                "content": "<p>Vous avez atteint la fin de la version d&eacute;mo.</p>\n<p>&nbsp;</p>\n<p>Si vous d&eacute;sirez utiliser le Programming game dans un cours ou m&ecirc;me participer &agrave; son d&eacute;veloppement, contactez-nous:<span style=\"color: #ffffff;\"> <a href=\"mailto:albasim@heig-vd.ch\"><span style=\"color: #ffffff;\">albasim@heig-vd.ch</span></a></span>.</p>"
+            },
+            {
+                "label": "Back to level selection",
+                "type": "Button",
+                "cssClass": "proggame-button",
+                "plugins": [
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "355px",
+                                "left": "513px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "230px",
+                                "height": "65px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "ExecuteScriptAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "onClick": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"currentLevel\").setValue(self, 4)"
+                            }
+                        }
+                    }
+                ],
+                "data": {}
+            }
+        ],
+        "@name": "Level 4.2",
+        "@index": 0
+    },
+    "401": {
+        "type": "AbsoluteLayout",
+        "plugins": [
+            {
+                "fn": "CSSSize",
+                "cfg": {
+                    "styles": {
+                        "position": "absolute"
+                    }
+                }
+            },
+            {
+                "fn": "CSSStyles",
+                "cfg": {
+                    "styles": {
+                        "background": "url(wegas-proggame/images/proggame-level-1.png)"
+                    }
+                }
+            }
+        ],
+        "children": [
+            {
+                "label": "STAGE<br /> 1.1",
+                "type": "Button",
+                "cssClass": "proggame-button-stage",
+                "plugins": [
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "104px",
+                                "left": "171px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "60px",
+                                "height": "60px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "subpageId": "2",
+                            "targetPageLoaderId": "maindisplayarea",
+                            "variable": {
+                                "@class": "Script",
+                                "content": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "ExecuteScriptAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "onClick": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"currentLevel\").setValue(self, 11);\n"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"maxLevel\").getValue(self)>11;\n"
+                            },
+                            "attribute": "cssClass",
+                            "value": "proggame-button-stagefinished"
+                        }
+                    }
+                ],
+                "data": {}
+            },
+            {
+                "label": "STAGE<br /> 1.2",
+                "type": "Button",
+                "cssClass": "proggame-button-stage",
+                "plugins": [
+                    {
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"maxLevel\").getValue(self)>12;\n"
+                            },
+                            "attribute": "cssClass",
+                            "value": "proggame-button-stagefinished"
+                        }
+                    },
+                    {
+                        "fn": "ConditionalDisable2",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"maxLevel\").getValue(self)<12;\n"
+                            },
+                            "attribute": "disabled",
+                            "value": ""
+                        }
+                    },
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "128px",
+                                "left": "452px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "60px",
+                                "height": "60px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "ExecuteScriptAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "onClick": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"currentLevel\").setValue(self, 12);\n"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "subpageId": "2",
+                            "targetPageLoaderId": "maindisplayarea",
+                            "variable": {
+                                "@class": "Script",
+                                "content": ""
+                            }
+                        }
+                    }
+                ],
+                "data": {}
+            },
+            {
+                "label": "STAGE<br /> 1.3",
+                "type": "Button",
+                "cssClass": "proggame-button-stage",
+                "plugins": [
+                    {
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"maxLevel\").getValue(self)<13;\n"
+                            },
+                            "attribute": "disabled",
+                            "value": ""
+                        }
+                    },
+                    {
+                        "fn": "ConditionalDisable2",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"maxLevel\").getValue(self)>13;\n"
+                            },
+                            "attribute": "cssClass",
+                            "value": "proggame-button-stagefinished"
+                        }
+                    },
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "370px",
+                                "left": "119px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "60px",
+                                "height": "60px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "ExecuteScriptAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "onClick": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"currentLevel\").setValue(self, 13);\n"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "subpageId": "2",
+                            "targetPageLoaderId": "maindisplayarea",
+                            "variable": {
+                                "@class": "Script",
+                                "content": ""
+                            }
+                        }
+                    }
+                ],
+                "data": {}
+            }
+        ],
+        "@name": "Map level 1",
+        "@index": 0
+    },
+    "402": {
+        "type": "AbsoluteLayout",
+        "plugins": [
+            {
+                "fn": "CSSSize",
+                "cfg": {
+                    "styles": {
+                        "position": "absolute"
+                    }
+                }
+            },
+            {
+                "fn": "CSSStyles",
+                "cfg": {
+                    "styles": {
+                        "background": "url(wegas-proggame/images/proggame-level-2.png)"
+                    }
+                }
+            }
+        ],
+        "children": [
+            {
+                "label": "STAGE<br /> 2.1",
+                "type": "Button",
+                "cssClass": "proggame-button-stage",
+                "plugins": [
+                    {
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"maxLevel\").getValue(self)<21;\n"
+                            },
+                            "attribute": "disabled",
+                            "value": ""
+                        }
+                    },
+                    {
+                        "fn": "ConditionalDisable2",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"maxLevel\").getValue(self)>21;\n"
+                            },
+                            "attribute": "cssClass",
+                            "value": "proggame-button-stagefinished"
+                        }
+                    },
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "50px",
+                                "left": "85px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "60px",
+                                "height": "60px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "ExecuteScriptAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "onClick": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"currentLevel\").setValue(self, 21);\n"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "subpageId": "2",
+                            "targetPageLoaderId": "maindisplayarea",
+                            "variable": {
+                                "@class": "Script",
+                                "content": ""
+                            }
+                        }
+                    }
+                ],
+                "data": {}
+            },
+            {
+                "label": "STAGE<br /> 2.2",
+                "type": "Button",
+                "cssClass": "proggame-button-stage",
+                "plugins": [
+                    {
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"maxLevel\").getValue(self)<22;\n"
+                            },
+                            "attribute": "disabled",
+                            "value": ""
+                        }
+                    },
+                    {
+                        "fn": "ConditionalDisable2",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"maxLevel\").getValue(self)>22;\n"
+                            },
+                            "attribute": "cssClass",
+                            "value": "proggame-button-stagefinished"
+                        }
+                    },
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "210px",
+                                "left": "420px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "60px",
+                                "height": "60px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "ExecuteScriptAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "onClick": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"currentLevel\").setValue(self, 22);\n"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "subpageId": "2",
+                            "targetPageLoaderId": "maindisplayarea",
+                            "variable": {
+                                "@class": "Script",
+                                "content": ""
+                            }
+                        }
+                    }
+                ],
+                "data": {}
+            },
+            {
+                "label": "STAGE<br /> 2.3",
+                "type": "Button",
+                "cssClass": "proggame-button-stage",
+                "plugins": [
+                    {
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"maxLevel\").getValue(self)<23"
+                            },
+                            "attribute": "disabled",
+                            "value": ""
+                        }
+                    },
+                    {
+                        "fn": "ConditionalDisable2",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"maxLevel\").getValue(self)>23"
+                            },
+                            "attribute": "cssClass",
+                            "value": "proggame-button-stagefinished"
+                        }
+                    },
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "410px",
+                                "left": "131px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "60px",
+                                "height": "60px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "subpageId": "2",
+                            "targetPageLoaderId": "maindisplayarea",
+                            "variable": {
+                                "@class": "Script",
+                                "content": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "ExecuteScriptAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "onClick": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"currentLevel\").setValue(self, 23)"
+                            }
+                        }
+                    }
+                ],
+                "data": {}
+            },
+            {
+                "label": "STAGE<br /> 2.4",
+                "type": "Button",
+                "cssClass": "proggame-button-stage",
+                "plugins": [
+                    {
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"maxLevel\").getValue(self)<24;\n"
+                            },
+                            "attribute": "disabled",
+                            "value": ""
+                        }
+                    },
+                    {
+                        "fn": "ConditionalDisable2",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"maxLevel\").getValue(self)>24;\n"
+                            },
+                            "attribute": "cssClass",
+                            "value": "proggame-button-stagefinished"
+                        }
+                    },
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "442px",
+                                "left": "450px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "60px",
+                                "height": "60px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "ExecuteScriptAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "onClick": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"currentLevel\").setValue(self, 24);\n"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "subpageId": "2",
+                            "targetPageLoaderId": "maindisplayarea",
+                            "variable": {
+                                "@class": "Script",
+                                "content": ""
+                            }
+                        }
+                    }
+                ],
+                "data": {}
+            }
+        ],
+        "@name": "Map level 2",
+        "@index": 0
+    },
+    "403": {
+        "type": "AbsoluteLayout",
+        "plugins": [
+            {
+                "fn": "CSSSize",
+                "cfg": {
+                    "styles": {
+                        "position": "absolute"
+                    }
+                }
+            },
+            {
+                "fn": "CSSStyles",
+                "cfg": {
+                    "styles": {
+                        "background": "url(wegas-proggame/images/proggame-level-3.png)"
+                    }
+                }
+            }
+        ],
+        "children": [
+            {
+                "label": "STAGE<br /> 3.1",
+                "type": "Button",
+                "cssClass": "proggame-button-stage",
+                "plugins": [
+                    {
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"maxLevel\").getValue(self)<31;\n"
+                            },
+                            "attribute": "disabled",
+                            "value": ""
+                        }
+                    },
+                    {
+                        "fn": "ConditionalDisable2",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"maxLevel\").getValue(self)>31;\n"
+                            },
+                            "attribute": "cssClass",
+                            "value": "proggame-button-stagefinished"
+                        }
+                    },
+                    {
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "subpageId": "2",
+                            "targetPageLoaderId": "maindisplayarea",
+                            "variable": {
+                                "@class": "Script",
+                                "content": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "221px",
+                                "left": "121px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "60px",
+                                "height": "60px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "ExecuteScriptAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "onClick": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"currentLevel\").setValue(self, 31);\n"
+                            }
+                        }
+                    }
+                ],
+                "data": {}
+            },
+            {
+                "label": "STAGE<br /> 3.2",
+                "type": "Button",
+                "cssClass": "proggame-button-stage",
+                "plugins": [
+                    {
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"maxLevel\").getValue(self)<31;\n"
+                            },
+                            "attribute": "disabled",
+                            "value": ""
+                        }
+                    },
+                    {
+                        "fn": "ConditionalDisable2",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"maxLevel\").getValue(self)>31;\n"
+                            },
+                            "attribute": "cssClass",
+                            "value": "proggame-button-stagefinished"
+                        }
+                    },
+                    {
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "subpageId": "2",
+                            "targetPageLoaderId": "maindisplayarea",
+                            "variable": {
+                                "@class": "Script",
+                                "content": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "132px",
+                                "left": "429px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "60px",
+                                "height": "60px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "ExecuteScriptAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "onClick": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"currentLevel\").setValue(self, 32);\n"
+                            }
+                        }
+                    }
+                ],
+                "data": {}
+            },
+            {
+                "label": "STAGE<br /> 3.3",
+                "type": "Button",
+                "cssClass": "proggame-button-stage",
+                "plugins": [
+                    {
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"maxLevel\").getValue(self)<31;\n"
+                            },
+                            "attribute": "disabled",
+                            "value": ""
+                        }
+                    },
+                    {
+                        "fn": "ConditionalDisable2",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"maxLevel\").getValue(self)>31;\n"
+                            },
+                            "attribute": "cssClass",
+                            "value": "proggame-button-stagefinished"
+                        }
+                    },
+                    {
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "subpageId": "2",
+                            "targetPageLoaderId": "maindisplayarea",
+                            "variable": {
+                                "@class": "Script",
+                                "content": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "354px",
+                                "left": "284px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "60px",
+                                "height": "60px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "ExecuteScriptAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "onClick": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"currentLevel\").setValue(self, 33);\n"
+                            }
+                        }
+                    }
+                ],
+                "data": {}
+            },
+            {
+                "label": "STAGE<br /> 3.4",
+                "type": "Button",
+                "cssClass": "proggame-button-stage",
+                "plugins": [
+                    {
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"maxLevel\").getValue(self)<31;\n"
+                            },
+                            "attribute": "disabled",
+                            "value": ""
+                        }
+                    },
+                    {
+                        "fn": "ConditionalDisable2",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"maxLevel\").getValue(self)>31;\n"
+                            },
+                            "attribute": "cssClass",
+                            "value": "proggame-button-stagefinished"
+                        }
+                    },
+                    {
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "subpageId": "2",
+                            "targetPageLoaderId": "maindisplayarea",
+                            "variable": {
+                                "@class": "Script",
+                                "content": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "474px",
+                                "left": "385px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "60px",
+                                "height": "60px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "ExecuteScriptAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "onClick": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"currentLevel\").setValue(self, 34);\n"
+                            }
+                        }
+                    }
+                ],
+                "data": {}
+            }
+        ],
+        "@name": "Map level 3",
+        "@index": 0
+    },
+    "404": {
+        "type": "AbsoluteLayout",
+        "plugins": [
+            {
+                "fn": "CSSSize",
+                "cfg": {
+                    "styles": {
+                        "position": "absolute"
+                    }
+                }
+            },
+            {
+                "fn": "CSSStyles",
+                "cfg": {
+                    "styles": {
+                        "background": "url(wegas-proggame/images/proggame-level-4.png)"
+                    }
+                }
+            }
+        ],
+        "children": [
+            {
+                "label": "STAGE<br /> 4.1",
+                "type": "Button",
+                "cssClass": "proggame-button-stage",
+                "plugins": [
+                    {
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"maxLevel\").getValue(self)<41"
+                            },
+                            "attribute": "disabled",
+                            "value": ""
+                        }
+                    },
+                    {
+                        "fn": "ConditionalDisable2",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"maxLevel\").getValue(self)>41"
+                            },
+                            "attribute": "cssClass",
+                            "value": "proggame-button-stagefinished"
+                        }
+                    },
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "330px",
+                                "left": "150px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "60px",
+                                "height": "60px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "subpageId": "2",
+                            "targetPageLoaderId": "maindisplayarea",
+                            "variable": {
+                                "@class": "Script",
+                                "content": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "ExecuteScriptAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "onClick": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"currentLevel\").setValue(self, 41)"
+                            }
+                        }
+                    }
+                ],
+                "data": {}
+            }
+        ],
+        "@name": "Map level 4",
+        "@index": 0
+    },
+    "5Unused": {
+        "label": "Level 3",
+        "type": "ProgGameLevel",
+        "maxTurns": 2,
+        "winningCondition": "level.objects[0].life===0",
+        "onWin": "currentLevel.value=7;money.value+=500;",
+        "api": [
+            "move",
+            "left",
+            "right",
+            "fire"
+        ],
+        "objects": [
+            {
+                "id": "Enemy",
+                "components": "NPC",
+                "direction": 4,
+                "x": 7,
+                "y": 3,
+                "actions": 5,
+                "ai": "left();\nmove();\nright();\nmove();\nmove();"
+            },
+            {
+                "id": "Player",
+                "components": "PC",
+                "direction": 2,
+                "x": 1,
+                "y": 3,
+                "actions": 5
+            }
+        ],
+        "map": [
+            [
+                {
+                    "x": 21,
+                    "y": 17
+                },
+                {
+                    "x": 21,
+                    "y": 17
+                },
+                {
+                    "x": 21,
+                    "y": 17
+                },
+                {
+                    "x": 21,
+                    "y": 17
+                },
+                {
+                    "x": 21,
+                    "y": 17
+                },
+                {
+                    "x": 21,
+                    "y": 17
+                },
+                {
+                    "x": 21,
+                    "y": 17
+                },
+                {
+                    "x": 21,
+                    "y": 17
+                }
+            ],
+            [
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                }
+            ],
+            [
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 17,
+                    "y": 5
+                },
+                {
+                    "x": 17,
+                    "y": 5
+                },
+                {
+                    "x": 17,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                }
+            ],
+            [
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 17,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 17,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                }
+            ],
+            [
+                {
+                    "x": 17,
+                    "y": 5
+                },
+                {
+                    "x": 17,
+                    "y": 5
+                },
+                {
+                    "x": 17,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 17,
+                    "y": 5
+                },
+                {
+                    "x": 17,
+                    "y": 5
+                },
+                {
+                    "x": 17,
+                    "y": 5
+                },
+                {
+                    "x": 17,
+                    "y": 5
+                }
+            ],
+            [
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 17,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 17,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                }
+            ],
+            [
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 17,
+                    "y": 5
+                },
+                {
+                    "x": 17,
+                    "y": 5
+                },
+                {
+                    "x": 17,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                }
+            ],
+            [
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                },
+                {
+                    "x": 21,
+                    "y": 5
+                }
+            ],
+            [
+                {
+                    "x": 21,
+                    "y": 17
+                },
+                {
+                    "x": 21,
+                    "y": 17
+                },
+                {
+                    "x": 21,
+                    "y": 17
+                },
+                {
+                    "x": 21,
+                    "y": 17
+                },
+                {
+                    "x": 21,
+                    "y": 17
+                },
+                {
+                    "x": 21,
+                    "y": 17
+                },
+                {
+                    "x": 21,
+                    "y": 17
+                },
+                {
+                    "x": 21,
+                    "y": 17
+                }
+            ]
+        ],
+        "intro": "Utilisez les fonctions de l'API pour dÃ©placer votre avatar jusqu'au personnage en jaune.",
+        "@name": "Level 1.4 (not used)",
+        "@index": 0
+    }
+}

@@ -51,6 +51,9 @@ public class Message extends NamedEntity implements Broadcastable {
     /**
      *
      */
+    @Column(length = 64)
+    private String token;
+
     @Lob
     @Basic(fetch = FetchType.LAZY)
     @JsonView(Views.ExtendedI.class)
@@ -157,6 +160,24 @@ public class Message extends NamedEntity implements Broadcastable {
 
     /**
      *
+     * @param from
+     * @param subject
+     * @param body
+     * @param date
+     * @param token
+     * @param attachements
+     */
+    public Message(String from, String subject, String body, String date, String token, List<String> attachements) {
+        this.from = from;
+        this.subject = subject;
+        this.body = body;
+        this.date = date;
+        this.token = token;
+        this.attachements = attachements;
+    }
+
+    /**
+     *
      * @param a
      */
     @Override
@@ -168,6 +189,7 @@ public class Message extends NamedEntity implements Broadcastable {
         this.setTime(other.getTime());
         this.setDate(other.getDate());
         this.setSubject(other.getSubject());
+        this.setToken(other.getToken());
         this.setAttachements(other.attachements);
     }
 
@@ -252,6 +274,24 @@ public class Message extends NamedEntity implements Broadcastable {
     @Override
     public Long getId() {
         return this.id;
+    }
+
+    /**
+     * get the token
+     *
+     * @return
+     */
+    public String getToken() {
+        return token;
+    }
+
+    /**
+     * set the token
+     *
+     * @param token
+     */
+    public void setToken(String token) {
+        this.token = token;
     }
 
     /**

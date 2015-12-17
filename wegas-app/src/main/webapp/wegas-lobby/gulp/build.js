@@ -13,15 +13,16 @@ gulp.task('html', ['inject'], function() {
     var htmlFilter = $.filter('*.html');
     var jsFilter = $.filter('**/*.js');
     var cssFilter = $.filter('**/*.css');
-    var assets;
 
     var gulped = gulp.src(paths.tmp + '/serve/*.jsp')
-        .pipe(assets = $.useref.assets());
+        .pipe($.useref());
     // .pipe($.rev())
     /* JS COMPRESS */
     gulped = gulped.pipe(jsFilter)
         .pipe($.ngAnnotate())
-        .pipe($.cache($.uglify({preserveComments: $.uglifySaveLicense})))
+        .pipe($.cache($.uglify({
+            preserveComments: $.uglifySaveLicense
+        })))
         .pipe(jsFilter.restore());
     /* CSS COMPRESS */
     gulped = gulped
@@ -29,7 +30,6 @@ gulp.task('html', ['inject'], function() {
         .pipe($.cache($.csso())).pipe(cssFilter.restore());
 
     gulped = gulped
-        .pipe(assets.restore())
         .pipe($.useref())
         //    .pipe($.revReplace())
         .pipe(htmlFilter);
@@ -47,11 +47,10 @@ gulp.task('html', ['inject'], function() {
             showFiles: true
         }));
 });
+// no compression on js/css
+// should also avoid concatenation ...
 gulp.task('debug-build', ['inject'], function() {
-    var assets = $.useref.assets();
     return gulp.src(paths.tmp + '/serve/*.jsp')
-        .pipe(assets)
-        .pipe(assets.restore())
         .pipe($.useref())
         .pipe(gulp.dest(paths.dist + '/'))
         .pipe($.size({

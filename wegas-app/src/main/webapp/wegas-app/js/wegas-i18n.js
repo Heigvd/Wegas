@@ -27,7 +27,7 @@ YUI.add("wegas-i18n", function(Y) {
                     return this + " :";
                 },
                 pluralize: function() {
-                    return this + "s";
+                    return this + "s"; // mostly...
                 }
             },
             en: {
@@ -42,7 +42,44 @@ YUI.add("wegas-i18n", function(Y) {
                 }
             }
         };
-
+        /**
+         * String extension with additional methods
+         * to transform given string
+         * 
+         * @constructor I18nString
+         * @extends String
+         * @param String str the given string
+         */
+        function I18nString(str) {
+            this.value = str;
+        }
+        I18nString.prototype = new String();
+        I18nString.prototype.toString = function() {
+            return "" + this.value
+        }
+        I18nString.prototype.valueOf = I18nString.prototype.toString
+        /**
+         * Capitalize sentence's first letter. 
+         * Uppercase first letter, language dependant
+         */
+        I18nString.prototype.capitalize = function() {
+            this.value = config[currentLocale()].capitalize.call(this.value)
+            return this;
+        }
+        /**
+         * Colonize sentence, append ":" to it, language dependant
+         */
+        I18nString.prototype.colonize = function() {
+            this.value = config[currentLocale()].colonize.call(this.value)
+            return this;
+        }
+        /**
+         * Pluralize sentence's last word, language dependant.
+         */
+        I18nString.prototype.pluralize = function() {
+            this.value = config[currentLocale()].pluralize.call(this.value)
+            return this;
+        }
         /*
          * Take the initial string and replace ALL parameters by theirs argument value 
          * provided by k/v in args object.
@@ -50,18 +87,19 @@ YUI.add("wegas-i18n", function(Y) {
          * All paramters (i.e. identifier [a-zA-Z0-9_] surrounded by '{{' and '}}') are mandatory
          * 
          */
-        function mapArguments(string, args, tName) {
+        function mapArguments(str, args, tName) {
             var pattern = /.*\{\{([a-zA-Z0-9_]*)\}\}/,
                 match, key;
-            while (match = pattern.exec(string)) {
+            while (match = pattern.exec(str)) {
                 key = match[1];
                 if (args && args.hasOwnProperty(key)) {
-                    string = string.replace("{{" + key + "}}", args[key]);
+                    str = str.replace("{{" + key + "}}", args[key]);
                 } else {
                     return "[I18N] MISSING MANDATORY ARGUMENT \"" + key + "\" FOR \"" + tName + "\"";
                 }
             }
-            return string;
+            // return new I18nString(str);
+            return str;
         }
 
 
@@ -107,15 +145,16 @@ YUI.add("wegas-i18n", function(Y) {
         }
 
         function setLang(lang) {
-            var module, deps = [];
-            for (module in Y.Wegas.I18n._modules){
-                deps.push (module + "-" + lang);
+            var module,
+                deps = [];
+            for (module in Y.Wegas.I18n._modules) {
+                deps.push(module + "-" + lang);
             }
             Y.use(deps, function(Y) {
                 Y.Wegas.I18n._currentLocale = lang;
-                String.prototype.capitalize = config[lang].capitalize;
-                String.prototype.colonize = config[lang].colonize;
-                String.prototype.pluralize = config[lang].pluralize;
+                String.prototype.capitalize = config[lang].capitalize; // don't
+                String.prototype.colonize = config[lang].colonize; // don't
+                String.prototype.pluralize = config[lang].pluralize; // don't
             });
         }
 

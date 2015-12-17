@@ -21,13 +21,14 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
             }, this);
         },
         syncUI: function() {
-            this._createCards().then(Y.bind(function(cardsData) {
-                this.each(function(item, index) {
-                    item.plug(Y.Wegas.TeamCardDetails, {
-                        team: cardsData[index].team
+            return Y.Wegas.TeamsOverviewDashboard.superclass.constructor.prototype.syncUI.apply(this, arguments)
+                .then(Y.bind(function(cardsData) {
+                    this.each(function(item, index) {
+                        item.plug(Y.Wegas.TeamCardDetails, {
+                            team: cardsData[index].team
+                        });
                     });
-                });
-            }, this));
+                }, this));
         },
         _getBlocs: function(team) {
             var blocs = [];
@@ -149,9 +150,9 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
         },
         destructor: function() {
             var editor = this.get("editor");
+            this.set("editor", null);
             if (editor && editor.destroy) {
                 editor.remove();
-                editor.destroy();
             }
             Y.Array.each(this.handles, function(handle) {
                 handle.detach();

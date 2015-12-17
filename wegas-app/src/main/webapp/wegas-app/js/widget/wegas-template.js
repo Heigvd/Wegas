@@ -50,6 +50,8 @@ YUI.add("wegas-template", function(Y) {
                 if (desc instanceof Y.Wegas.persistence.VariableInstance) {
                     data.value = this.undefinedToEmpty(desc.get("value"));
                     desc = Y.Wegas.Facade.Variable.cache.findById(desc.get("descriptorId"));
+                } else {
+                    data.value = undefined;
                 }
 
                 if (desc instanceof Wegas.persistence.ListDescriptor && desc.get("currentItem")) {       // If the widget is a list,
@@ -60,7 +62,9 @@ YUI.add("wegas-template", function(Y) {
                 if (initialData.label) {
                     initialData.label = Y.Template.Micro.compile(initialData.label || "")();
                 }
-                data.value = data.value || this.undefinedToEmpty(desc.getInstance().get("value"));
+                if (data.value === undefined){
+                    data.value = this.undefinedToEmpty(desc.getInstance().get("value"));
+                }
                 data.maxValue = this.undefinedToEmpty(desc.get("maxValue"));
                 data.minValue = this.undefinedToEmpty(desc.get("minValue"));
                 data.defaultValue = this.undefinedToEmpty(desc.get("defaultValue"));

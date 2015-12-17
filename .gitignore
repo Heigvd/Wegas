@@ -35,3 +35,6 @@ settings.xml
 ehthumbs.db
 Icon?
 Thumbs.db
+
+typings/
+.vscode

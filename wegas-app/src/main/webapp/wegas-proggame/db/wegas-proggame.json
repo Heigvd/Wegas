@@ -1014,7 +1014,7 @@
                             "cfg": {
                                 "styles": {
                                     "position": "absolute",
-                                    "top": "39px",
+                                    "top": "49px",
                                     "left": "485px"
                                 }
                             }
@@ -4297,7 +4297,7 @@
                                     },
                                     "preStateImpact": {
                                         "@class": "Script",
-                                        "content": "Variable.find(gameModel, \"inbox\").sendMessage(self, \"Professeur\", \"Bienvenue\", \"<p>Bienvenue dans le Programming Game.</p>\\n<p>&nbsp;</p>\\n<p>Je vous enverrai&nbsp;r&eacute;guli&eacute;rement des informations utiles et de la th&eacute;orie dans votre bo&icirc;te mail alors consultez-la r&eacute;guli&egrave;rement.</p>\", [])",
+                                        "content": "Variable.find(gameModel, \"inbox\").sendMessage(self, \"Professeur\", \"Bienvenue\", \"<p>Bienvenue dans le Programming Game.</p>\\n<p>&nbsp;</p>\\n<p>Vous trouverez des informations utiles dans la partie théorie, alors consultez-là régulièrement.</p>\", [])",
                                         "language": "JavaScript"
                                     },
                                     "nextStateId": 3

@@ -27,6 +27,7 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.UnauthorizedException;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
@@ -604,7 +605,12 @@ public class UserController {
 
         return userFacade.findUserPermissionByInstance(entityId);
     }
-
+    @GET
+    @Path("FindUsersWithRole/{role_id}")
+    @RequiresPermissions("User:Edit")
+    public List<User> findUsersWithRole(@PathParam("role_id") Long roleId){
+        return userFacade.findUsersWithRole(roleId);
+    }
     /**
      * @param permission
      * @param accountId

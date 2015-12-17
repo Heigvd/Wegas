@@ -151,8 +151,10 @@
     border-bottom: 8px solid transparent;
 }
 .wegas-mcqtabview .mcq-choice.spurned {
-    text-decoration: line-through;
     color: #999;
+}
+.wegas-mcqtabview .mcq-choices .mcq-choice.spurned {
+    text-decoration: line-through;
 }
 
 .wegas-mcqtabview .mcq-choice-name {
