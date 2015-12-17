@@ -244,7 +244,7 @@ html, .editor-preview {
     visibility: hidden;
 }
 .proggame-title {
-    position: absolute;
+    display: inline-block;
 }
 .proggame-title h1,.proggame-title h2 {
     text-align: left;
@@ -265,8 +265,7 @@ html, .editor-preview {
     font-size: 20px;
     letter-spacing: 2px;
 }
-.proggame-title .proggame-help,
-.proggame-title .proggame-level{
+.proggame-title .proggame-help{
     width: 32px;
     height: 32px;
     position: absolute;
@@ -280,15 +279,6 @@ html, .editor-preview {
 .proggame-title .proggame-help:hover {
     background-position: 0 -32px;
 }
-.proggame-title .proggame-level {
-    left: 860000px;
-    top: -60000px;
-    /*    background-position: 0 -69px;*/
-}
-
-.proggame-title .proggame-level:hover {
-    background-position: 0 -107px;
-}
 
 .wegas-proggame-level .yui3-button {
     background: none;
@@ -298,6 +288,7 @@ html, .editor-preview {
 /* Level: Run code buttons */
 .proggame-buttons {
     position: relative;
+    display: inline-block;
     top: 105px;
     left: 636px;
     z-index: 10;   

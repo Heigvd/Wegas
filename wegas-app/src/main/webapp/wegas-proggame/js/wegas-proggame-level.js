@@ -34,7 +34,7 @@ YUI.add('wegas-proggame-level', function(Y) {
         DEBUG_BUTTON_LABEL = "<span class='proggame-playpause'></span>",
         SMALLSTOP_BUTTON_LABEL = "<span class='proggame-stop-small'></span>",
         Wegas = Y.Wegas, ProgGameLevel,
-        levelPlayCount = 0; //Is used to count how many times the player enters the same level
+        currentLevel;
     /**
      *  The level display class controls script input, ia, debugger and
      *  terrain display.
@@ -42,8 +42,7 @@ YUI.add('wegas-proggame-level', function(Y) {
     ProgGameLevel = Y.Base.create("wegas-proggame-level", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         // *** Fields *** //
         CONTENT_TEMPLATE: '<div>' +
-            '<div class="proggame-title"><h1></h1><h2></h2><div class="proggame-help" title="Level information"></div>' +
-            '<div class="proggame-level" title="Back to level selection"></div></div>' +
+            '<div class="proggame-title"><h1></h1><h2></h2><div class="proggame-help" title="Level information"></div></div>' +
             '<div class="proggame-lefttab"></div>' +
             '<div class="proggame-view">' +
             '<div class="message"></div>' +
@@ -120,7 +119,8 @@ YUI.add('wegas-proggame-level', function(Y) {
             this._resizeHandle = resize;
         },
         bindUI: function() {
-            var cb = this.get(CONTENTBOX);
+            var cb = this.get(CONTENTBOX),
+                scriptFacade = Wegas.Facade.Variable.script;
             this.runButton.on(CLICK, this.onRunClick, this); // Run button click event
             this.handlers.shiftEnter = Y.one("body").on("key", this.onRunClick, "enter+shift", this); // Shift + enter event
 
@@ -159,26 +159,16 @@ YUI.add('wegas-proggame-level', function(Y) {
             });
             this.set(STATE, IDLE); // Game is in idle state by default
 
-            if (this.get("intro") && !Y.one(".editor-preview") && !levelPlayCount && Wegas.Facade.Variable.script.localEval("Variable.find(gameModel,\"currentLevel\").getValue(self)") === Wegas.Facade.Variable.script.localEval("Variable.find(gameModel,\"maxLevel\").getValue(self)")) {
+            if (this.get("intro") &&
+                currentLevel !== scriptFacade.localEval("Variable.find(gameModel,\"currentLevel\").getValue(self)") &&
+                scriptFacade.localEval("Variable.find(gameModel,\"currentLevel\").getValue(self)") === scriptFacade.localEval("Variable.find(gameModel,\"maxLevel\").getValue(self)")
+            ) {
                 this.showMessage(INFO, this.get("intro")); // Display introduction text at startup
-                levelPlayCount = 0; //If the player enters this lvl for the first time, initiaze the variable
             }
-            levelPlayCount += 1; //After the first time, the info page will not bw shown
+            currentLevel = scriptFacade.localEval("Variable.find(gameModel,\"currentLevel\").getValue(self)");
 
             cb.one(".proggame-help").on(CLICK, function() { // When help button is clicked,
                 this.showMessage(INFO, this.get("intro")); // redisplay the introduction
-            }, this);
-            cb.one(".proggame-level").on(CLICK, function() { // When level button is clicked,
-                //                this.plug(Y.Plugin.OpenPageAction, {
-                //                    subpageId: 4,
-                //                    targetPageLoaderId: "maindisplayarea"
-                //                });
-                this.plug(Y.Plugin.ExecuteScriptAction, {
-                    onClick: {
-                        "@class": "Script",
-                        content: "Variable.find(gameModel, \"currentLevel\").setValue(self, 4)"
-                    }
-                });
             }, this);
             //this.plug(Y.Plugin.OpenPageAction, {//                              // Whenever level is finished,
             //    subpageId: 2,
@@ -430,7 +420,6 @@ YUI.add('wegas-proggame-level', function(Y) {
                 content = this.get("onWin") + ";Variable.find(gameModel, \"money\").add(self, 0);"; //player don't win points if he already did the lvl
             } else {
                 content = this.get("onWin") + ";Variable.find(gameModel, \"money\").add(self, 100);";
-                levelPlayCount = 0; //reset the count for the next lvl
             }
             content += "maxLevel.value = Math.max(maxLevel.value, currentLevel.value);";
             if (retry) {
@@ -706,16 +695,28 @@ YUI.add('wegas-proggame-level', function(Y) {
          * @override
          */
         showMessage: function(level, message) {
+            var target = this.get("boundingBox").one(".proggame-help").get("region");
             var panel = this.getPanel({
                 content: "<div>" + message + "</div><button class='yui3-button proggame-button'>Continuer</button>"
             });
             Y.later(50, this, function() { // Hide panel anywhere user clicks
                 Y.one("body").once(CLICK, function() {
-                    panel.destroy();
                     this.show();
-                    if ("" + this.get("root").get("@pageId") === "11") {
-                        this.showTutorial();
-                    }
+                    panel.get("boundingBox").setStyles({
+                        transformOrigin:"top left"
+                    }).transition({
+                        duration: 0.7,
+                        top: Math.round(target.top) + 10 + "px",
+                        left: Math.round(target.left) + 10 + "px",
+                        transform: "scale(0.01)",
+                        opacity: 0.2
+                    }, Y.bind(function() {
+                        panel.destroy();
+                        this.show();
+                        if ("" + this.get("root").get("@pageId") === "11") {
+                            this.showTutorial();
+                        }
+                    }, this));
                 }, this);
             });
         },
