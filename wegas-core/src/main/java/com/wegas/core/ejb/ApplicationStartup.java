@@ -22,6 +22,8 @@ import org.slf4j.LoggerFactory;
 @WebServlet(name = "application-startup", loadOnStartup = 2)
 public class ApplicationStartup extends HttpServlet {
 
+    private static final long serialVersionUID = 1627669174708657546L;
+
     private final Logger logger = LoggerFactory.getLogger(ApplicationStartup.class);
 
     @EJB
