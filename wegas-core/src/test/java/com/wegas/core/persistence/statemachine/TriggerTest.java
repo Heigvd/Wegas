@@ -11,6 +11,7 @@ import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
+import java.util.Objects;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -117,6 +118,6 @@ public class TriggerTest {
         assert (this.triggerDescriptor.getPostTriggerEvent().getLanguage() == null ? newTestScript.getLanguage() == null : this.triggerDescriptor.getPostTriggerEvent().getLanguage().equals(newTestScript.getLanguage()));
         assert this.triggerDescriptor.getScope().getClass().equals(TeamScope.class);
         assert ((TriggerInstance) this.triggerDescriptor.getDefaultInstance()).getCurrentStateId().equals(instanceEntity.getCurrentStateId());
-        assert this.triggerDescriptor.getDefaultInstance().getId() == this.trigger.getId();
+        assert Objects.equals(this.triggerDescriptor.getDefaultInstance().getId(), this.trigger.getId());
     }
 }
