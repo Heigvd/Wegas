@@ -10,6 +10,7 @@ package com.wegas.core.security.persistence;
 import com.wegas.core.persistence.AbstractEntity;
 import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Objects;
 
 /**
  *
@@ -97,6 +98,13 @@ public class Permission extends AbstractEntity {
 
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 61 * hash + Objects.hashCode(this.value);
+        return hash;
+    }
+
     /**
      * @return the inducedPermission
      */
@@ -130,6 +138,7 @@ public class Permission extends AbstractEntity {
         return "Permission(" + this.value + ")";
     }
 
+    @Override
     public Long getId() {
         return id;
     }
