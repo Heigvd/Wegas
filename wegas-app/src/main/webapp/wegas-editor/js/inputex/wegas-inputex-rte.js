@@ -45,7 +45,12 @@ YUI.add("wegas-inputex-rte", function(Y) {
          */
         destroy: function() {
             if (this.editor) {
-                tinyMCE.remove(this.editor);
+                try {
+                    this.editor.remove();
+                } catch (ex) {
+                    //Error in all but chrome it seems.
+                    //NS_ERROR_UNEXPECTED
+                }
             }
             this.editor = null;
             RTEField.superclass.destroy.call(this);
