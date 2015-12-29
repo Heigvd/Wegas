@@ -8,6 +8,7 @@
 package com.wegas.core.persistence.variable.primitive;
 
 import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -57,16 +58,20 @@ public class StringDescriptor extends VariableDescriptor<StringInstance> {
      */
     @Override
     public void merge(AbstractEntity a) {
-        StringDescriptor other = (StringDescriptor) a;
-        this.setValidationPattern(other.getValidationPattern());
+        if (a instanceof StringDescriptor) {
+            StringDescriptor other = (StringDescriptor) a;
+            this.setValidationPattern(other.getValidationPattern());
 
-        this.allowedValues.clear();
-        this.allowedValues.addAll(other.getAllowedValues());
-        super.merge(a);
+            this.allowedValues.clear();
+            this.allowedValues.addAll(other.getAllowedValues());
+            super.merge(a);
 
-        String value = this.getDefaultInstance().getValue();
-        if (!this.isValueAllowed(value)) {
-            throw WegasErrorMessage.error("Value \"" + value + "\" not allowed !");
+            String value = this.getDefaultInstance().getValue();
+            if (!this.isValueAllowed(value)) {
+                throw WegasErrorMessage.error("Value \"" + value + "\" not allowed !");
+            }
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
     }
 

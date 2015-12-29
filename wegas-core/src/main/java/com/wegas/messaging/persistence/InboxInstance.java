@@ -21,7 +21,7 @@ import javax.persistence.OrderBy;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
-import javax.persistence.NamedQuery;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -75,14 +75,18 @@ public class InboxInstance extends VariableInstance {
 
     @Override
     public void merge(AbstractEntity a) {
-        InboxInstance other = (InboxInstance) a;
-        this.messages.clear();
-        for (Message m : other.getMessages()) {
-            try {
-                this.addMessage((Message) m.duplicate());
-            } catch (IOException ex) {
-                logger.error("Exception duplicating {}", m);
+        if (a instanceof InboxInstance) {
+            InboxInstance other = (InboxInstance) a;
+            this.messages.clear();
+            for (Message m : other.getMessages()) {
+                try {
+                    this.addMessage((Message) m.duplicate());
+                } catch (IOException ex) {
+                    logger.error("Exception duplicating {}", m);
+                }
             }
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
     }
 

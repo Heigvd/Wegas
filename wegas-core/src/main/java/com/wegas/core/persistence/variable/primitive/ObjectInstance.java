@@ -7,6 +7,7 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.HashMap;
@@ -15,8 +16,6 @@ import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.Table;
 
 /**
  *
@@ -43,9 +42,10 @@ public class ObjectInstance extends VariableInstance {
      */
     @Override
     public void merge(AbstractEntity a) {
-        ObjectInstance other = (ObjectInstance) a;
-        this.properties.clear();
-        this.properties.putAll(other.getProperties());
+        if (a instanceof ObjectInstance) {
+            ObjectInstance other = (ObjectInstance) a;
+            this.properties.clear();
+            this.properties.putAll(other.getProperties());
 //        this.setActive(other.getActive());
 //        if (other.getAssignments() != null) {
 //            this.setAssignments(other.getAssignments());
@@ -58,6 +58,9 @@ public class ObjectInstance extends VariableInstance {
 //        this.setUndesiredSkillset(other.getUndesiredSkillset());
 //        this.setMoral(other.getMoral());
 //        this.setConfidence(other.getConfidence());
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
+        }
     }
 
     /**

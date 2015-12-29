@@ -14,10 +14,10 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -225,11 +225,15 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
 
     @Override
     public void merge(AbstractEntity n) {
-        GameModel other = (GameModel) n;
-        this.setDescription(other.getDescription());                            // Set description first, since fetching this lazy loaded attribute will cause an entity refresh
-        this.setComments(other.getComments());
-        this.properties.merge(other.getProperties());
-        super.merge(n);
+        if (n instanceof GameModel) {
+            GameModel other = (GameModel) n;
+            this.setDescription(other.getDescription());                            // Set description first, since fetching this lazy loaded attribute will cause an entity refresh
+            this.setComments(other.getComments());
+            this.properties.merge(other.getProperties());
+            super.merge(n);
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + n.getClass().getSimpleName() + ") is not possible");
+        }
     }
 
     /**
@@ -329,6 +333,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     public void setStatus(Status status) {
         this.status = status;
     }
+
     /**
      *
      * @return
@@ -350,8 +355,8 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     /**
      *
      * @return a list of Variable Descriptors that are at the root level of the
-     * hierarchy (other VariableDescriptor can be placed inside of a
-     * ListDescriptor's items List)
+     *         hierarchy (other VariableDescriptor can be placed inside of a
+     *         ListDescriptor's items List)
      */
     public List<VariableDescriptor> getChildVariableDescriptors() {
         return childVariableDescriptors;
@@ -446,14 +451,14 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      * @return the createdTime
      */
     public Date getCreatedTime() {
-        return createdTime;
+        return (createdTime != null ? new Date(createdTime.getTime()) : null);
     }
 
     /**
      * @param createdTime the createdTime to set
      */
     public void setCreatedTime(Date createdTime) {
-        this.createdTime = createdTime;
+        this.createdTime = createdTime != null ? new Date(createdTime.getTime()) : null;
     }
 
     /**
@@ -642,7 +647,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         map.put(Helper.getAudienceToken(this), entities);
         return map;
     }*/
-
     public enum Status {
         /**
          * Initial value, game is playable

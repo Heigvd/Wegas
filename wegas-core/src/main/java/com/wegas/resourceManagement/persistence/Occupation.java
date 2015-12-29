@@ -13,6 +13,7 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.Broadcastable;
 import java.util.List;
 import java.util.Map;
@@ -89,11 +90,15 @@ public class Occupation extends AbstractAssignement implements Broadcastable {
      */
     @Override
     public void merge(AbstractEntity a) {
-        Occupation other = (Occupation) a;
-        this.setDescription(other.getDescription());
-        this.setTime(other.getTime());
-        this.setEditable(other.getEditable());
-        //this.setTaskDescriptor(other.getTaskDescriptor());
+        if (a instanceof Occupation) {
+            Occupation other = (Occupation) a;
+            this.setDescription(other.getDescription());
+            this.setTime(other.getTime());
+            this.setEditable(other.getEditable());
+            //this.setTaskDescriptor(other.getTaskDescriptor());
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
+        }
     }
 
     /*
@@ -104,7 +109,6 @@ public class Occupation extends AbstractAssignement implements Broadcastable {
      this.getResourceInstance().onInstanceUpdate();
      }
      */
-
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
         return this.getResourceInstance().getEntities();

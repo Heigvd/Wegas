@@ -159,7 +159,7 @@ public class RequestController implements Serializable {
      */
     public String getCurrentUserMail() {
         try {
-                return ((JpaAccount) this.getCurrentUser().getMainAccount()).getEmail();
+            return ((JpaAccount) this.getCurrentUser().getMainAccount()).getEmail();
         } catch (ClassCastException | WegasNotFoundException e) {
             return "";
         }
@@ -174,12 +174,13 @@ public class RequestController implements Serializable {
     }
 
     public String getCurrentRoles() {
-        String cssClass = "";
+        StringBuilder cssClass = new StringBuilder();
         try {
             for (Role r : this.getCurrentUser().getMainAccount().getRoles()) {
-                cssClass += " wegas-role-" + r.getName();
+                cssClass.append(" wegas-role-");
+                cssClass.append(r.getName());
             }
-            return cssClass.toLowerCase();
+            return cssClass.toString().toLowerCase();
         } catch (WegasNotFoundException e) {
             return ""; // Current user could not be found
         }

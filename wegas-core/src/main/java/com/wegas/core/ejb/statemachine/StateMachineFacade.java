@@ -222,10 +222,13 @@ public class StateMachineFacade {
         if (transitionPassed) {
             /*@DIRTY, @TODO : find something else : Running scripts overrides previous state change Only for first Player (resetEvent). */
             variableDescriptorFacade.findByClass(player.getGameModel(), StateMachineDescriptor.class);
-            for (StateMachineInstance fsmi : selectedTransitions.keySet()) {
+            for (Map.Entry<StateMachineInstance, Transition> entry : selectedTransitions.entrySet()) {
+
+                StateMachineInstance fsmi = entry.getKey();
+                Transition transition = entry.getValue();
                 List<Script> scripts = new ArrayList<>();
 
-                scripts.add(selectedTransitions.get(fsmi).getPreStateImpact());
+                scripts.add(transition.getPreStateImpact());
                 scripts.add(fsmi.getCurrentState().getOnEnterEvent());
 
                 try {

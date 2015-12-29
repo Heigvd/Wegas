@@ -13,6 +13,7 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 
 /**
  *
@@ -109,13 +110,17 @@ public class ChoiceInstance extends VariableInstance {
      */
     @Override
     public void merge(AbstractEntity a) {
-        //super.merge(a);
-        ChoiceInstance other = (ChoiceInstance) a;
-        this.setActive(other.getActive());
-        this.setUnread(other.getUnread());
-        this.setCurrentResultName(other.getDeserializedCurrentResultName());
-        this.setCurrentResultIndex(other.getCurrentResultIndex());
-        this.setCurrentResult(other.getCurrentResult());
+        if (a instanceof ChoiceInstance) {
+            //super.merge(a);
+            ChoiceInstance other = (ChoiceInstance) a;
+            this.setActive(other.getActive());
+            this.setUnread(other.getUnread());
+            this.setCurrentResultName(other.getDeserializedCurrentResultName());
+            this.setCurrentResultIndex(other.getCurrentResultIndex());
+            this.setCurrentResult(other.getCurrentResult());
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
+        }
     }
 
     /**

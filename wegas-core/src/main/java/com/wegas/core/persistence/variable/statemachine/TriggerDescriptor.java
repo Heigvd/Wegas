@@ -20,6 +20,7 @@ import javax.persistence.*;
 ////import javax.xml.bind.annotation.XmlTransient;
 //import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 
 /**
  *
@@ -40,7 +41,6 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     /**
      *
      */
-
     @JsonView(Views.EditorExtendedI.class)
     private Boolean disableSelf = true;
     /**
@@ -86,6 +86,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     public void setDisableSelf(Boolean disableSelf) {
         this.disableSelf = disableSelf;
     }
+
     /**
      *
      * @return
@@ -150,13 +151,17 @@ public class TriggerDescriptor extends StateMachineDescriptor {
 
     @Override
     public void merge(AbstractEntity a) {
-        TriggerDescriptor entity = (TriggerDescriptor) a;
-        entity.buildStateMachine();
-        this.oneShot = entity.isOneShot();
-        this.disableSelf = entity.isDisableSelf();
-        this.postTriggerEvent = entity.getPostTriggerEvent();
-        this.triggerEvent = entity.getTriggerEvent();
-        super.merge(entity);
+        if (a instanceof TriggerDescriptor) {
+            TriggerDescriptor entity = (TriggerDescriptor) a;
+            entity.buildStateMachine();
+            this.oneShot = entity.isOneShot();
+            this.disableSelf = entity.isDisableSelf();
+            this.postTriggerEvent = entity.getPostTriggerEvent();
+            this.triggerEvent = entity.getTriggerEvent();
+            super.merge(entity);
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
+        }
     }
 
     /**

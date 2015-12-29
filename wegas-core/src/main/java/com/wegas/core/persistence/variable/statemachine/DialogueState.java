@@ -8,6 +8,7 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import java.util.List;
 import javax.persistence.Entity;
@@ -51,7 +52,11 @@ public class DialogueState extends State {
 
     @Override
     public void merge(AbstractEntity other) {
-        this.text = ((DialogueState) other).text;
-        super.merge(other);
+        if (other instanceof DialogueState) {
+            this.text = ((DialogueState) other).text;
+            super.merge(other);
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
+        }
     }
 }

@@ -196,7 +196,7 @@ public class Helper {
     }
 
     public static void setNameAndLabelForResult(Result r,
-            List<String> usedNames, List<String> usedLabels) {
+        List<String> usedNames, List<String> usedLabels) {
         boolean hasLabel = !isNullOrEmpty(r.getLabel());
         boolean hasName = !isNullOrEmpty(r.getName());
         if (hasLabel && !hasName) {
@@ -383,7 +383,7 @@ public class Helper {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < array.length; ++i) {
             sb.append(Integer.toHexString((array[i]
-                    & 0xFF) | 0x100).substring(1, 3));
+                & 0xFF) | 0x100).substring(1, 3));
         }
         return sb.toString();
     }
@@ -395,7 +395,7 @@ public class Helper {
     public static String md5Hex(String message) {
         try {
             MessageDigest md
-                    = MessageDigest.getInstance("MD5");
+                = MessageDigest.getInstance("MD5");
             return hex(md.digest(message.getBytes("CP1252")));
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
         }
@@ -433,6 +433,7 @@ public class Helper {
     public static String unescape(String st) {
         return StringEscapeUtils.unescapeJava(st);
     }
+
     /*public static String old_unescape(String st) {
 
      StringBuilder sb = new StringBuilder(st.length());
@@ -549,10 +550,8 @@ public class Helper {
                 }
             }
 
-        } else {
-            if (!file.delete()) {
-                logger.warn("Failed to delete file {}", file.getName());
-            }
+        } else if (!file.delete()) {
+            logger.warn("Failed to delete file {}", file.getName());
         }
     }
 
@@ -594,12 +593,15 @@ public class Helper {
     }
 
     public static void merge(Map<String, List<AbstractEntity>> target, Map<String, List<AbstractEntity>> other) {
-        for (String key : other.keySet()) {
+        for (Map.Entry<String, List<AbstractEntity>> entry : other.entrySet()) {
+            String key = entry.getKey();
+
             if (!target.containsKey(key)) {
                 target.put(key, new ArrayList<>());
             }
+
             List<AbstractEntity> tList = target.get(key);
-            for (AbstractEntity entity : other.get(key)) {
+            for (AbstractEntity entity : entry.getValue()) {
                 if (!tList.contains(entity)) {
                     tList.add(entity);
                 }

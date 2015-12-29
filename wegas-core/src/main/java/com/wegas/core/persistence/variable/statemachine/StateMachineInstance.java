@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 
 /**
  *
@@ -134,9 +135,13 @@ public class StateMachineInstance extends VariableInstance {
 
     @Override
     public void merge(AbstractEntity a) {
-        this.currentStateId = ((StateMachineInstance) a).getCurrentStateId();
-        this.enabled = ((StateMachineInstance) a).getEnabled();
-        this.transitionHistory = ((StateMachineInstance) a).getTransitionHistory();
+        if (a instanceof StateMachineInstance) {
+            this.currentStateId = ((StateMachineInstance) a).getCurrentStateId();
+            this.enabled = ((StateMachineInstance) a).getEnabled();
+            this.transitionHistory = ((StateMachineInstance) a).getTransitionHistory();
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
+        }
     }
 
     @Override

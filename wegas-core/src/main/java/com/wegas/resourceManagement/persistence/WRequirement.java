@@ -27,6 +27,7 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 //import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import javax.persistence.Index;
 
 /**
@@ -36,10 +37,10 @@ import javax.persistence.Index;
 @Entity
 
 @Table(uniqueConstraints = @UniqueConstraint(
-        columnNames = {"requirements_variableinstance_id", "wrequirement_name"}),
-        indexes = {
-            @Index(columnList = "requirements_variableinstance_id")
-        }
+    columnNames = {"requirements_variableinstance_id", "wrequirement_name"}),
+    indexes = {
+        @Index(columnList = "requirements_variableinstance_id")
+    }
 )
 public class WRequirement extends AbstractEntity {
 
@@ -116,14 +117,18 @@ public class WRequirement extends AbstractEntity {
 
     @Override
     public void merge(AbstractEntity a) {
-        WRequirement other = (WRequirement) a;
-        this.setLevel(other.getLevel());
-        this.setLimit(other.getLimit());
-        this.setQuantity(other.getQuantity());
-        this.setWork(other.getWork());
-        this.setCompleteness(other.getCompleteness());
-        this.setQuality(other.getQuality());
-        this.setName(other.getName());
+        if (a instanceof WRequirement) {
+            WRequirement other = (WRequirement) a;
+            this.setLevel(other.getLevel());
+            this.setLimit(other.getLimit());
+            this.setQuantity(other.getQuantity());
+            this.setWork(other.getWork());
+            this.setCompleteness(other.getCompleteness());
+            this.setQuality(other.getQuality());
+            this.setName(other.getName());
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
+        }
     }
 
     /**

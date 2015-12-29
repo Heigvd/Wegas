@@ -8,6 +8,7 @@
 package com.wegas.core.persistence.variable.primitive;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NumberListener;
@@ -126,8 +127,12 @@ public class NumberInstance extends VariableInstance {
      */
     @Override
     public void merge(AbstractEntity a) {
-        NumberInstance vi = (NumberInstance) a;
-        this.setValue(vi.getValue());
-        this.setHistory(vi.getHistory());
+        if (a instanceof NumberInstance) {
+            NumberInstance vi = (NumberInstance) a;
+            this.setValue(vi.getValue());
+            this.setHistory(vi.getHistory());
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
+        }
     }
 }

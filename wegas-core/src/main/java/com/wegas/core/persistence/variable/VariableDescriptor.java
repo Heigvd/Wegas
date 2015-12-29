@@ -37,6 +37,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.game.Game;
@@ -48,7 +49,6 @@ import java.util.HashMap;
 import java.util.Map;
 import com.wegas.resourceManagement.persistence.BurndownDescriptor;
 import org.eclipse.persistence.annotations.JoinFetch;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -393,21 +393,25 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      */
     @Override
     public void merge(AbstractEntity a) {
-        try {
-            super.merge(a);
-            VariableDescriptor other = (VariableDescriptor) a;
-            this.setName(other.getName());
-            this.setLabel(other.getLabel());
-            this.setTitle(other.getTitle());
-            this.setComments(other.getComments());
-            this.defaultInstance.merge(other.getDefaultInstance());
-            if (other.getScope() != null) {
-                this.scope.setBroadcastScope(other.getScope().getBroadcastScope());
+        if (a instanceof VariableDescriptor) {
+            try {
+                super.merge(a);
+                VariableDescriptor other = (VariableDescriptor) a;
+                this.setName(other.getName());
+                this.setLabel(other.getLabel());
+                this.setTitle(other.getTitle());
+                this.setComments(other.getComments());
+                this.defaultInstance.merge(other.getDefaultInstance());
+                if (other.getScope() != null) {
+                    this.scope.setBroadcastScope(other.getScope().getBroadcastScope());
+                }
+            } catch (PersistenceException pe) {
+                throw WegasErrorMessage.error("The name is already in use");
             }
-        } catch (PersistenceException pe) {
-            throw WegasErrorMessage.error("The name is already in use");
+            //this.scope.merge(vd.getScope());
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
-        //this.scope.merge(vd.getScope());
     }
 
     /**

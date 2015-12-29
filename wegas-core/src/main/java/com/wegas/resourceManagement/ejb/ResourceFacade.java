@@ -237,7 +237,7 @@ public class ResourceFacade {
         } else if (abstractAssignement instanceof Assignment) {
             Assignment a = (Assignment) abstractAssignement;
             res.addAssignement(a);
-        } else {
+        } else if (abstractAssignement instanceof Activity){
             Activity a = (Activity) abstractAssignement;
             res.addActivity(a);
         }

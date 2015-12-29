@@ -238,14 +238,14 @@ public class Player extends AbstractEntity implements Broadcastable {
      * @return the joinTime
      */
     public Date getJoinTime() {
-        return joinTime;
+        return joinTime != null ? new Date(joinTime.getTime()) : null;
     }
 
     /**
      * @param joinTime the joinTime to set
      */
     public void setJoinTime(Date joinTime) {
-        this.joinTime = joinTime;
+        this.joinTime = joinTime != null ? new Date(joinTime.getTime()) : null;
     }
 
     /**

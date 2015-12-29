@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.DescriptorListI;
@@ -92,38 +93,42 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      */
     @Override
     public void merge(AbstractEntity a) {
-        ChoiceDescriptor other = (ChoiceDescriptor) a;
-        this.setDescription(other.getDescription());
-        super.merge(a);
-        this.setDuration(other.getDuration());
-        this.setCost(other.getCost());
+        if (a instanceof ChoiceDescriptor) {
+            ChoiceDescriptor other = (ChoiceDescriptor) a;
+            this.setDescription(other.getDescription());
+            super.merge(a);
+            this.setDuration(other.getDuration());
+            this.setCost(other.getCost());
 
-        ListUtils.mergeReplace(this.getResults(), other.getResults());
+            ListUtils.mergeReplace(this.getResults(), other.getResults());
 
-        // Has currentResult been removed ?
-        ChoiceInstance defaultInstance = (ChoiceInstance) this.getDefaultInstance();
-        if (!this.getResults().contains(defaultInstance.getCurrentResult())) {
-            defaultInstance.setCurrentResult(null);
-        }
-
-        // Detect new results
-        List<String> labels = new ArrayList<>();
-        List<String> names = new ArrayList<>();
-        List<Result> newResults = new ArrayList<>();
-
-        for (Result r : this.getResults()) {
-            if (r.getId() != null) {
-                // Store name and label existing result
-                labels.add(r.getLabel());
-                names.add(r.getName());
-            } else {
-                newResults.add(r);
+            // Has currentResult been removed ?
+            ChoiceInstance defaultInstance = (ChoiceInstance) this.getDefaultInstance();
+            if (!this.getResults().contains(defaultInstance.getCurrentResult())) {
+                defaultInstance.setCurrentResult(null);
             }
-        }
 
-        // set names and labels unique
-        for (Result r : newResults) {
-            Helper.setNameAndLabelForResult(r, names, labels);
+            // Detect new results
+            List<String> labels = new ArrayList<>();
+            List<String> names = new ArrayList<>();
+            List<Result> newResults = new ArrayList<>();
+
+            for (Result r : this.getResults()) {
+                if (r.getId() != null) {
+                    // Store name and label existing result
+                    labels.add(r.getLabel());
+                    names.add(r.getName());
+                } else {
+                    newResults.add(r);
+                }
+            }
+
+            // set names and labels unique
+            for (Result r : newResults) {
+                Helper.setNameAndLabelForResult(r, names, labels);
+            }
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
     }
 

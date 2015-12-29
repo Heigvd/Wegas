@@ -14,6 +14,7 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.Broadcastable;
 import java.util.List;
 import java.util.Map;
@@ -64,21 +65,25 @@ public class Reply extends AbstractEntity implements Broadcastable {
      */
     @Override
     public void merge(AbstractEntity a) {
-        Reply other = (Reply) a;
-        this.setUnread(other.getUnread());
-        //this.setResult(other.getResult());
-        this.setStartTime(other.getStartTime());
+        if (a instanceof Reply) {
+            Reply other = (Reply) a;
+            this.setUnread(other.getUnread());
+            //this.setResult(other.getResult());
+            this.setStartTime(other.getStartTime());
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
+        }
     }
 
     /**
      *
-    @PostPersist
-    @PostUpdate
-    @PostRemove
-    public void onUpdate() {
-        this.getQuestionInstance().onInstanceUpdate();
-    } */
-
+     * @PostPersist
+     * @PostUpdate
+     * @PostRemove
+     * public void onUpdate() {
+     * this.getQuestionInstance().onInstanceUpdate();
+     * }
+     */
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
         return this.getQuestionInstance().getEntities();

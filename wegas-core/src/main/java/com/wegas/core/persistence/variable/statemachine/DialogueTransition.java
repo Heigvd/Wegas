@@ -8,6 +8,7 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import java.util.List;
 import javax.persistence.Entity;
@@ -48,8 +49,12 @@ public class DialogueTransition extends Transition {
 
     @Override
     public void merge(AbstractEntity other) {
-        DialogueTransition otherDialogue = (DialogueTransition) other;
-        this.actionText = otherDialogue.actionText;
-        super.merge(other);
+        if (other instanceof DialogueTransition) {
+            DialogueTransition otherDialogue = (DialogueTransition) other;
+            this.actionText = otherDialogue.actionText;
+            super.merge(other);
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
+        }
     }
 }

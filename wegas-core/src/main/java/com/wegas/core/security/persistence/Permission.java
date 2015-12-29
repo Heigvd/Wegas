@@ -10,6 +10,7 @@ package com.wegas.core.security.persistence;
 import com.wegas.core.persistence.AbstractEntity;
 import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import java.util.Objects;
 
 /**
@@ -81,9 +82,13 @@ public class Permission extends AbstractEntity {
 
     @Override
     public void merge(AbstractEntity other) {
-        Permission o = (Permission) other;
-        this.setValue(o.getValue());
-        this.setInducedPermission(o.getInducedPermission());
+        if (other instanceof Permission) {
+            Permission o = (Permission) other;
+            this.setValue(o.getValue());
+            this.setInducedPermission(o.getInducedPermission());
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
+        }
     }
 
     @Override
@@ -92,8 +97,8 @@ public class Permission extends AbstractEntity {
             return true;
         } else {
             return (obj != null
-                    && obj instanceof Permission
-                    && this.value.equals(((Permission) obj).getValue()));
+                && obj instanceof Permission
+                && this.value.equals(((Permission) obj).getValue()));
         }
 
     }

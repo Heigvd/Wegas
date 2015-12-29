@@ -19,6 +19,7 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.variable.Scripted;
 
 /**
@@ -180,11 +181,15 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
 
     @Override
     public void merge(AbstractEntity other) {
-        Transition newTranstion = (Transition) other;
-        this.nextStateId = newTranstion.nextStateId;
-        this.preStateImpact = newTranstion.preStateImpact;
-        this.triggerCondition = newTranstion.triggerCondition;
-        this.index = newTranstion.index;
+        if (other instanceof Transition) {
+            Transition newTranstion = (Transition) other;
+            this.nextStateId = newTranstion.nextStateId;
+            this.preStateImpact = newTranstion.preStateImpact;
+            this.triggerCondition = newTranstion.triggerCondition;
+            this.index = newTranstion.index;
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
+        }
     }
 
     @Override

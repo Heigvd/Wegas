@@ -7,6 +7,7 @@
  */
 package com.wegas.resourceManagement.persistence;
 
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -52,7 +53,6 @@ public class BurndownInstance extends VariableInstance {
         this.iterations = iterations;
     }
 
-
     public void addIteration(Iteration iteration) {
         this.iterations.add(iteration);
         iteration.setBurndownInstance(this);
@@ -60,7 +60,11 @@ public class BurndownInstance extends VariableInstance {
 
     @Override
     public void merge(AbstractEntity a) {
-        BurndownInstance other = (BurndownInstance) a;
-        ListUtils.mergeReplace(iterations, other.getIterations());
+        if (a instanceof BurndownInstance) {
+            BurndownInstance other = (BurndownInstance) a;
+            ListUtils.mergeReplace(iterations, other.getIterations());
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
+        }
     }
 }

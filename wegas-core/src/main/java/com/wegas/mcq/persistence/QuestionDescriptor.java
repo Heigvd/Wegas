@@ -28,8 +28,8 @@ import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 
@@ -90,13 +90,17 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      */
     @Override
     public void merge(AbstractEntity a) {
-        super.merge(a);
-        QuestionDescriptor other = (QuestionDescriptor) a;
-        this.setDescription(other.getDescription());
-        this.setAllowMultipleReplies(other.getAllowMultipleReplies());
-        this.setCbx(other.getCbx());
-        this.setTabular(other.getTabular());
-        this.setPictures(other.getPictures());
+        if (a instanceof QuestionDescriptor) {
+            super.merge(a);
+            QuestionDescriptor other = (QuestionDescriptor) a;
+            this.setDescription(other.getDescription());
+            this.setAllowMultipleReplies(other.getAllowMultipleReplies());
+            this.setCbx(other.getCbx());
+            this.setTabular(other.getTabular());
+            this.setPictures(other.getPictures());
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
+        }
     }
 // *** Sugar for scripts *** //
 

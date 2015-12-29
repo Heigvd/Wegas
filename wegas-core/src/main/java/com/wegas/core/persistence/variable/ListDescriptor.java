@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
 import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -233,6 +234,8 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
             } else {
                 throw WegasErrorMessage.error(o.getAddShortcut() + " not allowed in this folder");
             }
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
     }
 

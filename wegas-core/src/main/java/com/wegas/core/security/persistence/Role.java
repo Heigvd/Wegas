@@ -8,6 +8,7 @@
 package com.wegas.core.security.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import java.util.ArrayList;
@@ -82,10 +83,14 @@ public class Role extends AbstractEntity {
 
     @Override
     public void merge(AbstractEntity other) {
-        Role r = (Role) other;
-        this.setName(r.getName());
-        this.setDescription(r.getDescription());
-        ListUtils.mergeLists(this.permissions, r.getPermissions());
+        if (other instanceof Role) {
+            Role r = (Role) other;
+            this.setName(r.getName());
+            this.setDescription(r.getDescription());
+            ListUtils.mergeLists(this.permissions, r.getPermissions());
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
+        }
     }
 
     /**

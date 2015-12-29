@@ -214,14 +214,14 @@ public class Team extends AbstractEntity implements Broadcastable{
      * @return the createdTime
      */
     public Date getCreatedTime() {
-        return createdTime;
+        return createdTime != null ? new Date(createdTime.getTime()) : null;
     }
 
     /**
      * @param createdTime the createdTime to set
      */
     public void setCreatedTime(Date createdTime) {
-        this.createdTime = createdTime;
+        this.createdTime = createdTime != null ? new Date(createdTime.getTime()) : null;
     }
 
     /**

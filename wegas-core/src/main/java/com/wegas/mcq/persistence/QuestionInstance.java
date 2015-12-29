@@ -16,6 +16,7 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import static java.lang.Boolean.FALSE;
 import javax.persistence.OrderBy;
 import org.eclipse.persistence.annotations.BatchFetch;
@@ -49,7 +50,8 @@ public class QuestionInstance extends VariableInstance {
      */
     private Boolean unread = true;
     /**
-     * False until the user has clicked on the global question-wide "submit" button.
+     * False until the user has clicked on the global question-wide "submit"
+     * button.
      */
     private Boolean validated = FALSE;
 
@@ -59,13 +61,17 @@ public class QuestionInstance extends VariableInstance {
      */
     @Override
     public void merge(AbstractEntity a) {
-        QuestionInstance other = (QuestionInstance) a;
-        this.setActive(other.getActive());
-        this.setUnread(other.getUnread());
-        Boolean v = other.getValidated();
-        this.setValidated(v);
-        this.replies.clear();
-        this.addReplies(other.getReplies());
+        if (a instanceof QuestionInstance) {
+            QuestionInstance other = (QuestionInstance) a;
+            this.setActive(other.getActive());
+            this.setUnread(other.getUnread());
+            Boolean v = other.getValidated();
+            this.setValidated(v);
+            this.replies.clear();
+            this.addReplies(other.getReplies());
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
+        }
     }
 
     /**

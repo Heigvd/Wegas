@@ -7,6 +7,7 @@
  */
 package com.wegas.reviewing.persistence.evaluation;
 
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import javax.persistence.Entity;
 
@@ -67,6 +68,8 @@ public class GradeDescriptor extends EvaluationDescriptor<GradeInstance> {
             super.merge(o);
             this.setMinValue(o.getMinValue());
             this.setMaxValue(o.getMaxValue());
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
     }
 

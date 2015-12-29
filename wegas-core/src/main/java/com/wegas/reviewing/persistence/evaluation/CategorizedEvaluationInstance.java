@@ -7,6 +7,7 @@
  */
 package com.wegas.reviewing.persistence.evaluation;
 
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -61,6 +62,8 @@ public class CategorizedEvaluationInstance extends EvaluationInstance {
             CategorizedEvaluationInstance o = (CategorizedEvaluationInstance) a;
             super.merge(a);
             this.setValue(o.getValue());
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
     }
 }

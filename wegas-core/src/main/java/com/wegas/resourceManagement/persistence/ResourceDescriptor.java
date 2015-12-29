@@ -20,6 +20,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Lob;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 
 /**
  *
@@ -48,11 +49,15 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
      */
     @Override
     public void merge(AbstractEntity a) {
-        super.merge(a);
-        ResourceDescriptor other = (ResourceDescriptor) a;
-        this.setDescription(other.getDescription());
-        this.properties.clear();
-        this.properties.putAll(other.getProperties());
+        if (a instanceof ResourceDescriptor) {
+            super.merge(a);
+            ResourceDescriptor other = (ResourceDescriptor) a;
+            this.setDescription(other.getDescription());
+            this.properties.clear();
+            this.properties.putAll(other.getProperties());
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
+        }
     }
 
     /**

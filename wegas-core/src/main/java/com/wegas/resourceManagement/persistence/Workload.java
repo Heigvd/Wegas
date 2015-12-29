@@ -9,6 +9,7 @@ package com.wegas.resourceManagement.persistence;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.rest.util.Views;
 import javax.persistence.*;
@@ -107,9 +108,13 @@ public class Workload extends AbstractEntity implements Serializable {
 
     @Override
     public void merge(AbstractEntity other) {
-        Workload o = (Workload) other;
-        this.setPeriodNumber(o.getPeriodNumber());
-        this.setWorkload(o.getWorkload());
-        this.setSpentWorkload(o.getSpentWorkload());
+        if (other instanceof Workload) {
+            Workload o = (Workload) other;
+            this.setPeriodNumber(o.getPeriodNumber());
+            this.setWorkload(o.getWorkload());
+            this.setSpentWorkload(o.getSpentWorkload());
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
+        }
     }
 }

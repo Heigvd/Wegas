@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.Scripted;
@@ -172,15 +173,19 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
      */
     @Override
     public void merge(AbstractEntity a) {
-        Result other = (Result) a;
-        this.setName(other.getName());
-        this.setLabel(other.getLabel());
-        this.setAnswer(other.getAnswer());
-        this.setImpact(other.getImpact());
-        this.setIgnorationAnswer(other.getIgnorationAnswer());
-        this.setIgnorationImpact(other.getIgnorationImpact());
-        this.setFiles(other.getFiles());
-        this.setChoiceDescriptor(other.getChoiceDescriptor());
+        if (a instanceof Result) {
+            Result other = (Result) a;
+            this.setName(other.getName());
+            this.setLabel(other.getLabel());
+            this.setAnswer(other.getAnswer());
+            this.setImpact(other.getImpact());
+            this.setIgnorationAnswer(other.getIgnorationAnswer());
+            this.setIgnorationImpact(other.getIgnorationImpact());
+            this.setFiles(other.getFiles());
+            this.setChoiceDescriptor(other.getChoiceDescriptor());
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
+        }
     }
 
 //    @PreRemove

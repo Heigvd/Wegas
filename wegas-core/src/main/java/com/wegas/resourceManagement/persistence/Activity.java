@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.Broadcastable;
 import java.util.List;
 import java.util.Map;
@@ -108,13 +109,17 @@ public class Activity extends AbstractAssignement implements Broadcastable {
      */
     @Override
     public void merge(AbstractEntity a) {
-        Activity other = (Activity) a;
-        this.setRequirement(other.getRequirement());
-        this.setResourceInstance(other.getResourceInstance());
-        this.setTime(other.getTime());
-        this.setCompletion(other.getCompletion());
-        this.setTaskDescriptor(other.getTaskDescriptor());
-        this.setDescription(other.getDescription());
+        if (a instanceof Activity) {
+            Activity other = (Activity) a;
+            this.setRequirement(other.getRequirement());
+            this.setResourceInstance(other.getResourceInstance());
+            this.setTime(other.getTime());
+            this.setCompletion(other.getCompletion());
+            this.setTaskDescriptor(other.getTaskDescriptor());
+            this.setDescription(other.getDescription());
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
+        }
     }
 
     /*@PostPersist
@@ -123,7 +128,6 @@ public class Activity extends AbstractAssignement implements Broadcastable {
      private void onUpdate() {
      this.getResourceInstance().onInstanceUpdate();
      }*/
-
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
         return this.getResourceInstance().getEntities();

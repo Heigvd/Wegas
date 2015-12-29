@@ -7,6 +7,7 @@
  */
 package com.wegas.reviewing.persistence;
 
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -118,6 +119,8 @@ public class PeerReviewInstance extends VariableInstance {
             this.setReviewState(o.getReviewState());
             this.setReviewed(ListUtils.mergeLists(this.getReviewed(), o.getReviewed()));
             this.setToReview(ListUtils.mergeLists(this.getToReview(), o.getToReview()));
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
     }
 

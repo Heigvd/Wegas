@@ -299,28 +299,28 @@ public class Game extends NamedEntity implements Broadcastable {
      * @return the createdTime
      */
     public Date getCreatedTime() {
-        return createdTime;
+        return createdTime != null ? new Date(createdTime.getTime()) : null;
     }
 
     /**
      * @param createdTime the createdTime to set
      */
     public void setCreatedTime(Date createdTime) {
-        this.createdTime = createdTime;
+        this.createdTime = createdTime != null ? new Date(createdTime.getTime()) : null;
     }
 
     /**
      * @return the updatedTime
      */
     public Date getUpdatedTime() {
-        return updatedTime;
+        return updatedTime != null ? new Date(updatedTime.getTime()) : null;
     }
 
     /**
      * @param updatedTime the updatedTime to set
      */
     public void setUpdatedTime(Date updatedTime) {
-        this.updatedTime = updatedTime;
+        this.updatedTime = updatedTime != null ? new Date(updatedTime.getTime()) : null;
     }
 
     /**

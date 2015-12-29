@@ -8,6 +8,7 @@
 package com.wegas.core.security.persistence;
 
 import com.fasterxml.jackson.annotation.*;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.rest.util.Views;
@@ -33,13 +34,13 @@ import java.util.*;
  @Index(columnList = "email", unique = true)
  })*/
 @NamedQueries({
-        @NamedQuery(name = "AbstractAccount.findByUsername", query = "SELECT a FROM AbstractAccount a WHERE a.username = :username")
+    @NamedQuery(name = "AbstractAccount.findByUsername", query = "SELECT a FROM AbstractAccount a WHERE a.username = :username")
 })
 @JsonSubTypes(value = {
-        @JsonSubTypes.Type(name = "FacebookAccount", value = FacebookAccount.class),
-        @JsonSubTypes.Type(name = "GuestJpaAccount", value = GuestJpaAccount.class),
-        @JsonSubTypes.Type(name = "JpaAccount", value = com.wegas.core.security.jparealm.JpaAccount.class),
-        @JsonSubTypes.Type(name = "GameAccount", value = com.wegas.core.security.jparealm.GameAccount.class)
+    @JsonSubTypes.Type(name = "FacebookAccount", value = FacebookAccount.class),
+    @JsonSubTypes.Type(name = "GuestJpaAccount", value = GuestJpaAccount.class),
+    @JsonSubTypes.Type(name = "JpaAccount", value = com.wegas.core.security.jparealm.JpaAccount.class),
+    @JsonSubTypes.Type(name = "GameAccount", value = com.wegas.core.security.jparealm.GameAccount.class)
 })
 @JsonIgnoreProperties({"passwordConfirm"})
 public class AbstractAccount extends AbstractEntity {
@@ -118,13 +119,17 @@ public class AbstractAccount extends AbstractEntity {
 
     @Override
     public void merge(AbstractEntity other) {
-        AbstractAccount a = (AbstractAccount) other;
-        this.setFirstname(a.getFirstname());
-        this.setLastname(a.getLastname());
-        this.setUsername(a.getUsername());
-        if (a.getDeserializedPermissions() != null && !a.getDeserializedPermissions().isEmpty()) {
-            // Pass through setter to update user
-            this.user.setPermissions(ListUtils.mergeLists(this.user.getPermissions(), a.getDeserializedPermissions()));
+        if (other instanceof AbstractAccount) {
+            AbstractAccount a = (AbstractAccount) other;
+            this.setFirstname(a.getFirstname());
+            this.setLastname(a.getLastname());
+            this.setUsername(a.getUsername());
+            if (a.getDeserializedPermissions() != null && !a.getDeserializedPermissions().isEmpty()) {
+                // Pass through setter to update user
+                this.user.setPermissions(ListUtils.mergeLists(this.user.getPermissions(), a.getDeserializedPermissions()));
+            }
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
         }
     }
 
@@ -247,13 +252,13 @@ public class AbstractAccount extends AbstractEntity {
      * @return the createdTime
      */
     public Date getCreatedTime() {
-        return createdTime;
+        return createdTime != null ? new Date(createdTime.getTime()) : null;
     }
 
     /**
      * @param createdTime the createdTime to set
      */
     public void setCreatedTime(Date createdTime) {
-        this.createdTime = createdTime;
+        this.createdTime = createdTime != null ? new Date(createdTime.getTime()) : null;
     }
 }

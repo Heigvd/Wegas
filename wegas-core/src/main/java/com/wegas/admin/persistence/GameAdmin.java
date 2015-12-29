@@ -9,6 +9,7 @@ package com.wegas.admin.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
@@ -26,13 +27,12 @@ import java.util.List;
  */
 @Entity
 @NamedQueries({
-        @NamedQuery(name = "GameAdmin.findByGame", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.game.id = :gameId"),
-        @NamedQuery(name = "GameAdmin.findByStatus", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status = :status ORDER BY ga.createdTime DESC"),
-        @NamedQuery(name = "GameAdmin.GamesToDelete", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status != com.wegas.admin.persistence.GameAdmin.Status.TODO AND ga.game.status = com.wegas.core.persistence.game.Game.Status.DELETE")
+    @NamedQuery(name = "GameAdmin.findByGame", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.game.id = :gameId"),
+    @NamedQuery(name = "GameAdmin.findByStatus", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status = :status ORDER BY ga.createdTime DESC"),
+    @NamedQuery(name = "GameAdmin.GamesToDelete", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status != com.wegas.admin.persistence.GameAdmin.Status.TODO AND ga.game.status = com.wegas.core.persistence.game.Game.Status.DELETE")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GameAdmin extends AbstractEntity {
-
 
     private static final long serialVersionUID = 1L;
 
@@ -93,7 +93,6 @@ public class GameAdmin extends AbstractEntity {
         this.status = status;
     }
 
-
     @JsonIgnore
     public Game getGame() {
         return game;
@@ -123,7 +122,7 @@ public class GameAdmin extends AbstractEntity {
     }
 
     public Date getCreatedTime() {
-        return this.createdTime;
+        return createdTime != null ? new Date(createdTime.getTime()) : null;
     }
 
     public String getCreator() {
@@ -132,9 +131,13 @@ public class GameAdmin extends AbstractEntity {
 
     @Override
     public void merge(AbstractEntity other) {
-        GameAdmin o = (GameAdmin) other;
-        this.status = o.status;
-        this.comments = o.comments;
+        if (other instanceof GameAdmin) {
+            GameAdmin o = (GameAdmin) other;
+            this.status = o.status;
+            this.comments = o.comments;
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
+        }
     }
 
     @JsonIgnore
@@ -173,7 +176,6 @@ public class GameAdmin extends AbstractEntity {
 //        this.prevGameModel = prevGameModel;
 //    }
 //
-
     public Integer getTeamCount() {
         if (this.getGame() != null) {
             int counter = 0;

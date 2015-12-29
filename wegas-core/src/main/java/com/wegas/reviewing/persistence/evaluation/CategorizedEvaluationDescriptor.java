@@ -7,6 +7,7 @@
  */
 package com.wegas.reviewing.persistence.evaluation;
 
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,6 +78,8 @@ public class CategorizedEvaluationDescriptor extends EvaluationDescriptor<Catego
             CategorizedEvaluationDescriptor o = (CategorizedEvaluationDescriptor) a;
             this.categories.clear();
             this.categories.addAll(o.getCategories());
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
     }
 

@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 
 /**
  *
@@ -81,27 +82,31 @@ public class ResourceInstance extends VariableInstance {
      */
     @Override
     public void merge(AbstractEntity a) {
-        ResourceInstance other = (ResourceInstance) a;
-        this.setActive(other.getActive());
-        if (other.getAssignments() != null) {
-            this.setAssignments(other.getAssignments());
-        }
-        if (other.getActivities() != null) {
-            this.setActivities(other.getActivities());
-        }
-        if (other.getOccupations() != null) {
-            this.occupations.clear();
-            for (Occupation occ : other.getOccupations()) {
-                Occupation o = new Occupation();
-                o.merge(occ);
-                o.setResourceInstance(this);
-                this.occupations.add(o);
+        if (a instanceof ResourceInstance) {
+            ResourceInstance other = (ResourceInstance) a;
+            this.setActive(other.getActive());
+            if (other.getAssignments() != null) {
+                this.setAssignments(other.getAssignments());
             }
+            if (other.getActivities() != null) {
+                this.setActivities(other.getActivities());
+            }
+            if (other.getOccupations() != null) {
+                this.occupations.clear();
+                for (Occupation occ : other.getOccupations()) {
+                    Occupation o = new Occupation();
+                    o.merge(occ);
+                    o.setResourceInstance(this);
+                    this.occupations.add(o);
+                }
+            }
+            this.properties.clear();
+            this.properties.putAll(other.getProperties());
+            //this.setMoral(other.getMoral());
+            this.setConfidence(other.getConfidence());
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
-        this.properties.clear();
-        this.properties.putAll(other.getProperties());
-        //this.setMoral(other.getMoral());
-        this.setConfidence(other.getConfidence());
     }
 
     /**

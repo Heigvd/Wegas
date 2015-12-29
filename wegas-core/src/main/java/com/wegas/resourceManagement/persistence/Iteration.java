@@ -13,6 +13,7 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.Broadcastable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -284,15 +285,19 @@ public class Iteration extends AbstractEntity implements Broadcastable {
      */
     @Override
     public void merge(AbstractEntity a) {
-        Iteration other = (Iteration) a;
-        this.setBeginAt(other.getBeginAt());
-        this.setName(other.getName());
+        if (a instanceof Iteration) {
+            Iteration other = (Iteration) a;
+            this.setBeginAt(other.getBeginAt());
+            this.setName(other.getName());
 
-        //ListUtils.updateList(tasks, other.getTasks());
-        //this.setPlannedWorkload(other.getPlannedWorkload());
-        //this.setReplannedWorkloads(replannedWorkloads);
-        //this.setTotalWorkload(other.getTotalWorkload());
-        //this.setWorkloads();
+            //ListUtils.updateList(tasks, other.getTasks());
+            //this.setPlannedWorkload(other.getPlannedWorkload());
+            //this.setReplannedWorkloads(replannedWorkloads);
+            //this.setTotalWorkload(other.getTotalWorkload());
+            //this.setWorkloads();
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
+        }
     }
 
     /**

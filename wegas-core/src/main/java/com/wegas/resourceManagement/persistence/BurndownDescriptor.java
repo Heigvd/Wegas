@@ -17,9 +17,10 @@ import javax.persistence.FetchType;
 import javax.persistence.Lob;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 
 /**
- * 
+ *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
 @Entity
@@ -36,9 +37,13 @@ public class BurndownDescriptor extends VariableDescriptor<BurndownInstance> {
 
     @Override
     public void merge(AbstractEntity a) {
-        super.merge(a);
-        BurndownDescriptor other = (BurndownDescriptor) a;
-        this.setDescription(other.getDescription());
+        if (a instanceof BurndownDescriptor) {
+            super.merge(a);
+            BurndownDescriptor other = (BurndownDescriptor) a;
+            this.setDescription(other.getDescription());
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
+        } 
     }
 
     /**
@@ -58,6 +63,6 @@ public class BurndownDescriptor extends VariableDescriptor<BurndownInstance> {
     @Override
     public Boolean containsAll(List<String> criterias) {
         return Helper.insensitiveContainsAll(this.getDescription(), criterias)
-                || super.containsAll(criterias);
+            || super.containsAll(criterias);
     }
 }

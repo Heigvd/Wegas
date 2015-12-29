@@ -10,6 +10,7 @@ package com.wegas.resourceManagement.persistence;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
@@ -206,30 +207,34 @@ public class TaskInstance extends VariableInstance {
      */
     @Override
     public void merge(AbstractEntity a) {
-        TaskInstance other = (TaskInstance) a;
-        this.setActive(other.getActive());
-        //this.setDuration(other.getDuration());
-        this.properties.clear();
-        this.properties.putAll(other.getProperties());
-        ListUtils.ListKeyToMap<String, WRequirement> converter;
-        converter = new WRequirementToNameConverter();
-        Map<String, WRequirement> reqMap = ListUtils.listAsMap(requirements, converter);
-        this.requirements.clear();
-        for (WRequirement req : other.getRequirements()) {
-            WRequirement r;
-            if (reqMap.containsKey(req.getName()) && req.getId() != null) {
-                r = reqMap.get(req.getName());
-                r.merge(req);
-                this.requirements.add(r);
-            } else {
-                r = new WRequirement();
-                r.merge(req);
-                r.setTaskInstance(this); // @fixme
-                this.requirements.add(r);
+        if (a instanceof TaskInstance) {
+            TaskInstance other = (TaskInstance) a;
+            this.setActive(other.getActive());
+            //this.setDuration(other.getDuration());
+            this.properties.clear();
+            this.properties.putAll(other.getProperties());
+            ListUtils.ListKeyToMap<String, WRequirement> converter;
+            converter = new WRequirementToNameConverter();
+            Map<String, WRequirement> reqMap = ListUtils.listAsMap(requirements, converter);
+            this.requirements.clear();
+            for (WRequirement req : other.getRequirements()) {
+                WRequirement r;
+                if (reqMap.containsKey(req.getName()) && req.getId() != null) {
+                    r = reqMap.get(req.getName());
+                    r.merge(req);
+                    this.requirements.add(r);
+                } else {
+                    r = new WRequirement();
+                    r.merge(req);
+                    r.setTaskInstance(this); // @fixme
+                    this.requirements.add(r);
+                }
             }
+            this.plannification.clear();
+            this.plannification.addAll(other.getPlannification());
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
-        this.plannification.clear();
-        this.plannification.addAll(other.getPlannification());
     }
 
     /**

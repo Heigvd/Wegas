@@ -29,6 +29,7 @@ import javax.persistence.Transient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import javax.persistence.Column;
 
 /**
@@ -62,10 +63,10 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      */
     @ManyToMany
     @JoinTable(
-            joinColumns = {
-                @JoinColumn(name = "taskdescriptor_variabledescriptor_id")},
-            inverseJoinColumns = {
-                @JoinColumn(name = "predecessors_variabledescriptor_id")})      // prevent change in the db
+        joinColumns = {
+            @JoinColumn(name = "taskdescriptor_variabledescriptor_id")},
+        inverseJoinColumns = {
+            @JoinColumn(name = "predecessors_variabledescriptor_id")})      // prevent change in the db
     @JsonIgnore
     private List<TaskDescriptor> predecessors = new ArrayList<>();
     /*
@@ -87,13 +88,17 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      */
     @Override
     public void merge(AbstractEntity a) {
-        super.merge(a);
-        TaskDescriptor other = (TaskDescriptor) a;
-        this.setDescription(other.getDescription());
-        this.setIndex(other.getIndex());
-        this.predecessors = ListUtils.updateList(this.predecessors, other.getPredecessors());
-        this.properties.clear();
-        this.properties.putAll(other.getProperties());
+        if (a instanceof TaskDescriptor) {
+            super.merge(a);
+            TaskDescriptor other = (TaskDescriptor) a;
+            this.setDescription(other.getDescription());
+            this.setIndex(other.getIndex());
+            this.predecessors = ListUtils.updateList(this.predecessors, other.getPredecessors());
+            this.properties.clear();
+            this.properties.putAll(other.getProperties());
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
+        }
     }
 
     /**
@@ -407,6 +412,6 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     @Override
     public Boolean containsAll(List<String> criterias) {
         return Helper.insensitiveContainsAll(this.getDescription(), criterias)
-                || super.containsAll(criterias);
+            || super.containsAll(criterias);
     }
 }

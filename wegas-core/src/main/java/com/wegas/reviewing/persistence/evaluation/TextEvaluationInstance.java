@@ -7,6 +7,7 @@
  */
 package com.wegas.reviewing.persistence.evaluation;
 
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -57,6 +58,8 @@ public class TextEvaluationInstance extends EvaluationInstance {
             TextEvaluationInstance o = (TextEvaluationInstance) a;
             super.merge(a);
             this.setValue(o.getValue());
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
     }
 }

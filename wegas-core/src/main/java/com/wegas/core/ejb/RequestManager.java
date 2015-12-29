@@ -100,8 +100,8 @@ public class RequestManager {
 
     public void addEntities(Map<String, List<AbstractEntity>> entities, Map<String, List<AbstractEntity>> container) {
         if (entities != null) {
-            for (String audience : entities.keySet()) {
-                this.addEntity(audience, entities.get(audience), container);
+            for ( Map.Entry<String, List<AbstractEntity>> entry : entities.entrySet()){
+                this.addEntity(entry.getKey(), entry.getValue() , container);
             }
         }
     }

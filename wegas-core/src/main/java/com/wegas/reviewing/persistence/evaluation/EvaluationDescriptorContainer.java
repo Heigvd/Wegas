@@ -7,9 +7,9 @@
  */
 package com.wegas.reviewing.persistence.evaluation;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.reviewing.persistence.*;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
@@ -21,7 +21,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,6 +86,8 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
         if (a instanceof EvaluationDescriptorContainer) {
             EvaluationDescriptorContainer other = (EvaluationDescriptorContainer) a;
             this.evaluations = ListUtils.mergeLists(this.getEvaluations(), other.getEvaluations());
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
     }
 }

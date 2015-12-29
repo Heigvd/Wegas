@@ -16,6 +16,7 @@ import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.apache.shiro.util.SimpleByteSource;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 
 import javax.persistence.*;
 
@@ -29,7 +30,7 @@ import javax.persistence.*;
         @UniqueConstraint(columnNames = "email")
 })*/
 @JsonSubTypes(value = {
-        @JsonSubTypes.Type(name = "GameAccount", value = com.wegas.core.security.jparealm.GameAccount.class)
+    @JsonSubTypes.Type(name = "GameAccount", value = com.wegas.core.security.jparealm.GameAccount.class)
 })
 @NamedQueries({
     @NamedQuery(name = "JpaAccount.findExactClass", query = "SELECT a FROM JpaAccount a WHERE TYPE(a) = :accountClass"),
@@ -64,12 +65,16 @@ public class JpaAccount extends AbstractAccount {
 
     @Override
     public void merge(AbstractEntity other) {
-        super.merge(other);
-        JpaAccount a = (JpaAccount) other;
-        this.setEmail(a.getEmail());
-        if (a.getPassword() != null && !a.getPassword().isEmpty()) {                                          // Only update the password if it is set
-            this.setPassword(a.getPassword());
-            this.setPasswordHex(null);                                          // Force jpa update
+        if (other instanceof JpaAccount) {
+            super.merge(other);
+            JpaAccount a = (JpaAccount) other;
+            this.setEmail(a.getEmail());
+            if (a.getPassword() != null && !a.getPassword().isEmpty()) {                                          // Only update the password if it is set
+                this.setPassword(a.getPassword());
+                this.setPasswordHex(null);                                          // Force jpa update
+            }
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
         }
     }
 
@@ -93,7 +98,7 @@ public class JpaAccount extends AbstractAccount {
     public void preUpdate() {
         if (this.password != null && !this.password.isEmpty()) {
             this.passwordHex = new Sha256Hash(this.password,
-                    (new SimpleByteSource(this.getSalt())).getBytes()).toHex();
+                (new SimpleByteSource(this.getSalt())).getBytes()).toHex();
         }
     }
 

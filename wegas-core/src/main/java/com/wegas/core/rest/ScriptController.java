@@ -14,8 +14,11 @@ import com.wegas.core.ejb.ScriptCheck;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasScriptException;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.Scripted;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.security.ejb.UserFacade;
@@ -23,8 +26,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
@@ -80,6 +85,9 @@ public class ScriptController {
     @EJB
     private ScriptCheck scriptCheck;
 
+    @Inject
+    private PlayerFacade playerFacade;
+
     /**
      *
      * @param gameModelId
@@ -96,8 +104,20 @@ public class ScriptController {
         @PathParam("variableDescriptorId") Long variableDescritptorId,
         Script script) {
 
-        if (SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + gameModelId)
-            || userFacade.matchCurrentUser(playerId)) {
+        Player thePlayer = playerFacade.find(playerId);
+        Team theTeam;
+        Game theGame;
+        GameModel theGameModel;
+
+        if ((thePlayer != null)
+            && ((theTeam = thePlayer.getTeam()) != null)
+            && ((theGame = theTeam.getGame()) != null)
+            && ((theGameModel = theGame.getGameModel()) != null)
+            && (Objects.equals(theGameModel.getId(), gameModelId))
+            && (SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + gameModelId)
+            || SecurityUtils.getSubject().isPermitted("Game:Edit:g" + theGame.getId())
+            || userFacade.matchCurrentUser(playerId))) {
+
             VariableDescriptor context;
             if (variableDescritptorId != null && variableDescritptorId > 0) {
                 context = variableDescriptorFacade.find(variableDescritptorId);

@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.Set;
 import java.util.zip.GZIPOutputStream;
 import org.apache.shiro.SecurityUtils;
 
@@ -274,8 +275,9 @@ public class WebsocketFacade {
 
     private <T extends ClientEvent> void propagate(Map<String, List<AbstractEntity>> container, String socketId, Class<T> eventClass) {
         try {
-            for (String audience : container.keySet()) {
-                List<AbstractEntity> toPropagate = container.get(audience);
+            for (Map.Entry<String, List<AbstractEntity>> entry : container.entrySet()){
+                String audience = entry.getKey();
+                List<AbstractEntity> toPropagate = entry.getValue();
                 //logger.error(eventClass.getSimpleName() + " entities: " + audience + ": " + toPropagate.size());
                 ClientEvent event = eventClass.getDeclaredConstructor(List.class).newInstance(toPropagate);
                 propagate(event, audience, socketId);

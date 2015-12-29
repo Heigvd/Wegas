@@ -9,6 +9,7 @@ package com.wegas.reviewing.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.reviewing.persistence.evaluation.EvaluationInstance;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
@@ -214,6 +215,8 @@ public class Review extends AbstractEntity implements Broadcastable {
             //this.setReviewer(o.getReviewer());
             this.setFeedback(ListUtils.mergeLists(this.getFeedback(), o.getFeedback()));
             this.setComments(ListUtils.mergeLists(this.getComments(), o.getComments()));
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
         }
     }
 

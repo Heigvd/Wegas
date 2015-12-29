@@ -17,7 +17,7 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Scripted;
 
@@ -87,7 +87,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
             this.mergeStates((HashMap<Long, State>) smDescriptor.getStates());
             super.merge(smDescriptor);
         } else {
-            throw WegasErrorMessage.error("Incompatible type");
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
     }
 
