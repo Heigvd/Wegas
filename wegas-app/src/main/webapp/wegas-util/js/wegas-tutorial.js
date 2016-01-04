@@ -114,8 +114,7 @@ YUI.add("wegas-tutorial", function(Y) {
         if (index + 1 === count) {
             panel.one(".wegas-tutorial-button-skip").hide();
         }
-        setPos(panel, node, element.pos);
-        //Y.later(10, null, setPos, [panel, node, element.pos]);
+        Y.later(10, null, setPos, [panel, node, element.pos]);
     }
     /**
      * @param Node panel the panel
@@ -191,10 +190,12 @@ YUI.add("wegas-tutorial", function(Y) {
         overlay2.setStyles({
             width: Math.max(viewport.width - rect.right, 0),
             height: Math.max(rect.top + rect.height, 0)
-        });overlay3.setStyles({
+        });
+        overlay3.setStyles({
             width: Math.max(viewport.width - rect.left, 0),
             height: Math.max(viewport.height - rect.bottom, 0)
-        });overlay4.setStyles({
+        });
+        overlay4.setStyles({
             width: Math.max(rect.left, 0),
             height: Math.max(viewport.height - rect.top, 0)
         });
