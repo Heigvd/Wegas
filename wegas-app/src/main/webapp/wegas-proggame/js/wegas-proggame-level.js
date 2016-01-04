@@ -737,34 +737,12 @@ YUI.add('wegas-proggame-level', function(Y) {
             return panel;
         },
         showTutorial: function() {
-            var panel = new Wegas.Panel({
-                modal: true,
-                centered: false,
-                zIndex: 1000,
-                buttons: {}
-            }).render();
-            panel.get("boundingBox").addClass("proggame-tutorial");
-            Y.one(".yui3-widget-mask").setStyle("opacity", 0.3);
-            Y.one("body").append("<div class='proggame-tuto-transparentmask'></div>");
-            this.currentTutoPanel = 0;
-            this.panel = panel;
-            this.showNextTutorialPanel();
-        },
-        showNextTutorialPanel: function() {
-            var cfg = ProgGameLevel.TUTORIAL[this.currentTutoPanel];
-            this.panel.setAttrs(cfg);
-            Y.all(cfg.highlight).addClass("proggame-tuto-highlight");
-            Y.one("body").once(CLICK, function() { // Anywhere user clicks,
-                Y.all(cfg.highlight).removeClass("proggame-tuto-highlight"); // Remove current highlight
-                this.currentTutoPanel += 1;
-                if (this.currentTutoPanel === ProgGameLevel.TUTORIAL.length) { // If there are no more panels to display,
-                    Y.all(".proggame-tuto-transparentmask").remove(true); // remove panel
-                    Y.one(".yui3-widget-mask").setStyle("opacity", 0);
-                    this.panel.destroy();
-                } else {
-                    this.showNextTutorialPanel(); // Otherwise show next panel
-                }
-            }, this);
+            Y.Wegas.Tutorial(ProgGameLevel.TUTORIAL, {
+                next: "Continuer",
+                skip: "Ignorer le tutoriel"
+            }).then(function(index) {
+                console.log('Im done', index);
+            });
         },
         syncFrontUI: function() {
             var cb = this.get(CONTENTBOX);
@@ -1245,56 +1223,32 @@ YUI.add('wegas-proggame-level', function(Y) {
                     "Allows to include a file from your file library. This way you can reuse your code multiple times."
             }
         },
-        TUTORIAL: [{
-            height: 105,
-            width: 460,
-            x: 402,
-            y: 390,
-            //                highlight: ".code",
-            bodyContent: "<div class='proggame-tuto-arrowbottom' style='float: left;'></div><div>L'éditeur de code vous permet de contrôler votre avatar.<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
-        }, {
-            height: 110,
-            width: 460,
-            x: 462,
-            y: 570,
-            highlight: ".proggame-buttons",
-            bodyContent: "<div class='proggame-tuto-arrowright'></div><div>Pour exécuter votre code, cliquez sur la flèche verte.<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
-        }, {
-            height: 105,
-            width: 460,
-            x: 550,
-            y: 340,
-            bodyContent: "<div class='proggame-tuto-arrowbottom' style='float: left;'></div><div>L'éditeur de code peut être agrandi en tirant sur cette barre<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
-        },
+        TUTORIAL: [
             {
-                height: 130,
-                width: 600,
-                x: 212,
-                y: 230,
-                highlight: ".proggame-lefttab",
-                bodyContent: "<div class='proggame-tuto-arrowleft'></div><div>Vous pouvez ajouter des instructions en cliquant directement dessus dans l'<b>API</b> (Application Programming Interface).<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
+                node: ".code",
+                html: "<div>L'éditeur de code vous permet de contrôler votre avatar.</div>"
             }, {
-                height: 130,
-                width: 340,
-                x: 256,
-                y: 87,
-                highlight: ".proggame-help",
-                bodyContent: "<div class='proggame-tuto-arrowleft'></div><div>Pour revoir les objectifs du niveau, cliquez sur le bouton <b>Information</b>.<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
+                node: ".proggame-buttons",
+                html: "<div>Pour exécuter votre code, cliquez sur la flèche verte.</div>"
             }, {
-                height: 200,
-                width: 360,
-                x: 780,
-                y: 54,
-                highlight: ".proggame-button-courses",
-                bodyContent: "<div class='proggame-tuto-arrowtop'></div><div>Vous recevez la théorie nécessaire pour chaque niveau dans la partie théorie.<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
+                node: ".barre",
+                html: "<div>L'éditeur de code peut être agrandi en tirant sur cette barre</div>"
             }, {
-                height: 200,
-                width: 360,
-                x: 650,
-                y: 54,
-                highlight: ".proggame-button-shop",
-                bodyContent: "<div class='proggame-tuto-arrowtop'></div><div>Vous pouvez rejouer les anciens niveaux en cliquant sur la carte<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
-            }]
+                node: ".proggame-lefttab",
+                html: "<div>L'<b>API</b>(Application Programming Interface) expose les instructions que vous avez à disposition.<br/><br/>" +
+                    "Le <b>?</b> donne des informations supplémentaires pour chaque instruction<br/><br/>" +
+                    "Vous pouvez ajouter des instructions en cliquant directement dessus.</div>"
+            }, {
+                node: ".proggame-help",
+                html: "<div>Pour revoir les objectifs du niveau, cliquez sur le bouton d'information <b>i</b>.</div>"
+            }, {
+                node: ".proggame-button-courses",
+                html: "<div>Vous recevrez la théorie nécessaire pour chaque niveau dans la partie théorie.</div>"
+            }, {
+                node: ".proggame-button-shop",
+                html: "<div>Vous pouvez rejouer les anciens niveaux en cliquant sur la carte</div>"
+            }
+        ]
     });
     Wegas.ProgGameLevel = ProgGameLevel;
 });
