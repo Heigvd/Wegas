@@ -1,0 +1,135 @@
+.wegas-tutorial {
+    position: absolute;
+    color: black;
+    background-color: white;
+    z-index: 10005;
+    transition: top 0.6s, left 0.6s;
+    -webkit-transition: top 0.6s, left 0.6s;
+    -o-transition: top 0.6s, left 0.6s;
+    -moz-transition: top 0.6s, left 0.6s;
+    max-width: 300px;
+}
+
+.wegas-tutorial .wegas-tutorial-content {
+    max-height: 200px;
+    overflow: auto;
+    padding: 10px;
+}
+
+.wegas-tutorial-overlay1, .wegas-tutorial-overlay2, .wegas-tutorial-overlay3, .wegas-tutorial-overlay4 {
+    position: absolute;
+    z-index: 10000;
+    /*width: 100%;
+    height: 100%;*/
+    background-color: rgba(0, 0, 0, 0.5);
+    transition: width 0.6s, height 0.6s;
+    -webkit-transition: width 0.6s, height 0.6s;
+    -o-transition: width 0.6s, height 0.6s;
+    -moz-transition: width 0.6s, height 0.6s;
+}
+
+.wegas-tutorial-overlay1 {
+    top: 0;
+    left: 0;
+}
+
+.wegas-tutorial-overlay2 {
+    top: 0;
+    right: 0;
+}
+
+.wegas-tutorial-overlay3 {
+    bottom: 0;
+    right: 0;
+}
+
+.wegas-tutorial-overlay4 {
+    bottom: 0;
+    left: 0;
+}
+
+.wegas-tutorial-footer {
+    text-align: right;
+    border-top: 1px solid lightgray;
+    padding: 5px;
+    font-size: smaller;
+}
+
+.wegas-tutorial-counter {
+    float: left;
+}
+
+.wegas-tutorial-button {
+    cursor: pointer;
+    opacity: 0.6;
+    padding: 5px 20px;
+}
+
+.wegas-tutorial-button:hover {
+    opacity: 1;
+}
+
+.wegas-tutorial .container:after {
+    content: '';
+    position: absolute;
+    box-sizing: border-box;
+    width: 0;
+    height: 0;
+    border: 8px solid;
+}
+
+.wegas-tutorial.top-left .container:after, .wegas-tutorial.top-right .container:after {
+    border-color: transparent transparent white transparent;
+}
+
+.wegas-tutorial.top-left .container:after {
+    left: 5px;
+    bottom: 100%;
+}
+
+.wegas-tutorial.top-right .container:after {
+    right: 5px;
+    bottom: 100%;
+}
+
+.wegas-tutorial.bottom-left .container:after, .wegas-tutorial.bottom-right .container:after {
+    border-color: white transparent transparent transparent;
+}
+
+.wegas-tutorial.bottom-left .container:after {
+    left: 5px;
+    top: 100%;
+}
+
+.wegas-tutorial.bottom-right .container:after {
+    right: 5px;
+    top: 100%;
+}
+
+.wegas-tutorial.right-top .container:after, .wegas-tutorial.right-bottom .container:after {
+    border-color: transparent transparent transparent white;
+}
+
+.wegas-tutorial.right-top .container:after {
+    left: 100%;
+    top: 5px;
+}
+
+.wegas-tutorial.right-bottom .container:after {
+    left: 100%;
+    bottom: 5px;
+}
+
+.wegas-tutorial.left-top .container:after, .wegas-tutorial.left-bottom .container:after {
+    border-color: transparent white transparent transparent;
+}
+
+.wegas-tutorial.left-top .container:after {
+    right: 100%;
+    top: 5px;
+}
+
+.wegas-tutorial.left-bottom .container:after {
+    right: 100%;
+    bottom: 5px;
+}

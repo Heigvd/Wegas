@@ -422,6 +422,12 @@ YUI().use(function(Y) {
             "wegas-widgettoolbarcss": {
                 type: CSS
             },
+            "wegas-tutorialcss": {
+                type: CSS
+            },
+            "wegas-tutorial": {
+                requires: ["wegas-tutorialcss", "event-resize"]
+            },
             "wegas-panel": {
                 ws_provides: "Panel",
                 requires: ["wegas-panelcss", "widget-buttons", "widget-modality",
