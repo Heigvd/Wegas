@@ -109,9 +109,7 @@ YUI.add('wegas-proggame-level', function(Y) {
             });
             resize.plug(Y.Plugin.ResizeConstrained, {
                 minHeight: 250,
-                maxHeight: 450,
-                maxWidth: 610,
-                minWidth: 610
+                maxHeight: 450
             });
             resize.on('resize:resize', function() {
                 this.mainEditorTab.aceField.editor.resize();
@@ -516,6 +514,9 @@ YUI.add('wegas-proggame-level', function(Y) {
                         on: {
                             click: Y.bind(function() {
                                 var watch = prompt("Expression");
+                                if (!watch) {
+                                    return;
+                                }
                                 this.watches.push(watch);
                                 if (this.get(STATE) === "breaking") { // If an evaluation is on going
                                     this.reRun(); // rerun script until current step to get new
@@ -548,7 +549,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                     };
                 } else {
                     node = {
-                        label: "<p class='questionMark' title=\"" + ProgGameLevel.API[i].tooltip + "\">?<p>" + ProgGameLevel.API[i].label
+                        label: "<span class='api-tooltip'>?<div><div class='api-tooltip-content'>" + ProgGameLevel.API[i].tooltip + "</div></div></span>" + ProgGameLevel.API[i].label
                     };
                 }
                 //                if (!ProgGameLevel.API[i]) {
@@ -703,7 +704,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                 Y.one("body").once(CLICK, function() {
                     this.show();
                     panel.get("boundingBox").setStyles({
-                        transformOrigin:"top left"
+                        transformOrigin: "top left"
                     }).transition({
                         duration: 0.7,
                         top: Math.round(target.top) + 10 + "px",
