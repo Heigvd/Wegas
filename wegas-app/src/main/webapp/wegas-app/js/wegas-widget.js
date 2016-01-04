@@ -22,6 +22,11 @@ YUI.add("wegas-widget", function(Y) {
      * @class Extension common to all wegas widgets
      */
     function Widget() {
+        this.before("destroy", function() {
+            while (this.overlayCounter > 0) {
+                this.hideOverlay();
+            }
+        });
         this.after("render", function() {
             this.overlayCounter = 0;
             this.get(BOUNDING_BOX)
@@ -126,24 +131,24 @@ YUI.add("wegas-widget", function(Y) {
          *  Defines edition menu to be used in editor
          */
         EDITMENU: [{
-                type: BUTTON,
-                label: "Edit",
-                plugins: [{
-                        fn: "EditWidgetAction"
-                    }]
-            }, {
-                type: BUTTON,
-                label: "Copy",
-                plugins: [{
-                        fn: "DuplicateWidgetAction"
-                    }]
-            }, {
-                type: BUTTON,
-                label: "Delete",
-                plugins: [{
-                        fn: "DeleteWidgetAction"
-                    }]
-            }],
+            type: BUTTON,
+            label: "Edit",
+            plugins: [{
+                fn: "EditWidgetAction"
+            }]
+        }, {
+            type: BUTTON,
+            label: "Copy",
+            plugins: [{
+                fn: "DuplicateWidgetAction"
+            }]
+        }, {
+            type: BUTTON,
+            label: "Delete",
+            plugins: [{
+                fn: "DeleteWidgetAction"
+            }]
+        }],
         /**
          * @field
          * @static
@@ -384,7 +389,7 @@ YUI.add("wegas-widget", function(Y) {
             /**
              * Plugins attached to the widget
              */
-            plugins: {//For serialization purpose, get plugin configs
+            plugins: { //For serialization purpose, get plugin configs
                 getter: function() {
                     var i,
                         p = [], plg;
@@ -407,124 +412,124 @@ YUI.add("wegas-widget", function(Y) {
                     _type: "pluginlist",
                     legend: "Plugins",
                     items: [{
-                            type: BUTTON,
-                            label: "On click",
-                            plugins: [{
-                                    fn: "WidgetMenu",
-                                    cfg: {
-                                        menuCfg: {
-                                            points: ["tl", "tr"]
-                                        },
-                                        event: "mouseenter",
-                                        children: [{
-                                                type: BUTTON,
-                                                label: "Open page",
-                                                data: "OpenPageAction"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Open url",
-                                                data: "OpenUrlAction"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Impact variables",
-                                                data: "ExecuteScriptAction"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Open Popup page",
-                                                data: "OpenPanelPageloader"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Play sound",
-                                                data: "PlaySoundAction"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Print Variables",
-                                                data: "PrintActionPlugin"
-                                            }
-                                        ]
-                                    }
-                                }]
-
-                        }, {
-                            type: BUTTON,
-                            label: "Styles",
-                            plugins: [{
-                                    fn: "WidgetMenu",
-                                    cfg: {
-                                        menuCfg: {
-                                            points: ["tl", "tr"]
-                                        },
-                                        event: "mouseenter",
-                                        children: [{
-                                                type: BUTTON,
-                                                label: "Tooltip",
-                                                data: "Tooltip"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Background",
-                                                data: "CSSBackground"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Position",
-                                                data: "CSSPosition"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Size",
-                                                data: "CSSSize"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Text",
-                                                data: "CSSText"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Other styles",
-                                                data: "CSSStyles"
-                                            }]
-                                    }
-                                }]
-                        }, {
-                            type: BUTTON,
-                            label: "Animations",
-                            plugins: [{
-                                    fn: "WidgetMenu",
-                                    cfg: {
-                                        menuCfg: {
-                                            points: ["tl", "tr"]
-                                        },
-                                        event: "mouseenter",
-                                        children: [{
-                                                type: BUTTON,
-                                                label: "Show after",
-                                                data: "ShowAfter"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Hide after",
-                                                data: "HideAfter"
-                                            }]
-                                    }
-                                }]
-                        }, {
-                            type: BUTTON,
-                            label: "Variables",
-                            plugins: [{
-                                    fn: "WidgetMenu",
-                                    cfg: {
-                                        menuCfg: {
-                                            points: ["tl", "tr"]
-                                        },
-                                        event: "mouseenter",
-                                        children: [{
-                                                type: BUTTON,
-                                                label: "Conditional disable",
-                                                data: "ConditionalDisable"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Unread count",
-                                                data: "UnreadCount"
-                                            }]
-                                    }
-                                }]
+                        type: BUTTON,
+                        label: "On click",
+                        plugins: [{
+                            fn: "WidgetMenu",
+                            cfg: {
+                                menuCfg: {
+                                    points: ["tl", "tr"]
+                                },
+                                event: "mouseenter",
+                                children: [{
+                                    type: BUTTON,
+                                    label: "Open page",
+                                    data: "OpenPageAction"
+                                }, {
+                                    type: BUTTON,
+                                    label: "Open url",
+                                    data: "OpenUrlAction"
+                                }, {
+                                    type: BUTTON,
+                                    label: "Impact variables",
+                                    data: "ExecuteScriptAction"
+                                }, {
+                                    type: BUTTON,
+                                    label: "Open Popup page",
+                                    data: "OpenPanelPageloader"
+                                }, {
+                                    type: BUTTON,
+                                    label: "Play sound",
+                                    data: "PlaySoundAction"
+                                }, {
+                                    type: BUTTON,
+                                    label: "Print Variables",
+                                    data: "PrintActionPlugin"
+                                }
+                                ]
+                            }
                         }]
+
+                    }, {
+                        type: BUTTON,
+                        label: "Styles",
+                        plugins: [{
+                            fn: "WidgetMenu",
+                            cfg: {
+                                menuCfg: {
+                                    points: ["tl", "tr"]
+                                },
+                                event: "mouseenter",
+                                children: [{
+                                    type: BUTTON,
+                                    label: "Tooltip",
+                                    data: "Tooltip"
+                                }, {
+                                    type: BUTTON,
+                                    label: "Background",
+                                    data: "CSSBackground"
+                                }, {
+                                    type: BUTTON,
+                                    label: "Position",
+                                    data: "CSSPosition"
+                                }, {
+                                    type: BUTTON,
+                                    label: "Size",
+                                    data: "CSSSize"
+                                }, {
+                                    type: BUTTON,
+                                    label: "Text",
+                                    data: "CSSText"
+                                }, {
+                                    type: BUTTON,
+                                    label: "Other styles",
+                                    data: "CSSStyles"
+                                }]
+                            }
+                        }]
+                    }, {
+                        type: BUTTON,
+                        label: "Animations",
+                        plugins: [{
+                            fn: "WidgetMenu",
+                            cfg: {
+                                menuCfg: {
+                                    points: ["tl", "tr"]
+                                },
+                                event: "mouseenter",
+                                children: [{
+                                    type: BUTTON,
+                                    label: "Show after",
+                                    data: "ShowAfter"
+                                }, {
+                                    type: BUTTON,
+                                    label: "Hide after",
+                                    data: "HideAfter"
+                                }]
+                            }
+                        }]
+                    }, {
+                        type: BUTTON,
+                        label: "Variables",
+                        plugins: [{
+                            fn: "WidgetMenu",
+                            cfg: {
+                                menuCfg: {
+                                    points: ["tl", "tr"]
+                                },
+                                event: "mouseenter",
+                                children: [{
+                                    type: BUTTON,
+                                    label: "Conditional disable",
+                                    data: "ConditionalDisable"
+                                }, {
+                                    type: BUTTON,
+                                    label: "Unread count",
+                                    data: "UnreadCount"
+                                }]
+                            }
+                        }]
+                    }]
                 }
             }
         },
@@ -656,12 +661,12 @@ YUI.add("wegas-widget", function(Y) {
         this.removeAll().each(function() {
             this.destroy();
         });
-        // Optim delay object destruction
-        //Y.soon(Y.bind(function(widgets) {
-        //    widgets.each(function() {
-        //        this.destroy();
-        //    });
-        //}, this, this.removeAll()));
+    // Optim delay object destruction
+    //Y.soon(Y.bind(function(widgets) {
+    //    widgets.each(function() {
+    //        this.destroy();
+    //    });
+    //}, this, this.removeAll()));
     };
     /**
      * @hack
@@ -689,8 +694,8 @@ YUI.add("wegas-widget", function(Y) {
             this.get(BOUNDING_BOX).setHTML("<div class='wegas-widget-errored'><i>Failed to render<br>" + e.message + "</i></div>");
 
             Y.log("error", "Failed to render " + this.getType() + ": " + (e.message || ""), this.constructor.NAME);
-            //Y.error("Failed to render " + this.getType() + ": " + (e.message || ""), e, this.constructor.NAME);//do crash parent widget in debug mode
-            //throw e;
+        //Y.error("Failed to render " + this.getType() + ": " + (e.message || ""), e, this.constructor.NAME);//do crash parent widget in debug mode
+        //throw e;
         }
     };
 });
