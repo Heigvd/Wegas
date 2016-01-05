@@ -5,74 +5,103 @@
  * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
+
+
 /*
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
+
 /* Override default browser styles and counter YUI's cssreset. */
+
 html, body {
     height: 100%;
 }
+
 body {
     overflow: hidden;
 }
+
 select {
     margin: 0;
 }
+
 strong {
     font-weight: 700;
 }
+
 em {
     font-style: italic;
 }
+
 h1, h2, h3, h4, h5, h6 {
     font-weight: 700;
 }
+
 h1 {
     font-size: 2.2em;
 }
+
 h2 {
     font-size: 1.8em;
 }
+
 h3 {
     font-size: 1.4em;
 }
+
 h4 {
     font-size: 1.3em;
 }
+
 h5 {
     font-size: 1.2em;
 }
+
 h6 {
     font-size: 1.1em;
 }
+
 input, input[type="text"], input[type="password"] {
     padding: 2px;
 }
+
 input[type="submit"], input[type="reset"] {
-    padding:2px 4px;
+    padding: 2px 4px;
     cursor: pointer;
 }
+
 *:focus {
-    outline: none; /* Remove chrome focus outline */
+    outline: none;
+    /* Remove chrome focus outline */
 }
+
 font {
     background: transparent !important;
     color: inherit !important;
 }
 
+
 /* Disabled widgets (.yui3-button-disabled, etc.) */
-[class*="-disabled"]{
-    opacity:0.8;
+
+[class*="-disabled"] {
+    opacity: 0.8;
 }
+
+
 /* Hidden widgets (.yui3-button-hidden, etc.) */
-[class*="-hidden"]{
+
+[class*="-hidden"] {
     display: none;
 }
+
 .yui3-overlay-hidden {
     display: block !important;
 }
+
+
 /* App loading */
+
 .wegas-loading-app {
     position: fixed;
     top: 50%;
@@ -83,6 +112,7 @@ font {
     margin-left: -40px;
     background: transparent url(../../wegas-app/images/wegas-logowhite-80.png) no-repeat;
 }
+
 .wegas-loading-app > div {
     width: auto;
     margin-top: 37px;
@@ -91,21 +121,25 @@ font {
     margin-right: 1px;
     height: 0.25em;
 }
+
 .wegas-loading-app > div > div {
     height: 100%;
     width: 0%;
     background-color: #03283A;
 }
 
+
 /* Wegas loading (overlay on content) */
+
 .wegas-loading {
     height: 100%;
 }
+
 @keyframes fadein {
     from {
         opacity: 0;
     }
-    to   {
+    to {
         opacity: 1;
     }
 }
@@ -114,7 +148,7 @@ font {
     from {
         opacity: 0;
     }
-    to   {
+    to {
         opacity: 1;
     }
 }
@@ -123,7 +157,7 @@ font {
     from {
         opacity: 0;
     }
-    to   {
+    to {
         opacity: 1;
     }
 }
@@ -132,18 +166,20 @@ font {
     from {
         opacity: 0;
     }
-    to   {
+    to {
         opacity: 1;
     }
 }
+
 @-o-keyframes fadein {
     from {
         opacity: 0;
     }
-    to   {
+    to {
         opacity: 1;
     }
 }
+
 .wegas-loading-overlay {
     background: rgba(255, 255, 255, 0);
     position: absolute;
@@ -164,11 +200,10 @@ font {
     content: "Please wait...";
 }
 
-.wegas-loading-overlay:before,
-.wegas-loading-overlay:after {
+.wegas-loading-overlay:before, .wegas-loading-overlay:after {
     text-shadow: 0 0 3px white;
     font-style: italic;
-    position:absolute;
+    position: absolute;
     top: 50%;
     left: 50%;
     margin-top: 2.2em;
@@ -188,25 +223,28 @@ font {
 
 .wegas-loading.maintenance .wegas-loading-overlay:before {
     content: "Upgrade in progress.\A\A";
-    margin-left : -11em;
+    margin-left: -11em;
     font-weight: 900;
     font-size: 1.5em;
 }
-.wegas-loading.maintenance .wegas-loading-overlay:before,
-.wegas-loading.maintenance .wegas-loading-overlay:after {
+
+.wegas-loading.maintenance .wegas-loading-overlay:before, .wegas-loading.maintenance .wegas-loading-overlay:after {
     color: #FFFFFF;
     text-shadow: 0 0 2px #0C0C0C;
     opacity: 1;
 }
+
 .wegas-loading.maintenance .wegas-loading-overlay:after {
     content: "\A\AYou may consider to refresh the page once this message has disappeared.";
-    margin-left : -11em;
+    margin-left: -11em;
     font-weight: 800;
     font-size: 1.3em;
 }
+
 .wegas-loading-overlay.wegas-loading-long:after {
     opacity: 1;
 }
+
 .wegas-loader {
     width: 36px;
     height: 32px;
@@ -216,70 +254,112 @@ font {
     margin-top: -15px;
     margin-left: -16px;
 }
+
 .wegas-loader .bar {
     background-color: #03283A;
-    border: 1px solid #03283A;
-    float:left;
-    margin-right:4px;
-    margin-top:6px;
-    width:6px;
-    height:18px;
-    -webkit-animation:loadingbar 1.2s linear infinite;
-    -moz-animation:loadingbar 1.2s linear infinite;
-    animation:loadingbar 1.2s linear infinite;
+    border: 1px solid white;
+    float: left;
+    margin-right: 4px;
+    margin-top: 6px;
+    width: 6px;
+    height: 18px;
+    -webkit-animation: loadingbar 1.2s linear infinite;
+    -moz-animation: loadingbar 1.2s linear infinite;
+    animation: loadingbar 1.2s linear infinite;
 }
+
 .wegas-loader .bar:nth-child(2) {
-    animation-delay: 0.1s;                                                      /* Delay both the second and third bar animation */
+    animation-delay: 0.1s;
+    /* Delay both the second and third bar animation */
     -webkit-animation-delay: 0.1s;
     -moz-animation-delay: 0.1s;
 }
+
 .wegas-loader .bar:nth-child(3) {
     animation-delay: 0.2s;
     -webkit-animation-delay: 0.2s;
     -moz-animation-delay: 0.2s;
 }
+
 @-webkit-keyframes loadingbar {
-    0% { }
-    10% { -webkit-transform: scaleY(1.2); }
-    20% { -webkit-transform: scaleY(1.55); opacity:0.3; }
-    30% { -webkit-transform: scaleY(1.45); opacity:0.2; }
-    40% { -webkit-transform: scaleY(1.2); }
-    60% { -webkit-transform: scaleY(1); }
-    70% { }
-    100% { }    /* Missing frames will cause the extra delay */
-}
-@-moz-keyframes loadingbar {
-    0% { }
-    10% { -moz-transform: scaleY(1.2); }
-    20% { -moz-transform: scaleY(1.55); opacity:0.3; }
-    30% { -moz-transform: scaleY(1.45); opacity:0.2; }
-    40% { -moz-transform: scaleY(1.2); }
-    60% { -moz-transform: scaleY(1); }
-    70% { }
-    100% { }    /* Missing frames will cause the extra delay */
-}
-@-o-keyframes loadingbar {
-    0% { }
-    10% { -o-transform: scaleY(1.2); }
-    20% { -o-transform: scaleY(1.55); opacity:0.3; }
-    30% { -o-transform: scaleY(1.45); opacity:0.2; }
-    40% { -o-transform: scaleY(1.2); }
-    60% { -o-transform: scaleY(1); }
-    70% { }
-    100% { }    /* Missing frames will cause the extra delay */
-}
-@keyframes loadingbar {
-    0% { }
-    10% { transform: scaleY(1.2); }
-    20% { transform: scaleY(1.55); opacity:0.3; }
-    30% { transform: scaleY(1.45); opacity:0.2; }
-    40% { transform: scaleY(1.2); }
-    60% { transform: scaleY(1); }
-    70% { }
-    100% { }    /* Missing frames will cause the extra delay */
+    10%, 40% {
+        -webkit-transform: scaleY(1.2);
+        background-color: white;
+        border-color: #03283A;
+    }
+    20% {
+        -webkit-transform: scaleY(1.55);
+        opacity: 0.3;
+    }
+    30% {
+        -webkit-transform: scaleY(1.45);
+        opacity: 0.2;
+    }
+    60% {
+        -webkit-transform: scaleY(1);
+    }
 }
 
+@-moz-keyframes loadingbar {
+    10%, 40% {
+        -moz-transform: scaleY(1.2);
+        background-color: white;
+        border-color: #03283A;
+    }
+    20% {
+        -moz-transform: scaleY(1.55);
+        opacity: 0.3;
+    }
+    30% {
+        -moz-transform: scaleY(1.45);
+        opacity: 0.2;
+    }
+    60% {
+        -moz-transform: scaleY(1);
+    }
+}
+
+@-o-keyframes loadingbar {
+    10%, 40% {
+        -o-transform: scaleY(1.2);
+        background-color: white;
+        border-color: #03283A;
+    }
+    20% {
+        -o-transform: scaleY(1.55);
+        opacity: 0.3;
+    }
+    30% {
+        -o-transform: scaleY(1.45);
+        opacity: 0.2;
+    }
+    60% {
+        -o-transform: scaleY(1);
+    }
+}
+
+@keyframes loadingbar {
+    10%, 40% {
+        transform: scaleY(1.2);
+        background-color: white;
+        border-color: #03283A;
+    }
+    20% {
+        transform: scaleY(1.55);
+        opacity: 0.3;
+    }
+    30% {
+        transform: scaleY(1.45);
+        opacity: 0.2;
+    }
+    60% {
+        transform: scaleY(1);
+    }
+}
+
+
 /* */
+
 .wegas-smallmessage {
     padding: 20px;
     margin: 20px;
@@ -287,30 +367,38 @@ font {
     font-style: italic;
 }
 
+
 /* List styles */
+
 .wegas-list-horizontal > div {
-    display:block;
-    float:left;
-    vertical-align:top;
+    display: block;
+    float: left;
+    vertical-align: top;
 }
-.wegas-list-content:empty:before,
-.wegas-choicelist-content:empty:before{
+
+.wegas-list-content:empty:before, .wegas-choicelist-content:empty:before {
     content: "Empty";
 }
 
+
 /* Progress bar */
-.yui3-wegas-progressbar-hidden{
-    display:none !important;
+
+.yui3-wegas-progressbar-hidden {
+    display: none !important;
 }
 
+
 /* Tooltip */
+
 .wegas-tooltip {
-    position:absolute;
+    position: absolute;
     display: block !important;
 }
+
 .wegas-tooltip-hidden {
     visibility: hidden;
 }
+
 .wegas-tooltip-content {
     background: white;
     border: 1px solid gray;
@@ -319,76 +407,94 @@ font {
     font-size: 0.8em;
     max-width: 460px;
 }
+
 .wegas-tooltip-content img {
     max-height: 300px;
     max-width: 300px;
 }
 
+
 /* Toggle button */
-.yui3-togglebutton-hidden{
+
+.yui3-togglebutton-hidden {
     display: none;
 }
+
 .yui3-togglebutton-disabled {
     cursor: default;
     background-image: none;
-    filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+    filter: progid: DXImageTransform.Microsoft.gradient(enabled=false);
     filter: alpha(opacity=55);
     -khtml-opacity: 0.55;
     -moz-opacity: 0.55;
     opacity: 0.55;
-    box-shadow: 0 0 0 1px rgba(0,0,0, 0.25) inset;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset;
 }
 
+
 /** Page loader styles */
+
 .wegas-playerview, .wegas-playerview > .wegas-pageloader-content {
     height: 100%;
 }
-.wegas-playerview{
+
+.wegas-playerview {
     overflow: auto;
 }
+
 .wegas-playerview .wegas-pageloader {
     min-height: 50px;
     min-width: 50px;
 }
+
 .wegas-playerview > .wegas-pageloader-content > div {
     margin-left: auto;
     margin-right: auto;
 }
-.wegas-pageloader-content{
+
+.wegas-pageloader-content {
     width: inherit;
     height: inherit;
 }
 
+
 /* Visibility plugin */
-.timed-hidden-node{
+
+.timed-hidden-node {
     visibility: hidden;
 }
-.yui3-skin-sam .userPreferences .wegas-toolbar{
+
+.yui3-skin-sam .userPreferences .wegas-toolbar {
     background: rgba(255, 255, 255, 0.6);
 }
+
 
 /*
  * Widget styles
  */
-.wegas-image-hidden,
-.yui3-tabview-hidden,
-.wegas-text-hidden {
+
+.wegas-image-hidden, .yui3-tabview-hidden, .wegas-text-hidden {
     display: none;
 }
+
 
 /*
  * Box widget
  */
-.wegas-box{
+
+.wegas-box {
     width: 300px;
     height: 100px;
 }
 
+
 /* Chat widget */
+
 .wegas-chat-content {
     height: 100%;
-    position:relative;
+    position: relative;
 }
+
 .wegas-chat .wegas-chat-msgs {
     position: absolute;
     top: 5px;
@@ -400,115 +506,136 @@ font {
     overflow-y: auto;
     background: white;
 }
+
 .wegas-chat .wegas-chat-msgs:empty:before {
-    content:"No messages received yet";
+    content: "No messages received yet";
     font-style: italic;
     text-align: center;
     padding-top: 30px;
 }
+
 .wegas-chat .inputEx-fieldWrapper {
     position: absolute;
     bottom: 0px;
     left: 5px;
 }
+
 .wegas-chat div.inputEx-Field input {
     padding: 3px !important;
 }
+
 .wegas-chat button {
     position: absolute;
     bottom: 5px;
     right: 5px;
     margin: 0;
 }
-.wegas-chat  div.inputEx-fieldWrapper {
-    padding:0;
+
+.wegas-chat div.inputEx-fieldWrapper {
+    padding: 0;
 }
+
 .wegas-chat div.inputEx-Field {
-    float:none;
+    float: none;
 }
-.wegas-chat  div.inputEx-Field textarea {
-    width:98%;
+
+.wegas-chat div.inputEx-Field textarea {
+    width: 98%;
     padding: 1% 1%;
     border: none;
-    border-bottom:1px solid lightgray;
+    border-bottom: 1px solid lightgray;
 }
+
 .wegas-chat div.inputEx-Form-buttonBar {
     margin: 0;
     float: right;
 }
+
 .wegas-chat-msgs {
     margin-top: 5px;
     border-top: 1px solid lightgray;
-    padding:5px;
-}
-.wegas-chat-msg {
-    padding-bottom:2px;
+    padding: 5px;
 }
 
+.wegas-chat-msg {
+    padding-bottom: 2px;
+}
+
+
 /* Unread count plugin */
+
 .wegas-unreadcount .value {
-    color:white;
-    margin-left:2px;
+    color: white;
+    margin-left: 2px;
     background-color: #0981A9;
     box-shadow: 1px 0px 1px white;
     font-family: Arial;
     font-size: 0.9em;
     padding: 3px 7px 3px 6px;
     border-radius: 16px;
-    background-image: -moz-linear-gradient(top,rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
-    background-image: -ms-linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
-    background-image: -o-linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
-    background-image: linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
+    background-image: -moz-linear-gradient(top, rgba(255, 255, 255, 0.30), rgba(255, 255, 255, 0.15) 40%, transparent);
+    background-image: -ms-linear-gradient(rgba(255, 255, 255, 0.30), rgba(255, 255, 255, 0.15) 40%, transparent);
+    background-image: -o-linear-gradient(rgba(255, 255, 255, 0.30), rgba(255, 255, 255, 0.15) 40%, transparent);
+    background-image: linear-gradient(rgba(255, 255, 255, 0.30), rgba(255, 255, 255, 0.15) 40%, transparent);
 }
 
+
 /* Tinymce styles*/
+
+
 /* Need to revert yui 3 base styles so lists are display correctly */
-#tinymce ul,
-.wegas-inbox .yui3-tab-panel ul,
-.wegas-mcqtabview .yui3-tab-panel ul,
-.wegas-text-content ul,
-.wegas-template-content ul{
+
+#tinymce ul, .wegas-inbox .yui3-tab-panel ul, .wegas-mcqtabview .yui3-tab-panel ul, .wegas-text-content ul, .wegas-template-content ul {
     list-style-type: disc;
     padding: 0 2em;
     margin: 0.1em 0em;
 }
 
+
 /* Wegas skin for datatable */
+
 .yui3-skin-wegas .yui3-datatable-table {
     border: none;
 }
-.yui3-skin-wegas .yui3-datatable-cell,
-.yui3-skin-wegas .yui3-datatable-header {
+
+.yui3-skin-wegas .yui3-datatable-cell, .yui3-skin-wegas .yui3-datatable-header {
     border: none;
     border-bottom: 1px solid #f1f1f1;
 }
+
 .yui3-skin-wegas .yui3-datatable-header {
     background: none;
-    font-weight:bold;
+    font-weight: bold;
     font-size: 90%;
     padding: 7px 5px 4px 5px;
 }
+
 .yui3-skin-wegas .yui3-datatable-cell {
     padding: 5px;
 }
-.yui3-skin-wegas .yui3-datatable-even .yui3-datatable-cell,
-.yui3-skin-wegas .yui3-datatable-odd .yui3-datatable-cell {
+
+.yui3-skin-wegas .yui3-datatable-even .yui3-datatable-cell, .yui3-skin-wegas .yui3-datatable-odd .yui3-datatable-cell {
     background: transparent;
 }
-.yui3-skin-wegas .yui3-datatable-data .yui3-datatable-even .yui3-datatable-sorted,
-.yui3-skin-wegas .yui3-datatable-data .yui3-datatable-odd .yui3-datatable-sorted {
+
+.yui3-skin-wegas .yui3-datatable-data .yui3-datatable-even .yui3-datatable-sorted, .yui3-skin-wegas .yui3-datatable-data .yui3-datatable-odd .yui3-datatable-sorted {
     background-color: transparent;
 }
+
 .yui3-skin-wegas .yui3-datatable-message-content {
     border: none;
 }
 
+
 /* Onclick pointer style */
+
 .wegas-click {
     cursor: pointer;
 }
 
+
 /* Wegas add icon */
+
 .yui3-skin-sam .wegas-icon {
     display: inline-block;
     height: 18px;
@@ -524,8 +651,7 @@ font {
     cursor: default;
 }
 
-.loading:before,
-.loading:after {
+.loading:before, .loading:after {
     box-sizing: border-box;
     position: absolute;
     content: '';
