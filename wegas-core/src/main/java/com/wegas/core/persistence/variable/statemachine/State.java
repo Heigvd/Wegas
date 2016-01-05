@@ -7,21 +7,23 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
-import com.wegas.core.Helper;
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.ListUtils;
-import com.wegas.core.persistence.game.Script;
-import com.wegas.core.persistence.variable.Searchable;
-import com.wegas.core.rest.util.Views;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.*;
-//import javax.xml.bind.annotation.XmlRootElement;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Scripted;
+import com.wegas.core.persistence.variable.Searchable;
+import com.wegas.core.rest.util.Views;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+//import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -73,15 +75,6 @@ public class State extends AbstractEntity implements Searchable, Scripted {
      *
      */
     public State() {
-    }
-
-    @Override
-    public Boolean contains(final String criteria) {
-        return this.containsAll(new ArrayList<String>() {
-            {
-                add(criteria);
-            }
-        });
     }
 
     @Override

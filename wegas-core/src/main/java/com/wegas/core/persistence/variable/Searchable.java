@@ -7,23 +7,25 @@
  */
 package com.wegas.core.persistence.variable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 public interface Searchable {
 
     /**
-     *
      * @param criteria value to search for
      * @return if this specific object contains criteria
      */
-    public Boolean contains(String criteria);
+    public default Boolean contains(String criteria) {
+        return containsAll(new ArrayList<String>() {{
+            add(criteria);
+        }});
+    }
 
     /**
-     *
      * @param criterias List of criteria to search for
      * @return if this specific object contains all criteria
      */

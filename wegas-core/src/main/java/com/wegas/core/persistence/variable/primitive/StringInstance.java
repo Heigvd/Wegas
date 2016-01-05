@@ -7,24 +7,28 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
-import java.util.List;
-import javax.persistence.Entity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.Entity;
+import java.util.List;
+
 /**
- *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-public class StringInstance extends VariableInstance {
+public class StringInstance extends VariableInstance implements Searchable {
 
     private static final long serialVersionUID = 1L;
+
     private static final Logger logger = LoggerFactory.getLogger(StringInstance.class);
+
     private String val;
 
     /**
@@ -34,7 +38,6 @@ public class StringInstance extends VariableInstance {
     }
 
     /**
-     *
      * @param value
      */
     public StringInstance(String value) {
@@ -42,7 +45,6 @@ public class StringInstance extends VariableInstance {
     }
 
     /**
-     *
      * @param a
      */
     @Override
@@ -65,11 +67,17 @@ public class StringInstance extends VariableInstance {
         VariableDescriptor vd = this.getDescriptorOrDefaultDescriptor();
         if (vd instanceof StringDescriptor) {
             StringDescriptor sd = (StringDescriptor) vd;
-            if (!sd.isValueAllowed(value)){
+            if (!sd.isValueAllowed(value)) {
                 throw WegasErrorMessage.error("Value \"" + value + "\" not allowed !");
             }
         }
 
         this.val = value;
+    }
+
+
+    @Override
+    public Boolean containsAll(List<String> criterias) {
+        return Helper.insensitiveContainsAll(this.getValue(), criterias);
     }
 }

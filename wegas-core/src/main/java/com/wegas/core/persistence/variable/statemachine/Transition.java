@@ -8,22 +8,23 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.game.Script;
-import com.wegas.core.persistence.variable.Searchable;
-import com.wegas.core.rest.util.Views;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.*;
-//import javax.xml.bind.annotation.XmlRootElement;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Scripted;
+import com.wegas.core.persistence.variable.Searchable;
+import com.wegas.core.rest.util.Views;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+//import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 @Entity
@@ -31,11 +32,12 @@ import com.wegas.core.persistence.variable.Scripted;
 //@XmlRootElement
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "DialogueTransition", value = DialogueTransition.class)
+        @JsonSubTypes.Type(name = "DialogueTransition", value = DialogueTransition.class)
 })
 public class Transition extends AbstractEntity implements Searchable, Scripted {
 
     private static final long serialVersionUID = 1L;
+
     /**
      *
      */
@@ -65,10 +67,10 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
      */
     @Embedded
     @AttributeOverrides({
-        @AttributeOverride(name = "content", column
-            = @Column(name = "onTransition_content")),
-        @AttributeOverride(name = "lang", column
-            = @Column(name = "onTransition_language"))
+            @AttributeOverride(name = "content", column
+                    = @Column(name = "onTransition_content")),
+            @AttributeOverride(name = "lang", column
+                    = @Column(name = "onTransition_language"))
     })
     @JsonView(Views.EditorExtendedI.class)
     private Script preStateImpact;
@@ -78,15 +80,6 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
      */
     @Embedded
     private Script triggerCondition;
-
-    @Override
-    public Boolean contains(final String criteria) {
-        return this.containsAll(new ArrayList<String>() {
-            {
-                add(criteria);
-            }
-        });
-    }
 
     @Override
     public Boolean containsAll(final List<String> criterias) {
@@ -124,7 +117,6 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
     }
 
     /**
-     *
      * @return
      */
     public Long getNextStateId() {
@@ -132,7 +124,6 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
     }
 
     /**
-     *
      * @param nextStateId
      */
     public void setNextStateId(Long nextStateId) {
@@ -140,7 +131,6 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
     }
 
     /**
-     *
      * @return
      */
     public Script getPreStateImpact() {
@@ -148,7 +138,6 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
     }
 
     /**
-     *
      * @param preStateImpact
      */
     public void setPreStateImpact(Script preStateImpact) {
@@ -164,7 +153,6 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
     }
 
     /**
-     *
      * @return
      */
     public Script getTriggerCondition() {
@@ -172,7 +160,6 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
     }
 
     /**
-     *
      * @param triggerCondition
      */
     public void setTriggerCondition(Script triggerCondition) {

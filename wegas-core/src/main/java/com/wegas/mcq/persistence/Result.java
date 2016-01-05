@@ -7,22 +7,23 @@
  */
 package com.wegas.mcq.persistence;
 
-import com.wegas.core.Helper;
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.game.Script;
-import com.wegas.core.persistence.variable.Searchable;
-import com.wegas.core.rest.util.Views;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.NamedEntity;
+import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Scripted;
+import com.wegas.core.persistence.variable.Searchable;
+import com.wegas.core.rest.util.Views;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -137,15 +138,6 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     public Result(String name, String label) {
         this.name = name;
         this.label = label;
-    }
-
-    @Override
-    public Boolean contains(final String criteria) {
-        return this.containsAll(new ArrayList<String>() {
-            {
-                add(criteria);
-            }
-        });
     }
 
     @Override

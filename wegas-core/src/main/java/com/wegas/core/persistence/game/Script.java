@@ -7,15 +7,15 @@
  */
 package com.wegas.core.persistence.game;
 
-import com.wegas.core.Helper;
-import com.wegas.core.persistence.variable.Searchable;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.Embeddable;
-import javax.persistence.Lob;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.wegas.core.Helper;
+import com.wegas.core.persistence.variable.Searchable;
+
+import javax.persistence.Embeddable;
+import javax.persistence.Lob;
+import java.io.Serializable;
+import java.util.List;
 
 /**
  *
@@ -59,15 +59,6 @@ public class Script implements Serializable, Searchable {
     public Script(String language, String content) {
         this.lang = language;
         this.content = content;
-    }
-
-    @Override
-    public Boolean contains(final String criteria) {
-        return this.containsAll(new ArrayList<String>() {
-            {
-                add(criteria);
-            }
-        });
     }
 
     @Override
