@@ -59,10 +59,13 @@ YUI.add("treeview", function(Y) {
          * @returns {undefined}
          */
         bindUI: function() {
-            this.after("*:addChild", function(e) {
-                /* Selection is not updated if a child with selected attribute is added, force it. */
-                e.target._set(SELECTION, e.target.get(SELECTION));
-            });
+            //this.after("*:addChild", function(e) {
+                /* Selection is not updated if a child with selected attribute is added, force it. 
+                if (e.target.get(SELECTION)){
+                    e.target._set(SELECTION, e.target.get(SELECTION));
+                }*/
+            //    e.target._set(SELECTION, e.target.get(SELECTION));
+            //});
             this.after("addChild", function() {
                 this.get(BOUNDING_BOX).all("." + classNames.emptyMSG).remove(true);
             });
