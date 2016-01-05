@@ -299,4 +299,9 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
         return Helper.insensitiveContainsAll(this.getDescription(), criterias)
             || super.containsAll(criterias);
     }
+
+    public int getUnreadCount(Player player) {
+        QuestionInstance instance = this.getInstance(player);
+        return instance.getActive() && instance.getReplies().isEmpty() ? 1 : 0;
+    }
 }

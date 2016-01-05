@@ -95,16 +95,12 @@ public class StateMachineController {
             = (StateMachineDescriptor) variableDescriptorFacade.find(stateMachineDescriptorId);
         StateMachineInstance stateMachineInstance = stateMachineDescriptor.getInstance(player);
         State currentState = stateMachineInstance.getCurrentState();
-        Boolean valid = true;
         List<Script> impacts = new ArrayList<>();
 
         Transition transition = stateMachineFacade.findTransition(transitionId);
 
         if (transition instanceof DialogueTransition && currentState.equals(transition.getState())) {
-            if (transition.getTriggerCondition() != null && !transition.getTriggerCondition().getContent().equals("")) {
-                valid = (Boolean) scriptManager.eval(playerId, transition.getTriggerCondition(), stateMachineDescriptor);
-            }
-            if (valid) {
+            if (stateMachineFacade.isTransitionValid((DialogueTransition) transition, playerId, stateMachineDescriptor)) {
                 if (transition.getPreStateImpact() != null) {
                     impacts.add(transition.getPreStateImpact());
                 }

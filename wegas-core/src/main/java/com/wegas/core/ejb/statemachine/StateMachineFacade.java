@@ -364,4 +364,24 @@ public class StateMachineFacade {
         }
 
     }
+
+    public long countValidTransition(DialogueDescriptor dialogueDescriptor, Player currentPlayer) {
+        long count = 0;
+        DialogueState currentState = (DialogueState) dialogueDescriptor.getInstance(currentPlayer).getCurrentState();
+        for (Transition transition : currentState.getTransitions()) {
+            if (isTransitionValid((DialogueTransition) transition, count, dialogueDescriptor)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public boolean isTransitionValid(DialogueTransition transition, Long playerId, StateMachineDescriptor context) {
+        boolean valid = true;
+
+        if (transition.getTriggerCondition() != null && !transition.getTriggerCondition().getContent().equals("")) {
+            valid = (Boolean) scriptManager.eval(playerId, transition.getTriggerCondition(), context);
+        }
+        return valid;
+    }
 }
