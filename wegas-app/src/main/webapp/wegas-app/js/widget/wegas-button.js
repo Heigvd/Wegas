@@ -14,7 +14,7 @@ YUI.add("wegas-button", function(Y) {
 
     var CONTENTBOX = 'contentBox',
         BOUNDINGBOX = 'boundingBox',
-        Wegas = Y.Wegas, Button, ToggleButton;
+        Wegas = Y.Wegas, Button, ToggleButton, MarkAsUnread;
 
     /**
      * @name Y.Wegas.Button
@@ -154,9 +154,9 @@ YUI.add("wegas-button", function(Y) {
                 },
                 "DialogueDescriptor": function(descriptor, instance, resolve) {
                     var state = descriptor.getCurrentState();
-                      state.getAvailableActions(function(availableActions){
-                          resolve(availableActions.length > 0 ? 1 : 0);
-                      });
+                    state.getAvailableActions(function(availableActions) {
+                        resolve(availableActions.length > 0 ? 1 : 0);
+                    });
                 },
                 "QuestionDescriptor": function(descriptor, instance, resolve) {
                     if (instance.get("replies")) {
@@ -309,7 +309,7 @@ YUI.add("wegas-button", function(Y) {
                     label: "Unread count",
                     classFilter: ["ListDescriptor", "InboxDescriptor"]
                 }
-            }, 
+            },
             userCounters: {
                 type: "object",
                 value: {},
@@ -321,6 +321,28 @@ YUI.add("wegas-button", function(Y) {
         }
     });
     Y.Plugin.UnreadCount = UnreadCount;
+
+    MarkAsUnread = Y.Base.create("wegas-mark-as-unread", Y.Plugin.UnreadCount, [], {
+        setCounterValue: function(unreadCount) {
+            if (unreadCount > 0) {
+                if (this.get("host") instanceof Y.Node){
+                    this.get("host").addClass("unread");
+                } else if (this.get("host") instanceof Y.Widget){
+                    this.get("host").get("boundingBox").addClass("unread");
+                } else {
+                    Y.log("unread error...");  
+                }
+            }
+        }
+    }, {
+        NS: "MarkAsUnread",
+        NAME: "MarkAsUnread",
+        ATTRS: {
+        }
+    });
+    Y.Plugin.MarkAsUnread = MarkAsUnread;
+
+
 
     /**
      * @name Y.Wegas.OpenPageButton

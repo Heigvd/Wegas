@@ -25,6 +25,10 @@
     padding: 4px 20px;
 }
 
+.chooser-entity.unread {
+    font-weight: bolder;
+}
+
 .chooser-entity:hover {
     background: rgba(178, 210, 255, 0.1);
     box-shadow: 0px 0px 1px lightgray inset;
