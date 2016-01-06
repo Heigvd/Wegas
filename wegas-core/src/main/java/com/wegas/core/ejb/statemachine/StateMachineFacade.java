@@ -369,7 +369,7 @@ public class StateMachineFacade {
         long count = 0;
         DialogueState currentState = (DialogueState) dialogueDescriptor.getInstance(currentPlayer).getCurrentState();
         for (Transition transition : currentState.getTransitions()) {
-            if (isTransitionValid((DialogueTransition) transition, count, dialogueDescriptor)) {
+            if (isTransitionValid((DialogueTransition) transition, currentPlayer.getId(), dialogueDescriptor)) {
                 count++;
             }
         }
