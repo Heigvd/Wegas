@@ -154,6 +154,9 @@ YUI.add("wegas-button", function(Y) {
                 },
                 "DialogueDescriptor": function(descriptor, instance, resolve) {
                     var state = descriptor.getCurrentState();
+                    if (!instance.get("enabled")) {
+                        return false;
+                    }
                     state.getAvailableActions(function(availableActions) {
                         resolve(availableActions.length > 0 ? 1 : 0);
                     });
@@ -217,7 +220,7 @@ YUI.add("wegas-button", function(Y) {
             }
 
             if (unreadCount > 0) {                                              // Update the content
-                target.setContent("<span class='value'>" + unreadCount + "</span>");
+                target.setContent("<span class='value'>" + (this.get("displayValue") ? unreadCount : "") + "</span>");
             } else {
                 target.setContent("");
             }
@@ -310,6 +313,11 @@ YUI.add("wegas-button", function(Y) {
                     classFilter: ["ListDescriptor", "InboxDescriptor"]
                 }
             },
+            displayValue: {
+                type: "boolean",
+                optional: true,
+                value: true
+            },
             userCounters: {
                 type: "object",
                 value: {},
@@ -325,12 +333,12 @@ YUI.add("wegas-button", function(Y) {
     MarkAsUnread = Y.Base.create("wegas-mark-as-unread", Y.Plugin.UnreadCount, [], {
         setCounterValue: function(unreadCount) {
             if (unreadCount > 0) {
-                if (this.get("host") instanceof Y.Node){
+                if (this.get("host") instanceof Y.Node) {
                     this.get("host").addClass("unread");
-                } else if (this.get("host") instanceof Y.Widget){
+                } else if (this.get("host") instanceof Y.Widget) {
                     this.get("host").get("boundingBox").addClass("unread");
                 } else {
-                    Y.log("unread error...");  
+                    Y.log("unread error...");
                 }
             }
         }
