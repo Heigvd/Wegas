@@ -41,3 +41,14 @@
 .wegas-text-input .mce-tinymce > .mce-container-body > .mce-edit-area iframe, .wegas-review-evaluation-content .mce-tinymce > .mce-container-body > .mce-edit-area iframe {
     height:100% !important;
 }
+
+
+.wegas-text-input-editor .readonly {
+    color: rgb(84, 84, 84);
+    border: 1px solid;
+    word-wrap: break-word;
+    background-color: rgb(235, 235, 228);
+    border-color: rgb(169, 169, 169);
+    padding: 2px;
+    min-height: 1em;
+}
