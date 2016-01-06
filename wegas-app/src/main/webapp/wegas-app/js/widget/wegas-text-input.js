@@ -47,7 +47,8 @@ YUI.add("wegas-text-input", function(Y) {
             }
 
             if (this.get("readonly")) {
-                this.get("contentBox").one(".wegas-text-input-editor").setContent(this.getInitialContent());
+                this.get("contentBox").one(".wegas-text-input-editor").setContent("<div class=\"readonly\">" + this.getInitialContent() + "</div>");
+
             } else {
                 this.editor = new tinymce.Editor(this.get("contentBox").one(".wegas-text-input-editor").getDOMNode(), {
                     plugins: [
