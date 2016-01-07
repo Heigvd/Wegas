@@ -178,7 +178,6 @@ YUI.add('wegas-proggame-level', function(Y) {
             this.after('commandExecuted', this.consumeCommand, this); // idem
 
             this.idleHandler = Y.later(10000, this, this.doIdleAnimation, [], true); // While in idle mode, launch idle animation every 10 secs
-            Y.later(100, this, this.doIdleAnimation);
             cb.delegate(CLICK, function() { // End level screen: restart button
                 this.doNextLevel(function() {
                     this.resetUI();

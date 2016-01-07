@@ -35,8 +35,6 @@ YUI.add('wegas-proggame-display', function(Y) {
                 map = this.get("map"),
                 gridH = map.length,
                 gridW = map[0].length;
-            Crafty.stop();
-            Crafty("*").destroy(); // @HACK Destructor sometimes not called !
 
             this.get("boundingBox").setStyles({
                 marginTop: (Math.floor((15 - gridH) / 2) * 32) + "px",
@@ -80,8 +78,8 @@ YUI.add('wegas-proggame-display', function(Y) {
             }, this));
         },
         destructor: function() {
-            Crafty.stop();
             Crafty("*").destroy();
+            Crafty.stop(true);
             Crafty.unbind(COMMANDEXECUTED);
         },
         getEntity: function(id) {
@@ -121,7 +119,7 @@ YUI.add('wegas-proggame-display', function(Y) {
                         entity[command.type](command);
                         return;
                     } else {
-                        Y.log("No action defined for '" + command.type + "'", "error", "Wegas.ProggameDisplay");
+                        Y.log("No action defined for '" + command.type + "'", "warn", "Wegas.ProggameDisplay");
                         return;
                     }
                     break;
@@ -256,7 +254,7 @@ YUI.add('wegas-proggame-display', function(Y) {
                 .bind("TweenEnd", function() {
                     var col = this.hit("Character");
                     if (col) {
-                        if (this._currentReelId === "moveRight") {
+                        if (this.reel() === "moveRight") {
                             this.attr({
                                 x: this._x - 6
                             }).animate("gzRight");
