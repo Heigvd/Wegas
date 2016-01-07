@@ -16,5 +16,5 @@
 var lang = I18n._currentLocale;
 YUI.add("wegas-i18n-mcq", function(Y) {
     "use strict";
-    Y.log("MCQ " + lang + " translation laoded");
+    Y.log("MCQ " + lang + " translation loaded");
 }, 1.0, {requires: ["wegas-i18n-mcq-" + lang]});
