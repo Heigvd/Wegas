@@ -129,6 +129,7 @@ YUI.add("wegas-text-input", function(Y) {
                     this._initialContent = content;
                     this.editor.setContent(content);
                 }
+                this.updateCounters();
                 /*var tmceI = tinyMCE.get(this.get("contentBox").one(".wegas-text-input-editor"));
                  if (tmceI) {
                  tmceI.setContent(this.getInitialContent());
@@ -211,7 +212,7 @@ YUI.add("wegas-text-input", function(Y) {
         onSave: function() {
             var value = this.editor.getContent(),
                 valid, msg;
-            valid = true || this.updateCounters();
+            valid = true || this.updateCounters(); // Fixme do something... (prevent saving or not...)
             if (valid) {
                 msg = (this.save(value) ? "Saved" : "Something went wrong");
             } else {
@@ -327,7 +328,7 @@ YUI.add("wegas-text-input", function(Y) {
                 if (!allowedValues.find(function(item) {
                     return item === value;
                 }, this)) {
-                    this.showMessage("error", Y.Wegas.I18n.t('errors.lessThan', {value: value, min: min}));
+                    this.showMessage("error", Y.Wegas.I18n.t('errors.prohibited', {value: value, values: allowedValues}));
                     return false;
                 }
             }
