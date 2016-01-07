@@ -41,13 +41,34 @@
     min-height: 100px;
     padding-bottom: 1px;
 }
+.wegas-mcqtabview .yui3-tabview-list .yui3-tab {
+    width: calc(100% - 4px);
+    display: block;
+    border: none;
+    border-bottom: 1px solid #DBDBDB;
+    margin: 0;
+    cursor: pointer;
+    padding: 0;
+    max-width: none !important;
+}
+.wegas-mcqtabview .yui3-tabview-list .yui3-tab:hover {
+    background-color: rgb(245,245,245);
+}
+.wegas-mcqtabview .yui3-tabview-list .yui3-tab a:hover {
+    background: none;
+    box-shadow: none;
+}
+.wegas-mcqtabview .yui3-tabview-list .yui3-tab.yui3-tab-selected {
+    background: #d8d9dd;
+    border-top: none;
+}
 
 /**
  * Question 
  */
 
 .wegas-mcqtabview .mcq-question {
-    padding: 0 6px 6px 6px;
+    padding: 0 6px 10px 6px;
 }
 
 .wegas-mcqtabview .mcq-question-title {
@@ -66,55 +87,198 @@
 /*
  * Choice details
  */
-
+.wegas-mcqtabview .mcq-choices-vertical,
 .wegas-mcqtabview .mcq-choices {
-    /* padding : 10px; */
+    display: table;
+    box-sizing: border-box;
+    border-collapse: separate; 
+    border-spacing: 0 15px;
+    margin-top: -10px;
+    margin-bottom: -10px;
+    width: 100%;
+    text-align: left;
 }
-
 .wegas-mcqtabview .mcq-choices-horizontal {
-    width:100%;
+    display: table;
+    border-collapse: separate; 
+    border-spacing: 4px 0;
+    width: 100%;
     text-align: center;
 }
-.wegas-mcqtabview .mcq-choice{
-    margin: 0 10px 6px 10px;
+.wegas-mcqtabview .mcq-choices .mcq-choice-vertical,
+.wegas-mcqtabview .mcq-choices-horizontal .mcq-choice-horizontal,
+.wegas-mcqtabview .mcq-choices-horizontal .mcq-last-horizontal,
+.wegas-mcqtabview .mcq-choices-vertical .mcq-choice-vertical,
+.wegas-mcqtabview .mcq-choices-vertical .mcq-last-vertical {
+    display: table-row;
+    width: 100%;
+}
+.wegas-mcqtabview .mcq-choice-horizontal .mcq-choice:hover,
+.wegas-mcqtabview .mcq-choice-vertical:hover,
+.wegas-mcqtabview .mcq-choice-vertical .mcq-choice:hover {
+    background-color: rgb(245,245,245);
 }
 
-.wegas-mcqtabview .mcq-choice.spurned{
-    text-decoration: line-through;
+.wegas-mcqtabview .mcq-choices-vertical-checkbox,
+.wegas-mcqtabview .mcq-choices-vertical-submit,
+.wegas-mcqtabview .mcq-choice-vertical {
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+
+.wegas-mcqtabview .mcq-choice-horizontal .mcq-choice {
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+.wegas-mcqtabview .mcq-choices-vertical-checkbox,
+.wegas-mcqtabview .mcq-choices-vertical-submit {
+    position: relative;
+    display: table-cell;
+    text-align: center;
+    vertical-align: top;
+    white-space: nowrap;
+    border: 1px solid #d8d9dd;
+    border-left: none;
+    border-bottom-width: 3px;
+}
+.wegas-mcqtabview .mcq-choices-vertical-checkbox.nodescr,
+.wegas-mcqtabview .mcq-choices-vertical-submit.nodescr {
+    background: #d8d9dd;
+    vertical-align: baseline;
+}
+.wegas-mcqtabview .mcq-choices-vertical-finalsubmit {
+    display: table-cell;
+    text-align: center;
+    vertical-align: bottom;
+}
+.wegas-mcqtabview .mcq-choices-horizontal-finalsubmit {
+    display: table-cell;
+    text-align: right;
+    vertical-align: bottom;
+}
+.wegas-mcqtabview .mcq-choices-horizontal-finalsubmit .yui3-button {
+    margin-top: 20px;
+    margin-right: 5px;
+}
+.wegas-mcqtabview .mcq-choices-horizontal .mcq-choice {
+    display: table-cell;
+    width: 100%;
+    margin: 0 10px;
+    border: 1px solid #d8d9dd;
+    border-bottom-width: 3px;
+}
+/* .wegas-mcqtabview .mcq-choice-vertical .mcq-choice-namedescr, */
+.wegas-mcqtabview .mcq-choice-vertical .mcq-choice {
+    display: table-cell;
+    width: 100%;
+    border: 1px solid #d8d9dd;
+    border-right: none;
+    border-bottom-width: 3px;
+}
+.wegas-mcqtabview .mcq-choice-name {
+    line-height: 35px;
+    background: #d8d9dd;
+}
+.wegas-mcqtabview .mcq-choices-vertical-submit.spurned,
+.wegas-mcqtabview .mcq-choices-vertical-checkbox.spurned,
+.wegas-mcqtabview .mcq-choice.spurned {
+    background: #eeeeee;
+    color: #aaa;
+}
+.wegas-mcqtabview .mcq-choices-vertical-submit.spurned .mcq-choice-name,
+.wegas-mcqtabview .mcq-choices-vertical-checkbox.spurned .mcq-choice-name,
+.wegas-mcqtabview .mcq-choices-vertical-checkbox.spurned.nodescr,
+.wegas-mcqtabview .mcq-choices-vertical-submit.spurned.nodescr,
+.wegas-mcqtabview .mcq-choice.spurned .mcq-choice-name {
+    background: #d0d0d0;
     color: #999;
 }
-
-.wegas-mcqtabview .mcq-choice-name {
+.wegas-mcqtabview .mcq-choice.spurned .mcq-choice-description {
+    color: #aaa;
+}
+.wegas-mcqtabview .mcq-choice-vertical .mcq-choice-name,
+.wegas-mcqtabview .mcq-choice-vertical .mcq-choice-description {
+    padding-left: 10px;
+    padding-right: 20px;
+    min-height: 24px;
+}
+.wegas-mcqtabview .mcq-choice-description {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    color: #333333;
+}
+.wegas-mcqtabview .mcq-question button {
+    display: inline-block;
+    position: relative;
+    background: #69bd7f;
+    text-transform: uppercase;
+    height: 24px;
+    margin: 2px 5px 4px 0;
+    font-size: 11px;
     font-weight: bold;
+    padding: 4px 8px 4px 24px;
+    border-radius: 6px;
+    color: white;
+    transition: .3s;
 }
-
-.wegas-mcqtabview .mcq-question .mcq-choice button {
-    float: right;
-    margin-right: 10px;
+.wegas-mcqtabview .mcq-question button:before {
+    content:"\f00c";
+    font-family:"FontAwesome";
+    /*display:block;*/
+    position:absolute;
+    width:24px;
+    height:24px;
+    text-align:center;
+    line-height:24px;
+    font-size:11px;
+    top:0px;
+    left:0px;
 }
-
-.wegas-mcqtabview .mcq-choice .numberOfReplies{
-    float:right;
-    margin-top: 5px;
-    color: #757575;
+.wegas-mcqtabview .mcq-question button:disabled {
+    visibility: hidden;
 }
-
-.wegas-mcqtabview .mcq-choices .mcq-checkbox { /* For checkboxes and radio boxes presented vertically */
-    float: right;
-    margin-right: 30px;
-    width:15px;
-    height:15px;
+.wegas-mcqtabview .mcq-question button:hover {
+    background:#4f8c5f;
+    color: rgb(255, 255, 204);
 }
-
+.wegas-mcqtabview .mcq-choices-vertical-submit .numberOfReplies {
+    color: #999;
+    padding: 0 5px 7px;
+    display: inline-block;
+    vertical-align: bottom;
+}
+.wegas-mcqtabview .mcq-choices .mcq-checkbox-container {
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+}
+.wegas-mcqtabview .mcq-choices-vertical .mcq-checkbox-container {
+    position: absolute;
+    width: 100%;
+    bottom: 3px;
+}
+.wegas-mcqtabview .mcq-choices-vertical .mcq-checkbox { /* For checkboxes and radio boxes presented vertically */
+    zoom: 1.3;
+    cursor: pointer;
+}
 .wegas-mcqtabview .mcq-choices-horizontal .mcq-checkbox { /* For checkboxes and radio boxes presented horizontally (tabular) */
     text-align: center;
-    width:15px;
-    height:15px;
     margin-top: 5px;
+    zoom: 1.3;
+    cursor: pointer;
 }
+
+
 /**
  * Choice replies
  */
+.wegas-mcqtabview .mcq-replies-section {
+    margin-top: 15px;
+}
 .wegas-mcqtabview .mcq-replies {
     /* padding: 0 10px; */
 }
@@ -126,15 +290,15 @@
     border-bottom: 1px solid lightgray;
 }
 
-.wegas-mcqtabview .mcq-replies .mcq-reply:first-child{
+.wegas-mcqtabview .mcq-replies .mcq-reply:first-child {
     color: black;
     font-style: normal;
 }
-.wegas-mcqtabview .mcq-replies .mcq-reply:last-child{
+.wegas-mcqtabview .mcq-replies .mcq-reply:last-child {
     border-bottom: none;
 }
 
-.wegas-mcqtabview .mcq-reply{
+.wegas-mcqtabview .mcq-reply {
     margin: 0 10px 6px 10px;
     color: #999;
     font-style: italic;

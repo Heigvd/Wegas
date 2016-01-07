@@ -33,8 +33,8 @@ import java.util.Map.Entry;
  */
 @Stateless
 @Path("GameModel/{gameModelId : [0-9]+}/Page")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
+@Consumes("application/json; charset=UTF-8")
+@Produces("application/json; charset=UTF-8")
 public class PageController {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(PageController.class);

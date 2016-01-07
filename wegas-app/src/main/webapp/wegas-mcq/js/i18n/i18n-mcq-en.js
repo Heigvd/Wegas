@@ -15,11 +15,12 @@
 YUI.add("wegas-i18n-mcq-en", function(Y) {
     Y.Wegas.I18n.register("wegas-i18n-mcq", "en", {
         mcq: {
-            result: "result",
+            result: "Result",
             empty: "No questions available yet",
             submit: "submit",
-            unanswered : "unanswered",
-            notDone: "not done"
+            unanswered : "",    // Customizable per scenario
+            notDone: "",        // Customizable per scenario
+            noReply: "Please select an answer first."
         }
     });
 });
