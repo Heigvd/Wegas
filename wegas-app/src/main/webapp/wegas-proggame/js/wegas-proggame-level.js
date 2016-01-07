@@ -70,7 +70,7 @@ YUI.add('wegas-proggame-level', function(Y) {
             '</div>',
         // *** Lifecycle Methods *** //
         initializer: function() {
-            this.handlers = {};
+            this.handlers = [];
             this.currentBreakpointLine = -1;
             this.currentBreakpointStep = -1;
             this.watches = [];
@@ -120,7 +120,7 @@ YUI.add('wegas-proggame-level', function(Y) {
             var cb = this.get(CONTENTBOX),
                 scriptFacade = Wegas.Facade.Variable.script;
             this.runButton.on(CLICK, this.onRunClick, this); // Run button click event
-            this.handlers.shiftEnter = Y.one("body").on("key", this.onRunClick, "enter+shift", this); // Shift + enter event
+            this.handlers.push(Y.one("body").on("key", this.onRunClick, "enter+shift", this)); // Shift + enter event
 
             this.stopButton.on(CLICK, function() {
                 this.set(STATE, IDLE);
@@ -134,7 +134,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                     case "breaking":
                         this.runButton.set(LABEL, DEBUG_BUTTON_LABEL);
                         break;
-                    case IDLE :
+                    case IDLE:
                         this.runButton.set(LABEL, RUN_BUTTON_LABEL);
                         this.commandsStack = null;
                         this.setCurrentLine(null);
@@ -165,9 +165,9 @@ YUI.add('wegas-proggame-level', function(Y) {
             }
             currentLevel = scriptFacade.localEval("Variable.find(gameModel,\"currentLevel\").getValue(self)");
 
-            cb.one(".proggame-help").on(CLICK, function() { // When help button is clicked,
+            this.handlers.push(cb.one(".proggame-help").on(CLICK, function() { // When help button is clicked,
                 this.showMessage(INFO, this.get("intro")); // redisplay the introduction
-            }, this);
+            }, this));
             //this.plug(Y.Plugin.OpenPageAction, {//                              // Whenever level is finished,
             //    subpageId: 2,
             //    targetEvent: "gameWon",
@@ -208,7 +208,7 @@ YUI.add('wegas-proggame-level', function(Y) {
             this.debugTabView.destroy();
             this.apiTabView.destroy();
             this.idleHandler.cancel();
-            Y.Object.each(this.handlers, function(h) {
+            Y.Array.each(this.handlers, function(h) {
                 h.detach();
             });
             this.editorTabView.destroy();
@@ -696,24 +696,38 @@ YUI.add('wegas-proggame-level', function(Y) {
          * @override
          */
         showMessage: function(level, message) {
-            var target = this.get("boundingBox").one(".proggame-help").get("region");
-            var panel = this.getPanel({
-                content: "<div>" + message + "</div><button class='yui3-button proggame-button'>Continuer</button>"
+            var BOUNDING_BOX = "boundingBox",
+                target = this.get(BOUNDING_BOX).one(".proggame-help").get("region"),
+                panel = this.getPanel({
+                    content: "<div>" + message + "</div><button class='yui3-button proggame-button'>Continuer</button>"
+                });
+
+            panel.get(BOUNDING_BOX).setStyles({
+                transformOrigin: "top left",
+                transform: "scale(0.01)",
+                opacity: 0.2,
+                top: Math.round(target.top) + 10 + "px",
+                left: Math.round(target.left) + 10 + "px"
+            }).transition({
+                duration: 0.3,
+                top: panel.get("x") + "px", // panel default value
+                left: panel.get("y") + "px",
+                transform: "scale(1)",
+                opacity: 1
             });
+
             Y.later(50, this, function() { // Hide panel anywhere user clicks
                 Y.one("body").once(CLICK, function() {
-                    this.show();
-                    panel.get("boundingBox").setStyles({
-                        transformOrigin: "top left"
-                    }).transition({
-                        duration: 0.7,
+                    //this.show();
+                    panel.get(BOUNDING_BOX).transition({
+                        duration: 0.3,
                         top: Math.round(target.top) + 10 + "px",
                         left: Math.round(target.left) + 10 + "px",
                         transform: "scale(0.01)",
                         opacity: 0.2
                     }, Y.bind(function() {
                         panel.destroy();
-                        this.show();
+                        //this.show();
                         if ("" + this.get("root").get("@pageId") === "11") {
                             this.showTutorial();
                         }
@@ -732,7 +746,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                 height: 709,
                 buttons: {}
             })).render();
-            this.hide();
+            // this.hide();
             panel.get("boundingBox").addClass("proggame-panel");
             return panel;
         },

@@ -222,6 +222,10 @@ html, .editor-preview {
     font-size: 1.2em !important;
 }
 
+.yui3-skin-sam .levelselection-hidden {
+    display: none;
+}
+
 .yui3-skin-sam .proggame-levelselection-button:hover, .yui3-skin-sam .proggame-button:hover, .yui3-skin-sam .proggame-button-stage:hover {
     opacity: 1;
 }
@@ -700,12 +704,12 @@ html, .editor-preview {
 }
 
 .proggame-panel .yui3-widget-bd {
-    padding: 170px 129px;
+    padding: 70px 100px;
     text-align: center;
     font-size: 1.4em;
     line-height: 1.3em;
     margin: 25px 20px 0 0;
-    height: 295px !important;
+    height: 495px !important;
 }
 
 .proggame-panel button {
@@ -845,6 +849,16 @@ html, .editor-preview {
 .proggame-levelend-star-3 {
     top: 182px;
     left: 494px;
+}
+
+.wegas-proggame-level .wegas-proggame-level-content .yui3-resize-handle-t {
+    width: 100%;
+    background-color: transparent;
+    cursor: ns-resize;
+}
+
+.wegas-proggame-level .wegas-proggame-level-content .yui3-resize-handle-inner {
+    display: block;
 }
 
 .proggame-levelend-money {

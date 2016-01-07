@@ -855,7 +855,7 @@
             {
                 "label": "Level 5: Procédures <em>(Pas encore disponible)</em>",
                 "type": "Button",
-                "cssClass": "proggame-levelselection-button",
+                "cssClass": "proggame-levelselection-button levelselection-hidden",
                 "plugins": [
                     {
                         "fn": "ConditionalDisable",
@@ -904,7 +904,7 @@
             {
                 "label": "Level 6: Tableaux <em>(Pas encore disponible)</em>",
                 "type": "Button",
-                "cssClass": "proggame-levelselection-button",
+                "cssClass": "proggame-levelselection-button levelselection-hidden",
                 "plugins": [
                     {
                         "fn": "ConditionalDisable",
@@ -953,7 +953,7 @@
             {
                 "label": "Level 7: Récursivité <em>(Pas encore disponible)</em>",
                 "type": "Button",
-                "cssClass": "proggame-levelselection-button",
+                "cssClass": "proggame-levelselection-button levelselection-hidden",
                 "plugins": [
                     {
                         "fn": "ConditionalDisable",
