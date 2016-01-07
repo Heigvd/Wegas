@@ -39,7 +39,7 @@ YUI().use(function(Y) {
         group.base = YUI_config.Wegas.base + group.root; // Set up path
         group.comboBase = YUI_config.Wegas.comboBase; // Set up combo path
         loadModules(group);
-    //YUI.applyConfig(YUI_config);
+        //YUI.applyConfig(YUI_config);
     };
     YUI.addGroup("wegas", {
         base: "./wegas-app/",
@@ -172,7 +172,7 @@ YUI().use(function(Y) {
             "wegas-button": {
                 path: "js/widget/wegas-button-min.js",
                 requires: ["wegas-widget", "wegas-plugin", "button", "wegas-tooltip", "wegas-button-css"],
-                ws_provides: "Button"
+                ws_provides: ["Button", "UnreadCount", "MarkAsUnread"]
             },
             "wegas-button-css": {
                 type: CSS
@@ -368,7 +368,7 @@ YUI().use(function(Y) {
             },
             "wegas-entitychooser": {
                 path: "js/widget/wegas-entitychooser-min.js",
-                requires: ["wegas-entitychoosercss"],
+                requires: ["wegas-entitychoosercss", "wegas-button"],
                 ws_provides: ["EntityChooser", "EntityChooser2"]
             },
             "wegas-entitychoosercss": {
@@ -914,12 +914,12 @@ YUI().use(function(Y) {
                     "wegas-panel", "wegas-simpledialogue"],
                 ws_provides: "CEPFolder"
             }
-        /* Chess */
-        //"wegas-chess": {
-        //    path: "wegas-games/wegas-chess/js/wegas-chess-min.js",
-        //    ws_provides: "ChessBoard",
-        //    requires: "transition"
-        //}
+            /* Chess */
+            //"wegas-chess": {
+            //    path: "wegas-games/wegas-chess/js/wegas-chess-min.js",
+            //    ws_provides: "ChessBoard",
+            //    requires: "transition"
+            //}
         }
     });
     /* Other libraries */

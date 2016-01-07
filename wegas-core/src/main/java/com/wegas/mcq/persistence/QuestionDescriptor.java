@@ -224,7 +224,10 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      */
     public boolean isReplied(Player p) {
         QuestionInstance instance = (QuestionInstance) this.getInstance(p);
-        return !instance.getReplies().isEmpty();
+        if (this.getCbx())
+            return instance.getValidated();
+        else
+            return !instance.getReplies().isEmpty();
     }
 
     /**
@@ -298,5 +301,10 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     public Boolean containsAll(List<String> criterias) {
         return Helper.insensitiveContainsAll(this.getDescription(), criterias)
             || super.containsAll(criterias);
+    }
+
+    public int getUnreadCount(Player player) {
+        QuestionInstance instance = this.getInstance(player);
+        return instance.getActive() && instance.getReplies().isEmpty() ? 1 : 0;
     }
 }

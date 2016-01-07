@@ -14,11 +14,12 @@
 YUI.add("wegas-i18n-mcq-fr", function(Y) {
     Y.Wegas.I18n.register("wegas-i18n-mcq", "fr", {
         mcq: {
-            result: "résultat",
-            empty: "Aucune questions disponibles actuellement",
+            result: "Résultat",
+            empty: "Aucune question disponible actuellement",
             submit: "valider",
-            unanswered : "non répondu",
-            notDone: "non effectué"
+            unanswered : "",    // Customizable per scenario
+            notDone: "",        // Customizable per scenario
+            noReply: "Merci de d'abord sélectionner une réponse&thinsp;!"
         }
     });
 });

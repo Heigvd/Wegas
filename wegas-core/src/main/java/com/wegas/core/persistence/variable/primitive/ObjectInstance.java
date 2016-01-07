@@ -63,6 +63,10 @@ public class ObjectInstance extends VariableInstance {
         }
     }
 
+    public boolean hasProperty(String property){
+        return this.properties.containsKey(property);
+    }
+
     /**
      * @return the properties
      */

@@ -867,8 +867,8 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                                 }, {
                                     type: "AddEntityChildButton",
                                     label: "String",
-                                    targetClass: "StringDescriptor",
-                                    cssClass: "wegas-advanced-feature"
+                                    targetClass: "StringDescriptor"
+                                    //cssClass: "wegas-advanced-feature"
                                 }, {
                                     type: "AddEntityChildButton",
                                     label: "Boolean",

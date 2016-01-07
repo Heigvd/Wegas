@@ -21,9 +21,9 @@ YUI.add("wegas-parent", function(Y) {
     function Parent() {
         Y.Wegas.Widget.apply(this, arguments);
         /* When a child is going to be removed, hide its overlay */
-        this.on("removeChild", function(e) {
+        /*this.on("removeChild", function(e) {
             e.child.hideAllOverlay();
-        });
+        });*/
         /*Check for Y.WidgetParent*/
         if (!this._add) {
             Y.log("Extension 'Y.WidgetParent' must be defined before Y.Wegas.Parent in " + this.constructor.NAME,
@@ -62,11 +62,6 @@ YUI.add("wegas-parent", function(Y) {
         },
         getEditorLabel: function() {
             return;
-        },
-        hideAllChildrenOverlay: function() {
-            this.each(function(child) {
-                child.hideAllOverlay();
-            });
         }
     }, true);
     Y.mix(Parent, {

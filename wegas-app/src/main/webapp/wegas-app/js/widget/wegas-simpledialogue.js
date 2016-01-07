@@ -65,6 +65,13 @@ YUI.add("wegas-simpledialogue", function(Y) {
             if (!availableActions || this.get("readonly")) {
                 return;
             }
+
+            if (availableActions.length === 0){
+                this.get(CONTENTBOX).one('.dialogue .response').addClass("empty");
+            } else {
+                this.get(CONTENTBOX).one('.dialogue .response').removeClass("empty");
+            }
+
             for (i = 0; i < availableActions.length; i++) {
                 responseNode.insert('<li response_no="' + i + '">' + availableActions[i].get('actionText') + '</li>');
             }
