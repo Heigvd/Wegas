@@ -24,7 +24,16 @@ YUI.add('wegas-panel', function(Y) {
                 };
             },
             bindUI: function() {
-                this.windowHandler = Y.on("windowresize", Y.bind(this.syncUI, this));
+                this.windowHandler = Y.after("windowresize", Y.bind(function() {
+                    /* 
+                    @HACK
+                    Hide - sync - show 
+                    Avoid Widget modal to stack it again. As it will destroy it only once.
+                     */
+                    this.hide();
+                    this.syncUI();
+                    this.show();
+                }, this));
             },
             syncUI: function() {
                 this.set("content", this.get("content"));
