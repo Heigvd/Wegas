@@ -731,6 +731,22 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             return acc;
 
         },
+        getChildByLabel: function(label){
+             var needle,
+                filterFn = function(it) {
+                    if (it.get("label") === label) {
+                        needle = it;
+                        return false;
+                    } else if (it instanceof persistence.ListDescriptor) {
+                        return Y.Array.every(it.get(ITEMS), filterFn);
+                    } else {
+                        return true;
+                    }
+                };
+            Y.Array.every(this.get(ITEMS), filterFn);
+            return needle;
+
+        },
         find: function(id) {
             return this.depthFirstSearch(id);
         },
