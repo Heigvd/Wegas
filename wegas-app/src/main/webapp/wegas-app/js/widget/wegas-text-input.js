@@ -375,14 +375,27 @@ YUI.add("wegas-text-input", function(Y) {
                 CB = this.get("contentBox"),
                 value = inst.get("value"),
                 readonly = this.get("readonly.evaluated"),
-                input, select, option;
+                input, select, option, i;
             if (allowedValues && allowedValues.length > 0) {
-                select = CB.one("select");
-                select.set("disabled", readonly);
-                if (this._initialValue !== value) {
-                    this._initialValue = value;
-                    option = select.one("option[value='" + value + "']");
-                    option && option.setAttribute("selected");
+                if (readonly && this.get("displayChoicesWhenReadonly")) {
+                    CB.one("select").addClass("hidden");
+                    input = CB.one(".wegas-input-text");
+                    select = ["<ul>"];
+                    for (i in allowedValues){
+                        option = allowedValues[i];;
+                        select.push("<li class=\"", (value === option ? "selected" : "unselected") + "\">", option, "</li>");
+                    }
+                    select.push("</ul>");
+                    
+                    input.append(select.join(""));
+                } else {
+                    select = CB.one("select");
+                    select.set("disabled", readonly);
+                    if (this._initialValue !== value) {
+                        this._initialValue = value;
+                        option = select.one("option[value='" + value + "']");
+                        option && option.setAttribute("selected");
+                    }
                 }
             } else {
                 input = CB.one("input");
@@ -434,6 +447,16 @@ YUI.add("wegas-text-input", function(Y) {
                     _type: "variableselect",
                     label: "variable",
                     classFilter: ["StringDescriptor"]
+                }
+            },
+            displayChoicesWhenReadonly: {
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                type: "boolean",
+                value: false,
+                optional: false,
+                _inputex: {
+                    _type: "script",
+                    expects: "condition"
                 }
             },
             readonly: {
