@@ -8,7 +8,9 @@ var gulp = require('gulp'),
     rename = require("gulp-rename"),
     cache = require("gulp-cache"),
     replace = require("gulp-replace"),
-    rootPath = "/";
+    autoprefixer = require("gulp-autoprefixer"),
+    rootPath = "/",
+    BROWSERLIST = ['last 2 versions', '> 1%', 'Firefox ESR', 'Firefox >= 18'];
 
 gulp.task('default', ["submodule", "compress-css", "compress-js"], function() {
     "use strict";
@@ -27,19 +29,28 @@ gulp.task("submodule", function() {
     "use strict";
     return gulp.src([
         'target/Wegas/*/gulpfile.js'
-    ], { read: false })
-    .pipe(chug());
+    ], {
+        read: false
+    })
+        .pipe(chug());
 });
 gulp.task("compress-css", ["submodule"], function() {
     "use strict";
     return gulp.src(["target/Wegas/**/*.css",
-            "!target/Wegas/lib/**",
-            "!target/Wegas/wegas-stats/**/*.css",
-            "!**/*-min.css"],
-        {base: "target/Wegas"})
+        "!target/Wegas/lib/**",
+        "!target/Wegas/wegas-stats/**/*.css",
+        "!**/*-min.css"],
+        {
+            base: "target/Wegas"
+        })
         .pipe(sourcemaps.init())
+        .pipe(autoprefixer({
+            browsers: BROWSERLIST
+        }))
         .pipe(cache(minifycss()))
-        .pipe(rename({suffix: "-min"}))
+        .pipe(rename({
+            suffix: "-min"
+        }))
         .pipe(sourcemaps.write("map"))
 
         .pipe(gulp.dest("target/Wegas"));
@@ -47,16 +58,20 @@ gulp.task("compress-css", ["submodule"], function() {
 gulp.task("compress-js", ["submodule"], function() {
     "use strict";
     return gulp.src(["target/Wegas/**/*.js",
-            "!target/Wegas/lib/**",
-            "!**/*-min.js",
-            "!**/gulpfile.js",
-            "!target/Wegas/wegas-lobby/**/*.js",
-            "!target/Wegas/wegas-stats/**/*.js",
-            "!target/Wegas/scripts/*.js"],
-        {base: "target/Wegas"})
+        "!target/Wegas/lib/**",
+        "!**/*-min.js",
+        "!**/gulpfile.js",
+        "!target/Wegas/wegas-lobby/**/*.js",
+        "!target/Wegas/wegas-stats/**/*.js",
+        "!target/Wegas/scripts/*.js"],
+        {
+            base: "target/Wegas"
+        })
         .pipe(sourcemaps.init())
         .pipe(cache(uglify()))
-        .pipe(rename({suffix: "-min"}))
+        .pipe(rename({
+            suffix: "-min"
+        }))
         .pipe(sourcemaps.write("map",
             {
                 includeContent: false,
