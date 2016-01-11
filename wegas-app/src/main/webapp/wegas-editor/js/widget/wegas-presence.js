@@ -46,9 +46,10 @@ YUI.add('wegas-presence', function(Y) {
      * @class
      */
     Chat = Y.Base.create("wegas-editorchat", Y.Widget, [Y.WidgetChild], {
-        CONTENT_TEMPLATE: "<div><div class='conversation'>" +
+        BOUNDING_TEMPLATE: "<div><div class='conversation'>" +
             "<div class='msgs'></div><ul class='users'></ul><div style='clear: both'></div><textarea  rows='3' class='input' placeholder='Your message'></textarea></div>" +
             "<div class='editorchat-footer'><i class='chat-icon fa fa-comments'></i> <span class='pusher-status'></span><span class='count'></span><span class='user-list'></span></div></div>",
+        CONTENT_TEMPLATE: null,
         initializer: function() {
             this.closed = true;
             this._handlers = [];
@@ -99,6 +100,7 @@ YUI.add('wegas-presence', function(Y) {
                 this.closed = !this.closed;
                 this.get(CONTENTBOX).one(".conversation").toggleClass("closed", this.closed);
                 this.get(CONTENTBOX).removeClass("new-message");
+                this.get(CONTENTBOX).all("span").removeClass("new-message");
             }, this));
         },
         sendInput: function() {
@@ -106,10 +108,10 @@ YUI.add('wegas-presence', function(Y) {
             if (val && pagePresence.subscribed) {
                 pagePresence.trigger("client-message", {
                     data: val,
-                    sender: pagePresence.members.me.info.name
+                    sender: pagePresence.members.me.id
                 });
                 this.onMessage({
-                    sender: "me",
+                    sender: pagePresence.members.me.id,
                     data: val
                 });
             }
@@ -155,11 +157,11 @@ YUI.add('wegas-presence', function(Y) {
             pagePresence.members.each(function(m) {
                 if (count < LIMIT && +m.id !== +pagePresence.members.me.id) {
                     initials = m.info.name.match(/\b\w/g).join("");
-                    uList.append("<span>" + initials + "</span>");
+                    uList.append("<span class='u" + m.id + "'>" + initials + "</span>");
                     count += 1;
                 }
             });
-            if(count === LIMIT){
+            if (count === LIMIT) {
                 uList.append("<span>...</span>");
             }
         },
@@ -175,15 +177,18 @@ YUI.add('wegas-presence', function(Y) {
             }
         },
         onMessage: function(data) {
-
+            var sender = ((pagePresence.members.me.id === data.sender) ? "me" : pagePresence.members.get(data.sender).info.name);
             if (this.lastNode && this.lastNode.one(".sender") &&
-                this.lastNode.one(".sender").get("text") === data.sender) {
+                this.lastNode.one(".sender").get("text") === sender) {
                 this.lastNode.append('<div class="content">' + data.data + '</div>');
                 this.addToChat(this.lastNode);
             } else {
-                this.addToChat('<div class="msg ' + (data.sender === "me" ? "me" : "") +
-                    '"><div class="sender">' + data.sender + '</div>' +
+                this.addToChat('<div class="msg ' + (sender === "me" ? "me" : "") +
+                    '"><div class="sender">' + sender + '</div>' +
                     '<div class="content">' + data.data + '</div></div>');
+            }
+            if (this.closed) {
+                this.get(CONTENTBOX).all(".u" + data.sender).addClass("new-message");
             }
         },
         notification: function(not) {

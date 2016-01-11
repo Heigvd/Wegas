@@ -90,10 +90,17 @@
     resize: none
 }
 
-.yui3-skin-sam .yui3-wegas-editorchat .new-message .chat-icon {
+.yui3-skin-sam .yui3-wegas-editorchat.new-message .chat-icon {
     color: orange;
     transform-origin: 50% 0%;
-    animation: msg-icon-pulse 1.5s 1;
+    animation: msg-icon-pulse 1.2s 1;
+}
+
+.yui3-skin-sam .yui3-wegas-editorchat .editorchat-footer .user-list .new-message {
+    transform-origin: 50% 0%;
+    color: orange;
+    border-color: orange;
+    animation: user-pulse 1.2s 1;
 }
 
 .yui3-skin-sam .yui3-wegas-editorchat .editorchat-footer .pusher-status {
@@ -106,6 +113,7 @@
 }
 
 .yui3-skin-sam .yui3-wegas-editorchat .editorchat-footer .user-list > span {
+    display: inline-block;
     border: 1px solid white;
     margin: 0px 2px;
     padding: 1px 2px;
@@ -117,5 +125,14 @@
     }
     50% {
         transform: scale(5);
+    }
+}
+
+@keyframes user-pulse {
+    50% {
+        transform: scale(2);
+    }
+    0%, 100% {
+        transform: scale(1);
     }
 }
