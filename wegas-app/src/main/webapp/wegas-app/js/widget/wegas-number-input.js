@@ -20,6 +20,9 @@ YUI.add("wegas-number-input", function(Y) {
             this.handlers = [];
             this._initialValue = undefined;
             this._previousValue = undefined;
+            this.publish("save", {
+                emitFacade: true
+            });
         },
         destructor: function() {
             Y.Array.each(this.handlers, function(h) {
@@ -77,6 +80,10 @@ YUI.add("wegas-number-input", function(Y) {
                             on: {
                                 success: Y.bind(function() {
                                     cb.removeClass("loading");
+                                    this.fire("save", {
+                                        descriptor: desc,
+                                        value: value
+                                    });
                                 }, this),
                                 failure: Y.bind(function() {
                                     cb.removeClass("loading");

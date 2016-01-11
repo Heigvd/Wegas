@@ -309,3 +309,20 @@
 .wegas-mcqtabview .mcq-reply-title {
     font-weight: bold;
 }
+
+
+
+/* Corrections for new question layout (Jan. 2016) */
+.wegas-mcqtabview .mcq-question .yui3-button {
+    vertical-align: middle;
+}
+.wegas-mcqtabview .mcq-choices .mcq-checkbox-container {
+    position: relative;
+    bottom: -2px;
+}
+
+.wegas-mcqtabview .numberOfReplies {
+    line-height: normal !important;
+}
+/* EOF  Corrections for new question layout (Jan. 2016) */
+

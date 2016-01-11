@@ -162,8 +162,12 @@ YUI.add("wegas-button", function(Y) {
                     });
                 },
                 "QuestionDescriptor": function(descriptor, instance, resolve) {
-                    if (instance.get("replies")) {
-                        resolve(instance.get("replies").length === 0 && instance.get("active") ? 1 : 0); // only count if it is active
+                    if (descriptor.get("cbx")) {
+                        resolve(instance.get("validated") ? 0 : 1);
+                    } else {
+                        if (instance.get("replies")) {
+                            resolve(instance.get("replies").length === 0 && instance.get("active") ? 1 : 0); // only count if it is active
+                        }
                     }
                     resolve(0);
                 },

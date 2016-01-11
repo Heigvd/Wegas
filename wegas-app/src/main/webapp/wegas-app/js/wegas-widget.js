@@ -25,7 +25,7 @@ YUI.add("wegas-widget", function(Y) {
         this.before("destroy", this.hideAllOverlay);
         /* When a child is going to be removed, hide its overlay */
         this.on("removeChild", function(e) {
-            e.child.hideAllOverlay();
+            e.child.hideAllOverlay && e.child.hideAllOverlay();
         });
         this.after("render", function() {
             this.overlayCounter = 0;

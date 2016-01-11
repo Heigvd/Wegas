@@ -11,7 +11,7 @@
  */
 YUI.add("wegas-text-input", function(Y) {
     "use strict";
-    var CONTENTBOX = "contentBox", TextInput, StringInput, SelectInput,
+    var CONTENTBOX = "contentBox", TextInput, StringInput,
         Wegas = Y.Wegas;
     /**
      * @name Y.Wegas.TextInput
@@ -35,6 +35,9 @@ YUI.add("wegas-text-input", function(Y) {
             "</div>",
         initializer: function() {
             this.handlers = [];
+            this.publish("save", {
+                emitFacade: true
+            });
         },
         /**
          * @function
@@ -123,18 +126,24 @@ YUI.add("wegas-text-input", function(Y) {
             this.setContent();
         },
         setContent: function() {
-            Y.later(100, this, function() {
-                var content = this.getInitialContent();
-                if (content != this._initialContent) {
-                    this._initialContent = content;
-                    this.editor.setContent(content);
-                }
-                /*var tmceI = tinyMCE.get(this.get("contentBox").one(".wegas-text-input-editor"));
-                 if (tmceI) {
-                 tmceI.setContent(this.getInitialContent());
-                 }*/
 
-            });
+            if (this.get("readonly")) {
+                this.get("contentBox").one(".wegas-text-input-editor").setContent("<div class=\"readonly\">" + this.getInitialContent() + "</div>");
+            } else {
+                Y.later(100, this, function() {
+                    var content = this.getInitialContent();
+                    if (content != this._initialContent) {
+                        this._initialContent = content;
+                        this.editor.setContent(content);
+                    }
+                    this.updateCounters();
+                    /*var tmceI = tinyMCE.get(this.get("contentBox").one(".wegas-text-input-editor"));
+                     if (tmceI) {
+                     tmceI.setContent(this.getInitialContent());
+                     }*/
+
+                });
+            }
         },
         getInitialContent: function() {
             return this.get("variable.evaluated").getInstance().get("value");
@@ -211,7 +220,7 @@ YUI.add("wegas-text-input", function(Y) {
         onSave: function() {
             var value = this.editor.getContent(),
                 valid, msg;
-            valid = true || this.updateCounters();
+            valid = true || this.updateCounters(); // Fixme do something... (prevent saving or not...)
             if (valid) {
                 msg = (this.save(value) ? "Saved" : "Something went wrong");
             } else {
@@ -220,10 +229,28 @@ YUI.add("wegas-text-input", function(Y) {
             this.setStatus(msg);
         },
         save: function(value) {
-            var theVar = this.get("variable.evaluated").getInstance();
+            var desc = this.get("variable.evaluated"),
+                theVar = desc.getInstance(),
+                cb = this.get("contentBox");
             this._initialContent = value;
+            cb.addClass("loading");
             theVar.set("value", value);
-            Y.Wegas.Facade.Variable.cache.put(theVar.toObject());
+            Y.Wegas.Facade.Variable.cache.put(theVar.toObject(), {
+                on: {
+                    success: Y.bind(function() {
+                        cb.removeClass("loading");
+                        this.fire("save", {
+                            descriptor: desc,
+                            value: value
+                        });
+                    }, this),
+                    failure: Y.bind(function() {
+                        cb.removeClass("loading");
+                    }, this)
+                }
+            });
+
+
             return true;
         },
         getEditorLabel: function() {
@@ -308,6 +335,9 @@ YUI.add("wegas-text-input", function(Y) {
         initializer: function() {
             this.handlers = [];
             this._initialValue = undefined;
+            this.publish("save", {
+                emitFacade: true
+            });
         },
         destructor: function() {
             Y.Array.each(this.handlers, function(h) {
@@ -322,19 +352,34 @@ YUI.add("wegas-text-input", function(Y) {
         updateValue: function(value) {
             var desc = this.get("variable.evaluated"),
                 inst = desc.getInstance(),
+                cb = this.get("contentBox"),
                 allowedValues = desc.get("allowedValues");
             if (allowedValues && allowedValues.length > 0) {
                 if (!allowedValues.find(function(item) {
                     return item === value;
                 }, this)) {
-                    this.showMessage("error", Y.Wegas.I18n.t('errors.lessThan', {value: value, min: min}));
+                    this.showMessage("error", Y.Wegas.I18n.t('errors.prohibited', {value: value, values: allowedValues}));
                     return false;
                 }
             }
 
             if (inst.get("value") !== value) {
+                cb.addClass("loading");
                 inst.set("value", value);
-                Y.Wegas.Facade.Variable.cache.put(inst.toObject());
+                Y.Wegas.Facade.Variable.cache.put(inst.toObject(), {
+                    on: {
+                        success: Y.bind(function() {
+                            cb.removeClass("loading");
+                            this.fire("save", {
+                                descriptor: desc,
+                                value: value
+                            });
+                        }, this),
+                        failure: Y.bind(function() {
+                            cb.removeClass("loading");
+                        }, this)
+                    }
+                });
             }
             return true;
         },
@@ -374,14 +419,27 @@ YUI.add("wegas-text-input", function(Y) {
                 CB = this.get("contentBox"),
                 value = inst.get("value"),
                 readonly = this.get("readonly.evaluated"),
-                input, select, option;
+                input, select, option, i;
             if (allowedValues && allowedValues.length > 0) {
-                select = CB.one("select");
-                select.set("disabled", readonly);
-                if (this._initialValue !== value) {
-                    this._initialValue = value;
-                    option = select.one("option[value='" + value + "']");
-                    option && option.setAttribute("selected");
+                if (readonly && this.get("displayChoicesWhenReadonly")) {
+                    CB.one("select").addClass("hidden");
+                    input = CB.one(".wegas-input-text");
+                    select = ["<ul>"];
+                    for (i in allowedValues) {
+                        option = allowedValues[i];
+                        select.push("<li class=\"", (value === option ? "selected" : "unselected") + "\">", option, "</li>");
+                    }
+                    select.push("</ul>");
+
+                    input.append(select.join(""));
+                } else {
+                    select = CB.one("select");
+                    select.set("disabled", readonly);
+                    if (this._initialValue !== value) {
+                        this._initialValue = value;
+                        option = select.one("option[value='" + value + "']");
+                        option && option.setAttribute("selected");
+                    }
                 }
             } else {
                 input = CB.one("input");
@@ -433,6 +491,16 @@ YUI.add("wegas-text-input", function(Y) {
                     _type: "variableselect",
                     label: "variable",
                     classFilter: ["StringDescriptor"]
+                }
+            },
+            displayChoicesWhenReadonly: {
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                type: "boolean",
+                value: false,
+                optional: false,
+                _inputex: {
+                    _type: "script",
+                    expects: "condition"
                 }
             },
             readonly: {

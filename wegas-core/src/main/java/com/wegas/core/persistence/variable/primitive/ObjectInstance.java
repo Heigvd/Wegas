@@ -42,10 +42,11 @@ public class ObjectInstance extends VariableInstance {
      */
     @Override
     public void merge(AbstractEntity a) {
-        if (a instanceof ObjectInstance) {
-            ObjectInstance other = (ObjectInstance) a;
-            this.properties.clear();
-            this.properties.putAll(other.getProperties());
+        if (a != null) {
+            if (a instanceof ObjectInstance) {
+                ObjectInstance other = (ObjectInstance) a;
+                this.properties.clear();
+                this.properties.putAll(other.getProperties());
 //        this.setActive(other.getActive());
 //        if (other.getAssignments() != null) {
 //            this.setAssignments(other.getAssignments());
@@ -58,12 +59,13 @@ public class ObjectInstance extends VariableInstance {
 //        this.setUndesiredSkillset(other.getUndesiredSkillset());
 //        this.setMoral(other.getMoral());
 //        this.setConfidence(other.getConfidence());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
+            } else {
+                throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
+            }
         }
     }
 
-    public boolean hasProperty(String property){
+    public boolean hasProperty(String property) {
         return this.properties.containsKey(property);
     }
 

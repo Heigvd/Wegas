@@ -731,13 +731,10 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             return acc;
 
         },
-        find: function(id) {
-            return this.depthFirstSearch(id);
-        },
-        depthFirstSearch: function(id) {
+        getChildByKey: function(key, value) {
             var needle,
                 filterFn = function(it) {
-                    if (it.get("id") === +id) {
+                    if (it.get(key) === value) {
                         needle = it;
                         return false;
                     } else if (it instanceof persistence.ListDescriptor) {
@@ -748,6 +745,15 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 };
             Y.Array.every(this.get(ITEMS), filterFn);
             return needle;
+        },
+        getChildByName: function(name) {
+            return this.getChildByKey("name", name);
+        },
+        getChildByLabel: function(label) {
+            return this.getChildByKey("label", label);
+        },
+        find: function(id) {
+            return this.getChildByKey("id", +id);
         },
         getTreeEditorLabel: function() {
             return "\u229e " + this.getEditorLabel();
@@ -868,7 +874,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                                     type: "AddEntityChildButton",
                                     label: "String",
                                     targetClass: "StringDescriptor"
-                                    //cssClass: "wegas-advanced-feature"
+                                        //cssClass: "wegas-advanced-feature"
                                 }, {
                                     type: "AddEntityChildButton",
                                     label: "Boolean",

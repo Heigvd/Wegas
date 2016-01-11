@@ -200,7 +200,7 @@ YUI.add("wegas-entitychooser", function(Y) {
                                 (items[i].get("title") || items[i].get("label")) + "</li>");
                             if (this.get("markUnread")) {
                                 li.plug(Y.Plugin.MarkAsUnread, {
-                                    userCounters: {"ObjectDescriptor": "function(descriptor, instance, resolve) {resolve ((descriptor.get(\"label\") === \"points\" && instance.get(\"properties.maxPoints\") && !instance.get(\"properties.submitted\") ? 1 : 0)); }"},
+                                    userCounters: this.get("userCounters"),
                                     variable: {
                                         name: items[i].get("name")
                                     }
