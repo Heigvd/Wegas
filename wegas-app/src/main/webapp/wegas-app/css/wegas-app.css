@@ -246,7 +246,7 @@ font {
 }
 
 .wegas-loader {
-    width: 36px;
+    width: auto;
     height: 32px;
     position: absolute;
     top: 50%;
