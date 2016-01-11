@@ -55,7 +55,7 @@ YUI.add('wegas-mcq-view', function(Y) {
          */
         renderUI: function() {
             var cb = this.get(CONTENTBOX);
-            cb.addClass("wegas-mcqtabview"); //@TODO : it's own stylesheet. Remove this and correct Loader
+            //cb.addClass("wegas-mcqtabview"); //@TODO : it's own stylesheet. Remove this and correct Loader
             cb.append("<div style='clear:both'></div>");
         },
         /**
@@ -265,7 +265,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                         if (choiceI.get("active")) {
                             checked = this.getNumberOfReplies(questionInstance, choiceD) > 0;
                             ret.push('<div class="mcq-choice', (answerable || checked ? '' : ' spurned'), '" style="width:', cellWidth, '% !important">');
-                            title = (choiceD.get("title") !== '') ? choiceD.get("title") : "&nbsp;";
+                            title = (choiceD.get("title").trim() !== '') ? choiceD.get("title") : "&nbsp;";
                             ret.push('<div class="mcq-choice-name" style="text-align:center"><label for="', choiceID, '">', title, '</label></div>');
                             currDescr = '';
                             if (hasDescription) {
@@ -303,7 +303,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                             ret.push('<div class="mcq-choice-vertical">');
                             checked = this.getNumberOfReplies(questionInstance, choiceD) > 0;
                             ret.push('<div class="mcq-choice', (answerable || checked ? '' : ' spurned'), '">');
-                            title = (choiceD.get("title") !== '') ? choiceD.get("title") : "&nbsp;";
+                            title = (choiceD.get("title").trim() !== '') ? choiceD.get("title") : "&nbsp;";
                             ret.push('<div class="mcq-choice-name"><label for="', choiceID, '">', title, '</label></div>');
                             if (currDescr !== '') {
                                 ret.push('<div class="mcq-choice-description"><label for="', choiceID, '">', currDescr, '</label></div>');
@@ -341,7 +341,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                     if (choiceI.get("active")) {
                         ret.push('<div class="mcq-choice-vertical">');
                         ret.push('<div class="mcq-choice', (answerable || isChosenReply) ? '' : ' spurned', '">');
-                        title = (choiceD.get("title") !== '') ? choiceD.get("title") : "&nbsp;";
+                        title = (choiceD.get("title").trim() !== '') ? choiceD.get("title") : "&nbsp;";
                         ret.push('<div class="mcq-choice-name">', title, '</div>');
                         if (currDescr !== '')
                             ret.push('<div class="mcq-choice-description">', currDescr, '</div>');
