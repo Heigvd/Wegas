@@ -423,7 +423,7 @@ font {
 .yui3-togglebutton-disabled {
     cursor: default;
     background-image: none;
-    filter: progid: DXImageTransform.Microsoft.gradient(enabled=false);
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
     filter: alpha(opacity=55);
     -khtml-opacity: 0.55;
     -moz-opacity: 0.55;
