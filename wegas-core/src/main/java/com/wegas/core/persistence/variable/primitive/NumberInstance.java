@@ -83,7 +83,7 @@ public class NumberInstance extends VariableInstance {
      */
     public void setValue(double value) {
         try {
-            VariableDescriptor vd = this.getDescriptorOrDefaultDescriptor();
+            VariableDescriptor vd = this.findDescriptor();
             if (vd instanceof NumberDescriptor) { // @fixme (Occurs when numberinstance are used for list descriptors) (IS THAT FUCKIN EXISTING ANY MORE ???)
                 NumberDescriptor desc = (NumberDescriptor) vd;
 

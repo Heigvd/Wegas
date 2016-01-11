@@ -39,7 +39,7 @@ public class EntityListener {
         if (o instanceof Broadcastable) {
             Broadcastable b = (Broadcastable) o;
             Map<String, List<AbstractEntity>> entities = b.getEntities();
-            if (b instanceof Team || b instanceof Player){
+            if (b instanceof Team || b instanceof Player) {
                 requestManager.addUpdatedEntities(entities);
             } else {
                 logger.debug("Unhandled new broadcastable entity: " + b);
@@ -70,10 +70,10 @@ public class EntityListener {
         if (o instanceof Broadcastable) {
             Broadcastable b = (Broadcastable) o;
             Map<String, List<AbstractEntity>> entities = b.getEntities();
-            if (b instanceof VariableDescriptor || b instanceof Game){
+            if (b instanceof VariableDescriptor || b instanceof Game) {
                 logger.debug(("#Entities: " + entities.size()));
                 requestManager.addDestroyedEntities(entities);
-            } else if (b instanceof Team || b instanceof Player){
+            } else if (b instanceof Team || b instanceof Player) {
                 logger.debug(("#Entities: " + entities.size()));
                 requestManager.addUpdatedEntities(entities);
             } else {

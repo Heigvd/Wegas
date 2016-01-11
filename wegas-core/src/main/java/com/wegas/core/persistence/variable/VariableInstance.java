@@ -362,15 +362,12 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      * return instance descriptor equals the instance is a default or effective
      * one
      *
+     * @deprecated {@link #findDescriptor()}
      * @return
      */
     @JsonIgnore
     public VariableDescriptor getDescriptorOrDefaultDescriptor() {
-        if (defaultDescriptor != null) {
-            return defaultDescriptor;
-        } else {
-            return this.getDescriptor();
-        }
+        return this.findDescriptor();
     }
 
     /**
