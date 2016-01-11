@@ -12,6 +12,7 @@
 YUI.add('wegas-presence', function(Y) {
     "use strict";
     var CONTENTBOX = 'contentBox', Chat, pagePresence,
+        INITIALS_LIMIT_COUNT = 6,
         updateState = function(node, status) {
             var text = "Chat: ";
             switch (status) {
@@ -118,52 +119,39 @@ YUI.add('wegas-presence', function(Y) {
             this.field.set("value", "");
         },
         onConnected: function() {
-            this.get(CONTENTBOX).one('.users').empty();
+            var users = this.get(CONTENTBOX).one('.users');
+            users.empty();
             pagePresence.members.each(Y.bind(function(m) {
+
                 if (+m.id !== +pagePresence.members.me.id) {
                     this.onAdded(m);
                 } else {
-                    this.get(CONTENTBOX).one('.users').append("<li class='me'>me</li>");
+                    users.append("<li class='me'>me</li>");
                     this.updateCount();
                 }
             }, this));
         },
-        //onEvent: function(event) {
-        //    console.log(event);
-        //},
         onRemoved: function(event) {
             this.get(CONTENTBOX).one('.users').one("#user" + event.id).remove(true);
             this.updateCount();
             this.notification(event.info.name + " left");
+            this.get(CONTENTBOX).one(".user-list").all(".u" + event.id).remove(true);
         },
         onAdded: function(event) {
+            var uList = this.get(CONTENTBOX).one(".user-list"), initials;
             this.get(CONTENTBOX).one('.users').append("<li id='user" + event.id + "' class='user'>" + event.info.name +
                 "</li>");
             this.updateCount();
             this.notification(event.info.name + " joined");
+            if (uList.get("children").size() < INITIALS_LIMIT_COUNT) {
+                initials = event.info.name.match(/\b\w/g).join("");
+                uList.append("<span class='u" + event.id + "'>" + initials + "</span>");
+            }
         },
         updateCount: function() {
             this.get(CONTENTBOX).one('.count').setHTML("viewer" +
                 (pagePresence.members.count > 2 ? "s: " : ": ") +
                 (pagePresence.members.count - 1)); //minus self
-            this.updateSmallUserList();
-        },
-        updateSmallUserList: function() {
-            var uList = this.get(CONTENTBOX).one(".user-list"),
-                initials,
-                count = 0,
-                LIMIT = 6;
-            uList.empty();
-            pagePresence.members.each(function(m) {
-                if (count < LIMIT && +m.id !== +pagePresence.members.me.id) {
-                    initials = m.info.name.match(/\b\w/g).join("");
-                    uList.append("<span class='u" + m.id + "'>" + initials + "</span>");
-                    count += 1;
-                }
-            });
-            if (count === LIMIT) {
-                uList.append("<span>...</span>");
-            }
         },
         addToChat: function(html) {
             var msgBox = this.get(CONTENTBOX).one('.msgs'),
