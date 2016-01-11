@@ -185,7 +185,7 @@ YUI.add("wegas-entitychooser", function(Y) {
                 var items = (this.get("variable.evaluated") ? (this.get("flatten") ? this.get("variable.evaluated").flatten() : this.get("variable.evaluated").get("items")) : []),
                     i, tmp, li,
                     entityBox = this.get(CONTENTBOX).one(".chooser-entities"),
-                    length = items.length,
+                    length = items.length, label, getLabel,
                     filter = Y.Object.keys(this.get("widgets"));
                 entityBox.empty();
                 for (i = 0; i < length; i += 1) {
@@ -196,8 +196,15 @@ YUI.add("wegas-entitychooser", function(Y) {
                             items[i].getInstance().get("active")) &&
                             (!items[i].getInstance().getAttrs().hasOwnProperty("enabled") ||
                                 items[i].getInstance().get("enabled"))) {
-                            li = entityBox.appendChild("<li class='chooser-entity' data-type='" + items[i].get("@class") + "'data-name='" + items[i].get("name") + "'>" +
-                                (items[i].get("title") || items[i].get("label")) + "</li>");
+                            getLabel = this.get("widgets")[items[i].get("@class")].getLabel;
+                            if (getLabel) {
+                                label = getLabel(items[i]);
+                            } else {
+                                label = (items[i].get("title") || items[i].get("label"));
+                            }
+                            li = entityBox.appendChild("<li class='chooser-entity' data-type='" +
+                                items[i].get("@class") + "'data-name='" +
+                                items[i].get("name") + "'>" + label + "</li>");
                             if (this.get("markUnread")) {
                                 li.plug(Y.Plugin.MarkAsUnread, {
                                     userCounters: this.get("userCounters"),
@@ -310,7 +317,12 @@ YUI.add("wegas-entitychooser", function(Y) {
                                             name: "widgetAttr",
                                             value: "dialogueVariable",
                                             type: "string"
-                                        }]
+                                        }, {
+                                            name: "getLabel",
+                                            value: null,
+                                            type: "function"
+                                        }
+                                    ]
                                 }
                             ]
                         }
