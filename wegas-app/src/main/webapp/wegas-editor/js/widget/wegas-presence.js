@@ -47,8 +47,8 @@ YUI.add('wegas-presence', function(Y) {
      */
     Chat = Y.Base.create("wegas-editorchat", Y.Widget, [Y.WidgetChild], {
         CONTENT_TEMPLATE: "<div><div class='conversation'>" +
-                          "<div class='msgs'></div><ul class='users'></ul><div style='clear: both'></div><textarea  rows='3' class='input' placeholder='Your message'></textarea></div>" +
-                          "<div class='editorchat-footer'><i class='chat-icon fa fa-comments'></i> <span class='pusher-status'></span><span class='count'></span></div></div>",
+            "<div class='msgs'></div><ul class='users'></ul><div style='clear: both'></div><textarea  rows='3' class='input' placeholder='Your message'></textarea></div>" +
+            "<div class='editorchat-footer'><i class='chat-icon fa fa-comments'></i> <span class='pusher-status'></span><span class='count'></span><span class='user-list'></span></div></div>",
         initializer: function() {
             this.closed = true;
             this._handlers = [];
@@ -66,7 +66,7 @@ YUI.add('wegas-presence', function(Y) {
             pagePresence.bind('pusher:subscription_succeeded', this.onConnected, this);
             pagePresence.bind("pusher:member_removed", this.onRemoved, this);
             pagePresence.bind("pusher:member_added", this.onAdded, this);
-            //pagePresence.bind_all(Y.bind(this.onEvent, this));
+        //pagePresence.bind_all(Y.bind(this.onEvent, this));
         },
         renderUI: function() {
             var cb = this.get(CONTENTBOX);
@@ -136,18 +136,37 @@ YUI.add('wegas-presence', function(Y) {
         },
         onAdded: function(event) {
             this.get(CONTENTBOX).one('.users').append("<li id='user" + event.id + "' class='user'>" + event.info.name +
-                                                      "</li>");
+                "</li>");
             this.updateCount();
             this.notification(event.info.name + " joined");
         },
         updateCount: function() {
             this.get(CONTENTBOX).one('.count').setHTML("viewer" +
-                                                       (pagePresence.members.count > 2 ? "s: " : ": ") +
-                                                       (pagePresence.members.count - 1)); //minus self
+                (pagePresence.members.count > 2 ? "s: " : ": ") +
+                (pagePresence.members.count - 1)); //minus self
+            this.updateSmallUserList();
+        },
+        updateSmallUserList: function() {
+            var uList = this.get(CONTENTBOX).one(".user-list"),
+                initials,
+                count = 0,
+                LIMIT = 6;
+            uList.empty();
+            pagePresence.members.each(function(m) {
+                if (count < LIMIT && +m.id !== +pagePresence.members.me.id) {
+                    initials = m.info.name.match(/\b\w/g).join("");
+                    uList.append("<span>" + initials + "</span>");
+                    count += 1;
+                }
+            });
+            if(count === LIMIT){
+                uList.append("<span>...</span>");
+            }
         },
         addToChat: function(html) {
-            var msgBox = this.get(CONTENTBOX).one('.msgs'), node = (html instanceof Y.Node) ? html :
-                Y.Node.create(html);
+            var msgBox = this.get(CONTENTBOX).one('.msgs'),
+                node = (html instanceof Y.Node) ? html :
+                    Y.Node.create(html);
             msgBox.append(node);
             this.lastNode = node;
             msgBox.getDOMNode().scrollTop = msgBox.getDOMNode().scrollHeight;
@@ -163,8 +182,8 @@ YUI.add('wegas-presence', function(Y) {
                 this.addToChat(this.lastNode);
             } else {
                 this.addToChat('<div class="msg ' + (data.sender === "me" ? "me" : "") +
-                               '"><div class="sender">' + data.sender + '</div>' +
-                               '<div class="content">' + data.data + '</div></div>');
+                    '"><div class="sender">' + data.sender + '</div>' +
+                    '<div class="content">' + data.data + '</div></div>');
             }
         },
         notification: function(not) {

@@ -36,35 +36,23 @@
     width: 300px;
 }
 
-.yui3-skin-sam .yui3-wegas-editorchat .conversation .users,
-.yui3-skin-sam .yui3-wegas-editorchat .conversation .chat-send {
+.yui3-skin-sam .yui3-wegas-editorchat .conversation .users, .yui3-skin-sam .yui3-wegas-editorchat .conversation .chat-send {
     width: 100px;
 }
 
-.yui3-skin-sam .yui3-wegas-editorchat .msgs,
-.yui3-skin-sam .yui3-wegas-editorchat .users {
+.yui3-skin-sam .yui3-wegas-editorchat .msgs, .yui3-skin-sam .yui3-wegas-editorchat .users {
     float: left;
     min-height: 200px;
     max-height: 300px;
-    /*width: 100%;*/
-    /*-webkit-transition: width 0.2s ease-in;*/
-    /*-moz-transition: width 0.2s ease-in;*/
-    /*-ms-transition: width 0.2s ease-in;*/
-    /*-o-transition: width 0.2s ease-in;*/
-    /*transition: width 0.2s ease-in;*/
     overflow: hidden;
     overflow-y: auto;
 }
 
 .yui3-skin-sam .yui3-wegas-editorchat .users {
-    -moz-box-shadow: -1px 0px 0px #CCC;
-    -o-box-shadow: -1px 0px 0px #CCC;
-    -webkit-box-shadow: -1px 0px 0px #CCC;
     box-shadow: -1px 0px 0px #CCC;
 }
 
-.yui3-skin-sam .yui3-wegas-editorchat .users li,
-.yui3-skin-sam .yui3-wegas-editorchat .msg {
+.yui3-skin-sam .yui3-wegas-editorchat .users li, .yui3-skin-sam .yui3-wegas-editorchat .msg {
     margin: 5px 3px 5px 3px;
     background-color: #E4E4E4;
     white-space: normal;
@@ -81,8 +69,7 @@
     white-space: pre-line;
 }
 
-.yui3-skin-sam .yui3-wegas-editorchat .me,
-.yui3-skin-sam .yui3-wegas-editorchat .users li.me {
+.yui3-skin-sam .yui3-wegas-editorchat .me, .yui3-skin-sam .yui3-wegas-editorchat .users li.me {
     background: #b5b5b5;
 }
 
@@ -105,8 +92,30 @@
 
 .yui3-skin-sam .yui3-wegas-editorchat .new-message .chat-icon {
     color: orange;
+    transform-origin: 50% 0%;
+    animation: msg-icon-pulse 1.5s 1;
 }
-.yui3-skin-sam .yui3-wegas-editorchat .editorchat-footer .pusher-status{
+
+.yui3-skin-sam .yui3-wegas-editorchat .editorchat-footer .pusher-status {
     font-size: 80%;
     margin-right: 10px;
+}
+
+.yui3-skin-sam .yui3-wegas-editorchat .editorchat-footer .user-list {
+    margin-left: 5px;
+}
+
+.yui3-skin-sam .yui3-wegas-editorchat .editorchat-footer .user-list > span {
+    border: 1px solid white;
+    margin: 0px 2px;
+    padding: 1px 2px;
+}
+
+@keyframes msg-icon-pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(5);
+    }
 }
