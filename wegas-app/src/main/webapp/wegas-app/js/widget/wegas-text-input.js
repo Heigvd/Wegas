@@ -355,7 +355,7 @@ YUI.add("wegas-text-input", function(Y) {
                 cb = this.get("contentBox"),
                 allowedValues = desc.get("allowedValues");
             if (allowedValues && allowedValues.length > 0) {
-                if (!allowedValues.find(function(item) {
+                if (!Y.Array.find(allowedValues, function(item) {
                     return item === value;
                 }, this)) {
                     this.showMessage("error", Y.Wegas.I18n.t('errors.prohibited', {value: value, values: allowedValues}));
