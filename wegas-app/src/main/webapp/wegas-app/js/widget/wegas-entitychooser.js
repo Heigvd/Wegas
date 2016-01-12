@@ -197,14 +197,18 @@ YUI.add("wegas-entitychooser", function(Y) {
                             (!items[i].getInstance().getAttrs().hasOwnProperty("enabled") ||
                                 items[i].getInstance().get("enabled"))) {
                             getLabel = this.get("widgets")[items[i].get("@class")].getLabel;
-                            if (getLabel) {
-                                label = getLabel(items[i]);
-                            } else {
-                                label = (items[i].get("title") || items[i].get("label"));
-                            }
+                            label = (items[i].get("title") || items[i].get("label"));
+
                             li = entityBox.appendChild("<li class='chooser-entity' data-type='" +
                                 items[i].get("@class") + "'data-name='" +
                                 items[i].get("name") + "'>" + label + "</li>");
+
+                            if (getLabel) {
+                                label = getLabel(items[i], items[i].get("name"), function(name, the_label) {
+                                    entityBox.one("[data-name='" + name + "']").setContent(the_label);
+                                });
+                            }
+
                             if (this.get("markUnread")) {
                                 li.plug(Y.Plugin.MarkAsUnread, {
                                     userCounters: this.get("userCounters"),
