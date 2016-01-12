@@ -134,7 +134,7 @@ YUI.add("wegas-injector", function(Y) {
          * @returns {undefined}
          */
         parser: function(element) {
-            var attr = (element.get("nodeName") === "IMG" || element.get("nodeName") === "AUDIO") ? "src" : "href";
+            var attr = (element.get("nodeName") === "IMG" || element.get("nodeName") === "VIDEO" ||  element.get("nodeName") === "AUDIO") ? "src" : "href";
 
             if (!element.hasAttribute(attr) || !element.getAttribute(attr).match("^(https?://)")) {
                 element.set(attr, Y.Wegas.Facade.File.get("source") + "read" + element.getAttribute("data-file"))
