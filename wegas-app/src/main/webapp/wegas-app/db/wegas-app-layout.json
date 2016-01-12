@@ -9,5 +9,7 @@
             "fn": "PopupListener"
         }, {
             "fn": "ServerPopupListener"
+        }, {
+            "fn": "GetPageIdFromQueryString"
         }]
 }

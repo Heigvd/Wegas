@@ -16,7 +16,7 @@ YUI.add("wegas-pageloader", function(Y) {
         WIDGET = "widget",
         PAGEID = "pageId",
         PAGE_LOADER_INSTANCES = {},
-        Wegas = Y.Wegas, PageLoader,
+        Wegas = Y.Wegas, PageLoader, GetPageIdFromQueryString,
         pageloaderErrorMessageClass = "wegas-pageloader-error";
 
     /**
@@ -78,13 +78,13 @@ YUI.add("wegas-pageloader", function(Y) {
                 }, this));
             }, this));
 
-        //Wegas.Facade.Page.after("response", this.syncUI, this);
-        //this.handlers.push(Wegas.Facade.Page.cache.after("pageUpdated", function(e) {
-        //    if (e.page && ("" + e.page["@pageId"] === "" + this.get("pageId"))) {
-        //        this.currentPageId = null; // @hack force update
-        //        this.syncUI();
-        //    }
-        //}, this));
+            //Wegas.Facade.Page.after("response", this.syncUI, this);
+            //this.handlers.push(Wegas.Facade.Page.cache.after("pageUpdated", function(e) {
+            //    if (e.page && ("" + e.page["@pageId"] === "" + this.get("pageId"))) {
+            //        this.currentPageId = null; // @hack force update
+            //        this.syncUI();
+            //    }
+            //}, this));
         },
         /**
          * @function
@@ -107,7 +107,7 @@ YUI.add("wegas-pageloader", function(Y) {
                 this.set(PAGEID, this.get("defaultPageId"));
             } else {
                 this.set(PAGEID, this.get(PAGEID)); // Otherwise use pageId (in case the
-            // setter has not been called yet)
+                // setter has not been called yet)
             }
         },
         /**
@@ -300,8 +300,8 @@ YUI.add("wegas-pageloader", function(Y) {
                     }
                     if (v) {
                         v.on(["*:message", "*:showOverlay", "*:hideOverlay"], this.fire, this); // Event on the loaded
-                    // widget will be
-                    // forwarded
+                        // widget will be
+                        // forwarded
                     }
                     return v;
                 }
@@ -326,4 +326,25 @@ YUI.add("wegas-pageloader", function(Y) {
         }
     });
     Wegas.PageLoader = PageLoader;
+
+    GetPageIdFromQueryString = Y.Base.create("wegas-getpageidfromquerystring", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
+        initializer: function() {
+            var host, query, pageLoaderId;
+            query = Y.QueryString.parse(window.location.search.substr(1));
+            host = this.get("host");
+            pageLoaderId = host.get("pageLoaderId");
+
+            if (query[pageLoaderId]) {
+                host.set("pageId", query[pageLoaderId]);
+            }
+        },
+        destructor: function() {
+        }
+    }, {
+        NS: "GetPageIdFromQueryString",
+        NAME: "GetPageIdFromQueryString",
+        ATTRS: {
+        }
+    });
+    Y.Plugin.GetPageIdFromQueryString = GetPageIdFromQueryString;
 });

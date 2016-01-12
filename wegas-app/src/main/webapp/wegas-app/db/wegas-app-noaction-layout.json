@@ -12,6 +12,8 @@
             "fn": "ServerPopupListener"
         }, {
             "fn": "BlockAnyAction"
+        }, {
+            "fn": "GetPageIdFromQueryString"
         }
     ]
 }

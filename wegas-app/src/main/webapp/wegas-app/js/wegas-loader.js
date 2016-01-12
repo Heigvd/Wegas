@@ -161,8 +161,8 @@ YUI().use(function(Y) {
             },
             "wegas-pageloader": {
                 path: "js/widget/wegas-pageloader-min.js",
-                ws_provides: "PageLoader",
-                requires: "wegas-widget"
+                ws_provides: ["PageLoader", "GetPageIdFromQueryString"],
+                requires: ["wegas-plugin", "wegas-widget", "querystring-parse"]
             },
             "wegas-popuplistener": {
                 path: "js/plugin/wegas-popuplistener-min.js",
@@ -279,7 +279,7 @@ YUI().use(function(Y) {
             },
             /** Plugins **/
             "wegas-plugin": {
-                requires: "timers"
+                requires: ["timers", "wegas-widget"]
             },
             "wegas-userpreferences": {
                 path: "js/plugin/wegas-userpreferences-min.js",
