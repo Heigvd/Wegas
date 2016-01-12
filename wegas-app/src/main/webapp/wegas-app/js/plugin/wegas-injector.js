@@ -134,11 +134,17 @@ YUI.add("wegas-injector", function(Y) {
          * @returns {undefined}
          */
         parser: function(element) {
-            var attr = (element.get("nodeName") === "IMG" || element.get("nodeName") === "VIDEO" ||  element.get("nodeName") === "AUDIO") ? "src" : "href";
+            var parent, isSrc = element.get("nodeName") === "SOURCE", attr = (isSrc || element.get("nodeName") === "IMG" || element.get("nodeName") === "SOURCE" || element.get("nodeName") === "VIDEO" || element.get("nodeName") === "AUDIO") ? "src" : "href";
 
             if (!element.hasAttribute(attr) || !element.getAttribute(attr).match("^(https?://)")) {
                 element.set(attr, Y.Wegas.Facade.File.get("source") + "read" + element.getAttribute("data-file"))
                     .removeAttribute("data-file");
+
+                if (isSrc) {
+                    parent = element.ancestor();
+                    parent.removeChild(element);
+                    parent.appendChild(element);
+                }
             }
         },
         getImageUri: function(uri, gameModelId) {
