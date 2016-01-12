@@ -276,8 +276,8 @@ angular.module('wegas.service.wegasTranslations', [])
 
                         // Commons Auth service
                         'COMMONS-AUTH-PASSWORD-FLASH-SUCCESS': {
-                            'en': "A new password has been send",
-                            'fr': "Un nouveau mot de passe a été envoyé"
+                            'en': "A new password has been send, check your spam/junk mail folder",
+                            'fr': "Un nouveau mot de passe a été envoyé, vérifiez dans vos messages indésirables"
                         },
                         'COMMONS-AUTH-PASSWORD-FLASH-ERROR': {
                             'en': "Error during password generation",
