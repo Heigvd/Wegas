@@ -282,8 +282,7 @@ YUI.add('wegas-helper', function(Y) {
         },
         reset: function() {
             this.cancel();
-            this.handler = Y.later(this.get("duration"), this, this.timeOut);
-            return this;
+            return this.start();
         },
         cancel: function() {
             if (this.handler) {
