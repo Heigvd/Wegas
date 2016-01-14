@@ -167,9 +167,10 @@ YUI.add("wegas-button", function(Y) {
                     } else {
                         if (instance.get("replies")) {
                             resolve(instance.get("replies").length === 0 && instance.get("active") ? 1 : 0); // only count if it is active
+                        } else {
+                            resolve(0);
                         }
                     }
-                    resolve(0);
                 },
                 "PeerReviewDescriptor": function(descriptor, instance, resolve) {
                     var i, j, k, types = ["toReview", "reviewed"],
@@ -190,7 +191,11 @@ YUI.add("wegas-button", function(Y) {
                 }
             };
             for (k in this.get("userCounters")) {
-                this._counters[k] = eval("(" + this.get("userCounters")[k] + ")");
+                var theFunction = this.get("userCounters")[k];
+                if (!theFunction instanceof Function) {
+                    theFunction = eval("(" + theFunction + ")");
+                }
+                this._counters[k] = theFunction;
             }
             this.bindUI();
         },
