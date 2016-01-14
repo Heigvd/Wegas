@@ -386,7 +386,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                     child = Y.Array.find(container.get(this.get("attributeKey")), function(i) {
                         return i.get(ID) === entity.get(ID);
                     });
-                    menuItems = Y.Array.filter(child.getMenuCfg({dataSource: dataSource}).slice(1), function(i) {
+                    menuItems = Y.Array.filter(child.getMenuCfg({dataSource: dataSource, parentEntity: container}).slice(1), function(i) {
                         return (!i.label || (i.label.indexOf("New") < 0 && i.label.indexOf("Edit") < 0));
                     });
 
@@ -449,9 +449,10 @@ YUI.add("wegas-editor-entityaction", function(Y) {
 
                         dataSource.cache.put(descriptor.toObject(), {
                             on: {
-                                success: function() {
+                                success: Y.bind(function() {
+                                    this.hideOverlay();
                                     EditEntityAction.hideRightTabs();
-                                },
+                                },this),
                                 failure: Y.bind(this.hideOverlay, this)
                             }
                         });
