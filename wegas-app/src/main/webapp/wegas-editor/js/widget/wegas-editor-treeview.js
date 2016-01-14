@@ -12,9 +12,15 @@
 YUI.add("wegas-editor-treeview", function(Y) {
     "use strict";
 
-    var CONTENTBOX = "contentBox", DATASOURCE = "dataSource", ID = "id",
-        CLASS = "@class", NAME = "name", HOST = "host",
-        Plugin = Y.Plugin, Wegas = Y.Wegas, EditorTreeView;
+    var CONTENTBOX = "contentBox",
+        DATASOURCE = "dataSource",
+        ID = "id",
+        CLASS = "@class",
+        NAME = "name",
+        HOST = "host",
+        EXCLUDED_CLASS = "wegas-forbidden-feature",
+        Plugin = Y.Plugin,
+        Wegas = Y.Wegas, EditorTreeView;
 
     /**
      * @name Y.Wegas.EditorTreeView
@@ -39,12 +45,11 @@ YUI.add("wegas-editor-treeview", function(Y) {
             this.currentSelection = -1;
             this.treeView = new Y.TreeView({
                 emptyMsg: this.get("emptyMessage")
-            }).render(this.get(CONTENTBOX))                                     // Instantiate & render treeview
-                .addTarget(this);                                               // Listen to treeview's events
-
+            }).render(this.get(CONTENTBOX)) // Instantiate & render treeview
+                .addTarget(this); // Listen to treeview's events
             this.plug(Plugin.EditorTVShortcut);
-            this.plug(Plugin.EditorTVContextMenu);                              // Open context menu on right click
-            this.plug(Plugin.RememberExpandedTreeView);                         // Selected node is preserved across requests
+            this.plug(Plugin.EditorTVContextMenu); // Open context menu on right click
+            this.plug(Plugin.RememberExpandedTreeView); // Selected node is preserved across requests
         },
         /**
          * @function
@@ -54,12 +59,12 @@ YUI.add("wegas-editor-treeview", function(Y) {
             var ds = this.get(DATASOURCE),
                 request = this.get("request");
             if (ds) {
-                this.handlers.push(ds.after("update", this.syncUI, this));     // Listen updates on the target datasource
+                this.handlers.push(ds.after("update", this.syncUI, this)); // Listen updates on the target datasource
                 this.handlers.push(ds.after("failure", this.defaultFailureHandler, this)); // GLOBAL error message
 
-                this.handlers.push(ds.after("added", function(e) {             // When an entity is created
+                this.handlers.push(ds.after("added", function(e) { // When an entity is created
                     Y.later(20, this, function() {
-                        var target = this.treeView.find(function(item) {        // scroll to it in the treeview
+                        var target = this.treeView.find(function(item) { // scroll to it in the treeview
                             return item.get("data.entity") && item.get("data.entity").get("id") === e.entity.get("id");
                         });
                         target && Wegas.Helper.scrollIntoViewIfNot(target.get(CONTENTBOX), false);
@@ -109,9 +114,9 @@ YUI.add("wegas-editor-treeview", function(Y) {
             return Y.Array.filter(Y.Array.map(elements, this.genTreeViewElement, this), Y.Lang.isObject);
         },
         genTreeViewElement: function(entity) {
-            var children = entity.get("players");                               // @hack so it works for team
+            var children = entity.get("players"); // @hack so it works for team
 
-            if (entity instanceof Wegas.persistence.User) {                     // @hack
+            if (entity instanceof Wegas.persistence.User) { // @hack
                 entity = entity.getMainAccount();
             }
 
@@ -183,24 +188,24 @@ YUI.add("wegas-editor-treeview", function(Y) {
         renderUI: function() {
             this.treeView = new Y.TreeView({
                 emptyMsg: this.get("emptyMessage")
-            })                                                                 // Render the treeview
+            }) // Render the treeview
                 .addTarget(this)
                 .render(this.get(CONTENTBOX).one(".treeview"));
 
             this.plug(Plugin.RememberExpandedTreeView);
             this.plug(Plugin.WidgetToolbar);
 
-            //this.plug(Plugin.EditorTVToggleClick);
-            //if (this.isFreeForAll()) {                                        // @hack Change the display if the gamemodel is freeforall
-            //    this.get("parent").set("label", "Players");
-            //}
+        //this.plug(Plugin.EditorTVToggleClick);
+        //if (this.isFreeForAll()) {                                        // @hack Change the display if the gamemodel is freeforall
+        //    this.get("parent").set("label", "Players");
+        //}
         },
         getNodes: function() {
             var entity = this.get("entity"),
                 acc = [],
                 nodes = this.genTreeViewElements(entity.get("teams"));
 
-            if (entity.get("properties.freeForAll")) {                          // Do not display teams in free for all game
+            if (entity.get("properties.freeForAll")) { // Do not display teams in free for all game
                 Y.Array.each(nodes, function(i) {
                     acc = acc.concat(i.children);
                 });
@@ -211,14 +216,14 @@ YUI.add("wegas-editor-treeview", function(Y) {
         genTreeViewElement: function(entity) {
             var elClass = entity.get(CLASS),
                 collapsed = !this.isNodeExpanded(entity);
-            //selected = (this.currentSelection === entity.get(ID)) ? 2 : 0;
+                //selected = (this.currentSelection === entity.get(ID)) ? 2 : 0;
 
             switch (elClass) {
                 case "Team":
                     var children = this.genTreeViewElements(entity.get("players")),
                         expanded = Y.Array.find(children, function(p) {
-                            return p.selected;
-                        }) || !collapsed;
+                                return p.selected;
+                            }) || !collapsed;
 
                     expanded = !collapsed;
 
@@ -302,7 +307,7 @@ YUI.add("wegas-editor-treeview", function(Y) {
 
             if (menuItems) {
                 host.toolbar.destroyAll();
-                host.toolbar.add(menuItems);                                    // Populate the menu with the elements associated to the
+                host.toolbar.add(menuItems); // Populate the menu with the elements associated to the
             } else {
                 Y.log("Menu item has no target entity", "info", "Y.Plugin.EditorTVToolbarMenu");
             }
@@ -319,7 +324,7 @@ YUI.add("wegas-editor-treeview", function(Y) {
                 if (menuItems) {
                     Wegas.Editable.mixMenuCfg(menuItems, data);
                 } else {
-                    menuItems = entity.getMenuCfg(data);               // If no menu is provided, use a clone of the entity default value
+                    menuItems = entity.getMenuCfg(data); // If no menu is provided, use a clone of the entity default value
                     allowedChildren = entity.get("allowedTypes");
 
                     if (allowedChildren && allowedChildren.length > 0) {
@@ -329,16 +334,16 @@ YUI.add("wegas-editor-treeview", function(Y) {
                         if (addChildrenMenu) {
                             Y.Array.each(addChildrenMenu.plugins[0].cfg.children, function(i) {
                                 if (!Y.Array.find(allowedChildren, function(j) {
-                                    return i.targetClass === j;
-                                })) {
-                                    i.cssClass = "wegas-forbidden-feature";
+                                        return i.targetClass === j;
+                                    })) {
+                                    i.cssClass = EXCLUDED_CLASS;
                                 }
                             }, this);
                         }
                     }
                 }
 
-                Y.Array.each(menuItems, function(i) {                           // @hack add icons to some buttons
+                Y.Array.each(menuItems, function(i) { // @hack add icons to some buttons
                     switch (i.label) {
                         case "Delete":
                         case "New":
@@ -368,7 +373,7 @@ YUI.add("wegas-editor-treeview", function(Y) {
         onTreeViewSelection: function(e) {
             var menuItems = this.getMenuItems(e.target.get("data"));
 
-            if (menuItems) {
+            if (menuItems && menuItems.length) {
                 var button = Wegas.Widget.create(menuItems[0]);
                 button.fire("click");
                 button.destroy();
@@ -389,26 +394,29 @@ YUI.add("wegas-editor-treeview", function(Y) {
         initializer: function() {
             this.handlers = [
                 this.onHostEvent("treenode:extraClick", this.onAddChildrenShortcutClick, this)
-                    //this.get("host").get("contentBox").delegate("click", this.onAddChildrenShortcutClick, ".add-child-shortcut", this)
+            //this.get("host").get("contentBox").delegate("click", this.onAddChildrenShortcutClick, ".add-child-shortcut", this)
             ];
+            this.menu = new Wegas.Menu();
         },
         onAddChildrenShortcutClick: function(e) {
             var widget = Y.Widget.getByNode(e.node),
-                node = e.node,
+                button,
+                cfg,
                 entity = widget.get("data").entity,
-                button, cfg, target = entity.get("addShortcut");
-
-            if (target.match(/Descriptor$/)) {
-                cfg = {
-                    type: "AddEntityChildButton",
-                    targetClass: entity.get("addShortcut"),
-                    dataSource: Y.Wegas.Facade.VariableDescriptor,
-                    entity: entity
-                };
-            } else if (target === "Result") {
-                cfg = {
-                    type: "Button",
-                    plugins: [{
+                addShortcut = entity.get("addShortcut"),
+                valids;
+            if (addShortcut) {
+                if (addShortcut.match(/Descriptor$/)) {
+                    cfg = [{
+                        type: "AddEntityChildButton",
+                        targetClass: addShortcut,
+                        dataSource: Y.Wegas.Facade.VariableDescriptor,
+                        entity: entity
+                    }];
+                } else if (addShortcut === "Result") {
+                    cfg = [{
+                        type: "Button",
+                        plugins: [{
                             fn: "EditEntityArrayFieldAction",
                             cfg: {
                                 targetClass: "Result",
@@ -419,19 +427,35 @@ YUI.add("wegas-editor-treeview", function(Y) {
                                 entity: entity
                             }
                         }]
-                };
+                    }];
+                }
+            } else {
+                cfg = this.getAddMenuItems(widget.get("data"));
             }
-
-            if (cfg) {
-                button = Wegas.Widget.create(cfg);
+            valids = Y.Array.filter(cfg, function(i) {
+                return !i.cssClass || i.cssClass.indexOf(EXCLUDED_CLASS) < 0;
+            })
+            if (valids.length === 1) {
+                button = Wegas.Widget.create(valids[0]);
                 button.fire("click");
                 button.destroy();
+            } else if (valids.length > 1) {
+                this.menu.destroyAll();
+                this.menu.add(cfg);
+                this.menu.show();
+                this.menu.set("xy", [e.domEvent.pageX, e.domEvent.pageY]);
             }
+        },
+        getAddMenuItems: function(data) {
+            return Y.Array.find(Plugin.EditorTVToolbarMenu.prototype.getMenuItems.call(this, data), function(item) {
+                return item.label && (item.label.indexOf("wegas-icon-new") + item.label.indexOf("wegas-icon-add") > -2); // one of those exist
+            }).plugins[0].cfg.children;
         },
         destructor: function() {
             Y.Array.each(this.handlers, function(i) {
                 i.detach();
             });
+            this.menu.destroy();
         }
     }, {
         NS: "addShortcut",
@@ -457,7 +481,7 @@ YUI.add("wegas-editor-treeview", function(Y) {
 
             //menuItems.splice(0, 1);                                           // Remove "Edit" button
 
-            Y.Array.each(menuItems, function(i, itemIndex) {                    // @HACK Fix the submenu positioning
+            Y.Array.each(menuItems, function(i, itemIndex) { // @HACK Fix the submenu positioning
                 Y.Array.each(i.plugins, function(p, index) {
                     if (p.fn === "WidgetMenu") {
                         menuItems[itemIndex] = Y.mix({}, menuItems[itemIndex]);
