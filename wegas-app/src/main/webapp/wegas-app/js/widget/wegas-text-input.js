@@ -74,6 +74,12 @@ YUI.add("wegas-text-input", function(Y) {
                     hidden_tootlbar: [2, 3],
                     setup: Y.bind(function(editor) {
                         //editor.on('keyUp', Y.bind(this._keyup, this)); // Update on editor update
+                        if (this.get("disablePaste")) {
+                            editor.on('paste', function(e) {
+                                e.preventDefault();
+                            });
+                        }
+                        // Update on editor update
                         editor.on('keyUp', Y.bind(this._onChange, this)); // Update on editor update
                         //editor.on('NodeChange', Y.bind(this.setContent, this)); // Update on editor update
                         this.editor = editor;
@@ -317,6 +323,11 @@ YUI.add("wegas-text-input", function(Y) {
                 value: undefined
             },
             countBlank: {
+                type: "boolean",
+                optional: true,
+                value: false
+            },
+            disablePaste: {
                 type: "boolean",
                 optional: true,
                 value: false
