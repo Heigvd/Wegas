@@ -267,8 +267,14 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         }
     }
 
-    public long getParentDescriptorId() {
-        return this.getParent().getId();
+    public Long getParentDescriptorId() {
+        if (parentList != null) {
+            return parentList.getId();
+        } else if (rootGameModel != null) {
+            return rootGameModel.getId();
+        } else {
+            return null;
+        }
     }
 
     public void setParentDescriptorId(Long id) {
