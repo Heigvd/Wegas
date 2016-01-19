@@ -125,6 +125,13 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
         }
     }, {
         ATTRS: {
+            parentDescriptorId: {
+                type: NUMBER,
+                optional: true,
+                _inputex: {
+                    _type: HIDDEN
+                }
+            },
             comments: {
                 type: STRING,
                 optional: true,
@@ -771,7 +778,8 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                     _type: HIDDEN
                 },
                 setter: function(val) {
-                    for (var i = 0; i < val.length; i = i + 1) { // We set up a back reference to the parent
+                    var i;
+                    for (i = 0; i < val.length; i = i + 1) { // We set up a back reference to the parent
                         val[i].parentDescriptor = this;
                     }
                     return val;

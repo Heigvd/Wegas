@@ -51,29 +51,29 @@ import java.util.Map;
 @Inheritance(strategy = InheritanceType.JOINED)
 //@EntityListeners({GmVariableDescriptorListener.class})
 @Table(uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"gamemodel_gamemodelid", "name"}) // Name has to be unique for the whole game model
+    @UniqueConstraint(columnNames = {"gamemodel_gamemodelid", "name"}) // Name has to be unique for the whole game model
 // @UniqueConstraint(columnNames = {"variabledescriptor_id", "name"})           // Name has to be unique within a list
 // @UniqueConstraint(columnNames = {"rootgamemodel_id", "name"})                // Names have to be unique at the base of a game model (root elements)
 }, indexes = {
-        @Index(columnList = "defaultinstance_variableinstance_id")
+    @Index(columnList = "defaultinstance_variableinstance_id")
 })
 @NamedQuery(name = "findVariableDescriptorsByRootGameModelId", query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.gameModel AS gm WHERE gm.id = :gameModelId")
 @JsonSubTypes(value = {
-        @JsonSubTypes.Type(name = "ListDescriptor", value = ListDescriptor.class),
-        @JsonSubTypes.Type(name = "StringDescriptor", value = StringDescriptor.class),
-        @JsonSubTypes.Type(name = "TextDescriptor", value = TextDescriptor.class),
-        @JsonSubTypes.Type(name = "BooleanDescriptor", value = BooleanDescriptor.class),
-        @JsonSubTypes.Type(name = "NumberDescriptor", value = NumberDescriptor.class),
-        @JsonSubTypes.Type(name = "InboxDescriptor", value = InboxDescriptor.class),
-        @JsonSubTypes.Type(name = "FSMDescriptor", value = StateMachineDescriptor.class),
-        @JsonSubTypes.Type(name = "ResourceDescriptor", value = ResourceDescriptor.class),
-        @JsonSubTypes.Type(name = "TaskDescriptor", value = TaskDescriptor.class),
-        @JsonSubTypes.Type(name = "QuestionDescriptor", value = QuestionDescriptor.class),
-        @JsonSubTypes.Type(name = "ChoiceDescriptor", value = ChoiceDescriptor.class),
-        @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class),
-        @JsonSubTypes.Type(name = "ObjectDescriptor", value = ObjectDescriptor.class),
-        @JsonSubTypes.Type(name = "PeerReviewDescriptor", value = PeerReviewDescriptor.class),
-        @JsonSubTypes.Type(name = "BurndownDescriptor", value = BurndownDescriptor.class)
+    @JsonSubTypes.Type(name = "ListDescriptor", value = ListDescriptor.class),
+    @JsonSubTypes.Type(name = "StringDescriptor", value = StringDescriptor.class),
+    @JsonSubTypes.Type(name = "TextDescriptor", value = TextDescriptor.class),
+    @JsonSubTypes.Type(name = "BooleanDescriptor", value = BooleanDescriptor.class),
+    @JsonSubTypes.Type(name = "NumberDescriptor", value = NumberDescriptor.class),
+    @JsonSubTypes.Type(name = "InboxDescriptor", value = InboxDescriptor.class),
+    @JsonSubTypes.Type(name = "FSMDescriptor", value = StateMachineDescriptor.class),
+    @JsonSubTypes.Type(name = "ResourceDescriptor", value = ResourceDescriptor.class),
+    @JsonSubTypes.Type(name = "TaskDescriptor", value = TaskDescriptor.class),
+    @JsonSubTypes.Type(name = "QuestionDescriptor", value = QuestionDescriptor.class),
+    @JsonSubTypes.Type(name = "ChoiceDescriptor", value = ChoiceDescriptor.class),
+    @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class),
+    @JsonSubTypes.Type(name = "ObjectDescriptor", value = ObjectDescriptor.class),
+    @JsonSubTypes.Type(name = "PeerReviewDescriptor", value = PeerReviewDescriptor.class),
+    @JsonSubTypes.Type(name = "BurndownDescriptor", value = BurndownDescriptor.class)
 })
 abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity implements Searchable, LabelledEntity, Broadcastable {
 
@@ -166,7 +166,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     //    @JoinColumn(referencedColumnName = "tag_id")})
     //@XmlTransient
     //private List<Tag> tags;
-
     /**
      *
      */
@@ -239,8 +238,22 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         this.gameModel = gameModel;
     }
 
+    @JsonIgnore
+    public GameModel getRootGameModel() {
+        return rootGameModel;
+    }
+
+    public void setRootGameModel(GameModel rootGameModel) {
+        this.rootGameModel = rootGameModel;
+    }
+    
+
     public ListDescriptor getParentList() {
         return parentList;
+    }
+
+    public void setParentList(ListDescriptor parentList) {
+        this.parentList = parentList;
     }
 
     @JsonIgnore
@@ -252,6 +265,14 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         } else {
             throw new WegasNotFoundException("ORPHAN DESCRIPTOR");
         }
+    }
+
+    public long getParentDescriptorId() {
+        return this.getParent().getId();
+    }
+
+    public void setParentDescriptorId(Long id) {
+        // nothing to do
     }
 
     /**
@@ -420,10 +441,10 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         }
 
         if ((context == null) // no-context
-                || (context instanceof GameModel) // gm ctx -> do not skip anything
-                || (context instanceof Game && sFlag < 4) // g ctx -> skip gms
-                || (context instanceof Team && sFlag < 3) // t ctx -> skip gms, gs
-                || (context instanceof Player && sFlag < 2)) { // p ctx -> skip gms, gs, ts
+            || (context instanceof GameModel) // gm ctx -> do not skip anything
+            || (context instanceof Game && sFlag < 4) // g ctx -> skip gms
+            || (context instanceof Team && sFlag < 3) // t ctx -> skip gms, gs
+            || (context instanceof Player && sFlag < 2)) { // p ctx -> skip gms, gs, ts
             scope.propagateDefaultInstance(context);
         }
     }
@@ -445,9 +466,9 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     @Override
     public Boolean containsAll(final List<String> criterias) {
         Boolean found = Helper.insensitiveContainsAll(this.getName(), criterias)
-                || Helper.insensitiveContainsAll(this.getLabel(), criterias)
-                || Helper.insensitiveContainsAll(this.getTitle(), criterias)
-                || Helper.insensitiveContainsAll(this.getComments(), criterias);
+            || Helper.insensitiveContainsAll(this.getLabel(), criterias)
+            || Helper.insensitiveContainsAll(this.getTitle(), criterias)
+            || Helper.insensitiveContainsAll(this.getComments(), criterias);
         if (!found && (this.getDefaultInstance() instanceof Searchable)) {
             return ((Searchable) this.getDefaultInstance()).containsAll(criterias);
         }
