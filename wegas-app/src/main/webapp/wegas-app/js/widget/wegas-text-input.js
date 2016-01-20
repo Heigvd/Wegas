@@ -44,13 +44,15 @@ YUI.add("wegas-text-input", function(Y) {
          * @private
          */
         renderUI: function() {
+            var CB = this.get("contentBox");
+            //CB.addClass("wegas-text-input-" + this.get("variable.evaluated").get("name"));
 //            Y.once("domready", function() {
             if (this.get("label")) {
-                this.get("contentBox").one(".wegas-input-label").setContent(this.get("label"));
+                CB.one(".wegas-input-label").setContent(this.get("label"));
             }
 
             if (this.get("readonly")) {
-                this.get("contentBox").one(".wegas-text-input-editor").setContent("<div class=\"readonly\">" + this.getInitialContent() + "</div>");
+                CB.one(".wegas-text-input-editor").setContent("<div class=\"readonly\">" + this.getInitialContent() + "</div>");
 
             } else {
                 Y.once("domready", function() {
@@ -59,7 +61,8 @@ YUI.add("wegas-text-input", function(Y) {
                         return;
                     }
                     tinyMCE.init({
-                        selector: ".wegas-text-input-editor",
+                        //selector: this.get("contentBox").one(".wegas-text-input-editor").getDOMNode(),
+                        selector: "#" + this.get("contentBox").get("id") + " .wegas-text-input-editor",
                         plugins: [
                             "autolink link image lists code media table contextmenu paste advlist textcolor"
                                 //textcolor wordcount autosave advlist charmap print preview hr anchor pagebreak spellchecker directionality
