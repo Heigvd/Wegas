@@ -55,6 +55,9 @@ YUI.add("wegas-text-input", function(Y) {
             } else {
                 Y.once("domready", function() {
                     //this.editor = new tinymce.Editor(this.get("contentBox").one(".wegas-text-input-editor").getDOMNode(),
+                    if (this.editor){
+                        return;
+                    }
                     tinyMCE.init({
                         selector: ".wegas-text-input-editor",
                         plugins: [
@@ -143,13 +146,13 @@ YUI.add("wegas-text-input", function(Y) {
             } else {
                 Y.later(500, this, function() {
                     var content = this.getInitialContent();
-                    if (this.editor){
+                    if (this.editor) {
                         if (content != this._initialContent) {
                             this._initialContent = content;
                             this.editor.setContent(content);
                         }
                     } else {
-                            debugger;
+                        //debugger;
                     }
                     this.updateCounters();
                     /*var tmceI = tinyMCE.get(this.get("contentBox").one(".wegas-text-input-editor"));
@@ -446,26 +449,29 @@ YUI.add("wegas-text-input", function(Y) {
                 readonly = this.get("readonly.evaluated"),
                 input, select, option, i;
             if (allowedValues && allowedValues.length > 0) {
+                select = CB.one("select");
+                select.set("disabled", readonly);
+                if (this._initialValue !== value) {
+                    this._initialValue = value;
+                    option = select.one("option[value='" + value + "']");
+                    option && option.setAttribute("selected");
+                }
+
                 if (readonly && this.get("displayChoicesWhenReadonly")) {
-                    CB.one("select").addClass("hidden");
+                    //CB.one("select").addClass("hidden");
                     input = CB.one(".wegas-input-text");
+                    input.all("ul").each(function(ul) {
+                        ul.remove();
+                    });
                     select = ["<ul>"];
                     for (i in allowedValues) {
                         option = allowedValues[i];
                         select.push("<li class=\"", (value === option ? "selected" : "unselected") + "\">", option, "</li>");
                     }
                     select.push("</ul>");
-
                     input.append(select.join(""));
-                } else {
-                    select = CB.one("select");
-                    select.set("disabled", readonly);
-                    if (this._initialValue !== value) {
-                        this._initialValue = value;
-                        option = select.one("option[value='" + value + "']");
-                        option && option.setAttribute("selected");
-                    }
                 }
+
             } else {
                 input = CB.one("input");
                 input.set("disabled", readonly);
