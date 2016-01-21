@@ -33,6 +33,10 @@ YUI.add("wegas-entitychooser", function(Y) {
                  */
                 this.currentTarget = null;
             },
+            hideAllOverlay: function() {
+                Y.Wegas.Widget.prototype.hideAllOverlay.call(this);
+                this._currentWidget && this._currentWidget.hideAllOverlay();
+            },
             syncUI: function() {
                 var items = (this.get("variable.evaluated") ?
                     (this.get("flatten") ?
@@ -180,6 +184,10 @@ YUI.add("wegas-entitychooser", function(Y) {
                  * hold a ref to the currently selected name
                  */
                 this.currentTarget = null;
+            },
+            hideAllOverlay: function() {
+                Y.Wegas.Widget.prototype.hideAllOverlay.call(this);
+                this._currentWidget && this._currentWidget.hideAllOverlay();
             },
             syncUI: function() {
                 var items = (this.get("variable.evaluated") ? (this.get("flatten") ? this.get("variable.evaluated").flatten() : this.get("variable.evaluated").get("items")) : []),
