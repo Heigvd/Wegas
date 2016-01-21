@@ -38,7 +38,7 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
         _addActionsBlocs: function(blocs, team) {
             var bloc = {
                 "title": "Actions",
-                "type": "action",
+                "cardBlocType": "action",
                 "items": [{
                     "icon": "action-impacts",
                     "label": "Impacts",

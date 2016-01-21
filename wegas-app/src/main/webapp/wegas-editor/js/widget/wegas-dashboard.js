@@ -148,17 +148,22 @@ YUI.add('wegas-dashboard', function(Y) {
                 monitoredBlocs.structure.forEach(function(blocsToAdd) {
                     newBlocs = {
                         "position": "left",
-                        "type": "monitoring",
+                        "cardBlocType": "monitoring",
                         "items": []
                     };
                     if (blocsToAdd.title) {
                         newBlocs.title = blocsToAdd.title;
                     }
+                    if (blocsToAdd.cardBlocType){
+                        newBlocs.cardBlocType = blocsToAdd.cardBlocType;
+                    }
                     blocsToAdd.items.forEach(function(bloc) {
                         newBloc = {
                             label: bloc.label,
+                            icon: bloc.icon,
                             value: monitoredBlocs.data[data.id][bloc.id],
-                            formatter: eval("(" + bloc.formatter + ")")
+                            formatter: eval("(" + bloc.formatter + ")"),
+                            do: eval("(" + bloc.do + ")")
                         };
                         newBlocs.items.push(newBloc);
                     });
