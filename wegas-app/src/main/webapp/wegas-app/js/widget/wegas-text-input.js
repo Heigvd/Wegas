@@ -38,6 +38,9 @@ YUI.add("wegas-text-input", function(Y) {
             this.publish("save", {
                 emitFacade: true
             });
+            this.publish("editing", {
+                emitFacade: true
+            });
         },
         /**
          * @function
@@ -82,7 +85,7 @@ YUI.add("wegas-text-input", function(Y) {
                         toolbar_items_size: 'small',
                         hidden_tootlbar: [2, 3],
                         setup: Y.bind(function(editor) {
-                            //editor.on('keyUp', Y.bind(this._keyup, this)); // Update on editor update
+
                             if (this.get("disablePaste")) {
                                 editor.on('paste', function(e) {
                                     e.preventDefault();
@@ -138,6 +141,7 @@ YUI.add("wegas-text-input", function(Y) {
         },
         bindUI: function() {
             this.handlers.push(Y.Wegas.Facade.Variable.after("update", this.syncUI, this));
+            this.on("save", this._save);
         },
         syncUI: function() {
             this.setContent();
@@ -177,9 +181,12 @@ YUI.add("wegas-text-input", function(Y) {
             }
         },
         _onChange: function() {
+            var content = this.editor.getContent(),
+                desc = this.get("variable.evaluated");
             this.setStatus("Not saved");
-            this.updateCounters();
-            this.valueChanged(this.editor.getContent());
+            this.updateCounters(); 
+            this.fire("editing", {"descriptor": desc, "value": content});
+            this.valueChanged(content);
             if (!this.get("showSaveButton")) {
                 if (this.wait) {
                     this.wait.cancel();
@@ -249,28 +256,31 @@ YUI.add("wegas-text-input", function(Y) {
             }
             this.setStatus(msg);
         },
-        save: function(value) {
-            var desc = this.get("variable.evaluated"),
-                theVar = desc.getInstance(),
-                cb = this.get("contentBox");
-            this._initialContent = value;
-            cb.addClass("loading");
-            theVar.set("value", value);
+        _save: function(e) {
+            var cb = this.get("contentBox"),
+                theVar = e.descriptor.getInstance();
+
+            this._initialContent = e.value;
+            theVar.set("value", e.value);
             Y.Wegas.Facade.Variable.cache.put(theVar.toObject(), {
                 on: {
                     success: Y.bind(function() {
                         cb.removeClass("loading");
-                        this.fire("save", {
-                            descriptor: desc,
-                            value: value
-                        });
                     }, this),
                     failure: Y.bind(function() {
                         cb.removeClass("loading");
                     }, this)
                 }
             });
+        },
+        save: function(value) {
+            var desc = this.get("variable.evaluated"),
+                cb = this.get("contentBox").addClass("loading");
 
+            this.fire("save", {
+                descriptor: desc,
+                value: value
+            });
 
             return true;
         },
@@ -310,7 +320,7 @@ YUI.add("wegas-text-input", function(Y) {
             readonly: {
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 type: "boolean",
-                value: { "content": "return false;"},
+                value: {"content": "return false;"},
                 optional: true,
                 _inputex: {
                     _type: "script",
@@ -368,6 +378,14 @@ YUI.add("wegas-text-input", function(Y) {
             this.publish("save", {
                 emitFacade: true
             });
+
+            this.publish("editing", {
+                emitFacade: true
+            });
+            /* to be fired if content is edited and canceled in a shot */
+            this.publish("revert", {
+                emitFacade: true
+            });
         },
         destructor: function() {
             Y.Array.each(this.handlers, function(h) {
@@ -395,23 +413,31 @@ YUI.add("wegas-text-input", function(Y) {
 
             if (inst.get("value") !== value) {
                 cb.addClass("loading");
-                inst.set("value", value);
-                Y.Wegas.Facade.Variable.cache.put(inst.toObject(), {
-                    on: {
-                        success: Y.bind(function() {
-                            cb.removeClass("loading");
-                            this.fire("save", {
-                                descriptor: desc,
-                                value: value
-                            });
-                        }, this),
-                        failure: Y.bind(function() {
-                            cb.removeClass("loading");
-                        }, this)
-                    }
+                this.fire("save", {
+                    descriptor: desc,
+                    value: value
                 });
+            } else {
+                this.fire("revert", {"descriptor": this._descriptor, "value": value});
             }
             return true;
+        },
+        _save: function(e) {
+            var inst = e.descriptor.getInstance(),
+                cb = this.get("contentBox"),
+                value = e.value;
+
+            inst.set("value", value);
+            Y.Wegas.Facade.Variable.cache.put(inst.toObject(), {
+                on: {
+                    success: Y.bind(function() {
+                        cb.removeClass("loading");
+                    }, this),
+                    failure: Y.bind(function() {
+                        cb.removeClass("loading");
+                    }, this)
+                }
+            });
         },
         renderUI: function() {
             var desc = this.get("variable.evaluated"),
@@ -421,6 +447,7 @@ YUI.add("wegas-text-input", function(Y) {
                 input = CB.one(".wegas-input-text"),
                 label = CB.one(".wegas-input-label"),
                 i, value, content;
+            this._descriptor = desc;
             if (this.get("label")) {
                 label.setContent(this.get("label"));
             }
@@ -489,14 +516,22 @@ YUI.add("wegas-text-input", function(Y) {
             input = this.get(CONTENTBOX).one("input");
             if (input) {
                 this.handlers.push(input.on("blur", this.updateFromInput, this));
+                this.handlers.push(input.on("valuechange", this.keyUp, this));
             }
             select = this.get(CONTENTBOX).one("select");
             if (select) {
                 this.handlers.push(select.on("change", this.updateFromSelect, this));
             }
+            this.on("save", this._save);
         },
         updateFromSelect: function(e) {
             this.updateValue(e.target.get("value"));
+        },
+        keyUp: function(e) {
+            var input = this.get(CONTENTBOX).one("input"),
+                data = input.getData(),
+                value = input.get("value");
+            this.fire("editing", {"descriptor": this._descriptor, "value": value});
         },
         updateFromInput: function(e) {
             var input = this.get(CONTENTBOX).one("input"),
