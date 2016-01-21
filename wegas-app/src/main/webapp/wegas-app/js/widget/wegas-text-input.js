@@ -51,13 +51,13 @@ YUI.add("wegas-text-input", function(Y) {
                 CB.one(".wegas-input-label").setContent(this.get("label"));
             }
 
-            if (this.get("readonly")) {
+            if (this.get("readonly.evaluated")) {
                 CB.one(".wegas-text-input-editor").setContent("<div class=\"readonly\">" + this.getInitialContent() + "</div>");
 
             } else {
                 Y.once("domready", function() {
                     //this.editor = new tinymce.Editor(this.get("contentBox").one(".wegas-text-input-editor").getDOMNode(),
-                    if (this.editor){
+                    if (this.editor) {
                         return;
                     }
                     tinyMCE.init({
@@ -144,7 +144,7 @@ YUI.add("wegas-text-input", function(Y) {
         },
         setContent: function() {
 
-            if (this.get("readonly")) {
+            if (this.get("readonly.evaluated")) {
                 this.get("contentBox").one(".wegas-text-input-editor").setContent("<div class=\"readonly\">" + this.getInitialContent() + "</div>");
             } else {
                 Y.later(500, this, function() {
@@ -308,15 +308,14 @@ YUI.add("wegas-text-input", function(Y) {
                 }
             },
             readonly: {
-                //getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 type: "boolean",
-                value: false,
-                optional: true
-                    /*_inputex: {
-                     _type: "variableselect",
-                     label: "Editable",
-                     classFilter: ["BooleanDescriptor"]
-                     }*/
+                value: { "content": "return false;"},
+                optional: true,
+                _inputex: {
+                    _type: "script",
+                    expects: "condition"
+                }
             },
             showSaveButton: {
                 type: "boolean",
