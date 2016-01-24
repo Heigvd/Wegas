@@ -425,6 +425,9 @@ YUI.add('wegas-datasource', function(Y) {
 
             drop.call(this, [entity]);
         },
+        _updateIndexes: function(oldAtts, newAttrs) {
+
+        },
         updateIndexes: function(oldAttrs, newAttrs) {
             var indexedKey, index, oldKey, newKey;
             for (indexedKey in this._indexes) {
@@ -816,6 +819,7 @@ YUI.add('wegas-datasource', function(Y) {
             this._indexes.name = {};
             this._indexes.id = {};
 
+
             this.on("CustomEvent", function(e) { // TODO MOVE SOMEWHERE...
                 this.get(HOST).fire(e.serverEvent.get("val.type"), e.serverEvent.get("val.payload"));
             });
@@ -886,6 +890,20 @@ YUI.add('wegas-datasource', function(Y) {
             } else {
                 VariableDescriptorCache.superclass.put.call(this, data, cfg);
             }
+        },
+        duplicateObject: function(entity, cfg) {
+            var parent = this.findParentDescriptor(entity);
+            if (parent) {
+                this.oldIds = Y.Array.map(parent.get(ITEMS), function(i) {
+                    return i.get(ID);
+                });
+            }
+            this.sendRequest(Y.mix({
+                request: this.generateRequest(entity.toObject()) + "/Duplicate/",
+                cfg: {
+                    method: POST
+                }
+            }, cfg));
         },
         post: function(data, parent, callback) {
             var request = "";
