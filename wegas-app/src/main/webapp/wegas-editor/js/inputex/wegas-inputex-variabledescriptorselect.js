@@ -943,9 +943,26 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             FlatVariableSelect.superclass.setOptions.call(this, options);
             this.options.className = options.className || 'wegas-inputex-variabledescriptorselect-group inputEx-Group';
             this.toDisable = [];
+            this.options.maxLevel = options.maxLevel || null;
+            this.options.root = options.root || null;
 
-            var that = this, 
+            var that = this,
+                items,
                 enableFolder = false;
+
+            if (this.options.root) {
+                items = [Y.Wegas.Facade.Variable.cache.find("name", this.options.root)]
+            } else {
+                items = Wegas.Facade.Variable.data;
+            }
+
+            if (options.selectableLevels) {
+                if (!Y.Lang.isArray(options.classFilter)) {
+                    this.options.selectable = [options.selectableLevels];
+                } else {
+                    this.options.selectable = options.selectableLevels;
+                }
+            }
 
             if (options.classFilter) {
                 if (!Y.Lang.isArray(options.classFilter)) {
@@ -954,7 +971,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                 this.options.classFilter = options.classFilter;
                 enableFolder = this.options.classFilter.indexOf("ListDescriptor") !== -1;
             }
-            
+
 
             function genSpaces(nb) {
                 var i,
@@ -967,30 +984,35 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
 
             function genChoices(items, level) {
                 var ret = [];
-                Y.Array.each(items, function(i) {
-                    if (i.get("@class") === "ListDescriptor") {
-                        var items = genChoices(i.get("items"), level + 1);
-                        if (items.length > 0 || enableFolder) {
+                if (!that.options.maxLevel || level <= that.options.maxLevel) {
+                    Y.Array.each(items, function(i) {
+                        if (i.get("@class") === "ListDescriptor") {
+                            var items = genChoices(i.get("items"), level + 1);
+                            if (items.length > 0 || enableFolder) {
+                                ret.push({
+                                    label: genSpaces(level) + i.get("label"),
+                                    value: i.get("name")
+                                });
+                                if (!enableFolder || (that.options.selectable && that.options.selectable.indexOf(level) === -1)) {
+                                    that.toDisable.push(ret[ret.length - 1]);
+                                }
+                                ret = ret.concat(items);
+                            }
+                        } else if (!that.options.classFilter || that.options.classFilter.indexOf(i.get("@class")) !== -1) {
                             ret.push({
                                 label: genSpaces(level) + i.get("label"),
                                 value: i.get("name")
                             });
-                            if (!enableFolder) {
+                            if (that.options.selectable && that.options.selectable.indexOf(level) === -1) {
                                 that.toDisable.push(ret[ret.length - 1]);
                             }
-                            ret = ret.concat(items);
                         }
-                    } else if (!that.options.classFilter || that.options.classFilter.indexOf(i.get("@class")) !== -1) {
-                        ret.push({
-                            label: genSpaces(level) + i.get("label"),
-                            value: i.get("name")
-                        });
-                    }
-                });
+                    });
+                }
                 return ret;
             }
 
-            that.options.choices = genChoices(Wegas.Facade.Variable.data, 0);
+            that.options.choices = genChoices(items, 0);
         },
         validate: function() {
             return this.toDisable.filter(function(e) {
