@@ -321,13 +321,16 @@ YUI.add('wegas-mcq-view', function(Y) {
                         }
                     }
                     // Row with global submit button:
-                    ret.push('<div class="mcq-last-vertical">');
-                    ret.push('<div class="mcq-choice">&nbsp;</div>');
-                    ret.push('<div class="mcq-choices-vertical-finalsubmit">');
-                    ret.push('<button class="yui3-button"', (answerable && !readonly ? '' : ' disabled'), ' id="', cQuestion.get("id"), '" style="font-weight:bold">', Y.Wegas.I18n.t('mcq.submit'), '</button>');
-                    ret.push('</div>'); // end cell with submit button
-                    ret.push('</div>'); // end table-row
                     ret.push('</div>'); // end mcq-choices-vertical
+
+                    ret.push('<div class="mcq-finalsubmit">');
+                    //ret.push('<div class="mcq-last-vertical">');
+                    //ret.push('<div class="mcq-choice">&nbsp;</div>');
+                    //ret.push('<div class="mcq-choices-vertical-finalsubmit">');
+                    ret.push('<button class="yui3-button"', (answerable && !readonly ? '' : ' disabled'), ' id="', cQuestion.get("id"), '" style="font-weight:bold">', Y.Wegas.I18n.t('mcq.submit'), '</button>');
+                    //ret.push('</div>'); // end cell with submit button
+                    //ret.push('</div>'); // end table-row
+                    ret.push('</div>'); // end mcq-finalsubmit
                 }
             } else { // Not checkbox-type:
 
