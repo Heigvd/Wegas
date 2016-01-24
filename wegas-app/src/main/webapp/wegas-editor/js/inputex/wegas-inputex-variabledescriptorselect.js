@@ -951,7 +951,13 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                 enableFolder = false;
 
             if (this.options.root) {
-                items = [Y.Wegas.Facade.Variable.cache.find("name", this.options.root)]
+                if (!Y.Lang.isArray(options.root)) {
+                    items = [Y.Wegas.Facade.Variable.cache.find("name", this.options.root)];
+                } else {
+                    items = Y.Array.map(this.options.root, function(item){
+                        return Y.Wegas.Facade.Variable.cache.find("name", item);
+                    }, this);
+                }
             } else {
                 items = Wegas.Facade.Variable.data;
             }
