@@ -85,9 +85,9 @@ YUI.add("wegas-injector", function(Y) {
                             description: item.get("title")
                         });
                     });
-                    this.instanciateGallery(gallery, index);
+                    this.instantiateGallery(gallery, index);
                 } else if (link) {
-                    this.instanciateGallery([{
+                    this.instantiateGallery([{
                             srcUrl: link,
                             description: e.target.get("title")
                         }]);
