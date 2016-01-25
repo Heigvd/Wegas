@@ -56,7 +56,6 @@ YUI.add("wegas-text-input", function(Y) {
 
             if (this.get("readonly.evaluated")) {
                 CB.one(".wegas-text-input-editor").setContent("<div class=\"readonly\">" + this.getInitialContent() + "</div>");
-
             } else {
                 Y.once("domready", function() {
                     //this.editor = new tinymce.Editor(this.get("contentBox").one(".wegas-text-input-editor").getDOMNode(),
@@ -74,11 +73,11 @@ YUI.add("wegas-text-input", function(Y) {
                             "dynamic_toolbar": Y.Wegas.app.get("base") + "wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar.js"
                         },
                         //toolbar1: "bold italic bullist | link image media code addToolbarButton",
-                        toolbar1: "bold italic bullist | link code addToolbarButton",
-                        toolbar2: "forecolor backcolor underline alignleft aligncenter alignright alignjustify table",
-                        toolbar3: "fontselect fontsizeselect styleselect",
+                        toolbar1: this.get("toolbar1"),
+                        toolbar2: this.get("toolbar2"),
+                        toolbar3: this.get("toolbar3"),
+                        contextmenu: this.get("contextmenu"),
                         // formatselect removeformat underline unlink forecolor backcolor anchor previewfontselect fontsizeselect styleselect spellchecker template
-                        // contextmenu: "link image inserttable | cell row column deletetable | formatselect forecolor",
                         menubar: false,
                         statusbar: false,
                         relative_urls: false,
@@ -184,7 +183,7 @@ YUI.add("wegas-text-input", function(Y) {
             var content = this.editor.getContent(),
                 desc = this.get("variable.evaluated");
             this.setStatus("Not saved");
-            this.updateCounters(); 
+            this.updateCounters();
             this.fire("editing", {"descriptor": desc, "value": content});
             this.valueChanged(content);
             if (!this.get("showSaveButton")) {
@@ -204,13 +203,10 @@ YUI.add("wegas-text-input", function(Y) {
             var body = this.editor.getContent(),
                 countEmpty = this.get("countBlank"),
                 stats = {};
-
             // Remove ML tags
             body = body.replace(/<[^>]*>/g, "");
-
             // Convert HTML entities to dummy characters
             body = body.replace(/&nbsp;/g, " ").replace(/&[a-zA-Z]*;/g, "X");
-
             if (countEmpty) {
                 stats.cc = body.length;
             } else {
@@ -259,7 +255,6 @@ YUI.add("wegas-text-input", function(Y) {
         _save: function(e) {
             var cb = this.get("contentBox"),
                 theVar = e.descriptor.getInstance();
-
             this._initialContent = e.value;
             theVar.set("value", e.value);
             Y.Wegas.Facade.Variable.cache.put(theVar.toObject(), {
@@ -276,12 +271,10 @@ YUI.add("wegas-text-input", function(Y) {
         save: function(value) {
             var desc = this.get("variable.evaluated"),
                 cb = this.get("contentBox").addClass("loading");
-
             this.fire("save", {
                 descriptor: desc,
                 value: value
             });
-
             return true;
         },
         getEditorLabel: function() {
@@ -360,13 +353,30 @@ YUI.add("wegas-text-input", function(Y) {
                 type: "boolean",
                 optional: true,
                 value: false
+            },
+            toolbar1: {
+                type: "string",
+                value: "bold italic bullist | link code addToolbarButton",
+                optionnal: true
+            },
+            toolbar2: {
+                type: "string",
+                value: "forecolor backcolor underline alignleft aligncenter alignright alignjustify table",
+                optionnal: true
+            },
+            toolbar3: {
+                type: "string",
+                value: "fontselect fontsizeselect styleselect",
+                optionnal: true
+            },
+            contextmenu: {
+                type: "string",
+                value: "link image inserttable | cell row column deletetable | formatselect forecolor",
+                optionnal: true
             }
         }
     });
     Y.Wegas.TextInput = TextInput;
-
-
-
     StringInput = Y.Base.create("wegas-string-input", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         CONTENT_TEMPLATE: "<div>" +
             "<div class=\"wegas-input-label\"></div>" +
@@ -378,7 +388,6 @@ YUI.add("wegas-text-input", function(Y) {
             this.publish("save", {
                 emitFacade: true
             });
-
             this.publish("editing", {
                 emitFacade: true
             });
@@ -426,7 +435,6 @@ YUI.add("wegas-text-input", function(Y) {
             var inst = e.descriptor.getInstance(),
                 cb = this.get("contentBox"),
                 value = e.value;
-
             inst.set("value", value);
             Y.Wegas.Facade.Variable.cache.put(inst.toObject(), {
                 on: {
