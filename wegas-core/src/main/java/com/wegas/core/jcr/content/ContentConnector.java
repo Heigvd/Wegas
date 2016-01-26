@@ -138,6 +138,19 @@ public class ContentConnector implements AutoCloseable {
         return null;
     }
 
+    public long getLength(String absolutePath) throws RepositoryException {
+        return this.getProperty(absolutePath, WFSConfig.WFS_DATA).getBinary().getSize();
+    }
+
+    protected InputStream getData(String absolutePath, long from, int len) throws RepositoryException, IOException {
+        InputStream data = this.getData(absolutePath);
+        byte[] bytes = new byte[len];
+        data.skip(from);
+        data.read(bytes, 0, len);
+
+        return new ByteArrayInputStream(bytes);
+    }
+
     /**
      *
      * @param absolutePath
@@ -311,10 +324,10 @@ public class ContentConnector implements AutoCloseable {
     protected Calendar getLastModified(String absolutePath) throws RepositoryException {
         return this.getProperty(absolutePath, WFSConfig.WFS_LAST_MODIFIED).getDate();
     }
+
     /*
      * Return content Bytes size
      */
-
     /**
      *
      * @param absolutePath
@@ -329,7 +342,7 @@ public class ContentConnector implements AutoCloseable {
      * Compress directory and children to ZipOutputStream. Warning: metadatas
      * are not included due to zip limitation
      *
-     * @param out a ZipOutputStream to write files to
+     * @param out  a ZipOutputStream to write files to
      * @param path root path to compress
      * @throws RepositoryException
      * @throws IOException
@@ -493,7 +506,7 @@ public class ContentConnector implements AutoCloseable {
      * @throws RepositoryException
      */
     private void initializeNamespaces()
-            throws RepositoryException {
+        throws RepositoryException {
         for (String prefix : WFSConfig.namespaces.keySet()) {
             try {
                 session.getWorkspace().getNamespaceRegistry().getURI(prefix);

@@ -40,6 +40,7 @@ import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipOutputStream;
+import javax.ws.rs.core.Response.StatusType;
 
 /**
  * @author Cyril Junod <cyril.junod at gmail.com>
@@ -52,6 +53,7 @@ public class FileController {
      *
      */
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(FileController.class);
+    static final long CHUNK_SIZE = 2 * 1024 * 1024; // 2MB
 
     /**
      *
@@ -80,13 +82,13 @@ public class FileController {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{force: (force/)?}upload{directory : .*?}")
     public Response upload(@PathParam("gameModelId") Long gameModelId,
-                           @FormDataParam("name") String name,
-                           @FormDataParam("note") String note,
-                           @FormDataParam("description") String description,
-                           @PathParam("directory") String path,
-                           @FormDataParam("file") InputStream file,
-                           @FormDataParam("file") FormDataBodyPart details,
-                           @PathParam("force") String force) throws RepositoryException {
+        @FormDataParam("name") String name,
+        @FormDataParam("note") String note,
+        @FormDataParam("description") String description,
+        @PathParam("directory") String path,
+        @FormDataParam("file") InputStream file,
+        @FormDataParam("file") FormDataBodyPart details,
+        @PathParam("force") String force) throws RepositoryException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
         logger.debug("File name: {}", details.getContentDisposition().getFileName());
@@ -135,8 +137,9 @@ public class FileController {
     @Path("read{absolutePath : .*?}")
     @CacheMaxAge(time = 48, unit = TimeUnit.HOURS)
     public Response read(@PathParam("gameModelId") Long gameModelId,
-                         @PathParam("absolutePath") String name,
-                         @Context Request request) {
+        @PathParam("absolutePath") String name,
+        @Context Request request,
+        @HeaderParam("Range") String range) {
 
         logger.debug("Asking file (/{})", name);
         AbstractContentDescriptor fileDescriptor;
@@ -151,14 +154,56 @@ public class FileController {
                 }
             }
             if (fileDescriptor instanceof FileDescriptor) {
-                Date lastModified = ((FileDescriptor) fileDescriptor).getDataLastModified().getTime();
+                FileDescriptor fileD = (FileDescriptor) fileDescriptor;
+                Date lastModified = fileD.getDataLastModified().getTime();
                 response = request.evaluatePreconditions(lastModified);
-                if (response == null) {
-                    response = Response.ok(new BufferedInputStream(((FileDescriptor) fileDescriptor).getBase64Data(), 512));
+                if (range != null && !range.isEmpty()) {
+                    // PARTIAL CONTENT !
+                    String[] ranges = range.split("=")[1].split("-");
+
+                    final long from = Long.parseLong(ranges[0]);
+                    long length = fileD.getLength();
+                    /**
+                     * Chunk media if the range upper bound is unspecified.
+                     * Chrome sends "bytes=0-"
+                     */
+                    long to;
+                    if (ranges.length == 2) {
+                        to = Long.parseLong(ranges[1]);
+                    } else {
+                        //to = from + CHUNK_SIZE;
+                        to = length - 1;
+                    }
+                    if (to >= length) {
+                        to = length - 1;
+                    }
+
+                    final int lengthToRead;
+                    if (to - from + 1 > Integer.MAX_VALUE) {
+                        lengthToRead = Integer.MAX_VALUE;
+                        to = from + lengthToRead;
+                    } else {
+                        lengthToRead = (int) (to - from + 1);
+                    }
+
+                    final String responseRange = String.format("bytes %d-%d/%d", from, to, length);
+
+                    BufferedInputStream bis = new BufferedInputStream(fileD.getBase64Data(from, lengthToRead), 512);
+
+                    response = Response.ok(bis).status(206);
+                    response.header("Accept-Ranges", "bytes");
+                    response.header("Content-Range", responseRange);
+                    response.header("Content-Length", lengthToRead);
                     response.header("Content-Type", fileDescriptor.getMimeType());
                     response.header("Description", fileDescriptor.getDescription());
+                } else {
+                    if (response == null) {
+                        response = Response.ok(new BufferedInputStream(fileD.getBase64Data(), 512));
+                        response.header("Content-Type", fileDescriptor.getMimeType());
+                        response.header("Description", fileDescriptor.getDescription());
+                    }
+                    response.lastModified(((FileDescriptor) fileDescriptor).getDataLastModified().getTime());
                 }
-                response.lastModified(((FileDescriptor) fileDescriptor).getDataLastModified().getTime());
             }
         } catch (PathNotFoundException e) {
             logger.debug("Asked path does not exist: {}", e.getMessage());
@@ -332,8 +377,8 @@ public class FileController {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public List<AbstractContentDescriptor> importXML(@PathParam("gameModelId") Long gameModelId,
-                                                     @FormDataParam("file") InputStream file,
-                                                     @FormDataParam("file") FormDataBodyPart details)
+        @FormDataParam("file") InputStream file,
+        @FormDataParam("file") FormDataBodyPart details)
         throws RepositoryException, IOException, SAXException,
         ParserConfigurationException, TransformerException {
 
@@ -370,8 +415,8 @@ public class FileController {
     @Path("{force: (force/)?}delete{absolutePath : .*?}")
     @Produces(MediaType.APPLICATION_JSON)
     public Object delete(@PathParam("gameModelId") Long gameModelId,
-                         @PathParam("absolutePath") String absolutePath,
-                         @PathParam("force") String force) {
+        @PathParam("absolutePath") String absolutePath,
+        @PathParam("force") String force) {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
@@ -410,8 +455,8 @@ public class FileController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public AbstractContentDescriptor update(AbstractContentDescriptor tmpDescriptor,
-                                            @PathParam("gameModelId") Long gameModelId,
-                                            @PathParam("absolutePath") String absolutePath) {
+        @PathParam("gameModelId") Long gameModelId,
+        @PathParam("absolutePath") String absolutePath) {
 
         AbstractContentDescriptor descriptor;
 
@@ -464,7 +509,7 @@ public class FileController {
      * @throws RepositoryException
      */
     public FileDescriptor createFile(Long gameModelId, String name, String path, String mediaType,
-                                     String note, String description, InputStream file, final Boolean override) throws RepositoryException {
+        String note, String description, InputStream file, final Boolean override) throws RepositoryException {
 
         logger.debug("File name: {}", name);
 

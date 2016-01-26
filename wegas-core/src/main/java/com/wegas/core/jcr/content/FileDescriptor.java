@@ -19,6 +19,8 @@ import javax.jcr.RepositoryException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.exception.client.WegasErrorMessage;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -69,6 +71,37 @@ public class FileDescriptor extends AbstractContentDescriptor {
         super(name, path, contentConnector);
     }
 
+    @JsonIgnore
+    public long getLength() {
+        try {
+            return connector.getLength(this.fileSystemAbsolutePath);
+        } catch (PathNotFoundException ex) {
+            logger.debug("Node does not exist or has no content, nothing to return");
+        } catch (RepositoryException ex) {
+            logger.error("Something bad append, Roger!", ex);
+        }
+        return 0l;
+    }
+
+    /**
+     *
+     * @param from
+     * @param len
+     * @return
+     */
+    //@XmlTransient
+    @JsonIgnore
+    public InputStream getBase64Data(long from, int len) {
+        try {
+            return connector.getData(this.fileSystemAbsolutePath, from, len);
+        } catch (PathNotFoundException ex) {
+            logger.debug("Node does not exist or has no content, nothing to return");
+        } catch (RepositoryException | IOException ex) {
+            logger.error("Something bad append, Roger!", ex);
+        }
+        return null;
+    }
+
     /**
      *
      * @return
@@ -90,7 +123,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
      * Attach this fileDescriptor to the content repository and writes
      * parameters to it.
      *
-     * @param data The InputStream to store
+     * @param data     The InputStream to store
      * @param mimeType The data type
      * @throws IOException
      */
@@ -123,7 +156,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
      * Attach this fileDescriptor to the content repository and writes
      * parameters to it.
      *
-     * @param data The String to store as data
+     * @param data     The String to store as data
      * @param mimeType The data type
      * @throws IOException
      */
