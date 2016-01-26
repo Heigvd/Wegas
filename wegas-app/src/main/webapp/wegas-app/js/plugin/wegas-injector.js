@@ -73,8 +73,9 @@ YUI.add("wegas-injector", function(Y) {
             // Load gallery on .light-picture click
             this.handlers.push(Y.one("body").delegate("click", function(e) {
                 var gallery = [], index,
+                    isNodeValid = e.target.get("nodeName") === "IMG",
                     link = e.target.get("href") || e.target.get("src");
-                e.halt(true);
+
                 if (e.target.hasAttribute("data-gallery")) {                    // Group same data-gallery together 
                     Y.all("[data-gallery='" + e.target.getAttribute("data-gallery") + "']").each(function(item, i) {
                         if (item === e.target) {
@@ -85,8 +86,10 @@ YUI.add("wegas-injector", function(Y) {
                             description: item.get("title")
                         });
                     });
+                    e.halt(true);
                     this.instantiateGallery(gallery, index);
-                } else if (link) {
+                } else if (isNodeValid && link) {
+                    e.halt(true);
                     this.instantiateGallery([{
                             srcUrl: link,
                             description: e.target.get("title")
