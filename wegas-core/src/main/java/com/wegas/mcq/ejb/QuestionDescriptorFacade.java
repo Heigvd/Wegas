@@ -141,7 +141,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     }
 
     /**
-     * @return
+     * @return 
      * @deprecated @param instanceId
      */
     public int findReplyCount(Long instanceId) {
@@ -305,10 +305,16 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         final ChoiceDescriptor choiceDescriptor = validateReply.getResult().getChoiceDescriptor();
         validateReply.setResult(choiceDescriptor.getInstance(player).getResult());// Refresh the current result
 
-        scriptManager.eval(player, validateReply.getResult().getImpact(), choiceDescriptor);
+        if (validateReply.getIgnored())
+            scriptManager.eval(player, validateReply.getResult().getIgnorationImpact(), choiceDescriptor);
+        else    
+            scriptManager.eval(player, validateReply.getResult().getImpact(), choiceDescriptor);
         final ReplyValidate replyValidate = new ReplyValidate(validateReply, choiceDescriptor.getInstance(player), validateReply.getQuestionInstance(), player);
         try {
-            scriptEvent.fire(player, "replyValidate", replyValidate);
+            if (validateReply.getIgnored())
+                scriptEvent.fire(player, "replyIgnore", replyValidate);
+            else
+                scriptEvent.fire(player, "replyValidate", replyValidate);
         } catch (WegasRuntimeException e) {
             logger.error("EventListener error (\"replyValidate\")", e);
             // GOTCHA no eventManager is instantiated
@@ -368,8 +374,12 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
                 }
             }
             if (!selected){
-                // There is no reply for this choice, execute its ignoration impact:
-                scriptManager.eval(player, choice.getInstance(player).getResult().getIgnorationImpact(), choice);
+                Reply ignoredReply = selectChoice(choice.getId(), player, 0L);
+                ignoredReply.setIgnored(true);
+                this.validateReply(player, ignoredReply);
+
+                // Previous version: There is no reply for this choice, execute its ignoration impact:
+                //scriptManager.eval(player, choice.getInstance(player).getResult().getIgnorationImpact(), choice);
             }
         }
 
