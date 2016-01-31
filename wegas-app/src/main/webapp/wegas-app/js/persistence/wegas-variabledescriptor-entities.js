@@ -738,14 +738,18 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             return acc;
 
         },
-        getChildByKey: function(key, value) {
+        getChildByKey: function(key, value, directChildOnly) {
             var needle,
                 filterFn = function(it) {
                     if (it.get(key) === value) {
                         needle = it;
                         return false;
                     } else if (it instanceof persistence.ListDescriptor) {
-                        return Y.Array.every(it.get(ITEMS), filterFn);
+                        if (!directChildOnly) {
+                            return Y.Array.every(it.get(ITEMS), filterFn);
+                        } else {
+                            return true;
+                        }
                     } else {
                         return true;
                     }
@@ -754,13 +758,13 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             return needle;
         },
         getChildByName: function(name) {
-            return this.getChildByKey("name", name);
+            return this.getChildByKey("name", name, true);
         },
         getChildByLabel: function(label) {
-            return this.getChildByKey("label", label);
+            return this.getChildByKey("label", label , true);
         },
         find: function(id) {
-            return this.getChildByKey("id", +id);
+            return this.getChildByKey("id", +id, false);
         },
         getTreeEditorLabel: function() {
             return "\u229e " + this.getEditorLabel();
