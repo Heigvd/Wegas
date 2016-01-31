@@ -816,8 +816,8 @@ YUI.add('wegas-datasource', function(Y) {
          */
         initializer: function() {
             // Server event, triggered through the managed-mode response events.
-            this._indexes.name = {};
-            this._indexes.id = {};
+            //this._indexes.name = {};
+            //this._indexes.id = {};
 
 
             this.on("CustomEvent", function(e) { // TODO MOVE SOMEWHERE...
