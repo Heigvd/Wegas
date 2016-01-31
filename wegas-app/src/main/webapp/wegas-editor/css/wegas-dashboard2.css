@@ -1,0 +1,216 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2016 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
+
+.dashboard-table-title{
+  font-size : 20px;
+}
+.dashboard-table-data{
+  margin: 0 10px;
+}
+
+
+.yui3-skin-sam .yui3-datatable-data tr {
+  /* margin: 12px 32px; */
+}
+
+.yui3-skin-sam .dashboard .yui3-datatable-header:first-child {
+  text-align : left;
+}
+.yui3-skin-sam .dashboard .yui3-datatable-header {
+    background: #fff;
+    text-align: center;
+    font-weight: bolder;
+    vertical-align: middle;
+    /* border-left: none; */
+    border-bottom: 1px solid #cbcbcb;
+}
+
+.yui3-skin-sam .dashboard  tr.team-details td{
+    background-color: #d4d4d4;
+    /* width: auto; */
+    position: relative;
+    width: 100%;
+}
+.yui3-skin-sam .dashboard  tr.team-details {
+    /* display: block; */
+    /* position: relative; */
+    /* width: 100%; */
+    color: white;
+    padding: 4px 0px;
+    box-sizing: border-box;
+    background-color: #d4d4d4;
+    height: 1px;
+    box-shadow: 0px 1px 1px rgba(0,0,0,0.24);
+    transition: .3s;
+    margin: 0px;
+    padding: 0px;
+}
+
+.yui3-skin-sam .dashboard .team-details__players {
+    display: block;
+    position: relative;
+    width: 50%;
+    height: 100%;
+    float: left;
+}
+
+.yui3-skin-sam .dashboard .team-details__players h3 {
+      display: block;
+    position: relative;
+    width: 80px;
+    height: 100%;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 34px;
+    box-sizing: border-box;
+    float: left;
+    padding: 0px 12px 0px 12px;
+    margin: 0px;
+}
+.yui3-skin-sam .dashboard .team-details__players .team-details__players__list {
+    display: block;
+    position: relative;
+    /* width: calc(100% - 80px); */
+    height: 100%;
+    margin: 0px;
+    padding: 0px 12px;
+    box-sizing: border-box;
+    overflow: auto;
+}
+.yui3-skin-sam .dashboard .team-details__players .team-details__player:before {
+    content: "\f007";
+    display: block;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 32px;
+    font-size: 18px;
+    text-align: center;
+    font-family: "FontAwesome";
+}
+
+.yui3-skin-sam .dashboard .team-details__players .team-details__player {
+    /* display: block; */
+    position: relative;
+    width: 100%;
+    height: 32px;
+    line-height: 32px;
+    margin: 0px;
+    padding: 0px 0px 0px 32px;
+    box-sizing: border-box;
+    text-overflow: ellipsis;
+    overflow: auto;
+    white-space: nowrap;
+}
+
+.yui3-skin-sam .dashboard  tr.team-details-closed {
+  display: none;
+}
+
+.yui3-skin-sam .dashboard td:first-child {
+  width: 100%;
+}
+
+.yui3-skin-sam .dashboard .yui3-datatable-col-team-name span {
+  padding:10px;
+}
+
+.yui3-skin-sam .dashboard .yui3-datatable-col-team-name .team-name {
+  font-weight: bolder;
+}
+
+.yui3-skin-sam .dashboard .yui3-datatable-col-team-name .details__link__closed:before{
+    transform:rotate(-90deg);
+    transition:transform .3s;
+}
+.yui3-skin-sam .dashboard .yui3-datatable-col-team-name .details__link__opened:before{
+    transform:rotate(0deg);
+    transition:transform .3s;
+}
+
+.yui3-skin-sam .dashboard .yui3-datatable-col-team-name .details__link:before{
+      content: "\f107";
+    font-family: "FontAwesome";
+    display: block;
+    position: absolute;
+    color: #82c3ec;
+    top: 0px;
+    left: 0px;
+    width: 24px;
+    height: 24px;
+    font-size: 21px;
+    line-height: 24px;
+    text-align: center;
+}
+
+.yui3-skin-sam .dashboard .yui3-datatable-col-team-name .details__link {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: 40px;
+    margin: 0px;
+    padding: 0px 0px 16px 24px;
+    box-sizing: border-box;
+    line-height: 24px;
+    cursor: pointer;
+    color: #82c3ec;
+    font-weight: lighter;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    text-decoration: none;
+}
+
+
+.yui3-skin-sam .dashboard td .dashboard-action.fa{
+  text-align: center;
+  line-height: 48px;
+}
+.yui3-skin-sam .dashboard td .dashboard-action.fa:before {
+  font-size: 2em;
+  color: #646565;
+}
+
+
+.yui3-skin-sam .dashboard td .dashboard-action {
+    background-position:center;
+    background-repeat:no-repeat;
+    background-size: auto 100%;
+    /* line-height: 48px; */
+    /* white-space: nowrap; */
+    overflow:hidden;
+    /*transition:background .3s;*/
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    border: none;
+    margin: 3px 4px 0px 0;
+    display: block;
+    cursor: pointer;
+}
+
+td .dashboard-action:hover {
+    background-color: #eee;
+}
+
+td .action-impacts {
+    background-image:url("../../wegas-app/images/icon_impact.png");
+}
+
+td .action-email {
+    background-image:url("../../wegas-app/images/icon_mail.png");
+}
+
+td .info-view {
+    background-image:url("../../wegas-app/images/icon_vision.png");
+    background-color: #41D2FA;
+}
+
+td .info-view:hover {
+    background-color: #06b7e8;
+}
