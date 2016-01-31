@@ -98,11 +98,11 @@ YUI.add("wegas-number-input", function(Y) {
                     return false;
                 }
             } else {
-                        this.fire("revert", {
-                            descriptor: desc,
-                            value: value
-                        });
-                    }
+                this.fire("revert", {
+                    descriptor: desc,
+                    value: value
+                });
+            }
         },
         _save: function(e) {
             var cb = this.get("contentBox"),
@@ -228,7 +228,7 @@ YUI.add("wegas-number-input", function(Y) {
                 this.handlers.push(this.xSlider.after("valueChange", this.updateInput, this));
             }
             if (input) {
-                this.handlers.push(input.on("blur", this.updateFromInput, this));
+                //this.handlers.push(input.on("blur", this.updateFromInput, this));
                 this.handlers.push(input.on("valuechange", this.onValueChange, this));
             }
         },
@@ -250,11 +250,19 @@ YUI.add("wegas-number-input", function(Y) {
             var input = this.get(CONTENTBOX).one("input"),
                 value = input.get("value");
             this.fire("editing", {"descriptor": this._descriptor, "value": value});
+            this.updateFromInput();
         },
-        updateFromInput: function(e) {
+        updateFromInput: function() {
             var input = this.get(CONTENTBOX).one(".wegas-input"),
                 value = input.get("value");
-            this.updateValue(value);
+
+            if (this.wait) {
+                this.wait.cancel();
+            }
+            this.wait = Y.later(750, this, function() {
+                this.wait = null;
+                this.updateValue(value);
+            });
         }
     }, {
         /** @lends Y.Wegas.NumberInput */

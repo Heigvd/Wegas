@@ -523,7 +523,7 @@ YUI.add("wegas-text-input", function(Y) {
             this.handlers.push(Y.Wegas.Facade.Variable.after("update", this.syncUI, this));
             input = this.get(CONTENTBOX).one("input");
             if (input) {
-                this.handlers.push(input.on("blur", this.updateFromInput, this));
+                //this.handlers.push(input.on("blur", this.updateFromInput, this));
                 this.handlers.push(input.on("valuechange", this.keyUp, this));
             }
             select = this.get(CONTENTBOX).one("select");
@@ -540,16 +540,17 @@ YUI.add("wegas-text-input", function(Y) {
                 data = input.getData(),
                 value = input.get("value");
             this.fire("editing", {"descriptor": this._descriptor, "value": value});
+            this.updateFromInput();
         },
         updateFromInput: function(e) {
             var input = this.get(CONTENTBOX).one("input"),
                 data = input.getData(),
                 value = input.get("value");
-            if (data.wait) {
-                data.wait.cancel();
+            if (this.wait) {
+                this.wait.cancel();
             }
-            data.wait = Y.later(200, this, function() {
-                data.wait = null;
+            this.wait = Y.later(750, this, function() {
+                this.wait = null;
                 this.updateValue(value);
             });
         }
