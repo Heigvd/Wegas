@@ -159,7 +159,7 @@ angular
             link: function($scope, element, attrs, parentCtrl) {
 
                 $scope.deleteFork = function(name) {
-                    ScenariosModel.deleteVersionHistory($scope.scenarioId, name).then(function(response) {
+                    ScenariosModel.deleteVersionHistory($scope.scenario.id, name).then(function(response) {
                         if (response.isErroneous()) {
                             response.flash();
                         } else {
