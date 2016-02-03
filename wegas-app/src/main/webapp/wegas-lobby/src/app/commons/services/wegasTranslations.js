@@ -1372,8 +1372,8 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Supprimer les accès pour cet utilisateur"
                         },
                         'SCENARIST-MODALE-VERSIONS-NEW-BTN': {
-                            'en': "New version",
-                            'fr': "Nouvelle version"
+                            'en': "Create version",
+                            'fr': "Créer version"
                         },
                         'SCENARIST-MODALE-VERSIONS-NEW-TITLE-BTN': {
                             'en': "This actions will store a new version of the " + keywords.scenario.singular.en +
