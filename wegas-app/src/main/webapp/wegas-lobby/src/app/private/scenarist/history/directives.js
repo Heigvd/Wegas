@@ -21,7 +21,7 @@ angular
                             response.flash();
                         } else {
                             response.data.forEach(function(version) {
-                                version.date = new Date(version.name.split(" ")[0]);
+                                version.date = new Date(version.dataLastModified);
                                 version.author = version.name.split("by ")[1].split(".")[0];
                             });
                             ctrl.versions = response.data;
