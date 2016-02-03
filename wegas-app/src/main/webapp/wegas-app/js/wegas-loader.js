@@ -781,7 +781,7 @@ YUI().use(function(Y) {
             },
             "wegas-presence": {
                 path: "js/widget/wegas-presence-min.js",
-                requires: ["wegas-presencecss", "font-awesome"],
+                requires: ["wegas-presencecss", "font-awesome", "escape"],
                 ws_provides: "EditorChat"
             },
             "wegas-statistics": {
