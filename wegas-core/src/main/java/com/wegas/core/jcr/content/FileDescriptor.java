@@ -7,24 +7,23 @@
  */
 package com.wegas.core.jcr.content;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.wegas.core.exception.client.WegasErrorMessage;
+import org.slf4j.LoggerFactory;
+
+import javax.jcr.PathNotFoundException;
+import javax.jcr.RepositoryException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.RepositoryException;
+
 ////import javax.xml.bind.annotation.XmlRootElement;
 ////import javax.xml.bind.annotation.XmlTransient;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.wegas.core.exception.client.WegasErrorMessage;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 //@XmlRootElement
@@ -33,13 +32,14 @@ public class FileDescriptor extends AbstractContentDescriptor {
     //@XmlTransient
     @JsonIgnore
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(FileDescriptor.class);
+
     @JsonIgnore
     private Calendar dataLastModified;
+
     @JsonIgnore
     private Long bytes;
 
     /**
-     *
      * @param absolutePath
      * @param contentConnector
      */
@@ -48,7 +48,6 @@ public class FileDescriptor extends AbstractContentDescriptor {
     }
 
     /**
-     *
      * @param absolutePath
      * @param mimeType
      * @param lastModified
@@ -62,7 +61,6 @@ public class FileDescriptor extends AbstractContentDescriptor {
     }
 
     /**
-     *
      * @param name
      * @param path
      * @param contentConnector
@@ -84,7 +82,6 @@ public class FileDescriptor extends AbstractContentDescriptor {
     }
 
     /**
-     *
      * @param from
      * @param len
      * @return
@@ -103,7 +100,6 @@ public class FileDescriptor extends AbstractContentDescriptor {
     }
 
     /**
-     *
      * @return
      */
     //@XmlTransient
@@ -140,12 +136,12 @@ public class FileDescriptor extends AbstractContentDescriptor {
             Long totalSize = ((DirectoryDescriptor) DescriptorFactory.getDescriptor("/", connector)).getBytes();
             if (totalSize > WFSConfig.MAX_REPO_SIZE) {
                 this.delete(true);
-                throw WegasErrorMessage.error("Total size[" + ContentConnector.bytesToHumanReadable(totalSize) + "] exceeded. Max " + ContentConnector.bytesToHumanReadable(WFSConfig.MAX_FILE_SIZE));
+                throw WegasErrorMessage.error("Exceeds total files storage capacity for this scenario [" + ContentConnector.bytesToHumanReadable(totalSize) + "/" + ContentConnector.bytesToHumanReadable(WFSConfig.MAX_REPO_SIZE) + "].");
             }
             this.dataLastModified = connector.getLastModified(fileSystemAbsolutePath);
             this.mimeType = mimeType;
         } catch (PathNotFoundException ex) {
-            logger.error("Parent directory ({}) does not exist, considere checking the way you try to store datas", ex.getMessage());
+            logger.error("Parent directory ({}) does not exist, consider checking the way you try to store datas", ex.getMessage());
         } catch (RepositoryException ex) {
             logger.error("Need to check this error, Roger !", ex);
         }
@@ -165,7 +161,6 @@ public class FileDescriptor extends AbstractContentDescriptor {
     }
 
     /**
-     *
      * @return
      */
     @JsonProperty("dataLastModified")
@@ -174,7 +169,6 @@ public class FileDescriptor extends AbstractContentDescriptor {
     }
 
     /**
-     *
      * @return
      */
     @JsonProperty("bytes")
@@ -184,7 +178,6 @@ public class FileDescriptor extends AbstractContentDescriptor {
     }
 
     /**
-     *
      * @throws RepositoryException
      */
     @Override
@@ -199,7 +192,6 @@ public class FileDescriptor extends AbstractContentDescriptor {
     }
 
     /**
-     *
      * @return @throws IOException
      */
     //@XmlTransient
