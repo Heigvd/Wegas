@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.OrderBy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +37,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance> {
     private String validationPattern;
 
     @ElementCollection
+    @OrderBy("allowedvalues")
     private List<String> allowedValues = new ArrayList<>();
 
     /**
