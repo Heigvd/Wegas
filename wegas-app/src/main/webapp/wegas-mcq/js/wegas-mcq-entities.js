@@ -525,7 +525,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                             type: "uneditable",
                             transient: true,
                             _inputex: {
-                                label: "<div style=\"height:60px\"><div style=\"position:absolute;margin-top:10px;\"><b>IMPACT&nbsp;WHEN&nbsp;IGNORED:</b><div style=\"font-size:85%\">For checkbox-type questions</div></div></div>",
+                                label: "<div style=\"height:60px\"><div style=\"position:absolute;margin-top:30px;\"><b>ONLY&nbsp;FOR&nbsp;CHECKBOX&nbsp;REPLIES:</b></div></div>",
                                 index: 3
                             }
                         },
@@ -534,7 +534,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                             optional: true,
                             format: HTML,
                             _inputex: {
-                                label: "Feedback",
+                                label: "Feedback<br/>when ignored",
                                 index: 4
                             }
                         },
@@ -542,7 +542,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                             optional: true,
                             _inputex: {
                                 _type: SCRIPT,
-                                label: "Impact on variables",
+                                label: "Impact on variables<br/>when ignored",
                                 index: 5
                             }
                         },
@@ -833,6 +833,12 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 type: STRING,
                 setter: function(val) {
                     return val * 1;
+                }
+            },
+            ignored: {
+                type: BOOLEAN,
+                _inputex: {
+                    label: 'Is ignored'
                 }
             },
             result: {

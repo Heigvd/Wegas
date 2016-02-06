@@ -154,6 +154,30 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         }
     }
 
+
+    /**
+     * @param choiceId
+     * @param player
+     * @return
+     */
+    public Reply ignoreChoice(Long choiceId, Player player) {
+
+        ChoiceDescriptor choice = getEntityManager().find(ChoiceDescriptor.class, choiceId);
+        QuestionDescriptor questionDescriptor = choice.getQuestion();
+        if (!questionDescriptor.getCbx()){
+            logger.error("ignoreChoice() invoked on a Question which is not of checkbox type");
+        }
+
+        Reply reply = questionSingleton.createReply(choiceId, player, -1L); // Negative startTime: hack to signal ignoration
+        try {
+            scriptEvent.fire(player, "replyIgnore", new ReplyValidate(reply));
+        } catch (WegasScriptException e) {
+            // GOTCHA no eventManager is instantiated
+            logger.error("EventListener error (\"replySelect\")", e);
+        }
+        return reply;
+    }
+
     /**
      * @param choiceId
      * @param player
@@ -167,7 +191,8 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         // Verify if mutually exclusive replies must be cancelled:
         if (questionDescriptor.getCbx() && !questionDescriptor.getAllowMultipleReplies()){
             for (Reply r : questionDescriptor.getInstance(player).getReplies()) {
-                if (!r.getResult().getChoiceDescriptor().equals(choice)) {
+                if (!r.getResult().getChoiceDescriptor().equals(choice) &&
+                        !r.getIgnored()) {
                     this.cancelReply(player.getId(), r.getId());
                 }
             }
@@ -364,27 +389,28 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
        
         for (ChoiceDescriptor choice : questionDescriptor.getItems()){
             // Test if the current choice has been selected, i.e. there is a reply for it.
-            boolean selected = false;
-            for (Reply r : choice.getQuestion().getInstance(player).getReplies()) {
+            boolean found = false;
+            for (Reply r : validateQuestion.getReplies()) {
                 if (r.getResult().getChoiceDescriptor().equals(choice)) {
-                    // It's been selected: validate the reply (which executes the impact)
-                    this.validateReply(player, r);
-                    selected = true;
+                    if (!r.getIgnored()) {
+                        // It's been selected: validate the reply (which executes the impact)
+                        this.validateReply(player, r);
+                    } else {
+                        logger.error("validateQuestion() invoked on a Question where ignored replies are already persisted");
+                    }
+                    found = true;
                     break;
                 }
             }
-            if (!selected){
-                Reply ignoredReply = selectChoice(choice.getId(), player, 0L);
-                ignoredReply.setIgnored(true);
+            if (!found){
+                Reply ignoredReply = ignoreChoice(choice.getId(), player);
                 this.validateReply(player, ignoredReply);
-
-                // Previous version: There is no reply for this choice, execute its ignoration impact:
-                //scriptManager.eval(player, choice.getInstance(player).getResult().getIgnorationImpact(), choice);
             }
         }
 
+        getEntityManager().refresh(validateQuestion);
         validateQuestion.setValidated(true);
-
+        getEntityManager().flush();
     }
 
     /**

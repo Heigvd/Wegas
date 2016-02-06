@@ -39,7 +39,7 @@
     overflow-x: hidden;
     overflow-y: auto;
     min-height: 100px;
-    padding-bottom: 1px;
+    padding-bottom: 2px !important;
 }
 .wegas-mcqtabview .yui3-tabview-list .yui3-tab {
     width: calc(100% - 4px);

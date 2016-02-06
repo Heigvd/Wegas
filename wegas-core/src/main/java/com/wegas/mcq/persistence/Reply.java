@@ -81,7 +81,7 @@ public class Reply extends AbstractEntity implements Broadcastable {
     }
 
     /**
-     * @return the "ignored" status.
+     * @return the ignored status.
      */
     public Boolean getIgnored(){
         return ignored;
