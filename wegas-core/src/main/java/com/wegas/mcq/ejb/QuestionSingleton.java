@@ -58,7 +58,8 @@ public class QuestionSingleton {
         QuestionDescriptor questionDescriptor = choice.getQuestion();
         QuestionInstance questionInstance = questionDescriptor.getInstance(player);
 
-        if (!questionDescriptor.getCbx()
+        Boolean isCbx = questionDescriptor.getCbx();
+        if (!isCbx
                 && !questionDescriptor.getAllowMultipleReplies()
                 && this.findReplyCount(questionInstance.getId()) > 0) {         // @fixme Need to check reply count this way, otherwise in case of double request, both will be added
             //if (!questionDescriptor.getAllowMultipleReplies()
@@ -67,7 +68,12 @@ public class QuestionSingleton {
         }
 
         Reply reply = new Reply();
-        reply.setStartTime(startTime);
+        if (isCbx && startTime<0){ // Hack to signal ignoration
+            reply.setStartTime(0L);
+            reply.setIgnored(true);
+        } else {
+            reply.setStartTime(startTime);
+        }
         reply.setResult(choice.getInstance(player).getResult());
         questionInstance.addReply(reply);
         //em.persist(reply);

@@ -49,6 +49,10 @@ public class Reply extends AbstractEntity implements Broadcastable {
     /**
      *
      */
+    private Boolean ignored = false;
+    /**
+     *
+     */
     @ManyToOne(optional = false)
     private Result result;
     /**
@@ -70,11 +74,25 @@ public class Reply extends AbstractEntity implements Broadcastable {
             this.setUnread(other.getUnread());
             //this.setResult(other.getResult());
             this.setStartTime(other.getStartTime());
+            this.setIgnored(other.getIgnored());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
     }
 
+    /**
+     * @return the ignored status.
+     */
+    public Boolean getIgnored(){
+        return ignored;
+    }
+    
+    /**
+     * @param ignored the ignored status to set.
+     */
+    public void setIgnored(Boolean ignored){
+        this.ignored = ignored;
+    }
     /**
      *
      * @PostPersist
