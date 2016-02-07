@@ -69,6 +69,10 @@ public class InboxInstance extends VariableInstance {
      * @param message
      */
     public void addMessage(Message message) {
+        InboxDescriptor descr = (InboxDescriptor) this.getDescriptor();
+        if (descr!=null && descr.getCapped()) {
+            this.messages.clear();
+        }
         this.messages.add(message);
         message.setInboxInstance(this);
     }

@@ -1009,6 +1009,15 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             "@class": {
                 value: "InboxDescriptor"
             },
+            capped: {
+                value: false,
+                type: "boolean",
+                _inputex: {
+                    label: "Limit to one message",
+                    description: "Each new message ejects the previous one",
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                }
+            },
             defaultInstance: {
                 properties: {
                     "@class": {
