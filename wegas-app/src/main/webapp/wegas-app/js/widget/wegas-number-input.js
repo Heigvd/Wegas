@@ -23,6 +23,9 @@ YUI.add("wegas-number-input", function(Y) {
             this.publish("save", {
                 emitFacade: true
             });
+            this.publish("saved", {
+                emitFacade: true
+            });
             this.publish("revert", {
                 emitFacade: true
             });
@@ -104,19 +107,29 @@ YUI.add("wegas-number-input", function(Y) {
                 });
             }
         },
+        _saved: function(value) {
+            var desc = this.get("variable.evaluated");
+            this.fire("saved", {
+                descriptor: desc,
+                value: value
+            });
+        },
         _save: function(e) {
             var cb = this.get("contentBox"),
+                value = e.value,
                 theVar = e.descriptor.getInstance();
 
-            this._initialContent = e.value;
-            theVar.set("value", e.value);
+            this._initialContent = value;
+            theVar.set("value", value);
             Y.Wegas.Facade.Variable.cache.put(theVar.toObject(), {
                 on: {
                     success: Y.bind(function() {
                         cb.removeClass("loading");
+                        this._saved(value);
                     }, this),
                     failure: Y.bind(function() {
                         cb.removeClass("loading");
+                        this._saved(value);
                     }, this)
                 }
             });
