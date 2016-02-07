@@ -110,6 +110,7 @@ YUI.add('wegas-dashboard2', function(Y) {
             this.handlers = {};
             this._freeForAll = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties.freeForAll");
 
+            this.plug(Y.Plugin.WidgetToolbar);
             this.datatables = {};
 
             /*
