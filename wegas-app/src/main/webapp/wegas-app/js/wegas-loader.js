@@ -205,7 +205,7 @@ YUI().use(function(Y) {
             "wegas-text-input": {
                 path: "js/widget/wegas-text-input-min.js",
                 ws_provides: ["TextInput", "StringInput"],
-                requires: ["wegas-text-inputcss", "wegas-widget", "tinymce", "wegas-panel-fileselect", "wegas-button"]
+                requires: ["wegas-text-inputcss", "wegas-widget", "tinymce", "wegas-panel-fileselect", "wegas-button",  "event-valuechange" ]
             },
             "wegas-number-inputcss": {
                 type: CSS
@@ -213,7 +213,7 @@ YUI().use(function(Y) {
             "wegas-number-input": {
                 path: "js/widget/wegas-number-input-min.js",
                 ws_provides: ["NumberInput", "BoxesNumberInput"],
-                requires: ["wegas-number-inputcss", "wegas-widget", "wegas-button", "slider", "wegas-i18n-global"]
+                requires: ["wegas-number-inputcss", "wegas-widget", "wegas-button", "slider", "wegas-i18n-global", "event-valuechange"]
             },
             "wegas-text": {
                 path: "js/widget/wegas-text-min.js",

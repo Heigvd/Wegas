@@ -91,3 +91,11 @@
 .wegas-rts-question .wegas-string-input ul.wegas-string-input-checkboxes li.selected:before {
     content: "";
 }
+
+.wegas-text-input .loading:after, .wegas-text-input .loading:before {
+    top: 37px;
+    left: initial;
+    right: 5px;
+    width: 15px;
+    height: 15px;
+}

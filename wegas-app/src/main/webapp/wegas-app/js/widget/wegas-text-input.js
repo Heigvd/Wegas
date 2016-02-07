@@ -249,7 +249,7 @@ YUI.add("wegas-text-input", function(Y) {
                 valid, msg;
             valid = true || this.updateCounters(); // Fixme do something... (prevent saving or not...)
             if (valid) {
-                msg = (this.save(value) ? "Saved" : "Something went wrong");
+                msg = (this.save(value) ? "Saving..." : "Something went wrong");
             } else {
                 msg = "Size limit exceeded";
             }
@@ -265,10 +265,12 @@ YUI.add("wegas-text-input", function(Y) {
                 on: {
                     success: Y.bind(function() {
                         cb.removeClass("loading");
+                        this.setStatus("Saved");
                         this._saved(value);
                     }, this),
                     failure: Y.bind(function() {
                         cb.removeClass("loading");
+                        this.setStatus("Something went wrong");
                         this._saved(value);
                     }, this)
                 }
@@ -390,6 +392,10 @@ YUI.add("wegas-text-input", function(Y) {
         }
     });
     Y.Wegas.TextInput = TextInput;
+
+
+
+
     StringInput = Y.Base.create("wegas-string-input", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         CONTENT_TEMPLATE: "<div>" +
             "<div class=\"wegas-input-label\"></div>" +
@@ -437,6 +443,7 @@ YUI.add("wegas-text-input", function(Y) {
             }
 
             if (inst.get("value") !== value) {
+                this._initialValue = value;
                 cb.addClass("loading");
                 this.fire("save", {
                     descriptor: desc,
@@ -605,7 +612,7 @@ YUI.add("wegas-text-input", function(Y) {
             if (this.wait) {
                 this.wait.cancel();
             }
-            this.wait = Y.later(750, this, function() {
+            this.wait = Y.later(1000, this, function() {
                 this.wait = null;
                 this.updateValue(value);
             });
