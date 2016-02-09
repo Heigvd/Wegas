@@ -46,14 +46,14 @@ YUI.add('wegas-cards-resizable', function(Y) {
             size.illustration = (cardNode && cardNode.hasClass("card--illustred")) ? 80 : 0;
             Y.Array.each(card.blocs, function(bloc) {
                 var blocs = size.blocs;
-                blocs[bloc.type].large += 2;
-                blocs[bloc.type].medium += 2;
-                blocs[bloc.type].small += (bloc.type === "action" ? 2 : 0);
+                blocs[bloc.cardBlocType].large += 2;
+                blocs[bloc.cardBlocType].medium += 2;
+                blocs[bloc.cardBlocType].small += (bloc.cardBlocType === "action" ? 2 : 0);
                 Y.Array.each(bloc.items, function() {
-                    blocs[bloc.type].cases = blocs[bloc.type].cases + 1;
-                    blocs[bloc.type].large += ((bloc.type === "monitoring") ? 80 : 65);
-                    blocs[bloc.type].medium += 65;
-                    blocs[bloc.type].small += 65;
+                    blocs[bloc.cardBlocType].cases = blocs[bloc.cardBlocType].cases + 1;
+                    blocs[bloc.cardBlocType].large += ((bloc.cardBlocType === "monitoring") ? 80 : 65);
+                    blocs[bloc.cardBlocType].medium += 65;
+                    blocs[bloc.cardBlocType].small += 65;
                 }, this);
             }, this);
             smallTop = size.illustration + size.title + size.blocs.action.small;

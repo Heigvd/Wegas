@@ -13,6 +13,7 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
+import static java.lang.Boolean.FALSE;
 //import javax.xml.bind.annotation.XmlType;
 
 /**
@@ -31,12 +32,19 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
     private String description;
 
     /**
+     * Tells if the inbox has a capacity of just one message.
+     */
+    private Boolean capped = FALSE;
+
+    /**
      *
      * @param a
      */
     @Override
     public void merge(AbstractEntity a) {
         super.merge(a);
+        InboxDescriptor other = (InboxDescriptor) a;
+        this.setCapped(other.getCapped());
     }
 
     /**
@@ -53,6 +61,19 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
         this.description = description;
     }
 
+    /**
+     * @return the limited capacity
+     */
+    public Boolean getCapped() {
+        return capped;
+    }
+
+    /**
+     * @param capped the capacity limitation to set
+     */
+    public void setCapped(Boolean capped) {
+        this.capped = capped;
+    }
     /**
      *
      * Sugar to be used from scripts.

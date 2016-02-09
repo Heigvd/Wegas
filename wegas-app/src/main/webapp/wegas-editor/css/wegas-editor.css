@@ -135,7 +135,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     left: 0px;
     right: 0px;
     overflow: auto;
-    height: initial !important;
+    height: auto !important;
 }
 
 .wegas-hastoolbar > .wegas-toolbar {

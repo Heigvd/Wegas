@@ -39,6 +39,12 @@ import javax.persistence.PersistenceContext;
 @RequestScoped
 public class RequestManager {
 
+    public enum RequestEnvironment {
+        STD, // Standard request from standard client (ie a browser)
+        TEST, // Testing Request from standard client
+        INTERNAL // Internal Process (timer, etc)
+    };
+
     @Inject
     MutexSingleton mutexSingleton;
 
@@ -46,6 +52,8 @@ public class RequestManager {
     private EntityManager em;
 
     private static Logger logger = LoggerFactory.getLogger(RequestManager.class);
+
+    private RequestEnvironment env = RequestEnvironment.STD;
 
     /**
      *
@@ -85,6 +93,14 @@ public class RequestManager {
      *
      */
     private ScriptEngine currentEngine = null;
+
+    public RequestEnvironment getEnv() {
+        return env;
+    }
+
+    public void setEnv(RequestEnvironment env) {
+        this.env = env;
+    }
 
     public void addUpdatedEntities(Map<String, List<AbstractEntity>> entities) {
         this.addEntities(entities, updatedEntities);

@@ -1572,7 +1572,7 @@ YUI.add("wegas-review-widgets", function(Y) {
 
                 });
             } else {
-                if (!this.get("readonly")) {
+                if (!this.get("readonly.evaluated")) {
                     evl.set("value", this.editor.getContent());
                 }
             }
@@ -1582,10 +1582,6 @@ YUI.add("wegas-review-widgets", function(Y) {
         ATTRS: {
             evaluation: {
                 type: "TextEvaluationInstance"
-            },
-            readonly: {
-                type: "boolean",
-                value: false
             },
             showSaveButton: {
                 type: "boolean",

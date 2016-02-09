@@ -8,6 +8,7 @@
 package com.wegas.core.persistence.variable.primitive;
 
 import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -63,8 +64,14 @@ public class TextInstance extends VariableInstance implements Searchable {
      */
     @Override
     public void merge(AbstractEntity a) {
-        TextInstance vi = (TextInstance) a;
-        this.setValue(vi.getValue());
+        if (a != null) {
+            if (a instanceof TextInstance) {
+                TextInstance vi = (TextInstance) a;
+                this.setValue(vi.getValue());
+            } else {
+                throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
+            }
+        }
     }
 
     @Override

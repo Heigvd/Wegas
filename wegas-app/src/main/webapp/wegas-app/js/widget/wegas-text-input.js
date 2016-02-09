@@ -35,7 +35,13 @@ YUI.add("wegas-text-input", function(Y) {
             "</div>",
         initializer: function() {
             this.handlers = [];
+            this.publish("saved", {
+                emitFacade: true
+            });
             this.publish("save", {
+                emitFacade: true
+            });
+            this.publish("editing", {
                 emitFacade: true
             });
         },
@@ -44,67 +50,83 @@ YUI.add("wegas-text-input", function(Y) {
          * @private
          */
         renderUI: function() {
+            var CB = this.get("contentBox");
+            //CB.addClass("wegas-text-input-" + this.get("variable.evaluated").get("name"));
 //            Y.once("domready", function() {
             if (this.get("label")) {
-                this.get("contentBox").one(".wegas-input-label").setContent(this.get("label"));
+                CB.one(".wegas-input-label").setContent(this.get("label"));
             }
 
-            if (this.get("readonly")) {
-                this.get("contentBox").one(".wegas-text-input-editor").setContent("<div class=\"readonly\">" + this.getInitialContent() + "</div>");
-
+            if (this.get("readonly.evaluated")) {
+                CB.one(".wegas-text-input-editor").setContent("<div class=\"readonly\">" + this.getInitialContent() + "</div>");
             } else {
-                this.editor = new tinymce.Editor(this.get("contentBox").one(".wegas-text-input-editor").getDOMNode(), {
-                    plugins: [
-                        "autolink link image lists code media table contextmenu paste advlist textcolor"
-                            //textcolor wordcount autosave advlist charmap print preview hr anchor pagebreak spellchecker directionality
-                    ],
-                    external_plugins: {
-                        "dynamic_toolbar": Y.Wegas.app.get("base") + "wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar.js"
-                    },
-                    //toolbar1: "bold italic bullist | link image media code addToolbarButton",
-                    toolbar1: "bold italic bullist | link code addToolbarButton",
-                    toolbar2: "forecolor backcolor underline alignleft aligncenter alignright alignjustify table",
-                    toolbar3: "fontselect fontsizeselect styleselect",
-                    // formatselect removeformat underline unlink forecolor backcolor anchor previewfontselect fontsizeselect styleselect spellchecker template
-                    // contextmenu: "link image inserttable | cell row column deletetable | formatselect forecolor",
-                    menubar: false,
-                    statusbar: false,
-                    relative_urls: false,
-                    toolbar_items_size: 'small',
-                    hidden_tootlbar: [2, 3],
-                    setup: Y.bind(function(editor) {
-                        //editor.on('keyUp', Y.bind(this._keyup, this)); // Update on editor update
-                        editor.on('keyUp', Y.bind(this._onChange, this)); // Update on editor update
-                        //editor.on('NodeChange', Y.bind(this.setContent, this)); // Update on editor update
-                        this.editor = editor;
-                    }, this),
-                    image_advtab: true,
-                    autoresize_min_height: 35,
-                    autoresize_max_height: 500,
-                    content_css: [
-                        Wegas.app.get("base") + "wegas-editor/css/wegas-inputex-rte.css"
-                    ],
-                    style_formats: [{// Style formats
-                            title: 'Title 1',
-                            block: 'h1'
-                        }, {
-                            title: 'Title 2',
-                            block: 'h2'
-                                // styles : {
-                                //    color : '#ff0000'
-                                // }
-                        }, {
-                            title: 'Title 3',
-                            block: 'h3'
-                        }, {
-                            title: 'Normal',
-                            inline: 'span'
-                        }, {
-                            title: "Code",
-                            //icon: "code",
-                            block: "code"
-                        }]}, tinymce.EditorManager);
-                this.editor.render();
+                Y.once("domready", function() {
+                    //this.editor = new tinymce.Editor(this.get("contentBox").one(".wegas-text-input-editor").getDOMNode(),
+                    if (this.editor) {
+                        return;
+                    }
+                    tinyMCE.init({
+                        //selector: this.get("contentBox").one(".wegas-text-input-editor").getDOMNode(),
+                        selector: "#" + this.get("contentBox").get("id") + " .wegas-text-input-editor",
+                        plugins: [
+                            "autolink link image lists code media table contextmenu paste advlist textcolor"
+                                //textcolor wordcount autosave advlist charmap print preview hr anchor pagebreak spellchecker directionality
+                        ],
+                        external_plugins: {
+                            "dynamic_toolbar": Y.Wegas.app.get("base") + "wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar.js"
+                        },
+                        //toolbar1: "bold italic bullist | link image media code addToolbarButton",
+                        toolbar1: this.get("toolbar1"),
+                        toolbar2: this.get("toolbar2"),
+                        toolbar3: this.get("toolbar3"),
+                        contextmenu: this.get("contextmenu"),
+                        // formatselect removeformat underline unlink forecolor backcolor anchor previewfontselect fontsizeselect styleselect spellchecker template
+                        menubar: false,
+                        statusbar: false,
+                        relative_urls: false,
+                        toolbar_items_size: 'small',
+                        hidden_tootlbar: [2, 3],
+                        setup: Y.bind(function(editor) {
+
+                            if (this.get("disablePaste")) {
+                                editor.on('paste', function(e) {
+                                    e.preventDefault();
+                                });
+                            }
+                            // Update on editor update
+                            editor.on('keyUp', Y.bind(this._onChange, this)); // Update on editor update
+                            //editor.on('NodeChange', Y.bind(this.setContent, this)); // Update on editor update
+                            this.editor = editor;
+                            this.syncUI();
+                        }, this),
+                        image_advtab: true,
+                        autoresize_min_height: 35,
+                        autoresize_max_height: 500,
+                        content_css: [
+                            Wegas.app.get("base") + "wegas-editor/css/wegas-inputex-rte.css"
+                        ],
+                        style_formats: [{// Style formats
+                                title: 'Title 1',
+                                block: 'h1'
+                            }, {
+                                title: 'Title 2',
+                                block: 'h2'
+                                    // styles : {
+                                    //    color : '#ff0000'
+                                    // }
+                            }, {
+                                title: 'Title 3',
+                                block: 'h3'
+                            }, {
+                                title: 'Normal',
+                                inline: 'span'
+                            }, {
+                                title: "Code",
+                                //icon: "code",
+                                block: "code"
+                            }]});
+                }, this);
+                //this.editor.render();
                 //this.setContent();
                 if (this.get("showSaveButton")) {
                     this.addButton = new Wegas.Button({
@@ -121,20 +143,25 @@ YUI.add("wegas-text-input", function(Y) {
         },
         bindUI: function() {
             this.handlers.push(Y.Wegas.Facade.Variable.after("update", this.syncUI, this));
+            this.on("save", this._save);
         },
         syncUI: function() {
             this.setContent();
         },
         setContent: function() {
 
-            if (this.get("readonly")) {
+            if (this.get("readonly.evaluated")) {
                 this.get("contentBox").one(".wegas-text-input-editor").setContent("<div class=\"readonly\">" + this.getInitialContent() + "</div>");
             } else {
-                Y.later(100, this, function() {
+                Y.later(500, this, function() {
                     var content = this.getInitialContent();
-                    if (content != this._initialContent) {
-                        this._initialContent = content;
-                        this.editor.setContent(content);
+                    if (this.editor) {
+                        if (content != this._initialContent) {
+                            this._initialContent = content;
+                            this.editor.setContent(content);
+                        }
+                    } else {
+                        //debugger;
                     }
                     this.updateCounters();
                     /*var tmceI = tinyMCE.get(this.get("contentBox").one(".wegas-text-input-editor"));
@@ -156,14 +183,17 @@ YUI.add("wegas-text-input", function(Y) {
             }
         },
         _onChange: function() {
+            var content = this.editor.getContent(),
+                desc = this.get("variable.evaluated");
             this.setStatus("Not saved");
             this.updateCounters();
-            this.valueChanged(this.editor.getContent());
+            this.fire("editing", {"descriptor": desc, "value": content});
+            this.valueChanged(content);
             if (!this.get("showSaveButton")) {
                 if (this.wait) {
                     this.wait.cancel();
                 }
-                this.wait = Y.later(750, this, function() {
+                this.wait = Y.later(1000, this, function() {
                     this.wait = null;
                     this.onSave();
                 });
@@ -176,13 +206,10 @@ YUI.add("wegas-text-input", function(Y) {
             var body = this.editor.getContent(),
                 countEmpty = this.get("countBlank"),
                 stats = {};
-
             // Remove ML tags
             body = body.replace(/<[^>]*>/g, "");
-
             // Convert HTML entities to dummy characters
             body = body.replace(/&nbsp;/g, " ").replace(/&[a-zA-Z]*;/g, "X");
-
             if (countEmpty) {
                 stats.cc = body.length;
             } else {
@@ -222,42 +249,59 @@ YUI.add("wegas-text-input", function(Y) {
                 valid, msg;
             valid = true || this.updateCounters(); // Fixme do something... (prevent saving or not...)
             if (valid) {
-                msg = (this.save(value) ? "Saved" : "Something went wrong");
+                msg = (this.save(value) ? "Saving..." : "Something went wrong");
             } else {
                 msg = "Size limit exceeded";
             }
             this.setStatus(msg);
         },
-        save: function(value) {
-            var desc = this.get("variable.evaluated"),
-                theVar = desc.getInstance(),
-                cb = this.get("contentBox");
+        _save: function(e) {
+            var cb = this.get("contentBox"),
+                value = e.value,
+                theVar = e.descriptor.getInstance();
             this._initialContent = value;
-            cb.addClass("loading");
             theVar.set("value", value);
             Y.Wegas.Facade.Variable.cache.put(theVar.toObject(), {
                 on: {
                     success: Y.bind(function() {
                         cb.removeClass("loading");
-                        this.fire("save", {
-                            descriptor: desc,
-                            value: value
-                        });
+                        this.setStatus("Saved");
+                        this._saved(value);
                     }, this),
                     failure: Y.bind(function() {
                         cb.removeClass("loading");
+                        this.setStatus("Something went wrong");
+                        this._saved(value);
                     }, this)
                 }
             });
-
-
+        },
+        _saved: function(value) {
+            var desc = this.get("variable.evaluated");
+            this.fire("saved", {
+                descriptor: desc,
+                value: value
+            });
+        },
+        save: function(value) {
+            var desc = this.get("variable.evaluated"),
+                cb = this.get("contentBox").addClass("loading");
+            this.fire("save", {
+                descriptor: desc,
+                value: value
+            });
             return true;
         },
         getEditorLabel: function() {
             return "TextInput";
         },
         destructor: function() {
-            this.editor && this.editor.destroy();
+            try {
+                this.editor && this.editor.remove();
+            } catch (e) {
+                console.debug(e);
+            }
+            this.editor = null;
             Y.Array.each(this.handlers, function(h) {
                 h.detach();
             });
@@ -282,15 +326,14 @@ YUI.add("wegas-text-input", function(Y) {
                 }
             },
             readonly: {
-                //getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 type: "boolean",
-                value: false,
-                optional: true
-                    /*_inputex: {
-                     _type: "variableselect",
-                     label: "Editable",
-                     classFilter: ["BooleanDescriptor"]
-                     }*/
+                value: {"content": "return false;"},
+                optional: true,
+                _inputex: {
+                    _type: "script",
+                    expects: "condition"
+                }
             },
             showSaveButton: {
                 type: "boolean",
@@ -320,10 +363,36 @@ YUI.add("wegas-text-input", function(Y) {
                 type: "boolean",
                 optional: true,
                 value: false
+            },
+            disablePaste: {
+                type: "boolean",
+                optional: true,
+                value: false
+            },
+            toolbar1: {
+                type: "string",
+                value: "bold italic bullist | link code addToolbarButton",
+                optionnal: true
+            },
+            toolbar2: {
+                type: "string",
+                value: "forecolor backcolor underline alignleft aligncenter alignright alignjustify table",
+                optionnal: true
+            },
+            toolbar3: {
+                type: "string",
+                value: "fontselect fontsizeselect styleselect",
+                optionnal: true
+            },
+            contextmenu: {
+                type: "string",
+                value: "link image inserttable | cell row column deletetable | formatselect forecolor",
+                optionnal: true
             }
         }
     });
     Y.Wegas.TextInput = TextInput;
+
 
 
 
@@ -336,6 +405,16 @@ YUI.add("wegas-text-input", function(Y) {
             this.handlers = [];
             this._initialValue = undefined;
             this.publish("save", {
+                emitFacade: true
+            });
+            this.publish("editing", {
+                emitFacade: true
+            });
+            /* to be fired if content is edited and canceled in a shot */
+            this.publish("revert", {
+                emitFacade: true
+            });
+            this.publish("saved", {
                 emitFacade: true
             });
         },
@@ -364,24 +443,42 @@ YUI.add("wegas-text-input", function(Y) {
             }
 
             if (inst.get("value") !== value) {
+                this._initialValue = value;
                 cb.addClass("loading");
-                inst.set("value", value);
-                Y.Wegas.Facade.Variable.cache.put(inst.toObject(), {
-                    on: {
-                        success: Y.bind(function() {
-                            cb.removeClass("loading");
-                            this.fire("save", {
-                                descriptor: desc,
-                                value: value
-                            });
-                        }, this),
-                        failure: Y.bind(function() {
-                            cb.removeClass("loading");
-                        }, this)
-                    }
+                this.fire("save", {
+                    descriptor: desc,
+                    value: value
                 });
+            } else {
+                this.fire("revert", {"descriptor": this._descriptor, "value": value});
             }
             return true;
+        },
+        _save: function(e) {
+            var inst = e.descriptor.getInstance(),
+                cb = this.get("contentBox"),
+                value = e.value;
+            this._initialContent = value;
+            inst.set("value", value);
+            Y.Wegas.Facade.Variable.cache.put(inst.toObject(), {
+                on: {
+                    success: Y.bind(function() {
+                        cb.removeClass("loading");
+                        this._saved(value);
+                    }, this),
+                    failure: Y.bind(function() {
+                        cb.removeClass("loading");
+                        this._saved(value);
+                    }, this)
+                }
+            });
+        },
+        _saved: function(value) {
+            var desc = this.get("variable.evaluated");
+            this.fire("saved", {
+                descriptor: desc,
+                value: value
+            });
         },
         renderUI: function() {
             var desc = this.get("variable.evaluated"),
@@ -391,22 +488,38 @@ YUI.add("wegas-text-input", function(Y) {
                 input = CB.one(".wegas-input-text"),
                 label = CB.one(".wegas-input-label"),
                 i, value, content;
+            this._descriptor = desc;
             if (this.get("label")) {
                 label.setContent(this.get("label"));
             }
 
             if (allowedValues && allowedValues.length > 0) {
-                // SELECT
-                content = ['<select>'];
-                content.push("<option value=\"\" disabled selected>--select--</option>");
-                for (i in allowedValues) {
-                    value = allowedValues[i];
-                    content.push("<option value=\"" + value + "\" " +
-                        (value === inst.get("value") ? "selected=''" : "") +
-                        ">" + value + "</option>");
+
+                if (!this.get("clickSelect")) {
+                    // SELECT
+                    content = ['<select>'];
+                    content.push("<option value=\"\" disabled selected>--select--</option>");
+                    for (i in allowedValues) {
+                        value = allowedValues[i];
+                        content.push("<option value=\"" + value + "\" " +
+                            (value === inst.get("value") ? "selected=''" : "") +
+                            ">" + value + "</option>");
+                    }
+                    content.push('</select>');
+                    input.setContent(content.join(""));
+                } else {
+                    // CheckBox Like
+                    content = ["<ul class=\"wegas-string-input-checkboxes\">"];
+                    for (i in allowedValues) {
+                        value = allowedValues[i];
+                        content.push("<li data-value=\"" + value + "\" " +
+                            (value === inst.get("value") ? "class='selected'" : "") +
+                            ">" + value + "</li>");
+                    }
+
+                    content.push("</ul>");
+                    input.setContent(content.join(""));
                 }
-                content.push('</select>');
-                input.setContent(content.join(""));
             } else {
                 // INPUT
                 input.setContent("<input value=\"" + value + "\" />");
@@ -420,19 +533,9 @@ YUI.add("wegas-text-input", function(Y) {
                 value = inst.get("value"),
                 readonly = this.get("readonly.evaluated"),
                 input, select, option, i;
+            this.get("boundingBox").toggleClass("readonly", readonly);
             if (allowedValues && allowedValues.length > 0) {
-                if (readonly && this.get("displayChoicesWhenReadonly")) {
-                    CB.one("select").addClass("hidden");
-                    input = CB.one(".wegas-input-text");
-                    select = ["<ul>"];
-                    for (i in allowedValues) {
-                        option = allowedValues[i];
-                        select.push("<li class=\"", (value === option ? "selected" : "unselected") + "\">", option, "</li>");
-                    }
-                    select.push("</ul>");
-
-                    input.append(select.join(""));
-                } else {
+                if (!this.get("clickSelect")) {
                     select = CB.one("select");
                     select.set("disabled", readonly);
                     if (this._initialValue !== value) {
@@ -440,6 +543,25 @@ YUI.add("wegas-text-input", function(Y) {
                         option = select.one("option[value='" + value + "']");
                         option && option.setAttribute("selected");
                     }
+
+                    if (readonly && this.get("displayChoicesWhenReadonly")) {
+                        //CB.one("select").addClass("hidden");
+                        input = CB.one(".wegas-input-text");
+                        input.all("ul").each(function(ul) {
+                            ul.remove();
+                        });
+                        select = ["<ul>"];
+                        for (i in allowedValues) {
+                            option = allowedValues[i];
+                            select.push("<li class=\"", (value === option ? "selected" : "unselected") + "\">", option, "</li>");
+                        }
+                        select.push("</ul>");
+                        input.append(select.join(""));
+                    }
+                } else {
+                    select = CB.one(".wegas-string-input-checkboxes");
+                    select.all(".selected").removeClass("selected");
+                    select.all("li[data-value=\"" + value + "\"]").addClass("selected");
                 }
             } else {
                 input = CB.one("input");
@@ -451,29 +573,47 @@ YUI.add("wegas-text-input", function(Y) {
             }
         },
         bindUI: function() {
-            var input, select;
+            var input, select, ul;
             this.handlers.push(Y.Wegas.Facade.Variable.after("update", this.syncUI, this));
             input = this.get(CONTENTBOX).one("input");
             if (input) {
-                this.handlers.push(input.on("blur", this.updateFromInput, this));
+                //this.handlers.push(input.on("blur", this.updateFromInput, this));
+                this.handlers.push(input.on("valuechange", this.keyUp, this));
             }
             select = this.get(CONTENTBOX).one("select");
             if (select) {
                 this.handlers.push(select.on("change", this.updateFromSelect, this));
             }
+            ul = this.get(CONTENTBOX).one("ul");
+            if (ul) {
+                this.handlers.push(this.get(CONTENTBOX).delegate("click", this.updateFromUl, "li", this));
+            }
+            this.on("save", this._save);
+        },
+        updateFromUl: function(e) {
+            if (!this.get("readonly.evaluated")) {
+                this.updateValue(e.target.getData().value);
+            }
         },
         updateFromSelect: function(e) {
             this.updateValue(e.target.get("value"));
+        },
+        keyUp: function(e) {
+            var input = this.get(CONTENTBOX).one("input"),
+                data = input.getData(),
+                value = input.get("value");
+            this.fire("editing", {"descriptor": this._descriptor, "value": value});
+            this.updateFromInput();
         },
         updateFromInput: function(e) {
             var input = this.get(CONTENTBOX).one("input"),
                 data = input.getData(),
                 value = input.get("value");
-            if (data.wait) {
-                data.wait.cancel();
+            if (this.wait) {
+                this.wait.cancel();
             }
-            data.wait = Y.later(200, this, function() {
-                data.wait = null;
+            this.wait = Y.later(1000, this, function() {
+                this.wait = null;
                 this.updateValue(value);
             });
         }
@@ -502,6 +642,11 @@ YUI.add("wegas-text-input", function(Y) {
                     _type: "script",
                     expects: "condition"
                 }
+            },
+            clickSelect: {
+                type: "boolean",
+                value: false,
+                optional: true
             },
             readonly: {
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,

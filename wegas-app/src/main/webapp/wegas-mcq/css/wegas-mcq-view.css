@@ -11,6 +11,8 @@
 
 .wegas-mcqview .mcq-question {
     padding: 0 6px 10px 6px;
+    position: relative;
+    height: 100%;
 }
 
 .wegas-mcqview .mcq-question-title {
@@ -21,7 +23,7 @@
 }
 
 .wegas-mcqview .mcq-question-details {
-    margin-bottom: 20px;
+    /* margin-bottom: 20px; */
     margin-bottom: 8px;
 }
 
@@ -106,6 +108,27 @@
     margin-top: 20px;
     margin-right: 5px;
 }
+.wegas-mcqview .mcq-finalsubmit {
+    
+width: 100%;
+    
+height: 24px;
+    
+box-sizing: border-box;
+    
+padding: 20px;
+    
+position: relative;
+}
+
+.wegas-mcqview .mcq-finalsubmit .yui3-button {
+
+right: 0px;
+
+position: absolute;
+}
+
+
 .wegas-mcqview .mcq-choices-horizontal .mcq-choice {
     display: table-cell;
     width: 100%;
@@ -116,7 +139,7 @@
 /* .wegas-tabview .mcq-choice-vertical .mcq-choice-namedescr, */
 .wegas-mcqview .mcq-choice-vertical .mcq-choice {
     display: table-cell;
-    width: 100%;
+    width: 82%;
     border: 1px solid #d8d9dd;
     border-right: none;
     border-bottom-width: 3px;
@@ -193,25 +216,23 @@
     display: inline-block;
     vertical-align: bottom;
 }
+.wegas-mcqview .mcq-choices-vertical .mcq-checkbox-container,
 .wegas-mcqview .mcq-choices .mcq-checkbox-container {
     position: absolute;
     width: 100%;
     bottom: 0;
 }
-.wegas-mcqview .mcq-choices-vertical .mcq-checkbox-container {
-    position: absolute;
-    width: 100%;
-    bottom: 3px;
-}
-.wegas-mcqview .mcq-choices-vertical .mcq-checkbox { /* For checkboxes and radio boxes presented vertically */
-    zoom: 1.3;
+.wegas-mcqview .mcq-checkbox {
+    -webkit-transform: scale(1.4);
+    -o-transform: scale(1.4);
+    transform: scale(1.4);
+    -moz-transform: scale(1.1); /* blurred, don't zoom more */
+    -ms-transform: scale(1.3);
     cursor: pointer;
 }
 .wegas-mcqview .mcq-choices-horizontal .mcq-checkbox { /* For checkboxes and radio boxes presented horizontally (tabular) */
     text-align: center;
     margin-top: 5px;
-    zoom: 1.3;
-    cursor: pointer;
 }
 
 

@@ -7,22 +7,23 @@
  */
 package com.wegas.core.jcr.content;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Calendar;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.RepositoryException;
-////import javax.xml.bind.annotation.XmlRootElement;
-////import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import org.slf4j.LoggerFactory;
 
+import javax.jcr.PathNotFoundException;
+import javax.jcr.RepositoryException;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Calendar;
+
+////import javax.xml.bind.annotation.XmlRootElement;
+////import javax.xml.bind.annotation.XmlTransient;
+
 /**
- *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 //@XmlRootElement
@@ -31,13 +32,14 @@ public class FileDescriptor extends AbstractContentDescriptor {
     //@XmlTransient
     @JsonIgnore
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(FileDescriptor.class);
+
     @JsonIgnore
     private Calendar dataLastModified;
+
     @JsonIgnore
     private Long bytes;
 
     /**
-     *
      * @param absolutePath
      * @param contentConnector
      */
@@ -46,7 +48,6 @@ public class FileDescriptor extends AbstractContentDescriptor {
     }
 
     /**
-     *
      * @param absolutePath
      * @param mimeType
      * @param lastModified
@@ -60,7 +61,6 @@ public class FileDescriptor extends AbstractContentDescriptor {
     }
 
     /**
-     *
      * @param name
      * @param path
      * @param contentConnector
@@ -69,8 +69,37 @@ public class FileDescriptor extends AbstractContentDescriptor {
         super(name, path, contentConnector);
     }
 
+    @JsonIgnore
+    public long getLength() {
+        try {
+            return connector.getLength(this.fileSystemAbsolutePath);
+        } catch (PathNotFoundException ex) {
+            logger.debug("Node does not exist or has no content, nothing to return");
+        } catch (RepositoryException ex) {
+            logger.error("Something bad append, Roger!", ex);
+        }
+        return 0l;
+    }
+
     /**
-     *
+     * @param from
+     * @param len
+     * @return
+     */
+    //@XmlTransient
+    @JsonIgnore
+    public InputStream getBase64Data(long from, int len) {
+        try {
+            return connector.getData(this.fileSystemAbsolutePath, from, len);
+        } catch (PathNotFoundException ex) {
+            logger.debug("Node does not exist or has no content, nothing to return");
+        } catch (RepositoryException | IOException ex) {
+            logger.error("Something bad append, Roger!", ex);
+        }
+        return null;
+    }
+
+    /**
      * @return
      */
     //@XmlTransient
@@ -90,7 +119,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
      * Attach this fileDescriptor to the content repository and writes
      * parameters to it.
      *
-     * @param data The InputStream to store
+     * @param data     The InputStream to store
      * @param mimeType The data type
      * @throws IOException
      */
@@ -107,12 +136,12 @@ public class FileDescriptor extends AbstractContentDescriptor {
             Long totalSize = ((DirectoryDescriptor) DescriptorFactory.getDescriptor("/", connector)).getBytes();
             if (totalSize > WFSConfig.MAX_REPO_SIZE) {
                 this.delete(true);
-                throw WegasErrorMessage.error("Total size[" + ContentConnector.bytesToHumanReadable(totalSize) + "] exceeded. Max " + ContentConnector.bytesToHumanReadable(WFSConfig.MAX_FILE_SIZE));
+                throw WegasErrorMessage.error("Exceeds total files storage capacity for this scenario [" + ContentConnector.bytesToHumanReadable(totalSize) + "/" + ContentConnector.bytesToHumanReadable(WFSConfig.MAX_REPO_SIZE) + "].");
             }
             this.dataLastModified = connector.getLastModified(fileSystemAbsolutePath);
             this.mimeType = mimeType;
         } catch (PathNotFoundException ex) {
-            logger.error("Parent directory ({}) does not exist, considere checking the way you try to store datas", ex.getMessage());
+            logger.error("Parent directory ({}) does not exist, consider checking the way you try to store datas", ex.getMessage());
         } catch (RepositoryException ex) {
             logger.error("Need to check this error, Roger !", ex);
         }
@@ -123,7 +152,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
      * Attach this fileDescriptor to the content repository and writes
      * parameters to it.
      *
-     * @param data The String to store as data
+     * @param data     The String to store as data
      * @param mimeType The data type
      * @throws IOException
      */
@@ -132,7 +161,6 @@ public class FileDescriptor extends AbstractContentDescriptor {
     }
 
     /**
-     *
      * @return
      */
     @JsonProperty("dataLastModified")
@@ -141,7 +169,6 @@ public class FileDescriptor extends AbstractContentDescriptor {
     }
 
     /**
-     *
      * @return
      */
     @JsonProperty("bytes")
@@ -151,7 +178,6 @@ public class FileDescriptor extends AbstractContentDescriptor {
     }
 
     /**
-     *
      * @throws RepositoryException
      */
     @Override
@@ -166,7 +192,6 @@ public class FileDescriptor extends AbstractContentDescriptor {
     }
 
     /**
-     *
      * @return @throws IOException
      */
     //@XmlTransient

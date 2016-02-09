@@ -10,6 +10,7 @@ package com.wegas.core.rest;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.ScriptCheck;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
@@ -180,6 +181,7 @@ public class ScriptController {
     @GET
     @Path("Test")
     public Map<Long, WegasScriptException> testGameModel(@PathParam("gameModelId") Long gameModelId) {
+        requestFacade.getRequestManager().setEnv(RequestManager.RequestEnvironment.TEST);
         List<VariableDescriptor> findAll = variableDescriptorFacade.findAll(gameModelId);
         Player player = gmf.find(gameModelId).getPlayers().get(0);
         Map<Long, WegasScriptException> ret = new HashMap<>();

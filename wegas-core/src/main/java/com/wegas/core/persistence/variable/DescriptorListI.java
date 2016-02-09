@@ -16,6 +16,8 @@ import java.util.List;
  */
 public interface DescriptorListI<T extends VariableDescriptor> {
 
+    public Long getId();
+
     /**
      * @return the variableDescriptors
      */
@@ -41,7 +43,7 @@ public interface DescriptorListI<T extends VariableDescriptor> {
 
     /**
      *
-     * @return 
+     * @return
      */
     public int size();
 

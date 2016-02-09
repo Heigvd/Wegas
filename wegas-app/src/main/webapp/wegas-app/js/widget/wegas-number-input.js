@@ -23,6 +23,15 @@ YUI.add("wegas-number-input", function(Y) {
             this.publish("save", {
                 emitFacade: true
             });
+            this.publish("saved", {
+                emitFacade: true
+            });
+            this.publish("revert", {
+                emitFacade: true
+            });
+        },
+        bindUI: function() {
+            this.on("save", this._save);
         },
         destructor: function() {
             Y.Array.each(this.handlers, function(h) {
@@ -75,20 +84,14 @@ YUI.add("wegas-number-input", function(Y) {
                     cb.removeClass("invalid");
                     if (inst.get("value") !== value) {
                         cb.addClass("loading");
-                        inst.set("value", value);
-                        Y.Wegas.Facade.Variable.cache.put(inst.toObject(), {
-                            on: {
-                                success: Y.bind(function() {
-                                    cb.removeClass("loading");
-                                    this.fire("save", {
-                                        descriptor: desc,
-                                        value: value
-                                    });
-                                }, this),
-                                failure: Y.bind(function() {
-                                    cb.removeClass("loading");
-                                }, this)
-                            }
+                        this.fire("save", {
+                            descriptor: desc,
+                            value: value
+                        });
+                    } else {
+                        this.fire("revert", {
+                            descriptor: desc,
+                            value: value
                         });
                     }
                     return true;
@@ -97,7 +100,39 @@ YUI.add("wegas-number-input", function(Y) {
                     this.showMessage("error", Y.Wegas.I18n.t('errors.nan', {value: raw_value}));
                     return false;
                 }
+            } else {
+                this.fire("revert", {
+                    descriptor: desc,
+                    value: value
+                });
             }
+        },
+        _saved: function(value) {
+            var desc = this.get("variable.evaluated");
+            this.fire("saved", {
+                descriptor: desc,
+                value: value
+            });
+        },
+        _save: function(e) {
+            var cb = this.get("contentBox"),
+                value = e.value,
+                theVar = e.descriptor.getInstance();
+
+            this._initialContent = value;
+            theVar.set("value", value);
+            Y.Wegas.Facade.Variable.cache.put(theVar.toObject(), {
+                on: {
+                    success: Y.bind(function() {
+                        cb.removeClass("loading");
+                        this._saved(value);
+                    }, this),
+                    failure: Y.bind(function() {
+                        cb.removeClass("loading");
+                        this._saved(value);
+                    }, this)
+                }
+            });
         }
     }, {
         /** @lends Y.Wegas.AbstractNumberInput */
@@ -148,11 +183,15 @@ YUI.add("wegas-number-input", function(Y) {
             "</div>",
         initializer: function() {
             this.xSlider = null;
+            this.publish("editing", {
+                emitFacade: true
+            });
         },
         renderUI: function() {
             var desc = this.get("variable.evaluated"),
                 inst = desc.getInstance(),
                 CB = this.get("contentBox");
+            this._descriptor = desc;
 
             if (this.get("label")) {
                 CB.one(".wegas-input-label").setContent(this.get("label"));
@@ -194,6 +233,7 @@ YUI.add("wegas-number-input", function(Y) {
         },
         bindUI: function() {
             var input = this.get(CONTENTBOX).one(".wegas-input");
+            NumberInput.superclass.constructor.prototype.bindUI.call(this);
             this.handlers.push(Y.Wegas.Facade.Variable.after("update", this.syncUI, this));
             if (this.xSlider) {
                 this.handlers.push(this.xSlider.after("slideEnd", this.updateFromSlider, this));
@@ -201,7 +241,8 @@ YUI.add("wegas-number-input", function(Y) {
                 this.handlers.push(this.xSlider.after("valueChange", this.updateInput, this));
             }
             if (input) {
-                this.handlers.push(input.on("blur", this.updateFromInput, this));
+                //this.handlers.push(input.on("blur", this.updateFromInput, this));
+                this.handlers.push(input.on("valuechange", this.onValueChange, this));
             }
         },
         destructor: function() {
@@ -218,16 +259,21 @@ YUI.add("wegas-number-input", function(Y) {
 
             this.updateValue(value);
         },
-        updateFromInput: function(e) {
+        onValueChange: function(e) {
+            var input = this.get(CONTENTBOX).one("input"),
+                value = input.get("value");
+            this.fire("editing", {"descriptor": this._descriptor, "value": value});
+            this.updateFromInput();
+        },
+        updateFromInput: function() {
             var input = this.get(CONTENTBOX).one(".wegas-input"),
-                data = input.getData(),
                 value = input.get("value");
 
-            if (data.wait) {
-                data.wait.cancel();
+            if (this.wait) {
+                this.wait.cancel();
             }
-            data.wait = Y.later(200, this, function() {
-                data.wait = null;
+            this.wait = Y.later(750, this, function() {
+                this.wait = null;
                 this.updateValue(value);
             });
         }
@@ -316,6 +362,7 @@ YUI.add("wegas-number-input", function(Y) {
             }
         },
         bindUI: function() {
+            BoxesNumberInput.superclass.constructor.prototype.bindUI.call(this);
             this.handlers.push(Y.Wegas.Facade.Variable.after("update", this.syncUI, this));
             this.handlers.push(this.get(CONTENTBOX).delegate("click", this.onBoxClick, ".box", this));
         },

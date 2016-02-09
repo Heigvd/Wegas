@@ -383,6 +383,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         this.childVariableDescriptors.add(variableDescriptor);
         this.variableDescriptors.add(variableDescriptor);
         variableDescriptor.setGameModel(this);
+        variableDescriptor.setRootGameModel(this);
     }
 
     @Override
@@ -390,6 +391,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         this.childVariableDescriptors.add(index, variableDescriptor);
         this.variableDescriptors.add(variableDescriptor);
         variableDescriptor.setGameModel(this);
+        variableDescriptor.setRootGameModel(this);
     }
 
     /**

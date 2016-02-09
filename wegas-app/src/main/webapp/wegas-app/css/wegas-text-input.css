@@ -52,3 +52,50 @@
     padding: 2px;
     min-height: 1em;
 }
+
+/**
+ * Checkboxes 
+ */
+
+.readonly .wegas-string-input-checkboxes li{
+    cursor: initial;;
+}
+
+.wegas-string-input-checkboxes li.selected {
+    background-color: #AEB7B0;
+}
+
+.wegas-string-input-checkboxes li{
+    display:inline-block;
+    padding: 2px 10px;
+    cursor: pointer;
+    background: #747D76;
+    /* text-transform: uppercase; */
+    /* height: 24px; */
+    margin: 2px 5px 4px 15px;
+    /* font-size: 11px; */
+    font-weight: bold;
+    /* padding: 4px 8px 4px 24px; */
+    border-radius: 6px;
+    color: white;
+    transition: .3s;
+}
+
+.wegas-string-input-checkboxes li:hover{
+    background-image: linear-gradient(transparent,rgba(0,0,0,0.05) 40%,rgba(0,0,0,0.15));
+}
+.readonly .wegas-string-input-checkboxes li:hover{
+    background-image: none;
+}
+
+.wegas-rts-question .wegas-string-input ul.wegas-string-input-checkboxes li.selected:before {
+    content: "";
+}
+
+.wegas-text-input .loading:after, .wegas-text-input .loading:before {
+    top: 37px;
+    left: initial;
+    right: 5px;
+    width: 15px;
+    height: 15px;
+}

@@ -17,7 +17,7 @@ YUI.add('wegas-card-bloc', function(Y) {
         TITLE_TEMPLATE: "<span class='title' />",
         renderUI: function() {
             this.get("boundingBox")
-                .addClass("card__blocs--" + this.get("type"));
+                .addClass("card__blocs--" + this.get("cardBlocType"));
             if (this._hasTitle()) {
                 this.get("boundingBox").append(this.TITLE_TEMPLATE);
             } else {
@@ -30,7 +30,7 @@ YUI.add('wegas-card-bloc', function(Y) {
                 this.get("boundingBox").one(".title").setContent(this.get("title"));
             }
             this.get("items").forEach(function(item) {
-                context.add(new Y.Wegas["CardBloc" + context.get("type").charAt(0).toUpperCase() + context.get("type").slice(1)](item));
+                context.add(new Y.Wegas["CardBloc" + context.get("cardBlocType").charAt(0).toUpperCase() + context.get("cardBlocType").slice(1)](item));
             });
         },
         _hasTitle: function() {
@@ -41,7 +41,7 @@ YUI.add('wegas-card-bloc', function(Y) {
             title: {
                 value: null
             },
-            type: {},
+            cardBlocType:{},
             items: {
                 value: []
             }
@@ -57,7 +57,7 @@ YUI.add('wegas-card-bloc', function(Y) {
         bindUI: function() {
             this.get("boundingBox").on("click", function(event) {
                 event.halt(true);
-                this.get("do")();
+                this.get("do")(this.get("value"));
             }, this);
         },
         syncUI: function() {
@@ -66,6 +66,7 @@ YUI.add('wegas-card-bloc', function(Y) {
         }
     }, {
         "ATTRS": {
+            "value": {},
             "label": {},
             "icon": {},
             "do": {}

@@ -123,6 +123,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
         if (isAuthorized(item)) {
             this.items.add(item);
             item.setGameModel(this.getGameModel());
+            item.setParentList(this);
         } else {
             throw WegasErrorMessage.error(item.getClass().getSimpleName() + " not allowed in this folder");
         }
@@ -133,6 +134,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
         if (isAuthorized(item)) {
             this.items.add(index, item);
             item.setGameModel(this.getGameModel());
+            item.setParentList(this);
         } else {
             throw WegasErrorMessage.error(item.getClass().getSimpleName() + " not allowed in this folder");
         }

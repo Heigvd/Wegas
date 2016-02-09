@@ -95,7 +95,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                         }
                         this.dataSource.sendRequest({
                             request: "/QuestionDescriptor/ValidateQuestion/" + instance.get('id')
-                                + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
+                            + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
                             cfg: {
                                 method: "POST"
                             },
@@ -109,7 +109,7 @@ YUI.add('wegas-mcq-view', function(Y) {
 
                         this.dataSource.sendRequest({
                             request: "/QuestionDescriptor/SelectAndValidateChoice/" + e.target.get('id') + "/Player/" +
-                                Wegas.Facade.Game.get('currentPlayerId'),
+                            Wegas.Facade.Game.get('currentPlayerId'),
                             cfg: {
                                 method: "POST"
                             },
@@ -129,8 +129,8 @@ YUI.add('wegas-mcq-view', function(Y) {
                     if (e.target.get('checked')) {
                         this.dataSource.sendRequest({
                             request: "/QuestionDescriptor/SelectChoice/" + e.target.get('id')
-                                + "/Player/" + Wegas.Facade.Game.get('currentPlayerId')
-                                + "/StartTime/0",
+                            + "/Player/" + Wegas.Facade.Game.get('currentPlayerId')
+                            + "/StartTime/0",
                             cfg: {
                                 method: "GET" // initially: POST
                             },
@@ -149,7 +149,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                             if (replies[i].getChoiceDescriptor().get("id") === choiceID) {
                                 this.dataSource.sendRequest({
                                     request: "/QuestionDescriptor/CancelReply/" + replies[i].get('id')
-                                        + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
+                                    + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
                                     cfg: {
                                         method: "GET"
                                     },
@@ -321,13 +321,16 @@ YUI.add('wegas-mcq-view', function(Y) {
                         }
                     }
                     // Row with global submit button:
-                    ret.push('<div class="mcq-last-vertical">');
-                    ret.push('<div class="mcq-choice">&nbsp;</div>');
-                    ret.push('<div class="mcq-choices-vertical-finalsubmit">');
-                    ret.push('<button class="yui3-button"', (answerable && !readonly ? '' : ' disabled'), ' id="', cQuestion.get("id"), '" style="font-weight:bold">', Y.Wegas.I18n.t('mcq.submit'), '</button>');
-                    ret.push('</div>'); // end cell with submit button
-                    ret.push('</div>'); // end table-row
                     ret.push('</div>'); // end mcq-choices-vertical
+
+                    ret.push('<div class="mcq-finalsubmit">');
+                    //ret.push('<div class="mcq-last-vertical">');
+                    //ret.push('<div class="mcq-choice">&nbsp;</div>');
+                    //ret.push('<div class="mcq-choices-vertical-finalsubmit">');
+                    ret.push('<button class="yui3-button"', (answerable && !readonly ? '' : ' disabled'), ' id="', cQuestion.get("id"), '" style="font-weight:bold">', Y.Wegas.I18n.t('mcq.submit'), '</button>');
+                    //ret.push('</div>'); // end cell with submit button
+                    //ret.push('</div>'); // end table-row
+                    ret.push('</div>'); // end mcq-finalsubmit
                 }
             } else { // Not checkbox-type:
 
@@ -408,15 +411,21 @@ YUI.add('wegas-mcq-view', function(Y) {
                         for (var j = totalNumberOfReplies - 1; j >= 0; j -= 1) {
                             reply = allReplies[j];
                             if (reply.getChoiceDescriptor().get("id") === choiceD.get("id")) {
-                                checked = true;
-                                answer = reply.get("result").get("answer");
+                                if (!reply.get("ignored")) {
+                                    checked = true;
+                                    answer = reply.get("result").get("answer");
+                                } else {
+                                    ignorationAnswer = reply.get("result").get("ignorationAnswer");
+                                }
                                 break;
                             }
                         }
-                        if (!checked) {
-                            var results = choiceD.get("results")[0];
-                            if (results !== undefined)
-                                ignorationAnswer = results.get("ignorationAnswer");
+                        if (!checked){
+                            /*
+                             var results = choiceD.get("results")[0];
+                             if (results !== undefined)
+                             ignorationAnswer = results.get("ignorationAnswer");
+                             */
                             // Empty (invisible) ignoration answers would be confusing and must not be displayed:
                             if (ignorationAnswer === null || ignorationAnswer === undefined || ignorationAnswer.replace(/(\r\n|\n|\r)/gm, "").trim().length === 0)
                                 ignorationAnswer = "";
@@ -432,8 +441,8 @@ YUI.add('wegas-mcq-view', function(Y) {
                             ret.push('</div>'); // end mcq-reply
                         }
                     }
-                    ret.push('</div>'); // end mcq-replies                        
-                    ret.push('</div>'); // end mcq-replies-section                      
+                    ret.push('</div>'); // end mcq-replies
+                    ret.push('</div>'); // end mcq-replies-section
                 }
             }
             ret.push('</div>'); // end mcq-question
@@ -450,9 +459,10 @@ YUI.add('wegas-mcq-view', function(Y) {
          */
         getNumberOfReplies: function(questionInstance, choice) {
             var i,
-                occurrence = 0;
-            for (i = 0; i < questionInstance.get("replies").length; i++) {
-                if (questionInstance.get("replies")[i].getChoiceDescriptor().get("id") === choice.get("id")) { //can be buggy
+                occurrence = 0,
+                allReplies = questionInstance.get("replies");
+            for (i = 0; i < allReplies.length; i++) {
+                if (!allReplies[i].get("ignored") && allReplies[i].getChoiceDescriptor().get("id") === choice.get("id")) { //can be buggy
                     occurrence++;
                 }
             }

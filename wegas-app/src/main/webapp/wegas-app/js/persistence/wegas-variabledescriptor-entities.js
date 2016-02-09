@@ -125,6 +125,13 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
         }
     }, {
         ATTRS: {
+            parentDescriptorId: {
+                type: NUMBER,
+                optional: true,
+                _inputex: {
+                    _type: HIDDEN
+                }
+            },
             comments: {
                 type: STRING,
                 optional: true,
@@ -731,14 +738,18 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             return acc;
 
         },
-        getChildByKey: function(key, value) {
+        getChildByKey: function(key, value, directChildOnly) {
             var needle,
                 filterFn = function(it) {
                     if (it.get(key) === value) {
                         needle = it;
                         return false;
                     } else if (it instanceof persistence.ListDescriptor) {
-                        return Y.Array.every(it.get(ITEMS), filterFn);
+                        if (!directChildOnly) {
+                            return Y.Array.every(it.get(ITEMS), filterFn);
+                        } else {
+                            return true;
+                        }
                     } else {
                         return true;
                     }
@@ -747,13 +758,13 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             return needle;
         },
         getChildByName: function(name) {
-            return this.getChildByKey("name", name);
+            return this.getChildByKey("name", name, true);
         },
         getChildByLabel: function(label) {
-            return this.getChildByKey("label", label);
+            return this.getChildByKey("label", label , true);
         },
         find: function(id) {
-            return this.getChildByKey("id", +id);
+            return this.getChildByKey("id", +id, false);
         },
         getTreeEditorLabel: function() {
             return "\u229e " + this.getEditorLabel();
@@ -771,7 +782,8 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                     _type: HIDDEN
                 },
                 setter: function(val) {
-                    for (var i = 0; i < val.length; i = i + 1) { // We set up a back reference to the parent
+                    var i;
+                    for (i = 0; i < val.length; i = i + 1) { // We set up a back reference to the parent
                         val[i].parentDescriptor = this;
                     }
                     return val;
@@ -996,6 +1008,15 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
         ATTRS: {
             "@class": {
                 value: "InboxDescriptor"
+            },
+            capped: {
+                value: false,
+                type: "boolean",
+                _inputex: {
+                    label: "Limit to one message",
+                    description: "Each new message ejects the previous one",
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                }
             },
             defaultInstance: {
                 properties: {

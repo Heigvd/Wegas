@@ -205,7 +205,7 @@ YUI().use(function(Y) {
             "wegas-text-input": {
                 path: "js/widget/wegas-text-input-min.js",
                 ws_provides: ["TextInput", "StringInput"],
-                requires: ["wegas-text-inputcss", "wegas-widget", "tinymce", "wegas-panel-fileselect", "wegas-button"]
+                requires: ["wegas-text-inputcss", "wegas-widget", "tinymce", "wegas-panel-fileselect", "wegas-button",  "event-valuechange" ]
             },
             "wegas-number-inputcss": {
                 type: CSS
@@ -213,7 +213,7 @@ YUI().use(function(Y) {
             "wegas-number-input": {
                 path: "js/widget/wegas-number-input-min.js",
                 ws_provides: ["NumberInput", "BoxesNumberInput"],
-                requires: ["wegas-number-inputcss", "wegas-widget", "wegas-button", "slider", "wegas-i18n-global"]
+                requires: ["wegas-number-inputcss", "wegas-widget", "wegas-button", "slider", "wegas-i18n-global", "event-valuechange"]
             },
             "wegas-text": {
                 path: "js/widget/wegas-text-min.js",
@@ -725,6 +725,23 @@ YUI().use(function(Y) {
             "wegas-dashboardcss": {
                 type: CSS
             },
+            "wegas-dashboard2css": {
+                type: CSS
+            },
+            "wegas-dashboard2": {
+                path: "js/widget/wegas-dashboard2-min.js",
+                requires: [
+                    "wegas-dashboard2css",
+                    "promise",
+                    "font-awesome",
+                    "datatable",
+                    "overlay",
+                    "wegas-modal",
+                    "wegas-dashboardcss",
+                    "wegas-teams-overview-dashboard"
+                ],
+                ws_provides: ["Dashboard2"]
+            },
             "wegas-dashboard": {
                 path: "js/widget/wegas-dashboard-min.js",
                 requires: [
@@ -735,7 +752,7 @@ YUI().use(function(Y) {
                     "wegas-modal",
                     "wegas-dashboardcss"
                 ],
-                ws_provides: "Dashboard"
+                ws_provides: ["Dashboard"]
             },
             "wegas-teams-dashboard": {
                 path: "js/widget/wegas-dashboard-teams-min.js",
@@ -749,7 +766,7 @@ YUI().use(function(Y) {
             "wegas-teams-overview-dashboard": {
                 path: "js/widget/wegas-dashboard-teams-overview-min.js",
                 requires: ["wegas-teams-dashboard"],
-                ws_provides: "TeamsOverviewDashboard"
+                ws_provides: ["TeamsOverviewDashboard", "ImpactsTeamModal", "EmailTeamModal"]
             },
             "wegas-resetter": {
                 path: "js/widget/wegas-resetter-min.js",
@@ -764,7 +781,7 @@ YUI().use(function(Y) {
             },
             "wegas-presence": {
                 path: "js/widget/wegas-presence-min.js",
-                requires: ["wegas-presencecss", "font-awesome"],
+                requires: ["wegas-presencecss", "font-awesome", "escape"],
                 ws_provides: "EditorChat"
             },
             "wegas-statistics": {

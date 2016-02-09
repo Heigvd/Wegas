@@ -275,7 +275,7 @@ YUI.add('wegas-console-custom', function(Y) {
                      * ${...} delimiter will be processed as a JSON Object. Properties are inputex field configuration
                      */
                     customImpacts: {
-                        value: Y.namespace("Wegas.Config").CustomImpacts,
+                        value: Y.namespace("Wegas.Config").CustomImpacts || [],
                         validator: Y.Lang.isArray,
                         setter: function(v) {
                             v = Y.Lang.isFunction(v) ? v() : v;

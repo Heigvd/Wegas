@@ -25,6 +25,7 @@ import javax.ejb.Timer;
 import javax.ejb.TimerService;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import javax.script.ScriptEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +61,7 @@ public class DelayedScriptEventFacade {
     public void timeout(Timer timer) {
         Serializable info = timer.getInfo();
         if (info instanceof DelayedEventPayload) {
+            requestFacade.getRequestManager().setEnv(RequestManager.RequestEnvironment.INTERNAL);
             DelayedEventPayload payload = (DelayedEventPayload) info;
             Player p = playerFacade.find(payload.getPlayerId());
 
@@ -91,13 +93,17 @@ public class DelayedScriptEventFacade {
      * @param eventName event to fire
      */
     public void delayedFire(long minutes, long seconds, String eventName) {
-        // Using second will prevent too short timer (not very usefull and may stress up the server...)
-        long duration = (minutes * 60 + seconds) * 1000;
-        try {
-            timerService.createTimer(duration, new DelayedEventPayload(requestFacade.getPlayer().getId(), eventName));
-        } catch (IllegalArgumentException ex) {
-            throw WegasErrorMessage.error("Timer duration is not valid");
+        RequestManager.RequestEnvironment env = requestFacade.getRequestManager().getEnv();
+        if (env == RequestManager.RequestEnvironment.STD) {
+            // Using second will prevent too short timer (not very usefull and may stress up the server...)
+            long duration = (minutes * 60 + seconds) * 1000;
+            try {
+                timerService.createTimer(duration, new DelayedEventPayload(requestFacade.getPlayer().getId(), eventName));
+            } catch (IllegalArgumentException ex) {
+                throw WegasErrorMessage.error("Timer duration is not valid");
+            }
+        } else {
+            logger.info("DelayedEvent skipped due to execution environnement (" + env + ")");
         }
-
     }
 }

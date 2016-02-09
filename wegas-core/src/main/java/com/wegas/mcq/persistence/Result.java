@@ -216,6 +216,7 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
      *
      * @return
      */
+    @JsonView(Views.IndexI.class)
     public Long getChoiceDescriptorId() {
         return choiceDescriptor.getId();
     }

@@ -1372,8 +1372,8 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Supprimer les accès pour cet utilisateur"
                         },
                         'SCENARIST-MODALE-VERSIONS-NEW-BTN': {
-                            'en': "New version",
-                            'fr': "Nouvelle version"
+                            'en': "Create version",
+                            'fr': "Créer version"
                         },
                         'SCENARIST-MODALE-VERSIONS-NEW-TITLE-BTN': {
                             'en': "This actions will store a new version of the " + keywords.scenario.singular.en +
@@ -1415,8 +1415,8 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Supprimer la version"
                         },
                         'SCENARIST-CARD-VERSION-TITLE': {
-                            'en': "Version of {{dateVersion | date:'MM/dd/yyyy'}}",
-                            'fr': "Version du {{dateVersion | date:'dd.MM.yyyy'}}"
+                            'en': "Version of {{dateVersion | date:'MM/dd/yyyy h:mm a'}}",
+                            'fr': "Version du {{dateVersion | date:'dd.MM.yyyy H:mm'}}"
                         },
                         'SCENARIST-CARD-VERSION-AUTHOR': {
                             'en': "Created by {{author}}",

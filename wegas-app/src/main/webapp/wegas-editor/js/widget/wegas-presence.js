@@ -48,7 +48,8 @@ YUI.add('wegas-presence', function(Y) {
      */
     Chat = Y.Base.create("wegas-editorchat", Y.Widget, [Y.WidgetChild], {
         BOUNDING_TEMPLATE: "<div><div class='conversation'>" +
-            "<div class='msgs'></div><ul class='users'></ul><div style='clear: both'></div><textarea  rows='3' class='input' placeholder='Your message'></textarea></div>" +
+            "<div class='msgs'></div>" +
+            "<div style='clear: both'></div><textarea  rows='3' class='input' placeholder='Your message'></textarea></div>" +
             "<div class='editorchat-footer'><i class='chat-icon fa fa-comments'></i> <span class='pusher-status'></span><span class='count'></span><span class='user-list'></span></div></div>",
         CONTENT_TEMPLATE: null,
         initializer: function() {
@@ -74,16 +75,11 @@ YUI.add('wegas-presence', function(Y) {
             var cb = this.get(CONTENTBOX);
 
             this.field = cb.one(".input");
-            this.send = new Y.Wegas.Button({
-                label: "Send",
-                cssClass: "chat-send"
-            }).render(cb.one(".conversation"));
             this.footer = cb.one(".editorchat-footer");
             this.get(CONTENTBOX).one(".conversation").toggleClass("closed", this.closed);
             updateState(this.get(CONTENTBOX).one(".pusher-status"), Y.Wegas.Facade.Pusher.get("status"));
         },
         bindUI: function() {
-            this._handlers.push(this.send.on("click", this.sendInput, this));
             this._handlers.push(this.get(CONTENTBOX).on("clickoutside", function() {
                 this.closed = true;
                 this.get(CONTENTBOX).one(".conversation").toggleClass("closed", this.closed);
@@ -119,33 +115,26 @@ YUI.add('wegas-presence', function(Y) {
             this.field.set("value", "");
         },
         onConnected: function() {
-            var users = this.get(CONTENTBOX).one('.users');
-            users.empty();
             pagePresence.members.each(Y.bind(function(m) {
-
                 if (+m.id !== +pagePresence.members.me.id) {
                     this.onAdded(m);
                 } else {
-                    users.append("<li class='me'>me</li>");
                     this.updateCount();
                 }
             }, this));
         },
         onRemoved: function(event) {
-            this.get(CONTENTBOX).one('.users').one("#user" + event.id).remove(true);
             this.updateCount();
             this.notification(event.info.name + " left");
             this.get(CONTENTBOX).one(".user-list").all(".u" + event.id).remove(true);
         },
         onAdded: function(event) {
             var uList = this.get(CONTENTBOX).one(".user-list"), initials;
-            this.get(CONTENTBOX).one('.users').append("<li id='user" + event.id + "' class='user'>" + event.info.name +
-                "</li>");
             this.updateCount();
             this.notification(event.info.name + " joined");
             if (uList.get("children").size() < INITIALS_LIMIT_COUNT) {
                 initials = event.info.name.match(/\b\w/g).join("");
-                uList.append("<span class='u" + event.id + "'>" + initials + "</span>");
+                uList.append("<span class='u" + event.id + "' title='" + event.info.name + "'>" + initials + "</span>");
             }
         },
         updateCount: function() {
@@ -166,6 +155,7 @@ YUI.add('wegas-presence', function(Y) {
         },
         onMessage: function(data) {
             var sender = ((pagePresence.members.me.id === data.sender) ? "me" : pagePresence.members.get(data.sender).info.name);
+            data.data = Y.Escape.html(data.data);
             if (this.lastNode && this.lastNode.one(".sender") &&
                 this.lastNode.one(".sender").get("text") === sender) {
                 this.lastNode.append('<div class="content">' + data.data + '</div>');
@@ -183,7 +173,6 @@ YUI.add('wegas-presence', function(Y) {
             this.addToChat('<div class="notification">' + not + '</div>');
         },
         destructor: function() {
-            this.send.destroy();
             Y.Array.each(this._handlers, function(i) {
                 i.detach();
             });

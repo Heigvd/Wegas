@@ -46,8 +46,8 @@ import java.util.Map;
     //@NamedQuery(name = "findTeamInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.teamScopeKey = :teamid"),
     //@NamedQuery(name = "findPlayerInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.playerScopeKey = :playerid"),
     @NamedQuery(name = "findInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE EXISTS "
-            + "(SELECT player From Player player WHERE player.id = :playerid AND "
-            + "(variableinstance.playerScopeKey = player.id OR variableinstance.teamScopeKey = player.teamId OR variableinstance.gameScopeKey = player.team.gameId))")
+        + "(SELECT player From Player player WHERE player.id = :playerid AND "
+        + "(variableinstance.playerScopeKey = player.id OR variableinstance.teamScopeKey = player.teamId OR variableinstance.gameScopeKey = player.team.gameId))")
 })
 
 /*@Indexes(value = { // JPA 2.0 eclipse link extension TO BE REMOVED
@@ -57,7 +57,7 @@ import java.util.Map;
  @Index(name = "index_variableinstance_playerscope_id", columnNames = {"playerscope_id"})
  })*/
 
-/* JPA2.1 (GlassFish4) Indexes */
+ /* JPA2.1 (GlassFish4) Indexes */
 @Table(indexes = {
     @Index(columnList = "gamescope_id"),
     @Index(columnList = "teamscope_id"),
