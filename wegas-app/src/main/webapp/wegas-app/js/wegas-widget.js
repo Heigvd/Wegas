@@ -594,15 +594,7 @@ YUI.add("wegas-widget", function(Y) {
 
                 if (val.content) { // Eval based on the field (new pattern)
                     try {
-
-                        if (val["@class"] === "ParentArgument") {
-                            val.evaluated = this.get("parent").get(val.content);
-                            if (val.evaluated["@class"] === "Script") {
-                                toEval = val.evaluated;
-                            }
-                        } else {
-                            toEval = val.content;
-                        }
+                        toEval = val.content;
 
                         if (toEval) {
                             val.evaluated = ds.script.localEval(toEval);

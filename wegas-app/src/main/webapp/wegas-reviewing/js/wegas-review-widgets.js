@@ -585,29 +585,32 @@ YUI.add("wegas-review-widgets", function(Y) {
      * @borrows Y.WidgetChild, Y.WidgetParent, Y.Wegas.Widget, Y.Wegas.Editable
      * @class  class loader of wegas's pages
      * @constructor
-     * @description Used to edit the variable to review. This widget takes two subpage as 
-     * parameter: one for editing the variable, one for display it in readonly
-     * once the variable has been submitted, the variable is readonly
      */
-    ReviewVariableEditor = Y.Base.create("wegas-review-variableeditor", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
+    ReviewVariableEditor = Y.Base.create("wegas-review-variableeditor", Y.Widget,
+        [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         /** @lends Y.Wegas.ReviewVariableEditor# */
-        CONTENT_TEMPLATE: "<div>" +
-            "<div class=\"wegas-review-header\"></div>" +
-            "<div class=\"" + SUBPAGE + "\"></div>" +
-            "<div class=\"" + BUTTON + "\"></div>" +
-            "</div>",
         initializer: function() {
             this.handlers = [];
         },
         renderUI: function() {
             var prd = this.get("variable.evaluated");
 
-            //this.get("contentBox").one(".wegas-review-header").setContent(prd.get("description"));
+            this._mainList = new Y.Wegas.List({
+                cssClass: "wegas-review-variable-editor--list",
+                editable: false
+            });
 
-            this.submitButton = new Y.Button({
+
+            //this._mainList.add(this._input);
+
+            this._submitButton = new Y.Wegas.Button({
+                cssClass: BUTTON,
                 label: "Submit",
                 visible: true
-            }).render(this.get(CONTENTBOX).one("." + BUTTON));
+            });
+            this._mainList.add(this._submitButton);
+
+            this.add(this._mainList);
         },
         /**
          * @function
@@ -622,7 +625,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             this.handlers.push(Wegas.Facade.Variable.after("update", function() {// When the variable cache is updated,
                 this.syncUI(); // sync the view
             }, this));
-            this.submitButton.on("click", this.onSubmit, this);
+            this._submitButton.on("click", this.onSubmit, this);
         },
         /**
          * @function
@@ -632,46 +635,61 @@ YUI.add("wegas-review-widgets", function(Y) {
          */
         syncUI: function() {
             var prd = this.get("variable.evaluated"),
-                page;
-            this.get("page.evaluated");
+                variableName;
+
+            variableName = prd.get("toReviewName");
+
             if (prd.getInstance().get("reviewState") === "NOT_STARTED") {
                 // Time to edit the variable
-                this.submitButton.set("visible", true && this.get("showSubmitButton"));
-                page = this.get("editPage");
+                this._submitButton.set("visible", true && this.get("showSubmitButton"));
+                if (!this._input || this._input.get("readonly.evaluated")) {
+                    this._input && this._input.destroy();
+                    this._input = new Y.Wegas.TextInput({
+                        variable: {name: variableName},
+                        showSaveButton: false,
+                        showStatus: true,
+                        toolbar1: "bold italic underline bullist",
+                        toolbar2: "",
+                        toolbar3: "",
+                        contextmenu: "bold italic underline bullist",
+                        disablePaste: false,
+                        readonly: {
+                            "content": "return false;"
+                        }
+                    });
+                    this._mainList.add(this._input, 0);
+                }
             } else {
                 // No longer editable
-                this.submitButton.set("visible", false);
-                page = this.get("showPage");
-            }
-
-            if (page && page.getInstance) {
-                this.set(PAGEID, page.getInstance().get("value"));
-            } else if (page) {                                                  // If there is a page script
-                this.set(PAGEID, +page); // display it
+                this._submitButton.set("visible", false);
+                // No input or editable one
+                if (!this._input || !this._input.get("readonly.evaluated")) {
+                    this._input && this._input.destroy();
+                    this._input = new Y.Wegas.TextInput({
+                        variable: {name: variableName},
+                        showSaveButton: false,
+                        showStatus: true,
+                        toolbar1: "bold italic underline bullist",
+                        toolbar2: "",
+                        toolbar3: "",
+                        contextmenu: "bold italic underline bullist",
+                        disablePaste: false,
+                        readonly: {
+                            "content": "return true;"
+                        }
+                    });
+                    this._mainList.add(this._input, 0);
+                }
             }
         },
         /**
          * @function
          * @private
-         * @description Destroy widget and detach all functions created by this widget
          */
         destructor: function() {
-            this.submitButton.destroy();
-            this.get(WIDGET) && this.get(WIDGET).destroy();
             Y.Array.each(this.handlers, function(h) {
                 h.detach();
             });
-        },
-        /**
-         * reload current page from cache
-         * @function
-         * @public
-         */
-        reload: function() {
-            this.showOverlay();
-            this._pageId = null;
-            this.syncUI();
-            this.hideOverlay();
         },
         getEditorLabel: function() {
             return this.get("pageLoaderId");
@@ -684,15 +702,6 @@ YUI.add("wegas-review-widgets", function(Y) {
          * @return boolean
          * @description Return true if an ancestor already loads pageId
          */
-        ancestorWithPage: function(pageId) {                                    //Page loader mustn't load the page who contain itself.
-            return this.get("boundingBox").ancestors("." + this.getClassName(), false).some(function(node) {
-                var widget = Y.Widget.getByNode(node);
-                if (+pageId === +widget._pageId || +pageId === +widget.get("variable.evaluated")) {
-                    this.showMessage("warn", "PeerReview Variable editor tries to load page " + pageId + " which is already loaded by its parent page display");
-                    return true;
-                }
-            }, this);
-        },
         onSubmit: function() {
 
             var prd = this.get("variable.evaluated");
@@ -723,78 +732,6 @@ YUI.add("wegas-review-widgets", function(Y) {
         /** @lends Y.Wegas.PageLoader */
         EDITORNAME: "Review Variable Editor",
         ATTRS: {
-            /**
-             * the id of the default page to load
-             */
-            editPage: {
-                type: "string",
-                _inputex: {
-                    label: "Edit page",
-                    description: "A page to edit the variable",
-                    _type: "pageselect",
-                    required: true
-                }
-            },
-            showPage: {
-                type: "string",
-                _inputex: {
-                    label: "Show page",
-                    description: "A parametrized page to show (readonly) the variable",
-                    _type: "pageselect",
-                    required: true
-                }
-            },
-            /**
-             * the page id to load
-             */
-            pageId: {
-                type: "string",
-                "transient": true,
-                setter: function(val, name, opts) {
-                    if (Y.Lang.isObject(opts) && opts.noquery) {
-                        return val;
-                    }
-                    if (!arguments.length || val === this._pageId || this.ancestorWithPage(val)) {// If the widget is currently being loaded,
-                        return val; // do not continue
-                    }
-                    this._pageId = val;
-                    Wegas.Facade.Page.cache.getPage(val, Y.bind(function(widgetCfg) {// Retrieve page
-                        this.showOverlay();
-                        Y.log("Destroy previous widget", "log", "Wegas.ReviewVariableEditor");
-                        this.set(WIDGET, null);
-                        if (!widgetCfg) {
-                            this.get(CONTENTBOX).one("." + SUBPAGE).setContent("<center class=" + pageloaderErrorMessageClass + "><i>Page [" + this._pageId + "] was not found</i></center>");
-                            this.hideOverlay();
-                            this.fire("contentUpdated");
-                            return;
-                        }
-
-                        Wegas.Widget.use(widgetCfg, Y.bind(function() {         // Load the subwidget dependencies
-                            try {
-                                Y.log("Rendering new widget", "log", "Wegas.ReviewVariableEditor");
-                                this.get(CONTENTBOX).all("." + pageloaderErrorMessageClass).remove(true);
-                                widgetCfg.editable = true;
-                                var widget = Wegas.Widget.create(widgetCfg); // Render the subwidget
-                                widget.render(this.get(CONTENTBOX).one("." + SUBPAGE));
-                                widget["@pageId"] = widgetCfg["@pageId"]; // @HACK set up a reference to the page
-                                this.set(WIDGET, widget);
-                            } catch (e) {
-                                this.set("widgetCfg", widgetCfg);
-                                this.get(CONTENTBOX).one("." + SUBPAGE).setContent("<center class=" + pageloaderErrorMessageClass + "><i>Could not load sub page.</i></center>");
-                                Y.log("renderUI(): Error rendering widget: " + (e.stack || e), "error", "Wegas.PageLoader");
-                            } finally {
-                                this.hideOverlay();
-                                this.fire("contentUpdated");
-                            }
-                        }, this));
-                    }, this));
-                    return val;
-                }
-            },
-            /**
-             * The PeerReviewDescriptor
-             * 
-             */
             variable: {
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
@@ -802,35 +739,6 @@ YUI.add("wegas-review-widgets", function(Y) {
                     label: "Peer Review Descriptor",
                     classFilter: ["PeerReviewDescriptor"],
                     wrapperClassName: "inputEx-fieldWrapper"
-                }
-            },
-            /**
-             * A widget to render in current subpage (transient)
-             */
-            widget: {
-                "transient": true,
-                setter: function(v) {
-                    if (this.get(WIDGET)) {
-                        this.get(WIDGET).destroy();
-                    }
-                    if (v) {
-                        v.on(["*:message", "*:showOverlay", "*:hideOverlay"], this.fire, this); // Event on the loaded widget will be forwarded
-                    }
-                    return v;
-                }
-            },
-            widgetCfg: {
-                "transient": true,
-                getter: function(val) {
-                    var p;
-                    if (this.get(WIDGET)) {
-                        return Y.JSON.stringify(this.get(WIDGET).toObject("@pageId"), null, "\t");
-                    } else if (val) {
-                        p = Y.clone(val);
-                        delete p["@pageId"];
-                        return Y.JSON.stringify(val, null, "\t");
-                    }
-                    return val;
                 }
             },
             showSubmitButton: {
@@ -1029,7 +937,6 @@ YUI.add("wegas-review-widgets", function(Y) {
                 review: tab.review,
                 descriptor: this.get("variable.evaluated"),
                 reviewer: tab.reviewer,
-                showPage: this.get("showPage"),
                 showSubmitButton: this.get("showSubmitButton")
             }).render(tab.get("panelNode"));
         },
@@ -1078,14 +985,6 @@ YUI.add("wegas-review-widgets", function(Y) {
                     classFilter: ["PeerReviewDescriptor"]
                 }
             },
-            showPage: {
-                type: "string",
-                _inputex: {
-                    label: "Show page",
-                    _type: "pageselect",
-                    required: true
-                }
-            },
             showSubmitButton: {
                 type: "boolean",
                 value: true,
@@ -1104,11 +1003,7 @@ YUI.add("wegas-review-widgets", function(Y) {
      * @borrows Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable
      * @class 
      * @constructor
-     * @description Is used to display a specific review. The 'showPage' attribute 
-     * deserve a specific attention (@hack). Such a show page MUST be a ParametrizedLayout
-     * that contains ONLY ONE carameter called "variable". Nested widget must then fetch 
-     * this variable with {"@class": "ParentArgument", "content" : "parameters.variable"}.
-     * This strange process is required since we want to display a variable that not belong to the current player
+     * @description Is used to display a specific review.
      */
     ReviewWidget = Y.Base.create("wegas-review-widget", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         CONTENT_TEMPLATE: "<div>"
@@ -1153,6 +1048,9 @@ YUI.add("wegas-review-widgets", function(Y) {
                         widget = new Wegas.GradeInput(cfg).render(container);
                         break;
                     case "TextEvaluationInstance":
+                        cfg.readonly = {
+                            "content": "return " + readonly + ";"
+                        };
                         widget = new Wegas.TextEvalInput(cfg).render(container);
                         break;
                     case "CategorizedEvaluationInstance":
@@ -1175,59 +1073,24 @@ YUI.add("wegas-review-widgets", function(Y) {
             this.get("contentBox").one(".title").setContent(this.get("title"));
             this.get("contentBox").one(".description").setContent(desc.get("description"));
 
-            Wegas.Facade.Page.cache.getPage(this.get("showPage"), Y.bind(function(widgetCfg) {// Retrieve page
-                var content = this.get(CONTENTBOX).one(".toReview").one(".content");
-                this.showOverlay();
-                Y.log("Destroy previous widget", "log", "Wegas.ReviewWidget");
-                this.set(WIDGET, null);
-                if (!widgetCfg) {
-                    content.setContent("<center class=" + pageloaderErrorMessageClass + "><i>Page [" + this._pageId + "] was not found</i></center>");
-                    this.hideOverlay();
-                    this.fire("contentUpdated");
-                    return;
+            var content = this.get(CONTENTBOX).one(".toReview").one(".content");
+            this.showOverlay();
+            Y.Wegas.Facade.Variable.sendRequest({
+                request: "/PeerReviewController/" + desc.get("id") + "/ToReview/" + review.get("id"),
+                cfg: {
+                    updateCache: false,
+                    method: "get"
+                },
+                on: {
+                    success: Y.bind(function(e) {
+                        content.setContent(e.response.entity.get("value"));
+                        this.hideOverlay();
+                        this.fire("contentUpdated");
+                    }, this),
+                    failure: Y.bind(function() {
+                    }, this)
                 }
-
-
-                /*
-                 * @HACK substitute variable in widgetConfig @HACK
-                 ******************************************************/
-                Y.Wegas.Facade.Variable.sendRequest({
-                    request: "/PeerReviewController/" + desc.get("id") + "/ToReview/" + review.get("id"),
-                    cfg: {
-                        updateCache: false,
-                        method: "get"
-                            //data: this.get("review")
-                    },
-                    on: {
-                        success: Y.bind(function(e) {
-                            // Once the variable that belong to the author has been retrived, 
-                            // let inject it in the ParametrizedLayout
-
-                            widgetCfg.parameters.variable = e.response.entity;
-
-                            Wegas.Widget.use(widgetCfg, Y.bind(function() {         // Load the subwidget dependencies
-                                try {
-                                    Y.log("Rendering new widget", "log", "Wegas.ReviewWidget");
-                                    this.get(CONTENTBOX).all("." + pageloaderErrorMessageClass).remove(true);
-                                    widgetCfg.editable = true;
-                                    var widget = Wegas.Widget.create(widgetCfg); // Render the subwidget
-                                    widget.render(content);
-                                    widget["@pageId"] = widgetCfg["@pageId"]; // @HACK set up a reference to the page
-                                    this.set(WIDGET, widget);
-                                } catch (e) {
-                                    content.setContent("<center class=" + pageloaderErrorMessageClass + "><i>Could not load sub page.</i></center>");
-                                    Y.log("renderUI(): Error rendering widget: " + (e.stack || e), "error", "Wegas.PageLoader");
-                                } finally {
-                                    this.hideOverlay();
-                                    this.fire("contentUpdated");
-                                }
-                            }, this));
-                        }, this),
-                        failure: Y.bind(function() {
-                        }, this)
-                    }
-                });
-            }, this));
+            });
 
 
             this.get("contentBox").one(".toReview").one(".subtitle").setContent("Given: ");
@@ -1335,21 +1198,6 @@ YUI.add("wegas-review-widgets", function(Y) {
                     }, this)
                 }
             });
-        },
-        /**
-         * A widget to render in current page (transient)
-         */
-        widget: {
-            "transient": true,
-            setter: function(v) {
-                if (this.get(WIDGET)) {
-                    this.get(WIDGET).destroy();
-                }
-                if (v) {
-                    v.on(["*:message", "*:showOverlay", "*:hideOverlay"], this.fire, this); // Event on the loaded widget will be forwarded
-                }
-                return v;
-            }
         },
         save: function() {
             this._sendRequest("SaveReview");
