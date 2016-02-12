@@ -3,13 +3,13 @@
   "version": "0.1.1",
   "private": true,
   "dependencies": {},
-  "scripts":{
-    "start": "browser-sync start --config bs-config.js"
+  "scripts": {
+    "start": "./node_modules/.bin/browser-sync start --config bs-config.js"
   },
   "devDependencies": {
     "amd-optimize": "^0.4.4",
     "bower": "^1.6.5",
-    "browser-sync": "^2.10.0",
+    "browser-sync": "^2.11.1",
     "chalk": "~0.5.1",
     "del": "^1.2.1",
     "gulp": "^3.9.0",
