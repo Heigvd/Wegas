@@ -16,27 +16,23 @@
                 position:relative;
             }
             input{
+                display:none;
+            }
+            input + label{
                 text-align: center;
                 width: 40px;
                 height: auto;
                 position: absolute;
                 top: 0;
                 bottom: 0;
-                margin: auto 0;
-                border: none;
-                -webkit-appearance: none;
-                -moz-appearance: none;
-                -ms-appearance: none;
-                -o-appearance: none;
-                appearance: none;
             }
-            input:checked:after {
+            input:checked + label:after{
                 color: #85ada7;
                 text-shadow: 0 1px 0 #669991;
                 bottom: 1px;
                 position: relative;
             }
-            input:after {
+            input + label:after{
                 content: '✔';
                 line-height: 43px;
                 font-size: 20px;
