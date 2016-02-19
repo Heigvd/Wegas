@@ -11,7 +11,7 @@
  */
 YUI.add('wegas-layout-absolute', function(Y) {
     "use strict";
-    var AbsoluteLayout, PositionPlugin, ParametrizedLayout;
+    var AbsoluteLayout, PositionPlugin;
     /**
      * @name Y.Wegas.AbsoluteLayout
      * @extends Y.Widget
@@ -73,22 +73,6 @@ YUI.add('wegas-layout-absolute', function(Y) {
     });
     Y.Wegas.AbsoluteLayout = AbsoluteLayout;
 
-
-    ParametrizedLayout = Y.Base.create("wegas-parametrizedlayout", Y.Wegas.AbsoluteLayout, [], {
-    },{
-    /**
-         * @lends Y.Wegas.AbsoluteLayout
-         */
-        NAME: "wegas-parametrizedlayout",
-        CSS_PREFIX: "wegas-parametrizedlayout",
-        EDITORNAME: "Parametrized Layout",
-        ATTRS: {
-            parameters: {
-                type: "object"
-            }
-        }
-    });
-    Y.Wegas.ParametrizedLayout = ParametrizedLayout;
 
     /**
      * @deprecated use CSSPosition instead

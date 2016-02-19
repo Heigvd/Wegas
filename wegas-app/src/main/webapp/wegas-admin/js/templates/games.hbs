@@ -27,8 +27,8 @@
             <td>{{game.gameModelName}}</td>
             <td class="mouse-pointer" {{action 'openModal' "players" game}}><u>{{game.playerCount}}</u></td>
             <td>{{game.teamCount}}</td>
-            <td>{{input type='checkbox' checked=game.isDone}}</td>
-            <td>{{input type='checkbox' checked=game.isCharged}}</td>
+            <td>{{input type='checkbox' id=game.doneId checked=game.isDone}}<label {{bindAttr for="game.doneId"}} /></td>
+            <td>{{input type='checkbox' id=game.chargedId checked=game.isCharged}}<label {{bindAttr for="game.chargedId"}} /></td>
             <td>{{game.gameStatus}}</td>
             {{#if game.commentEdit}}
                 <td> {{textarea-edit class="form-control" value=game.comments focus-out="acceptComment" rows="5"}}</td>

@@ -34,7 +34,9 @@ define(["ember"], function(Ember) {
                 var model = this.get("model"),
                     gameId = model.get("gameId");
                 if (gameId) {
-                    Ember.$.ajax("rest/GameModel/Game/" + gameId, {method: "DELETE"}).then(function() {
+                    Ember.$.ajax("rest/GameModel/Game/" + gameId, {
+                        method: "DELETE"
+                    }).then(function() {
                         this.set("gameStatus", "SUPPRESSED");
                     }.bind(this));
                 }
@@ -86,6 +88,12 @@ define(["ember"], function(Ember) {
                 model.set("gameStatus", value);
             }
             return DICT[this.get("model").get("gameStatus")];
-        }.property("gameStatus")
+        }.property("gameStatus"),
+        doneId: function() {
+            return this.get('model').get('gameId') + 'done';
+        }.property("gameId"),
+        chargedId: function() {
+            return this.get('model').get('gameId') + 'charged';
+        }.property("gameId")
     });
 });
