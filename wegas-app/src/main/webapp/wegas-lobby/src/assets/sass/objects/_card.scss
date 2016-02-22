@@ -294,6 +294,7 @@
                         text-overflow:ellipsis;
                         overflow:hidden;
                         user-select:all;
+                        -ms-user-select:element;
                         white-space: nowrap;
                         font-weight:500;
                     }
