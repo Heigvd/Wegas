@@ -83,7 +83,9 @@ YUI.add("wegas-number-input", function(Y) {
 
                     cb.removeClass("invalid");
                     if (inst.get("value") !== value) {
-                        cb.addClass("loading");
+                        if (this.get("selfSaving")) {
+                            cb.addClass("loading");
+                        }
                         this.fire("save", {
                             descriptor: desc,
                             value: value
@@ -121,18 +123,22 @@ YUI.add("wegas-number-input", function(Y) {
 
             this._initialContent = value;
             theVar.set("value", value);
-            Y.Wegas.Facade.Variable.cache.put(theVar.toObject(), {
-                on: {
-                    success: Y.bind(function() {
-                        cb.removeClass("loading");
-                        this._saved(value);
-                    }, this),
-                    failure: Y.bind(function() {
-                        cb.removeClass("loading");
-                        this._saved(value);
-                    }, this)
-                }
-            });
+            if (this.get("selfSaving")) {
+                Y.Wegas.Facade.Variable.cache.put(theVar.toObject(), {
+                    on: {
+                        success: Y.bind(function() {
+                            cb.removeClass("loading");
+                            this._saved(value);
+                        }, this),
+                        failure: Y.bind(function() {
+                            cb.removeClass("loading");
+                            this._saved(value);
+                        }, this)
+                    }
+                });
+            } else {
+                this._saved(value);
+            }
         }
     }, {
         /** @lends Y.Wegas.AbstractNumberInput */
@@ -159,6 +165,11 @@ YUI.add("wegas-number-input", function(Y) {
                     _type: "script",
                     expects: "condition"
                 }
+            },
+            selfSaving: {
+                type: "boolean",
+                value: true,
+                optional: true
             },
             label: {
                 type: "string",
@@ -272,10 +283,14 @@ YUI.add("wegas-number-input", function(Y) {
             if (this.wait) {
                 this.wait.cancel();
             }
-            this.wait = Y.later(750, this, function() {
-                this.wait = null;
+            if (this.get("selfSaving")) {
+                this.wait = Y.later(750, this, function() {
+                    this.wait = null;
+                    this.updateValue(value);
+                });
+            } else {
                 this.updateValue(value);
-            });
+            }
         }
     }, {
         /** @lends Y.Wegas.NumberInput */

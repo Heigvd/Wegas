@@ -193,10 +193,14 @@ YUI.add("wegas-text-input", function(Y) {
                 if (this.wait) {
                     this.wait.cancel();
                 }
-                this.wait = Y.later(1000, this, function() {
-                    this.wait = null;
+                if (this.get("selfSaving")) {
+                    this.wait = Y.later(1000, this, function() {
+                        this.wait = null;
+                        this.onSave();
+                    });
+                } else {
                     this.onSave();
-                });
+                }
             }
         },
         valueChanged: function(newValue) {
@@ -261,20 +265,25 @@ YUI.add("wegas-text-input", function(Y) {
                 theVar = e.descriptor.getInstance();
             this._initialContent = value;
             theVar.set("value", value);
-            Y.Wegas.Facade.Variable.cache.put(theVar.toObject(), {
-                on: {
-                    success: Y.bind(function() {
-                        cb.removeClass("loading");
-                        this.setStatus("Saved");
-                        this._saved(value);
-                    }, this),
-                    failure: Y.bind(function() {
-                        cb.removeClass("loading");
-                        this.setStatus("Something went wrong");
-                        this._saved(value);
-                    }, this)
-                }
-            });
+            if (this.get("selfSaving")) {
+                Y.Wegas.Facade.Variable.cache.put(theVar.toObject(), {
+                    on: {
+                        success: Y.bind(function() {
+                            cb.removeClass("loading");
+                            this.setStatus("Saved");
+                            this._saved(value);
+                        }, this),
+                        failure: Y.bind(function() {
+                            cb.removeClass("loading");
+                            this.setStatus("Something went wrong");
+                            this._saved(value);
+                        }, this)
+                    }
+                });
+            } else {
+                this.setStatus("Saved");
+                this._saved(value);
+            }
         },
         _saved: function(value) {
             var desc = this.get("variable.evaluated");
@@ -285,7 +294,11 @@ YUI.add("wegas-text-input", function(Y) {
         },
         save: function(value) {
             var desc = this.get("variable.evaluated"),
-                cb = this.get("contentBox").addClass("loading");
+                cb = this.get("contentBox");
+
+            if (this.get("selfSaving")) {
+                cb.addClass("loading");
+            }
             this.fire("save", {
                 descriptor: desc,
                 value: value
@@ -336,6 +349,11 @@ YUI.add("wegas-text-input", function(Y) {
                 }
             },
             showSaveButton: {
+                type: "boolean",
+                value: true,
+                optional: true
+            },
+            selfSaving: {
                 type: "boolean",
                 value: true,
                 optional: true
@@ -444,7 +462,9 @@ YUI.add("wegas-text-input", function(Y) {
 
             if (inst.get("value") !== value) {
                 this._initialValue = value;
-                cb.addClass("loading");
+                if (this.get("selfSaving")) {
+                    cb.addClass("loading");
+                }
                 this.fire("save", {
                     descriptor: desc,
                     value: value
@@ -460,18 +480,23 @@ YUI.add("wegas-text-input", function(Y) {
                 value = e.value;
             this._initialContent = value;
             inst.set("value", value);
-            Y.Wegas.Facade.Variable.cache.put(inst.toObject(), {
-                on: {
-                    success: Y.bind(function() {
-                        cb.removeClass("loading");
-                        this._saved(value);
-                    }, this),
-                    failure: Y.bind(function() {
-                        cb.removeClass("loading");
-                        this._saved(value);
-                    }, this)
-                }
-            });
+            if (this.get("selfSaving")) {
+                Y.Wegas.Facade.Variable.cache.put(inst.toObject(), {
+                    on: {
+                        success: Y.bind(function() {
+                            cb.removeClass("loading");
+                            this._saved(value);
+                        }, this),
+                        failure: Y.bind(function() {
+                            cb.removeClass("loading");
+                            this._saved(value);
+                        }, this)
+                    }
+                });
+            } else {
+                this._saved(value);
+                this.syncUI();
+            }
         },
         _saved: function(value) {
             var desc = this.get("variable.evaluated");
@@ -612,10 +637,14 @@ YUI.add("wegas-text-input", function(Y) {
             if (this.wait) {
                 this.wait.cancel();
             }
-            this.wait = Y.later(1000, this, function() {
-                this.wait = null;
+            if (this.get("selfSaving")) {
+                this.wait = Y.later(1000, this, function() {
+                    this.wait = null;
+                    this.updateValue(value);
+                });
+            } else {
                 this.updateValue(value);
-            });
+            }
         }
     }, {
         /** @lends Y.Wegas.StringInput */
@@ -642,6 +671,11 @@ YUI.add("wegas-text-input", function(Y) {
                     _type: "script",
                     expects: "condition"
                 }
+            },
+            selfSaving: {
+                type: "boolean",
+                value: true,
+                optional: true
             },
             clickSelect: {
                 type: "boolean",
