@@ -114,13 +114,15 @@ public class PeerReviewInstance extends VariableInstance {
 
     @Override
     public void merge(AbstractEntity a) {
-        if (a instanceof PeerReviewInstance) {
-            PeerReviewInstance o = (PeerReviewInstance) a;
-            this.setReviewState(o.getReviewState());
-            this.setReviewed(ListUtils.mergeLists(this.getReviewed(), o.getReviewed()));
-            this.setToReview(ListUtils.mergeLists(this.getToReview(), o.getToReview()));
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
+        if (a != null) {
+            if (a instanceof PeerReviewInstance) {
+                PeerReviewInstance o = (PeerReviewInstance) a;
+                this.setReviewState(o.getReviewState());
+                this.setReviewed(ListUtils.mergeLists(this.getReviewed(), o.getReviewed()));
+                this.setToReview(ListUtils.mergeLists(this.getToReview(), o.getToReview()));
+            } else {
+                throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
+            }
         }
     }
 
