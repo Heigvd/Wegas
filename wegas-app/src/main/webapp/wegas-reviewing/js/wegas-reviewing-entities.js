@@ -132,8 +132,14 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                         value: "DISPATCHED",
                         label: "reviewing"
                     }, {
+                        value: "COMPLETED",
+                        label: "completed"
+                    }, {
                         value: "DISCARDED",
                         label: "discarded"
+                    }, {
+                        value: "EVICTED",
+                        label: "evicted"
                     }
                 ],
                 arguments: [{
@@ -172,7 +178,6 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             }
         }
     });
-
     /**
      * Review mapper
      */
@@ -382,7 +387,6 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             }
         }
     });
-
     /**
      * EvaluationDescriptor
      */
@@ -397,8 +401,6 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             }
         }
     });
-
-
     /**
      * EvaluationDescriptor
      */
@@ -413,8 +415,6 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             }
         }
     });
-
-
     /**
      * EvaluationDescriptor
      */
@@ -429,8 +429,6 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             }
         }
     });
-
-
     /**
      * EvaluationDescriptor
      */

@@ -459,6 +459,7 @@ public class ReviewingFacade {
                     review.setReviewState(Review.ReviewState.CLOSED);
                 }
             }
+            pri.setReviewState(PeerReviewDescriptor.ReviewingState.COMPLETED);
             touched.add(pri);
             variableInstanceFacade.merge(pri);
             //requestManager.addUpdatedInstance(pri);
