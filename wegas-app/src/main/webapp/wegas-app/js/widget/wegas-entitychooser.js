@@ -173,121 +173,145 @@ YUI.add("wegas-entitychooser", function(Y) {
 
     EntityChooser2 = Y.Base.create("wegas-entitychooser2",
         Y.Widget,
-        [Y.WidgetChild,
-            Y.Wegas.Widget,
-            Y.Wegas.Editable],
-        {
-            CONTENT_TEMPLATE: "<div><ul class='chooser-entities'></ul><div class='chooser-widget'></div></div>",
-            initializer: function() {
-                this._handlers = [];
-                /**
-                 * hold a ref to the currently selected name
-                 */
-                this.currentTarget = null;
-            },
-            hideAllOverlay: function() {
-                Y.Wegas.Widget.prototype.hideAllOverlay.call(this);
-                this._currentWidget && this._currentWidget.hideAllOverlay();
-            },
-            syncUI: function() {
-                var items = (this.get("variable.evaluated") ? (this.get("flatten") ? this.get("variable.evaluated").flatten() : this.get("variable.evaluated").get("items")) : []),
-                    i, tmp, li,
-                    entityBox = this.get(CONTENTBOX).one(".chooser-entities"),
-                    length = items.length, label, getLabel,
-                    filter = Y.Object.keys(this.get("widgets"));
-                entityBox.empty();
-                for (i = 0; i < length; i += 1) {
-                    if (Y.Array.find(filter, function(item) {
-                        return item === items[i].get("@class");
-                    })) {
-                        if ((!items[i].getInstance().getAttrs().hasOwnProperty("active") ||
-                            items[i].getInstance().get("active")) &&
-                            (!items[i].getInstance().getAttrs().hasOwnProperty("enabled") ||
-                                items[i].getInstance().get("enabled"))) {
-                            getLabel = this.get("widgets")[items[i].get("@class")].getLabel;
-                            label = (items[i].get("title") || items[i].get("label"));
+        [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+        CONTENT_TEMPLATE: "<div><ul class='chooser-entities'></ul><div class='chooser-widget'></div></div>",
+        initializer: function() {
+            this._handlers = [];
+            /**
+             * hold a ref to the currently selected name
+             */
+            this.currentTarget = null;
+        },
+        hideAllOverlay: function() {
+            Y.Wegas.Widget.prototype.hideAllOverlay.call(this);
+            this._currentWidget && this._currentWidget.hideAllOverlay();
+        },
+        syncUI: function() {
+            var items = (this.get("variable.evaluated") ? (this.get("flatten") ? this.get("variable.evaluated").flatten() : this.get("variable.evaluated").get("items")) : []),
+                i, tmp, li,
+                entityBox = this.get(CONTENTBOX).one(".chooser-entities"),
+                length = items.length, label, getLabel,
+                filter = Y.Object.keys(this.get("widgets"));
+            entityBox.empty();
+            for (i = 0; i < length; i += 1) {
+                if (Y.Array.find(filter, function(item) {
+                    return item === items[i].get("@class");
+                })) {
+                    if ((!items[i].getInstance().getAttrs().hasOwnProperty("active") ||
+                        items[i].getInstance().get("active")) &&
+                        (!items[i].getInstance().getAttrs().hasOwnProperty("enabled") ||
+                            items[i].getInstance().get("enabled"))) {
+                        getLabel = this.get("widgets")[items[i].get("@class")].getLabel;
+                        label = (items[i].get("title") || items[i].get("label"));
 
-                            li = entityBox.appendChild("<li class='chooser-entity' data-type='" +
-                                items[i].get("@class") + "'data-name='" +
-                                items[i].get("name") + "'>" + label + "</li>");
+                        li = entityBox.appendChild("<li class='chooser-entity' data-type='" +
+                            items[i].get("@class") + "'data-name='" +
+                            items[i].get("name") + "'>" + label + "</li>");
 
-                            if (getLabel) {
-                                label = getLabel(items[i], items[i].get("name"), function(name, the_label) {
-                                    entityBox.one("[data-name='" + name + "']").setContent(the_label);
-                                });
-                            }
+                        if (getLabel) {
+                            label = getLabel(items[i], items[i].get("name"), function(name, the_label) {
+                                entityBox.one("[data-name='" + name + "']").setContent(the_label);
+                            });
+                        }
 
-                            if (this.get("markUnread")) {
-                                li.plug(Y.Plugin.MarkAsUnread, {
-                                    userCounters: this.get("userCounters"),
-                                    variable: {
-                                        name: items[i].get("name")
-                                    }
-                                });
-                                li.MarkAsUnread.updateCounter();
-                            }
+                        if (this.get("markUnread")) {
+                            li.plug(Y.Plugin.MarkAsUnread, {
+                                userCounters: this.get("userCounters"),
+                                variable: {
+                                    name: items[i].get("name")
+                                }
+                            });
+                            li.MarkAsUnread.updateCounter();
                         }
                     }
                 }
-                if (this.currentTarget) {
-                    tmp = entityBox.all("[data-name='" + this.currentTarget + "']");
-                    tmp.addClass(CLASSES.CHOOSEN);
-                    if (!tmp.size()) { //current target exists but is not rendered anymore
-                        Y.later(200, this, function() {
-                            this._currentWidget.destroy();
-                            this._currentWidget = null;
-                            this._currentWidgetType = null;
-                        });
-                        this.currentTarget = null;
-                    }
+            }
+            if (this.currentTarget) {
+                tmp = entityBox.all("[data-name='" + this.currentTarget + "']");
+                tmp.addClass(CLASSES.CHOOSEN);
+                if (!tmp.size()) { //current target exists but is not rendered anymore
+                    Y.later(200, this, function() {
+                        this._currentWidget.destroy();
+                        this._currentWidget = null;
+                        this._currentWidgetType = null;
+                    });
+                    this.currentTarget = null;
                 }
-            },
-            bindUI: function() {
-                this.get(CONTENTBOX).delegate("click", function(e) {
-                    var targetName = e.target.getData("name");
-                    if (this.currentTarget === targetName) { // I'm the choosen one
-                        return;
-                    }
-                    this.genWidget(e.target.getData("type"), targetName);
-                    this.get(CONTENTBOX).all("." + CLASSES.CHOOSEN).removeClass(CLASSES.CHOOSEN);
-                    e.target.addClass(CLASSES.CHOOSEN);
-                    this.currentTarget = targetName;
-                }, ".chooser-entities .chooser-entity", this);
-                this._handlers.push(Y.Wegas.Facade.Variable.after("update", this.syncUI, this));
-            },
-            genWidget: function(type, name) {
-                var widgetConfig = this.get("widgets")[type],
-                    ctx = this, cfg;
-                cfg = widgetConfig.widget;
-
-                Y.Wegas.Editable.use(cfg, function(Y) {
-                    if (ctx._currentWidgetType === type) {
-                        ctx._currentWidget.set(widgetConfig.widgetAttr, {
-                            name: name
-                        });
-                    } else {
-                        cfg[widgetConfig.widgetAttr] = {
-                            name: name
-                        };
-                        Y.Wegas.use(cfg, Y.bind(function() {
-                            this._currentWidget && this._currentWidget.destroy();
-
-                            this._currentWidgetType = type;
-                            this._currentWidget = Y.Wegas.Widget.create(cfg);
-                            this._currentWidget.render(this.get(CONTENTBOX).one(".chooser-widget"));
-                            // propagates selected event to the "parent"
-                            this._currentWidget.on(["*:message", "*:showOverlay", "*:hideOverlay"], this.fire, this);
-                        }, ctx));
-                    }
-                });
-            },
-            destructor: function() {
-                this._currentWidget && this._currentWidget.destroy();
-                Y.Array.each(this._handlers, function(handle) {
-                    handle.detach();
-                });
+            } else {
+                if (this.get("autoSelectFirstUnread")) {
+                    Y.later(200, this, this.selectNextUnread);
+                }
             }
         },
+        selectNextUnread: function() {
+            var newTarget;
+            if (this.currentTarget) {
+                newTarget = this.get("contentBox").one("[data-name='" + this.currentTarget + "'] + .unread");
+            } else {
+                newTarget = this.get("contentBox").one(".unread");
+            }
+            if (newTarget) {
+                this.select(newTarget);
+            }
+        },
+        select: function(target) {
+            var targetName = target.getData("name"),
+                targetType = target.getData("type");
+            if (this.currentTarget === targetName) { // I'm the choosen one
+                return;
+            }
+            this.genWidget(targetType, targetName);
+            this.get(CONTENTBOX).all("." + CLASSES.CHOOSEN).removeClass(CLASSES.CHOOSEN);
+            target.addClass(CLASSES.CHOOSEN);
+            this.currentTarget = targetName;
+        },
+        bindUI: function() {
+            this.get(CONTENTBOX).delegate("click", function(e) {
+                this.selectNextUnread();
+            }, ".select-next", this);
+
+            this.get(CONTENTBOX).delegate("click", function(e) {
+                this.select(e.target);
+            }, ".chooser-entities .chooser-entity", this);
+            this._handlers.push(Y.Wegas.Facade.Variable.after("update", this.syncUI, this));
+        },
+        genWidget: function(type, name) {
+            var widgetConfig = this.get("widgets")[type],
+                ctx = this, cfg;
+            cfg = widgetConfig.widget;
+
+            Y.Wegas.Editable.use(cfg, function(Y) {
+                if (ctx._currentWidgetType === type) {
+                    ctx._currentWidget.set(widgetConfig.widgetAttr, {
+                        name: name
+                    });
+                } else {
+                    cfg[widgetConfig.widgetAttr] = {
+                        name: name
+                    };
+                    Y.Wegas.use(cfg, Y.bind(function() {
+                        this._currentWidget && this._currentWidget.destroy();
+
+                        this._currentWidgetType = type;
+                        this._currentWidget = Y.Wegas.Widget.create(cfg);
+                        this._currentWidget.render(this.get(CONTENTBOX).one(".chooser-widget"));
+                        // propagates selected event to the "parent"
+                        this._currentWidget.on(["*:message", "*:showOverlay", "*:hideOverlay"], this.fire, this);
+                        this._currentWidget.__hackParent = this;
+                    }, ctx));
+                }
+            });
+        },
+        interceptor: function(e) {
+            debugger;
+        },
+        destructor: function() {
+            this._currentWidget && this._currentWidget.destroy();
+            Y.Array.each(this._handlers, function(handle) {
+                handle.detach();
+            });
+        }
+    },
         {
             ATTRS: {
                 variable: {
@@ -343,6 +367,11 @@ YUI.add("wegas-entitychooser", function(Y) {
                 markUnread: {
                     type: "boolean",
                     value: false
+                },
+                autoSelectFirstUnread: {
+                    type: "boolean",
+                    value: true,
+                    optional: true
                 },
                 userCounters: {
                     type: "object",

@@ -449,6 +449,8 @@ YUI.add("wegas-text-input", function(Y) {
         updateValue: function(value) {
             var desc = this.get("variable.evaluated"),
                 inst = desc.getInstance(),
+                values, iValue,
+                numSelectable,
                 cb = this.get("contentBox"),
                 allowedValues = desc.get("allowedValues");
             if (allowedValues && allowedValues.length > 0) {
@@ -458,9 +460,36 @@ YUI.add("wegas-text-input", function(Y) {
                     this.showMessage("error", Y.Wegas.I18n.t('errors.prohibited', {value: value, values: allowedValues}));
                     return false;
                 }
+                numSelectable = this.get("numSelectable");
+                if (numSelectable > 1) {
+                    iValue = inst.get("value");
+                    if (!iValue) {
+                        values = [];
+                    } else {
+                        values = JSON.parse(iValue);
+                        if (!Y.Lang.isArray(values)) {
+                            values = [values];
+                        }
+                    }
+                    if (values.indexOf(value) >= 0) {
+                        values.splice(values.indexOf(value), 1);
+                    } else {
+                        if (values.length >= numSelectable){
+                            this.showMessage("error", Y.Wegas.I18n.t('errors.limitReached', {num: numSelectable}));
+                            return false;
+                        } else {
+                            values.push(value);    
+                        }
+                    }
+                    value = JSON.stringify(values);
+                } else {
+                    // Only one value -> replace
+                    value = JSON.stringify([value]);
+                }
             }
 
             if (inst.get("value") !== value) {
+                // HERE
                 this._initialValue = value;
                 if (this.get("selfSaving")) {
                     cb.addClass("loading");
@@ -526,7 +555,7 @@ YUI.add("wegas-text-input", function(Y) {
                     content.push("<option value=\"\" disabled selected>--select--</option>");
                     for (i in allowedValues) {
                         value = allowedValues[i];
-                        content.push("<option value=\"" + value + "\" " +
+                        content.push("<option value=" + JSON.stringify(value) + " " +
                             (value === inst.get("value") ? "selected=''" : "") +
                             ">" + value + "</option>");
                     }
@@ -537,7 +566,8 @@ YUI.add("wegas-text-input", function(Y) {
                     content = ["<ul class=\"wegas-string-input-checkboxes\">"];
                     for (i in allowedValues) {
                         value = allowedValues[i];
-                        content.push("<li data-value=\"" + value + "\" " +
+
+                        content.push("<li data-value=" + JSON.stringify(value) + " " +
                             (value === inst.get("value") ? "class='selected'" : "") +
                             ">" + value + "</li>");
                     }
@@ -556,6 +586,7 @@ YUI.add("wegas-text-input", function(Y) {
                 inst = desc.getInstance(),
                 CB = this.get("contentBox"),
                 value = inst.get("value"),
+                values, i,
                 readonly = this.get("readonly.evaluated"),
                 input, select, option, i;
             this.get("boundingBox").toggleClass("readonly", readonly);
@@ -584,9 +615,26 @@ YUI.add("wegas-text-input", function(Y) {
                         input.append(select.join(""));
                     }
                 } else {
+                    // First deselect *
                     select = CB.one(".wegas-string-input-checkboxes");
                     select.all(".selected").removeClass("selected");
-                    select.all("li[data-value=\"" + value + "\"]").addClass("selected");
+                    //if (this.get("numSelectable") > 1) {
+                        if (!value) {
+                            value = "[]";
+                        }
+                        // value shall always be an array (even an empty one!)
+                        values = JSON.parse(value);
+                        if (!Y.Lang.isArray(values)) {
+                            values = [values];
+                        }
+                        for (i in values) {
+                            select.all("li[data-value=\"" + values[i] + "\"]").addClass("selected");
+                        }
+
+                    //} else {
+                        // value will never contains several values
+                        //select.all("li[data-value=\"" + value + "\"]").addClass("selected");
+                    //}
                 }
             } else {
                 input = CB.one("input");
@@ -616,12 +664,16 @@ YUI.add("wegas-text-input", function(Y) {
             this.on("save", this._save);
         },
         updateFromUl: function(e) {
+            var v;
             if (!this.get("readonly.evaluated")) {
-                this.updateValue(e.target.getData().value);
+                v = JSON.parse("\"" + e.target.getData().value + "\"");
+                this.updateValue(v);
             }
         },
         updateFromSelect: function(e) {
-            this.updateValue(e.target.get("value"));
+            if (!this.get("readonly.evaluated")) {
+                this.updateValue(e.target.get("value"));
+            }
         },
         keyUp: function(e) {
             var input = this.get(CONTENTBOX).one("input"),
@@ -680,6 +732,11 @@ YUI.add("wegas-text-input", function(Y) {
             clickSelect: {
                 type: "boolean",
                 value: false,
+                optional: true
+            },
+            numSelectable: {
+                type: "number",
+                value: 1,
                 optional: true
             },
             readonly: {

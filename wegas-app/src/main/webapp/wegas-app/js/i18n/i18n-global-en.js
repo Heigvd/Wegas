@@ -28,7 +28,8 @@ YUI.add("wegas-i18n-global-en", function(Y) {
             outOfBounds: "{{value}} not in [{{min}},{{max}}]",
             lessThan: "{{value}} is less than {{min}}",
             greaterThan: "{{value}} is greater greater than {{max}}",
-			prohibited: "\"{{value}}\" not allowed. It must be one of these: {{values}}"
+			prohibited: "\"{{value}}\" not allowed. It must be one of these: {{values}}",
+			limitReached: "You cannot select more than {{num}} values"
         },
         inbox: {
             deleteEmailConfirmation: "The e-mail {{subject}} will be permanently deleted. Continue?",
