@@ -18,7 +18,7 @@ gulp.task("webpack", ["install"], function(callback) {
     var webpack = require('webpack');
     var config = require('./webpack.config.prod');
     webpack(config, function(err, stats) {
-        console.log("[webpack]", stats.toString({color: true}));
+      //  console.log("[webpack]", stats.toString({color: true}));
         callback();
     });
 });
