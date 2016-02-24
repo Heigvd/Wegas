@@ -4,7 +4,8 @@
   "private": true,
   "dependencies": {},
   "scripts": {
-    "start": "./node_modules/.bin/browser-sync start --config bs-config.js"
+    "start": "./node_modules/.bin/browser-sync start --config bs-config.js",
+    "build": "gulp"
   },
   "devDependencies": {
     "amd-optimize": "^0.4.4",
