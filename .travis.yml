@@ -4,6 +4,10 @@ dist: trusty
 jdk:
   - oraclejdk8
 services: postgresql
+cache:
+  directories:
+  - $HOME/.m2
+  - wegas-app/node_modules
 git:
   submodules: false
 branches:
@@ -24,8 +28,6 @@ before_install:
 - echo -e "machine github.com\n  login $GIT_USER\n  password $GIT_TOKEN" >> ~/.netrc
 - git submodule update --init --recursive
 - nvm install $NODE_VERSION
-- node -v
-- npm -v
 before_script:
 - psql -c 'create database wegas_test;' -U postgres
 - psql -c "create user \"user\" with superuser password '1234';" -U postgres
