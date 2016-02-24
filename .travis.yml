@@ -1,10 +1,6 @@
-sudo: required
-dist: trusty
 language: java
 jdk:
-- oraclejdk8
-node_js:
-- "node"
+  - oraclejdk8
 services: postgresql
 git:
   submodules: false
@@ -24,6 +20,7 @@ install:
 before_install:
 - echo -e "machine github.com\n  login $GIT_USER\n  password $GIT_TOKEN" >> ~/.netrc
 - git submodule update --init --recursive
+- nvm install 5.7
 before_script:
 - psql -c 'create database wegas_test;' -U postgres
 - psql -c "create user \"user\" with superuser password '1234';" -U postgres
