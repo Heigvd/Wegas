@@ -9,12 +9,17 @@
 /*global require*/
 var gulp = require('gulp');
 var webpack = require('webpack');
+var install = require('gulp-install');
 var config = require('./webpack.config.prod');
 gulp.task("default", ["webpack"], function() {
     "use strict";
 });
-
-gulp.task("webpack", function(callback) {
+gulp.task("install", function() {
+    "use strict";
+    return gulp.src('package.json')
+        .pipe(install());
+})
+gulp.task("webpack", ["install"], function(callback) {
     "use strict";
     webpack(config, function(err, stats) {
         console.log("[webpack]", stats.toString({color: true}));
