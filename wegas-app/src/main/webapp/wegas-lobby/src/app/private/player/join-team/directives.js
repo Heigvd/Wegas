@@ -70,7 +70,7 @@ angular.module('private.player.join.directives', [])
                                 ctrl.newTeam = false;
                                 refresher = $interval(function() {
                                     findSessionToJoin();
-                                }, 1000);
+                                }, 5000);
                                 return deferred.resolve(true);
                             } else {
                                 responseCreate.flash();
@@ -113,7 +113,7 @@ angular.module('private.player.join.directives', [])
         findSessionToJoin();
         refresher = $interval(function() {
             findSessionToJoin();
-        }, 1000);
+        }, 5000);
     })
     .directive('playerSessionTeamsList', function() {
         "use strict";

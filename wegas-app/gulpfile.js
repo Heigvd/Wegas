@@ -39,6 +39,7 @@ gulp.task("compress-css", ["submodule"], function() {
     "use strict";
     return gulp.src(["target/Wegas/**/*.css",
             "!target/Wegas/lib/**",
+            "!target/Wegas/wegas-lobby/**",
             "!target/Wegas/wegas-stats/**/*.css",
             "!**/*-min.css"],
         {
