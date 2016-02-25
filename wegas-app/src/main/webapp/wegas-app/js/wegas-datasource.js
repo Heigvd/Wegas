@@ -818,6 +818,12 @@ YUI.add('wegas-datasource', function(Y) {
             // Server event, triggered through the managed-mode response events.
             //this._indexes.name = {};
             //this._indexes.id = {};
+            var indexes = this.get("indexes"), i, indexOn;
+            for (i in indexes) {
+                indexOn = indexes[i];
+                this._indexes[indexOn] = {};
+            }
+
 
 
             this.on("CustomEvent", function(e) { // TODO MOVE SOMEWHERE...
@@ -992,7 +998,14 @@ YUI.add('wegas-datasource', function(Y) {
         }
     }, {
         NS: "cache",
-        NAME: "VariableDescriptorCache"
+        NAME: "VariableDescriptorCache",
+        ATTRS: {
+            indexes: {
+                type: "array",
+                value: [],
+                optional: true
+            }
+        }
     });
     Plugin.VariableDescriptorCache = VariableDescriptorCache;
 

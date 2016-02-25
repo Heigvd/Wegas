@@ -37,15 +37,18 @@
                                 //source: "rest/Editor/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
                                 initialRequest: "",
                                 plugins: [{
-                                        fn: "VariableDescriptorCache"
+                                        fn: "VariableDescriptorCache",
+                                        cfg: {
+                                            indexes: ["name", "id"]
+                                        }
                                     }, {
                                         fn: "ScriptEval"
                                     }/*, {
-                                        fn: "WebSocketListener",
-                                        cfg: {
-                                            dataSource: "Pusher"
-                                        }
-                                    }*/]
+                                     fn: "WebSocketListener",
+                                     cfg: {
+                                     dataSource: "Pusher"
+                                     }
+                                     }*/]
                             },
                             Page: {
                                 /*
