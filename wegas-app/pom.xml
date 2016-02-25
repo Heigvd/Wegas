@@ -434,26 +434,7 @@
                     </execution>
                 </executions>
             </plugin>-->
-
-            <!-- YUI JS Compression Plugin -->
-            <plugin>
-                <groupId>net.alchim31.maven</groupId>
-                <artifactId>yuicompressor-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>none</phase>
-                        <goals>
-                            <goal>compress</goal>
-                        </goals>
-                        <configuration>
-                            <encoding>${project.build.sourceEncoding}</encoding>
-                            <excludes>
-                                <exclude>**/*-min.js</exclude>
-                            </excludes>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+            
             <!-- Copy classes to test classes directory, for ejbcontainer to use -->
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
