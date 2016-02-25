@@ -26,6 +26,7 @@ YUI.add("wegas-simpledialogue", function(Y) {
             this.get(CONTENTBOX).delegate('click', function(e) {
                 var no = parseInt(e.currentTarget.getAttribute("response_no"));
                 if (this.availableActions[no]) {
+                    e.currentTarget.addClass("loading");
                     this.currentDialogue.doTransition(this.availableActions[no]);
                 }
             }, '.dialogue .response .responseElements li', this);
