@@ -274,7 +274,6 @@
                     padding-left:8px;
                     box-sizing: border-box;
                     float:left;
-                    user-select:none;
 
                     &:before{
                         display: block;
@@ -286,23 +285,15 @@
                         content: "d";
                         color:#828282;
                         font-family: "wegas-icons-font";
-                        user-select:none;
                     }
                     .key{
                         display:block;
+                        border:none;
                         width: calc(100% - 24px);
                         text-overflow:ellipsis;
                         overflow:hidden;
-                        user-select:all;
-                        -ms-user-select:element;
                         white-space: nowrap;
                         font-weight:500;
-                    }
-                    &:after{
-                        display:block;
-                        position:relative;
-                        content:"";
-                        user-select:none;
                     }
 
                 }
