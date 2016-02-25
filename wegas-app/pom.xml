@@ -177,7 +177,7 @@
             <artifactId>glassfish-embedded-all</artifactId>
             <scope>provided</scope>
         </dependency>-->
-        
+
         <dependency>
             <groupId>fish.payara.extras</groupId>
             <artifactId>payara-embedded-all</artifactId>
@@ -280,53 +280,35 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>com.github.eirslett</groupId>
-                <artifactId>frontend-maven-plugin</artifactId>
-                <version>0.0.25</version>
-                <configuration>
-                    <!--<workingDirectory>${project.build.directory}</workingDirectory>-->
-                </configuration>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.4.0</version>
                 <executions>
                     <execution>
-                        <id>install node and npm</id>
-                        <goals>
-                            <goal>install-node-and-npm</goal>
-                        </goals>
-                        <phase>generate-resources</phase>
-                        <configuration>
-                            <nodeVersion>v0.12.7</nodeVersion>
-                            <npmVersion>2.14.2</npmVersion>
-                            <nodeDownloadRoot>https://nodejs.org/dist/</nodeDownloadRoot>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>npm install</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-
-                        <!-- optional: default phase is "generate-resources" -->
                         <phase>process-resources</phase>
-
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
                         <configuration>
-                            <!-- optional: The default argument is actually
-                            "install", so unless you need to run some other npm command,
-                            you can remove this whole <configuration> section.
-                            -->
-                            <arguments>install</arguments>
+                            <executable>npm</executable>
+                            <arguments>
+                                <argument>install</argument>
+                            </arguments>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>gulp build</id>
+                        <id>gulp</id>
                         <phase>prepare-package</phase>
-                        <!--<phase>none</phase>-->
                         <goals>
-                            <goal>gulp</goal>
+                            <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <!--<srcdir>${project.basedir}/src/main/webapp</srcdir>-->
-                            <!--<outputdir>${project.build.directory}/${project.build.finalName}</outputdir>-->
-                            <!--<arguments>&#45;&#45;verbose</arguments>-->
+                            <executable>npm</executable>
+                            <arguments>
+                                <argument>run</argument>
+                                <argument>build</argument>
+                            </arguments>
                         </configuration>
                     </execution>
                 </executions>
@@ -452,26 +434,7 @@
                     </execution>
                 </executions>
             </plugin>-->
-
-            <!-- YUI JS Compression Plugin -->
-            <plugin>
-                <groupId>net.alchim31.maven</groupId>
-                <artifactId>yuicompressor-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>none</phase>
-                        <goals>
-                            <goal>compress</goal>
-                        </goals>
-                        <configuration>
-                            <encoding>${project.build.sourceEncoding}</encoding>
-                            <excludes>
-                                <exclude>**/*-min.js</exclude>
-                            </excludes>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+            
             <!-- Copy classes to test classes directory, for ejbcontainer to use -->
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
