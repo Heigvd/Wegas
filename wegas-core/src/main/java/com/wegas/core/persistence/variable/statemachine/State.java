@@ -24,14 +24,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 //import javax.xml.bind.annotation.XmlRootElement;
-
 /**
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 @Entity
-@Table(name = "fsm_state")
-@Access(AccessType.FIELD)
+@Table(
+    name = "fsm_state",
+    indexes = {
+        @Index(columnList = "statemachine_id")
+    }
+)
 //@XmlRootElement
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @JsonSubTypes(value = {

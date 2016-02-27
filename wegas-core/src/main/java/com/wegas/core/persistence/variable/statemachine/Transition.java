@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 //import javax.xml.bind.annotation.XmlRootElement;
-
 /**
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
@@ -32,8 +31,13 @@ import java.util.List;
 //@XmlRootElement
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @JsonSubTypes(value = {
-        @JsonSubTypes.Type(name = "DialogueTransition", value = DialogueTransition.class)
+    @JsonSubTypes.Type(name = "DialogueTransition", value = DialogueTransition.class)
 })
+@Table(
+    indexes = {
+        @Index(columnList = "state_id")
+    }
+)
 public class Transition extends AbstractEntity implements Searchable, Scripted {
 
     private static final long serialVersionUID = 1L;
@@ -67,10 +71,10 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
      */
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name = "content", column
-                    = @Column(name = "onTransition_content")),
-            @AttributeOverride(name = "lang", column
-                    = @Column(name = "onTransition_language"))
+        @AttributeOverride(name = "content", column
+            = @Column(name = "onTransition_content")),
+        @AttributeOverride(name = "lang", column
+            = @Column(name = "onTransition_language"))
     })
     @JsonView(Views.EditorExtendedI.class)
     private Script preStateImpact;

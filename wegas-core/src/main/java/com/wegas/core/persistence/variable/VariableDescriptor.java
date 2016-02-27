@@ -55,7 +55,10 @@ import java.util.Map;
 // @UniqueConstraint(columnNames = {"variabledescriptor_id", "name"})           // Name has to be unique within a list
 // @UniqueConstraint(columnNames = {"rootgamemodel_id", "name"})                // Names have to be unique at the base of a game model (root elements)
 }, indexes = {
-    @Index(columnList = "defaultinstance_variableinstance_id")
+    @Index(columnList = "defaultinstance_variableinstance_id"),
+    @Index(columnList = "items_variabledescriptor_id"),
+    @Index(columnList = "rootgamemodel_id"),
+    @Index(columnList = "dtype")
 })
 @NamedQuery(name = "findVariableDescriptorsByRootGameModelId", query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.gameModel AS gm WHERE gm.id = :gameModelId")
 @JsonSubTypes(value = {

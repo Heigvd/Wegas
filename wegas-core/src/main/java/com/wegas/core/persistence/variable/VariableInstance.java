@@ -61,7 +61,10 @@ import java.util.Map;
 @Table(indexes = {
     @Index(columnList = "gamescope_id"),
     @Index(columnList = "teamscope_id"),
-    @Index(columnList = "playerscope_id")
+    @Index(columnList = "playerscope_id"),
+    @Index(columnList = "variableinstances_key"),
+    @Index(columnList = "teamvariableinstances_key"),
+    @Index(columnList = "gamevariableinstances_key")
 })
 
 //@JsonIgnoreProperties(value={"descriptorId"})

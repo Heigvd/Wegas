@@ -25,6 +25,10 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
+
+/*@Table(indexes = {
+ @Index(columnList = "allowedvalues.stringdescriptor_variabledescriptor_id")
+ })*/
 public class StringDescriptor extends VariableDescriptor<StringInstance> {
 
     private static final long serialVersionUID = 1L;
