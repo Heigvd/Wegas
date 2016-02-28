@@ -239,7 +239,7 @@ YUI.add("wegas-entitychooser", function(Y) {
                 }
             } else {
                 if (this.get("autoSelectFirstUnread")) {
-                    Y.later(200, this, this.selectNextUnread);
+                    Y.later(500, this, this.selectNextUnread);
                 }
             }
         },
