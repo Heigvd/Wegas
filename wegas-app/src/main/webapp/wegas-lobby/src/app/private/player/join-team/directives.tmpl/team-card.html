@@ -8,8 +8,7 @@
       <span class="button__label">{{'PLAYER-MODALE-JOIN-TEAM-HIDE-TOGGLE' | translate: hideToggle}}</span>
     </a> 
     <a  class="button button--small button--join-team button--info" 
-        confirmed-click="join(team.id)" 
-        ng-confirm-click="{{'PLAYER-MODALE-JOIN-TEAM-JOIN-BTN' | translate}} {{team.name}} ?">
+        ng-click="join(team.id)">
       <span class="button__label">{{'PLAYER-MODALE-JOIN-TEAM-JOIN-BTN' | translate}}</span>
     </a>   
 </div>
