@@ -474,11 +474,11 @@ YUI.add("wegas-text-input", function(Y) {
                     if (values.indexOf(value) >= 0) {
                         values.splice(values.indexOf(value), 1);
                     } else {
-                        if (values.length >= numSelectable){
+                        if (values.length >= numSelectable) {
                             this.showMessage("error", Y.Wegas.I18n.t('errors.limitReached', {num: numSelectable}));
                             return false;
                         } else {
-                            values.push(value);    
+                            values.push(value);
                         }
                     }
                     value = JSON.stringify(values);
@@ -577,6 +577,7 @@ YUI.add("wegas-text-input", function(Y) {
                 }
             } else {
                 // INPUT
+                value = value || "";
                 input.setContent("<input value=\"" + value + "\" />");
             }
         },
@@ -619,21 +620,21 @@ YUI.add("wegas-text-input", function(Y) {
                     select = CB.one(".wegas-string-input-checkboxes");
                     select.all(".selected").removeClass("selected");
                     //if (this.get("numSelectable") > 1) {
-                        if (!value) {
-                            value = "[]";
-                        }
-                        // value shall always be an array (even an empty one!)
-                        values = JSON.parse(value);
-                        if (!Y.Lang.isArray(values)) {
-                            values = [values];
-                        }
-                        for (i in values) {
-                            select.all("li[data-value=\"" + values[i] + "\"]").addClass("selected");
-                        }
+                    if (!value) {
+                        value = "[]";
+                    }
+                    // value shall always be an array (even an empty one!)
+                    values = JSON.parse(value);
+                    if (!Y.Lang.isArray(values)) {
+                        values = [values];
+                    }
+                    for (i in values) {
+                        select.all("li[data-value=\"" + values[i] + "\"]").addClass("selected");
+                    }
 
                     //} else {
-                        // value will never contains several values
-                        //select.all("li[data-value=\"" + value + "\"]").addClass("selected");
+                    // value will never contains several values
+                    //select.all("li[data-value=\"" + value + "\"]").addClass("selected");
                     //}
                 }
             } else {
