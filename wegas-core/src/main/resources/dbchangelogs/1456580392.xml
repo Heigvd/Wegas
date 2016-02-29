@@ -37,4 +37,9 @@
             <column name="dtype"/>
         </createIndex>
     </changeSet>
+    <changeSet author="maxence" id="1456580400127-3">
+        <createIndex indexName="index_mcqchoicedescriptor_question_variabledescriptor_id" tableName="mcqchoicedescriptor" unique="false">
+            <column name="question_variabledescriptor_id" />
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>

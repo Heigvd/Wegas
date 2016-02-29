@@ -32,7 +32,10 @@ import com.wegas.core.persistence.variable.Scripted;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@Table(name = "MCQChoiceDescriptor")
+@Table(name = "MCQChoiceDescriptor",
+    indexes = {
+        @Index(columnList = "question_variabledescriptor_id")
+    })
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 //@XmlType(name = "ChoiceDescriptor")
 @JsonSubTypes(value = {
