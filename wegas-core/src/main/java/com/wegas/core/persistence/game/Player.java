@@ -32,6 +32,10 @@ import java.util.Map;
     @NamedQuery(name = "findPlayerByTeamIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.id = :teamId")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Table(indexes = {
+    @Index(columnList = "user_id"),
+    @Index(columnList = "parrentteam_id")
+})
 public class Player extends AbstractEntity implements Broadcastable {
 
     private static final long serialVersionUID = 1L;

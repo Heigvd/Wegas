@@ -29,10 +29,14 @@ import java.util.*;
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 @Entity
-@Table(uniqueConstraints = {
-    //    @UniqueConstraint(columnNames = {"name"}), 
-    @UniqueConstraint(columnNames = {"token"})
-})
+@Table(
+    uniqueConstraints = {
+        //    @UniqueConstraint(columnNames = {"name"}), 
+        @UniqueConstraint(columnNames = {"token"})},
+    indexes = {
+        @Index(columnList = "gamemodelid")
+    }
+)
 @NamedQueries({
     @NamedQuery(name = "game.findByStatus", query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status = :status ORDER BY g.createdTime ASC"),
     @NamedQuery(name = "game.findByToken", query = "SELECT DISTINCT g FROM Game g WHERE  g.status = :status AND g.token = :token")

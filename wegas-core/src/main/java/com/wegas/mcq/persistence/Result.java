@@ -32,10 +32,15 @@ import java.util.List;
 @Entity
 //@XmlType(name = "Result")
 @JsonTypeName(value = "Result")
-@Table(name = "MCQResult", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"choicedescriptor_id", "name"}),
-    @UniqueConstraint(columnNames = {"choicedescriptor_id", "label"})
-})
+@Table(
+    name = "MCQResult",
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"choicedescriptor_id", "name"}),
+        @UniqueConstraint(columnNames = {"choicedescriptor_id", "label"}),},
+    indexes = {
+        @Index(columnList = "choicedescriptor_id")
+    }
+)
 public class Result extends NamedEntity implements Searchable, Scripted, LabelledEntity {
 
     private static final long serialVersionUID = 1L;

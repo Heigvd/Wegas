@@ -27,7 +27,8 @@ import java.util.Map;
 //@XmlType(name = "Reply")
 @JsonTypeName(value = "Reply")
 @Table(name = "MCQReply", indexes = {
-    @Index(columnList = "variableinstance_id")
+    @Index(columnList = "variableinstance_id"),
+    @Index(columnList = "result_id")
 })
 public class Reply extends AbstractEntity implements Broadcastable {
 

@@ -25,15 +25,19 @@ import java.util.Map;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@Table(uniqueConstraints
-    = @UniqueConstraint(columnNames = {"name", "parentgame_id"}))
+@Table(
+    uniqueConstraints = @UniqueConstraint(columnNames = {"name", "parentgame_id"}),
+    indexes = {
+        @Index(columnList = "parentgame_id")
+    }
+)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "DebugTeam", value = DebugTeam.class)
 })
 @NamedQueries({
     @NamedQuery(name = "Team.findByGameIdAndName", query = "SELECT a FROM Team a WHERE a.name = :name AND a.gameId = :gameId")})
-public class Team extends AbstractEntity implements Broadcastable{
+public class Team extends AbstractEntity implements Broadcastable {
 
     private static final long serialVersionUID = 1L;
 

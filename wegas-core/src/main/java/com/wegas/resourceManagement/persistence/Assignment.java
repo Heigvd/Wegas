@@ -25,7 +25,8 @@ import java.util.Map;
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
 @Table(indexes = {
-    @Index(columnList = "variableinstance_id")
+    @Index(columnList = "variableinstance_id"),
+    @Index(columnList = "taskdescriptor_id")
 })
 @Entity
 public class Assignment extends AbstractAssignement implements Broadcastable {
