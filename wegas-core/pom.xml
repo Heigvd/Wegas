@@ -46,9 +46,9 @@
         </dependency>-->
 
         <!--<dependency>
-            <groupId>org.glassfish.main.extras</groupId>
-            <artifactId>glassfish-embedded-all</artifactId>
-            <scope>provided</scope>-->
+        <groupId>org.glassfish.main.extras</groupId>
+        <artifactId>glassfish-embedded-all</artifactId>
+        <scope>provided</scope>-->
         <!-- Compile scope is usefull to test JPQL queries-->
         <!--            <scope>compile</scope>-->
         <!--</dependency>-->
@@ -159,6 +159,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>de.empulse.eclipselink</groupId>
+                <artifactId>staticweave-maven-plugin</artifactId>
             </plugin>
 
             <!-- Copy classes to test classes directory, for ejbcontainer to use -->
