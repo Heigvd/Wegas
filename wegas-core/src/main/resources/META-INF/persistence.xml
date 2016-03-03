@@ -9,7 +9,7 @@
       <property name="eclipselink.target-database" value="PostgreSQL"/>
       <property name="eclipselink.persistence-context.reference-mode" value="WEAK"/>
       <property name="eclipselink.jdbc.batch-writing" value="JDBC"/>
-      <property name="eclipselink.weaving" value="static" />
+      <!--<property name="eclipselink.weaving" value="static" />-->
       <!-- Enable logging -->
       <!--<property name="eclipselink.logging.level" value="FINE"/>-->
       <!--<property name="eclipselink.logging.parameters" value="true"/>-->

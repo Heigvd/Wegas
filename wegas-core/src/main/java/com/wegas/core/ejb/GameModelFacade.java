@@ -327,8 +327,8 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         final CriteriaQuery query = criteriaBuilder.createQuery();
         Root e = query.from(entityClass);
         query.select(e)
-                .where(criteriaBuilder.isTrue(e.get("template")))
-                .orderBy(criteriaBuilder.asc(e.get("name")));
+            .where(criteriaBuilder.isTrue(e.get("template")))
+            .orderBy(criteriaBuilder.asc(e.get("name")));
         return getEntityManager().createQuery(query).getResultList();
     }
 
@@ -341,10 +341,10 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
         Root e = query.from(entityClass);
         query.select(e)
-                .where(criteriaBuilder.and(
-                                criteriaBuilder.equal(e.get("status"), status),
-                                criteriaBuilder.isTrue(e.get("template"))))
-                .orderBy(criteriaBuilder.asc(e.get("name")));
+            .where(criteriaBuilder.and(
+                criteriaBuilder.equal(e.get("status"), status),
+                criteriaBuilder.isTrue(e.get("template"))))
+            .orderBy(criteriaBuilder.asc(e.get("name")));
         return getEntityManager().createQuery(query).getResultList();
     }
 
@@ -398,8 +398,8 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         }
 
         fileController.createFile(gameModelId, name + ".json", "/" + HISTORYPATH,
-                "application/octet-stream", null, null,
-                new ByteArrayInputStream(serializedGameModel.getBytes("UTF-8")), false);// Create a file containing the version
+            "application/octet-stream", null, null,
+            new ByteArrayInputStream(serializedGameModel.getBytes("UTF-8")), false);// Create a file containing the version
     }
 
     /**
@@ -440,8 +440,8 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
             if (!found) {
                 this.createVersion(model.getId(),
-                        new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date()) + "-" + hash + ".json",
-                        serialized);
+                    new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date()) + "-" + hash + ".json",
+                    serialized);
             }
 
             //System.gc();
