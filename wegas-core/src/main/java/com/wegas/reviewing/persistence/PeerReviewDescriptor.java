@@ -69,6 +69,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
         NOT_STARTED, // author can edit toReview
         SUBMITTED, // authors can't edit toReview anymore
         DISPATCHED, // toReview are dispatched, state became review dependent
+        NOTIFIED, // tema take aquintance of peer's evaluations
         DISCARDED,    // completely out of reviewing process (debug team for instance)
         EVICTED, // partially out of reviewing process -> nothing to review
         COMPLETED // 
