@@ -454,7 +454,7 @@ YUI.add("wegas-text-input", function(Y) {
                 cb = this.get("contentBox"),
                 allowedValues = desc.get("allowedValues");
             if (allowedValues && allowedValues.length > 0) {
-                if (!Y.Array.find(allowedValues, function(item) {
+                if (!(this.get("allowNull") && value === "") && !Y.Array.find(allowedValues, function(item) {
                     return item === value;
                 }, this)) {
                     this.showMessage("error", Y.Wegas.I18n.t('errors.prohibited', {value: value, values: allowedValues}));
@@ -572,6 +572,9 @@ YUI.add("wegas-text-input", function(Y) {
                             ">" + value + "</li>");
                     }
 
+                    if (this.get("allowNull")){
+                        content.push("<li data-value=\"\">" + I18n.t("global.dunno") + "</li>");
+                    }
                     content.push("</ul>");
                     input.setContent(content.join(""));
                 }
@@ -733,6 +736,11 @@ YUI.add("wegas-text-input", function(Y) {
             clickSelect: {
                 type: "boolean",
                 value: false,
+                optional: true
+            },
+            allowNull: {
+                    type: "boolean",
+                value: true,
                 optional: true
             },
             numSelectable: {
