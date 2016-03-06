@@ -62,4 +62,9 @@
             <column name="predecessors_variabledescriptor_id"/>
         </createIndex>
     </changeSet>
+    <changeSet author="maxence" id="1456917688658-2">
+        <createIndex indexName="index_player_parentteam_id" tableName="player" unique="false">
+            <column name="parentteam_id"/>
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>

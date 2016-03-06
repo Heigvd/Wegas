@@ -34,7 +34,7 @@ import java.util.Map;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Table(indexes = {
     @Index(columnList = "user_id"),
-    @Index(columnList = "parrentteam_id")
+    @Index(columnList = "parentteam_id")
 })
 public class Player extends AbstractEntity implements Broadcastable {
 
