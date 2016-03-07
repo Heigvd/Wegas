@@ -231,7 +231,8 @@ public class StateMachineFacade {
         if (transitionPassed) {
             /* WHAT ? */
             /*@DIRTY, @TODO : find something else : Running scripts overrides previous state change Only for first Player (resetEvent). */
-            this.getAllStateMachines(player.getGameModel());
+            /* Fixed by lib, currently commenting it  @removeme */
+//            this.getAllStateMachines(player.getGameModel());
             
             for (Map.Entry<StateMachineInstance, Transition> entry : selectedTransitions.entrySet()) {
 
