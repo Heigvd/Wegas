@@ -68,7 +68,7 @@ public class StringInstance extends VariableInstance implements Searchable {
      */
     public void setValue(String value) {
         VariableDescriptor vd = this.findDescriptor();
-        if (vd instanceof StringDescriptor) {
+        if (vd instanceof StringDescriptor && value != null) {
             StringDescriptor sd = (StringDescriptor) vd;
             String[] values;
 
