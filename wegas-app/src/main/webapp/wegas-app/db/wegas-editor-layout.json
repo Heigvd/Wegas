@@ -143,16 +143,16 @@
                                 {
                                     "type": "Button",
                                     "label": "Clear Cache",
-                                    "plugins" : [
+                                    "plugins": [
                                         {
-                                            "fn" : "FireAndForgetRequestAction",
-                                            "cfg" : {
+                                            "fn": "FireAndForgetRequestAction",
+                                            "cfg": {
                                                 "url": "rest/combo",
-                                                "method" : "DELETE"
+                                                "method": "DELETE"
                                             }
                                         }
                                     ]
-                                 }
+                                }
                             ]
                         }
                     }
@@ -210,7 +210,9 @@
                         "type": "Tab",
                         "label": "Pages",
                         "cssClass": "editor-pages",
-                        "plugins": [{"fn": "UneditablePageDisabler"}],
+                        "plugins": [{
+                                "fn": "UneditablePageDisabler"
+                            }],
                         "children": [
                             {
                                 "type": "PageTreeview"
@@ -269,6 +271,8 @@
                                         "fn": "PopupListener"
                                     }, {
                                         "fn": "ServerPopupListener"
+                                    }, {
+                                        "fn": "GetPageIdFromQueryString"
                                     }
                                 ]
                             }
