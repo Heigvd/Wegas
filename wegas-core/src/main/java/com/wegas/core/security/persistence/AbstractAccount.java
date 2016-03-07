@@ -43,6 +43,9 @@ import java.util.*;
     @JsonSubTypes.Type(name = "GameAccount", value = com.wegas.core.security.jparealm.GameAccount.class)
 })
 @JsonIgnoreProperties({"passwordConfirm"})
+@Table(indexes = {
+    @Index(columnList = "user_id")
+})
 public class AbstractAccount extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;

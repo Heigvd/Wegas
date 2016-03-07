@@ -73,10 +73,10 @@ public class StringDescriptor extends VariableDescriptor<StringInstance> {
             this.allowedValues.addAll(other.getAllowedValues());
             super.merge(a);
 
-            String value = this.getDefaultInstance().getValue();
+            /*String value = this.getDefaultInstance().getValue();
             if (!this.isValueAllowed(value)) {
                 throw WegasErrorMessage.error("Value \"" + value + "\" not allowed !");
-            }
+            }*/
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }

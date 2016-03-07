@@ -21,7 +21,11 @@ import com.wegas.core.exception.client.WegasIncompatibleType;
  */
 @Entity
 //@XmlType(name = "ChoiceInstance")
-@Table(name = "MCQChoiceInstance")
+@Table(name = "MCQChoiceInstance", 
+    indexes = {
+        @Index(columnList = "result_id")
+    }
+)
 public class ChoiceInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;

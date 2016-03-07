@@ -23,6 +23,11 @@ import com.fasterxml.jackson.annotation.JsonView;
 //@XmlRootElement
 //@XmlType(name = "")                                                             // This forces to use Class's short name as contentType
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+@Table(indexes = {
+    @Index(columnList = "clientscriptlibrary_gamemodelid"),
+    @Index(columnList = "scriptlibrary_gamemodelid"),
+    @Index(columnList = "csslibrary_gamemodelid")
+})
 public class GameModelContent implements Serializable {
 
     private static final long serialVersionUID = 1L;

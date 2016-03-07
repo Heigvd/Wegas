@@ -21,6 +21,12 @@ import java.util.Objects;
 @NamedQueries({
     @NamedQuery(name = "Permission.deleteByInstance", query = "DELETE FROM Permission p WHERE p.value LIKE :instance")
 })
+@Table(
+    indexes = {
+        @Index(columnList = "role_id"),
+        @Index(columnList = "user_id")
+    }
+)
 public class Permission extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;

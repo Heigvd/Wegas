@@ -19,18 +19,25 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.primitive.StringDescriptor;
+import com.wegas.core.persistence.variable.scope.AbstractScope;
+import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.statemachine.State;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.Transition;
 import com.wegas.core.rest.util.JacksonMapperProvider;
+import com.wegas.core.rest.util.Views;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.Result;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -85,7 +92,9 @@ public class UpdateController {
 
         //ret.append("<a href=\"Update/KillOrphans\">Kill Ulvide and 3000 Orphans (" + nbOrphans + " orphans)</a> <br />");
         //ret.append("<a href=\"Update/RestoreDebugTeams\">Restore 25 Debug Teams and Kill Ulvide (" + noDebugTeamGames.size() + " games)</a> <br />");
-        ret.append("<a href=\"Update/PMG_UPGRADE\">PMG upgrade</a> <br />");
+        ret.append("<a href=\"RtsUpdateScope/10901\">RTS Update Scopes</a> <br />");
+        ret.append("<a href=\"RtsNewScope/10901\">RTS New Scopes</a> <br />");
+        //ret.append("<a href=\"Update/PMG_UPGRADE\">PMG upgrade</a> <br />");
         // for (GameModel gm : gameModelFacade.findAll()) {
         //    ret.append("<a href=\"Encode/").append(gm.getId()).append("\">Update variable names ").append(gm.getId()).append("</a> | ");
         //    ret.append("<a href=\"UpdateScript/").append(gm.getId()).append("\">Update script ").append(gm.getId()).append("</a><br />");
@@ -171,17 +180,146 @@ public class UpdateController {
 
         if (scenarioOnly) {
             where = criteriaBuilder.and(
-                    criteriaBuilder.equal(e.get("template"), true),
-                    criteriaBuilder.like(e.get("properties").get("clientScriptUri"), "wegas-pmg/js/wegas-pmg-loader.js%")
+                criteriaBuilder.equal(e.get("template"), true),
+                criteriaBuilder.like(e.get("properties").get("clientScriptUri"), "wegas-pmg/js/wegas-pmg-loader.js%")
             );
         } else {
             where = criteriaBuilder.like(e.get("properties").get("clientScriptUri"), "wegas-pmg/js/wegas-pmg-loader.js%");
         }
 
         query.select(e)
-                .where(where);
+            .where(where);
 
         return em.createQuery(query).getResultList();
+    }
+
+    private void updateScope(VariableDescriptor vd) {
+        if (!(vd.getScope() instanceof GameModelScope)) {
+            GameModelScope scope = new GameModelScope();
+            scope.setBroadcastScope("GameScope");
+            scope.setVariableDescscriptor(vd);
+            vd.setScope(scope);
+            em.persist(vd);
+            vd.propagateDefaultInstance(null);
+        }
+    }
+
+    private String listDescriptorScope(GameModel gameModel) {
+        List<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+
+        for (VariableDescriptor vd : variableDescriptors) {
+            if (vd instanceof ListDescriptor) {
+                this.updateScope(vd);
+            }
+        }
+        sb.append("]");
+
+        return sb.toString();
+    }
+
+    @GET
+    @Path("ListDescriptorScope/{gameModelId : ([1-9][0-9]*)}")
+    public String listDUpdate(@PathParam("gameModelId") Long gameModelId) {
+        GameModel find = gameModelFacade.find(gameModelId);
+        return listDescriptorScope(find);
+    }
+
+    private String rtsUpdateScope(GameModel gameModel) {
+        List<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+
+        for (VariableDescriptor vd : variableDescriptors) {
+
+            if ("question".equals(vd.getLabel().toLowerCase())) {
+                this.updateScope(vd);
+            } else if ("toolbar".equals(vd.getLabel().toLowerCase())
+                || "moves".equals(vd.getLabel().toLowerCase())
+                || "dialogues".equals(vd.getLabel().toLowerCase())) {
+                if (vd instanceof ListDescriptor) {
+                    ListDescriptor list = (ListDescriptor) vd;
+                    for (VariableDescriptor child : list.getItems()) {
+                        if (child instanceof StringDescriptor) {
+                            this.updateScope(child);
+                        }
+                    }
+                }
+            }
+        }
+        sb.append("]");
+
+        return sb.toString();
+    }
+
+    @GET
+    @Path("RtsUpdateScope/{gameModelId : ([1-9][0-9]*)}")
+    public String rtsScopeUpdate(@PathParam("gameModelId") Long gameModelId) {
+        GameModel find = gameModelFacade.find(gameModelId);
+        return rtsUpdateScope(find);
+    }
+
+    private String newScope(GameModel gameModel, VariableDescriptor vd) {
+        StringBuilder sb = new StringBuilder();
+        try {
+            em.detach(vd);
+            String name = vd.getName();
+            String parentName = vd.getParentList().getName();
+
+            GameModelScope scope = new GameModelScope();
+            scope.setBroadcastScope("GameScope");
+            vd.setScope(scope);
+            String json = vd.toJson(Views.Export.class);
+            logger.error("JSON for " + parentName + "/" + name + " variable: " + json);
+
+            descriptorFacade.remove(vd.getId());
+            em.flush();
+
+            logger.error("REMOVED");
+
+            sb.append("NAME: ").append(name).append(" -> ").append(this.addVariable(gameModel, json, name, parentName));
+
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(UpdateController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return sb.toString();
+    }
+
+    private String rtsNewScope(GameModel gameModel) {
+        List<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+
+        for (Iterator<VariableDescriptor> it = variableDescriptors.iterator(); it.hasNext();) {
+            VariableDescriptor vd = it.next();
+            if ("question".equals(vd.getLabel().toLowerCase())) {
+                if (!(vd.getScope() instanceof GameModelScope)) {
+                    sb.append(this.newScope(gameModel, vd));
+                }
+            } else if ("toolbar".equals(vd.getLabel().toLowerCase())
+                || "moves".equals(vd.getLabel().toLowerCase())
+                || "dialogues".equals(vd.getLabel().toLowerCase())) {
+                if (vd instanceof ListDescriptor) {
+                    ListDescriptor list = (ListDescriptor) vd;
+                    for (VariableDescriptor child : list.getItems()) {
+                        if (child instanceof StringDescriptor) {
+                            sb.append(this.newScope(gameModel, child));
+                        }
+                    }
+                }
+            }
+        }
+        sb.append("]");
+
+        return sb.toString();
+    }
+
+    @GET
+    @Path("RtsNewScope/{gameModelId : ([1-9][0-9]*)}")
+    public String rtsNewScope(@PathParam("gameModelId") Long gameModelId) {
+        GameModel find = gameModelFacade.find(gameModelId);
+        return rtsNewScope(find);
     }
 
     private String addVariable(GameModel gm, String json, String varName, String parentName) {

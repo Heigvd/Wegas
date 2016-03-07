@@ -15,6 +15,7 @@ import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -36,6 +37,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.ejb.EJBException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -126,8 +128,12 @@ public class StateMachineFacade {
         }
     }
 
+    private List<StateMachineDescriptor> getAllStateMachines(GameModel gameModel) {
+        return variableDescriptorFacade.findByClass(gameModel, StateMachineDescriptor.class);
+    }
+
     private void runForPlayer(Player player) throws WegasScriptException {
-        List<StateMachineDescriptor> statemachines = variableDescriptorFacade.findByClass(player.getGameModel(), StateMachineDescriptor.class);
+        List<StateMachineDescriptor> statemachines = this.getAllStateMachines(player.getGameModel());
         List<Transition> passed = new ArrayList<>();
         stateMachineEventsCounter = new InternalStateMachineEventCounter();
         Integer steps = this.doSteps(player, passed, statemachines, 0);
@@ -186,6 +192,9 @@ public class StateMachineFacade {
                 } else {
                     try {
                         validTransition = (Boolean) scriptManager.eval(player, transition.getTriggerCondition(), sm);
+                    } catch (EJBException ex) {
+                        logger.error("Transition eval exception: FSM " + sm.getName() + ":" + sm.getId() + ":" + transition.getTriggerCondition().getContent());
+                        throw ex;
                     } catch (WegasScriptException ex) {
                         ex.setScript("Variable " + sm.getLabel());
                         requestManager.addException(ex);
@@ -220,8 +229,10 @@ public class StateMachineFacade {
             }
         }
         if (transitionPassed) {
+            /* WHAT ? */
             /*@DIRTY, @TODO : find something else : Running scripts overrides previous state change Only for first Player (resetEvent). */
-            variableDescriptorFacade.findByClass(player.getGameModel(), StateMachineDescriptor.class);
+            this.getAllStateMachines(player.getGameModel());
+            
             for (Map.Entry<StateMachineInstance, Transition> entry : selectedTransitions.entrySet()) {
 
                 StateMachineInstance fsmi = entry.getKey();

@@ -137,7 +137,7 @@ public class ScriptFacade {
         } catch (WegasRuntimeException ex) { // throw our exception as-is
             throw ex;
         } catch (RuntimeException ex) { // Java exception (Java -> JS -> Java -> throw)
-            throw new WegasScriptException(script.getContent(), ex.getMessage());
+            throw new WegasScriptException(script.getContent(), ex.getMessage(), ex);
         }
     }
 

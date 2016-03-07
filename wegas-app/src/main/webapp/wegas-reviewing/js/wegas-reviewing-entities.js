@@ -132,6 +132,9 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                         value: "DISPATCHED",
                         label: "reviewing"
                     }, {
+                        value: "NOTIFIED",
+                        label: "notified"
+                    }, {
                         value: "COMPLETED",
                         label: "completed"
                     }, {

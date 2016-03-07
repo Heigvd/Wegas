@@ -134,7 +134,7 @@ public class UserFacadeTest {
         // Get all GameModel permissions by GameModel id or Game permissions by Game id
         List<Map> rolePermissions = userFacade.findRolePermissionByInstance("gm1");
         Assert.assertEquals("Public", rolePermissions.get(0).get("name"));
-        Assert.assertEquals("[GameModel:Edit:gm1, GameModel:View:gm1]", rolePermissions.get(0).get("permissions").toString());
+        Assert.assertEquals("[GameModel:View:gm1, GameModel:Edit:gm1]", rolePermissions.get(0).get("permissions").toString());
 
         userFacade.deleteRolePermissionsByIdAndInstance(roleP.getId(), "gm1");
     }
@@ -168,7 +168,7 @@ public class UserFacadeTest {
 
         // Delete all permission from a role in a Game or GameModel
         List<Map> rolePermissions = userFacade.findRolePermissionByInstance("gm20");
-        Assert.assertEquals("[GameModel:Edit:gm20, GameModel:View:gm20, GameModel:Token:gm20]", rolePermissions.get(0).get("permissions").toString());
+        Assert.assertEquals("[GameModel:Token:gm20, GameModel:View:gm20, GameModel:Edit:gm20]", rolePermissions.get(0).get("permissions").toString());
         userFacade.deleteRolePermissionsByIdAndInstance(roleR.getId(), "gm20");
         Role r = roleFacade.findByName("Registered");
         Assert.assertEquals(0, r.getPermissions().size());
@@ -208,7 +208,7 @@ public class UserFacadeTest {
         userFacade.deleteUserPermissionByInstance("gm100");
 
 //        Assert.assertTrue(accountFacade.find(abstractAccount.getId()).getPermissions().contains(new Permission("GameModel:Edit:gm200")));
-        Assert.assertTrue(userFacade.find(u.getId()).getPermissions().get(0).getValue().equals("GameModel:Edit:gm200"));
+        Assert.assertTrue(userFacade.find(u.getId()).getPermissions().get(0).getValue().equals("GameModel:View:gm200"));
     }
 
     /**

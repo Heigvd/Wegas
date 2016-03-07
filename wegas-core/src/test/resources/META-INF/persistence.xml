@@ -9,6 +9,7 @@
     <properties>
       <property name="eclipselink.target-database" value="PostgreSQL"/>
       <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
+      <!--<property name="eclipselink.weaving" value="static" />-->
     </properties>
   </persistence-unit>
 </persistence>
