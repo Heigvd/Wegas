@@ -56,6 +56,9 @@ YUI.add("wegas-text-input", function(Y) {
             if (this.get("label")) {
                 CB.one(".wegas-input-label").setContent(this.get("label"));
             }
+            if (this.get("maxNumberOfCharacters")){
+                this.get("contentBox").one(".wegas-text-input-editor").setAttribute("data-maxChars", this.get("maxNumberOfCharacters"));
+            }
 
             if (this.get("readonly.evaluated")) {
                 CB.one(".wegas-text-input-editor").setContent("<div class=\"readonly\">" + this.getInitialContent() + "</div>");
