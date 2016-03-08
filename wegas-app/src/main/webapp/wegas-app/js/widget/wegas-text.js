@@ -32,10 +32,22 @@ YUI.add("wegas-text", function(Y) {
          */
         syncUI: function() {
             //this.set("content", this.get("content"));
+            this.cleanMarkup();
             this.get(CONTENTBOX).setContent(Y.Template.Micro.compile(this.get("content") || "")());
+        },
+        cleanMarkup: function() {
+            this.get(CONTENTBOX).all("video").each(function(e) {
+                var video = e.getDOMNode();
+                video.pause();
+                video.src = "";
+                video.load();
+            });
         },
         getEditorLabel: function() {
             return this.get(CONTENTBOX).get("text");
+        },
+        destructor: function() {
+            this.cleanMarkup();
         }
 
     }, {
