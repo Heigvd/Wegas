@@ -40,7 +40,6 @@ import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipOutputStream;
-import javax.ws.rs.core.Response.StatusType;
 
 /**
  * @author Cyril Junod <cyril.junod at gmail.com>
@@ -53,6 +52,7 @@ public class FileController {
      *
      */
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(FileController.class);
+
     static final long CHUNK_SIZE = 2 * 1024 * 1024; // 2MB
 
     /**
@@ -82,13 +82,13 @@ public class FileController {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{force: (force/)?}upload{directory : .*?}")
     public Response upload(@PathParam("gameModelId") Long gameModelId,
-        @FormDataParam("name") String name,
-        @FormDataParam("note") String note,
-        @FormDataParam("description") String description,
-        @PathParam("directory") String path,
-        @FormDataParam("file") InputStream file,
-        @FormDataParam("file") FormDataBodyPart details,
-        @PathParam("force") String force) throws RepositoryException {
+                           @FormDataParam("name") String name,
+                           @FormDataParam("note") String note,
+                           @FormDataParam("description") String description,
+                           @PathParam("directory") String path,
+                           @FormDataParam("file") InputStream file,
+                           @FormDataParam("file") FormDataBodyPart details,
+                           @PathParam("force") String force) throws RepositoryException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
         logger.debug("File name: {}", details.getContentDisposition().getFileName());
@@ -99,11 +99,11 @@ public class FileController {
         AbstractContentDescriptor detachedFile;
         try {
             if (details.getContentDisposition().getFileName() == null
-                || details.getContentDisposition().getFileName().equals("")) {//Assuming an empty filename means a directory
+                    || details.getContentDisposition().getFileName().equals("")) {//Assuming an empty filename means a directory
                 detachedFile = this.createDirectory(gameModelId, name, path, note, description);
             } else {
                 detachedFile = this.createFile(gameModelId, name, path, details.getMediaType().toString(),
-                    note, description, file, override);
+                        note, description, file, override);
             }
         } catch (final WegasRuntimeException ex) {
             Response.StatusType status = new Response.StatusType() {
@@ -137,9 +137,9 @@ public class FileController {
     @Path("read{absolutePath : .*?}")
     @CacheMaxAge(time = 48, unit = TimeUnit.HOURS)
     public Response read(@PathParam("gameModelId") Long gameModelId,
-        @PathParam("absolutePath") String name,
-        @Context Request request,
-        @HeaderParam("Range") String range) {
+                         @PathParam("absolutePath") String name,
+                         @Context Request request,
+                         @HeaderParam("Range") String range) {
 
         logger.debug("Asking file (/{})", name);
         AbstractContentDescriptor fileDescriptor;
@@ -285,18 +285,14 @@ public class FileController {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
                 try {
-                    try {
-                        connector.exportXML(output);
-                    } catch (SAXException ex) {
-                        logger.error(null, ex);
-                    }
+                    connector.exportXML(output);
                 } catch (RepositoryException ex) {
                     logger.error(null, ex);
                 }
             }
         };
         return Response.ok(out, MediaType.APPLICATION_OCTET_STREAM).header("content-disposition",
-            "attachment; filename=WEGAS_" + gmFacade.find(gameModelId).getName() + "_files.xml").build();
+                "attachment; filename=WEGAS_" + gmFacade.find(gameModelId).getName() + "_files.xml").build();
     }
 
     /**
@@ -316,23 +312,20 @@ public class FileController {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
                 try {
-                    try {
-                        try (ByteArrayOutputStream xmlStream = new ByteArrayOutputStream()) {
-                            connector.exportXML(xmlStream);
-                            try (GZIPOutputStream o = new GZIPOutputStream(output)) {
-                                o.write(xmlStream.toByteArray());
-                            }
+                    try (ByteArrayOutputStream xmlStream = new ByteArrayOutputStream()) {
+                        connector.exportXML(xmlStream);
+                        try (GZIPOutputStream o = new GZIPOutputStream(output)) {
+                            o.write(xmlStream.toByteArray());
                         }
-                    } catch (SAXException ex) {
-                        logger.error(null, ex);
                     }
+
                 } catch (RepositoryException ex) {
                     logger.error(null, ex);
                 }
             }
         };
         return Response.ok(out, MediaType.APPLICATION_OCTET_STREAM).header("content-disposition",
-            "attachment; filename=WEGAS_" + gmFacade.find(gameModelId).getName() + "_files.xml.gz").build();
+                "attachment; filename=WEGAS_" + gmFacade.find(gameModelId).getName() + "_files.xml.gz").build();
     }
 
     /**
@@ -358,7 +351,7 @@ public class FileController {
             }
         };
         return Response.ok(out, "application/zip").
-            header("content-disposition", "attachment; filename=WEGAS_" + gmFacade.find(gameModelId).getName() + "_files.zip").build();
+                header("content-disposition", "attachment; filename=WEGAS_" + gmFacade.find(gameModelId).getName() + "_files.zip").build();
     }
 
     /**
@@ -377,10 +370,10 @@ public class FileController {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public List<AbstractContentDescriptor> importXML(@PathParam("gameModelId") Long gameModelId,
-        @FormDataParam("file") InputStream file,
-        @FormDataParam("file") FormDataBodyPart details)
-        throws RepositoryException, IOException, SAXException,
-        ParserConfigurationException, TransformerException {
+                                                     @FormDataParam("file") InputStream file,
+                                                     @FormDataParam("file") FormDataBodyPart details)
+            throws RepositoryException, IOException, SAXException,
+            ParserConfigurationException, TransformerException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
@@ -397,7 +390,7 @@ public class FileController {
                     break;
                 default:
                     throw WegasErrorMessage.error("Uploaded file mimetype does not match requirements [XML or Gunzip], found:"
-                        + details.getMediaType().toString());
+                            + details.getMediaType().toString());
             }
             connector.save();
         } finally {
@@ -416,8 +409,8 @@ public class FileController {
     @Path("{force: (force/)?}delete{absolutePath : .*?}")
     @Produces(MediaType.APPLICATION_JSON)
     public Object delete(@PathParam("gameModelId") Long gameModelId,
-        @PathParam("absolutePath") String absolutePath,
-        @PathParam("force") String force) {
+                         @PathParam("absolutePath") String absolutePath,
+                         @PathParam("force") String force) {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
@@ -456,8 +449,8 @@ public class FileController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public AbstractContentDescriptor update(AbstractContentDescriptor tmpDescriptor,
-        @PathParam("gameModelId") Long gameModelId,
-        @PathParam("absolutePath") String absolutePath) {
+                                            @PathParam("gameModelId") Long gameModelId,
+                                            @PathParam("absolutePath") String absolutePath) {
 
         AbstractContentDescriptor descriptor;
 
@@ -510,7 +503,7 @@ public class FileController {
      * @throws RepositoryException
      */
     public FileDescriptor createFile(Long gameModelId, String name, String path, String mediaType,
-        String note, String description, InputStream file, final Boolean override) throws RepositoryException {
+                                     String note, String description, InputStream file, final Boolean override) throws RepositoryException {
 
         logger.debug("File name: {}", name);
 
