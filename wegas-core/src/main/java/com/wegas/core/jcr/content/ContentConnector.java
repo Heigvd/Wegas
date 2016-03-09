@@ -8,39 +8,35 @@
 package com.wegas.core.jcr.content;
 
 import com.wegas.core.jcr.SessionHolder;
-import java.io.*;
-import java.nio.charset.StandardCharsets;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
+
+import javax.jcr.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
-import javax.jcr.*;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import org.apache.commons.io.IOUtils;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 /**
- *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 public class ContentConnector implements AutoCloseable {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(ContentConnector.class);
+
+    static final private String EXPORT_NODE_NAME = "exportedFiles";
+
     final private Session session;
+
     private String workspace = null;
 
     /**
-     *
      * @param bytes
      * @return
      */
@@ -55,7 +51,6 @@ public class ContentConnector implements AutoCloseable {
     }
 
     /**
-     *
      * @param gameModelId
      * @throws RepositoryException
      */
@@ -67,7 +62,6 @@ public class ContentConnector implements AutoCloseable {
     }
 
     /**
-     *
      * @throws RepositoryException
      */
     protected ContentConnector() throws RepositoryException {
@@ -76,7 +70,6 @@ public class ContentConnector implements AutoCloseable {
     }
 
     /**
-     *
      * @param absolutePath
      * @return
      * @throws RepositoryException
@@ -91,7 +84,6 @@ public class ContentConnector implements AutoCloseable {
     }
 
     /**
-     *
      * @param absolutePath
      * @return
      * @throws RepositoryException
@@ -101,7 +93,6 @@ public class ContentConnector implements AutoCloseable {
     }
 
     /**
-     *
      * @param absolutePath
      * @throws RepositoryException
      */
@@ -111,7 +102,6 @@ public class ContentConnector implements AutoCloseable {
     }
 
     /**
-     *
      * @param path
      * @return
      * @throws PathNotFoundException
@@ -152,7 +142,6 @@ public class ContentConnector implements AutoCloseable {
     }
 
     /**
-     *
      * @param absolutePath
      * @return
      * @throws RepositoryException
@@ -162,7 +151,6 @@ public class ContentConnector implements AutoCloseable {
     }
 
     /**
-     *
      * @param absolutePath
      * @return
      * @throws RepositoryException
@@ -173,7 +161,6 @@ public class ContentConnector implements AutoCloseable {
     }
 
     /**
-     *
      * @param absolutePath
      * @param mimeType
      * @param data
@@ -190,7 +177,6 @@ public class ContentConnector implements AutoCloseable {
     }
 
     /**
-     *
      * @param absolutePath
      * @return
      * @throws RepositoryException
@@ -205,7 +191,6 @@ public class ContentConnector implements AutoCloseable {
     }
 
     /**
-     *
      * @param absolutePath
      * @param mimeType
      * @throws RepositoryException
@@ -215,7 +200,6 @@ public class ContentConnector implements AutoCloseable {
     }
 
     /**
-     *
      * @param absolutePath
      * @return
      * @throws RepositoryException
@@ -229,7 +213,6 @@ public class ContentConnector implements AutoCloseable {
     }
 
     /**
-     *
      * @param absolutePath
      * @param note
      * @throws RepositoryException
@@ -240,7 +223,6 @@ public class ContentConnector implements AutoCloseable {
     }
 
     /**
-     *
      * @param absolutePath
      * @return
      * @throws RepositoryException
@@ -254,7 +236,6 @@ public class ContentConnector implements AutoCloseable {
     }
 
     /**
-     *
      * @param absolutePath
      * @param description
      * @throws RepositoryException
@@ -266,7 +247,6 @@ public class ContentConnector implements AutoCloseable {
     }
 
     /**
-     *
      * @param absolutePath
      * @return
      * @throws RepositoryException
@@ -280,7 +260,6 @@ public class ContentConnector implements AutoCloseable {
     }
 
     /**
-     *
      * @param absolutePath
      * @param priv
      * @throws RepositoryException
@@ -316,7 +295,6 @@ public class ContentConnector implements AutoCloseable {
     }
 
     /**
-     *
      * @param absolutePath
      * @return
      * @throws RepositoryException
@@ -328,8 +306,8 @@ public class ContentConnector implements AutoCloseable {
     /*
      * Return content Bytes size
      */
+
     /**
-     *
      * @param absolutePath
      * @return
      * @throws RepositoryException
@@ -396,7 +374,6 @@ public class ContentConnector implements AutoCloseable {
     }
 
     /**
-     *
      * @param oldGameModelId
      * @throws RepositoryException
      */
@@ -420,13 +397,22 @@ public class ContentConnector implements AutoCloseable {
     }
 
     /**
-     *
      * @throws RepositoryException
      */
     public void clearWorkspace() throws RepositoryException {
-        NodeIterator it = this.listChildren("/");
+        NodeIterator it = session.getRootNode().getNodes("*");
         while (it.hasNext()) {
-            it.nextNode().remove();
+            Node node = it.nextNode();
+            if (!(node.getName().equals("jcr:system") || node.getName().equals("rep:policy"))) {
+                node.remove();
+            }
+        }
+        PropertyIterator properties = session.getRootNode().getProperties();
+        while (properties.hasNext()) {
+            Property property = properties.nextProperty();
+            if (!(property.getName().startsWith("jcr:") || property.getName().startsWith("rep:") || property.getName().startsWith("sling:"))) {
+                property.remove();
+            }
         }
         this.save();
     }
@@ -445,58 +431,42 @@ public class ContentConnector implements AutoCloseable {
     }
 
     /**
-     *
      * @param out
      * @throws RepositoryException
      * @throws IOException
      * @throws SAXException
      */
     public void exportXML(OutputStream out) throws RepositoryException, IOException, SAXException {
-
-        XMLSerializer handler = new XMLSerializer(out);
-        NodeIterator it = this.listChildren("/");
-        handler.startDocument();
-        handler.startElement("", "", "root", null);
-        while (it.hasNext()) {
-            session.exportSystemView(it.nextNode().getPath(), handler, false, false);
+        final NodeIterator nodeIterator = this.listChildren("/");
+        final Node exportNode = session.getRootNode().addNode(EXPORT_NODE_NAME);
+        while (nodeIterator.hasNext()) {
+            Node n = nodeIterator.nextNode();
+            session.move(n.getPath(), exportNode.getPath() + "/" + n.getName());
         }
-        handler.endElement("", "", "root");
-        handler.endDocument();
-
+        session.exportSystemView(exportNode.getPath(), out, false, false);
+        session.refresh(false); // Discard change.
     }
 
     /**
-     *
      * @param input
-     * @throws IOException
-     * @throws SAXException
-     * @throws ParserConfigurationException
-     * @throws TransformerException
      * @throws RepositoryException
+     * @throws IOException
      */
-    public void importXML(InputStream input) throws IOException, SAXException, ParserConfigurationException, TransformerException, RepositoryException {
+    public void importXML(InputStream input) throws RepositoryException, IOException{
         try {
-            DocumentBuilderFactory bf = DocumentBuilderFactory.newInstance();
-            bf.setIgnoringElementContentWhitespace(true);
-            DocumentBuilder rootBuilder = bf.newDocumentBuilder();
-            Document root = rootBuilder.parse(input);
-            NodeList list = root.getFirstChild().getChildNodes();
             this.clearWorkspace();                                              // Remove nodes first
-            for (Integer i = 0; i < list.getLength(); i++) {
-                if (list.item(i).getNodeName().equals("sv:node")) {
-                    Document node = bf.newDocumentBuilder().newDocument();
-                    node.appendChild(node.importNode(list.item(i), true));
-                    DOMSource source = new DOMSource(node);
-                    StringWriter writer = new StringWriter();
-                    StreamResult result = new StreamResult(writer);
-                    TransformerFactory.newInstance().newTransformer().transform(source, result);
-                    try (InputStream nodeAsStream = new ByteArrayInputStream(writer.getBuffer().toString().getBytes(StandardCharsets.UTF_8))) {
-                        session.getWorkspace().importXML("/", nodeAsStream, ImportUUIDBehavior.IMPORT_UUID_COLLISION_REMOVE_EXISTING);
-                    }
-                }
+            final Node rootNode = session.getRootNode();
+            session.save();
+            session.getWorkspace().importXML("/", input, ImportUUIDBehavior.IMPORT_UUID_COLLISION_THROW);
+            final NodeIterator nodes = rootNode.getNode(EXPORT_NODE_NAME).getNodes("wfs:*");
+            while (nodes.hasNext()) {
+                final Node node = nodes.nextNode();
+                session.getWorkspace().move(node.getPath(), "/" + node.getName());
             }
-        } finally {
-            input.close();
+            rootNode.getNode(EXPORT_NODE_NAME).remove();
+        } catch (RepositoryException | IOException ex) {
+            logger.error("File repository import failed", ex);
+            throw ex;
         }
     }
 
@@ -505,8 +475,7 @@ public class ContentConnector implements AutoCloseable {
      *
      * @throws RepositoryException
      */
-    private void initializeNamespaces()
-        throws RepositoryException {
+    private void initializeNamespaces() throws RepositoryException {
         for (String prefix : WFSConfig.namespaces.keySet()) {
             try {
                 session.getWorkspace().getNamespaceRegistry().getURI(prefix);
