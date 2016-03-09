@@ -436,7 +436,7 @@ public class ContentConnector implements AutoCloseable {
      * @throws IOException
      * @throws SAXException
      */
-    public void exportXML(OutputStream out) throws RepositoryException, IOException, SAXException {
+    public void exportXML(OutputStream out) throws RepositoryException, IOException {
         final NodeIterator nodeIterator = this.listChildren("/");
         final Node exportNode = session.getRootNode().addNode(EXPORT_NODE_NAME);
         while (nodeIterator.hasNext()) {
@@ -452,7 +452,7 @@ public class ContentConnector implements AutoCloseable {
      * @throws RepositoryException
      * @throws IOException
      */
-    public void importXML(InputStream input) throws RepositoryException, IOException{
+    public void importXML(InputStream input) throws RepositoryException, IOException {
         try {
             this.clearWorkspace();                                              // Remove nodes first
             final Node rootNode = session.getRootNode();
