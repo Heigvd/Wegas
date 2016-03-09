@@ -6,7 +6,7 @@
  * Licensed under the MIT License
  */
 /**
- * Question 
+ * Question
  */
 
 .wegas-mcqview .mcq-question {
@@ -35,7 +35,7 @@
 .wegas-mcqview .mcq-choices {
     display: table;
     box-sizing: border-box;
-    border-collapse: separate; 
+    border-collapse: separate;
     border-spacing: 0 15px;
     margin-top: -10px;
     margin-bottom: -10px;
@@ -44,7 +44,7 @@
 }
 .wegas-mcqview .mcq-choices-horizontal {
     display: table;
-    border-collapse: separate; 
+    border-collapse: separate;
     border-spacing: 4px 0;
     width: 100%;
     text-align: center;
@@ -94,6 +94,11 @@
     background: #d8d9dd;
     vertical-align: baseline;
 }
+.wegas-mcqview .mcq-choices-vertical-submit.notitle.nodescr {
+    background: transparent;
+    vertical-align: baseline;
+    border: none;
+}
 .wegas-mcqview .mcq-choices-vertical-finalsubmit {
     display: table-cell;
     text-align: center;
@@ -109,23 +114,16 @@
     margin-right: 5px;
 }
 .wegas-mcqview .mcq-finalsubmit {
-    
-width: 100%;
-    
-height: 24px;
-    
-box-sizing: border-box;
-    
-padding: 20px;
-    
-position: relative;
+    width: 100%;
+    height: 24px;
+    box-sizing: border-box;
+    padding: 20px;
+    position: relative;
 }
 
 .wegas-mcqview .mcq-finalsubmit .yui3-button {
-
-right: 0px;
-
-position: absolute;
+    right: 0;
+    position: absolute;
 }
 
 
@@ -147,6 +145,13 @@ position: absolute;
 .wegas-mcqview .mcq-choice-name {
     line-height: 35px;
     background: #d8d9dd;
+}
+.wegas-mcqview .mcq-choice.notitle {
+    border: none;
+}
+.wegas-mcqview .mcq-choice-name.notitle {
+    line-height: 35px;
+    background: transparent;
 }
 .wegas-mcqview .mcq-choices-vertical-submit.spurned,
 .wegas-mcqview .mcq-choices-vertical-checkbox.spurned,
@@ -200,8 +205,8 @@ position: absolute;
     text-align:center;
     line-height:24px;
     font-size:11px;
-    top:0px;
-    left:0px;
+    top:0;
+    left:0;
 }
 .wegas-mcqview .mcq-question button:disabled {
     visibility: hidden;

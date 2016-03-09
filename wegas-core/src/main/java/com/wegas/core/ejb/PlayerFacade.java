@@ -9,6 +9,7 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
@@ -166,7 +167,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     public Player findByGameId(Long gameId) throws WegasNoResultException {
         Query getByGameId = getEntityManager().createQuery("SELECT player FROM Player player WHERE player.team.game.id = :gameId "
-                + "ORDER BY type(player.team) desc"); // Debug player comes last
+            + "ORDER BY type(player.team) desc"); // Debug player comes last
         getByGameId.setParameter("gameId", gameId);
         try {
             return (Player) getByGameId.setMaxResults(1).getSingleResult();
@@ -211,6 +212,20 @@ public class PlayerFacade extends BaseFacade<Player> {
     public Player findLive(Long id) {
         Player player = this.find(id);
         if (player == null || !player.getGame().getStatus().equals(Game.Status.LIVE)) {
+            return null;
+        }
+        return player;
+    }
+
+    /**
+     * Find a player test player
+     *
+     * @param id player's id
+     * @return Player if found and game is a debug one, null otherwise
+     */
+    public Player findTestPlayer(Long id) {
+        Player player = this.find(id);
+        if (player == null || !(player.getGame() instanceof DebugGame)) {
             return null;
         }
         return player;

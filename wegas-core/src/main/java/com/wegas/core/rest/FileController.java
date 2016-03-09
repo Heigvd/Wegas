@@ -387,6 +387,7 @@ public class FileController {
         try (final ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(gameModelId)) {
             switch (details.getMediaType().getSubtype()) {
                 case "x-gzip":
+                case "gzip":
                     try (GZIPInputStream in = new GZIPInputStream(file)) {
                         connector.importXML(in);
                     }
