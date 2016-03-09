@@ -341,19 +341,23 @@ YUI.add('wegas-mcq-view', function(Y) {
                     choiceID = choiceD.get("id");
                     currDescr = question.get("items")[i].get("description");
                     isChosenReply = answerable || questionInstance.get("replies")[0].getChoiceDescriptor().get("id") === choiceID;
-                    if (choiceI.get("active")) {
+                    if (!choiceI.get("active")) {
+                    } else {
+                        var noTitle = (choiceD.get("title").trim() == '');
+                        var noDescr = (currDescr.trim() == '');
                         ret.push('<div class="mcq-choice-vertical">');
-                        ret.push('<div class="mcq-choice', (answerable || isChosenReply) ? '' : ' spurned', '">');
-                        title = (choiceD.get("title").trim() !== '') ? choiceD.get("title") : "&nbsp;";
-                        ret.push('<div class="mcq-choice-name">', title, '</div>');
-                        if (currDescr !== '')
+                        ret.push('<div class="mcq-choice', (answerable || isChosenReply) ? (noTitle&&noDescr ? ' notitle' : '') : ' spurned', '">');
+                        title = noTitle ? "&nbsp;" : choiceD.get("title");
+                        ret.push('<div class="mcq-choice-name',(noTitle&&noDescr ? ' notitle' : ''),'">', title, '</div>');
+                        if (!noDescr)
                             ret.push('<div class="mcq-choice-description">', currDescr, '</div>');
                         ret.push('</div>'); // end cell mcq-choice
                         ret.push('<div class="mcq-choices-vertical-submit',
                             (answerable || isChosenReply) ? '' : ' spurned',
-                            (currDescr !== '' ? '' : ' nodescr'), '">');
-                        if (currDescr !== '')
-                            ret.push('<div class="mcq-choice-name" style="padding:0; width:', (allowMultiple ? '115px' : '95px'), '">&nbsp;</div>'); // Finish line with same style
+                            (noTitle ? ' notitle' : ''),
+                            (noDescr ? ' nodescr' : ''), '">');
+                        if (!noDescr)  // Previous width of this div: 115px (if allowMultiple) and else 95px
+                            ret.push('<div class="mcq-choice-name" style="padding:0; width:100%">&nbsp;</div>'); // Finish line with same style as below
                         ret.push('<div class="mcq-checkbox-container">');
                         ret.push('<button class="yui3-button"', (answerable && !readonly ? '' : ' disabled'), ' id="', choiceID, '">', Y.Wegas.I18n.t('mcq.submit'), '</button>');
                         if (allowMultiple) {
@@ -368,7 +372,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                 }
                 ret.push('</div>'); // end mcq-choices
             }
-            /* 
+            /*
              * Display results section:
              */
             if (!cbxType) {
@@ -399,7 +403,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                         choiceI = choiceD.getInstance();
                         if (!choiceI.get("active"))
                             continue;
-                        /*              
+                        /*
                          For each choice, there are 3 cases:
                          1. checked => display title and answer (if any).
                          2. unchecked and no ignorationAnswer => display nothing.
