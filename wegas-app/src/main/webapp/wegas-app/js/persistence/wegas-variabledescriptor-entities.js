@@ -112,6 +112,15 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
          */
         getInstance: function(player) {
             return this.get("scope").getInstance(player || Wegas.Facade.Game.get("currentPlayer"));
+            
+            /*player = player || Wegas.Facade.Game.get("currentPlayer");
+            var instance = this.get("scope").getInstance(player);
+            if (!instance) {
+                this._loadInstance(player);
+                instance = this.get("scope").getInstance(player);
+            }
+            return instance;*/
+
         },
         /**
          *
@@ -122,6 +131,24 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
         },
         getIconCss: function() {
             return "wegas-icon-variabledescriptor wegas-icon-" + this.get("@class").toLowerCase();
+        },
+        _loadInstance: function(player) {
+            var promise = new Y.Promise(function(resolve, reject) {
+                Y.Wegas.Facade.Variable.sendRequest(Y.mix({
+                    request: '/' + this.get("id") + '/VariableInstance/playerId' + player.get("id"),
+                    cfg: {
+                        method: "GET"
+                    },
+                    on: {
+                        success: function(e) {
+                            resolve(e.target.entity);
+                        }, failure: function(e) {
+                            resolve(null);
+                        }
+                    }
+                }));
+            });
+            this.get("scope").setInstance(player, promise);
         }
     }, {
         ATTRS: {
@@ -279,8 +306,16 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
      * Scope mapper
      */
     persistence.Scope = Base.create("Scope", persistence.Entity, [], {
-        getInstance: function() {
+        getInstance: function(player) {
             Y.error("SHOULD BE OVERRIDDEN, abstract!", new Error("getInstance, abstract"), "Wegas.persistance.Scope");
+        },
+        setInstance: function(player, promise) {
+            if (!this.getInstance(player)) {
+                this.setPromise(player, promise);
+            }
+        },
+        setPromise: function(player, promise) {
+            Y.error("SHOULD BE OVERRIDDEN, abstract!", new Error("setPromise, abstract"), "Wegas.persistance.Scope");
         }
     }, {
         ATTRS: {
@@ -306,6 +341,9 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
     persistence.GameModelScope = Base.create("GameModelScope", persistence.Scope, [], {
         getInstance: function() {
             return this.get("variableInstances")[0];
+        },
+        setPromise: function(player, promise) {
+            this.get("variableInstances")[0] = promise;
         }
     }, {
         ATTRS: {
@@ -320,6 +358,9 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
     persistence.GameScope = Base.create("GameScope", persistence.Scope, [], {
         getInstance: function() {
             return this.get("variableInstances")[String(Wegas.Facade.Game.get("currentGameId"))];
+        },
+        setPromise: function(player, instance) {
+            this.get("variableInstances")[String(Wegas.Facade.Game.get("currentGameId"))] = promise;
         }
     }, {
         ATTRS: {
@@ -335,6 +376,9 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
     persistence.TeamScope = Base.create("TeamScope", persistence.Scope, [], {
         getInstance: function(player) {
             return this.get("variableInstances")[player.get("team").get("id")];
+        },
+        setPromise: function(player, instance) {
+            this.get("variableInstances")[player.get("id")] = promise;
         }
     }, {
         ATTRS: {
@@ -350,6 +394,9 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
     persistence.PlayerScope = Base.create("PlayerScope", persistence.Scope, [], {
         getInstance: function(player) {
             return this.get("variableInstances")[player.get("id")];
+        },
+        setPromise: function(player, promise) {
+            this.get("variableInstances")[player.get("id")] = promise;
         }
     }, {
         ATTRS: {
@@ -761,7 +808,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             return this.getChildByKey("name", name, true);
         },
         getChildByLabel: function(label) {
-            return this.getChildByKey("label", label , true);
+            return this.getChildByKey("label", label, true);
         },
         find: function(id) {
             return this.getChildByKey("id", +id, false);
