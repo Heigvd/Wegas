@@ -12,14 +12,22 @@
 YUI.add("wegas-entity", function(Y) {
     "use strict";
 
-    var STRING = "string", HIDDEN = "hidden", ARRAY = "array", NAME = "name",
-        BUTTON = "Button", TEXT = "text", HTML = "html", GROUP = "group",
-        Wegas = Y.namespace("Wegas"), persistence = Y.namespace("Wegas.persistence"),
+    var STRING = "string",
+        NUMBER = "number",
+        HIDDEN = "hidden",
+        ARRAY = "array",
+        NAME = "name",
+        BUTTON = "Button",
+        TEXT = "text",
+        HTML = "html",
+        GROUP = "group",
+        Wegas = Y.namespace("Wegas"),
+        persistence = Y.namespace("Wegas.persistence"),
         Base = Y.Base, Entity,
         IDATTRDEF = {
             type: STRING,
             optional: true, //                                                  // The id is optional for entites that
-                            // have not been persisted
+            // have not been persisted
             _inputex: {
                 _type: HIDDEN
             }
@@ -41,24 +49,25 @@ YUI.add("wegas-entity", function(Y) {
                 "transient": true
             },
             id: {
-                type: STRING,
+                type: NUMBER,
                 optional: true, // The id is optional for entites that have not been persisted
                 writeOnce: "initOnly",
                 setter: function(val) {
                     return val * 1;
                 },
-                _inputex: {
-                    _type: "uneditable",
-                    wrapperClassName: "inputEx-fieldWrapper inputEx-uneditableField wegas-advanced-feature",
-                    index: -2
+                index: -2,
+                view: {
+                    type: "uneditable",
+                    className: "wegas-advanced-feature"                    
                 }
             },
             "@class": {
                 value: "null",
+                required: true,
                 writeOnce: "initOnly",
                 type: STRING,
-                _inputex: {
-                    _type: HIDDEN
+                view: {
+                    type: HIDDEN
                 }
             },
             label: {
@@ -268,7 +277,7 @@ YUI.add("wegas-entity", function(Y) {
             updatedTime: {
                 "transient": true
             },
-            gameModel: {//                                                      // Extended view only
+            gameModel: { //                                                      // Extended view only
                 "transient": true
             },
             properties: {
@@ -338,7 +347,7 @@ YUI.add("wegas-entity", function(Y) {
                     label: "Option 1: Player accesses through his account",
                     wrapperClassName: "inputEx-fieldWrapper wegas-game-token",
                     description: "Players log in and joins game with an <b>enrolment key</b>.<br />"
-                                 + "The enrolment key can be used by an unlimited number of players."
+                        + "The enrolment key can be used by an unlimited number of players."
                 }
             },
             keys: {
@@ -349,7 +358,7 @@ YUI.add("wegas-entity", function(Y) {
                     wrapperClassName: "inputEx-fieldWrapper wegas-game-keys",
                     _type: "enrolmentkeylist",
                     description: "Players log in and joins game with an <b>enrolment key</b>.<br />"
-                                 + "Each enrolment key can be used only once."
+                        + "Each enrolment key can be used only once."
                 }
             },
             accountkeys: {
@@ -361,7 +370,7 @@ YUI.add("wegas-entity", function(Y) {
                     wrapperClassName: "inputEx-fieldWrapper wegas-game-users",
                     index: 2,
                     description: "Player directly joins the game with username/password.<br />"
-                                 + " Each username/password can be used only once."
+                        + " Each username/password can be used only once."
                 }
             },
             playersCount: {

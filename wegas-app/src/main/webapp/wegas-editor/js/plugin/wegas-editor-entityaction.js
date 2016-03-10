@@ -213,7 +213,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
         getEditionTab: function() {
             if (!EditEntityAction.tab || EditEntityAction.tab.get("destroyed")) {// First make sure the edit tab does not exist
                 var tab = Wegas.TabView.createTab("Edit", "#rightTabView", {}, 0), // Create a tab,
-                    form = new Wegas.Form();                                    // and a form
+                    form = new Wegas.RForm();                                    // and a form
 
                 //tab.plug(Plugin.Removeable);                                  // make it closeable
                 tab.add(form);

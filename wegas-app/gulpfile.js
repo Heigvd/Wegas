@@ -40,6 +40,7 @@ gulp.task("compress-css", ["submodule"], function() {
     return gulp.src(["target/Wegas/**/*.css",
             "!target/Wegas/lib/**",
             "!target/Wegas/wegas-lobby/**",
+            "!target/Wegas/wegas-react-form/**",
             "!target/Wegas/wegas-stats/**/*.css",
             "!**/*-min.css"],
         {
@@ -70,6 +71,7 @@ gulp.task("compress-js", ["submodule"], function() {
             "!**/*-min.js",
             "!**/gulpfile.js",
             "!target/Wegas/wegas-lobby/**",
+            "!target/Wegas/wegas-react-form/**",
             "!target/Wegas/wegas-stats/**",
             "!target/Wegas/scripts/*.js"],
         {

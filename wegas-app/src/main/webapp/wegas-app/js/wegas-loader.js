@@ -39,7 +39,7 @@ YUI().use(function(Y) {
         group.base = YUI_config.Wegas.base + group.root; // Set up path
         group.comboBase = YUI_config.Wegas.comboBase; // Set up combo path
         loadModules(group);
-        //YUI.applyConfig(YUI_config);
+    //YUI.applyConfig(YUI_config);
     };
     YUI.addGroup("wegas", {
         base: "./wegas-app/",
@@ -205,7 +205,7 @@ YUI().use(function(Y) {
             "wegas-text-input": {
                 path: "js/widget/wegas-text-input-min.js",
                 ws_provides: ["TextInput", "StringInput"],
-                requires: ["wegas-text-inputcss", "wegas-widget", "tinymce", "wegas-panel-fileselect", "wegas-button",  "event-valuechange" ]
+                requires: ["wegas-text-inputcss", "wegas-widget", "tinymce", "wegas-panel-fileselect", "wegas-button", "event-valuechange"]
             },
             "wegas-number-inputcss": {
                 type: CSS
@@ -609,7 +609,7 @@ YUI().use(function(Y) {
             },
             "wegas-editor-entityaction": {
                 path: "js/plugin/wegas-editor-entityaction-min.js",
-                requires: ["wegas-plugin", "wegas-form"],
+                requires: ["wegas-plugin", "wegas-form", "wegas-react-form"],
                 ws_provides: ["NewEntityAction", "EditEntityAction", "NewEntityButton"]
             },
             "wegas-editor-form": {
@@ -834,6 +834,16 @@ YUI().use(function(Y) {
 
         }
     });
+    YUI.addGroup("wegas-react-form", {
+        base: "./wegas-react-form/",
+        root: "/wegas-react-form/",
+        modules: {
+            "wegas-react-form": {
+                path: "dist/bundle.js",
+                requires:["roboto-font", "tinymce", "wegas-panel-fileselect"]
+            }
+        }
+    });
     /**
      * Accounting
      */
@@ -933,12 +943,12 @@ YUI().use(function(Y) {
                     "wegas-panel", "wegas-simpledialogue"],
                 ws_provides: "CEPFolder"
             }
-            /* Chess */
-            //"wegas-chess": {
-            //    path: "wegas-games/wegas-chess/js/wegas-chess-min.js",
-            //    ws_provides: "ChessBoard",
-            //    requires: "transition"
-            //}
+        /* Chess */
+        //"wegas-chess": {
+        //    path: "wegas-games/wegas-chess/js/wegas-chess-min.js",
+        //    ws_provides: "ChessBoard",
+        //    requires: "transition"
+        //}
         }
     });
     /* Other libraries */
@@ -1000,6 +1010,10 @@ YUI().use(function(Y) {
                 type: CSS,
                 fullpath: "//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"
             },
+            "roboto-font": {
+                type: CSS,
+                fullpath: "//fonts.googleapis.com/css?family=Roboto:400,300,500"
+            },
             "chart-js": {
                 async: false,
                 fullpath: "//cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"
@@ -1055,4 +1069,5 @@ YUI().use(function(Y) {
         }
         group.allModules = allModules;
     }
+
 });
