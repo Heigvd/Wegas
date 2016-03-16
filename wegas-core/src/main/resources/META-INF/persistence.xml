@@ -12,7 +12,7 @@
             <property name="eclipselink.persistence-context.reference-mode" value="WEAK"/>
             <property name="eclipselink.jdbc.batch-writing" value="JDBC"/>
             <property name="eclipselink.jdbc.batch-writing.size" value="1000"/>
-            <!--<property name="eclipselink.weaving" value="static" />-->
+            <property name="eclipselink.weaving" value="static" />
             <!-- Enable logging -->
             <!--<property name="eclipselink.logging.level" value="FINE"/>-->
             <!--<property name="eclipselink.logging.parameters" value="true"/>-->
