@@ -230,6 +230,24 @@ public class Role extends AbstractEntity {
         this.users = users;
     }
 
+    /**
+     * @param role
+     */
+    public void addUser(User user) {
+        this.users.add(user);
+    }
+
+    /**
+     * strike out this account from the role
+     *
+     * @param role
+     */
+    public void removeUser(User user) {
+        this.users.remove(user);
+    }
+
+
+
     @Override
     public String toString() {
         return "Role(" + this.id + ", " + this.name + ")";
