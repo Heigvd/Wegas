@@ -195,7 +195,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
 
     /**
      *
-     * @param force
+     * @param context
      */
     public void propagateDefaultInstance(Object context) {
         for (VariableDescriptor vd : this.getVariableDescriptors()) {
@@ -420,6 +420,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     public void addGame(Game game) {
         this.games.add(game);
         game.setGameModel(this);
+        game.setGameModelId(this.getId());
     }
 
     /**

@@ -39,6 +39,11 @@ public class RoleFacade extends BaseFacade<Role> {
     }
 
     @Override
+    public void create(Role entity) {
+        getEntityManager().persist(entity);
+    }
+
+    @Override
     public void remove(Role role) {
         // Strike out all members from the role to avoid pkey violation
         Set<User> users = role.getUsers();
@@ -48,8 +53,7 @@ public class RoleFacade extends BaseFacade<Role> {
             logger.error("User: " +  u);
             u.removeRole(role);
         }
-
-        super.remove(role);
+        getEntityManager().remove(role);
     }
 
     /**

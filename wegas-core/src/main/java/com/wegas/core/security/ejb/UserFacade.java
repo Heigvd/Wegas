@@ -148,7 +148,7 @@ public class UserFacade extends BaseFacade<User> {
             // E-Mail not yet registered -> proceed
         }
 
-        super.create(user);
+        getEntityManager().persist(user);
         try {
             user.addRole(roleFacade.findByName("Public"));
         } catch (WegasNoResultException ex) {
@@ -161,6 +161,11 @@ public class UserFacade extends BaseFacade<User> {
             logger.error("Unable to find Role: Registered");
         }
         this.getEntityManager().flush();
+    }
+
+    @Override
+    public void remove(User entity) {
+        getEntityManager().remove(entity);
     }
 
     /**

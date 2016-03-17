@@ -133,7 +133,7 @@ public class GameFacade extends BaseFacade<Game> {
      * @param gameModel
      * @param game
      */
-    public void create(final GameModel gameModel, final Game game) {
+    private void create(final GameModel gameModel, final Game game) {
         final User currentUser = userFacade.getCurrentUser();
 
         if (game.getToken() == null) {
@@ -141,7 +141,7 @@ public class GameFacade extends BaseFacade<Game> {
         } else if (this.findByToken(game.getToken()) != null) {
             throw WegasErrorMessage.error("This token is already in use.");
         }
-
+        getEntityManager().persist(game);
         game.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
         gameModel.addGame(game);
         gameModelFacade.reset(gameModel);                                       // Reset the game so the default player will have instances
@@ -225,7 +225,8 @@ public class GameFacade extends BaseFacade<Game> {
             && !(entity.getGameModel().getGames().get(0) instanceof DebugGame)) {// This is for retrocompatibility w/ game models that do not habe DebugGame
             gameModelFacade.remove(entity.getGameModel());
         } else {
-            super.remove(entity);
+            getEntityManager().remove(entity);
+            entity.getGameModel().getGames().remove(entity);
         }
 
         //for (Team t : entity.getTeams()) {

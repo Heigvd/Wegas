@@ -9,8 +9,8 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
 import com.wegas.core.event.internal.EngineInvocationEvent;
-import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.WegasErrorMessageManager;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.AbstractEntity;
@@ -19,14 +19,9 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.*;
-import java.util.Map.Entry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -37,11 +32,16 @@ import javax.inject.Inject;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
- *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
@@ -54,31 +54,37 @@ public class ScriptFacade {
      * name
      */
     public static final String CONTEXT = "currentDescriptor";
+
     /**
      *
      */
     @EJB
-    private PlayerFacade playerEntityFacade;
+    private PlayerFacade playerFacade;
+
     /**
      *
      */
     @EJB
     private VariableDescriptorFacade variableDescriptorFacade;
+
     /**
      *
      */
     @Inject
     private ScriptEventFacade event;
+
     /**
      *
      */
     @EJB
     DelayedScriptEventFacade delayedEvent;
+
     /**
      *
      */
     @Inject
     private RequestManager requestManager;
+
     /**
      *
      */
@@ -99,7 +105,7 @@ public class ScriptFacade {
             }
             try {
                 engineInvocationEvent.fire(
-                    new EngineInvocationEvent(player, engine));// Fires the engine invocation event, to allow extensions
+                        new EngineInvocationEvent(player, engine));// Fires the engine invocation event, to allow extensions
 
             } catch (ObserverException ex) {
                 throw (WegasRuntimeException) ex.getCause();
@@ -110,13 +116,11 @@ public class ScriptFacade {
     }
 
     /**
-     *
      * Fires an engineInvocationEvent, which should be intercepted to customize
      * engine scope.
      *
      * @param script
      * @param arguments
-     *
      * @return
      */
     private Object eval(Script script, Map<String, AbstractEntity> arguments) throws WegasScriptException {
@@ -159,7 +163,7 @@ public class ScriptFacade {
         event.detachAll();
         this.injectStaticScript(evt);
         for (Entry<String, GameModelContent> arg
-            : evt.getPlayer().getGameModel().getScriptLibrary().entrySet()) { // Inject the script library
+                : evt.getPlayer().getGameModel().getScriptLibrary().entrySet()) { // Inject the script library
             evt.getEngine().put(ScriptEngine.FILENAME, "Server script " + arg.getKey()); //@TODO: JAVA 8 filename in scope
             try {
                 evt.getEngine().eval(arg.getValue().getContent());
@@ -171,7 +175,7 @@ public class ScriptFacade {
         }
 
         for (VariableDescriptor vd
-            : evt.getPlayer().getGameModel().getChildVariableDescriptors()) { // Inject the variable instances in the script
+                : evt.getPlayer().getGameModel().getChildVariableDescriptors()) { // Inject the variable instances in the script
             VariableInstance vi = vd.getInstance(evt.getPlayer());
             try {
                 evt.getEngine().put(vd.getName(), vi);
@@ -231,13 +235,12 @@ public class ScriptFacade {
     /**
      * extract all javascript files from the files list. If one of the files is
      * a directory, recurse through it and fetch *.js.
-     *
+     * <p>
      * Note: When iterating, if a script and its minified version stands in the
      * directory, the minified is ignored (debugging purpose)
      *
      * @param root
      * @param files
-     *
      * @return
      */
     private Collection<String> getJavaScriptsRecursively(String root, String[] files) {
@@ -268,8 +271,8 @@ public class ScriptFacade {
                         queue.addAll(Arrays.asList(listFiles));
                     }
                 } else if (current.isFile()
-                    && current.getName().endsWith(".js") // Is a javascript
-                    && !isMinifedDuplicata(current)) { // avoid minified version when original exists
+                        && current.getName().endsWith(".js") // Is a javascript
+                        && !isMinifedDuplicata(current)) { // avoid minified version when original exists
                     result.add(current.getPath());
                 }
             }
@@ -281,7 +284,6 @@ public class ScriptFacade {
      * check if the given file is a minified version of an existing one
      *
      * @param file
-     *
      * @return
      */
     private boolean isMinifedDuplicata(File file) {
@@ -294,12 +296,12 @@ public class ScriptFacade {
     }
 
     // *** Sugar *** //
+
     /**
      * Concatenate scripts
      *
      * @param scripts
      * @param arguments
-     *
      * @return
      */
     private Object eval(Player player, List<Script> scripts, Map<String, AbstractEntity> arguments) throws WegasScriptException {
@@ -329,11 +331,9 @@ public class ScriptFacade {
     }
 
     /**
-     *
      * @param p
      * @param s
      * @param context
-     *
      * @return
      */
     public Object eval(Player p, Script s, VariableDescriptor context) throws WegasScriptException {
@@ -343,20 +343,17 @@ public class ScriptFacade {
     }
 
     /**
-     *
      * @param player
      * @param s
      * @param arguments
-     *
      * @return
      */
     private Object eval(Player player, Script s, Map<String, AbstractEntity> arguments) throws WegasScriptException {
-        requestManager.setPlayer(player);
+        requestManager.setPlayer(playerFacade.find(player.getId()));
         return this.eval(s, arguments);
     }
 
     /**
-     *
      * @param playerId
      * @param s
      * @param context
@@ -366,6 +363,6 @@ public class ScriptFacade {
     public Object eval(Long playerId, Script s, VariableDescriptor context) throws WegasScriptException { // ICI CONTEXT
         Map<String, AbstractEntity> arguments = new HashMap<>();
         arguments.put(ScriptFacade.CONTEXT, context);
-        return this.eval(playerEntityFacade.find(playerId), s, arguments);
+        return this.eval(playerFacade.find(playerId), s, arguments);
     }
 }

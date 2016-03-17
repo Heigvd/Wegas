@@ -161,10 +161,10 @@
                 <artifactId>maven-jar-plugin</artifactId>
             </plugin>
 
-            <!--<plugin>
+           <plugin>
                 <groupId>de.empulse.eclipselink</groupId>
                 <artifactId>staticweave-maven-plugin</artifactId>
-            </plugin>-->
+            </plugin>
 
             <!-- Copy classes to test classes directory, for ejbcontainer to use -->
             <plugin>

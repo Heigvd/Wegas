@@ -105,6 +105,11 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         return oAccount;
     }
 
+    @Override
+    public void remove(AbstractAccount entity) {
+        getEntityManager().remove(entity);
+    }
+
     /**
      * @param entity
      */

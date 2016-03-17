@@ -152,4 +152,14 @@ public class AdminFacade extends BaseFacade<GameAdmin> {
         }
         
     }
+
+    @Override
+    public void create(GameAdmin entity) {
+        getEntityManager().persist(entity);
+    }
+
+    @Override
+    public void remove(GameAdmin entity) {
+        getEntityManager().remove(entity);
+    }
 }

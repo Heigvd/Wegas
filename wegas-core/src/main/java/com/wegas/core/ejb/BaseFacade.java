@@ -69,15 +69,6 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
         getEntityManager().refresh(entity);
     }
 
-    /**
-     *
-     * @param entity
-     */
-    @Override
-    public void create(final T entity) {
-        getEntityManager().persist(entity);
-        // getEntityManager().flush();
-    }
 
 //    /**
 //     *
@@ -125,15 +116,6 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
         final T newEntity = (T) oldEntity.duplicate();
         this.create(newEntity);                                                 // Store it in db
         return newEntity;
-    }
-
-    /**
-     *
-     * @param entity
-     */
-    @Override
-    public void remove(final T entity) {
-        getEntityManager().remove(entity);
     }
 
     /**
