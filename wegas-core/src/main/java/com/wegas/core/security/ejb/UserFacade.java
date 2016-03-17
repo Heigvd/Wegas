@@ -39,6 +39,7 @@ import javax.persistence.Query;
 import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import java.util.*;
+import javax.persistence.EntityManager;
 
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -296,7 +297,7 @@ public class UserFacade extends BaseFacade<User> {
         final Permission p = new Permission(permissionStr);
         final String splitedPermission[] = permissionStr.split(":");
         if (splitedPermission[0].equals(Game.class.getSimpleName()) // If current permission is on game
-                && !splitedPermission[1].equals("Token")) {                     // and is not a Token access
+            && !splitedPermission[1].equals("Token")) {                     // and is not a Token access
             final Long gameId = Long.parseLong(splitedPermission[2].substring(1));
             final Game g = gameFacade.find(gameId);
             p.setInducedPermission("GameModel:View:gm" + g.getGameModelId());   // grant view access on its parent game model
@@ -381,26 +382,27 @@ public class UserFacade extends BaseFacade<User> {
      * @param instance
      */
     public void deleteUserPermissionByInstance(String instance) {
+        /*
         Query query = getEntityManager().createNamedQuery("Permission.deleteByInstance");
         query.setParameter("instance", "%:" + instance);
         query.executeUpdate();
+         */
 
-        /*
-         Query findByToken = getEntityManager().createNamedQuery("findUserPermissions");
+        Query findByToken = getEntityManager().createNamedQuery("findUserPermissions");
 
-         findByToken.setParameter("instance", "%:" + instance);
-         List<User> users = (List<User>) findByToken.getResultList();
-         for (User user : users) {
-         for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext();) {
-         Permission p = sit.next();
-         String splitedPermission[] = p.getValue().split(":");
-         if (splitedPermission.length >= 3) {
-         if (splitedPermission[2].equals(instance)) {
-         sit.remove();
-         }
-         }
-         }
-         }*/
+        findByToken.setParameter("instance", "%:" + instance);
+        List<User> users = (List<User>) findByToken.getResultList();
+        for (User user : users) {
+            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext();) {
+                Permission p = sit.next();
+                String splitedPermission[] = p.getValue().split(":");
+                if (splitedPermission.length >= 3) {
+                    if (splitedPermission[2].equals(instance)) {
+                        sit.remove();
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -409,10 +411,10 @@ public class UserFacade extends BaseFacade<User> {
      */
     public void deleteUserPermissionByInstanceAndUser(String instance, Long userId) {
         Query findByToken = getEntityManager().createQuery("SELECT DISTINCT users FROM User users JOIN users.permissions p "
-                + "WHERE p.value LIKE '%:" + instance + "' AND p.user.id =" + userId);
+            + "WHERE p.value LIKE '%:" + instance + "' AND p.user.id =" + userId);
         try {
             User user = (User) findByToken.getSingleResult();
-            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext(); ) {
+            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext();) {
                 String p = sit.next().getValue();
                 String splitedPermission[] = p.split(":");
                 if (splitedPermission.length >= 3) {
@@ -436,10 +438,10 @@ public class UserFacade extends BaseFacade<User> {
      */
     public void deleteUserPermissionByPermissionAndAccount(String permission, Long userId) {
         Query findByToken = getEntityManager().createQuery("SELECT DISTINCT users FROM User users JOIN users.permissions p "
-                + "WHERE p.value LIKE '" + permission + "' AND p.user.id =" + userId);
+            + "WHERE p.value LIKE '" + permission + "' AND p.user.id =" + userId);
         try {
             User user = (User) findByToken.getSingleResult();
-            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext(); ) {
+            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext();) {
                 String p = sit.next().getValue();
                 String splitedPermission[] = p.split(":");
                 if (splitedPermission.length >= 3 && p.equals(permission)) {
@@ -469,11 +471,12 @@ public class UserFacade extends BaseFacade<User> {
             String body = "A new password for your wegas account has been successfully created: " + newPassword;
             String from = "noreply@" + Helper.getWegasProperty("mail.default_domain");
             if (acc != null) {
-                emailFacade.send(acc.getEmail(), from, null, subject, body, Message.RecipientType.TO, "text/plain", true);
                 acc.setPassword(newPassword);
                 acc.setPasswordHex(null);                                           //force JPA update
+                emailFacade.send(acc.getEmail(), from, null, subject, body, Message.RecipientType.TO, "text/plain", true);
             }
         } catch (WegasNoResultException | MessagingException ex) {
+            System.out.println(ex);
         }
     }
 
@@ -499,7 +502,7 @@ public class UserFacade extends BaseFacade<User> {
     public void removeIdleGuests() {
         logger.info("removeIdleGuests(): unused guest accounts will be removed");
         Query findIdleGuests = getEntityManager().createQuery("SELECT DISTINCT account FROM GuestJpaAccount account "
-                + "WHERE account.createdTime < :idletime");
+            + "WHERE account.createdTime < :idletime");
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - 3);
         findIdleGuests.setParameter("idletime", calendar.getTime(), TemporalType.DATE);
@@ -606,5 +609,16 @@ public class UserFacade extends BaseFacade<User> {
             p.setName(user.getName());
         }
 
+    }
+
+    void addRole(User u, Role r) {
+        u.addRole(r);
+        r.addUser(u);
+    }
+
+    void addRole(Long uId, Long rId) {
+        User u = this.find(uId);
+        Role r = roleFacade.find(rId);
+        this.addRole(u, r);
     }
 }
