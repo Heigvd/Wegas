@@ -52,7 +52,7 @@ public class GameFacadeTest extends AbstractEJBTest {
         teamFacade.create(t);
         final User u = new User();
         final JpaAccount abstractAccount = new JpaAccount();
-        abstractAccount.setEmail("a@a.com");
+        abstractAccount.setEmail("a@a.local");
         u.addAccount(abstractAccount);
         userFacade.create(u);
         final Player p = new Player("player");
