@@ -150,10 +150,10 @@ public class RequestManager {
      * @param currentPlayer the currentPlayer to set
      */
     public void setPlayer(Player currentPlayer) {
-        if (this.currentPlayer == null || !this.currentPlayer.equals(currentPlayer)) {
+        if (this.currentPlayer == null || this.currentPlayer != currentPlayer) {
             this.setCurrentEngine(null);
         }
-        this.currentPlayer = currentPlayer;
+        this.currentPlayer = currentPlayer != null ? em.find(Player.class, currentPlayer.getId()) : null;
     }
 
     /**

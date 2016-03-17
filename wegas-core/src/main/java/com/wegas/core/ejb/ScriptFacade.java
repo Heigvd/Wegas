@@ -349,7 +349,7 @@ public class ScriptFacade {
      * @return
      */
     private Object eval(Player player, Script s, Map<String, AbstractEntity> arguments) throws WegasScriptException {
-        requestManager.setPlayer(playerFacade.find(player.getId()));
+        requestManager.setPlayer(player);
         return this.eval(s, arguments);
     }
 
