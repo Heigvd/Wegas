@@ -104,4 +104,16 @@ public class MessageFacade extends BaseFacade<Message> {
         this.send(p, msg);
         return msg;
     }
+
+    @Override
+    public void create(Message entity) {
+        getEntityManager().persist(entity);
+        entity.getInboxInstance().addMessage(entity);
+    }
+
+    @Override
+    public void remove(Message entity) {
+        getEntityManager().remove(entity);
+        entity.getInboxInstance().getMessages().remove(entity);
+    }
 }

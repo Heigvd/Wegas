@@ -9,7 +9,6 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.AccountFacade;
@@ -23,7 +22,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -103,6 +101,12 @@ public class TeamFacade extends BaseFacade<Team> {
         return t;
     }
 
+    @Override
+    public void create(Team entity) {
+        getEntityManager().persist(entity);
+        getEntityManager().find(Game.class, entity.getGame().getId()).addTeam(entity);
+    }
+
     /**
      * @param entity
      */
@@ -120,7 +124,7 @@ public class TeamFacade extends BaseFacade<Team> {
     /**
      * @param team
      * @return
-     * @deprecated  use JPA team.privateInstances
+     * @deprecated use JPA team.privateInstances
      */
     public List<VariableInstance> getAssociatedInstances(Team team) {
         return team.getPrivateInstances();

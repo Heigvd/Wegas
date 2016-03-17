@@ -99,7 +99,7 @@ public class PlayerFacade extends BaseFacade<Player> {
     }
 
     /**
-     * @param gameId
+     * @param teamId
      * @param userId
      * @return
      */
@@ -136,6 +136,15 @@ public class PlayerFacade extends BaseFacade<Player> {
         return findPlayerInstance.setParameter("playerid", playerId).getResultList();
     }
 
+    @Override
+    public void create(Player entity) {
+        getEntityManager().persist(entity);
+        getEntityManager().find(Team.class, entity.getTeam().getId()).addPlayer(entity);
+        if(entity.getUser() != null) {
+            getEntityManager().find(User.class, entity.getUser().getId()).getPlayers().add(entity);
+        }
+    }
+
     /**
      * @param player
      */
@@ -143,6 +152,7 @@ public class PlayerFacade extends BaseFacade<Player> {
     public void remove(final Player player) {
         //List<VariableInstance> instances = this.getAssociatedInstances(player);
         this.getEntityManager().remove(player);
+        player.getTeam().getPlayers().remove(player);
         //for (VariableInstance i : instances) {
         //    this.getEntityManager().remove(i);
         //}

@@ -238,10 +238,22 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
     }
 
     @Override
+    public void create(VariableInstance entity) {
+        getEntityManager().persist(entity);
+        getEntityManager().refresh(entity.getScope());
+    }
+
+    @Override
     public VariableInstance update(final Long entityId, final VariableInstance entity) {
         VariableInstance ret = super.update(entityId, entity);
         requestFacade.commit();
         return ret;
+    }
+
+    @Override
+    public void remove(VariableInstance entity) {
+        getEntityManager().remove(entity);
+        entity.getScope().getVariableInstances().remove(entity.getId());
     }
 
     /**

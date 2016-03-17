@@ -73,4 +73,13 @@ public class IterationFacade extends BaseFacade<Iteration> {
         getEntityManager().remove(findIteration);
     }
 
+    @Override
+    public void create(Iteration entity) {
+        getEntityManager().persist(entity);
+    }
+
+    @Override
+    public void remove(Iteration entity) {
+        getEntityManager().remove(entity);
+    }
 }

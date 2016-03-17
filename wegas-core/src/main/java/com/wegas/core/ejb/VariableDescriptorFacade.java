@@ -179,6 +179,11 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         return newEntity;
     }
 
+    @Override
+    public void remove(VariableDescriptor entity) {
+        getEntityManager().remove(entity);
+    }
+
     /**
      * @param vd
      * @return

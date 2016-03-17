@@ -429,6 +429,18 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         this.validateQuestion(questionInstanceId, playerFacade.find(playerId));
     }
 
+    @Override
+    public void create(ChoiceDescriptor entity) {
+        getEntityManager().persist(entity);
+        entity.getQuestion().addItem(entity);;
+    }
+
+    @Override
+    public void remove(ChoiceDescriptor entity) {
+        getEntityManager().remove(entity);
+        entity.getQuestion().remove(entity);
+    }
+
     /**
      *
      */

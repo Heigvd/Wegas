@@ -116,7 +116,8 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      */
     @Override
     public void create(final GameModel entity) {
-        super.create(entity);
+
+        getEntityManager().persist(entity);
 
         final User currentUser = userFacade.getCurrentUser();
         entity.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
@@ -266,7 +267,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
     @Override
     public void remove(final GameModel gameModel) {
-        super.remove(gameModel);
+        getEntityManager().remove(gameModel);
         //Remove jcr repo.
         // @TODO : in fact, removes all files but not the workspace.
         // @fx Why remove files? The may be referenced in other workspaces
