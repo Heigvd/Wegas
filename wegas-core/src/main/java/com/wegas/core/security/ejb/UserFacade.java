@@ -166,6 +166,14 @@ public class UserFacade extends BaseFacade<User> {
 
     @Override
     public void remove(User entity) {
+        for (Role r : entity.getRoles()) {
+            r.removeUser(entity);
+        }
+        /* ??? */ 
+        for (AbstractAccount aa : entity.getAccounts()) {
+            accountFacade.remove(aa);
+        }
+
         getEntityManager().remove(entity);
     }
 
