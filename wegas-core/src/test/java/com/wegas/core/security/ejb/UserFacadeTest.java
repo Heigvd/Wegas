@@ -9,20 +9,16 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
-import javax.ejb.embeddable.EJBContainer;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ejb.embeddable.EJBContainer;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
+
 /**
- *
  * @author Yannick Lagger
  */
 public class UserFacadeTest {
@@ -30,12 +26,19 @@ public class UserFacadeTest {
     private static final Logger logger = LoggerFactory.getLogger(UserFacadeTest.class);
 
     private static UserFacade userFacade;
+
     private static RoleFacade roleFacade;
+
     private static AccountFacade accountFacade;
+
     private static JpaAccount abstractAccount;
+
     private static User u;
+
     private static Role roleP;
+
     private static Role roleR;
+
     private static EJBContainer container;
 
     @BeforeClass
@@ -63,7 +66,7 @@ public class UserFacadeTest {
         userFacade.remove(u.getId());
         roleFacade.remove(roleP.getId());
         roleFacade.remove(roleR.getId());
-        container.close();
+        TestHelper.closeContainer();
     }
 
     @Before

@@ -55,10 +55,7 @@ public class AbstractEJBTest {
 
     @AfterClass
     public static void tearDown() {
-        if (ejbContainer != null) {
-            ejbContainer.close();
-        }
-        //logger.info("Closing the container");
+        TestHelper.closeContainer();
     }
 
     @Before
@@ -94,6 +91,7 @@ public class AbstractEJBTest {
         RequestFacade rm = AbstractEJBTest.lookupBy(RequestFacade.class);
         rm.getRequestManager().setPlayer(null);
         rm.getRequestManager().clearUpdatedEntities();
+        TestHelper.wipeEmCache();
     }
 
     public static <T> T lookupBy(Class<T> type, Class service) throws NamingException {

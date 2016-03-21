@@ -8,17 +8,19 @@
 package com.wegas.core.persistence;
 
 import com.wegas.core.ejb.TestHelper;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 
 /**
  * CRUD testunit for Entities (Integration test)<br/> Setup embedded-glassfish
@@ -28,10 +30,15 @@ import org.junit.BeforeClass;
 public abstract class AbstractEntityTest<T extends AbstractEntity> {
 
     private static EntityManager em;
+
     private static EntityManagerFactory emf;
+
     protected static EntityTransaction tx;
+
     private static EJBContainer ejbContainer;
+
     private static Context ctx;
+
     private Class<T> entityClass;
 
     public AbstractEntityTest(Class<T> entityClass) {
@@ -50,10 +57,7 @@ public abstract class AbstractEntityTest<T extends AbstractEntity> {
     @AfterClass
     public static void closeContext() throws Exception {
         System.out.println("[WeGAS Entity Test] ...Clean context");
-        em.close();
-        emf.close();
-        ctx.close();
-        ejbContainer.close();
+        TestHelper.closeContainer();
     }
 
     @Before
