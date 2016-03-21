@@ -202,7 +202,6 @@ public class StateMachineITest extends AbstractEJBTest {
         rf.getRequestManager().setPlayer(null);
 
         scriptFacade.eval(player.getId(), new Script("personalScore.value = 10"), null);
-        rf.getRequestManager().setPlayer(player);
         rf.commit();
         Assert.assertEquals(10, ((NumberInstance) instanceFacade.find(personalScore.getId(), player.getId())).getValue(), 0);
         Assert.assertEquals(10, ((NumberInstance) instanceFacade.find(highScore.getId(), player.getId())).getValue(), 0);
