@@ -39,6 +39,7 @@ import javax.persistence.Query;
 import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import java.util.*;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 /**
@@ -150,12 +151,12 @@ public class UserFacade extends BaseFacade<User> {
 
         getEntityManager().persist(user);
         try {
-            user.addRole(roleFacade.findByName("Public"));
+            this.addRole(user, roleFacade.findByName("Public"));
         } catch (WegasNoResultException ex) {
             logger.error("Unable to find Role: Public");
         }
         try {
-            user.addRole(roleFacade.findByName("Registered"));
+            this.addRole(user, roleFacade.findByName("Registered"));
         } catch (WegasNoResultException ex) {
             //logger.error("Unable to find Role: Registered", ex);
             logger.error("Unable to find Role: Registered");
@@ -616,12 +617,12 @@ public class UserFacade extends BaseFacade<User> {
 
     }
 
-    void addRole(User u, Role r) {
+    public void addRole(User u, Role r) {
         u.addRole(r);
         r.addUser(u);
     }
 
-    void addRole(Long uId, Long rId) {
+    public void addRole(Long uId, Long rId) {
         User u = this.find(uId);
         Role r = roleFacade.find(rId);
         this.addRole(u, r);
