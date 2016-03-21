@@ -239,6 +239,7 @@ public class UserFacadeTest {
         Assert.assertFalse(permissions.contains(new Permission("GameModel:View:gm100")));
         Assert.assertTrue(permissions.contains(new Permission("GameModel:Edit:gm200")));
         Assert.assertTrue(permissions.contains(new Permission("GameModel:View:gm200")));
+        userFacade.deleteUserPermissionByInstance("gm200");
     }
 
     /**
@@ -293,7 +294,6 @@ public class UserFacadeTest {
 
         //roleFacade.merge(r);
         //accountFacade.merge(abstractAccount);
-
         Assert.assertEquals(3, accountFacade.find(abstractAccount.getId()).getRoles().size());
         Assert.assertEquals(1, roleFacade.find(r.getId()).getNumberOfMember());
         roleFacade.remove(r.getId());
