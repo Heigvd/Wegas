@@ -47,10 +47,8 @@ public class RoleFacade extends BaseFacade<Role> {
     public void remove(Role role) {
         // Strike out all members from the role to avoid pkey violation
         Set<User> users = role.getUsers();
-        logger.error("REMOVE ROLE " + role.getName() + " " + users.size() + " members");
 
         for (User u : users) {
-            logger.error("User: " +  u);
             u.removeRole(role);
         }
         getEntityManager().remove(role);

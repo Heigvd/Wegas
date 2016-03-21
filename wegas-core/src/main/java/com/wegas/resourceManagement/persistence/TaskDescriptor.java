@@ -27,10 +27,16 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.Transient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import java.util.Iterator;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.OneToMany;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -39,6 +45,8 @@ import javax.persistence.Column;
  */
 @Entity
 public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
+
+    private static final Logger logger = LoggerFactory.getLogger(TaskDescriptor.class);
 
     private static final long serialVersionUID = 1L;
     /**
@@ -81,6 +89,16 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     @Transient
     private List<String> predecessorNames = new ArrayList<>();
 
+    @OneToMany(mappedBy = "taskDescriptor", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @JsonManagedReference
+    @JsonIgnore
+    private List<Activity> activities = new ArrayList<>();
+
+    @OneToMany(mappedBy = "taskDescriptor", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @JsonManagedReference
+    @JsonIgnore
+    private List<Assignment> assignments = new ArrayList<>();
+
     /**
      * /**
      *
@@ -106,8 +124,16 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      */
     @PreDestroy
     public void preDestroy() {
-        for (TaskDescriptor t : this.dependencies) {
-            t.predecessors.remove(this);
+        System.out.println("YOUPI !!!");
+        logger.error("PRE DESTROY");
+        for (Iterator<TaskDescriptor> it = this.dependencies.iterator(); it.hasNext();) {
+            TaskDescriptor t = it.next();
+            t.removePredecessor(this);
+        }
+
+        for (Iterator<TaskDescriptor> it = this.predecessors.iterator(); it.hasNext();) {
+            TaskDescriptor t = it.next();
+            this.removePredecessor(t);
         }
     }
 
@@ -174,6 +200,15 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      */
     public void addPredecessor(final TaskDescriptor taskDescriptor) {
         this.predecessors.add(taskDescriptor);
+        taskDescriptor.dependencies.add(this);
+    }
+
+    /**
+     * @param taskDescriptor
+     */
+    public void removePredecessor(final TaskDescriptor taskDescriptor) {
+        this.predecessors.remove(taskDescriptor);
+        taskDescriptor.dependencies.remove(this);
     }
 
     /**
@@ -407,6 +442,68 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      */
     public void setPredecessorNames(List<String> exportedPredecessors) {
         this.predecessorNames = exportedPredecessors;
+    }
+
+    /**
+     * @return the activities
+     */
+    public List<Activity> getActivities() {
+        return activities;
+    }
+
+    /**
+     * @param activities
+     */
+    public void setActivities(List<Activity> activities) {
+        this.activities = activities;
+    }
+
+    /**
+     *
+     * @param activity
+     */
+    public void addActivity(Activity activity) {
+        this.activities.add(activity);
+        activity.setTaskDescriptor(this);
+    }
+
+    /**
+     *
+     * @param activity
+     */
+    public void removeActivity(Activity activity) {
+        if (this.activities.remove(activity)) {
+            activity.setTaskDescriptor(null);
+        }
+    }
+
+    /**
+     * @return the assignments
+     */
+    public List<Assignment> getAssignments() {
+        return assignments;
+    }
+
+    /**
+     * @param assignments
+     */
+    public void setAssignments(List<Assignment> assignments) {
+        this.assignments = assignments;
+    }
+
+    /**
+     *
+     * @param assignment
+     */
+    public void addAssignment(Assignment assignment) {
+        assignments.add(assignment);
+        assignment.setTaskDescriptor(this);
+    }
+
+    public void removeAssignment(Assignment assignment) {
+        if (assignments.remove(assignment)) {
+            assignment.setResourceInstance(null);
+        }
     }
 
     @Override

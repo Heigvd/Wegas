@@ -83,193 +83,6 @@ public class ResourceFacade {
 
     /**
      *
-     * @param resourceInstance
-     * @param taskDescriptor
-     * @return
-     */
-    public Assignment assign(ResourceInstance resourceInstance, TaskDescriptor taskDescriptor) {
-        resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstance.getId());
-        return resourceInstance.assign(taskDescriptor);
-    }
-
-    /**
-     *
-     * @param resourceInstanceId
-     * @param taskDescriptorId
-     * @return
-     */
-    public Assignment assign(Long resourceInstanceId, Long taskDescriptorId) {
-        return this.assign((ResourceInstance) variableInstanceFacade.find(resourceInstanceId), (TaskDescriptor) variableDescriptorFacade.find(taskDescriptorId));
-    }
-
-    /**
-     *
-     * @param resourceInstance
-     * @param taskDescriptor
-     * @return
-     */
-    public Activity createActivity(ResourceInstance resourceInstance, TaskDescriptor taskDescriptor) {
-        resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstance.getId());
-        return resourceInstance.createActivity(taskDescriptor);
-    }
-
-    /**
-     *
-     * @param resourceInstanceId
-     * @param taskDescriptorId
-     * @return
-     */
-    public Activity createActivity(Long resourceInstanceId, Long taskDescriptorId) {
-        return this.createActivity((ResourceInstance) variableInstanceFacade.find(resourceInstanceId),
-                (TaskDescriptor) variableDescriptorFacade.find(taskDescriptorId));
-    }
-
-    /**
-     * Add an occupation for a resource at the given time
-     *
-     * @param resourceInstance
-     * @param editable
-     * @param time
-     * @return
-     */
-    public Occupation addOccupation(ResourceInstance resourceInstance,
-            Boolean editable,
-            double time) {
-        Occupation newOccupation = new Occupation(time);
-        newOccupation.setEditable(editable);
-
-        this.addAbstractAssignement(resourceInstance.getId(), newOccupation);
-        return newOccupation;
-    }
-
-    /**
-     * Reserve a resource for the given time
-     *
-     * @param resourceInstance
-     * @param time
-     * @return
-     */
-    public Occupation reserve(ResourceInstance resourceInstance,
-            double time) {
-        return addOccupation(resourceInstance, true, time);
-    }
-
-    /**
-     *
-     * @param resourceInstance
-     * @param editable
-     * @return
-     */
-    public Occupation addOccupation(ResourceInstance resourceInstance, Boolean editable) {
-        Occupation occupation = this.addOccupation(resourceInstance);
-        occupation.setEditable(editable);
-        return occupation;
-    }
-
-    /**
-     *
-     * @param resourceInstance
-     * @return
-     */
-    public Occupation addOccupation(ResourceInstance resourceInstance) {
-        resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstance.getId());
-        Occupation occupation = resourceInstance.addOccupation();
-        return occupation;
-    }
-
-    /**
-     *
-     * @param resourceInstanceId
-     * @return
-     */
-    public Occupation addOccupation(Long resourceInstanceId) {
-        ResourceInstance resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstanceId);
-        return resourceInstance.addOccupation();
-    }
-
-    /**
-     *
-     * @param assignementId
-     * @param index
-     * @return
-     */
-    public ResourceInstance moveAssignment(final Long assignementId, final int index) {
-        final Assignment assignement = this.getEntityManager().find(Assignment.class, assignementId);
-        assignement.getResourceInstance().getAssignments().remove(assignement);
-        assignement.getResourceInstance().getAssignments().add(index, assignement);
-        return assignement.getResourceInstance();
-    }
-
-    /**
-     *
-     * @param assignementId
-     * @return
-     */
-    public ResourceInstance removeAssignment(final Long assignementId) {
-        final Assignment assignement = this.getEntityManager().find(Assignment.class, assignementId);
-        assignement.getResourceInstance().getAssignments().remove(assignement);
-        return assignement.getResourceInstance();
-    }
-
-    /**
-     *
-     * @param requirement
-     * @param taskInstanceId
-     * @return
-     */
-    public TaskInstance addRequierement(WRequirement requirement, Long taskInstanceId) {
-        TaskInstance ti = (TaskInstance) variableInstanceFacade.find(taskInstanceId);
-        ti.getRequirements().add(requirement);
-        return ti;
-    }
-
-    /**
-     *
-     * @param resourceInstanceId
-     * @param abstractAssignement
-     * @return
-     */
-    public ResourceInstance addAbstractAssignement(Long resourceInstanceId, AbstractAssignement abstractAssignement) {
-        ResourceInstance res = (ResourceInstance) variableInstanceFacade.find(resourceInstanceId);
-        if (abstractAssignement instanceof Occupation) {
-            Occupation o = (Occupation) abstractAssignement;
-            res.addOccupation(o);
-        } else if (abstractAssignement instanceof Assignment) {
-            Assignment a = (Assignment) abstractAssignement;
-            res.addAssignement(a);
-        } else if (abstractAssignement instanceof Activity){
-            Activity a = (Activity) abstractAssignement;
-            res.addActivity(a);
-        }
-        return res;
-    }
-
-    /**
-     *
-     * @param abstractAssignementId
-     * @param type
-     */
-    public void removeAbstractAssignement(Long abstractAssignementId, String type) {
-        switch (type) {
-            case "occupations":
-                Occupation o = this.findOccupation(abstractAssignementId);
-                o.getResourceInstance().getOccupations().remove(o);
-               // getEntityManager().remove(o);
-                break;
-            case "assignment":
-                Assignment a = this.findAssignment(abstractAssignementId);
-                a.getResourceInstance().getAssignments().remove(a);
-//                getEntityManager().remove(a);
-                break;
-            default:
-                Activity ac = this.findActivity(abstractAssignementId);
-                ac.getResourceInstance().getActivities().remove(ac);
-//                getEntityManager().remove(ac);
-        }
-    }
-
-    /**
-     *
      * @param id
      * @return
      */
@@ -302,6 +115,105 @@ public class ResourceFacade {
      */
     public TaskInstance findTaskInstance(Long id) {
         return getEntityManager().find(TaskInstance.class, id);
+    }
+
+    /**
+     *
+     * @param resourceInstanceId
+     * @param taskDescriptorId
+     * @return
+     */
+    public Assignment assign(Long resourceInstanceId, Long taskDescriptorId) {
+        ResourceInstance resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstanceId);
+        TaskDescriptor taskDescriptor = (TaskDescriptor) variableDescriptorFacade.find(taskDescriptorId);
+
+        final Assignment assignment = new Assignment(taskDescriptor);
+        resourceInstance.addAssignment(assignment);
+        taskDescriptor.addAssignment(assignment);
+
+        return assignment;
+    }
+
+    /**
+     *
+     * @param assignmentId
+     * @param index
+     * @return
+     */
+    public ResourceInstance moveAssignment(final Long assignmentId, final int index) {
+        final Assignment assignment = this.getEntityManager().find(Assignment.class, assignmentId);
+        assignment.getResourceInstance().getAssignments().remove(assignment);
+        assignment.getResourceInstance().getAssignments().add(index, assignment);
+        return assignment.getResourceInstance();
+    }
+
+    /**
+     *
+     * @param assignmentId
+     * @return
+     */
+    public ResourceInstance removeAssignment(final Long assignmentId) {
+        final Assignment assignment = this.getEntityManager().find(Assignment.class, assignmentId);
+        assignment.getResourceInstance().removeAssignment(assignment);
+        assignment.getTaskDescriptor().removeAssignment(assignment);
+        return assignment.getResourceInstance();
+    }
+
+    /**
+     *
+     * @param resourceInstanceId
+     * @param taskDescriptorId
+     * @return
+     */
+    public Activity createActivity(Long resourceInstanceId, Long taskDescriptorId) {
+        ResourceInstance resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstanceId);
+        TaskDescriptor taskDescriptor = (TaskDescriptor) variableDescriptorFacade.find(taskDescriptorId);
+
+        final Activity activity = new Activity();
+        resourceInstance.addActivity(activity);
+        taskDescriptor.addActivity(activity);
+
+        return activity;
+    }
+
+    public void changeActivityReq(Activity activity, WRequirement newReq) {
+        WRequirement oldReq = activity.getRequirement();
+        if (oldReq != null) {
+            oldReq.removeActivity(activity);
+        }
+        newReq.addActivity(activity);
+    }
+
+    public void deleteActivity(Long activityId) {
+        Activity activity = this.findActivity(activityId);
+        activity.getResourceInstance().removeActivity(activity);
+        activity.getRequirement().removeActivity(activity);
+        activity.getTaskDescriptor().removeActivity(activity);
+    }
+
+    /**
+     * Add an occupation for a resource at the given time
+     *
+     * @param resourceInstanceId
+     * @param editable
+     * @param time
+     * @return
+     */
+    public Occupation addOccupation(Long resourceInstanceId,
+        Boolean editable,
+        double time) {
+        ResourceInstance resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstanceId);
+        Occupation newOccupation = new Occupation(time);
+        newOccupation.setEditable(editable);
+
+        resourceInstance.addOccupation(newOccupation);
+
+        return newOccupation;
+    }
+
+    public void removeOccupation(Long occupationId) {
+        Occupation occupation = this.findOccupation(occupationId);
+        occupation.getResourceInstance().removeOccupation(occupation);
     }
 
     /**
@@ -381,16 +293,17 @@ public class ResourceFacade {
                 task.getDefaultInstance().setProperty("duration", duration.toString());
             }
             for (String predecessorName : task.getImportedPredecessorNames()) {
-                task.addPredecessor((TaskDescriptor) variableDescriptorFacade.find(task.getGameModel(), predecessorName));
+                TaskDescriptor predecessor = (TaskDescriptor) variableDescriptorFacade.find(task.getGameModel(), predecessorName);
+                task.addPredecessor(predecessor);
             }
         } else if (event.getEntity() instanceof ResourceDescriptor) {
             // BACKWARD COMPAT
             ResourceInstance ri = (ResourceInstance) event.getEntity().getDefaultInstance();
             Integer moral = ri.getMoral();
-            if (moral != null){
+            if (moral != null) {
                 ri.setProperty("motivation", moral.toString());
             }
-            Map<String, Long> skills = ri.getDeserializedSkillsets() ;
+            Map<String, Long> skills = ri.getDeserializedSkillsets();
             if (skills != null && skills.size() > 0) {
                 Long level = (Long) skills.values().toArray()[0];
                 ri.setProperty("level", level.toString());

@@ -94,15 +94,14 @@ public class Activity extends AbstractAssignement implements Broadcastable {
     /**
      *
      * @param taskDescriptor
+     *                       public Activity(TaskDescriptor taskDescriptor) {
+     *                       this.taskDescriptor = taskDescriptor;
+     *                       this.time = 0D;
+     *                       this.completion = 0.0D;
+     *                       this.description = "";
+     *                       this.requirement = null;
+     *                       }
      */
-    public Activity(TaskDescriptor taskDescriptor) {
-        this.taskDescriptor = taskDescriptor;
-        this.time = 0D;
-        this.completion = 0.0D;
-        this.description = "";
-        this.requirement = null;
-    }
-
     /**
      *
      * @param a

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import javax.naming.NamingException;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +35,44 @@ import org.slf4j.LoggerFactory;
 public class ResourceFacadeTest extends AbstractEJBTest {
 
     static final private Logger logger = LoggerFactory.getLogger(ResourceFacade.class);
+
+    @Test
+    public void testAssignmentsCascadeFromTaskDescriptor() throws Exception {
+
+        // Lookup Ejb's
+        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
+        final ResourceFacade resourceFacade = lookupBy(ResourceFacade.class);
+
+        // Create a resource
+        ResourceDescriptor res = new ResourceDescriptor();
+        res.setLabel("Paul");
+        res.setDefaultInstance(new ResourceInstance());
+        vdf.create(gameModel.getId(), res);
+
+        // Create a task
+        TaskDescriptor task = new TaskDescriptor();
+        task.setLabel("My task");
+        task.setDefaultInstance(new TaskInstance());
+        vdf.create(gameModel.getId(), task);
+
+        resourceFacade.assign(res.getInstance(player).getId(), task.getId());
+
+        assertEquals(
+            ((ResourceInstance) vif.find(res.getId(), player)).getAssignments().get(0).getTaskDescriptor().getInstance(player),
+            task.getInstance(player));
+
+        assertEquals(
+            ((TaskDescriptor) vdf.find(task.getId())).getAssignments().get(0).getResourceInstance(),
+            res.getInstance(player));
+
+        vdf.remove(task.getId());
+
+        /*assertTrue("Resource assignments not empty", 
+            ((ResourceInstance) vif.find(res.getId(), player)).getAssignments().isEmpty());*/
+        // Clean
+        vdf.remove(res.getId());
+    }
 
     /**
      * Test of assign method, of class ResourceFacade.
@@ -58,11 +97,11 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         task.setDefaultInstance(new TaskInstance());
         vdf.create(gameModel.getId(), task);
 
-        resourceFacade.assign(res.getInstance(player), task);
+        resourceFacade.assign(res.getInstance(player).getId(), task.getId());
 
         assertEquals(
-                ((ResourceInstance) vif.find(res.getId(), player)).getAssignments().get(0).getTaskDescriptor().getInstance(player),
-                task.getInstance(player));
+            ((ResourceInstance) vif.find(res.getId(), player)).getAssignments().get(0).getTaskDescriptor().getInstance(player),
+            task.getInstance(player));
 
         // Clean
         vdf.remove(res.getId());
@@ -96,8 +135,8 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         resourceFacade.assign(res.getInstance(player).getId(), task.getId());
 
         assertEquals(
-                ((ResourceInstance) vif.find(res.getId(), player)).getAssignments().get(0).getTaskDescriptor().getInstance(player),
-                task.getInstance(player));
+            ((ResourceInstance) vif.find(res.getId(), player)).getAssignments().get(0).getTaskDescriptor().getInstance(player),
+            task.getInstance(player));
 
         // Clean
         vdf.remove(res.getId());
@@ -128,11 +167,11 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         vdf.create(gameModel.getId(), task);
 
         // Create activity between resource to task
-        resourceFacade.createActivity(res.getInstance(player), task);
+        resourceFacade.createActivity(res.getInstance(player).getId(), task.getId());
 
         assertEquals(
-                ((ResourceInstance) vif.find(res.getId(), player)).getActivities().get(0).getTaskDescriptor().getInstance(player),
-                task.getInstance(player));
+            ((ResourceInstance) vif.find(res.getId(), player)).getActivities().get(0).getTaskDescriptor().getInstance(player),
+            task.getInstance(player));
 
         // Clean
         vdf.remove(res.getId());
@@ -166,8 +205,8 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         resourceFacade.createActivity(res.getInstance(player).getId(), task.getId());
 
         assertEquals(
-                ((ResourceInstance) vif.find(res.getId(), player)).getActivities().get(0).getTaskDescriptor().getInstance(player),
-                task.getInstance(player));
+            ((ResourceInstance) vif.find(res.getId(), player)).getActivities().get(0).getTaskDescriptor().getInstance(player),
+            task.getInstance(player));
 
         // Clean
         vdf.remove(res.getId());
@@ -192,11 +231,11 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         vdf.create(gameModel.getId(), res);
 
         // Add occupation to a resource
-        resourceFacade.addOccupation(res.getInstance(player), false);
+        resourceFacade.addOccupation(res.getInstance(player).getId(), false, 1);
 
         assertEquals(
-                ((ResourceInstance) vif.find(res.getId(), player)).getOccupations().get(0).getResourceInstance(),
-                res.getInstance(player));
+            ((ResourceInstance) vif.find(res.getId(), player)).getOccupations().get(0).getResourceInstance(),
+            res.getInstance(player));
 
         // Clean
         vdf.remove(res.getId());
@@ -220,17 +259,19 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         vdf.create(gameModel.getId(), res);
 
         // add occupation between to a resource
-        resourceFacade.addOccupation(res.getInstance(player).getId());
+        resourceFacade.addOccupation(res.getInstance(player).getId(), true, 1);
 
         assertEquals(
-                ((ResourceInstance) vif.find(res.getId(), player)).getOccupations().get(0).getResourceInstance(),
-                res.getInstance(player));
+            ((ResourceInstance) vif.find(res.getId(), player)).getOccupations().get(0).getResourceInstance(),
+            res.getInstance(player));
 
         // Clean
         vdf.remove(res.getId());
     }
+
     /**
      * Test of addOccupation method, of class ResourceFacade.
+     *
      * @throws java.lang.Exception
      */
     @Test
@@ -248,7 +289,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         vdf.create(gameModel.getId(), res);
 
         // Add occupation to a resource
-        resourceFacade.addOccupation(res.getInstance(player), false, 1.0);
+        resourceFacade.addOccupation(res.getInstance(player).getId(), false, 1.0);
 
         Occupation newOccupation = ((ResourceInstance) vif.find(res.getId(), player)).getOccupations().get(0);
 
@@ -258,7 +299,6 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         // Check the editiable occupation mode
         assertEquals(false, newOccupation.getEditable());
 
-        
         // Check the occupation time
         assertEquals(1.0, newOccupation.getTime(), 0.00001);
 
@@ -268,6 +308,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
 
     /**
      * Test ResourceFacade.addReservation
+     *
      * @throws javax.naming.NamingException
      */
     @Test
@@ -285,7 +326,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         vdf.create(gameModel.getId(), res);
 
         // reserve Paul for the 1.0 period
-        resourceFacade.reserve(res.getInstance(player), 1.0);
+        resourceFacade.addOccupation(res.getInstance(player).getId(), true, 1.0);
 
         Occupation newOccupation = ((ResourceInstance) vif.find(res.getId(), player)).getOccupations().get(0);
         // Check resource instance has been correctly setted 
@@ -296,7 +337,6 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         // Clean
         vdf.remove(res.getId());
     }
-
 
     /**
      * Test of moveAssignment method, of class ResourceFacade.
@@ -340,8 +380,8 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         resourceFacade.moveAssignment(assignment.getId(), 0);
 
         assertEquals(
-                ((ResourceInstance) vif.find(res.getId(), player)).getAssignments().get(0).getId(),
-                assignment.getId());
+            ((ResourceInstance) vif.find(res.getId(), player)).getAssignments().get(0).getId(),
+            assignment.getId());
 
         // Clean
         vdf.remove(res.getId());
@@ -364,8 +404,8 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         // Create a task
         TaskDescriptor task = new TaskDescriptor();
         task.setLabel("My task");
-        task.setDefaultInstance(new TaskInstance());
-        vdf.create(gameModel.getId(), task);
+        TaskInstance taskInstance = new TaskInstance();
+        task.setDefaultInstance(taskInstance);
 
         //assign new requirement in task
         WRequirement requirement = new WRequirement();
@@ -373,12 +413,13 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         requirement.setLevel(58);
         requirement.setQuantity(1L);
         requirement.setWork("Carpenter");
+        taskInstance.addRequirement(requirement);
 
-        resourceFacade.addRequierement(requirement, task.getInstance(player).getId());
+        vdf.create(gameModel.getId(), task);
 
         //test on work variable because if it match, requierements work.
         assertEquals(((TaskInstance) vif.find(task.getInstance(player).getId())).getRequirements().get(0).getWork(),
-                requirement.getWork());
+            requirement.getWork());
 
         // Clean
         vdf.remove(task.getId());
@@ -456,6 +497,47 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         // Clean
         vdf.remove(task.getId());
         vdf.remove(task2.getId());
+        vdf.remove(task3.getId());
+    }
+
+    @Test
+    public void testRemovePredecessors() throws Exception {
+        // Lookup Ejb's
+        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+
+        // Create a task
+        TaskDescriptor task = new TaskDescriptor();
+        task.setLabel("My task");
+        task.setDefaultInstance(new TaskInstance());
+        vdf.create(gameModel.getId(), task);
+
+        // Create a second task
+        TaskDescriptor task2 = new TaskDescriptor();
+        task2.setLabel("My task2");
+        task2.setDefaultInstance(new TaskInstance());
+        task2.addPredecessor(task);
+        vdf.create(gameModel.getId(), task2);
+
+        TaskDescriptor created = (TaskDescriptor) vdf.find(task2.getId());
+        assertEquals("My task", created.getPredecessor(0).getLabel());
+        assertEquals(1, created.getPredecessors().size());
+
+        // Create a third task
+        TaskDescriptor task3 = new TaskDescriptor();
+        task3.setLabel("task3");
+        task3.setDefaultInstance(new TaskInstance());
+        task3.addPredecessor(task2);
+        vdf.create(gameModel.getId(), task3);
+
+        assertEquals("My task2", task3.getPredecessor(0).getLabel());
+        assertEquals(1, task3.getPredecessors().size());
+
+        vdf.remove(task2.getId());
+        //vdf.flush();
+
+        //assertEquals(0, task3.getPredecessors().size());
+        // Clean
+        vdf.remove(task.getId());
         vdf.remove(task3.getId());
     }
 }

@@ -8,11 +8,7 @@
 package com.wegas.resourceManagement.rest;
 
 import com.wegas.resourceManagement.ejb.ResourceFacade;
-import com.wegas.resourceManagement.persistence.AbstractAssignement;
-import com.wegas.resourceManagement.persistence.Assignment;
-import com.wegas.resourceManagement.persistence.Occupation;
 import com.wegas.resourceManagement.persistence.ResourceInstance;
-import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.resourceManagement.persistence.TaskInstance;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -40,46 +36,15 @@ public class ResourceController {
     /**
      *
      * @param resourceInstanceId
-     * @param data
+     * @param taskDescriptorId
      */
     @POST
-    @Path("AbstractAssign/{resourceId : [1-9][0-9]*}")
-    public void save(@PathParam("resourceId") Long resourceInstanceId, AbstractAssignement data) {
-        resourceFacade.addAbstractAssignement(resourceInstanceId, data);
-    }
-
-    /**
-     *
-     * @param abstractAssignementId
-     * @param type
-     */
-    @DELETE
-    @Path("AbstractRemove/{abstractAssignementId : [1-9][0-9]*}/{type}")
-    public void delete(@PathParam("abstractAssignementId") Long abstractAssignementId,
-            @PathParam("type") String type) {
-        resourceFacade.removeAbstractAssignement(abstractAssignementId, type);
-    }
-
-    /**
-     *
-     * @param resourceInstanceId
-     * @param task
-     */
-    @POST
-    @Path("Assign/{resourceId : [1-9][0-9]*}")
-    public void addAssignment(@PathParam("resourceId") Long resourceInstanceId, TaskDescriptor task) {
-        resourceFacade.addAbstractAssignement(resourceInstanceId, new Assignment(task));
-    }
-
-    /**
-     *
-     * @param resourceInstanceId
-     * @param time
-     */
-    @POST
-    @Path("Reserve/{resourceId : [1-9][0-9]*}/{time : [1-9][0-9]*}")
-    public void addReservation(@PathParam("resourceId") Long resourceInstanceId, @PathParam("time") double time) {
-        resourceFacade.addAbstractAssignement(resourceInstanceId, new Occupation(time));
+    @Path("Assign/{resourceId : [1-9][0-9]*}/{taskDescriptorId : [1-9][0-9]*}")
+    public void addAssignment(
+        @PathParam("resourceId") Long resourceInstanceId,
+        @PathParam("taskDescriptorId") Long taskDescriptorId
+    ) {
+        resourceFacade.assign(resourceInstanceId, taskDescriptorId);
     }
 
     /**
@@ -89,7 +54,7 @@ public class ResourceController {
      * @return
      */
     @POST
-    @Path("MoveAssignment/{assignmentId : [1-9][0-9]*}/{index : [0-9]*}")
+    @Path("Assign/{assignmentId : [1-9][0-9]*}/{index : [0-9]*}")
     public ResourceInstance moveAssignment(@PathParam("assignmentId") Long assignmentId, @PathParam("index") Integer index) {
         return resourceFacade.moveAssignment(assignmentId, index);
     }
@@ -100,9 +65,31 @@ public class ResourceController {
      * @return
      */
     @DELETE
-    @Path("RemoveAssignment/{assignmentId : [1-9][0-9]*}")
+    @Path("Assign/{assignmentId : [1-9][0-9]*}")
     public ResourceInstance removeAssignment(@PathParam("assignmentId") Long assignmentId) {
         return resourceFacade.removeAssignment(assignmentId);
+    }
+
+    /**
+     *
+     * @param resourceInstanceId
+     * @param time
+     */
+    @POST
+    @Path("Reserve/{resourceId : [1-9][0-9]*}/{time : [1-9][0-9]*}")
+    public void addReservation(@PathParam("resourceId") Long resourceInstanceId, @PathParam("time") double time) {
+        resourceFacade.addOccupation(resourceInstanceId, true, time);
+    }
+
+    /**
+     *
+     * @param occupationId
+     *
+     */
+    @DELETE
+    @Path("Reserve/{occupationId : [1-9][0-9]*}/{type}")
+    public void deleteReservation(@PathParam("occupationId") Long occupationId) {
+        resourceFacade.removeOccupation(occupationId);
     }
 
     /**
@@ -115,7 +102,7 @@ public class ResourceController {
     @POST
     @Path("Player/{playerId : [1-9][0-9]*}/Plan/{taskInstanceId : [1-9][0-9]*}/{period : [0-9]*}")
     public TaskInstance plan(@PathParam("playerId") Long playerId, @PathParam("taskInstanceId") Long taskInstanceId,
-            @PathParam("period") Integer period) {
+        @PathParam("period") Integer period) {
         return resourceFacade.plan(playerId, taskInstanceId, period);
     }
 
@@ -129,7 +116,7 @@ public class ResourceController {
     @DELETE
     @Path("Player/{playerId : [1-9][0-9]*}/Plan/{taskInstanceId : [1-9][0-9]*}/{periode : [0-9]*}")
     public TaskInstance unplan(@PathParam("playerId") Long playerId, @PathParam("taskInstanceId") Long taskInstanceId,
-            @PathParam("periode") Integer period) {
+        @PathParam("periode") Integer period) {
         return resourceFacade.unplan(playerId, taskInstanceId, period);
     }
 }

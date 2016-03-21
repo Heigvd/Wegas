@@ -110,7 +110,7 @@ public class ResourceInstance extends VariableInstance {
     }
 
     /**
-     * @return the assignements
+     * @return the assignments
      */
     public List<Assignment> getAssignments() {
         return assignments;
@@ -127,21 +127,27 @@ public class ResourceInstance extends VariableInstance {
      *
      * @param assignment
      */
-    public void addAssignement(Assignment assignment) {
+    public void addAssignment(Assignment assignment) {
         assignments.add(assignment);
         assignment.setResourceInstance(this);
+    }
+
+    public void removeAssignment(Assignment assignment){
+        if (assignments.remove(assignment)){
+            assignment.setResourceInstance(null);
+        }
     }
 
     /**
      *
      * @param task
      * @return
+     *         public Assignment assign(TaskDescriptor task) {
+     *         final Assignment assignment = new Assignment(task);
+     *         this.addAssignment(assignment);
+     *         return assignment;
+     *         }
      */
-    public Assignment assign(TaskDescriptor task) {
-        final Assignment assignment = new Assignment(task);
-        this.addAssignement(assignment);
-        return assignment;
-    }
 
     /**
      * @return the activities
@@ -172,13 +178,16 @@ public class ResourceInstance extends VariableInstance {
      */
     public void removeActivity(Activity activity) {
         if (activity.getId() == null) {
+            // ??
             for (int i = 0; i < this.activities.size(); i++) {
                 if (this.activities.get(i) == activity) {
+                    activity.setResourceInstance(null);
                     this.activities.remove(i);
+
                 }
             }
-        } else {
-            activities.remove(activity);
+        } else if (activities.remove(activity)) {
+            activity.setResourceInstance(null);
         }
     }
 
@@ -186,13 +195,12 @@ public class ResourceInstance extends VariableInstance {
      *
      * @param task
      * @return the activity
+     *         public Activity createActivity(TaskDescriptor task) {
+     *         final Activity activity = new Activity(task);
+     *         this.addActivity(activity);
+     *         return activity;
+     *         }
      */
-    public Activity createActivity(TaskDescriptor task) {
-        final Activity activity = new Activity(task);
-        this.addActivity(activity);
-        return activity;
-    }
-
     /**
      * @return the activities
      */
@@ -231,16 +239,21 @@ public class ResourceInstance extends VariableInstance {
         occupation.setResourceInstance(this);
     }
 
+    public void removeOccupation(Occupation occupation){
+        if (this.getOccupations().remove(occupation)){
+            occupation.setResourceInstance(null);
+        }
+    }
+
     /**
      *
      * @return
+     *         public Occupation addOccupation() {
+     *         Occupation occupation = new Occupation();
+     *         this.addOccupation(occupation);
+     *         return occupation;
+     *         }
      */
-    public Occupation addOccupation() {
-        Occupation occupation = new Occupation();
-        this.addOccupation(occupation);
-        return occupation;
-    }
-
     /**
      * @return the active
      */
