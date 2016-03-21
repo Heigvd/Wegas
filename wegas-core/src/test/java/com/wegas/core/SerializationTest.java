@@ -341,7 +341,8 @@ public class SerializationTest {
         assertPropertyEquals(mapper.writeValueAsString(resourceD), "@class", "ResourceDescriptor");
         assertPropertyEquals(mapper.writeValueAsString(resourceI), "@class", "ResourceInstance");
 
-        Activity activity = new Activity(taskD);
+        Activity activity = new Activity();
+        taskD.addActivity(activity);
 
         Assignment assignment = new Assignment(taskD);
         assignment.setResourceInstance(resourceI);

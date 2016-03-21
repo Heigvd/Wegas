@@ -9,7 +9,6 @@ package com.wegas.resourceManagement.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.persistence.AbstractEntity;
@@ -23,10 +22,8 @@ import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 
 /**
@@ -203,6 +200,21 @@ public class TaskInstance extends VariableInstance {
 
     /**
      *
+     * @param index
+     * @param val
+     */
+    public void setRequirement(Integer index, WRequirement val) {
+        this.getRequirements().set(index, val);
+        val.setTaskInstance(this);
+    }
+
+    public void addRequirement(WRequirement req){
+        this.getRequirements().add(req);
+        req.setTaskInstance(this);
+    }
+
+    /**
+     *
      * @param a
      */
     @Override
@@ -244,15 +256,6 @@ public class TaskInstance extends VariableInstance {
      */
     public void setProperty(String key, String val) {
         this.properties.put(key, val);
-    }
-
-    /**
-     *
-     * @param index
-     * @param val
-     */
-    public void setRequirement(Integer index, WRequirement val) {
-        this.requirements.set(index, val);
     }
 
     private static class WRequirementToNameConverter implements ListUtils.ListKeyToMap<String, WRequirement> {

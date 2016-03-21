@@ -317,6 +317,17 @@ public class WRequirement extends AbstractEntity {
         }
     }
 
+    public void addActivity(Activity activity) {
+        this.activities.add(activity);
+        activity.setRequirement(this);
+    }
+
+    public void removeActivity(Activity activity) {
+        if (this.activities.remove(activity)) {
+            activity.setRequirement(null);
+        }
+    }
+
     @Override
     public String toString() {
         return "Requirement(" + this.id + ", " + this.work + ", limit: " + this.limit + ", level:  " + this.level + ")";
