@@ -182,6 +182,8 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
     @Override
     public void remove(VariableDescriptor entity) {
         getEntityManager().remove(entity);
+        entity.getParent().remove(entity);
+        entity.getGameModel().getVariableDescriptors().remove(entity);
     }
 
     /**
@@ -356,7 +358,6 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
     private void move(final Long descriptorId, final DescriptorListI targetListDescriptor, final int index) {
         final VariableDescriptor vd = this.find(descriptorId);                  // Remove from the previous list
         vd.getParent().remove(vd);
-
         targetListDescriptor.addItem(index, vd);                                // Then add to the new one
     }
 

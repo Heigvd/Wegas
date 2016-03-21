@@ -7,12 +7,7 @@
  */
 package com.wegas.core.persistence.game;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.jcr.page.Page;
@@ -23,14 +18,14 @@ import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
-import java.util.*;
-import java.util.Map.Entry;
-import javax.jcr.RepositoryException;
-import javax.persistence.*;
 import org.apache.shiro.SecurityUtils;
 
+import javax.jcr.RepositoryException;
+import javax.persistence.*;
+import java.util.*;
+import java.util.Map.Entry;
+
 /**
- *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
@@ -38,12 +33,13 @@ import org.apache.shiro.SecurityUtils;
 //        @UniqueConstraint(columnNames = "name"))
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NamedQueries({
-    @NamedQuery(name = "GameModel.findByStatus", query = "SELECT a FROM GameModel a WHERE a.status = :status ORDER BY a.createdTime ASC"),
-    @NamedQuery(name = "GameModel.findDistinctChildrenLabels", query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.rootGameModel = :container"),
-    @NamedQuery(name = "GameModel.findByName", query = "SELECT a FROM GameModel a WHERE a.name = :name")})
+        @NamedQuery(name = "GameModel.findByStatus", query = "SELECT a FROM GameModel a WHERE a.status = :status ORDER BY a.createdTime ASC"),
+        @NamedQuery(name = "GameModel.findDistinctChildrenLabels", query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.rootGameModel = :container"),
+        @NamedQuery(name = "GameModel.findByName", query = "SELECT a FROM GameModel a WHERE a.name = :name")})
 public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor> /*, Broadcastable */ {
 
     private static final long serialVersionUID = 1L;
+
     /**
      *
      */
@@ -52,6 +48,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @JsonView(Views.IndexI.class)
     private Long id;
+
     /**
      *
      */
@@ -59,6 +56,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     //@Pattern(regexp = "^\\w+$")
     //@XmlID
     private String name;
+
     /**
      *
      */
@@ -73,6 +71,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @Enumerated(value = EnumType.STRING)
     @Column(length = 24)
     private Status status = Status.LIVE;
+
     /**
      *
      */
@@ -80,11 +79,13 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @Basic(fetch = FetchType.LAZY)
     @JsonView(Views.ExtendedI.class)
     private String comments;
+
     /**
      *
      */
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdTime = new Date();
+
     /**
      *
      */
@@ -92,12 +93,14 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     //@XmlTransient
     @JsonIgnore
     private User createdBy;
+
     /**
      *
      */
     //@XmlTransient
     @JsonIgnore
     private Boolean template = true;
+
     /**
      *
      */
@@ -105,6 +108,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     //@XmlTransient
     @JsonIgnore
     private List<VariableDescriptor> variableDescriptors;
+
     /**
      * A list of Variable Descriptors that are at the root level of the
      * hierarchy (other VariableDescriptor can be placed inside of a
@@ -116,6 +120,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @JsonView(Views.Export.class)
     //@JsonManagedReference
     private List<VariableDescriptor> childVariableDescriptors;
+
     /**
      *
      */
@@ -125,6 +130,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @JsonIgnore
     //@JsonView(Views.ExportI.class)
     private List<Game> games = new ArrayList<>();
+
     /**
      * Holds all the scripts contained in current game model.
      */
@@ -132,6 +138,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @JoinColumn(name = "scriptlibrary_gamemodelid")
     @JsonView({Views.Export.class})
     private Map<String, GameModelContent> scriptLibrary = new HashMap<>();
+
     /**
      *
      */
@@ -139,6 +146,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @JoinColumn(name = "csslibrary_gamemodelid")
     @JsonView({Views.Export.class})
     private Map<String, GameModelContent> cssLibrary = new HashMap<>();
+
     /**
      *
      */
@@ -146,11 +154,13 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @JoinColumn(name = "clientscriptlibrary_gamemodelid")
     @JsonView({Views.Export.class})
     private Map<String, GameModelContent> clientScriptLibrary = new HashMap<>();
+
     /**
      *
      */
     @Embedded
     private GameModelProperties properties = new GameModelProperties();
+
     /**
      * Holds a reference to the pages, used to serialize page and game model at
      * the same time.
@@ -166,7 +176,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
-     *
      * @param name
      */
     public GameModel(String name) {
@@ -174,7 +183,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
-     *
      * @param pageMap
      * @throws RepositoryException
      */
@@ -194,7 +202,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
-     *
      * @param context
      */
     public void propagateDefaultInstance(Object context) {
@@ -207,14 +214,14 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      */
     public void propagateGameModel() {
+        this.variableDescriptors.clear();
         this.propagateGameModel(this);
     }
 
     /**
-     *
      * @param list
      */
-    public void propagateGameModel(final DescriptorListI list) {
+    private void propagateGameModel(final DescriptorListI list) {
         for (VariableDescriptor vd : (List<VariableDescriptor>) list.getItems()) {
             this.variableDescriptors.add(vd);
             if (vd instanceof DescriptorListI) {
@@ -255,7 +262,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
-     *
      * @return
      */
     @JsonView(Views.IndexI.class)
@@ -264,7 +270,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
-     *
      * @return
      */
     @JsonView(Views.IndexI.class)
@@ -273,7 +278,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
-     *
      * @return
      */
     @JsonView(Views.IndexI.class)
@@ -282,7 +286,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
-     *
      * @return
      */
     @Override
@@ -291,7 +294,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
-     *
      * @param id
      */
     public void setId(Long id) {
@@ -299,7 +301,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
-     *
      * @return
      */
     @Override
@@ -308,7 +309,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
-     *
      * @param name
      */
     @Override
@@ -317,7 +317,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
-     *
      * @return Current GameModel's status
      */
     @JsonIgnore
@@ -326,7 +325,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
-     *
      * @param status status to set
      */
     @JsonIgnore
@@ -335,7 +333,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
-     *
      * @return
      */
     //@XmlTransient
@@ -345,7 +342,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
-     *
      * @param variableDescriptors
      */
     public void setVariableDescriptors(List<VariableDescriptor> variableDescriptors) {
@@ -353,17 +349,15 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
-     *
      * @return a list of Variable Descriptors that are at the root level of the
-     *         hierarchy (other VariableDescriptor can be placed inside of a
-     *         ListDescriptor's items List)
+     * hierarchy (other VariableDescriptor can be placed inside of a
+     * ListDescriptor's items List)
      */
     public List<VariableDescriptor> getChildVariableDescriptors() {
         return childVariableDescriptors;
     }
 
     /**
-     *
      * @param variableDescriptors
      */
     public void setChildVariableDescriptors(List<VariableDescriptor> variableDescriptors) {
@@ -375,7 +369,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
-     *
      * @param variableDescriptor
      */
     @Override
@@ -389,7 +382,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @Override
     public void addItem(int index, VariableDescriptor variableDescriptor) {
         this.childVariableDescriptors.add(index, variableDescriptor);
-        this.variableDescriptors.add(variableDescriptor);
         variableDescriptor.setGameModel(this);
         variableDescriptor.setRootGameModel(this);
     }
@@ -414,7 +406,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
-     *
      * @param game
      */
     public void addGame(Game game) {
@@ -438,7 +429,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
-     *
      * @return
      */
     @JsonIgnore
@@ -518,7 +508,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
-     *
      * @param pageMap
      */
     public final void setPages(Map<String, JsonNode> pageMap) {
@@ -610,7 +599,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
-     *
      * @return
      */
     public String getCreatedByName() {
@@ -621,7 +609,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
-     *
      * @param createdByName
      */
     public void setCreatedByName(String createdByName) {

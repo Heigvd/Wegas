@@ -195,20 +195,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         this.remove(id);
     }
 
-    @Override
-    public void remove(final Long id) {
-        userFacade.deleteUserPermissionByInstance("gm" + id);
-        userFacade.deleteRolePermissionsByInstance("gm" + id);
-
-        for (Game g : this.find(id).getGames()) {
-            userFacade.deleteUserPermissionByInstance("g" + g.getId());
-            userFacade.deleteRolePermissionsByInstance("g" + g.getId());
-        }
-        preRemovedGameModelEvent.fire(new PreEntityRemoved<>(this.find(id)));
-        super.remove(id);
-        this.flush();
-    }
-
     /**
      * Find a unique name for this new game (e.g. Oldname(1))
      *
@@ -267,6 +253,15 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
     @Override
     public void remove(final GameModel gameModel) {
+        final Long id = gameModel.getId();
+        userFacade.deleteUserPermissionByInstance("gm" + id);
+        userFacade.deleteRolePermissionsByInstance("gm" + id);
+
+        for (Game g : this.find(id).getGames()) {
+            userFacade.deleteUserPermissionByInstance("g" + g.getId());
+            userFacade.deleteRolePermissionsByInstance("g" + g.getId());
+        }
+        preRemovedGameModelEvent.fire(new PreEntityRemoved<>(this.find(id)));
         getEntityManager().remove(gameModel);
         //Remove jcr repo.
         // @TODO : in fact, removes all files but not the workspace.
