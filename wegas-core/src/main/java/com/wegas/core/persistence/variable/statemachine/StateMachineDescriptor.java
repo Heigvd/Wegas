@@ -143,9 +143,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
         for (Iterator<Entry<Long, State>> it = newStates.entrySet().iterator(); it.hasNext();) {
             Entry<Long, State> newState = it.next();
             Long newKey = newState.getKey();
-            if (this.states.get(newKey) == null) {
-                this.states.put(newKey, newState.getValue());
-            }
+            this.states.putIfAbsent(newKey, newState.getValue());
         }
     }
 
