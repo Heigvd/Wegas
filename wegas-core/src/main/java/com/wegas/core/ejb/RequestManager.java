@@ -20,17 +20,16 @@ import jdk.nashorn.internal.runtime.ScriptObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PreDestroy;
+import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.script.ScriptEngine;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
+
 //import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -43,13 +42,13 @@ public class RequestManager {
         STD, // Standard request from standard client (ie a browser)
         TEST, // Testing Request from standard client
         INTERNAL // Internal Process (timer, etc)
-    };
+    }
 
     @Inject
     MutexSingleton mutexSingleton;
 
-    @PersistenceContext(unitName = "wegasPU")
-    private EntityManager em;
+    @EJB
+    private PlayerFacade playerFacade;
 
     private static Logger logger = LoggerFactory.getLogger(RequestManager.class);
 
@@ -116,8 +115,8 @@ public class RequestManager {
 
     public void addEntities(Map<String, List<AbstractEntity>> entities, Map<String, List<AbstractEntity>> container) {
         if (entities != null) {
-            for ( Map.Entry<String, List<AbstractEntity>> entry : entities.entrySet()){
-                this.addEntity(entry.getKey(), entry.getValue() , container);
+            for (Map.Entry<String, List<AbstractEntity>> entry : entities.entrySet()) {
+                this.addEntity(entry.getKey(), entry.getValue(), container);
             }
         }
     }
@@ -150,10 +149,10 @@ public class RequestManager {
      * @param currentPlayer the currentPlayer to set
      */
     public void setPlayer(Player currentPlayer) {
-        if (this.currentPlayer == null || this.currentPlayer != currentPlayer) {
+        if (this.currentPlayer == null || !this.currentPlayer.equals(currentPlayer)) {
             this.setCurrentEngine(null);
         }
-        this.currentPlayer = currentPlayer != null ? em.find(Player.class, currentPlayer.getId()) : null;
+        this.currentPlayer = currentPlayer != null ? playerFacade.find(currentPlayer.getId()) : null;
     }
 
     /**
@@ -323,7 +322,6 @@ public class RequestManager {
     }
 
     /**
-     *
      * @param millis
      */
     public void pleaseWait(long millis) {
