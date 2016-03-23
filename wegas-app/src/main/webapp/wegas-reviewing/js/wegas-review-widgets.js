@@ -25,7 +25,7 @@ YUI.add("wegas-review-widgets", function(Y) {
      * @borrows Y.WidgetChild, Y.WidgetParent, Y.Wegas.Widget, Y.Wegas.Editable
      * @class  class loader of wegas's pages
      * @constructor
-     * @description 
+     * @description
      */
     ReviewOrchestrator = Y.Base.create("wegas-review-orchestrator", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         /** @lends Y.Wegas.ReviewOrchestrator# */
@@ -445,7 +445,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                 data = summary[evD.get("id")].get("val");
                 if (evD.get("@class") === "GradeDescriptor") {
                     /*
-                     math = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">" + 
+                     math = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">" +
                      "<mrow>" +
                      "<mstyle displaystyle=\"true\" scriptlevel=\"0\"> " +
                      "<mrow> " +
@@ -457,7 +457,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                      "</mrow> " +
                      "<mo>=</mo>" +
                      "<mn>"  + data.mean.toFixed(2) + "</mn>" +
-                     "<mo>;</mo>" +        
+                     "<mo>;</mo>" +
                      "</mrow> " +
                      "<mrow>"+
                      "<mrow>"+
@@ -563,7 +563,7 @@ YUI.add("wegas-review-widgets", function(Y) {
         ATTRS: {
             /**
              * The PeerReviewDescriptor
-             * 
+             *
              */
             variable: {
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
@@ -757,11 +757,11 @@ YUI.add("wegas-review-widgets", function(Y) {
      * @name Y.Wegas.ReviewTabView
      * @extends Y.Widget
      * @borrows Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable
-     * @class 
+     * @class
      * @constructor
      * @description Show available review to the player. There is two review categories:
      * the first one contains reviews the player (self) has to write to reflect
-     * his thoughts about work done by others players. The second contains the reviews 
+     * his thoughts about work done by others players. The second contains the reviews
      * written by others about the work of the current player.
      */
     ReviewTabView = Y.Base.create("wegas-review-tabview", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
@@ -878,7 +878,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                     review = reviews[j];
                     tab = null;
                     for (k = 0; k < this.tabView.size(); k += 1) {
-                        if (this.tabView.item(k).review.get("id") === review.get("id")) {
+                        if (this.tabView.item(k).review && this.tabView.item(k).review.get("id") === review.get("id")) {
                             tab = this.tabView.item(k);
                             break;
                         }
@@ -1001,7 +1001,7 @@ YUI.add("wegas-review-widgets", function(Y) {
      * @name Y.Wegas.ReviewWidget
      * @extends Y.Widget
      * @borrows Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable
-     * @class 
+     * @class
      * @constructor
      * @description Is used to display a specific review.
      */
@@ -1028,7 +1028,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             this.widgets = {};
         },
         /**
-         * 
+         *
          * @param {type} ev
          * @param {type} container
          * @param {type} mode hidden, read or write, others means hidden
