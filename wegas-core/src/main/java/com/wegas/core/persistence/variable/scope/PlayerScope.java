@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -60,7 +59,7 @@ public class PlayerScope extends AbstractScope {
      */
     @Override
     public VariableInstance getVariableInstance(Player player) {
-        return this.variableInstances.get(player.getId());
+        return this.getVariableInstances().get(player.getId());
     }
 
     /**
@@ -69,7 +68,7 @@ public class PlayerScope extends AbstractScope {
      */
     @Override
     public void setVariableInstance(Long key, VariableInstance v) {
-        this.variableInstances.put(key, v);
+        this.getVariableInstances().put(key, v);
         v.setPlayerScopeKey(key);
         v.setPlayerScope(this);
     }
@@ -90,7 +89,7 @@ public class PlayerScope extends AbstractScope {
     @Override
     protected void propagate(Player p) {
         VariableDescriptor vd = getVariableDescriptor();
-        VariableInstance vi = this.variableInstances.get(p.getId());
+        VariableInstance vi = this.getVariableInstances().get(p.getId());
         if (vi == null) {
             this.setVariableInstance(p.getId(), vd.getDefaultInstance().clone());
         } else {

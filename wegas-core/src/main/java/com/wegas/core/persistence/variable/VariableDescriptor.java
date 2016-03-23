@@ -307,7 +307,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      * @return
      */
     public T getInstance(Player player) {
-        return (T) this.scope.getVariableInstance(player);
+        return (T) this.getScope().getVariableInstance(player);
     }
 
     /**

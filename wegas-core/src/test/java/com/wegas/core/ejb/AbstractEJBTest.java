@@ -87,10 +87,11 @@ public class AbstractEJBTest {
 
     @After
     public void clear() throws NamingException {
-        gameModelFacade.remove(gameModel.getId());
+        TestHelper.wipeEmCache();
         RequestFacade rm = AbstractEJBTest.lookupBy(RequestFacade.class);
         rm.getRequestManager().setPlayer(null);
         rm.getRequestManager().clearUpdatedEntities();
+        gameModelFacade.remove(gameModel.getId());
         TestHelper.wipeEmCache();
     }
 

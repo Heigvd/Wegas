@@ -10,7 +10,6 @@ package com.wegas.core.persistence.variable.scope;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -62,7 +61,7 @@ public class TeamScope extends AbstractScope {
      */
     @Override
     public VariableInstance getVariableInstance(Player player) {
-        return this.teamVariableInstances.get(player.getTeam().getId());
+        return this.getVariableInstances().get(player.getTeam().getId());
     }
 
     @Override
@@ -73,7 +72,7 @@ public class TeamScope extends AbstractScope {
         if (cPlayer != null) {
             if (this.getBroadcastScope().equals(GameScope.class.getSimpleName())) {
                 for (Team t : cPlayer.getGame().getTeams()) {
-                    ret.put(t.getId(), this.teamVariableInstances.get(t.getId()));
+                    ret.put(t.getId(), this.getVariableInstances().get(t.getId()));
                 }
             } else {
                 ret.put(cPlayer.getTeam().getId(), this.getVariableInstance(cPlayer));
@@ -89,7 +88,7 @@ public class TeamScope extends AbstractScope {
      */
     @Override
     public void setVariableInstance(Long teamId, VariableInstance v) {
-        this.teamVariableInstances.put(teamId, v);
+        this.getVariableInstances().put(teamId, v);
         v.setTeamScopeKey(teamId);
         v.setTeamScope(this);
     }
@@ -105,7 +104,7 @@ public class TeamScope extends AbstractScope {
     @Override
     protected void propagate(Team t) {
         VariableDescriptor vd = this.getVariableDescriptor();
-        VariableInstance vi = this.teamVariableInstances.get(t.getId());
+        VariableInstance vi = this.getVariableInstances().get(t.getId());
         if (vi == null) {
             this.setVariableInstance(t.getId(), vd.getDefaultInstance().clone());
         } else {

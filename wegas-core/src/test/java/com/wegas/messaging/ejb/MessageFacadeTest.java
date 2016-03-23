@@ -14,6 +14,8 @@ import com.wegas.messaging.persistence.Message;
 import java.util.ArrayList;
 import javax.naming.NamingException;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -183,7 +185,7 @@ public class MessageFacadeTest extends AbstractEJBTest {
      */
     @Test
     public void testInboxSendTrigger() throws NamingException {
-
+        logger.info("send inbox trigger");
         // Lookup Ejb's
         final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
         final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
@@ -208,6 +210,7 @@ public class MessageFacadeTest extends AbstractEJBTest {
         // Test
         assertEquals(1, ((InboxInstance) vif.find(inbox.getId(), player)).getMessages().size());
         assertEquals(1, ((InboxInstance) vif.find(inbox.getId(), player2)).getMessages().size());
+        assertTrue(((InboxInstance) vif.find(inbox.getId(), player2)).getMessages().get(0).getBody().equals("test"));
 
         // Clean up
         vdf.remove(inbox.getId());

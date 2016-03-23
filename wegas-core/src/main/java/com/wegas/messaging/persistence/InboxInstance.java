@@ -7,25 +7,26 @@
  */
 package com.wegas.messaging.persistence;
 
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.rest.util.Views;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-//import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.rest.util.Views;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import java.util.ArrayList;
+import java.util.List;
+
+//import javax.xml.bind.annotation.XmlType;
+
 /**
- *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
@@ -37,7 +38,9 @@ public class InboxInstance extends VariableInstance {
      *
      */
     protected static final org.slf4j.Logger logger = LoggerFactory.getLogger(InboxInstance.class);
+
     private static final long serialVersionUID = 1L;
+
     /**
      *
      */
@@ -65,15 +68,14 @@ public class InboxInstance extends VariableInstance {
     }
 
     /**
-     *
      * @param message
      */
     public void addMessage(Message message) {
-        InboxDescriptor descr = (InboxDescriptor) this.getDescriptor();
-        if (descr!=null && descr.getCapped()) {
-            this.messages.clear();
+        InboxDescriptor descr = (InboxDescriptor) this.findDescriptor();
+        if (descr.getCapped()) {
+            this.getMessages().clear();
         }
-        this.messages.add(message);
+        this.getMessages().add(message);
         message.setInboxInstance(this);
     }
 
@@ -81,21 +83,13 @@ public class InboxInstance extends VariableInstance {
     public void merge(AbstractEntity a) {
         if (a instanceof InboxInstance) {
             InboxInstance other = (InboxInstance) a;
-            this.messages.clear();
-            for (Message m : other.getMessages()) {
-                try {
-                    this.addMessage((Message) m.duplicate());
-                } catch (IOException ex) {
-                    logger.error("Exception duplicating {}", m);
-                }
-            }
+            ListUtils.updateList(this.getMessages(), other.getMessages());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
     }
 
     /**
-     *
      * @param message
      */
     public void sendMessage(Message message) {
@@ -103,7 +97,6 @@ public class InboxInstance extends VariableInstance {
     }
 
     /**
-     *
      * @param from
      * @param subject
      * @param body
@@ -116,11 +109,10 @@ public class InboxInstance extends VariableInstance {
     }
 
     /**
-     *
      * @param from
      * @param subject
      * @param body
-     * @param date
+     * @param token
      * @return
      */
     public Message sendWithToken(String from, String subject, String body, String token) {
@@ -130,7 +122,6 @@ public class InboxInstance extends VariableInstance {
     }
 
     /**
-     *
      * @param from
      * @param subject
      * @param body
@@ -159,7 +150,6 @@ public class InboxInstance extends VariableInstance {
     }
 
     /**
-     *
      * @param from
      * @param subject
      * @param body
@@ -174,7 +164,6 @@ public class InboxInstance extends VariableInstance {
     }
 
     /**
-     *
      * @param from
      * @param subject
      * @param body
@@ -190,7 +179,6 @@ public class InboxInstance extends VariableInstance {
     }
 
     /**
-     *
      * @return int unread message count
      */
     public int getUnreadCount() {
@@ -205,7 +193,6 @@ public class InboxInstance extends VariableInstance {
     }
 
     /**
-     *
      * @param count
      */
     public void setUnreadCount(int count) {
@@ -213,7 +200,6 @@ public class InboxInstance extends VariableInstance {
     }
 
     /**
-     *
      * @param subject
      * @return
      */

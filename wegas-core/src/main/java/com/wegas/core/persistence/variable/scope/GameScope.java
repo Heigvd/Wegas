@@ -10,7 +10,6 @@ package com.wegas.core.persistence.variable.scope;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -40,9 +39,6 @@ public class GameScope extends AbstractScope {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(GameScope.class);
-    /**
-     *
-     */
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "gameScope")
     @JoinColumn(name = "gamescope_id", referencedColumnName = "id")
     //@XmlTransient
@@ -59,14 +55,14 @@ public class GameScope extends AbstractScope {
 
     @Override
     public void setVariableInstance(Long key, VariableInstance v) {
-        this.gameVariableInstances.put(key, v);
+        this.getVariableInstances().put(key, v);
         v.setGameScopeKey(key);
         v.setGameScope(this);
     }
 
     @Override
     public VariableInstance getVariableInstance(Player player) {
-        return this.gameVariableInstances.get(player.getGame().getId());
+        return this.getVariableInstances().get(player.getGame().getId());
     }
 
     @Override
@@ -77,7 +73,7 @@ public class GameScope extends AbstractScope {
     @Override
     protected void propagate(Game g) {
         VariableDescriptor vd = this.getVariableDescriptor();
-        VariableInstance vi = this.gameVariableInstances.get(g.getId());
+        VariableInstance vi = this.getVariableInstances().get(g.getId());
         if (vi == null) {
             this.setVariableInstance(g.getId(), vd.getDefaultInstance().clone());
         } else {
