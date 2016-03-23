@@ -87,7 +87,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      *
      */
     @Transient
-    private List<String> predecessorNames = new ArrayList<>();
+    private List<String> predecessorNames/* = new ArrayList<>()*/;
 
     @OneToMany(mappedBy = "taskDescriptor", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
@@ -100,7 +100,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     private List<Assignment> assignments = new ArrayList<>();
 
     /**
-     * /**
+     *
      *
      * @param a
      */
@@ -111,9 +111,10 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
             TaskDescriptor other = (TaskDescriptor) a;
             this.setDescription(other.getDescription());
             this.setIndex(other.getIndex());
-            this.predecessors = ListUtils.updateList(this.predecessors, other.getPredecessors());
-            this.properties.clear();
-            this.properties.putAll(other.getProperties());
+            this.setPredecessorNames(other.getImportedPredecessorNames());
+            // this.setPredecessors(ListUtils.updateList(this.getPredecessors(), other.getPredecessors()));
+            this.getProperties().clear();
+            this.getProperties().putAll(other.getProperties());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
@@ -124,8 +125,6 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      */
     @PreDestroy
     public void preDestroy() {
-        System.out.println("YOUPI !!!");
-        logger.error("PRE DESTROY");
         for (Iterator<TaskDescriptor> it = this.dependencies.iterator(); it.hasNext();) {
             TaskDescriptor t = it.next();
             t.removePredecessor(this);
@@ -501,9 +500,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     }
 
     public void removeAssignment(Assignment assignment) {
-        if (assignments.remove(assignment)) {
-            assignment.setResourceInstance(null);
-        }
+        assignment.setResourceInstance(null);
     }
 
     @Override
