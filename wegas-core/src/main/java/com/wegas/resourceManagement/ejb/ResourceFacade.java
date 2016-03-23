@@ -154,9 +154,13 @@ public class ResourceFacade {
      */
     public ResourceInstance removeAssignment(final Long assignmentId) {
         final Assignment assignment = this.getEntityManager().find(Assignment.class, assignmentId);
+        ResourceInstance resourceInstance = assignment.getResourceInstance();
+
         assignment.getResourceInstance().removeAssignment(assignment);
         assignment.getTaskDescriptor().removeAssignment(assignment);
-        return assignment.getResourceInstance();
+
+        this.getEntityManager().remove(assignment);
+        return resourceInstance;
     }
 
     /**
@@ -292,10 +296,23 @@ public class ResourceFacade {
                 // BACKWARD
                 task.getDefaultInstance().setProperty("duration", duration.toString());
             }
-            for (String predecessorName : task.getImportedPredecessorNames()) {
-                TaskDescriptor predecessor = (TaskDescriptor) variableDescriptorFacade.find(task.getGameModel(), predecessorName);
-                task.addPredecessor(predecessor);
+
+            if (task.getImportedPredecessorNames() != null) {
+                for (String predecessorName : task.getImportedPredecessorNames()) {
+                    TaskDescriptor predecessor = (TaskDescriptor) variableDescriptorFacade.find(task.getGameModel(), predecessorName);
+                    if (!task.getPredecessorNames().contains(predecessorName)) {
+                        task.addPredecessor(predecessor);
+                    }
+                }
+                for (String predecessorName : task.getPredecessorNames()) {
+                    TaskDescriptor predecessor = (TaskDescriptor) variableDescriptorFacade.find(task.getGameModel(), predecessorName);
+                    if (!task.getImportedPredecessorNames().contains(predecessorName)) {
+                        task.removePredecessor(predecessor);
+                    }
+                }
             }
+            //this.setPredecessors(ListUtils.updateList(this.getPredecessors(), other.getPredecessors()));
+
         } else if (event.getEntity() instanceof ResourceDescriptor) {
             // BACKWARD COMPAT
             ResourceInstance ri = (ResourceInstance) event.getEntity().getDefaultInstance();

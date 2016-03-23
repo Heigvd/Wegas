@@ -132,10 +132,8 @@ public class ResourceInstance extends VariableInstance {
         assignment.setResourceInstance(this);
     }
 
-    public void removeAssignment(Assignment assignment){
-        if (assignments.remove(assignment)){
-            assignment.setResourceInstance(null);
-        }
+    public void removeAssignment(Assignment assignment) {
+        assignments.remove(assignment);
     }
 
     /**
@@ -148,7 +146,6 @@ public class ResourceInstance extends VariableInstance {
      *         return assignment;
      *         }
      */
-
     /**
      * @return the activities
      */
@@ -239,8 +236,8 @@ public class ResourceInstance extends VariableInstance {
         occupation.setResourceInstance(this);
     }
 
-    public void removeOccupation(Occupation occupation){
-        if (this.getOccupations().remove(occupation)){
+    public void removeOccupation(Occupation occupation) {
+        if (this.getOccupations().remove(occupation)) {
             occupation.setResourceInstance(null);
         }
     }
