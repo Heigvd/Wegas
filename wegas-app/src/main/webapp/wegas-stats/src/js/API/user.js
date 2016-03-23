@@ -5,11 +5,11 @@ const BASE = '/rest/User/';
 export function getCurrentUser() {
     return Axios.get(`${BASE}Current`)
         .then(res => ({
-                isLoggedIn: true,
-                user: res.data,
+            isLoggedIn: true,
+            user: res.data,
         }))
         .catch(() => ({
-                isloggedIn: false,
+            isloggedIn: false,
         }));
 }
 
@@ -20,8 +20,8 @@ export function login(user = 'root@root.com', password = '1234', remember = true
         password,
         remember,
     }).then(res => ({
-            isLoggedIn: true,
-            user: res.data,
+        isLoggedIn: true,
+        user: res.data,
     }));
 }
 

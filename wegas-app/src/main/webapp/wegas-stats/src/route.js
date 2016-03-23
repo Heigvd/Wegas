@@ -10,11 +10,6 @@ import Stats from './js/Comps/Stats';
 const history = createHistory();
 
 class AppRoute extends React.Component {
-
-    constructor(props, context) {
-        super(props, context);
-    }
-
     renderRoute() {
         return (
             <Router history={ history }>
@@ -30,9 +25,9 @@ class AppRoute extends React.Component {
     }
 
     render() {
-        return ( <Provider store={ store }>
-                   { this.renderRoute() }
-                 </Provider> );
+        return (<Provider store={ store }>
+                  { this.renderRoute() }
+                </Provider>);
     }
 }
 export default React.createElement(AppRoute);

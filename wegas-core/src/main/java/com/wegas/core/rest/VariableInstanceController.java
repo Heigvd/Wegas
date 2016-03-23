@@ -9,6 +9,7 @@ package com.wegas.core.rest;
 
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.UserFacade;
@@ -42,7 +43,7 @@ public class VariableInstanceController {
     @EJB
     private VariableDescriptorFacade variableDescriptorFacade;
     /**
-     * 
+     *
      */
     @EJB
     private UserFacade userFacade;
@@ -86,6 +87,20 @@ public class VariableInstanceController {
         return vd.getScope().getVariableInstances().values();
     }
 
+    @GET
+    @Path("player/{playerId: [1-9][0-9]*}")
+    public VariableInstance find(@PathParam("variableDescriptorId") Long variableDescriptorId, @PathParam("playerId") Long playerId) {
+
+        VariableInstance vi = variableInstanceFacade.find(variableDescriptorId, playerId);
+        if (SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + vi.findDescriptor().getGameModelId()) // Can edit the game model
+            || SecurityUtils.getSubject().isPermitted("Game:Edit:g" + variableInstanceFacade.findGame(vi)) // or can edit the game
+            || userFacade.matchCurrentUser(playerId)) { // current user is the player
+            return vi;
+        } else {
+            throw new WegasErrorMessage("error", "Forbidden");
+        }
+    }
+
     /**
      *
      * @param variableDescriptorId
@@ -118,10 +133,10 @@ public class VariableInstanceController {
     @POST
     @Path("user/{userId : [1-9][0-9]*}")
     public VariableInstance setVariableInstance(
-            @PathParam("gameModelId") Long gameModelId,
-            @PathParam("variableDescriptorId") Long variableDescriptorId,
-            @PathParam("userId") Long userId,
-            VariableInstance newInstance) {
+        @PathParam("gameModelId") Long gameModelId,
+        @PathParam("variableDescriptorId") Long variableDescriptorId,
+        @PathParam("userId") Long userId,
+        VariableInstance newInstance) {
         return variableInstanceFacade.update(variableDescriptorId, userId, newInstance);
     }
 }
