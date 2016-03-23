@@ -83,9 +83,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
     @Override
     public VariableDescriptor update(final Long entityId, final VariableDescriptor entity) {
         final VariableDescriptor vd = this.find(entityId);
-        entity.setGameModel(vd.getGameModel());
-        this.revive(entity);
+        //entity.setGameModel(vd.getGameModel());
         vd.merge(entity);
+        this.revive(vd.getGameModel(), vd);
         return vd;
     }
 
@@ -114,28 +114,50 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         Helper.setUniqueName(entity, usedNames);
         Helper.setUniqueLabel(entity, usedLabels);
 
-        this.revive(entity);
+        this.revive(gameModel, entity);
         return list;
     }
 
     /**
+     * @param gameModel
      * @param entity
      */
-    public void revive(VariableDescriptor entity) {
-
+    public void revive(GameModel gameModel, VariableDescriptor entity) {
         descriptorRevivedEvent.fire(new DescriptorRevivedEvent(entity));
-
+        gameModel.addToVariableDescriptors(entity);
         if (entity instanceof DescriptorListI) {
-            this.reviveItems((DescriptorListI) entity);
+            this.reviveItems(gameModel, (DescriptorListI) entity);
         }
     }
 
     /**
+     * @param gameModel
      * @param entity
      */
-    public void reviveItems(DescriptorListI entity) {
+    public void reviveItems(GameModel gameModel, DescriptorListI entity) {
         for (Object vd : ((DescriptorListI) entity).getItems()) {
-            this.revive((VariableDescriptor) vd);
+            this.revive(gameModel, (VariableDescriptor) vd);
+        }
+    }
+
+    /**
+     * @param gameModel
+     * @param entity
+     */
+    public void preDestroy(GameModel gameModel, VariableDescriptor entity) {
+        gameModel.removeFromVariableDescriptors(entity);
+        if (entity instanceof DescriptorListI) {
+            this.preDestroyItems(gameModel, (DescriptorListI) entity);
+        }
+    }
+
+    /**
+     * @param gameModel
+     * @param entity
+     */
+    public void preDestroyItems(GameModel gameModel, DescriptorListI entity) {
+        for (Object vd : ((DescriptorListI) entity).getItems()) {
+            this.preDestroy(gameModel, (VariableDescriptor) vd);
         }
     }
 
@@ -181,9 +203,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
 
     @Override
     public void remove(VariableDescriptor entity) {
-        getEntityManager().remove(entity);
+        this.preDestroy(entity.getGameModel(), entity);
         entity.getParent().remove(entity);
-        entity.getGameModel().getVariableDescriptors().remove(entity);
+        getEntityManager().remove(entity);
     }
 
     /**

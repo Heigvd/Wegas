@@ -33,9 +33,9 @@ import java.util.Map.Entry;
 //        @UniqueConstraint(columnNames = "name"))
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NamedQueries({
-        @NamedQuery(name = "GameModel.findByStatus", query = "SELECT a FROM GameModel a WHERE a.status = :status ORDER BY a.createdTime ASC"),
-        @NamedQuery(name = "GameModel.findDistinctChildrenLabels", query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.rootGameModel = :container"),
-        @NamedQuery(name = "GameModel.findByName", query = "SELECT a FROM GameModel a WHERE a.name = :name")})
+    @NamedQuery(name = "GameModel.findByStatus", query = "SELECT a FROM GameModel a WHERE a.status = :status ORDER BY a.createdTime ASC"),
+    @NamedQuery(name = "GameModel.findDistinctChildrenLabels", query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.rootGameModel = :container"),
+    @NamedQuery(name = "GameModel.findByName", query = "SELECT a FROM GameModel a WHERE a.name = :name")})
 public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor> /*, Broadcastable */ {
 
     private static final long serialVersionUID = 1L;
@@ -214,8 +214,19 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      */
     public void propagateGameModel() {
-        this.variableDescriptors.clear();
+        //this.variableDescriptors.clear();
         this.propagateGameModel(this);
+    }
+
+    public void addToVariableDescriptors(VariableDescriptor vd) {
+        if (!this.getVariableDescriptors().contains(vd)) {
+            this.getVariableDescriptors().add(vd);
+            vd.setGameModel(this);
+        }
+    }
+
+    public void removeFromVariableDescriptors(VariableDescriptor vd) {
+        this.getVariableDescriptors().remove(vd);
     }
 
     /**
@@ -223,7 +234,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     private void propagateGameModel(final DescriptorListI list) {
         for (VariableDescriptor vd : (List<VariableDescriptor>) list.getItems()) {
-            this.variableDescriptors.add(vd);
+            this.addToVariableDescriptors(vd);
             if (vd instanceof DescriptorListI) {
                 this.propagateGameModel((DescriptorListI) vd);
             }
@@ -236,7 +247,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
             GameModel other = (GameModel) n;
             this.setDescription(other.getDescription());                            // Set description first, since fetching this lazy loaded attribute will cause an entity refresh
             this.setComments(other.getComments());
-            this.properties.merge(other.getProperties());
+            this.getProperties().merge(other.getProperties());
             super.merge(n);
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + n.getClass().getSimpleName() + ") is not possible");
@@ -350,8 +361,8 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
 
     /**
      * @return a list of Variable Descriptors that are at the root level of the
-     * hierarchy (other VariableDescriptor can be placed inside of a
-     * ListDescriptor's items List)
+     *         hierarchy (other VariableDescriptor can be placed inside of a
+     *         ListDescriptor's items List)
      */
     public List<VariableDescriptor> getChildVariableDescriptors() {
         return childVariableDescriptors;
@@ -363,7 +374,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     public void setChildVariableDescriptors(List<VariableDescriptor> variableDescriptors) {
         this.childVariableDescriptors = variableDescriptors;
         //this.variableDescriptors.addAll(variableDescriptors);
-        for (VariableDescriptor vd : variableDescriptors) {
+        for (VariableDescriptor vd : getChildVariableDescriptors()) {
             vd.setGameModel(this);
         }
     }
@@ -373,15 +384,15 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     @Override
     public void addItem(VariableDescriptor variableDescriptor) {
-        this.childVariableDescriptors.add(variableDescriptor);
-        this.variableDescriptors.add(variableDescriptor);
+        this.getChildVariableDescriptors().add(variableDescriptor);
+        this.getVariableDescriptors().add(variableDescriptor);
         variableDescriptor.setGameModel(this);
         variableDescriptor.setRootGameModel(this);
     }
 
     @Override
     public void addItem(int index, VariableDescriptor variableDescriptor) {
-        this.childVariableDescriptors.add(index, variableDescriptor);
+        this.getChildVariableDescriptors().add(index, variableDescriptor);
         variableDescriptor.setGameModel(this);
         variableDescriptor.setRootGameModel(this);
     }
@@ -409,7 +420,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      * @param game
      */
     public void addGame(Game game) {
-        this.games.add(game);
+        this.getGames().add(game);
         game.setGameModel(this);
         game.setGameModelId(this.getId());
     }
@@ -532,25 +543,25 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
 
     @Override
     public int size() {
-        return this.childVariableDescriptors.size();
+        return this.getChildVariableDescriptors().size();
     }
 
     @Override
     public VariableDescriptor item(int index) {
-        return this.childVariableDescriptors.get(index);
+        return this.getChildVariableDescriptors().get(index);
     }
 
     @Override
     public boolean remove(VariableDescriptor item) {
-        return this.childVariableDescriptors.remove(item);
+        return this.getChildVariableDescriptors().remove(item);
     }
 
     @PostPersist
     private void storePages() {
-        if (this.pages != null) {
+        if (this.getPages() != null) {
             try (final Pages pagesDAO = new Pages(this.id.toString())) {
                 pagesDAO.delete();                                              // Remove existing pages
-                for (Entry<String, JsonNode> p : this.pages.entrySet()) {       // Add all pages
+                for (Entry<String, JsonNode> p : this.getPages().entrySet()) {       // Add all pages
                     pagesDAO.store(new Page(p.getKey(), p.getValue()));
                 }
 
