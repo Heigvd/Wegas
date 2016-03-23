@@ -151,8 +151,20 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
     public void setCurrentResult(Player player, String resultName) throws WegasNoResultException {
+        ChoiceInstance instance = this.getInstance(player);
         Result resultByName = getResultByName(resultName);
-        this.getInstance(player).setCurrentResult(resultByName);
+        this.changeCurrentResult(instance, resultByName);
+    }
+
+    public void changeCurrentResult(ChoiceInstance choiceInstance, Result newCurrentResult) {
+        Result previousResult = choiceInstance.getCurrentResult();
+        if (previousResult != null) {
+            previousResult.removeChoiceInstance(choiceInstance);
+        }
+
+        newCurrentResult.addChoiceInstance(choiceInstance);
+
+        choiceInstance.setCurrentResult(newCurrentResult);
     }
 
     /**

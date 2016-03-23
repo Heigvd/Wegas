@@ -112,7 +112,7 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     @OneToMany(mappedBy = "currentResult", cascade = CascadeType.MERGE)
     //@XmlTransient
     @JsonIgnore
-    private List<ChoiceInstance> choiceInstances;
+    private List<ChoiceInstance> choiceInstances = new ArrayList<>();
     /**
      * This field is here so deletion will be propagated to replies.
      */
@@ -346,5 +346,15 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
      */
     public void setChoiceInstances(List<ChoiceInstance> choiceInstances) {
         this.choiceInstances = choiceInstances;
+    }
+
+    public void addChoiceInstance(ChoiceInstance choiceInstance) {
+        if (!this.choiceInstances.contains(choiceInstance)) {
+            this.choiceInstances.add(choiceInstance);
+        }
+    }
+
+    public boolean removeChoiceInstance(ChoiceInstance choiceInstance) {
+        return this.choiceInstances.remove(choiceInstance);
     }
 }

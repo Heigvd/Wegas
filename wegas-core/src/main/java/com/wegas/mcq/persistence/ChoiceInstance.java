@@ -21,7 +21,7 @@ import com.wegas.core.exception.client.WegasIncompatibleType;
  */
 @Entity
 //@XmlType(name = "ChoiceInstance")
-@Table(name = "MCQChoiceInstance", 
+@Table(name = "MCQChoiceInstance",
     indexes = {
         @Index(columnList = "result_id")
     }
@@ -121,7 +121,15 @@ public class ChoiceInstance extends VariableInstance {
             this.setUnread(other.getUnread());
             this.setCurrentResultName(other.getDeserializedCurrentResultName());
             this.setCurrentResultIndex(other.getCurrentResultIndex());
-            this.setCurrentResult(other.getCurrentResult());
+            if (other.getCurrentResult() != null) {
+                Result previousResult = this.getCurrentResult();
+                Result newResult = other.getCurrentResult();
+                if (previousResult != null) {
+                    previousResult.removeChoiceInstance(this);
+                }
+                this.setCurrentResult(newResult);
+                newResult.addChoiceInstance(this);
+            }
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }

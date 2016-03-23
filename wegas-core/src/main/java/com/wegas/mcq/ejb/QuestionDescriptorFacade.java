@@ -87,8 +87,8 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         final CriteriaQuery cq = cb.createQuery();
         Root<Result> result = cq.from(Result.class);
         cq.where(cb.and(
-                cb.equal(result.get("choiceDescriptor"), choiceDescriptor),
-                cb.like(result.get("name"), name)));
+            cb.equal(result.get("choiceDescriptor"), choiceDescriptor),
+            cb.like(result.get("name"), name)));
         final Query q = getEntityManager().createQuery(cq);
         try {
             return (Result) q.getSingleResult();
@@ -109,15 +109,18 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
             if (defaultInstance.getDeserializedCurrentResultName() != null && !defaultInstance.getDeserializedCurrentResultName().isEmpty()) {
                 try {
                     Result cr = findResult(choice, defaultInstance.getDeserializedCurrentResultName());
-                    defaultInstance.setCurrentResult(cr);
+                    choice.changeCurrentResult(defaultInstance, cr);
+                    //defaultInstance.setCurrentResult(cr);
                 } catch (WegasNoResultException ex) {
                     throw WegasErrorMessage.error("Error while setting current result");
                 }
             } else if (defaultInstance.getCurrentResultIndex() != null
-                    && defaultInstance.getCurrentResultIndex() >= 0
-                    && defaultInstance.getCurrentResultIndex() < choice.getResults().size()) {
+                && defaultInstance.getCurrentResultIndex() >= 0
+                && defaultInstance.getCurrentResultIndex() < choice.getResults().size()) {
+
                 Result cr = choice.getResults().get(defaultInstance.getCurrentResultIndex());
-                defaultInstance.setCurrentResult(cr);
+                //defaultInstance.setCurrentResult(cr);
+                choice.changeCurrentResult(defaultInstance, cr);
             }
         }
     }
@@ -141,7 +144,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     }
 
     /**
-     * @return 
+     * @return
      * @deprecated @param instanceId
      */
     public int findReplyCount(Long instanceId) {
@@ -154,7 +157,6 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         }
     }
 
-
     /**
      * @param choiceId
      * @param player
@@ -164,7 +166,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
 
         ChoiceDescriptor choice = getEntityManager().find(ChoiceDescriptor.class, choiceId);
         QuestionDescriptor questionDescriptor = choice.getQuestion();
-        if (!questionDescriptor.getCbx()){
+        if (!questionDescriptor.getCbx()) {
             logger.error("ignoreChoice() invoked on a Question which is not of checkbox type");
         }
 
@@ -189,15 +191,15 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         ChoiceDescriptor choice = getEntityManager().find(ChoiceDescriptor.class, choiceId);
         QuestionDescriptor questionDescriptor = choice.getQuestion();
         // Verify if mutually exclusive replies must be cancelled:
-        if (questionDescriptor.getCbx() && !questionDescriptor.getAllowMultipleReplies()){
+        if (questionDescriptor.getCbx() && !questionDescriptor.getAllowMultipleReplies()) {
             for (Reply r : questionDescriptor.getInstance(player).getReplies()) {
-                if (!r.getResult().getChoiceDescriptor().equals(choice) &&
-                        !r.getIgnored()) {
+                if (!r.getResult().getChoiceDescriptor().equals(choice)
+                    && !r.getIgnored()) {
                     this.cancelReply(player.getId(), r.getId());
                 }
             }
         }
-        
+
         Reply reply = questionSingleton.createReply(choiceId, player, startTime);
         try {
             scriptEvent.fire(player, "replySelect", new ReplyValidate(reply));
@@ -330,16 +332,18 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         final ChoiceDescriptor choiceDescriptor = validateReply.getResult().getChoiceDescriptor();
         validateReply.setResult(choiceDescriptor.getInstance(player).getResult());// Refresh the current result
 
-        if (validateReply.getIgnored())
+        if (validateReply.getIgnored()) {
             scriptManager.eval(player, validateReply.getResult().getIgnorationImpact(), choiceDescriptor);
-        else    
+        } else {
             scriptManager.eval(player, validateReply.getResult().getImpact(), choiceDescriptor);
+        }
         final ReplyValidate replyValidate = new ReplyValidate(validateReply, choiceDescriptor.getInstance(player), validateReply.getQuestionInstance(), player);
         try {
-            if (validateReply.getIgnored())
+            if (validateReply.getIgnored()) {
                 scriptEvent.fire(player, "replyIgnore", replyValidate);
-            else
+            } else {
                 scriptEvent.fire(player, "replyValidate", replyValidate);
+            }
         } catch (WegasRuntimeException e) {
             logger.error("EventListener error (\"replyValidate\")", e);
             // GOTCHA no eventManager is instantiated
@@ -364,30 +368,30 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     }
 
     /**
-     * Validates a question that's marked as checkbox type: sequentially validates all replies (i.e. selected choices)
+     * Validates a question that's marked as checkbox type: sequentially
+     * validates all replies (i.e. selected choices)
      * and processes all other choices as "ignored".
-     * 
+     *
      * @param validateQuestion
      * @param player
      * @throws com.wegas.core.exception.client.WegasRuntimeException
      */
     public void validateQuestion(final QuestionInstance validateQuestion, final Player player) throws WegasRuntimeException {
-        
+
         final QuestionDescriptor questionDescriptor = (QuestionDescriptor) validateQuestion.getDescriptor();
-        if (!questionDescriptor.getCbx()){
+        if (!questionDescriptor.getCbx()) {
             logger.error("validateQuestion() invoked on a Question which is not of checkbox type");
             return;
         }
-        
+
         // Don't validate questions with no replies
-        if (validateQuestion.getReplies().isEmpty()){
+        if (validateQuestion.getReplies().isEmpty()) {
             throw new WegasErrorMessage(WegasErrorMessage.ERROR, "Please select a reply");
         }
 
         // Loop on all choices: validate all replies (checked choices) and "ignore" all unchecked choices.
         // NB: there should be only one reply per choice for each player.
-       
-        for (ChoiceDescriptor choice : questionDescriptor.getItems()){
+        for (ChoiceDescriptor choice : questionDescriptor.getItems()) {
             // Test if the current choice has been selected, i.e. there is a reply for it.
             boolean found = false;
             for (Reply r : validateQuestion.getReplies()) {
@@ -402,7 +406,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
                     break;
                 }
             }
-            if (!found){
+            if (!found) {
                 Reply ignoredReply = ignoreChoice(choice.getId(), player);
                 this.validateReply(player, ignoredReply);
             }
@@ -432,11 +436,12 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     @Override
     public void create(ChoiceDescriptor entity) {
         getEntityManager().persist(entity);
-        entity.getQuestion().addItem(entity);;
+        entity.getQuestion().addItem(entity);
     }
 
     @Override
     public void remove(ChoiceDescriptor entity) {
+        logger.error("ICI *********************************************** ICI");
         getEntityManager().remove(entity);
         entity.getQuestion().remove(entity);
     }
@@ -471,7 +476,6 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
          * @param choice
          * @param question
          */
-
         public ReplyValidate(Reply reply, ChoiceInstance choice, QuestionInstance question, Player player) {
             this.reply = reply;
             this.choice = choice;
