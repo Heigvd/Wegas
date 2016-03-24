@@ -156,7 +156,7 @@ class Graph extends React.Component {
 
     render() {
         const legends = this.props.groups.map((val, index) => (
-        <span className={ `color ct-series- ${String.fromCharCode(97 + index)}` }
+        <span className={ `color ct-series-${String.fromCharCode(97 + index)}` }
               key={ index }
               style={ legendStyle }>{ `Group ${(index + 1)}` }</span>
         ));
