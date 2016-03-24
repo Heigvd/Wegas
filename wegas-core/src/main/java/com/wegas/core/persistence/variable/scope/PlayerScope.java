@@ -98,7 +98,7 @@ public class PlayerScope extends AbstractScope {
     }
 
     @Override
-    public void propagateDefaultInstance(Object context) {
+    public void propagateDefaultInstance(AbstractEntity context) {
         if (context instanceof Player) {
             propagate((Player) context);
         } else if (context instanceof Team) {

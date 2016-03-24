@@ -113,7 +113,7 @@ public class TeamScope extends AbstractScope {
     }
 
     @Override
-    public void propagateDefaultInstance(Object context) {
+    public void propagateDefaultInstance(AbstractEntity context) {
         //logger.info("Propagating default instance for VariableDescriptor: {}", this.getVariableDescriptor());
         if (context instanceof Player) {
             // No need to propagate since the team already exists

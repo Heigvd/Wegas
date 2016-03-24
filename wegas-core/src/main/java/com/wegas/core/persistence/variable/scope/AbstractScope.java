@@ -146,7 +146,7 @@ abstract public class AbstractScope extends AbstractEntity {
      * @param context instance (GameModel, Game, Team, Player) to propagate
      *                instances to (null means propagate to everybody)
      */
-    abstract public void propagateDefaultInstance(Object context);
+    abstract public void propagateDefaultInstance(AbstractEntity context);
 
     /**
      *

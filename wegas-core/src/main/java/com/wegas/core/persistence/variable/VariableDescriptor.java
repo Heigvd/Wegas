@@ -439,7 +439,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      *                context. It may be an instance of GameModel, Game, Team,
      *                or Player
      */
-    public void propagateDefaultInstance(Object context) {
+    public void propagateDefaultInstance(AbstractEntity context) {
         int sFlag = 0;
         if (scope instanceof GameModelScope) { // gms
             sFlag = 4;

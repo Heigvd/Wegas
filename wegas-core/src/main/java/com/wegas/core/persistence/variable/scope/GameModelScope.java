@@ -69,7 +69,7 @@ public class GameModelScope extends AbstractScope {
      */
     @JsonIgnore
     @Override
-    public void propagateDefaultInstance(Object context) {
+    public void propagateDefaultInstance(AbstractEntity context) {
         if (context instanceof Player) {
             // Since player's gamemodel already exists, nothing to propagate
         } else if (context instanceof Team) {
