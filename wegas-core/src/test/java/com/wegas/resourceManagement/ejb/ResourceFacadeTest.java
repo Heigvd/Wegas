@@ -9,8 +9,10 @@ package com.wegas.resourceManagement.ejb;
 
 import com.wegas.core.ejb.AbstractEJBTest;
 import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
+import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.core.persistence.game.Script;
 import com.wegas.resourceManagement.persistence.Assignment;
 import com.wegas.resourceManagement.persistence.Occupation;
 import com.wegas.resourceManagement.persistence.ResourceDescriptor;
@@ -137,6 +139,84 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         assertEquals(
             ((ResourceInstance) vif.find(res.getId(), player)).getAssignments().get(0).getTaskDescriptor().getInstance(player),
             task.getInstance(player));
+
+        // Clean
+        vdf.remove(res.getId());
+        vdf.remove(task.getId());
+    }
+
+    /**
+     * Remove Assignment Test
+     */
+    @Test
+    public void testRemoveAssignment() throws NamingException {
+
+        // Lookup Ejb's
+        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
+        final ResourceFacade resourceFacade = lookupBy(ResourceFacade.class);
+
+        // Create a resource
+        ResourceDescriptor res = new ResourceDescriptor();
+        res.setLabel("Paul");
+        res.setDefaultInstance(new ResourceInstance());
+        vdf.create(gameModel.getId(), res);
+
+        // Create a task
+        TaskDescriptor task = new TaskDescriptor();
+        task.setLabel("My task");
+        task.setDefaultInstance(new TaskInstance());
+        vdf.create(gameModel.getId(), task);
+
+        // Assign resource to task
+        resourceFacade.assign(res.getInstance(player).getId(), task.getId());
+
+        assertEquals(
+            ((ResourceInstance) vif.find(res.getId(), player)).getAssignments().get(0).getTaskDescriptor().getInstance(player),
+            task.getInstance(player));
+
+        Assignment assignment = resourceFacade.findAssignment(res.getInstance(player).getId(), task.getId());
+        resourceFacade.removeAssignment(assignment.getId());
+
+        // Clean
+        vdf.remove(res.getId());
+        vdf.remove(task.getId());
+    }
+
+    /**
+     * Remove Assignment Test.
+     * Script eval version 
+     */
+    @Test
+    public void testRemoveAssignmentFromScript() throws NamingException {
+
+        // Lookup Ejb's
+        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
+        final ResourceFacade resourceFacade = lookupBy(ResourceFacade.class);
+        final ScriptFacade scriptFacade = lookupBy(ScriptFacade.class);
+
+        // Create a resource
+        ResourceDescriptor res = new ResourceDescriptor();
+        res.setLabel("Paul");
+        res.setName("paul");
+        res.setDefaultInstance(new ResourceInstance());
+        vdf.create(gameModel.getId(), res);
+
+        // Create a task
+        TaskDescriptor task = new TaskDescriptor();
+        task.setLabel("task");
+        task.setName("task");
+        task.setDefaultInstance(new TaskInstance());
+        vdf.create(gameModel.getId(), task);
+        String script = "var rF = new javax.naming.InitialContext().lookup('java:module/ResourceFacade');\n"
+            + "var paul = Variable.find(gameModel, \"paul\");\n"
+            + "var paulI = paul.getInstance(self);\n"
+            + "var task = Variable.find(gameModel, \"task\");\n" 
+            + "rF.assign(paulI.getId(), task.getId());\n"
+            + "rF.removeAssignment(rF.findAssignment(paulI.getId(), task.getId()).getId());\n";
+
+        scriptFacade.eval(player, new Script("javascript", script), null);
 
         // Clean
         vdf.remove(res.getId());

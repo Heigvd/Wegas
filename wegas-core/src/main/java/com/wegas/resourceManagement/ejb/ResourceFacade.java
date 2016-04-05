@@ -32,7 +32,12 @@ import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,6 +115,33 @@ public class ResourceFacade {
 
     /**
      *
+     * @param resourceId
+     * @param taskDescriptorId
+     * @return null if NotFound
+     */
+    public Assignment findAssignment(Long resourceId, Long taskDescriptorId) {
+        EntityManager em = getEntityManager();
+        TaskDescriptor taskDescriptor = em.find(TaskDescriptor.class, taskDescriptorId);
+        ResourceInstance resourceInstance = em.find(ResourceInstance.class, resourceId);
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Assignment> query = cb.createQuery(Assignment.class);
+        Root<Assignment> from = query.from(Assignment.class);
+        query.where(
+            cb.and(
+                cb.equal(from.get("taskDescriptor"), taskDescriptor),
+                cb.equal(from.get("resourceInstance"), resourceInstance))
+        );
+        TypedQuery<Assignment> q = em.createQuery(query);
+
+        try {
+            return q.getSingleResult();
+        } catch (NoResultException ex) {
+            return null;
+        }
+    }
+
+    /**
+     *
      * @param id
      * @return
      */
@@ -127,7 +159,7 @@ public class ResourceFacade {
         ResourceInstance resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstanceId);
         TaskDescriptor taskDescriptor = (TaskDescriptor) variableDescriptorFacade.find(taskDescriptorId);
 
-        final Assignment assignment = new Assignment(taskDescriptor);
+        final Assignment assignment = new Assignment();
         resourceInstance.addAssignment(assignment);
         taskDescriptor.addAssignment(assignment);
 
@@ -141,10 +173,11 @@ public class ResourceFacade {
      * @return
      */
     public ResourceInstance moveAssignment(final Long assignmentId, final int index) {
-        final Assignment assignment = this.getEntityManager().find(Assignment.class, assignmentId);
-        assignment.getResourceInstance().getAssignments().remove(assignment);
-        assignment.getResourceInstance().getAssignments().add(index, assignment);
-        return assignment.getResourceInstance();
+        final Assignment assignment = this.findAssignment(assignmentId);
+        ResourceInstance resourceInstance = (ResourceInstance) variableInstanceFacade.find(assignment.getResourceInstance().getId());
+        resourceInstance.getAssignments().remove(assignment);
+        resourceInstance.getAssignments().add(index, assignment);
+        return resourceInstance;
     }
 
     /**
@@ -154,12 +187,16 @@ public class ResourceFacade {
      */
     public ResourceInstance removeAssignment(final Long assignmentId) {
         final Assignment assignment = this.getEntityManager().find(Assignment.class, assignmentId);
-        ResourceInstance resourceInstance = assignment.getResourceInstance();
+        //ResourceDescriptor rD = (ResourceDescriptor) variableDescriptorFacade.find(assignment.getResourceInstance().findDescriptor().getId());
+        ResourceInstance resourceInstance = (ResourceInstance) variableInstanceFacade.find(assignment.getResourceInstance().getId());
+        //ResourceInstance resourceInstance = rD.getInstance();
+        TaskDescriptor taskDescriptor = (TaskDescriptor) variableDescriptorFacade.find(assignment.getTaskDescriptor().getId());
 
-        assignment.getResourceInstance().removeAssignment(assignment);
-        assignment.getTaskDescriptor().removeAssignment(assignment);
+        taskDescriptor.removeAssignment(assignment);
+        resourceInstance.removeAssignment(assignment);
 
-        this.getEntityManager().remove(assignment);
+        //this.getEntityManager().remove(assignment);
+
         return resourceInstance;
     }
 

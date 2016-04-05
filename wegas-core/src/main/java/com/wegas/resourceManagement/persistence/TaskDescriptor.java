@@ -500,7 +500,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     }
 
     public void removeAssignment(Assignment assignment) {
-        assignment.setResourceInstance(null);
+        assignments.remove(assignment);
     }
 
     @Override

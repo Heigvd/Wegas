@@ -89,9 +89,18 @@ public class Assignment extends AbstractAssignement implements Broadcastable {
      this.getResourceInstance().onInstanceUpdate();
      }
      */
+    /**
+     *
+     * @return parent resource entities or null if assignment has been removed
+     * @todo do no use other entity through this method...
+     */
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
-        return this.getResourceInstance().getEntities();
+        if (this.getResourceInstance() != null) {
+            return this.getResourceInstance().getEntities();
+        } else {
+            return null;
+        }
     }
 
     @Override
