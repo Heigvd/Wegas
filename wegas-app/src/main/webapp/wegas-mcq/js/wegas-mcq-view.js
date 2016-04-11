@@ -339,7 +339,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                     choiceD = choices[i];
                     choiceI = choiceD.getInstance();
                     choiceID = choiceD.get("id");
-                    currDescr = question.get("items")[i].get("description");
+                    currDescr = question.get("items")[i].get("description") || "";
                     isChosenReply = answerable || questionInstance.get("replies")[0].getChoiceDescriptor().get("id") === choiceID;
                     if (!choiceI.get("active")) {
                     } else {
