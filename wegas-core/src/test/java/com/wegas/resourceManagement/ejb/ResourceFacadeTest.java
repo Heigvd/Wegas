@@ -23,8 +23,8 @@ import com.wegas.resourceManagement.persistence.WRequirement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import javax.naming.NamingException;
+import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -184,8 +184,44 @@ public class ResourceFacadeTest extends AbstractEJBTest {
     }
 
     /**
+     * Remove Assignment Test
+     */
+    @Test
+    public void testMergeAssignment_Add() throws NamingException {
+
+        // Lookup Ejb's
+        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
+        final ResourceFacade resourceFacade = lookupBy(ResourceFacade.class);
+
+        // Create a resource
+        ResourceDescriptor res = new ResourceDescriptor();
+        res.setLabel("Paul");
+        res.setDefaultInstance(new ResourceInstance());
+        vdf.create(gameModel.getId(), res);
+
+        // Create a task
+        TaskDescriptor task = new TaskDescriptor();
+        task.setLabel("My task");
+        task.setDefaultInstance(new TaskInstance());
+        vdf.create(gameModel.getId(), task);
+
+        ResourceInstance defaultInstance = res.getDefaultInstance();
+        Assignment assignment = new Assignment();
+        assignment.setResourceInstance(defaultInstance);
+        assignment.setTaskDescriptor(task);
+        defaultInstance.addAssignment(assignment);
+
+        vdf.update(res.getId(), res);
+
+        task = (TaskDescriptor) vdf.find(task.getId());
+        res = (ResourceDescriptor) vdf.find(res.getId());
+        Assert.assertEquals(1, task.getAssignments().size());
+    }
+
+    /**
      * Remove Assignment Test.
-     * Script eval version 
+     * Script eval version
      */
     @Test
     public void testRemoveAssignmentFromScript() throws NamingException {
@@ -212,11 +248,19 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         String script = "var rF = new javax.naming.InitialContext().lookup('java:module/ResourceFacade');\n"
             + "var paul = Variable.find(gameModel, \"paul\");\n"
             + "var paulI = paul.getInstance(self);\n"
-            + "var task = Variable.find(gameModel, \"task\");\n" 
-            + "rF.assign(paulI.getId(), task.getId());\n"
-            + "rF.removeAssignment(rF.findAssignment(paulI.getId(), task.getId()).getId());\n";
+            + "var task = Variable.find(gameModel, \"task\");\n"
+            + "rF.assign(paulI.getId(), task.getId());\n";
 
         scriptFacade.eval(player, new Script("javascript", script), null);
+        
+        String script2 = "var rF = new javax.naming.InitialContext().lookup('java:module/ResourceFacade');\n"
+            + "var paul = Variable.find(gameModel, \"paul\");\n"
+            + "var paulI = paul.getInstance(self);\n"
+            + "var task = Variable.find(gameModel, \"task\");\n"
+            + "rF.removeAssignment(rF.findAssignment(paulI.getId(), task.getId()).getId());\n";
+
+        scriptFacade.eval(player, new Script("javascript", script2), null);
+
 
         // Clean
         vdf.remove(res.getId());
