@@ -227,10 +227,10 @@ public class Message extends NamedEntity implements Broadcastable {
     public int hashCode() {
         int hash = 7;
         hash = 53 * hash + Objects.hashCode(this.id);
-        hash = 53 * hash + Objects.hashCode(this.subject);
+        /*hash = 53 * hash + Objects.hashCode(this.subject);
         hash = 53 * hash + Objects.hashCode(this.sentTime);
         hash = 53 * hash + Objects.hashCode(this.unread);
-        hash = 53 * hash + Objects.hashCode(this.from);
+        hash = 53 * hash + Objects.hashCode(this.from);*/
         return hash;
     }
 
