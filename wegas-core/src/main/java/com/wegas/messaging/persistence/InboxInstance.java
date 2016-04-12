@@ -75,7 +75,7 @@ public class InboxInstance extends VariableInstance {
         if (descr.getCapped()) {
             this.getMessages().clear();
         }
-        this.getMessages().add(message);
+        this.getMessages().add(0, message);
         message.setInboxInstance(this);
     }
 
