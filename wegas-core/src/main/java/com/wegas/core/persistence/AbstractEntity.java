@@ -60,14 +60,17 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      */
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash += (getId() != null ? getId().hashCode() : 0);
-        hash += getClass().hashCode();
+        int hash = 17;
+        hash = 31 * hash + (getId() != null ? getId().hashCode() : 0);
+        hash = 31 * hash + getClass().hashCode();
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
+        if (object == this) {
+            return true;
+        }
 
         if (object == null) {
             return false;
@@ -113,7 +116,7 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
         //ae.setId(null);
         ObjectMapper mapper = JacksonMapperProvider.getMapper();                // Retrieve a jackson mapper instance
         String serialized = mapper.writerWithView(view).
-                writeValueAsString(this);                                       // Serialize the entity
+            writeValueAsString(this);                                       // Serialize the entity
 
         return mapper.readValue(serialized, AbstractEntity.class);              // and deserialize it
     }
