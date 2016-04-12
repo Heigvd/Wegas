@@ -15,7 +15,6 @@ import com.wegas.core.event.internal.DescriptorRevivedEvent;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.resourceManagement.persistence.AbstractAssignement;
 import com.wegas.resourceManagement.persistence.Activity;
 import com.wegas.resourceManagement.persistence.Assignment;
 import com.wegas.resourceManagement.persistence.Occupation;
@@ -32,12 +31,8 @@ import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import javax.persistence.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,21 +118,10 @@ public class ResourceFacade {
         EntityManager em = getEntityManager();
         TaskDescriptor taskDescriptor = em.find(TaskDescriptor.class, taskDescriptorId);
         ResourceInstance resourceInstance = em.find(ResourceInstance.class, resourceId);
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Assignment> query = cb.createQuery(Assignment.class);
-        Root<Assignment> from = query.from(Assignment.class);
-        query.where(
-            cb.and(
-                cb.equal(from.get("taskDescriptor"), taskDescriptor),
-                cb.equal(from.get("resourceInstance"), resourceInstance))
-        );
-        TypedQuery<Assignment> q = em.createQuery(query);
-
-        try {
-            return q.getSingleResult();
-        } catch (NoResultException ex) {
-            return null;
-        }
+        Query query = em.createNamedQuery("Assignment.findByResourceInstanceAndTaskDescriptor").
+            setParameter("resourceInstance", resourceInstance).
+            setParameter("taskDescriptor", taskDescriptor);
+        return (Assignment) query.getSingleResult();
     }
 
     /**
@@ -195,7 +179,7 @@ public class ResourceFacade {
         taskDescriptor.removeAssignment(assignment);
         resourceInstance.removeAssignment(assignment);
 
-        //this.getEntityManager().remove(assignment);
+        this.getEntityManager().remove(assignment);
 
         return resourceInstance;
     }
@@ -230,6 +214,8 @@ public class ResourceFacade {
         activity.getResourceInstance().removeActivity(activity);
         activity.getRequirement().removeActivity(activity);
         activity.getTaskDescriptor().removeActivity(activity);
+
+        this.getEntityManager().remove(activity);
     }
 
     /**
@@ -334,13 +320,22 @@ public class ResourceFacade {
                 task.getDefaultInstance().setProperty("duration", duration.toString());
             }
 
+            /**
+             * Transform task name into real TaskDescriptor
+             */
             if (task.getImportedPredecessorNames() != null) {
+                /**
+                 * New predecessor's names : be sure they're registered
+                 */
                 for (String predecessorName : task.getImportedPredecessorNames()) {
                     TaskDescriptor predecessor = (TaskDescriptor) variableDescriptorFacade.find(task.getGameModel(), predecessorName);
                     if (!task.getPredecessorNames().contains(predecessorName)) {
                         task.addPredecessor(predecessor);
                     }
                 }
+                /**
+                 * Old predecessor's names : make sure to remove oldies
+                 */
                 for (String predecessorName : task.getPredecessorNames()) {
                     TaskDescriptor predecessor = (TaskDescriptor) variableDescriptorFacade.find(task.getGameModel(), predecessorName);
                     if (!task.getImportedPredecessorNames().contains(predecessorName)) {

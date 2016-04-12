@@ -18,7 +18,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.ListUtils;
 
 /**
  *
@@ -36,7 +38,7 @@ public class ResourceInstance extends VariableInstance {
     /**
      *
      */
-    @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}/*, orphanRemoval = true*/)
     @JsonManagedReference
     @OrderColumn
     private List<Assignment> assignments = new ArrayList<>();
@@ -86,19 +88,37 @@ public class ResourceInstance extends VariableInstance {
             ResourceInstance other = (ResourceInstance) a;
             this.setActive(other.getActive());
             if (other.getAssignments() != null) {
-                this.setAssignments(other.getAssignments());
+                //ListUtils.mergeLists(this.getAssignments(), other.getAssignments());
+                ListUtils.mergeLists(this.getAssignments(), other.getAssignments(), new ListUtils.Updater() {
+                    @Override
+                    public void addEntity(AbstractEntity entity) {
+                        if (entity instanceof Assignment) {
+                            Assignment assignment = (Assignment) entity;
+                            TaskDescriptor parent = (TaskDescriptor) VariableDescriptorFacade.lookup().find(assignment.getTaskDescriptorId());
+                            if (parent == null) {
+                                parent = assignment.getTaskDescriptor();
+                            }
+                            parent.addAssignment(assignment);
+                        }
+                    }
+
+                    @Override
+                    public void removeEntity(AbstractEntity entity) {
+                        if (entity instanceof Assignment) {
+                            Assignment assignment = (Assignment) entity;
+                            TaskDescriptor parent = (TaskDescriptor) VariableDescriptorFacade.lookup().find(assignment.getTaskDescriptorId());
+                            if (parent != null) {
+                                parent.removeAssignment(assignment);
+                            }
+                        }
+                    }
+                });
             }
             if (other.getActivities() != null) {
                 this.setActivities(other.getActivities());
             }
             if (other.getOccupations() != null) {
-                this.occupations.clear();
-                for (Occupation occ : other.getOccupations()) {
-                    Occupation o = new Occupation();
-                    o.merge(occ);
-                    o.setResourceInstance(this);
-                    this.occupations.add(o);
-                }
+                ListUtils.mergeLists(this.getOccupations(), other.getOccupations());
             }
             this.properties.clear();
             this.properties.putAll(other.getProperties());

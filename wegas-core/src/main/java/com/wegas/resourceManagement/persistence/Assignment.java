@@ -28,6 +28,12 @@ import java.util.Map;
     @Index(columnList = "variableinstance_id"),
     @Index(columnList = "taskdescriptor_id")
 })
+@NamedQueries({
+    @NamedQuery(
+        name = "Assignment.findByResourceInstanceAndTaskDescriptor",
+        query = "SELECT a FROM Assignment a where a.resourceInstance = :resourceInstance AND a.taskDescriptor = :taskDescriptor"
+    )
+})
 @Entity
 public class Assignment extends AbstractAssignement implements Broadcastable {
 

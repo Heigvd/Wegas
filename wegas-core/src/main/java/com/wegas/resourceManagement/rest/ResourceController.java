@@ -87,7 +87,7 @@ public class ResourceController {
      *
      */
     @DELETE
-    @Path("Reserve/{occupationId : [1-9][0-9]*}/{type}")
+    @Path("Reserve/{occupationId : [1-9][0-9]*}")
     public void deleteReservation(@PathParam("occupationId") Long occupationId) {
         resourceFacade.removeOccupation(occupationId);
     }
