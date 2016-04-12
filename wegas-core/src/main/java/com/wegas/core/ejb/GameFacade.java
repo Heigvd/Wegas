@@ -30,9 +30,6 @@ import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -243,7 +240,7 @@ public class GameFacade extends BaseFacade<Game> {
      * @return first game found or null
      */
     public Game findByToken(final String token) {
-        final TypedQuery<Game> tq = getEntityManager().createNamedQuery("game.findByToken", Game.class).setParameter("token", token).setParameter("status", Game.Status.LIVE);
+        final TypedQuery<Game> tq = getEntityManager().createNamedQuery("Game.findByToken", Game.class).setParameter("token", token).setParameter("status", Game.Status.LIVE);
         try {
             return tq.getSingleResult();
         } catch (NoResultException ex) {
@@ -255,13 +252,10 @@ public class GameFacade extends BaseFacade<Game> {
      * @param search
      * @return
      */
-    public List<Game> findByName(String search) {
-        final CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        final CriteriaQuery cq = cb.createQuery();
-        final Root<Game> game = cq.from(Game.class);
-        cq.where(cb.like(game.get("name"), search));
-        Query q = getEntityManager().createQuery(cq);
-        return (List<Game>) q.getResultList();
+    public List<Game> findByName(final String search) {
+        final TypedQuery<Game> query = getEntityManager().createNamedQuery("Game.findByNameLike", Game.class);
+        query.setParameter("name", search);
+        return query.getResultList();
     }
 
     /**
@@ -281,7 +275,7 @@ public class GameFacade extends BaseFacade<Game> {
      * @return
      */
     public List<Game> findAll(final Game.Status status) {
-        return getEntityManager().createNamedQuery("game.findByStatus", Game.class).setParameter("status", status).getResultList();
+        return getEntityManager().createNamedQuery("Game.findByStatus", Game.class).setParameter("status", status).getResultList();
     }
 
     /**

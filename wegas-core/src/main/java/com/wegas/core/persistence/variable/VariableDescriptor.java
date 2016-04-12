@@ -63,7 +63,7 @@ import org.eclipse.persistence.annotations.CacheIndex;
 })
 @NamedQueries({
     @NamedQuery(
-        name = "findVariableDescriptorsByRootGameModelId",
+        name = "VariableDescriptor.findByRootGameModelId",
         query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.gameModel AS gm WHERE gm.id = :gameModelId"
     ),
     @NamedQuery(

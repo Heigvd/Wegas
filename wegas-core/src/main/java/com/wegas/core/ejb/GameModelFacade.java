@@ -31,6 +31,8 @@ import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.User;
 import org.apache.shiro.SecurityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
@@ -39,19 +41,16 @@ import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
-import javax.persistence.*;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import javax.naming.NamingException;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
+import javax.persistence.TypedQuery;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import javax.naming.NamingException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -141,7 +140,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
-     *
      * @param toUpdate GameModel to update
      * @param source   GameModel to fetch instance from
      * @param player   instances owner
@@ -304,11 +302,8 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
     @Override
     public List<GameModel> findAll() {
-        final CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
-        final CriteriaQuery query = criteriaBuilder.createQuery();
-        Root e = query.from(entityClass);
-        query.select(e).orderBy(criteriaBuilder.asc(e.get("name")));
-        return getEntityManager().createQuery(query).getResultList();
+        final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findAll", GameModel.class);
+        return query.getResultList();
     }
 
     public List<GameModel> findByStatus(final GameModel.Status status) {
@@ -321,29 +316,17 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      * @return
      */
     public List<GameModel> findTemplateGameModels() {
-        final CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
-        final CriteriaQuery query = criteriaBuilder.createQuery();
-        Root e = query.from(entityClass);
-        query.select(e)
-            .where(criteriaBuilder.isTrue(e.get("template")))
-            .orderBy(criteriaBuilder.asc(e.get("name")));
-        return getEntityManager().createQuery(query).getResultList();
+        final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findTemplate", GameModel.class);
+        return query.getResultList();
     }
 
     /**
      * @return
      */
     public List<GameModel> findTemplateGameModelsByStatus(final GameModel.Status status) {
-        final CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
-        final CriteriaQuery query = criteriaBuilder.createQuery();
-
-        Root e = query.from(entityClass);
-        query.select(e)
-            .where(criteriaBuilder.and(
-                criteriaBuilder.equal(e.get("status"), status),
-                criteriaBuilder.isTrue(e.get("template"))))
-            .orderBy(criteriaBuilder.asc(e.get("name")));
-        return getEntityManager().createQuery(query).getResultList();
+        final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findTemplateByStatus", GameModel.class);
+        query.setParameter("status", status);
+        return query.getResultList();
     }
 
     /**
@@ -396,8 +379,8 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         }
 
         fileController.createFile(gameModelId, name + ".json", "/" + HISTORYPATH,
-            "application/octet-stream", null, null,
-            new ByteArrayInputStream(serializedGameModel.getBytes("UTF-8")), false);// Create a file containing the version
+                "application/octet-stream", null, null,
+                new ByteArrayInputStream(serializedGameModel.getBytes("UTF-8")), false);// Create a file containing the version
     }
 
     /**
@@ -438,8 +421,8 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
             if (!found) {
                 this.createVersion(model.getId(),
-                    new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date()) + "-" + hash + ".json",
-                    serialized);
+                        new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date()) + "-" + hash + ".json",
+                        serialized);
             }
 
             //System.gc();
