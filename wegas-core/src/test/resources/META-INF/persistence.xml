@@ -1,22 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
-    <persistence-unit name="wegasPU" transaction-type="JTA">
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <jta-data-source>jdbc/wegas_dev</jta-data-source>
-        <exclude-unlisted-classes>false</exclude-unlisted-classes>
-        <shared-cache-mode>DISABLE_SELECTIVE</shared-cache-mode>
-        <properties>
-            <property name="eclipselink.target-database" value="PostgreSQL"/>
-            <property name="eclipselink.persistence-context.reference-mode" value="WEAK"/>
-            <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
-            <property name="eclipselink.jdbc.batch-writing" value="JDBC"/>
-            <property name="eclipselink.jdbc.batch-writing.size" value="1000"/>
-            <property name="eclipselink.weaving" value="static"/>
-            <property name="eclipselink.logging.logger" value="com.wegas.core.Slf4jSessionLogger" />
-            <property name="eclipselink.logging.level" value="FINEST"/>
-            <property name="eclipselink.logging.level.sql" value="FINEST"/>
-            <property name="eclipselink.logging.level.cache" value="FINEST"/>
-            <property name="eclipselink.logging.parameters" value="true"/>
-        </properties>
-    </persistence-unit>
+  <persistence-unit name="wegasPU" transaction-type="JTA">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <jta-data-source>jdbc/wegas_dev</jta-data-source>
+    <exclude-unlisted-classes>false</exclude-unlisted-classes>
+    <shared-cache-mode>DISABLE_SELECTIVE</shared-cache-mode>
+    <properties>
+      <property name="eclipselink.target-database" value="PostgreSQL"/>
+      <property name="eclipselink.persistence-context.reference-mode" value="WEAK"/>
+      <property name="eclipselink.persistence-context.flush-mode" value="COMMIT"/>
+      <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
+      <property name="eclipselink.jdbc.batch-writing" value="JDBC"/>
+      <property name="eclipselink.jdbc.batch-writing.size" value="1000"/>
+      <property name="eclipselink.weaving" value="true"/>
+      <property name="eclipselink.logging.logger" value="com.wegas.core.Slf4jSessionLogger"/>
+      <property name="eclipselink.logging.level" value="FINEST"/>
+      <property name="eclipselink.logging.level.sql" value="FINE"/>
+      <property name="eclipselink.logging.level.sql" value="FINE"/>
+      <property name="eclipselink.logging.level.cache" value="ALL"/>
+      <property name="eclipselink.logging.parameters" value="true"/>
+      <property name="eclipselink.cache.type.default" value="Soft"/>
+    </properties>
+  </persistence-unit>
 </persistence>

@@ -20,7 +20,6 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
-import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,6 +122,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      * @param entity
      */
     public void revive(GameModel gameModel, VariableDescriptor entity) {
+        this.getEntityManager().flush();
         descriptorRevivedEvent.fire(new DescriptorRevivedEvent(entity));
         gameModel.addToVariableDescriptors(entity);
         if (entity instanceof DescriptorListI) {
@@ -235,18 +235,14 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      * @param gameModel
      * @param name
      * @return
-     * @throws com.wegas.core.exception.internal.WegasNoResultException
+     * @throws WegasNoResultException
      */
     public VariableDescriptor find(final GameModel gameModel, final String name) throws WegasNoResultException {
-        final CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        final CriteriaQuery cq = cb.createQuery();
-        final Root<User> variableDescriptor = cq.from(VariableDescriptor.class);
-        cq.where(cb.and(
-            cb.equal(variableDescriptor.get("gameModel"), gameModel),
-            cb.equal(variableDescriptor.get("name"), name)));
-        final Query q = getEntityManager().createQuery(cq);
         try {
-            return (VariableDescriptor) q.getSingleResult();
+            Query query = getEntityManager().createNamedQuery("VariableDescriptor.findByGameModelAndName");
+            query.setParameter("gameModel", gameModel);
+            query.setParameter("name", name);
+            return (VariableDescriptor) query.getSingleResult();
         } catch (NoResultException ex) {
             throw new WegasNoResultException(ex);
         }
@@ -442,8 +438,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         try {
             return Helper.lookupBy(VariableDescriptorFacade.class);
         } catch (NamingException ex) {
-            logger.error("Error retrieving requestmanager", ex);
+            logger.error("Error retrieving var desc facade", ex);
             return null;
         }
     }
+
 }

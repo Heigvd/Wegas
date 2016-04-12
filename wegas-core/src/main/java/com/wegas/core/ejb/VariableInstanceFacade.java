@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.Helper;
 import com.wegas.core.exception.internal.NoGameException;
 import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.exception.internal.NoTeamException;
@@ -24,6 +25,7 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.naming.NamingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +71,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
      * @return
      */
     public VariableInstance find(Long variableDescriptorId,
-            Player player) {
+        Player player) {
         VariableDescriptor vd = variableDescriptorFacade.find(variableDescriptorId);
         return vd.getInstance(player);
     }
@@ -81,7 +83,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
      * @return
      */
     public VariableInstance find(Long variableDescriptorId,
-            Long playerId) {
+        Long playerId) {
         return this.find(variableDescriptorId, playerFacade.find(playerId));
     }
 
@@ -166,7 +168,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
      * @throws NoPlayerException
      */
     public Player findAPlayer(VariableInstance instance)
-            throws NoPlayerException {
+        throws NoPlayerException {
         Player p;
         try {
             if (instance.getScope() instanceof PlayerScope) {
@@ -229,7 +231,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
      * @return
      */
     public VariableInstance update(Long variableDescriptorId,
-            Long playerId, VariableInstance variableInstance) {
+        Long playerId, VariableInstance variableInstance) {
 
         VariableDescriptor vd = variableDescriptorFacade.find(variableDescriptorId);
         VariableInstance vi = vd.getScope().getVariableInstance(playerFacade.find(playerId));
@@ -240,7 +242,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
     @Override
     public void create(VariableInstance entity) {
         getEntityManager().persist(entity);
-        getEntityManager().refresh(entity.getScope());
+        //getEntityManager().refresh(entity.getScope());
     }
 
     @Override
@@ -261,5 +263,17 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
      */
     public VariableInstanceFacade() {
         super(VariableInstance.class);
+    }
+
+    /**
+     * @return
+     */
+    public static VariableInstanceFacade lookup() {
+        try {
+            return Helper.lookupBy(VariableInstanceFacade.class);
+        } catch (NamingException ex) {
+            logger.error("Error retrieving var inst f", ex);
+            return null;
+        }
     }
 }

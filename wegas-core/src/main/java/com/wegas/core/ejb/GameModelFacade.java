@@ -8,6 +8,7 @@
 package com.wegas.core.ejb;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wegas.core.Helper;
 import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
 import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
@@ -48,6 +49,7 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import javax.naming.NamingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -473,5 +475,17 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      */
     public final void nop(String msg) {
         // for JS breakpoints...
+    }
+
+    /**
+     * @return
+     */
+    public static GameModelFacade lookup() {
+        try {
+            return Helper.lookupBy(GameModelFacade.class);
+        } catch (NamingException ex) {
+            logger.error("Error retrieving gamemodelfacade", ex);
+            return null;
+        }
     }
 }

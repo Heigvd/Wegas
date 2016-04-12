@@ -18,8 +18,8 @@ import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-
 /**
+ *
  * This is the default implementation of the AbstractFacade pattern defined in
  * Wegas, to be extended.
  *
@@ -68,7 +68,6 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
         getEntityManager().flush();
         getEntityManager().refresh(entity);
     }
-
 
 //    /**
 //     *

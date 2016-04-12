@@ -19,8 +19,10 @@
     <logger name="com.wegas.core" level="WARN"/>
     <logger name="net.sf.ehcache" level="WARN"/>
     <logger name="com.wegas.core.persistence.EntityListener" level="WARN"/>
-    <logger name="org.eclipse.persistence.logging" level="DEBUG" />
-    <logger name="org.eclipse.persistence.logging.cache" level="TRACE" />
+    <logger name="org.eclipse.persistence.logging" level="WARN" />
+    <logger name="org.eclipse.persistence.logging.cache" level="WARN" />
+    <logger name="org.eclipse.persistence.logging.sql" level="WARN" />
+    <logger name="org.eclipse.persistence.logging.default" level="WARN" />
 
     <root level="WARN">
         <appender-ref ref="STDOUT" />
