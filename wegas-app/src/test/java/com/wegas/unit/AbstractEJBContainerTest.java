@@ -25,6 +25,7 @@ import org.apache.shiro.config.IniSecurityManagerFactory;
 import org.glassfish.embeddable.GlassFishException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -34,6 +35,7 @@ public abstract class AbstractEJBContainerTest extends AbstractTest {
 
     private static EJBContainer container;
     private static GameModelFacade gmFacade;
+    private static org.slf4j.Logger logger = LoggerFactory.getLogger(AbstractEJBContainerTest.class);
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -51,6 +53,7 @@ public abstract class AbstractEJBContainerTest extends AbstractTest {
         Logger.getLogger("javax.enterprise.system").setLevel(Level.SEVERE);
         org.glassfish.ejb.LogFacade.getLogger().setLevel(Level.SEVERE);
 
+        logger.error("CREATE CONTAINER");
         container = EJBContainer.createEJBContainer(properties);
         Helper.lookupBy(container.getContext(), UserFacade.class, UserFacade.class).guestLogin(); //login as guest
 
@@ -60,6 +63,7 @@ public abstract class AbstractEJBContainerTest extends AbstractTest {
     @AfterClass
     public static void tearDown() throws GlassFishException {
         if (container != null) {
+            logger.error("CLOSE CONTAINER");
             container.close();
         }
     }
