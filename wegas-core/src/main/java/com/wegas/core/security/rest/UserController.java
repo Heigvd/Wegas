@@ -146,7 +146,7 @@ public class UserController {
      */
     @POST
     @Path("AutoComplete/{value}")
-    public List<JpaAccount> getAutoCompleteByRoles(@PathParam("value") String value, HashMap<String, Object> rolesList) {
+    public List<JpaAccount> getAutoCompleteByRoles(@PathParam("value") String value, HashMap<String, List<String>> rolesList) {
         if (!SecurityUtils.getSubject().isRemembered() && !SecurityUtils.getSubject().isAuthenticated()) {
             throw new UnauthorizedException();
         }
