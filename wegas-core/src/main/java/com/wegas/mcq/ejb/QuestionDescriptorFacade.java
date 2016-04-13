@@ -15,7 +15,6 @@ import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.mcq.persistence.*;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,9 +26,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import javax.persistence.TypedQuery;
 
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -83,15 +80,11 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      * @throws WegasNoResultException
      */
     public Result findResult(final ChoiceDescriptor choiceDescriptor, final String name) throws WegasNoResultException {
-        final CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        final CriteriaQuery cq = cb.createQuery();
-        Root<Result> result = cq.from(Result.class);
-        cq.where(cb.and(
-            cb.equal(result.get("choiceDescriptor"), choiceDescriptor),
-            cb.like(result.get("name"), name)));
-        final Query q = getEntityManager().createQuery(cq);
+        final TypedQuery<Result> query = getEntityManager().createNamedQuery("Result.findByName", Result.class);
+        query.setParameter("choicedescriptor", choiceDescriptor);
+        query.setParameter("name", name);
         try {
-            return (Result) q.getSingleResult();
+            return query.getSingleResult();
         } catch (NoResultException ex) {
             throw new WegasNoResultException(ex);
         }
@@ -115,8 +108,8 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
                     throw WegasErrorMessage.error("Error while setting current result");
                 }
             } else if (defaultInstance.getCurrentResultIndex() != null
-                && defaultInstance.getCurrentResultIndex() >= 0
-                && defaultInstance.getCurrentResultIndex() < choice.getResults().size()) {
+                    && defaultInstance.getCurrentResultIndex() >= 0
+                    && defaultInstance.getCurrentResultIndex() < choice.getResults().size()) {
 
                 Result cr = choice.getResults().get(defaultInstance.getCurrentResultIndex());
                 //defaultInstance.setCurrentResult(cr);
@@ -194,7 +187,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         if (questionDescriptor.getCbx() && !questionDescriptor.getAllowMultipleReplies()) {
             for (Reply r : questionDescriptor.getInstance(player).getReplies()) {
                 if (!r.getResult().getChoiceDescriptor().equals(choice)
-                    && !r.getIgnored()) {
+                        && !r.getIgnored()) {
                     this.cancelReply(player.getId(), r.getId());
                 }
             }

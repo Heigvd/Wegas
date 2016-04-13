@@ -11,10 +11,7 @@ import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.persistence.AbstractEntity;
 import java.io.IOException;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
+import javax.persistence.*;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
@@ -142,7 +139,7 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
      */
     @Override
     public List<T> findAll() {
-        final CriteriaQuery query = getEntityManager().getCriteriaBuilder().createQuery();
+        final CriteriaQuery<T> query = getEntityManager().getCriteriaBuilder().createQuery(entityClass);
         query.select(query.from(entityClass));
         return getEntityManager().createQuery(query).getResultList();
     }
@@ -154,9 +151,9 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
      */
     @Override
     public List<T> findRange(int[] range) {
-        final CriteriaQuery query = getEntityManager().getCriteriaBuilder().createQuery();
+        final CriteriaQuery<T> query = getEntityManager().getCriteriaBuilder().createQuery(entityClass);
         query.select(query.from(entityClass));
-        Query q = getEntityManager().createQuery(query);
+        TypedQuery<T> q = getEntityManager().createQuery(query);
         q.setMaxResults(range[1] - range[0]);
         q.setFirstResult(range[0]);
         return q.getResultList();
@@ -168,12 +165,12 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
      */
     @Override
     public int count() {
-        final CriteriaQuery query = getEntityManager().getCriteriaBuilder().createQuery();
+        final CriteriaQuery<Long> query = getEntityManager().getCriteriaBuilder().createQuery(Long.class);
         final Root<T> rt = query.from(entityClass);
         query.select(getEntityManager().getCriteriaBuilder().count(rt));
-        final Query q = getEntityManager().createQuery(query);
+        final TypedQuery<Long> q = getEntityManager().createQuery(query);
         try {
-            return ((Long) q.getSingleResult()).intValue();
+            return q.getSingleResult().intValue();
         } catch (NoResultException ex) {
             throw new WegasNotFoundException(ex.getMessage());
         }

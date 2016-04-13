@@ -28,7 +28,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -166,7 +165,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         String[] tokens = input.split(" ");
 
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery cq = cb.createQuery();
+        CriteriaQuery<JpaAccount> cq = cb.createQuery(JpaAccount.class);
         Root<JpaAccount> jpaAccount = cq.from(JpaAccount.class);
 
         Predicate[] prs = {};
@@ -187,9 +186,9 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
 
         cq.where(cb.and(andPreds.toArray(prs)));
 
-        Query q = getEntityManager().createQuery(cq);
+        TypedQuery<JpaAccount> q = getEntityManager().createQuery(cq);
         q.setMaxResults(MAXRESULT);
-        return (List<JpaAccount>) q.getResultList();
+        return q.getResultList();
     }
 
     /**
@@ -198,7 +197,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      * @return
      */
     public List<JpaAccount> findByNameOrEmail(String name, boolean withEmail) {
-        ArrayList<JpaAccount> accounts = new ArrayList();
+        ArrayList<JpaAccount> accounts = new ArrayList<>();
         String splidedName[] = name.split(" ");
         for (int i = 0; i < splidedName.length; i++) {
             StringBuilder firstnameBuilder = new StringBuilder();
@@ -306,13 +305,13 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         return accounts;
     }
 
-    public List<JpaAccount> getAutoCompleteByRoles(String value, HashMap<String, Object> rolesList) {
+    public List<JpaAccount> getAutoCompleteByRoles(String value, HashMap<String, List<String>> rolesList) {
         ArrayList<String> roles = (ArrayList<String>) rolesList.get("rolesList");
 
         List<JpaAccount> returnValue = new ArrayList<>();
         //for (JpaAccount a : accountFacade.findByNameOrEmail("%" + value + "%", true)) {
         for (JpaAccount a : findByNameEmailOrUsername(value)) {
-            boolean hasRole = userFacade.hasRoles(roles, new ArrayList(a.getRoles()));
+            boolean hasRole = userFacade.hasRoles(roles, new ArrayList<>(a.getRoles()));
             if (hasRole) {
                 getEntityManager().detach(a);
                 a.setEmail(a.getEmail().replaceFirst("([^@]{1,4})[^@]*(@.*)", "$1****$2"));
@@ -332,7 +331,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         List<String> notValidValue = new ArrayList<>();
         for (String value : values) {
             try {
-                Map account = new HashMap<>();
+                Map<String, Object> account = new HashMap<>();
                 JpaAccount a = findByEmail(value.trim());
                 if (a.getFirstname() != null && a.getLastname() != null) {
                     account.put("label", a.getFirstname() + " " + a.getLastname());
