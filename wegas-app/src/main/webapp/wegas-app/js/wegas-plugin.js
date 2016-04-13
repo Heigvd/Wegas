@@ -35,7 +35,8 @@ YUI.add("wegas-plugin", function(Y) {
      *  @extends Y.Plugin
      *  @constructor
      */
-    Wegas.Plugin = function() {};
+    Wegas.Plugin = function() {
+    };
     Y.mix(Wegas.Plugin.prototype, {
         showMessage: function() {
             return this.get(HOST).showMessage.apply(this.get(HOST), arguments);
@@ -139,7 +140,8 @@ YUI.add("wegas-plugin", function(Y) {
         execute: function() {
             Y.io(Y.Wegas.app.get("base") + this.get("url"), {
                 "method": this.get("method"),
-                "data": this.get("data")
+                "data": this.get("data"),
+                "headers": {"Content-Type": "application/json"}
             });
         }
     }, {
@@ -251,10 +253,10 @@ YUI.add("wegas-plugin", function(Y) {
             }
 
             printUrl = Wegas.app.get("base") + "print.html?id=" + playerId +
-                "&outputType=" + outputType +
-                "&displayPath=" + displayPath +
-                (title ? "&title=" + title : "") +
-                "&root=" + encodeURIComponent(root);
+                       "&outputType=" + outputType +
+                       "&displayPath=" + displayPath +
+                       (title ? "&title=" + title : "") +
+                       "&root=" + encodeURIComponent(root);
             window.open(printUrl);
         }
     }, {
@@ -452,8 +454,8 @@ YUI.add("wegas-plugin", function(Y) {
             } else {
                 new Wegas.Panel({
                     bodyContent: "<div class=''> <span class=\"fa fa-4x fa-bullhorn\"></span> <span>Please listen to that <a target=\"_blank\" href=\"" +
-                        url +
-                        "\">sound</a>. <br /><br /><p style=\"font-size: 0.6em;color: rgba(153, 153, 153, 0.99);\">(And, btw, upgrade your browser...)</p><span></div>",
+                                 url +
+                                 "\">sound</a>. <br /><br /><p style=\"font-size: 0.6em;color: rgba(153, 153, 153, 0.99);\">(And, btw, upgrade your browser...)</p><span></div>",
                 }).render();
             }
         }
@@ -481,7 +483,8 @@ YUI.add("wegas-plugin", function(Y) {
     var ConfirmExecuteScriptAction = Y.Base.create("ConfirmExecuteScriptAction", ExecuteScriptAction, [], {
         execute: function() {
             if (!this.get(HOST).get("disabled")) {
-                Wegas.Panel.confirm(Y.Template.Micro.compile(this.get("message") || "")(), Y.bind(ConfirmExecuteScriptAction.superclass.execute, this));
+                Wegas.Panel.confirm(Y.Template.Micro.compile(this.get("message") || "")(),
+                    Y.bind(ConfirmExecuteScriptAction.superclass.execute, this));
             }
         }
     }, {
@@ -520,7 +523,7 @@ YUI.add("wegas-plugin", function(Y) {
 
             for (i in e.value) {
                 script += data + ".put('" + (i + "").replace(/'/g, "\\'") + "','" +
-                    (e.value[i] + "").replace(/'/g, "\\'") + "');";
+                          (e.value[i] + "").replace(/'/g, "\\'") + "');";
             }
 
             Wegas.Facade.Variable.script.run(script, {
