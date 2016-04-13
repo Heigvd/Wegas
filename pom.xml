@@ -594,6 +594,7 @@
                         that forces us to run  in compatiblity mode.-->
                         <argLine>-Xms800m -Xmx800m</argLine>
                         <forkCount>1</forkCount>
+                        <reuseForks>true</reuseForks>
                         <classpathDependencyExcludes>
                             <classpathDependencyExcludes>
                                 javax.servlet:servlet-api
