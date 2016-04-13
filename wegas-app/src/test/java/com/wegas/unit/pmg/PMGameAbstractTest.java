@@ -53,7 +53,7 @@ abstract public class PMGameAbstractTest extends AbstractEJBContainerTest {
 
     @After
     public void cleanGM() {
-        this.getGameModelFacade().remove(getGameModel().getId());
+        //this.getGameModelFacade().remove(getGameModel().getId());
         cleanData();
     }
 }

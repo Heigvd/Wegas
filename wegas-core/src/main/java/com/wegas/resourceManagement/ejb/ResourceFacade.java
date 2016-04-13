@@ -171,9 +171,16 @@ public class ResourceFacade {
      */
     public ResourceInstance removeAssignment(final Long assignmentId) {
         final Assignment assignment = this.getEntityManager().find(Assignment.class, assignmentId);
-        //ResourceDescriptor rD = (ResourceDescriptor) variableDescriptorFacade.find(assignment.getResourceInstance().findDescriptor().getId());
+        return this.removeAssignment(assignment);
+    }
+
+    /**
+     *
+     * @param assignmentId
+     * @return
+     */
+    public ResourceInstance removeAssignment(Assignment assignment) {
         ResourceInstance resourceInstance = (ResourceInstance) variableInstanceFacade.find(assignment.getResourceInstance().getId());
-        //ResourceInstance resourceInstance = rD.getInstance();
         TaskDescriptor taskDescriptor = (TaskDescriptor) variableDescriptorFacade.find(assignment.getTaskDescriptor().getId());
 
         taskDescriptor.removeAssignment(assignment);
@@ -183,6 +190,7 @@ public class ResourceFacade {
 
         return resourceInstance;
     }
+
 
     /**
      *
