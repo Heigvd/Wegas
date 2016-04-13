@@ -67,7 +67,7 @@ public class QuestionInstance extends VariableInstance {
             this.setUnread(other.getUnread());
             Boolean v = other.getValidated();
             this.setValidated(v);
-            this.replies.clear();
+            this.getReplies().clear(); // TODO 
             this.addReplies(other.getReplies());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
@@ -109,7 +109,7 @@ public class QuestionInstance extends VariableInstance {
      * @param reply
      */
     public void addReply(Reply reply) {
-        this.replies.add(reply);
+        this.getReplies().add(reply);
         reply.setQuestionInstance(this);
     }
 
