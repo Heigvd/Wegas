@@ -17,11 +17,11 @@ public interface LabelledEntity {
      * 
      * @return 
      */
-    public String getLabel();
+    String getLabel();
 
     /**
      * 
      * @param newLabel
      */
-    public void setLabel(String newLabel);
+    void setLabel(String newLabel);
 }

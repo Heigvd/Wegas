@@ -386,6 +386,6 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
 
         GameModel duplicateGm = gameModelFacade.duplicateWithDebugGame(gameModel.getId());
         DescriptorListI find = (DescriptorListI) vdf.find(duplicateGm, LISTNAME1);
-        Assert.assertEquals(10.0, ((NumberInstance) ((NumberDescriptor) ((DescriptorListI) ((DescriptorListI) find.item(1)).item(0)).item(0)).getScope().getVariableInstances().values().iterator().next()).getValue());
+        Assert.assertEquals(10.0, ((NumberInstance) ((DescriptorListI) ((DescriptorListI) find.item(1)).item(0)).item(0).getScope().getVariableInstances().values().iterator().next()).getValue());
     }
 }

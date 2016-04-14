@@ -153,7 +153,7 @@ public class StateMachineFacade {
 
         for (StateMachineDescriptor sm : stateMachineDescriptors) {
             validTransition = false;
-            smi = (StateMachineInstance) sm.getInstance(player);
+            smi = sm.getInstance(player);
             if (!smi.getEnabled() || smi.getCurrentState() == null) { // a state may not be defined : remove statemachine's state when a player is inside that state
                 continue;
             }

@@ -23,9 +23,6 @@ public class FacebookCredentialsMatcher implements CredentialsMatcher {
      */
     @Override
     public boolean doCredentialsMatch(AuthenticationToken token, AuthenticationInfo info) {
-        if (info instanceof FacebookAuthenticationInfo) {
-            return true;
-        }
-        return false;
+        return info instanceof FacebookAuthenticationInfo;
     }
 }

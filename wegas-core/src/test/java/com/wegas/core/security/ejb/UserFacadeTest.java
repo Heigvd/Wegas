@@ -247,10 +247,10 @@ public class UserFacadeTest {
      */
     @Test
     public void testSendNewPassword() throws Exception {
-        JpaAccount acc = (JpaAccount) accountFacade.findByEmail("a@a.local");
+        JpaAccount acc = accountFacade.findByEmail("a@a.local");
         String oldPwd = acc.getPasswordHex();
         userFacade.sendNewPassword("a@a.local");
-        acc = (JpaAccount) accountFacade.findByEmail("a@a.local");
+        acc = accountFacade.findByEmail("a@a.local");
         Assert.assertFalse(oldPwd.equals(acc.getPasswordHex()));
     }
 

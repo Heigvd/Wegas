@@ -23,6 +23,6 @@ public interface Scripted {
      * @return List all contained scripts
      */
     @JsonIgnore
-    public List<Script> getScripts();
+    List<Script> getScripts();
 
 }

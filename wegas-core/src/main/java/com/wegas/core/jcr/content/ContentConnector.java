@@ -107,7 +107,7 @@ public class ContentConnector implements AutoCloseable {
      * @throws PathNotFoundException
      * @throws RepositoryException
      */
-    protected NodeIterator listChildren(String path) throws PathNotFoundException, RepositoryException {
+    protected NodeIterator listChildren(String path) throws RepositoryException {
         return session.getNode(path).getNodes(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + "*");
     }
 

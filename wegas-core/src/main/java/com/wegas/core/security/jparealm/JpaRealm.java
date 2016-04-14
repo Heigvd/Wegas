@@ -43,7 +43,7 @@ public class JpaRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authcToken) throws AuthenticationException {
         UsernamePasswordToken token = (UsernamePasswordToken) authcToken;
         try {
-            JpaAccount account = (JpaAccount) accountFacade().findByEmail(token.getUsername());
+            JpaAccount account = accountFacade().findByEmail(token.getUsername());
             SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(account.getId(), account.getPasswordHex(), getName());
             info.setCredentialsSalt(new SimpleByteSource(account.getSalt()));
             return info;

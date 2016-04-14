@@ -133,7 +133,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
                 this.delete(true);
                 throw WegasErrorMessage.error(this.getName() + "[" + ContentConnector.bytesToHumanReadable(this.bytes) + "] file max size exceeded. Max " + ContentConnector.bytesToHumanReadable(WFSConfig.MAX_FILE_SIZE));
             }
-            Long totalSize = ((DirectoryDescriptor) DescriptorFactory.getDescriptor("/", connector)).getBytes();
+            Long totalSize = DescriptorFactory.getDescriptor("/", connector).getBytes();
             if (totalSize > WFSConfig.MAX_REPO_SIZE) {
                 this.delete(true);
                 throw WegasErrorMessage.error("Exceeds total files storage capacity for this scenario [" + ContentConnector.bytesToHumanReadable(totalSize) + "/" + ContentConnector.bytesToHumanReadable(WFSConfig.MAX_REPO_SIZE) + "].");

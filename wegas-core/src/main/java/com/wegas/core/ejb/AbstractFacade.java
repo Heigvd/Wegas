@@ -22,7 +22,7 @@ public interface AbstractFacade<T extends AbstractEntity> {
      *
      * @param entity
      */
-    public void create(T entity);
+    void create(T entity);
 
     /**
      *
@@ -35,7 +35,7 @@ public interface AbstractFacade<T extends AbstractEntity> {
      * @param entity
      * @return
      */
-    public T update(final Long entityId, final T entity);
+    T update(final Long entityId, final T entity);
 
     /**
      *
@@ -43,48 +43,48 @@ public interface AbstractFacade<T extends AbstractEntity> {
      * @return
      * @throws IOException
      */
-    public T duplicate(final Long entityId) throws IOException;
+    T duplicate(final Long entityId) throws IOException;
 
     /**
      *
      * @param entity
      */
-    public void remove(T entity);
+    void remove(T entity);
 
     /**
      *
      * @param id
      */
-    public void remove(Long id);
+    void remove(Long id);
 
     /**
      *
      * @param id
      * @return
      */
-    public T find(final Long id);
+    T find(final Long id);
 
     /**
      *
      * @return
      */
-    public int count();
+    int count();
 
     /**
      *
      * @return
      */
-    public List<T> findAll();
+    List<T> findAll();
 
     /**
      *
      * @param range
      * @return
      */
-    public List<T> findRange(int[] range);
+    List<T> findRange(int[] range);
 
     /**
      *
      */
-    public void flush();
+    void flush();
 }

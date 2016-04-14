@@ -151,7 +151,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
      */
     @Transient
     public double getDefaultValue() {
-        return ((NumberInstance) this.getDefaultInstance()).getValue();
+        return this.getDefaultInstance().getValue();
     }
 
     /**

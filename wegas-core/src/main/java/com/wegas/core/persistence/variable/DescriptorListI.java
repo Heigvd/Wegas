@@ -16,48 +16,48 @@ import java.util.List;
  */
 public interface DescriptorListI<T extends VariableDescriptor> {
 
-    public Long getId();
+    Long getId();
 
     /**
      * @return the variableDescriptors
      */
-    public List<T> getItems();
+    List<T> getItems();
 
     /**
      * @param items
      */
-    public void setItems(List<T> items);
+    void setItems(List<T> items);
 
     /**
      *
      * @param item
      */
-    public void addItem(T item);
+    void addItem(T item);
 
     /**
      *
      * @param index
      * @param item
      */
-    public void addItem(int index, T item);
+    void addItem(int index, T item);
 
     /**
      *
      * @return
      */
-    public int size();
+    int size();
 
     /**
      *
      * @param index
      * @return
      */
-    public T item(int index);
+    T item(int index);
 
     /**
      *
      * @param item
      * @return
      */
-    public boolean remove(T item);
+    boolean remove(T item);
 }

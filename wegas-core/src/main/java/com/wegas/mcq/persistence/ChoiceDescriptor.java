@@ -106,7 +106,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
             ListUtils.mergeReplace(this.getResults(), other.getResults());
 
             // Has currentResult been removed ?
-            ChoiceInstance defaultInstance = (ChoiceInstance) this.getDefaultInstance();
+            ChoiceInstance defaultInstance = this.getDefaultInstance();
             if (!this.getResults().contains(defaultInstance.getCurrentResult())) {
                 defaultInstance.setCurrentResult(null);
             }

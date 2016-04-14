@@ -16,9 +16,9 @@ public class ListUtils {
 
     public interface Updater {
 
-        public void addEntity(AbstractEntity entity);
+        void addEntity(AbstractEntity entity);
 
-        public void removeEntity(AbstractEntity entity);
+        void removeEntity(AbstractEntity entity);
     }
 
     /**

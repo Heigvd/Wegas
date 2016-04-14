@@ -36,10 +36,7 @@ public class FacebookRealm extends AuthorizingRealm {
 
     @Override
     public boolean supports(AuthenticationToken token) {
-        if (token instanceof FacebookToken) {
-            return true;
-        }
-        return false;
+        return token instanceof FacebookToken;
     }
 
     @Override

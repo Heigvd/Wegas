@@ -65,7 +65,7 @@ public class Review extends AbstractEntity implements Broadcastable {
         NOTIFIED,
         COMPLETED,
         CLOSED
-    };
+    }
 
     @Id
     @GeneratedValue

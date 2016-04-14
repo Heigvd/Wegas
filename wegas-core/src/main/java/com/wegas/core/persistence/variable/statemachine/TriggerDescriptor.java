@@ -186,7 +186,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
             initialState.setOnEnterEvent(this.postTriggerEvent);
             transition.setNextStateId(1L);
         }
-        ((TriggerInstance) this.getDefaultInstance()).setCurrentStateId(1L);
+        this.getDefaultInstance().setCurrentStateId(1L);
         this.setStates(states);
     }
 

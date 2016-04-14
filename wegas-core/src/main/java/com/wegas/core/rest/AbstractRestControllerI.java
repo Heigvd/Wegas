@@ -21,7 +21,7 @@ import javax.ws.rs.core.MediaType;
  * @param <U>
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-public abstract interface AbstractRestControllerI<T extends AbstractFacade, U extends AbstractEntity> {
+public interface AbstractRestControllerI<T extends AbstractFacade, U extends AbstractEntity> {
 
     /**
      * Index : retrieve the game model list
@@ -30,7 +30,7 @@ public abstract interface AbstractRestControllerI<T extends AbstractFacade, U ex
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Collection<U> index();
+    Collection<U> index();
 
     /**
      * Retrieve a specific game model
@@ -41,7 +41,7 @@ public abstract interface AbstractRestControllerI<T extends AbstractFacade, U ex
     @GET
     @Path("{entityId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public U get(@PathParam("entityId") Long entityId);
+    U get(@PathParam("entityId") Long entityId);
 
     /**
      *
@@ -51,7 +51,7 @@ public abstract interface AbstractRestControllerI<T extends AbstractFacade, U ex
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public U create(U entity);
+    U create(U entity);
 
     /**
      *
@@ -63,7 +63,7 @@ public abstract interface AbstractRestControllerI<T extends AbstractFacade, U ex
     @Path("{entityId: [1-9][0-9]*}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public U update(@PathParam("entityId") Long entityId, U entity);
+    U update(@PathParam("entityId") Long entityId, U entity);
 
     /**
      *
@@ -75,7 +75,7 @@ public abstract interface AbstractRestControllerI<T extends AbstractFacade, U ex
     @Path("{entityId: [1-9][0-9]*}/Duplicate")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public U duplicate(@PathParam("entityId") Long entityId) throws IOException;
+    U duplicate(@PathParam("entityId") Long entityId) throws IOException;
 
     /**
      *
@@ -85,5 +85,5 @@ public abstract interface AbstractRestControllerI<T extends AbstractFacade, U ex
     @DELETE
     @Path("{entityId: [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public U delete(@PathParam("entityId") Long entityId);
+    U delete(@PathParam("entityId") Long entityId);
 }

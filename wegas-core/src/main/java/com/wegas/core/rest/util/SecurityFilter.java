@@ -111,7 +111,7 @@ public class SecurityFilter implements ContainerRequestFilter {
 
             List<Permission> listOfPermissions = new ArrayList<>();
             for (String p : listOfPermissionsString) {
-                listOfPermissions.add((Permission) new WildcardPermission(p));
+                listOfPermissions.add(new WildcardPermission(p));
             }
             boolean[] boolPermissions = subject.isPermitted(listOfPermissions);
             boolean permitted = false;

@@ -19,7 +19,7 @@ public interface Searchable {
      * @param criteria value to search for
      * @return if this specific object contains criteria
      */
-    public default Boolean contains(String criteria) {
+    default Boolean contains(String criteria) {
         return containsAll(new ArrayList<String>() {{
             add(criteria);
         }});
@@ -29,5 +29,5 @@ public interface Searchable {
      * @param criterias List of criteria to search for
      * @return if this specific object contains all criteria
      */
-    public Boolean containsAll(List<String> criterias);
+    Boolean containsAll(List<String> criterias);
 }

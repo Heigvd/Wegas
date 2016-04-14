@@ -477,7 +477,7 @@ public class UserFacade extends BaseFacade<User> {
      */
     public void sendNewPassword(String email) {
         try {
-            JpaAccount acc = (JpaAccount) accountFacade.findByEmail(email);
+            JpaAccount acc = accountFacade.findByEmail(email);
             EMailFacade emailFacade = new EMailFacade();
             RandomNumberGenerator rng = new SecureRandomNumberGenerator();
             String newPassword = rng.nextBytes().toHex().substring(0, 12);

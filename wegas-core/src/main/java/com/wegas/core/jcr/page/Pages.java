@@ -72,10 +72,7 @@ public class Pages implements AutoCloseable {
 
     public Boolean pageExist(String id) throws RepositoryException {
         final Node child = this.connector.getChild(this.gameModelId, id);
-        if (child == null) {
-            return false;
-        }
-        return true;
+        return child != null;
     }
 
     /**

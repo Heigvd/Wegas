@@ -571,11 +571,11 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         task2.setDefaultInstance(taskInstance);
         task2.addPredecessor(task);
         vdf.create(gameModel.getId(), task2);
-        assertEquals("engineer", ((TaskInstance) task2.getDefaultInstance()).getRequirements().get(0).getWork());
+        assertEquals("engineer", task2.getDefaultInstance().getRequirements().get(0).getWork());
 
         // and duplicate it
         TaskDescriptor duplicate = (TaskDescriptor) vdf.duplicate(task2.getId());
-        assertEquals("engineer", ((TaskInstance) duplicate.getDefaultInstance()).getRequirements().get(0).getWork());
+        assertEquals("engineer", duplicate.getDefaultInstance().getRequirements().get(0).getWork());
         assertEquals("My task", duplicate.getPredecessor(0).getLabel());
 
         // Clean

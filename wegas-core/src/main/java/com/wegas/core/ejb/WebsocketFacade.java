@@ -61,7 +61,7 @@ public class WebsocketFacade {
         DOWN,
         READY,
         OUTDATED
-    };
+    }
 
     /**
      *

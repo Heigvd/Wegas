@@ -37,7 +37,7 @@ public class SessionHolder {
      */
     public static Session getSession(String repository) throws RepositoryException {
         Session session;
-        final Repository repo = (Repository) new JackrabbitConnector().getRepo();
+        final Repository repo = new JackrabbitConnector().getRepo();
         try {
             session = repo.login(admin, repository);
         } catch (javax.jcr.NoSuchWorkspaceException ex) {

@@ -24,5 +24,5 @@ public interface Broadcastable {
      * @return
      */
     @JsonIgnore
-    public Map<String, List<AbstractEntity>> getEntities();
+    Map<String, List<AbstractEntity>> getEntities();
 }

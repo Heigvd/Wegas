@@ -18,25 +18,25 @@ public class Views {
     /**
      * Index minimal (w/ ids)
      */
-    public static interface IndexI {
+    public interface IndexI {
     }
 
     /**
      * Extended (w/ blob texts)
      */
-    public static interface ExtendedI {
+    public interface ExtendedI {
     }
 
     /**
      *
      */
-    public static interface EditorExtendedI extends ExtendedI {
+    public interface EditorExtendedI extends ExtendedI {
     }
 
     /**
      * Extend view (w/ scripts, impacts)
      */
-    public static interface EditorI {
+    public interface EditorI {
     }
 
     /**
@@ -47,13 +47,13 @@ public class Views {
     /**
      * Only display current player's VariableInstance
      */
-    public static interface WithScopeI {
+    public interface WithScopeI {
     }
 
     /**
      *
      */
-    public static interface SinglePlayerI extends WithScopeI {
+    public interface SinglePlayerI extends WithScopeI {
     }
 
     /**

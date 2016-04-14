@@ -158,7 +158,7 @@ public class ComboController {
                 throw new WegasForbiddenException("Trying to access a blacklisted content");
             }
             try {
-                InputStream fis = (InputStream) servletContext.getResourceAsStream(fileName);
+                InputStream fis = servletContext.getResourceAsStream(fileName);
                 String content = IOUtils.toString(fis, Helper.getWegasProperty("encoding"));
                 //String content = new Scanner(fis, Helper.getWegasProperty("encoding"))
                 //.useDelimiter("\\A").next();                                  // Use a fake delimiter to read all lines at once
