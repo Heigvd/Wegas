@@ -11,19 +11,23 @@ angular.module('private.player.directives', [])
         "use strict";
         var ctrl = this,
 
-        /* Method used to update sessions. */
-            updateTeams = function() {
-                ctrl.loading = true;
-                TeamsModel.getTeams().then(function(response) {
-                    ctrl.loading = false;
-                    if (!response.isErroneous()) {
-                        ctrl.teams = response.data || [];
-                    } else {
-                        ctrl.teams = [];
+        // Method used to update sessions:
+        updateTeams = function() {
+            ctrl.loading = true;
+            TeamsModel.getTeams().then(function(response) {
+                ctrl.loading = false;
+                if (!response.isErroneous()) {
+                    ctrl.teams = response.data || [];
+                    if (ctrl.teams.length<1) {
+                        $scope.$emit('expand');
                     }
-                });
-            };
+                } else {
+                    ctrl.teams = [];
+                }
+            });
+        };
 
+        $rootScope.currentRole = "PLAYER";
         /* Container for datas. */
         ctrl.teams = [];
         ctrl.loading = true;
@@ -124,6 +128,13 @@ angular.module('private.player.directives', [])
                         });
                     }
                 };
+                scope.cancelJoin = function() {
+                    scope.sessionToJoin = {
+                        token: ""
+                    };
+                    scope.$emit('collapse');
+                };
+
             }
         };
     })

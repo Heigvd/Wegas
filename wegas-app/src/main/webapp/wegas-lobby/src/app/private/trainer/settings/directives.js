@@ -168,12 +168,22 @@ angular.module('private.trainer.settings.directives', [
             }
         };
     })
-    .directive('trainerSessionsCustomizeAdvanced', function() {
+    .directive('trainerSessionsCustomizeAdvanced', function(Auth) {
         "use strict";
         return {
             scope: {
                 activeInfos: "="
             },
-            templateUrl: 'app/private/trainer/settings/directives.tmpl/infos-advanced.html'
-        };
+            templateUrl: 'app/private/trainer/settings/directives.tmpl/infos-advanced.html',
+            link: function (scope, elem, attrs) {
+                Auth.getAuthenticatedUser().then(function (user) {
+                    scope.user = user;
+                });
+                $(".link--selector").on("click", function(e) {
+                    e.stopPropagation();
+                    $(".tool--selectable").trigger("click");
+                });
+            }
+        }
     });
+

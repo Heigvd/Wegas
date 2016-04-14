@@ -1,7 +1,7 @@
 #flash-messages {
   position: fixed;
   top: 50px;
-  left: 50%;
+  left: calc(50% - 40px);
   z-index: 10000;
 
   li{

@@ -1,26 +1,22 @@
 <div class="view view--new-session view--bottom" expandable>
-	<h3>{{'TRAINER-INDEX-ADD-TITLE' | translate}}</h3>
-        <a title="{{'VIEW-CLOSE' | translate}}" class="view__button-collapse button button--medium button--round button--default-reverse button--label-off button--close" collapser>
-            <span class="button__label">{{'VIEW-CLOSE' | translate}}</span>
-        </a>
-	<trainer-sessions-add></trainer-sessions-add>
+    <trainer-sessions-add></trainer-sessions-add>
 </div>
 <div class="view view--managed-sessions-list view--middle">
-    <h3><i class="fa fa-dashboard"></i><span>{{'TRAINER-INDEX-LIST-TITLE' | translate}}</span></h3>
-        <a class="view__button-expand button button--small button--info-reverse" expander>
-            <span class="button__label">{{'TRAINER-INDEX-ADD-TITLE' | translate}}</span>
-        </a>
-        <div class="view__tools" data-search-tool="trainerIndexCtrl.search" ></div>
-	<div 
+    <h3>{{'TRAINER-INDEX-LIST-TITLE' | translate}}</h3>
+    <a class="button button--small button--success-reverse non-collapsible-expander-button" expander>
+        <span class="button__label"><i class="fa fa-plus-circle same-color-larger">&nbsp;</i>{{'TRAINER-INDEX-ADD-TITLE' | translate}}</span>
+    </a>
+    <div class="view__tools" data-search-tool="trainerIndexCtrl.search" ></div>
+	<div
 		ng-if="!trainerIndexCtrl.loading"
 		ng-class="{true:'view__list--with-archive', false:''}[trainerIndexCtrl.nbArchives > 0]"
-		class="view__list" 
-		sessions="trainerIndexCtrl.sessions" 
+		class="view__list"
+		sessions="trainerIndexCtrl.sessions"
 		maximum="trainerIndexCtrl.maxSessionsDisplayed"
 		search="trainerIndexCtrl.search"
 		archive="trainerIndexCtrl.archiveSession"
 		edit-access="trainerIndexCtrl.editAccess"
-		trainer-sessions-list 
+		trainer-sessions-list
 		repeat-auto-load >
 	</div>
 	<div ng-if="(!trainerIndexCtrl.loading) && (trainerIndexCtrl.nbArchives > 0)" class="view__archives">
@@ -30,7 +26,7 @@
 		</a>
 	</div>
 	<div    ng-if="trainerIndexCtrl.loading"
-		class="view__list view__list--loading" 
+		class="view__list view__list--loading"
                 content-loading="{{'COMMONS-SESSIONS-LOADING' | translate}}">
 	</div>
 </div>

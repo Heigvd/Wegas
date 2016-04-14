@@ -37,6 +37,7 @@ angular.module('Wegas', [
         // Configurate loading bar
         cfpLoadingBarProvider.latencyThreshold = 1000;
         cfpLoadingBarProvider.includeSpinner = true;
+        cfpLoadingBarProvider.includeBar = false; // was true until 14.04.2016
 
         $stateProvider
             .state('wegas', {

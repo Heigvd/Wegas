@@ -100,6 +100,7 @@
         @include make-xs-column(12, 96px);
         @include make-md-column(3, 96px);
         overflow-x: hidden;
+        width: 100% !important;
         .form {
             margin: 0px;
             padding: 0px;
@@ -111,8 +112,14 @@
     &.view--create-scenario,
     &.view--history-download {
         max-height: 100%;
-        @include make-xs-column(12, 96px);
-        @include make-md-column(3, 96px);
+        width: 100% !important;
+        /* @include make-xs-column(12, 96px); */
+        /* @include make-md-column(3, 96px); */
+
+        h3 {
+            font-weight: normal;
+            float: left;
+        }
         .form {
             margin: 0px;
             padding: 0px;
@@ -122,7 +129,7 @@
             min-width: 275px;
         }
 
-        @media screen and (max-width: $screen-md) {
+        @media screen /* and (max-width: $screen-md) */ {
             display: block;
             position: absolute;
             top: 0px;
@@ -151,19 +158,21 @@
     &.view--scenarios-list,
     &.view--history-list {
         @include make-xs-column(12, 96px);
-        @include make-md-column(9, 96px);
+        /*@include make-md-column(9, 96px); */ /* hack to occupy 100% width */
         height: 100%;
 
         h3 {
             @include make-xs-column(12);
-            @include make-md-column(6);
+            /* @include make-md-column(6); */
             box-sizing: border-box;
             padding: 0px;
+            font-weight: normal;
+
             i {
                 padding-right: 8px;
             }
 
-            @media screen and (max-width: $screen-md) {
+            @media screen /* and (max-width: $screen-md)*/ {
                 width: auto;
                 float: left;
             }
@@ -220,7 +229,114 @@
             }
 
             &.view__list--no-content {
-                padding: 8px 0px 32px 0px;
+                padding: 16px 0px 32px 0px;
+                font-style: italic;
+            }
+            &.view__list--loading {
+                @include loading-message();
+            }
+            &.view__list--with-archive {
+                height: calc(100% - 160px);
+            }
+        }
+        .view__no-group {
+            @include make-xs-column(12);
+            height: calc(100% - 82px);
+            padding: 8px 16px 32px 16px;
+            box-sizing: border-box;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        .view__archives {
+            @include make-xs-column(12);
+            height: 80px;
+            padding: 16px 0px;
+            clear: both;
+            box-sizing: border-box;
+            .button {
+                float: right;
+            }
+
+    &.view--admin-content,
+    &.view--played-sessions-list,
+    &.view--managed-sessions-list,
+    &.view--scenarios-list,
+    &.view--history-list {
+        @include make-xs-column(12, 96px);
+        /*@include make-md-column(9, 96px); */ /* hack to occupy 100% width */
+        height: 100%;
+
+        h3 {
+            @include make-xs-column(12);
+            /* @include make-md-column(6); */
+            box-sizing: border-box;
+            padding: 0px;
+            font-weight: normal;
+
+            i {
+                padding-right: 8px;
+            }
+
+            @media screen /* and (max-width: $screen-md)*/ {
+                width: auto;
+                float: left;
+            }
+
+            @media screen and (max-width: 819px) {
+                i + span {
+                    display: none;
+                }
+            }
+        }
+
+        .view__tools {
+            margin: 28px 0 8px 0;
+            padding: 0px;
+            float: right;
+            width: 50%;
+            max-width: 320px;
+
+            @media screen and (max-width: 519px) {
+                clear: both;
+                width: 100%;
+                float: left;
+                margin: 4px 0 12px 0px;
+            }
+        }
+        .view__list {
+            @include make-xs-column(12);
+            height: calc(100% - 90px);
+            padding: 8px 0px 0px 0px;
+            box-sizing: border-box;
+            overflow-x: hidden;
+            overflow-y: auto;
+
+            &.ng-enter,
+            &.ng-leave {
+                transition: .3s;
+            }
+
+            &.ng-enter.ng-enter-active,
+            &.ng-leave {
+                visibility: visible;
+                opacity: 1;
+
+            }
+
+            &.ng-leave.ng-leave-active,
+            &.ng-enter {
+                visibility: hidden;
+                opacity: 0;
+            }
+
+            &.ng-enter {
+                transition-delay: .3s;
+            }
+
+            &.view__list--no-content {
+                padding: 16px 0px 32px 0px;
+                font-style: italic;
             }
             &.view__list--loading {
                 @include loading-message();
@@ -248,6 +364,7 @@
                 float: right;
             }
         }
+    }    }
     }
 
     &.view--scenarios-list,
@@ -336,7 +453,8 @@
     }
 
     .view--separate-primary {
-        border-top: solid 5px #666;
+        border-top: solid 4px #fff;
+        border-bottom: solid 2px #fff;
     }
 
     @each $position in $positions {
@@ -375,7 +493,7 @@
         max-width: 380px;
         padding: 8px 20px 0px 20px;
         font-size: 16px;
-        color: $white;
+        /*color: $white;*/
 
         &.subtitle--center {
             text-align: center;
@@ -484,13 +602,14 @@
             padding: 0px;
             background-size: 100%;
             background-image: url("../images/albasim_logo.png");
+            background-repeat: no-repeat;
             float: left;
         }
         .view__first-subtitle {
             margin: 0px;
             padding: 64px 0 0 0;
             width: 240px;
-            float: right;
+            /*float: right;*/
             text-align: center;
         }
     }

@@ -7,7 +7,8 @@ angular.module('private.directives', [])
                 var config = localStorage.getObject("wegas-config");
                 scope.currentLanguage = $translate.use();
                 scope.languages = WegasTranslations.languages;
-                    
+                $rootScope.currentRole = "GUEST"; // Set initially as Guest for safety
+
                 Auth.getAuthenticatedUser().then(function(user) {
                     scope.user = user;
                     scope.changeLanguage = function(key){
@@ -31,8 +32,9 @@ angular.module('private.directives', [])
                             case "wegas.private.admin.users":
                             case "wegas.private.admin.groups":
                                 type = "ADMIN";
-                                break;          
+                                break;
                         }
+                        $rootScope.currentRole = type;
                         $rootScope.translationWorkspace = {workspace: WegasTranslations.workspaces[type][$translate.use()]};
                     };
                 });
@@ -73,29 +75,29 @@ angular.module('private.directives', [])
                             break;
                         default:
                             profileState = "wegas.private.profile";
-                         
+
                     }
                     $state.go(profileState);
                 };
-                
+
                 scope.logout = function() {
                     $state.go("wegas.private.logout");
                 };
-                
-                $('h2.view__headding-workspace').unbind("click");
-                $('h2.view__headding-workspace').on('click', function(e) {
+
+                scope.menuClick = function(e) {
+                    e.stopPropagation();
                     e.preventDefault();
                     $('#menu-toggler').trigger('click');
                     return false;
-                });
+                };
+
                 $(document).on('click', function(e) {
                     var $menu = $('.menu');
                     var $menuToggler = $('#menu-toggler');
-                    var $labelMenuToggler = $('label[for="menu-toggler"]');
+
                     // if element is opened and click target is outside it, hide it
                     if ($menuToggler.is(':checked')) {
-
-                        if ($menu.is(e.target) || $menuToggler.is(e.target) || $labelMenuToggler.is(e.target)) {
+                        if ($menu.is(e.target) || $menuToggler.is(e.target) || $('#roleMenuTitle').is(e.target) || $('label[for="menu-toggler"]').is(e.target)) {
                             return;
                         } else {
                             $menuToggler.trigger('click');
@@ -106,9 +108,22 @@ angular.module('private.directives', [])
                     }
                     return;
                 });
+
                 $timeout(function(){
-                    $('.action--language').unbind("click");
-                    $(".action--language").on("click", ".button--language", function(e){
+                    // Install click handler on role menu title (which must exist beforehand):
+                    /*
+                    var roleMenuTitle = $('#roleMenuTitle');
+                    roleMenuTitle.unbind("click");
+                    roleMenuTitle.on('click', function (e) {
+                        e.preventDefault();
+                        $('#menu-toggler').trigger('click');
+                        return false;
+                    });
+                    */
+                    // Install click handler on language menu title
+                    var actionLanguage = $('.action--language');
+                    actionLanguage.unbind("click");
+                    actionLanguage.on("click", ".button--language", function(e){
                         e.stopPropagation();
                         e.preventDefault();
                         $(".action--language .subactions").toggleClass("subactions--show");
