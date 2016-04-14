@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
+import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
@@ -351,14 +352,15 @@ public class UserController {
                        @FormParam("password") String password,
                        @FormParam("firstname") String firstname,
                        @FormParam("lastname") String lastname,
-                       @FormParam("email") String email) {
+                       @FormParam("email") String email,
+                       @Context HttpServletRequest request) {
         JpaAccount account = new JpaAccount();                                   // Convert post params to entity
         account.setUsername(username);
         account.setPassword(password);
         account.setFirstname(firstname);
         account.setLastname(lastname);
         account.setEmail(email);
-        this.signup(account);                                                   // and forward
+        this.signup(account, request);                                                   // and forward
     }
 
     /**
@@ -370,7 +372,8 @@ public class UserController {
      */
     @POST
     @Path("Signup")
-    public Response signup(JpaAccount account) {
+    public Response signup(JpaAccount account,
+                           @Context HttpServletRequest request) {
         Response r;
         if (this.checkEmailString(account.getEmail())) {
             if (account.getUsername().equals("") || !this.checkExistingUsername(account.getUsername())) {
@@ -381,17 +384,28 @@ public class UserController {
                     GuestJpaAccount from = (GuestJpaAccount) accountFacade.find((Long) subject.getPrincipal());
                     subject.logout();
                     userFacade.upgradeGuest(from, account);
+                    r = Response.status(Response.Status.CREATED).build();
                 } else {
-                    user = new User(account);
-                    userFacade.create(user);
+                    // Check if e-mail is already taken and if yes return a localized error message:
+                    try {
+                        accountFacade.findByEmail(account.getEmail());
+                        String msg = detectBrowserLocale(request).equals("fr") ? "Cette adresse e-mail est déjà prise." : "This email address is already taken.";
+                        r = Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error(msg)).build();
+                    } catch (WegasNoResultException e) {
+                        // GOTCHA
+                        // E-Mail not yet registered -> proceed with account creation
+                        user = new User(account);
+                        userFacade.create(user);
+                        r = Response.status(Response.Status.CREATED).build();
+                    }
                 }
-
-                r = Response.status(Response.Status.CREATED).build();
             } else {
-                r = Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error("The username is already taken.")).build();
+                String msg = detectBrowserLocale(request).equals("fr") ? "Ce nom d'utilisateur est déjà pris." : "This username is already taken.";
+                r = Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error(msg)).build();
             }
         } else {
-            r = Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error("The email isn't correct.")).build();
+            String msg = detectBrowserLocale(request).equals("fr") ? "Cette adresse e-mail n'est pas valide." : "This e-mail address is not valid.";
+            r = Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error(msg)).build();
         }
         return r;
     }
@@ -686,4 +700,23 @@ public class UserController {
         }
         return existingUsername;
     }
+
+    /*
+    ** Returns the browser's preference among the languages supported by Wegas:
+    */
+    private String detectBrowserLocale(HttpServletRequest request) {
+        String supportedLanguages = "en fr";
+
+        Enumeration locales = request.getLocales();
+        while (locales.hasMoreElements()) {
+            Locale locale = (Locale) locales.nextElement();
+            String loc = locale.getLanguage();
+            if (supportedLanguages.contains(loc)) {
+                return loc;
+            }
+        }
+        // No match found, return the default "en":
+        return "en";
+    }
+
 }

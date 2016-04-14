@@ -11,7 +11,7 @@ $buttons-icon : (
     (play, $fa-var-play, "FontAwesome", 0px),
     (workspaces, $fa-var-th, "FontAwesome", 0px),
     (player, $fa-var-gamepad, "FontAwesome", 0px),
-    (trainer, $fa-var-tachometer, "FontAwesome", 0px),
+    //(trainer, $fa-var-tachometer, "FontAwesome", 0px),
     (scenarist, $fa-var-magic, "FontAwesome", 0px),
     (add, $fa-var-plus, "FontAwesome", 0px),
     (remove, $fa-var-minus-circle, "FontAwesome", 0px),
@@ -37,7 +37,8 @@ $buttons-icon : (
     //(play, $wif-play, "wegas-icons-font", 24px),
     (settings, $wif-settings, "wegas-icons-font", 3px),
     (trash, $wif-trash, "wegas-icons-font", 3px),
-    (user, $wif-user, "wegas-icons-font", 3px)
+    (user, $wif-user, "wegas-icons-font", 3px),
+    (trainer, $wif-trainer, "wegas-icons-font", 0px)
 );
 
 %button--with-icon{
@@ -83,4 +84,55 @@ $buttons-icon : (
             }
         }
     }
+}
+
+.button.button--language {
+    padding-right: 14px;
+}
+.button.button--language:before,
+.button.button--language:hover:before {
+    margin-top: 2px !important;
+}
+.button.button--language .button__label {
+    margin-left: -9px;
+}
+.button.button--user {
+    padding-right: 14px;
+}
+.button.button--user .button__label {
+    margin-left: -9px;
+}
+
+.button.button--trainer:before,
+.button.button--trainer:hover:before,
+.button.button--trainer:active:before,
+.button.button--trainer:visited:before,
+.button:focus.button--trainer:before,
+.button:focus.button--trainer:hover:before,
+.button:focus.button--trainer:active:before,
+.button:focus.button--trainer:visited:before {
+    font-size: 30px !important;
+}
+
+.button.button--small.non-collapsible-expander-button {
+    float: left;
+    margin: 24px 12px 0px 12px;
+}
+
+.button.button--close.non-collapsible-close-button {
+    position:relative;
+    float:right;
+    margin-right:-64px;
+    padding-right:0;
+    right:0;
+    top: 18px;
+}
+
+.same-color-larger {
+    color:inherit;
+    font-size:110%;
+}
+
+.same-color {
+    color:inherit;
 }

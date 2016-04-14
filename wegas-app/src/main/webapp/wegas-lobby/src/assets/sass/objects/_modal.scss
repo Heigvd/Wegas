@@ -28,7 +28,7 @@
 		margin-top: 0;
 		margin-bottom: 0;
 	}
-        
+
         .modal__header{
 		display:block;
 		position:relative;
@@ -53,7 +53,7 @@
                         text-overflow: ellipsis;
                         white-space: nowrap;
 			margin:0px;
-                        
+
                         &.modal__title--has-subtitle{
                             padding:0px 20px;
                             .modal__title__line{
@@ -63,13 +63,13 @@
                                 overflow: hidden;
                                 text-overflow: ellipsis;
                                 white-space: nowrap;
-                                
+
                                 &.modal__title__line--primary{
                                     height:40px;
                                     font-size:21px;
                                     line-height:40px;
                                 }
-                                
+
                                 &.modal__title__line--secondary{
                                     height:24px;
                                     line-height:14px;
@@ -90,18 +90,18 @@
                 top:50%;
                 left:50%;
 		margin: -140px 0px 0px -180px;
-                
+
                 .modal__title{
                     width:calc(100% - 66px);
                 }
-                
+
 		@media screen and (max-width: 360px) {
 			width: 100%;
 			margin-left: 0;
 			margin-right: 0;
 			left: 0;
 		}
-                
+
                 @media screen and (max-height: 210px) {
                         height: 100%;
                         top: 0;
@@ -116,7 +116,7 @@
                 top:50%;
                 left:50%;
 		margin: -270px 0px 0px -200px;
-                
+
                 .modal__title{
                     width:calc(100% - 66px);
                 }
@@ -138,7 +138,7 @@
                         margin-top: 0;
                         margin-bottom: 0;
 		}
-                
+
 	}
 
 	&.modal--users, &.modal--player-team {
@@ -150,7 +150,7 @@
                 .input{
                     width:80%;
                 }
-                
+
                 .button {
                     float: right;
                     margin-top: 8px;
@@ -158,14 +158,14 @@
                 }
             }
 	}
-        
+
 	&.modal--open{
             visibility: visible;
             opacity:1;
             transition:.5s;
 	}
 
-	
+
 	.modal__nav{
 		width:100%;
 		height:49px;
@@ -294,11 +294,11 @@
                     height:48px;
                     line-height:48px;
                     color:$warning-color;
-                    
+
                     i{
                             color:$warning-color;
                     }
-                    
+
                     &.ng-enter,
                     &.ng-leave
                     {
@@ -389,19 +389,19 @@
 	&.modal--archives{
 		.modal__content {
 			padding: 1em;
-                        
+
                         .modal__content__search{
                             width:100%;
                             height: 36px;
                             margin-bottom:16px;
-                            .tool--search{                            
+                            .tool--search{
                                 float:right;
                                 width:50%;
                                 @media screen and (max-width: 520px) {
                                     width: 100%;
                                 }
                             }
-                            
+
                         }
                         .modal__content__list{
                             display:block;
@@ -432,7 +432,7 @@
 		.form{
 			padding:0px;
 		}
-                
+
                 .modal__tools {
 			padding:8px 16px;
 			.modal__tools__button{
@@ -506,7 +506,8 @@
 				}
 			}
 			.advanced {
-				@include make-xs-column(12);
+				@include make-xs-column(10,100px);
+                width: 100%;
 				h3 {
                                     color: $warning-color;
                                     font-weight: 500;
@@ -516,19 +517,23 @@
                                     }
 				}
 			}
+            .infos--single-column {
+                @include make-xs-column(10,100px);
+                width: 100%;
+            }
 			.infos--main {
 		        @include make-xs-column(7);
-
 			}
 			.infos--secondary {
 		        @include make-xs-column(5);
 			}
-			.infos--main, .infos--secondary {
+			.infos--main, .infos--secondary, .infos--single-column, .advanced {
 				.infos__label {
 					display:block;
-					padding:0px 24px;
+					padding:0px 0px;
 					margin:12px 0px 8px 0px;
 					color:#777777;
+                    font-weight: bold;
 				}
 			}
 		}
@@ -540,7 +545,7 @@
                     }
 		}
 	}
-        
+
         & > .form{
             height:100%;
             padding:0px;

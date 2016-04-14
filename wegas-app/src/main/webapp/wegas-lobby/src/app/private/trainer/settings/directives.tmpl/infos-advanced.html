@@ -1,18 +1,41 @@
-<div class="advanced">
-    <h3>{{'PRIVATE-MODALE-TABS-ADVANCED-WARNING' | translate}}</h3>
+<label class="advanced">
 
-    <label class="infos__label">{{'PRIVATE-SCENARIOS-LOG-ID-LABEL-INPUT' | translate}}</label>
-    <input ng-model="activeInfos.logID" class="input input--small" type="text" />
+    <label class="infos__label">{{'PRIVATE-MODALE-TABS-ACCESS-LINK-TITLE' | translate}}</label>
+    <label class="indented">{{'PRIVATE-MODALE-TABS-INFOS-ACCESS-LINK' | translate}} <span class="link link--selector" title="{{'PRIVATE-MODALE-TABS-INFOS-ACCESS-LINK-SELECT-TITLE' | translate}}"><i class="fa fa-text-width"></i></span><span class="tool tool--selectable indented" text-selectable>http://wegas.albasim.ch/#/play/{{activeInfos.token}}</span></label>
 
-    <label class="infos__label">{{'PRIVATE-SCENARIOS-SERVER-SCRIPT-LABEL-INPUT' | translate}}</label>
-    <input ng-model="activeInfos.scriptUri" class="input input--small" type="text" />
+    <label class="infos__label" style="margin-top: 30px">{{'PRIVATE-SCENARIOS-TYPE-LABEL-CHECKBOX' | translate}}</label>
+    <label class="choice indented">
+        <div class="choice__box">
+            <input ng-disabled="isReadonly" ng-model="activeInfos.individual" type="radio" ng-value="true" />
+            <div class="choice__box__display"></div>
+        </div>
+        <div class="choice__label">{{'PRIVATE-SCENARIOS-TYPE-INDIVIDUALLY-CHECKBOX' | translate}}</div>
+    </label>
+    <label class="choice indented">
+        <div class="choice__box">
+            <input ng-disabled="isReadonly" ng-model="activeInfos.individual" type="radio" ng-value="false" />
+            <div class="choice__box__display"></div>
+        </div>
+        <div class="choice__label">{{'PRIVATE-SCENARIOS-TYPE-IN-TEAM-CHECKBOX' | translate}}</div>
+    </label>
 
-    <label class="infos__label">{{'PRIVATE-SCENARIOS-CLIENT-SCRIPT-LABEL-INPUT' | translate}}</label>
-    <input ng-model="activeInfos.clientScriptUri" class="input input--small" type="text" />
+    <div ng-if="user.isAdmin" style="margin-top:40px">
+        <hr>
+        <h3>Admin-level settings:</h3>
 
-    <label class="infos__label">{{'PRIVATE-SCENARIOS-STYLESHEETS-LABEL-INPUT' | translate}}</label>
-    <input ng-model="activeInfos.cssUri" class="input input--small" type="text" />
+        <label class="infos__label">{{'PRIVATE-SCENARIOS-LOG-ID-LABEL-INPUT' | translate}}</label>
+        <input ng-model="activeInfos.logID" class="input input--small" type="text" />
 
-    <label class="infos__label">{{'PRIVATE-SCENARIOS-PAGES-LABEL-INPUT' | translate}}</label>
-    <input ng-model="activeInfos.pagesUri" class="input input--small" type="text" />
+        <label class="infos__label">{{'PRIVATE-SCENARIOS-SERVER-SCRIPT-LABEL-INPUT' | translate}}</label>
+        <input ng-model="activeInfos.scriptUri" class="input input--small" type="text" />
+
+        <label class="infos__label">{{'PRIVATE-SCENARIOS-CLIENT-SCRIPT-LABEL-INPUT' | translate}}</label>
+        <input ng-model="activeInfos.clientScriptUri" class="input input--small" type="text" />
+
+        <label class="infos__label">{{'PRIVATE-SCENARIOS-STYLESHEETS-LABEL-INPUT' | translate}}</label>
+        <input ng-model="activeInfos.cssUri" class="input input--small" type="text" />
+
+        <label class="infos__label">{{'PRIVATE-SCENARIOS-PAGES-LABEL-INPUT' | translate}}</label>
+        <input ng-model="activeInfos.pagesUri" class="input input--small" type="text" />
+    </div>
 </div>

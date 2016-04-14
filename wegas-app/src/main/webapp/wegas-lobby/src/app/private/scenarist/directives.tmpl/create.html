@@ -1,20 +1,25 @@
-<h3>{{'SCENARIST-INDEX-ADD-TITLE' | translate}}</h3>
-<a title="{{'VIEW-CLOSE' | translate}}" class="view__button-collapse button button--medium button--round button--default-reverse button--label-off button--close" collapser>
-    <span class="button__label">{{'VIEW-CLOSE' | translate}}</span>
-</a>
-<form class="form form__create-scenario">
-  <div class="form__row">
-    <input class="form__row__entry input input--small" type="text" id="session-token" ng-model="newScenario.name" placeholder="{{'SCENARIST-INDEX-ADD-NAME-INPUT' | translate}}" autocomplete="off">
-  </div>
-  <div class="form__row fade" ng-if="newScenario.name != ''">
-    <select class="form__row__entry input input--small" ng-model="newScenario.templateId">
-        <option value="0" disabled>{{'SCENARIST-INDEX-ADD-SCENARIO-INPUT' | translate}}</option>
-        <option ng-repeat="scenario in scenarios | filter: { canDuplicate: true }" value="{{scenario.id}}">{{scenario.name}}</option>
-    </select>
-  </div>
-  <div class="form__row form__row--right fade" ng-if="newScenario.name != '' && newScenario.templateId">
-    <a ng-click="createScenario()" class="form__row__btn form__submit button button--default">
-        <span class="button__label">{{'SCENARIST-INDEX-ADD-BTN' | translate}}</span>
+<div style="max-width:30em; margin:auto;">
+    <a class="non-collapsible-close-button button button--medium button--round button--default-reverse button--label-off button--close" ng-click="cancelScenario()">
+        <span class="button__label">X</span>
     </a>
-  </div>
-</form>
+    <h3>{{'SCENARIST-INDEX-ADD-TITLE' | translate}}</h3>
+    <form class="form form__create-scenario">
+        <div class="form__row">
+            <input class="form__row__entry input input--small" type="text" id="session-token" ng-model="newScenario.name" placeholder="{{'SCENARIST-INDEX-ADD-NAME-INPUT' | translate}}" autocomplete="off" style="background:#fff">
+        </div>
+        <div class="form__row">
+            <select class="form__row__entry input input--small" ng-model="newScenario.templateId">
+                <option value="0" disabled>{{'SCENARIST-INDEX-ADD-SCENARIO-INPUT' | translate}}</option>
+                <option ng-repeat="scenario in scenarios | filter: { canDuplicate: true }" value="{{scenario.id}}">{{scenario.name}}</option>
+            </select>
+        </div>
+        <div class="form__row form__row--right">
+            <a class="modal__tools__button button button--small button--default" ng-click="cancelScenario()">
+                <span class="button__label">{{'PRIVATE-MODALE-SETTINGS-CANCEL-BTN' | translate}}</span>
+            </a>
+            <a ng-click="createScenario()" class="form__row__btn form__submit button button--success" style="margin-left:8px">
+                <span class="button__label">{{'SCENARIST-INDEX-ADD-BTN' | translate}}</span>
+            </a>
+        </div>
+    </form>
+</div>
