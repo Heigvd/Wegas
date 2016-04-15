@@ -132,10 +132,10 @@ class Graph extends React.Component {
                 }).then(([chart, diff]) => {
                     const container = document.createElement('div');
                     const label = JSON.search(snapshot,
-                        `//*[name="${question}"]/ancestor::*[@class="ListDescriptor"]`)
-                        .reduce((pre, cur) => `${pre}${cur.label} → `, '') +
-                    JSON.search(snapshot,
-                        `//*[@class='QuestionDescriptor'][name="${question}"]/label`)[0];
+                            `//*[name="${question}"]/ancestor::*[@class="ListDescriptor"]`)
+                            .reduce((pre, cur) => `${pre}${cur.label} → `, '') +
+                        JSON.search(snapshot,
+                            `//*[@class='QuestionDescriptor'][name="${question}"]/label`)[0];
                     container.setAttribute('style', 'white-space:nowrap');
                     container.innerHTML = `<div>${label}</div>`;
                     container.appendChild(chart);

@@ -17,6 +17,7 @@ function genLabel(questionName, snapshot) {
     }
     return labels;
 }
+
 function questionSerie(questionName, questionData, snapshot) {
     const question = JSON.search(snapshot, `//*[@class='QuestionDescriptor'][name='${questionName}']`)[0];
     const choices = new Map();
@@ -50,7 +51,8 @@ function questionSerie(questionName, questionData, snapshot) {
         count,
     };
 }
-function computeData({question, snapshot, logId, groups}) {
+
+function computeData({ question, snapshot, logId, groups }) {
     const data = {
         labels: genLabel(question, snapshot),
         series: [],
@@ -80,6 +82,7 @@ function computeData({question, snapshot, logId, groups}) {
             console.error(err);
         });
 }
+
 function computeDiffs(data) {
     const ref = data.series[0].data;
     const newData = {
@@ -90,6 +93,7 @@ function computeDiffs(data) {
     function diff(val, index) {
         return Math.abs(ref[index] - val); // quote DJ : "doit moins avoir" => Abs
     }
+
     for (item in data.series) {
         if (data.series.hasOwnProperty(item)) {
             newData.series[item] = {
@@ -99,4 +103,5 @@ function computeDiffs(data) {
     }
     return newData;
 }
+
 export { computeData, computeDiffs };

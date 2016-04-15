@@ -2,8 +2,26 @@
     "root": true,
     "indent": {
         "value": "    ",
-        "FunctionExpression": 1,
-        "ObjectExpression": 1
+        "SwitchStatement": 0
+    },
+    "whiteSpace": {
+        "before": {
+            "ObjectPatternClosingBrace": 1
+        },
+        "after": {
+            "ObjectPatternOpeningBrace": 1,
+            "ObjectPatternComma": 1
+        }
+    },
+    "lineBreak": {
+        "before": {
+            "FunctionDeclaration": ">0",
+            "EndOfFile": "=1"
+        },
+        "after": {
+            "FunctionDeclarationClosingBrace": ">1",
+            "FunctionDeclarationOpeningBrace": "1"
+        }
     },
     "plugins": [
         "esformatter-jsx"

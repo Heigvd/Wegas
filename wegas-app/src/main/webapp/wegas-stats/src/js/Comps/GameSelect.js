@@ -12,17 +12,15 @@ class GameSelect extends React.Component {
     }
     componentWillReceiveProps(props) {
         this.setState({
-            options: props.games.map(val => {
-                return {
-                    value: val.id,
-                    label: val.name ? `${val.name} (${val.gmName})` : val.id
-                };
-            }),
+            options: props.games.map(val => ({
+                value: val.id,
+                label: val.name ? `${val.name} (${val.gmName})` : val.id
+            }))
         });
     }
     onChange(group, value) {
         const val = value ? value.split(',') : [];
-        const {groups} = this.state;
+        const { groups } = this.state;
         groups[group] = val;
         this.setState({
             groups,
@@ -36,7 +34,7 @@ class GameSelect extends React.Component {
         this.props.onChange(groups);
     }
     genGroups(opt) {
-        const {groupsCount} = this.props;
+        const { groupsCount } = this.props;
         const ret = [];
         const style = {
             display: 'inline-block',

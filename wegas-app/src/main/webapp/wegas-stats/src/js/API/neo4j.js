@@ -11,6 +11,7 @@ export function getGameForLogId(logId) {
         `MATCH n WHERE n.logID='${logId}' RETURN DISTINCT n.gameId`
     ).then(res => res.data);
 }
+
 export function getQuestionData(logID, name, ...games) {
     if (logID && name && games[0]) {
         return Axios.get(`${BASE}LogId/${logID}/Question/${name}`, {
