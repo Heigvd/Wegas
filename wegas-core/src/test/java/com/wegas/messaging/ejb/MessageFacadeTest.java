@@ -242,9 +242,9 @@ public class MessageFacadeTest extends AbstractEJBTest {
         String script = "var inbox = Variable.find(gameModel, \"inbox\");"
             + "var inbox2 = Variable.find(gameModel, \"inbox\");"
             + "var inbox3 = Variable.find(gameModel, \"inbox\");"
-            + "print(\"sending\"); inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
-            + "print(\"sending\"); inbox2.sendMessage(self, \"test\", \"test\", \"test\");\n"
-            + "print(\"sending\"); inbox3.sendMessage(self, \"test\", \"test\", \"test\");\n";
+            + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
+            + "inbox2.sendMessage(self, \"test\", \"test\", \"test\");\n"
+            + "inbox3.sendMessage(self, \"test\", \"test\", \"test\");\n";
         scriptFacade.eval(player, new Script("javascript", script), null);
 
         vdf.flush();
@@ -254,6 +254,8 @@ public class MessageFacadeTest extends AbstractEJBTest {
         Message get = ((InboxInstance) vif.find(inbox.getId(), player)).getMessages().get(0);
 
         assertTrue(((InboxInstance) vif.find(inbox.getId(), player)).getMessages().get(0).getBody().equals("test"));
+        assertTrue(((InboxInstance) vif.find(inbox.getId(), player)).getMessages().get(1).getBody().equals("test"));
+        assertTrue(((InboxInstance) vif.find(inbox.getId(), player)).getMessages().get(2).getBody().equals("test"));
 
         // Clean up
         vdf.remove(inbox.getId());
@@ -279,16 +281,11 @@ public class MessageFacadeTest extends AbstractEJBTest {
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger("org.eclipse.persistence.logging.default")).setLevel(Level.TRACE);
          */
 
-        String script = "print(\"TEST IS STARTING NOW\");"
-            + "var inbox = Variable.find(gameModel, \"inbox\");"
-            + "print(\"sending\"); inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
-            //+ "Variable.flush();\n"
-            + "print(\"sending\"); inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
-            //+ "Variable.flush();\n"
+        String script = "var inbox = Variable.find(gameModel, \"inbox\");"
+            + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
+            + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
             + "var inbox2 = Variable.find(gameModel, \"inbox\");"
-            //+ "Variable.diff(inbox, inbox2);"
-            + "print(\"sending\"); inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
-            + "print(\"TEST FINISHS\")";
+            + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n";
         scriptFacade.eval(player, new Script("javascript", script), null);
 
         /*
@@ -333,13 +330,12 @@ public class MessageFacadeTest extends AbstractEJBTest {
         Long inboxId = inbox.getId();
 
         String script = "var inbox = Variable.find(" + inboxId + ");"
-            + "var instance1 = inbox.getInstance(self);"
-            + "print(\"sending\"); inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
-            + "print(\"sending\"); inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
+            + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
+            + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
             + "var inbox2 = Variable.find(" + inboxId + ");"
-            + "print(\"sending\"); inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
+            + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
             + "var inbox3 = Variable.find(" + inboxId + ");"
-            + "print(\"sending\"); inbox2.sendMessage(self, \"test\", \"test\", \"test\");\n";
+            + "inbox2.sendMessage(self, \"test\", \"test\", \"test\");\n";
         scriptFacade.eval(player, new Script("javascript", script), null);
 
         // Test
@@ -348,6 +344,9 @@ public class MessageFacadeTest extends AbstractEJBTest {
         Message get = ((InboxInstance) vif.find(inbox.getId(), player)).getMessages().get(0);
 
         assertTrue(((InboxInstance) vif.find(inbox.getId(), player)).getMessages().get(0).getBody().equals("test"));
+        assertTrue(((InboxInstance) vif.find(inbox.getId(), player)).getMessages().get(1).getBody().equals("test"));
+        assertTrue(((InboxInstance) vif.find(inbox.getId(), player)).getMessages().get(2).getBody().equals("test"));
+        assertTrue(((InboxInstance) vif.find(inbox.getId(), player)).getMessages().get(3).getBody().equals("test"));
 
         // Clean up
         vdf.remove(inbox.getId());
