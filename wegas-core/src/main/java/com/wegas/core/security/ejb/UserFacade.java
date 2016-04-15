@@ -136,6 +136,8 @@ public class UserFacade extends BaseFacade<User> {
     @Override
     public void create(User user) {
         AbstractAccount account = user.getMainAccount();
+        /*
+        // The following check is now done by caller UserController.signup()
         try {
             if (account instanceof JpaAccount) {                                // @fixme This is only done to have a nice error and not the unparsable ConstraintViolationException
                 String mail = ((JpaAccount) account).getEmail();
@@ -148,6 +150,7 @@ public class UserFacade extends BaseFacade<User> {
             // GOTCHA
             // E-Mail not yet registered -> proceed
         }
+        */
 
         getEntityManager().persist(user);
         try {

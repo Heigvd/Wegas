@@ -1,12 +1,12 @@
 angular.module('private.trainer.directives', [
     'wegas.behaviours.repeat.autoload'
 ])
-    .directive('trainerSessionsIndex', function() {
+    .directive('trainerSessionsIndex', function(Auth) {
         "use strict";
         return {
             templateUrl: 'app/private/trainer/directives.tmpl/index.html',
             controller: "TrainerIndexController as trainerIndexCtrl"
-        };
+        }
     })
     .controller("TrainerIndexController", function TrainerIndexController($rootScope, $scope, $translate, SessionsModel, Flash) {
         "use strict";
@@ -29,6 +29,7 @@ angular.module('private.trainer.directives', [
                     }
                 }
             };
+        $rootScope.currentRole = "TRAINER";
         ctrl.loading = true;
         ctrl.search = "";
         ctrl.sessions = [];
@@ -130,8 +131,22 @@ angular.module('private.trainer.directives', [
                     scenarioId: 0
                 };
 
+                scope.cancelAddSession = function() {
+                    scope.newSession = {
+                        name: "",
+                        scenarioId: 0
+                    };
+                    scope.$emit('collapse');
+                };
+
                 scope.addSession = function() {
                     var button = $(element).find(".form__submit");
+                    if (scope.newSession.name==""){
+                        $translate('COMMONS-SESSIONS-NO-NAME-FLASH-ERROR').then(function(message) {
+                            Flash.warning(message);
+                        });
+                        return;
+                    }
                     if (+scope.newSession.scenarioId !== 0) {
                         if (!button.hasClass("button--disable")) {
                             button.addClass("button--disable button--spinner button--rotate");

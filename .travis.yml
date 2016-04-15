@@ -25,16 +25,19 @@ env:
 install:
 - mvn -B -P release-profile generate-resources
 before_install:
-- echo -e "machine github.com\n  login $GIT_USER\n  password $GIT_TOKEN" >> ~/.netrc
-- git submodule update --init --recursive
-- nvm install $NODE_VERSION
+  - echo -e "machine github.com\n  login $GIT_USER\n  password $GIT_TOKEN" >> ~/.netrc
+  - git submodule update --init --recursive
+  - nvm install $NODE_VERSION
 before_script:
-- psql -c 'create database wegas_test;' -U postgres
-- psql -c "create user \"user\" with superuser password '1234';" -U postgres
+  - psql -c 'create database wegas_test;' -U postgres
+  - psql -c "create user \"user\" with superuser password '1234';" -U postgres
 script:
-- mvn -B -P release-profile install
+  - mvn -B -P release-profile install
+  - export PR=https://api.github.com/repos/$TRAVIS_REPO_SLUG/pulls/$TRAVIS_PULL_REQUEST
+  - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST; fi)
+  #- export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo `curl -s $PR | jq -r .head.ref`; fi)
+  - echo "TRAVIS_BRANCH=$TRAVIS_BRANCH, PR=$PR, BRANCH=$BRANCH"
 after_success:
-- if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then openssl aes-256-cbc -K $encrypted_fb8fa6aea355_key
-  -iv $encrypted_fb8fa6aea355_iv -in .id_rsa.enc -out .id_rsa -d; chmod 400 .id_rsa;
-  scp -B -i .id_rsa wegas-app/target/Wegas.war $USER@dev.albasim.ch:/home/drop/autodeploy/;
-  rm -f .id_rsa; fi
+- openssl aes-256-cbc -K $encrypted_fb8fa6aea355_key -iv $encrypted_fb8fa6aea355_iv -in .id_rsa.enc -out .id_rsa -d; chmod 400 .id_rsa;
+  scp -B -i .id_rsa wegas-app/target/Wegas.war $USER@dev.albasim.ch:/home/drop/autodeploy/Wegas_${BRANCH}.war;
+  rm -f .id_rsa;

@@ -22,7 +22,7 @@ angular.module('public.signup', [
         controller: "ModalsController as modalsCtrl"
     }).then(function(modal) {
         modal.close.then(function(result) {
-            $state.go("^");
+            $state.go('wegas'); // Before direct login: "^"
         });
     });
 });

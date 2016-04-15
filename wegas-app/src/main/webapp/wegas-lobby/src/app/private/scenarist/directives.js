@@ -22,7 +22,7 @@ angular.module('private.scenarist.directives', [
                     }
                 }
             };
-
+        $rootScope.currentRole = "SCENARIST";
         ctrl.loading = true;
         ctrl.scenarios = [];
         ctrl.nbArchives = [];
@@ -110,6 +110,15 @@ angular.module('private.scenarist.directives', [
                         templateId: 0
                     };
                 };
+
+                scope.cancelScenario = function() {
+                    scope.newScenario = {
+                        name: "",
+                        templateId: 0
+                    };
+                    scope.$emit('collapse');
+                };
+
                 scope.createScenario = function() {
                     var button = $(element).find(".form__submit");
 

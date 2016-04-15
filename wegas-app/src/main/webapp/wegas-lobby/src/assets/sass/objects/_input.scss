@@ -62,13 +62,13 @@
 .input--group{
     .input{
         border-bottom-left-radius: 6px;
-        border-bottom-right-radius:0px; 
+        border-bottom-right-radius:0px;
         border-top-left-radius: 6px;
         border-top-right-radius: 0px;
     }
     .button{
         border-bottom-left-radius: 0px;
-        border-bottom-right-radius:6px; 
+        border-bottom-right-radius:6px;
         border-top-left-radius: 0px;
         border-top-right-radius: 6px;
     }
@@ -78,7 +78,7 @@ label.choice{
     display:block;
     position:relative;
     clear:both;
-    height: 24px;;
+    height: 24px;
     width:100%;
     cursor:pointer;
     box-sizing: border-box;
@@ -108,16 +108,16 @@ label.choice{
             transition:.3s;
         }
 
-        input[type="radio"]:checked + .choice__box__display{ 
+        input[type="radio"]:checked + .choice__box__display{
             border:solid 9px lighten($primary-color, 10%);
             transition:.3s;
-        } 
+        }
 
 
-        input[type="checkbox"]:checked + .choice__box__display{ 
+        input[type="checkbox"]:checked + .choice__box__display{
             border:solid 6px lighten($primary-color, 10%);
             transition:.3s;
-        } 
+        }
 
     }
 
@@ -158,12 +158,16 @@ label.choice{
                 transition:.3s;
             }
 
-            input[type="checkbox"]:checked + .choice__box__display{ 
+            input[type="checkbox"]:checked + .choice__box__display{
                 border:none;
                 left:0;
                 background:$success-color;
                 transition:.3s;
-            } 
+            }
         }
     }
+}
+
+.indented {
+    margin-left:20px;
 }
