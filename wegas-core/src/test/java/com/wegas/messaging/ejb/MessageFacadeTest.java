@@ -1,12 +1,6 @@
 package com.wegas.messaging.ejb;
 
-import ch.qos.logback.classic.Level;
-import com.wegas.core.ejb.AbstractEJBTest;
-import com.wegas.core.ejb.BaseFacade;
-import com.wegas.core.ejb.RequestFacade;
-import com.wegas.core.ejb.ScriptFacade;
-import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.core.ejb.*;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -15,17 +9,17 @@ import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
 import com.wegas.messaging.persistence.InboxDescriptor;
 import com.wegas.messaging.persistence.InboxInstance;
 import com.wegas.messaging.persistence.Message;
-import java.util.ArrayList;
-import javax.naming.NamingException;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.naming.NamingException;
+import java.util.ArrayList;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
- *
  * @author Benjamin
  */
 public class MessageFacadeTest extends AbstractEJBTest {
@@ -222,6 +216,7 @@ public class MessageFacadeTest extends AbstractEJBTest {
         vdf.remove(inbox.getId());
         vdf.remove(trigger.getId());
     }
+
     @Test
     public void testInboxSendMultipleCapped() throws NamingException {
         logger.info("send inbox trigger");
@@ -241,8 +236,7 @@ public class MessageFacadeTest extends AbstractEJBTest {
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new TriggerInstance());
         trigger.setPostTriggerEvent(
-                new Script("print(\"sending\");\n" +
-                        "Variable.find(gameModel, 'inbox').sendMessage(self, \"test\", \"test\", \"msg1\");\n" +
+                new Script("Variable.find(gameModel, 'inbox').sendMessage(self, \"test\", \"test\", \"msg1\");\n" +
                         "Variable.find(gameModel, 'inbox').sendMessage(self, \"test\", \"test\", \"msg2\");\n"));
         vdf.create(gameModel.getId(), trigger);
 
@@ -276,11 +270,11 @@ public class MessageFacadeTest extends AbstractEJBTest {
         vdf.flush();
 
         String script = "var inbox = Variable.find(gameModel, \"inbox\");"
-            + "var inbox2 = Variable.find(gameModel, \"inbox\");"
-            + "var inbox3 = Variable.find(gameModel, \"inbox\");"
-            + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
-            + "inbox2.sendMessage(self, \"test\", \"test\", \"test\");\n"
-            + "inbox3.sendMessage(self, \"test\", \"test\", \"test\");\n";
+                + "var inbox2 = Variable.find(gameModel, \"inbox\");"
+                + "var inbox3 = Variable.find(gameModel, \"inbox\");"
+                + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
+                + "inbox2.sendMessage(self, \"test\", \"test\", \"test\");\n"
+                + "inbox3.sendMessage(self, \"test\", \"test\", \"test\");\n";
         scriptFacade.eval(player, new Script("javascript", script), null);
 
         vdf.flush();
@@ -318,10 +312,10 @@ public class MessageFacadeTest extends AbstractEJBTest {
          */
 
         String script = "var inbox = Variable.find(gameModel, \"inbox\");"
-            + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
-            + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
-            + "var inbox2 = Variable.find(gameModel, \"inbox\");"
-            + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n";
+                + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
+                + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
+                + "var inbox2 = Variable.find(gameModel, \"inbox\");"
+                + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n";
         scriptFacade.eval(player, new Script("javascript", script), null);
 
         /*
@@ -366,12 +360,12 @@ public class MessageFacadeTest extends AbstractEJBTest {
         Long inboxId = inbox.getId();
 
         String script = "var inbox = Variable.find(" + inboxId + ");"
-            + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
-            + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
-            + "var inbox2 = Variable.find(" + inboxId + ");"
-            + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
-            + "var inbox3 = Variable.find(" + inboxId + ");"
-            + "inbox2.sendMessage(self, \"test\", \"test\", \"test\");\n";
+                + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
+                + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
+                + "var inbox2 = Variable.find(" + inboxId + ");"
+                + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
+                + "var inbox3 = Variable.find(" + inboxId + ");"
+                + "inbox2.sendMessage(self, \"test\", \"test\", \"test\");\n";
         scriptFacade.eval(player, new Script("javascript", script), null);
 
         // Test
