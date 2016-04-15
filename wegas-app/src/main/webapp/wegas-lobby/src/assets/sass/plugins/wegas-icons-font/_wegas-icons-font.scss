@@ -12,6 +12,7 @@ $wif-play: "i";
 $wif-settings: "j";
 $wif-trash: "k";
 $wif-user: "l";
+$wif-trainer: "m";
 
 @charset "UTF-8";
 @font-face {
@@ -87,4 +88,7 @@ $wif-user: "l";
 }
 .wif-user:before {
   content: $wif-user;
+}
+.wif-trainer:before {
+  content: $wif-trainer;
 }

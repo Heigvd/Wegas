@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb;
 
+import javax.ejb.DependsOn;
 import javax.enterprise.inject.Specializes;
 import javax.inject.Singleton;
 
@@ -16,5 +17,6 @@ import javax.inject.Singleton;
  */
 @Specializes
 @Singleton
+@DependsOn("MutexSingleton")
 public class MockRequestManager extends RequestManager {
 }

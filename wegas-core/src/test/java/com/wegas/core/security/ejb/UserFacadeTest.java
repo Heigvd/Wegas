@@ -9,14 +9,18 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
-import org.junit.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.embeddable.EJBContainer;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import javax.ejb.EJBException;
+import javax.ejb.embeddable.EJBContainer;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Yannick Lagger
@@ -257,7 +261,7 @@ public class UserFacadeTest {
     /**
      * Test CreateSameUser
      */
-    @Test(expected = WegasErrorMessage.class)
+    @Test(expected = EJBException.class)
     public void testCreateSameUser() throws WegasErrorMessage {
         u.addAccount(abstractAccount);
         userFacade.create(u);

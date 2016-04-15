@@ -13,13 +13,13 @@
                id="password" placeholder="{{ 'LOGIN-INPUT-PASSWORD' | translate }}" autocomplete="off"
                ng-model="password">
     </div>
-    <div class="form__row form__row--left">
+    <div class="form__row form__row--right" style="margin:-24px 2px -10px 0;">
         <a class="link link--medium link--simple" ui-sref="wegas.public.password">{{ 'PASSWORD-BTN' | translate }}</a>
     </div>
-    <div class="form__row form__row--right">
+    <div class="form__row form__row--right" style="clear:both">
         <input class="form__row__btn button button--small button--default" type="submit" class="link"
                value="{{ 'LOGIN-BTN' | translate }}"/>
     </div>
 </form>
-<p class="view__first-subtitle subtitle--center subtitle--account">{{'CREATE-ACCOUNT-LABEL' | translate }} <a
-    class="link link--simple-primary" ui-sref="wegas.public.signup">{{'CREATE-ACCOUNT-BTN' | translate}}</a></p>
+<div class="view__first-subtitle subtitle--center subtitle--account" style="width: 380px; margin-top: 40px; padding: 0 32px;"><span style="padding-right:10px; line-height:3em">{{ 'CREATE-ACCOUNT-LABEL' | translate }}</span><a
+    class="link link--simple-primary" ui-sref="wegas.public.signup" style="text-decoration:none;float:right"><button class="button button--small button--success" type="button" style="font-weight: bold; letter-spacing: 1px;">{{'CREATE-ACCOUNT-BTN' | translate}}</button></a></div>

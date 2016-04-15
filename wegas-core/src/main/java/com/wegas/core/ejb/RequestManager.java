@@ -28,14 +28,15 @@ import javax.inject.Named;
 import javax.script.ScriptEngine;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import javax.ejb.DependsOn;
 
 //import javax.annotation.PostConstruct;
-
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Named("RequestManager")
 @RequestScoped
+@DependsOn("MutexSingleton")
 public class RequestManager {
 
     public enum RequestEnvironment {

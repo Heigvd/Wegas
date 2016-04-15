@@ -9,7 +9,25 @@ angular.module('public.signup.directives', [])
             templateUrl: 'app/public/signup/directives.tmpl/index.html'
         };
     })
-    .controller('PublicSignupController', function PublicSignupController($scope, $translate, Auth, Flash) {
+    // Directive for auto-focus
+    .directive('focus', function($timeout) {
+        return {
+            scope : {
+                trigger : '=focus'
+            },
+            link : function(scope, element) {
+                scope.$watch('trigger', function(value) {
+                    console.log('element=',element[0],'  value=',value);
+                    if (value === "true" || value===true) {
+                        $timeout(function() {
+                            element[0].focus();
+                        }, 2000);
+                    }
+                });
+            }
+        };
+    })
+    .controller('PublicSignupController', function PublicSignupController($scope, $translate, Auth, Flash, $state, TeamsModel, SessionsModel, ScenariosModel) {
         "use strict";
         var ctrl = this;
         ctrl.newUser = {
@@ -18,37 +36,90 @@ angular.module('public.signup.directives', [])
             p1: "",
             p2: "",
             firstname: "",
-            lastname: ""
+            lastname: "",
+            language: ""
+        };
+        // Returns true if either (1) username does not look like an e-mail address or (2) username is an e-mail and is identical to the e-mail address field.
+        // Returns false otherwise.
+        ctrl.checkEmailInUsername = function() {
+            var username = ctrl.newUser.username.trim();
+            if (username.indexOf('@') != -1) {
+                return (username==ctrl.newUser.email.trim());
+            } else {
+                return true;
+            }
         };
         ctrl.signup = function() {
-            if (ctrl.newUser.p1 && ctrl.newUser.p1.length > 3) {
-                if (ctrl.newUser.firstname && ctrl.newUser.firstname.length > 0 && ctrl.newUser.lastname &&
-                    ctrl.newUser.lastname.length > 0) {
-                    if (ctrl.newUser.p1 === ctrl.newUser.p2) {
-                        Auth.signup(ctrl.newUser.email,
-                            ctrl.newUser.username,
-                            ctrl.newUser.p1,
-                            ctrl.newUser.firstname,
-                            ctrl.newUser.lastname).then(function(response) {
-                            response.flash();
-                            if (!response.isErroneous()) {
-                                $scope.close();
+            if (ctrl.newUser.username && ctrl.newUser.username.length > 0) {
+                if (ctrl.newUser.email && ctrl.newUser.email.length > 0) {
+                    if (ctrl.checkEmailInUsername()){
+                        if (ctrl.newUser.p1 && ctrl.newUser.p1.length >= 3) {
+                            if (ctrl.newUser.p1 === ctrl.newUser.p2) {
+                                if (ctrl.newUser.firstname && ctrl.newUser.firstname.length > 0 && ctrl.newUser.lastname &&
+                                    ctrl.newUser.lastname.length > 0) {
+                                    Auth.signup(ctrl.newUser.email,
+                                        ctrl.newUser.username,
+                                        ctrl.newUser.p1,
+                                        ctrl.newUser.firstname,
+                                        ctrl.newUser.lastname,
+                                        ctrl.newUser.language).then(function (response) {
+                                        if (response.isErroneous()) {
+                                            response.flash();
+                                        } else {
+                                            $scope.close();
+                                            // Automatic login after successful registration:
+                                            Auth.login(ctrl.newUser.username, ctrl.newUser.p1).then(function(response2) {
+                                                if (response2.isErroneous()) {
+                                                    response2.flash();
+                                                } else {
+                                                    $scope.username = $scope.p1 = "";
+                                                    // clear cache after a Login. We do not want to have previous user's cache
+                                                    TeamsModel.clearCache();
+                                                    SessionsModel.clearCache();
+                                                    ScenariosModel.clearCache();
+                                                    // Browser redirect is done in signup.js
+                                                }
+                                            });
+                                        }
+                                    });
+                                } else {
+                                    if (ctrl.newUser.firstname && ctrl.newUser.firstname.length > 0)
+                                        document.getElementById('lastname').focus();
+                                    else
+                                        document.getElementById('firstname').focus();
+                                    $translate('CREATE-ACCOUNT-FLASH-WRONG-NAME').then(function (message) {
+                                        Flash.danger(message);
+                                    });
+                                }
+                            } else {
+                                document.getElementById('password2').focus();
+                                $translate('CREATE-ACCOUNT-FLASH-WRONG-PASS2').then(function (message) {
+                                    Flash.danger(message);
+                                });
                             }
-                        });
+                        } else {
+                            document.getElementById('password1').focus();
+                            $translate('CREATE-ACCOUNT-FLASH-WRONG-PASS').then(function (message) {
+                                Flash.danger(message);
+                            });
+                        }
                     } else {
-                        $translate('CREATE-ACCOUNT-FLASH-WRONG-PASS2').then(function(message) {
+                        document.getElementById('username').focus();
+                        $translate('CREATE-ACCOUNT-FLASH-WRONG-EMAIL-IN-USERNAME').then(function (message) {
                             Flash.danger(message);
                         });
                     }
                 } else {
-                    $translate('CREATE-ACCOUNT-FLASH-WRONG-NAME').then(function(message) {
+                    document.getElementById('email').focus();
+                    $translate('CREATE-ACCOUNT-FLASH-WRONG-EMAIL').then(function (message) {
                         Flash.danger(message);
                     });
                 }
             } else {
-                $translate('CREATE-ACCOUNT-FLASH-WRONG-PASS').then(function(message) {
+                document.getElementById('username').focus();
+                $translate('CREATE-ACCOUNT-FLASH-WRONG-USERNAME').then(function (message) {
                     Flash.danger(message);
                 });
             }
         };
-    });
+});
