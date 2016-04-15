@@ -11,6 +11,7 @@ import com.wegas.core.security.persistence.User;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.embeddable.EJBContainer;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -226,7 +227,7 @@ public class UserFacadeTest {
     /**
      * Test CreateSameUser
      */
-    @Test(expected = WegasErrorMessage.class)
+    @Test(expected = EJBTransactionRolledbackException.class)
     public void testCreateSameUser() throws WegasErrorMessage {
         u.addAccount(abstractAccount);
         userFacade.create(u);
