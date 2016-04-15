@@ -21,6 +21,8 @@ import com.wegas.core.rest.util.Views;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 //import javax.xml.bind.annotation.XmlRootElement;
@@ -172,6 +174,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
      * @param transitions
      */
     public void setTransitions(List<Transition> transitions) {
+        Collections.sort(transitions, (o1, o2) -> o1.getIndex() - o2.getIndex());
         this.transitions = transitions;
     }
 
@@ -181,8 +184,8 @@ public class State extends AbstractEntity implements Searchable, Scripted {
             State newState = (State) other;
             this.label = newState.getLabel();
             this.onEnterEvent = newState.getOnEnterEvent();
-            this.editorPosition = newState.editorPosition;
-            this.transitions = ListUtils.mergeLists(this.transitions, newState.transitions);
+            this.editorPosition = newState.getEditorPosition();
+            this.setTransitions(ListUtils.mergeReplace(this.getTransitions(), newState.getTransitions()));
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
         }

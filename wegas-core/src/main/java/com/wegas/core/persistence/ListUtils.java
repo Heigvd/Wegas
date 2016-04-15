@@ -119,8 +119,8 @@ public class ListUtils {
             }
         }
         //Add all new elements
-        for (AbstractEntity newEntity : newElements) {
-            oldList.add((E) newEntity);
+        for (E newEntity : newElements) {
+            oldList.add(newEntity);
             if (callback != null) {
                 callback.addEntity(newEntity);
             }
@@ -145,6 +145,7 @@ public class ListUtils {
      * @return A merged list
      */
     public static <E extends AbstractEntity> List<E> mergeReplace(List<E> oldList, List<E> newList) {
+        final List<E> updatedList = new ArrayList<>();
         ListUtils.ListKeyToMap<Long, E> converter = new ListUtils.ListKeyToMap<Long, E>() {
             @Override
             public Long getKey(E item) {
@@ -152,22 +153,21 @@ public class ListUtils {
             }
         };
         Map<Long, E> elementMap = ListUtils.listAsMap(oldList, converter);      //Create a map with oldList based on Ids
-        oldList.clear();
-        for (Iterator<E> it = newList.iterator(); it.hasNext();) {
-            E element = it.next();
+      //  oldList.clear();
+        for (E element : newList) {
             if (elementMap.containsKey(element.getId())) {                      //old element still exists
                 elementMap.get(element.getId()).merge(element);                 //Then merge them
-                oldList.add(elementMap.get(element.getId()));
+                updatedList.add(elementMap.get(element.getId()));
             } else {
                 try {
                     E newElement = (E) element.getClass().newInstance();
                     newElement.merge(element);
-                    oldList.add(newElement);
+                    updatedList.add(newElement);
                 } catch (InstantiationException | IllegalAccessException ex) {
                 }
             }
         }
-        return oldList;
+        return updatedList;
     }
 
     /**

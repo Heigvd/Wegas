@@ -103,7 +103,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
             this.setDuration(other.getDuration());
             this.setCost(other.getCost());
 
-            ListUtils.mergeReplace(this.getResults(), other.getResults());
+            this.setResults(ListUtils.mergeReplace(this.getResults(), other.getResults()));
 
             // Has currentResult been removed ?
             ChoiceInstance defaultInstance = this.getDefaultInstance();
