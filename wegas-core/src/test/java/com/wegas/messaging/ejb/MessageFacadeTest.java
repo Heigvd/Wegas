@@ -206,7 +206,7 @@ public class MessageFacadeTest extends AbstractEJBTest {
         trigger.setDefaultInstance(new TriggerInstance());
         trigger.setTriggerEvent(new Script("true"));
         trigger.setPostTriggerEvent(
-            new Script("print(\"sending\");var inbox = VariableDescriptorFacade.find(" + inbox.getId() + "); inbox.sendMessage(self, \"test\", \"test\", \"test\");"));
+                new Script("print(\"sending\");var inbox = VariableDescriptorFacade.find(" + inbox.getId() + "); inbox.sendMessage(self, \"test\", \"test\", \"test\");"));
         vdf.create(gameModel.getId(), trigger);
 
         // Reset
@@ -218,6 +218,42 @@ public class MessageFacadeTest extends AbstractEJBTest {
         assertEquals(1, ((InboxInstance) vif.find(inbox.getId(), player2)).getMessages().size());
         assertTrue(ii.getMessages().get(0).getBody().equals("test"));
 
+        // Clean up
+        vdf.remove(inbox.getId());
+        vdf.remove(trigger.getId());
+    }
+    @Test
+    public void testInboxSendMultipleCapped() throws NamingException {
+        logger.info("send inbox trigger");
+        // Lookup Ejb's
+        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
+        final ScriptFacade scriptFacade = lookupBy(ScriptFacade.class);
+
+        // Create a inbox descriptor
+        InboxDescriptor inbox = new InboxDescriptor();
+        inbox.setName("inbox");
+        inbox.setCapped(true);
+        inbox.setDefaultInstance(new InboxInstance());
+        vdf.create(gameModel.getId(), inbox);
+
+        // Create a trigger
+        TriggerDescriptor trigger = new TriggerDescriptor();
+        trigger.setDefaultInstance(new TriggerInstance());
+        trigger.setPostTriggerEvent(
+                new Script("print(\"sending\");\n" +
+                        "Variable.find(gameModel, 'inbox').sendMessage(self, \"test\", \"test\", \"msg1\");\n" +
+                        "Variable.find(gameModel, 'inbox').sendMessage(self, \"test\", \"test\", \"msg2\");\n"));
+        vdf.create(gameModel.getId(), trigger);
+
+        // Reset
+        gameModelFacade.reset(gameModel.getId());
+
+        InboxInstance ii = ((InboxInstance) vif.find(inbox.getId(), player));
+        // Test
+        assertEquals(1, ((InboxInstance) vif.find(inbox.getId(), player)).getMessages().size());
+        assertTrue(ii.getMessages().get(0).getBody().equals("msg2"));
+        scriptFacade.eval(player, new Script("Variable.find(gameModel, 'inbox').sendMessage(self, \"test\", \"test\", \"msg out\");"), null);
         // Clean up
         vdf.remove(inbox.getId());
         vdf.remove(trigger.getId());

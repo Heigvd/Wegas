@@ -54,7 +54,7 @@ public class InboxInstance extends VariableInstance {
      * @return the replies
      */
     public List<Message> getMessages() {
-        return messages;
+        return this.messages;
     }
 
     /**
@@ -73,7 +73,11 @@ public class InboxInstance extends VariableInstance {
     public void addMessage(Message message) {
         InboxDescriptor descr = (InboxDescriptor) this.findDescriptor();
         if (descr.getCapped()) {
-            this.getMessages().clear();
+            /*
+             Multiple message in same transaction will end in null object with List#clear
+             MessageFacadeTest#testInboxSendMultipleCapped
+             */
+            this.setMessages(new ArrayList<>());
         }
         this.getMessages().add(0, message);
         message.setInboxInstance(this);
@@ -83,7 +87,10 @@ public class InboxInstance extends VariableInstance {
     public void merge(AbstractEntity a) {
         if (a instanceof InboxInstance) {
             InboxInstance other = (InboxInstance) a;
-            ListUtils.updateList(this.getMessages(), other.getMessages());
+            ListUtils.mergeLists(this.getMessages(), other.getMessages());
+            for (Message m : this.getMessages()) {
+                m.setInboxInstance(this);
+            }
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
