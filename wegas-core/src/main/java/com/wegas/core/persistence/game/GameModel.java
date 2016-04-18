@@ -564,7 +564,9 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         if (this.getPages() != null) {
             try (final Pages pagesDAO = new Pages(this.id.toString())) {
                 pagesDAO.delete();                                              // Remove existing pages
-                for (Entry<String, JsonNode> p : this.getPages().entrySet()) {       // Add all pages
+                // Pay Attention: this.pages != this.getPages() ! 
+                // this.pages contains deserialized pages, getPages() fetchs them from the jackrabbit repository
+                for (Entry<String, JsonNode> p : this.pages.entrySet()) {       // Add all pages
                     pagesDAO.store(new Page(p.getKey(), p.getValue()));
                 }
 

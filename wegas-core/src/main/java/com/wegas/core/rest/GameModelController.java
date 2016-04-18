@@ -90,8 +90,8 @@ public class GameModelController {
 
     @PUT
     @Path("{templateGameModelId : [1-9][0-9]*}/UpdateFromPlayer/{playerId: [1-9][0-9]*}")
-    public GameModel updateFromPlayer(@PathParam("templateGameModelId") Long templateGameModelId, 
-            @PathParam("playerId") Long playerId) throws IOException {
+    public GameModel updateFromPlayer(@PathParam("templateGameModelId") Long templateGameModelId,
+        @PathParam("playerId") Long playerId) throws IOException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + templateGameModelId);
 
@@ -103,8 +103,8 @@ public class GameModelController {
 
     @POST
     @Path("{templateGameModelId : [1-9][0-9]*}/CreateFromPlayer/{playerId: [1-9][0-9]*}")
-    public GameModel createFromPlayer(@PathParam("templateGameModelId") Long templateGameModelId, 
-            @PathParam("playerId") Long playerId) throws IOException {
+    public GameModel createFromPlayer(@PathParam("templateGameModelId") Long templateGameModelId,
+        @PathParam("playerId") Long playerId) throws IOException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Duplicate:gm" + templateGameModelId);
         GameModel duplicate = gameModelFacade.createFromPlayer(templateGameModelId, playerId);
@@ -122,7 +122,7 @@ public class GameModelController {
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public GameModel upload(@FormDataParam("file") InputStream file,
-            @FormDataParam("file") FormDataBodyPart details) throws IOException {
+        @FormDataParam("file") FormDataBodyPart details) throws IOException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Create");
 
@@ -155,7 +155,7 @@ public class GameModelController {
     @Path("{entityId : [1-9][0-9]*}/{filename: .*}.json")                       // @hack allow to add a filename with *.json to have a nice file
     public Response downloadJSON(@PathParam("entityId") Long entityId, @PathParam("filename") String filename) {
         return Response.ok(this.get(entityId))
-                .header("Content-Disposition", "attachment; filename=" + filename).build();
+            .header("Content-Disposition", "attachment; filename=" + filename).build();
     }
 
     /**
@@ -201,8 +201,8 @@ public class GameModelController {
         for (GameModel gm : gameModelFacade.findTemplateGameModelsByStatus(GameModel.Status.LIVE)) {
             //if (s.isPermitted("GameModel:" + r +":gm" + aGm.getId())) {
             if (s.isPermitted("GameModel:View:gm" + gm.getId())
-                    || s.isPermitted("GameModel:Instantiate:gm" + gm.getId())
-                    || s.isPermitted("GameModel:Duplicate:gm" + gm.getId())) {
+                || s.isPermitted("GameModel:Instantiate:gm" + gm.getId())
+                || s.isPermitted("GameModel:Duplicate:gm" + gm.getId())) {
                 games.add(gm);
             }
         }
@@ -218,8 +218,8 @@ public class GameModelController {
         switch (status) {
             case LIVE:
                 if (s.isPermitted("GameModel:View:gm" + gm.getId())
-                        || s.isPermitted("GameModel:Instantiate:gm" + gm.getId())
-                        || s.isPermitted("GameModel:Duplicate:gm" + gm.getId())) {
+                    || s.isPermitted("GameModel:Instantiate:gm" + gm.getId())
+                    || s.isPermitted("GameModel:Duplicate:gm" + gm.getId())) {
                     gameModelFacade.live(gm);
                 }
                 break;
@@ -245,8 +245,8 @@ public class GameModelController {
         Subject s = SecurityUtils.getSubject();
         for (GameModel gm : gameModelFacade.findTemplateGameModelsByStatus(status)) {
             if (s.isPermitted("GameModel:View:gm" + gm.getId())
-                    || s.isPermitted("GameModel:Instantiate:gm" + gm.getId())
-                    || s.isPermitted("GameModel:Duplicate:gm" + gm.getId())) {
+                || s.isPermitted("GameModel:Instantiate:gm" + gm.getId())
+                || s.isPermitted("GameModel:Duplicate:gm" + gm.getId())) {
                 games.add(gm);
             }
         }
@@ -260,8 +260,8 @@ public class GameModelController {
         Subject s = SecurityUtils.getSubject();
         for (GameModel gm : gameModelFacade.findTemplateGameModelsByStatus(status)) {
             if (s.isPermitted("GameModel:View:gm" + gm.getId())
-                    || s.isPermitted("GameModel:Instantiate:gm" + gm.getId())
-                    || s.isPermitted("GameModel:Duplicate:gm" + gm.getId())) {
+                || s.isPermitted("GameModel:Instantiate:gm" + gm.getId())
+                || s.isPermitted("GameModel:Duplicate:gm" + gm.getId())) {
                 games.add(gm);
             }
         }
@@ -313,7 +313,7 @@ public class GameModelController {
     @GET
     @Path("{gameModelId: [1-9][0-9]*}/Restore/{path: .*}")
     public GameModel restoreVersion(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("path") String path) throws IOException {
+        @PathParam("path") String path) throws IOException {
 
         //SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
         //InputStream file = fileController.getFile(gameModelId, path);           // Retrieve file from content repository
@@ -338,7 +338,7 @@ public class GameModelController {
     @GET
     @Path("{gameModelId: [1-9][0-9]*}/CreateFromVersion/{path: .*}")
     public GameModel createFromVersion(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("path") String path) throws IOException {
+        @PathParam("path") String path) throws IOException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
@@ -355,7 +355,7 @@ public class GameModelController {
     @POST
     @Path("{gameModelId: [1-9][0-9]*}/CreateVersion/{version: .*}")
     public void createVersion(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("name") String name) throws RepositoryException, IOException {
+        @PathParam("name") String name) throws RepositoryException, IOException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
         gameModelFacade.createVersion(gameModelId, name);
@@ -373,7 +373,7 @@ public class GameModelController {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
         gameModelFacade.createVersion(gameModelId, new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date())
-                + " by " + userFacade.getCurrentUser().getName());
+            + " by " + userFacade.getCurrentUser().getName());
     }
 
     /**
