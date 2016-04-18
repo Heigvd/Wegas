@@ -151,6 +151,7 @@ public class Team extends AbstractEntity implements Broadcastable {
     public void addPlayer(Player p) {
         this.players.add(p);
         p.setTeam(this);
+        p.setTeamId(this.getId());
     }
 
     /**
@@ -212,6 +213,10 @@ public class Team extends AbstractEntity implements Broadcastable {
      */
     public Long getGameId() {
         return gameId;
+    }
+
+    public void setGameId(Long gameId) {
+        this.gameId = gameId;
     }
 
     /**

@@ -93,15 +93,16 @@ public class Player extends AbstractEntity implements Broadcastable {
     public Player(String name) {
         this.name = name;
     }
+
     /**
-     * 
+     *
      * @param user
-     * @param team 
+     * @param team
      */
     public Player(User user, Team team) {
         this.name = user.getName();
         this.user = user;
-        this.userId =  user.getId();
+        this.userId = user.getId();
         this.team = team;
         this.teamId = team.getId();
     }
@@ -113,7 +114,7 @@ public class Player extends AbstractEntity implements Broadcastable {
     @PreUpdate
     public void preUpdate() {
         if ((this.getName() == null || this.getName().equals(""))
-                && this.getUser() != null) {                                    // User may be null for test players
+            && this.getUser() != null) {                                    // User may be null for test players
             this.name = this.getUser().getName();
         }
     }
@@ -173,14 +174,28 @@ public class Player extends AbstractEntity implements Broadcastable {
      * @return the teamId
      */
     public Long getTeamId() {
-        return teamId;
+        if (this.teamId == null && this.getTeam() != null) {
+            this.teamId = this.getTeam().getId();
+        }
+        return this.teamId;
+    }
+
+    /**
+     * 
+     * @param teamId 
+     */
+    public void setTeamId(Long teamId) {
+        this.teamId = teamId;
     }
 
     /**
      * @return the userId
      */
     public Long getUserId() {
-        return userId;
+        if (this.userId == null && this.getUser() != null) {
+            this.userId = this.getUser().getId();
+        }
+        return this.userId;
     }
 
     // *** Sugar *** //
@@ -253,7 +268,9 @@ public class Player extends AbstractEntity implements Broadcastable {
     }
 
     /**
-     * Retrieve all variableInstances that belongs to this player only (ie. playerScoped)
+     * Retrieve all variableInstances that belongs to this player only (ie.
+     * playerScoped)
+     *
      * @return all player playerScoped instances
      */
     public List<VariableInstance> getPrivateInstances() {
@@ -283,12 +300,12 @@ public class Player extends AbstractEntity implements Broadcastable {
     public int hashCode() {
         int hash = 7;
         hash = 83 * hash + Objects.hashCode(this.id);
-        hash = 83 * hash + Objects.hashCode(this.user);
-        hash = 83 * hash + Objects.hashCode(this.userId);
+        //hash = 83 * hash + Objects.hashCode(this.user);
+        //hash = 83 * hash + Objects.hashCode(this.userId);
         hash = 83 * hash + Objects.hashCode(this.name);
         hash = 83 * hash + Objects.hashCode(this.joinTime);
-        hash = 83 * hash + Objects.hashCode(this.team);
-        hash = 83 * hash + Objects.hashCode(this.teamId);
+        //hash = 83 * hash + Objects.hashCode(this.team);
+        //hash = 83 * hash + Objects.hashCode(this.teamId);
         return hash;
     }
 

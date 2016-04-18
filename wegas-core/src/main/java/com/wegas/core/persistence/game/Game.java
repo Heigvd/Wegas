@@ -164,7 +164,7 @@ public class Game extends NamedEntity implements Broadcastable {
     @PrePersist
     public void prePersist() {
         this.setCreatedTime(new Date());
-        if (this.teams.isEmpty()) {
+        if (this.getTeams().isEmpty()) {
             this.addTeam(new DebugTeam());
         }
         this.preUpdate();
@@ -231,8 +231,9 @@ public class Game extends NamedEntity implements Broadcastable {
     //@XmlTransient
     @JsonIgnore
     public void addTeam(Team t) {
-        this.teams.add(t);
+        this.getTeams().add(t);
         t.setGame(this);
+        t.setGameId(this.getId());
     }
 
     /**
