@@ -37,7 +37,7 @@ import java.util.Map.Entry;
     @NamedQuery(name = "GameModel.findDistinctChildrenLabels", query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.rootGameModel = :container"),
     @NamedQuery(name = "GameModel.findByName", query = "SELECT a FROM GameModel a WHERE a.name = :name"),
     @NamedQuery(name = "GameModel.findTemplate", query = "SELECT a FROM GameModel a WHERE a.template = TRUE"),
-    @NamedQuery(name = "GameModel.findTemplateByStatus", query = "SELECT a FROM GameModel a WHERE a.template = TRUE AND a.status = :status"),
+    @NamedQuery(name = "GameModel.findTemplateByStatus", query = "SELECT a FROM GameModel a WHERE a.template = TRUE AND a.status = :status ORDER BY a.name"),
     @NamedQuery(name = "GameModel.findAll", query = "SELECT gm FROM GameModel gm")})
 public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor> /*, Broadcastable */ {
 
