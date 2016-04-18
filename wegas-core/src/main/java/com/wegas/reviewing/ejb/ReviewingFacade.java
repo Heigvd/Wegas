@@ -159,8 +159,11 @@ public class ReviewingFacade {
     private Review createReview(PeerReviewDescriptor prd, PeerReviewInstance author, PeerReviewInstance reviewer) {
         Review r = new Review();
         r.setReviewState(Review.ReviewState.DISPATCHED);
-        r.setAuthor(author);
-        r.setReviewer(reviewer);
+
+        reviewer.addToToReview(r);
+        author.addToReviewed(r);
+
+        //r.setAuthor(author);
         for (EvaluationDescriptor ed : prd.getFeedback().getEvaluations()) {
             EvaluationInstance ei = ed.createInstance();
             ei.setFeedbackReview(r);
@@ -269,21 +272,21 @@ public class ReviewingFacade {
             if (author.getReviewState() == PeerReviewDescriptor.ReviewingState.SUBMITTED
                 || author.getReviewState() == PeerReviewDescriptor.ReviewingState.NOT_STARTED) {
                 logger.warn("Dispatch Author");
-                List<Review> reviewed = author.getReviewed();
+                //List<Review> reviewed = author.getReviewed();
                 for (j = 1; j <= numberOfReview; j++) {
                     PeerReviewInstance reviewer = pris.get((i + j) % pris.size());
                     Review r = createReview(prd, author, reviewer);
-                    reviewed.add(r);
+                    //reviewed.add(r);
                     //reviewer.getToReview().add(r);
                 }
                 author.setReviewState(PeerReviewDescriptor.ReviewingState.DISPATCHED);
                 touched.add(author);
             }
         }
-        for (PeerReviewInstance pri : pris) {
+        /*for (PeerReviewInstance pri : pris) {
             variableInstanceFacade.merge(pri);
             em.flush();
-        }
+        }*/
         return touched;
     }
 
@@ -389,10 +392,10 @@ public class ReviewingFacade {
         r = this.saveReview(pri, review);
         if (r.getReviewState() == Review.ReviewState.DISPATCHED) {
             r.setReviewState(Review.ReviewState.REVIEWED);
-            em.merge(r);
+            //em.merge(r);
         } else if (r.getReviewState() == Review.ReviewState.NOTIFIED) {
             r.setReviewState(Review.ReviewState.COMPLETED);
-            em.merge(r);
+            //em.merge(r);
         }
         return r;
     }
@@ -424,7 +427,7 @@ public class ReviewingFacade {
             }
             touched.add(pri);
             pri.setReviewState(PeerReviewDescriptor.ReviewingState.NOTIFIED);
-            variableInstanceFacade.merge(pri);
+            //variableInstanceFacade.merge(pri);
             //requestManager.addUpdatedInstance(pri);
         }
         return touched;
@@ -462,7 +465,7 @@ public class ReviewingFacade {
             }
             pri.setReviewState(PeerReviewDescriptor.ReviewingState.COMPLETED);
             touched.add(pri);
-            variableInstanceFacade.merge(pri);
+            //variableInstanceFacade.merge(pri);
             //requestManager.addUpdatedInstance(pri);
         }
         return touched;

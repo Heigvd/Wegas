@@ -801,7 +801,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             prd = this.get("variable.evaluated");
             pri = prd.getInstance();
 
-            if (pri.get("reviewState") !== "DISPATCHED") {
+            if (pri.get("reviewState") === "NOT_STARTED") {
                 this.status = "EMPTY";
                 this.tabView.add(new Y.Tab({
                     label: "",
@@ -841,7 +841,7 @@ YUI.add("wegas-review-widgets", function(Y) {
 
             //this.hideOverlay();
 
-            if (this.status === "EMPTY" && pri.get("reviewState") === "DISPATCHED") {
+            if (this.status === "EMPTY" && pri.get("reviewState") !== "NOT_STARTED") {
                 this.status = "BUILT";
                 this.isRemovingTabs = true;
                 this.tabView.destroyAll();
@@ -878,7 +878,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                     review = reviews[j];
                     tab = null;
                     for (k = 0; k < this.tabView.size(); k += 1) {
-                        if (this.tabView.item(k).review && this.tabView.item(k).review.get("id") === review.get("id")) {
+                        if (this.tabView.item(k).reviewer === (i === 0) && this.tabView.item(k).review && this.tabView.item(k).review.get("id") === review.get("id")) {
                             tab = this.tabView.item(k);
                             break;
                         }

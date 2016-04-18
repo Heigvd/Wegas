@@ -95,6 +95,15 @@ public class PeerReviewInstance extends VariableInstance {
     }
 
     /**
+     *
+     * @param r
+     */
+    public void addToToReview(Review r) {
+        this.getToReview().add(r);
+        r.setReviewer(this);
+    }
+
+    /**
      * Get the list of feedback written by others authors
      *
      * @return
@@ -112,6 +121,11 @@ public class PeerReviewInstance extends VariableInstance {
         this.reviewed = reviewed;
     }
 
+    public void addToReviewed(Review r) {
+        this.getReviewed().add(r);
+        r.setAuthor(this);
+    }
+
     @Override
     public void merge(AbstractEntity a) {
         if (a != null) {
@@ -125,5 +139,4 @@ public class PeerReviewInstance extends VariableInstance {
             }
         }
     }
-
 }
