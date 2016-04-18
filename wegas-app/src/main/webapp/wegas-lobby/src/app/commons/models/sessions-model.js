@@ -38,7 +38,7 @@ angular.module('wegas.models.sessions', [])
                     }
                 }).success(function(data) {
                     if (data.events !== undefined && data.events.length === 0) {
-                        sessions.cache[status].data = data.entities;
+                        sessions.cache[status].data = data.updatedEntities;
                         $translate('COMMONS-SESSIONS-FIND-FLASH-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, sessions.cache[status]));
                         });

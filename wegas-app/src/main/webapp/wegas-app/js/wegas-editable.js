@@ -292,6 +292,8 @@ YUI.add('wegas-editable', function(Y) {
             }
 
             props = ["children", "entities", "items"];                          // Revive array attributes
+            props.push("updatedEntities");
+            props.push("deletedEntities");
             for (i = 0; i < props.length; i += 1) {
                 if (cfg[props[i]]) {                                            // Get definitions from children (for Y.WidgetParent widgets)
                     Y.Array.each(cfg[props[i]], function(field) {

@@ -301,9 +301,9 @@ angular.module('wegas.models.teams', [])
                             }).success(
                                 function(data) {
                                     var i, team;
-                                    for (i = 0; i < data.entities.length; i += 1) {
-                                        if (data.entities[i]["@class"] === "Team") {
-                                            team = data.entities[i];
+                                    for (i = 0; i < data.updatedEntities.length; i += 1) {
+                                        if (data.updatedEntities[i]["@class"] === "Team") {
+                                            team = data.updatedEntities[i];
                                             break;
                                         }
                                     }
@@ -370,9 +370,9 @@ angular.module('wegas.models.teams', [])
                                 }
                             }).success(function(data) {
                                 var i, team;
-                                for (i = 0; i < data.entities.length; i += 1) {
-                                    if (data.entities[i]["@class"] === "Team") {
-                                        team = data.entities[i];
+                                for (i = 0; i < data.updatedEntities.length; i += 1) {
+                                    if (data.updatedEntities[i]["@class"] === "Team") {
+                                        team = data.updatedEntities[i];
                                         break;
                                     }
                                 }

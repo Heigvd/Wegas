@@ -18,6 +18,7 @@ YUI.add('wegas-datasource', function(Y) {
         POST = "POST",
         GET = "GET",
         PUT = "PUT",
+        DELETE = "DELETE",
         ITEMS = "items",
         CLASS = "@class",
         Lang = Y.Lang,
@@ -303,8 +304,8 @@ YUI.add('wegas-datasource', function(Y) {
                 Wegas.Editable.use(payload.response.results, // Lookup dependencies
                     Y.bind(function(payload) {
                         payload.serverResponse = Wegas.Editable.revive(payload.response.results); // Revive
-                        if (payload.serverResponse.get && payload.serverResponse.get("entities")) {
-                            payload.response.entities = payload.serverResponse.get("entities");
+                        if (payload.serverResponse.get && payload.serverResponse.get("updatedEntities")) {
+                            payload.response.entities = payload.serverResponse.get("updatedEntities");
                             if (payload.response.entities.length > 0) {
                                 payload.response.entity = payload.response.entities[0]; // Shortcut, useful if there is
                                 // only one instance
@@ -346,13 +347,23 @@ YUI.add('wegas-datasource', function(Y) {
                     }
                 }
             } else if (response instanceof Y.Wegas.persistence.ManagedResponse) { // Managed-Mode ManagedResponse
-                if (response.get("entities")) {
-                    if (toUpdate) { // No Update ? No-update...
-                        for (i = 0; i < response.get("entities").length; i += 1) { // Update the cache with the Entities in the reply body
-                            entity = response.get("entities")[i];
+                if (toUpdate) { // No Update ? No-update...
+                    if (response.get("updatedEntities")) {
+                        for (i = 0; i < response.get("updatedEntities").length; i += 1) { // Update the cache with the Entities in the reply body
+                            entity = response.get("updatedEntities")[i];
                             if (Lang.isObject(entity)) {
-                                method = e.cfg && e.cfg.method ? e.cfg.method : "POST";
-                                this.updated = this.updateCache(method, entity, !e.cfg || !e.cfg.initialRequest) ||
+                                this.updated = this.updateCache(POST, entity, !e.cfg || !e.cfg.initialRequest) ||
+                                    this.updated;
+                            }
+                        }
+                    }
+
+                    if (response.get("deletedEntities")) {
+                        for (i = 0; i < response.get("deletedEntities").length; i += 1) { // Update the cache with the Entities in the reply body
+                            entity = response.get("deletedEntities")[i];
+                            if (Lang.isObject(entity)) {
+                                //method = e.cfg && e.cfg.method ? e.cfg.method : "POST";
+                                this.updated = this.updateCache(DELETE, entity, !e.cfg || !e.cfg.initialRequest) ||
                                     this.updated;
                             }
                         }
@@ -848,34 +859,38 @@ YUI.add('wegas-datasource', function(Y) {
          */
         updateCache: function(method, entity) {
             if (entity instanceof Wegas.persistence.VariableInstance) {
-                return this.find(ID, +entity.get("descriptorId"), Y.bind(function(found, needle) {
-                    var i, instances = found.get("scope").get("variableInstances"), update = false;
+                if (method === DELETE) {
+                    // shall never happen...
+                } else {
+                    return this.find(ID, +entity.get("descriptorId"), Y.bind(function(found, needle) {
+                        var i, instances = found.get("scope").get("variableInstances"), update = false;
 
-                    for (i in instances) {
-                        if (instances[i].get(ID) === entity.get(ID)) {
-                            instances[i].setAttrs(entity.getAttrs());
-                            update = true;
-                            this.get(HOST).fire("updatedInstance", {// Variable instance updated
-                                entity: entity
-                            });
-                            break;
+                        for (i in instances) {
+                            if (instances[i].get(ID) === entity.get(ID)) {
+                                instances[i].setAttrs(entity.getAttrs());
+                                update = true;
+                                this.get(HOST).fire("updatedInstance", {// Variable instance updated
+                                    entity: entity
+                                });
+                                break;
+                            }
                         }
-                    }
-                    if (!update) { // New variable instance
-                        switch (found.get("scope").get("@class")) {
-                            case "TeamScope":
-                                instances[String(Wegas.Facade.Game.get("currentTeamId"))] = entity;
-                                break;
-                            case "PlayerScope":
-                                instances[String(Wegas.Facade.Game.get("currentPlayerId"))] = entity;
-                                break;
-                            case "GameScope":
-                                instances[String(Wegas.Facade.Game.get("currentGameId"))] = entity;
-                                break;
+                        if (!update) { // New variable instance
+                            switch (found.get("scope").get("@class")) {
+                                case "TeamScope":
+                                    instances[String(Wegas.Facade.Game.get("currentTeamId"))] = entity;
+                                    break;
+                                case "PlayerScope":
+                                    instances[String(Wegas.Facade.Game.get("currentPlayerId"))] = entity;
+                                    break;
+                                case "GameScope":
+                                    instances[String(Wegas.Facade.Game.get("currentGameId"))] = entity;
+                                    break;
+                            }
                         }
-                    }
-                    return true;
-                }, this));
+                        return true;
+                    }, this));
+                }
             } else if (entity instanceof Wegas.persistence.VariableDescriptor) {
                 return VariableDescriptorCache.superclass.updateCache.apply(this, arguments);
             }
