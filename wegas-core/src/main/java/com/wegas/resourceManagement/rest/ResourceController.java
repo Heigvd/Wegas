@@ -15,6 +15,7 @@ import javax.ejb.Stateless;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -53,8 +54,8 @@ public class ResourceController {
      * @param index
      * @return
      */
-    @POST
-    @Path("Assign/{assignmentId : [1-9][0-9]*}/{index : [0-9]*}")
+    @PUT
+    @Path("MoveAssignment/{assignmentId : [1-9][0-9]*}/{index : [0-9]*}")
     public ResourceInstance moveAssignment(@PathParam("assignmentId") Long assignmentId, @PathParam("index") Integer index) {
         return resourceFacade.moveAssignment(assignmentId, index);
     }
