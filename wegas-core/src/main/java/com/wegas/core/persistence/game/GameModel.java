@@ -561,7 +561,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
 
     @PostPersist
     private void storePages() {
-        if (this.getPages() != null) {
+        if (this.pages != null) {
             try (final Pages pagesDAO = new Pages(this.id.toString())) {
                 pagesDAO.delete();                                              // Remove existing pages
                 // Pay Attention: this.pages != this.getPages() ! 
