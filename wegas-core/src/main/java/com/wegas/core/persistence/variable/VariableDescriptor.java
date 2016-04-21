@@ -236,7 +236,9 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      */
     public void setDefaultInstance(T defaultInstance) {
         this.defaultInstance = defaultInstance;
-        defaultInstance.setDefaultDescriptor(this);
+        if (this.defaultInstance != null) {
+            this.defaultInstance.setDefaultDescriptor(this);
+        }
     }
 
     /**
@@ -422,7 +424,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
                 this.setLabel(other.getLabel());
                 this.setTitle(other.getTitle());
                 this.setComments(other.getComments());
-                this.defaultInstance.merge(other.getDefaultInstance());
+                this.getDefaultInstance().merge(other.getDefaultInstance());
                 if (other.getScope() != null) {
                     this.scope.setBroadcastScope(other.getScope().getBroadcastScope());
                 }
