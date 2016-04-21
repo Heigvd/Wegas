@@ -7,7 +7,6 @@
  */
 package com.wegas.core.rest;
 
-import com.hazelcast.spi.exception.ResponseAlreadySentException;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.internal.WegasForbiddenException;
 import com.wegas.core.rest.util.CacheManagerHolder;
@@ -25,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.servlet.ServletContext;

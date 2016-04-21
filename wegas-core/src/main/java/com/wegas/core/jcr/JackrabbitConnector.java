@@ -97,7 +97,7 @@ public class JackrabbitConnector {
      * @param workspaceName
      */
     private static void deleteWorkspaces(List<String> toDelete) {
-        String dbName = Helper.getWegasProperty("jcr.jdbc-resource-name");
+        String dbName = Helper.getWegasProperty("jcr.jdbc.resource-name");
         try {
             DataSource ds = (DataSource) new InitialContext().lookup(dbName);
             try (Connection con = ds.getConnection()) {

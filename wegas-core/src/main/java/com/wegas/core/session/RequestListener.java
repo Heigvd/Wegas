@@ -7,9 +7,6 @@
  */
 package com.wegas.core.session;
 
-import com.sun.faces.application.resource.ResourceCache;
-import com.sun.faces.config.WebConfiguration;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletRequestEvent;
 import javax.servlet.ServletRequestListener;
 

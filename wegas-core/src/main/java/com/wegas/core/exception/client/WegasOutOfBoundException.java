@@ -7,8 +7,6 @@
  */
 package com.wegas.core.exception.client;
 
-import com.wegas.core.persistence.variable.VariableDescriptor;
-
 /**
  *
  * @author Maxence Laurent <maxence.laurent gmail.com>

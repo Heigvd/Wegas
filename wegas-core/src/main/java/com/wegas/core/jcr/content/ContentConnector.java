@@ -34,8 +34,6 @@ public class ContentConnector implements AutoCloseable {
 
     final private Session session;
 
-    private String workspace = null;
-
     /**
      * @param bytes
      * @return
@@ -55,8 +53,8 @@ public class ContentConnector implements AutoCloseable {
      * @throws RepositoryException
      */
     protected ContentConnector(Long gameModelId) throws RepositoryException {
-        this.workspace = "GM_" + gameModelId;
-        this.session = SessionHolder.getSession(this.workspace);
+        String workspace = "GM_" + gameModelId;
+        this.session = SessionHolder.getSession(workspace);
         this.initializeNamespaces();
 
     }

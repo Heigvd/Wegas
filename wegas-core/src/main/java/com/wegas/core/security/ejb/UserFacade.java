@@ -31,7 +31,10 @@ import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.*;
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Schedule;
+import javax.ejb.Stateless;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.persistence.NoResultException;
@@ -39,8 +42,6 @@ import javax.persistence.Query;
 import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import java.util.*;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
 
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -172,7 +173,7 @@ public class UserFacade extends BaseFacade<User> {
         for (Role r : entity.getRoles()) {
             r.removeUser(entity);
         }
-        /* ??? */ 
+        /* ??? */
         for (AbstractAccount aa : entity.getAccounts()) {
             accountFacade.remove(aa);
         }
@@ -314,7 +315,7 @@ public class UserFacade extends BaseFacade<User> {
         final Permission p = new Permission(permissionStr);
         final String splitedPermission[] = permissionStr.split(":");
         if (splitedPermission[0].equals(Game.class.getSimpleName()) // If current permission is on game
-            && !splitedPermission[1].equals("Token")) {                     // and is not a Token access
+                && !splitedPermission[1].equals("Token")) {                     // and is not a Token access
             final Long gameId = Long.parseLong(splitedPermission[2].substring(1));
             final Game g = gameFacade.find(gameId);
             p.setInducedPermission("GameModel:View:gm" + g.getGameModelId());   // grant view access on its parent game model
@@ -384,13 +385,13 @@ public class UserFacade extends BaseFacade<User> {
      * @return
      */
     public List<User> findUserPermissionByInstance(String instance) {
-        final TypedQuery<User> findByToken = getEntityManager().createNamedQuery("findUserPermissions", User.class);
+        final TypedQuery<User> findByToken = getEntityManager().createNamedQuery("User.findUserPermissions", User.class);
         findByToken.setParameter("instance", "%:" + instance);
         return findByToken.getResultList();
     }
 
     public List<User> findUsersWithRole(Long role_id) {
-        final TypedQuery<User> findWithRole = getEntityManager().createNamedQuery("findUsersWithRole", User.class);
+        final TypedQuery<User> findWithRole = getEntityManager().createNamedQuery("User.findUsersWithRole", User.class);
         findWithRole.setParameter("role_id", role_id);
         return findWithRole.getResultList();
     }
@@ -405,12 +406,12 @@ public class UserFacade extends BaseFacade<User> {
         query.executeUpdate();
          */
 
-        Query findByToken = getEntityManager().createNamedQuery("findUserPermissions");
+        Query findByToken = getEntityManager().createNamedQuery("User.findUserPermissions");
 
         findByToken.setParameter("instance", "%:" + instance);
         List<User> users = (List<User>) findByToken.getResultList();
         for (User user : users) {
-            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext();) {
+            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext(); ) {
                 Permission p = sit.next();
                 String splitedPermission[] = p.getValue().split(":");
                 if (splitedPermission.length >= 3) {
@@ -427,11 +428,12 @@ public class UserFacade extends BaseFacade<User> {
      * @param userId
      */
     public void deleteUserPermissionByInstanceAndUser(String instance, Long userId) {
-        Query findByToken = getEntityManager().createQuery("SELECT DISTINCT users FROM User users JOIN users.permissions p "
-            + "WHERE p.value LIKE '%:" + instance + "' AND p.user.id =" + userId);
+        final TypedQuery<User> findByToken = getEntityManager().createNamedQuery("User.findUserWithPermission", User.class);
+        findByToken.setParameter("permission", "%:" + instance)
+                .setParameter("userId", userId);
         try {
-            User user = (User) findByToken.getSingleResult();
-            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext();) {
+            User user = findByToken.getSingleResult();
+            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext(); ) {
                 String p = sit.next().getValue();
                 String splitedPermission[] = p.split(":");
                 if (splitedPermission.length >= 3) {
@@ -454,11 +456,12 @@ public class UserFacade extends BaseFacade<User> {
      * @param userId
      */
     public void deleteUserPermissionByPermissionAndAccount(String permission, Long userId) {
-        Query findByToken = getEntityManager().createQuery("SELECT DISTINCT users FROM User users JOIN users.permissions p "
-            + "WHERE p.value LIKE '" + permission + "' AND p.user.id =" + userId);
+        final TypedQuery<User> findByToken = getEntityManager().createNamedQuery("User.findUserWithPermission", User.class);
+        findByToken.setParameter("permission", permission)
+                .setParameter("userId", userId);
         try {
-            User user = (User) findByToken.getSingleResult();
-            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext();) {
+            User user = findByToken.getSingleResult();
+            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext(); ) {
                 String p = sit.next().getValue();
                 String splitedPermission[] = p.split(":");
                 if (splitedPermission.length >= 3 && p.equals(permission)) {
@@ -519,7 +522,7 @@ public class UserFacade extends BaseFacade<User> {
     public void removeIdleGuests() {
         logger.info("removeIdleGuests(): unused guest accounts will be removed");
         Query findIdleGuests = getEntityManager().createQuery("SELECT DISTINCT account FROM GuestJpaAccount account "
-            + "WHERE account.createdTime < :idletime");
+                + "WHERE account.createdTime < :idletime");
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - 3);
         findIdleGuests.setParameter("idletime", calendar.getTime(), TemporalType.DATE);

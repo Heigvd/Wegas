@@ -305,7 +305,6 @@ public class ScriptFacade {
      * @return
      */
     private Object eval(Player player, List<Script> scripts, Map<String, AbstractEntity> arguments) throws WegasScriptException {
-        Object ret;
         if (scripts.isEmpty()) {
             return null;
         }

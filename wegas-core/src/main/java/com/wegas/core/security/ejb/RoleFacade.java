@@ -9,11 +9,9 @@ package com.wegas.core.security.ejb;
 
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.exception.internal.WegasNoResultException;
-import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import java.util.Set;
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.NoResultException;

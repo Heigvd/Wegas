@@ -8,7 +8,6 @@
 package com.wegas.core.session;
 
 import javax.servlet.http.HttpSessionEvent;
-import javax.servlet.http.HttpSessionListener;
 
 /**
  *

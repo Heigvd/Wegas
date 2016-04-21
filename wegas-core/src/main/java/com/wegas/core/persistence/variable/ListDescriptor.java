@@ -31,7 +31,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
     /**
      *
      */
-    @OneToMany(cascade = {CascadeType.ALL})
+    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     //@BatchFetch(BatchFetchType.IN)
     @JoinColumn(referencedColumnName = "variabledescriptor_id", name = "items_variabledescriptor_id")
     //@OrderBy("id")
@@ -90,7 +90,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
     @Override
     public void setGameModel(GameModel gameModel) {
         super.setGameModel(gameModel);
-        for (VariableDescriptor item : this.items) {
+        for (VariableDescriptor item : this.getItems()) {
             item.setGameModel(gameModel);
         }
     }
@@ -100,7 +100,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
      */
     @Override
     public List<VariableDescriptor> getItems() {
-        return items;
+        return this.items;
     }
 
     /**
@@ -121,7 +121,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
     @Override
     public void addItem(VariableDescriptor item) {
         if (isAuthorized(item)) {
-            this.items.add(item);
+            this.getItems().add(item);
             item.setGameModel(this.getGameModel());
             item.setParentList(this);
         } else {
@@ -132,7 +132,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
     @Override
     public void addItem(int index, VariableDescriptor item) {
         if (isAuthorized(item)) {
-            this.items.add(index, item);
+            this.getItems().add(index, item);
             item.setGameModel(this.getGameModel());
             item.setParentList(this);
         } else {
@@ -145,7 +145,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
      * @param type
      */
     private boolean isAuthorized(String type) {
-        return (allowedTypes.isEmpty() || allowedTypes.contains(type));
+        return (this.getAllowedTypes().isEmpty() || this.getAllowedTypes().contains(type));
     }
 
     /**
@@ -163,7 +163,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
      */
     @Override
     public VariableDescriptor item(int index) {
-        return this.items.get(index);
+        return this.getItems().get(index);
     }
 
     /**
@@ -172,7 +172,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
      */
     @Override
     public int size() {
-        return this.items.size();
+        return this.getItems().size();
     }
 
     /**
@@ -181,7 +181,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
      * @return allowed types
      */
     public List<String> getAllowedTypes() {
-        return allowedTypes;
+        return this.allowedTypes;
     }
 
     /**
@@ -220,7 +220,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
      */
     @Override
     public boolean remove(VariableDescriptor item) {
-        return this.items.remove(item);
+        return this.getItems().remove(item);
     }
 
     @Override
@@ -228,11 +228,9 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
         if (a instanceof ListDescriptor) {
             super.merge(a);
             ListDescriptor o = (ListDescriptor) a;
-            this.allowedTypes = new ArrayList<>();
-            this.allowedTypes.addAll(o.getAllowedTypes());
-
+            this.setAllowedTypes(o.getAllowedTypes());
             if (o.getAddShortcut() == null || o.getAddShortcut().isEmpty() || isAuthorized(o.getAddShortcut())) {
-                this.addShortcut = o.getAddShortcut();
+                this.setAddShortcut(o.getAddShortcut());
             } else {
                 throw WegasErrorMessage.error(o.getAddShortcut() + " not allowed in this folder");
             }

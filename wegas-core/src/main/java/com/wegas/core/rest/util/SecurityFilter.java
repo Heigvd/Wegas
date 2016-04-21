@@ -48,7 +48,7 @@ public class SecurityFilter implements ContainerRequestFilter {
     @Context
     private ResourceInfo resourceInfo;
 
-    private <T extends Annotation> T getAnnotation(Class<T> annotation, Class<? extends Object> klass, Method method) {
+    private <T extends Annotation> T getAnnotation(Class<T> annotation, Class<?> klass, Method method) {
         T a = method.getAnnotation(annotation);
         if (a == null) {
             a = klass.getAnnotation(annotation);
@@ -60,7 +60,7 @@ public class SecurityFilter implements ContainerRequestFilter {
     public void filter(ContainerRequestContext crc) throws IOException {
 
         // Targeted Class & method
-        final Class<? extends Object> runtimeClass = resourceInfo.getResourceClass();
+        final Class<?> runtimeClass = resourceInfo.getResourceClass();
         Method method = resourceInfo.getResourceMethod();
 
         Subject subject = SecurityUtils.getSubject();

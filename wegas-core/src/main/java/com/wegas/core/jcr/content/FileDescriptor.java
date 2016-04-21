@@ -78,7 +78,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
         } catch (RepositoryException ex) {
             logger.error("Something bad append, Roger!", ex);
         }
-        return 0l;
+        return 0L;
     }
 
     /**

@@ -8,7 +8,6 @@
 package com.wegas.admin;
 
 import com.wegas.admin.persistence.GameAdmin;
-import org.apache.shiro.SecurityUtils;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -42,7 +41,7 @@ public class AdminRestController {
             List<GameAdmin.Status> statuses = new ArrayList();
             for (int i = 0; i < types.length; i++) {
                 try {
-                    statuses.add(GameAdmin.Status.valueOf(types[i].toString().toUpperCase()));
+                    statuses.add(GameAdmin.Status.valueOf(types[i].toUpperCase()));
                 } catch (IllegalArgumentException ex) {
                     //type not found
                 }

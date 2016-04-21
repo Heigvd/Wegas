@@ -355,7 +355,7 @@ public class GameModelController {
     @POST
     @Path("{gameModelId: [1-9][0-9]*}/CreateVersion/{version: .*}")
     public void createVersion(@PathParam("gameModelId") Long gameModelId,
-        @PathParam("name") String name) throws RepositoryException, IOException {
+        @PathParam("version") String name) throws RepositoryException, IOException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
         gameModelFacade.createVersion(gameModelId, name);
