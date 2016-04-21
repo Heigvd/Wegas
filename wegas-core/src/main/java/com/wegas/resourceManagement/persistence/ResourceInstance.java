@@ -89,7 +89,8 @@ public class ResourceInstance extends VariableInstance {
             this.setActive(other.getActive());
             if (other.getAssignments() != null) {
                 //ListUtils.mergeLists(this.getAssignments(), other.getAssignments());
-                ListUtils.mergeLists(this.getAssignments(), other.getAssignments(), new ListUtils.Updater() {
+                this.setAssignments(
+                        ListUtils.mergeLists(this.getAssignments(), other.getAssignments(), new ListUtils.Updater() {
                     @Override
                     public void addEntity(AbstractEntity entity) {
                         if (entity instanceof Assignment) {
@@ -112,16 +113,15 @@ public class ResourceInstance extends VariableInstance {
                             }
                         }
                     }
-                });
+                }));
             }
             if (other.getActivities() != null) {
                 this.setActivities(other.getActivities());
             }
             if (other.getOccupations() != null) {
-                ListUtils.mergeLists(this.getOccupations(), other.getOccupations());
+                this.setOccupations(ListUtils.mergeLists(this.getOccupations(), other.getOccupations()));
             }
-            this.properties.clear();
-            this.properties.putAll(other.getProperties());
+            this.setProperties(other.getProperties());
             //this.setMoral(other.getMoral());
             this.setConfidence(other.getConfidence());
         } else {

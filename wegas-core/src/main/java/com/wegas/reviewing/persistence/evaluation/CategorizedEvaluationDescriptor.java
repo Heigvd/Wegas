@@ -76,7 +76,7 @@ public class CategorizedEvaluationDescriptor extends EvaluationDescriptor<Catego
         if (a instanceof CategorizedEvaluationDescriptor) {
             super.merge(a);
             CategorizedEvaluationDescriptor o = (CategorizedEvaluationDescriptor) a;
-            this.categories.clear();
+            this.categories = new ArrayList<>();
             this.categories.addAll(o.getCategories());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
