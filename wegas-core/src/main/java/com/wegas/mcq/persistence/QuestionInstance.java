@@ -67,7 +67,7 @@ public class QuestionInstance extends VariableInstance {
             this.setUnread(other.getUnread());
             Boolean v = other.getValidated();
             this.setValidated(v);
-            this.getReplies().clear(); // TODO 
+            this.setReplies(new ArrayList<>()); //@TODO merge them
             this.addReplies(other.getReplies());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");

@@ -125,8 +125,10 @@ public class ListUtils {
                 callback.addEntity(newEntity);
             }
         }
-        //oldList.addAll(newElements);                                            
-        return oldList;
+        //oldList.addAll(newElements);
+        final List<E> ret = new ArrayList<>();
+        ret.addAll(oldList);
+        return ret;
     }
 
     public static <E extends AbstractEntity> List<E> mergeLists(List<E> oldList, List<E> newList) {

@@ -108,7 +108,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
      */
     @Override
     public void setItems(List<VariableDescriptor> items) {
-        this.items.clear();
+        this.items = new ArrayList<>();
         for (VariableDescriptor vd : items) {
             this.addItem(vd);
         }
@@ -142,7 +142,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
 
     /**
      *
-     * @param child
+     * @param type
      */
     private boolean isAuthorized(String type) {
         return (allowedTypes.isEmpty() || allowedTypes.contains(type));
@@ -228,7 +228,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
         if (a instanceof ListDescriptor) {
             super.merge(a);
             ListDescriptor o = (ListDescriptor) a;
-            this.allowedTypes.clear();
+            this.allowedTypes = new ArrayList<>();
             this.allowedTypes.addAll(o.getAllowedTypes());
 
             if (o.getAddShortcut() == null || o.getAddShortcut().isEmpty() || isAuthorized(o.getAddShortcut())) {
