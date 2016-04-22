@@ -121,7 +121,9 @@ public class ResourceInstance extends VariableInstance {
             if (other.getOccupations() != null) {
                 this.setOccupations(ListUtils.mergeLists(this.getOccupations(), other.getOccupations()));
             }
-            this.setProperties(other.getProperties());
+            this.setProperties(new HashMap());
+            this.getProperties().putAll(other.getProperties());
+            //this.setProperties(other.getProperties());
             //this.setMoral(other.getMoral());
             this.setConfidence(other.getConfidence());
         } else {
