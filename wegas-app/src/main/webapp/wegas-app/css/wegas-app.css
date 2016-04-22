@@ -235,7 +235,7 @@ font {
 }
 
 .wegas-loading.maintenance .wegas-loading-overlay:after {
-    content: "\A\AYou may consider to refresh the page once this message has disappeared.";
+    content: "\A\AYou are advised to refresh the page once this message has disappeared.";
     margin-left: -11em;
     font-weight: 800;
     font-size: 1.3em;

@@ -24,14 +24,15 @@
     <div mass-autocomplete class="col-xs-6">
         <div class="modal__tools__autocomplete" search-users input-style="input input--small input--add-trainer"
              restrict-roles="usersIndexCtrl.restrictRoles" callback="usersIndexCtrl.addTrainer"
+             exclude="usersIndexCtrl.trainers"
              placeholder="{{'TRAINER-MODALE-USERS-ADD-TRAINER-INPUT' | translate}}"></div>
     </div>
     <div class="col-xs-6">
         <a
             class="button button--label-off"
-            ng-class="{'-1':'button--label-off button--default button--refresh', '0':'button--valid button--success', '1':'button--label-off button--refresh button--default button--rotate'}[usersIndexCtrl.refreshing]"
+            ng-class="{'-1':'button--label-off button--default button--refresh', '0':'button--label-off button--valid button--success', '1':'button--label-off button--refresh button--default button--rotate'}[usersIndexCtrl.refreshing]"
             title="{{'TRAINER-MODALE-USERS-RELOAD-BTN' | translate}}" ng-click="usersIndexCtrl.refreshSession()">
-            <span class="button__label">{{'TRAINER-MODALE-USERS-RELOAD-OK-BTN' | translate}}</span>
+            <span class="button__label"></span>
         </a>
     </div>
 </div>
@@ -51,9 +52,9 @@
 <div ng-if="usersIndexCtrl.playersViewActived" class="modal__tools">
     <a
         class="button"
-        ng-class="{'-1':'button--label-off button--default button--refresh', '0':'button--valid button--success', '1':'button--label-off button--refresh button--default button--rotate'}[usersIndexCtrl.refreshing]"
+        ng-class="{'-1':'button--label-off button--default button--refresh', '0':'button--label-off button--valid button--success', '1':'button--label-off button--refresh button--default button--rotate'}[usersIndexCtrl.refreshing]"
         title="{{'TRAINER-MODALE-USERS-RELOAD-BTN' | translate}}"
         ng-click="usersIndexCtrl.refreshSession()">
-        <span class="button__label">{{'TRAINER-MODALE-USERS-RELOAD-OK-BTN' | translate}}</span>
+        <span class="button__label"></span>
     </a>
 </div>

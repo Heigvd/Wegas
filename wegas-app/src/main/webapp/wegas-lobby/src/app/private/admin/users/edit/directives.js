@@ -8,7 +8,7 @@ angular.module('private.admin.users.edit.directives', ['wegas.directive.permissi
             templateUrl: 'app/private/admin/users/edit/directives.tmpl/index.html',
             controller: "AdminUsersEditIndexController as adminUsersEditIndexCtrl"
         };
-    }).controller("AdminUsersEditIndexController", function AdminUsersEditIndexController(UsersModel, $stateParams, $state){
+    }).controller("AdminUsersEditIndexController", function AdminUsersEditIndexController(UsersModel, $stateParams, $state, $scope){
         "use strict";
         var ctrl = this;
         ctrl.user = {};
@@ -31,8 +31,11 @@ angular.module('private.admin.users.edit.directives', ['wegas.directive.permissi
 
         ctrl.save = function () {
             UsersModel.updateUser(ctrl.user.account).then(function (response) {
-                if (!response.isErroneous()) {
+                if (response && !response.isErroneous()) {
                     response.flash();
+                }
+                if (!response || !response.isErroneous()) {
+                    $scope.close();
                 }
             });
         };

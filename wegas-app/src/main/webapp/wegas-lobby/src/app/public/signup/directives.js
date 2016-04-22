@@ -66,7 +66,6 @@ angular.module('public.signup.directives', [])
                                         if (response.isErroneous()) {
                                             response.flash();
                                         } else {
-                                            $scope.close();
                                             // Automatic login after successful registration:
                                             Auth.login(ctrl.newUser.username, ctrl.newUser.p1).then(function(response2) {
                                                 if (response2.isErroneous()) {
@@ -74,9 +73,14 @@ angular.module('public.signup.directives', [])
                                                 } else {
                                                     $scope.username = $scope.p1 = "";
                                                     // clear cache after a Login. We do not want to have previous user's cache
-                                                    TeamsModel.clearCache();
+                                                    //TeamsModel.clearCache();
                                                     SessionsModel.clearCache();
                                                     ScenariosModel.clearCache();
+                                                    // Pre-load teams into local cache to speed up first login:
+                                                    TeamsModel.getTeams().then(function() {
+                                                        // Don't leave this page until the cache is pre-populated:
+                                                        $scope.close();
+                                                    });
                                                     // Browser redirect is done in signup.js
                                                 }
                                             });

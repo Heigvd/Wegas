@@ -104,9 +104,12 @@ angular.module('private.trainer.directives', [
 
         /* Request data. */
         ctrl.updateSessions(true);
+        /*
+        // This is redundant with ctrl.updateSessions(true):
         SessionsModel.countArchivedSessions().then(function(response) {
             ctrl.nbArchives = response.data;
         });
+        */
     })
     .directive('trainerSessionsAdd', function(ScenariosModel, SessionsModel, Flash, $translate) {
         "use strict";

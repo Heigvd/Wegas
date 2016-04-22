@@ -34,11 +34,11 @@ angular
 
                 ctrl.updateInformations = function() {
                     UsersModel.updateUser($scope.user.account).then(function(response) {
-                        response.flash();
+                        if (response) response.flash();
                         $scope.user.password = '';
                         $scope.user.password2 = '';
 
-                        if (!response.isErroneous()) {
+                        if (!response || !response.isErroneous()) {
                             $scope.close();
                         }
                     });

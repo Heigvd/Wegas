@@ -8,7 +8,7 @@
         />
     </div>
 </div>
-<div class="view__list" repeat-auto-load>
+<div class="view__list" repeat-auto-load >
     <div class="card card--player-session"
          ng-repeat="user in adminUsersCtrl.users | filter: adminUsersCtrl.search | limitTo: adminUsersCtrl.maxUsersDisplayed | orderBy:'account.lastname'"
          user="user">

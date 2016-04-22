@@ -24,6 +24,7 @@ angular.module('private.scenarist.directives', [
             };
         $rootScope.currentRole = "SCENARIST";
         ctrl.loading = true;
+        ctrl.duplicating = false;
         ctrl.scenarios = [];
         ctrl.nbArchives = [];
         ctrl.search = '';
@@ -55,6 +56,21 @@ angular.module('private.scenarist.directives', [
             });
         };
 
+        ctrl.duplicate = function(scenario) {
+            if (ctrl.duplicating) return;
+            ctrl.duplicating = true;
+            $('#dupe-'+scenario.id).addClass('active');
+            ScenariosModel.copyScenario(scenario.id).then(function(response) {
+                if (response.isErroneous()) {
+                    response.flash();
+                } else {
+                    $rootScope.$emit('changeScenarios', true);
+                }
+                $('#dupe-'+scenario.id).removeClass('active');
+                ctrl.duplicating = false;
+            });
+        };
+
         ctrl.createScenario = function(name, templateId) {
             var deferred = $q.defer();
             ScenariosModel.createScenario(name, templateId).then(function(response) {
@@ -83,10 +99,12 @@ angular.module('private.scenarist.directives', [
         });
 
         ctrl.updateScenarios(true);
-
+        /*
+        // This is redundant with ctrl.updateScenarios(true);
         ScenariosModel.countArchivedScenarios().then(function(response) {
             ctrl.nbArchives = response.data;
         });
+        */
     })
     .directive('scenaristScenariosIndex', function() {
         "use strict";
@@ -154,7 +172,9 @@ angular.module('private.scenarist.directives', [
                 scenarios: '=',
                 archive: '=',
                 maximum: '=',
-                search: '='
+                search: '=',
+                duplicate: '=',
+                duplicating: '='
             }
         };
     })
@@ -164,7 +184,10 @@ angular.module('private.scenarist.directives', [
             templateUrl: 'app/private/scenarist/directives.tmpl/card.html',
             scope: {
                 scenario: '=',
-                archive: '='
+                archive: '=',
+                duplicate: '=',
+                duplicating: '=',
+                isDuplicated: '='
             },
             link: function(scope) {
                 scope.ServiceURL = window.ServiceURL;

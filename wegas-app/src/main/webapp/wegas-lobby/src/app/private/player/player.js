@@ -30,7 +30,7 @@ angular.module('private.player', [
                 }
             });
     })
-    .controller('PlayerCtrl', function PlayerCtrl($rootScope, $scope,$state, Auth, WegasTranslations, $translate) {
+    .controller('PlayerCtrl', function PlayerCtrl($rootScope, $scope, $state, Auth, WegasTranslations, $translate, $timeout) {
         "use strict";
         $scope.message = "";
         Auth.getAuthenticatedUser().then(function(user) {
@@ -52,6 +52,17 @@ angular.module('private.player', [
                 $state.go("wegas.private.player");
             }
             $("body").removeClass("admin scenarist trainer").addClass("player");
+
+            if (user.isGuest) {
+                $("body").addClass("guest");
+                // Make the start button green after a slight delay :-)
+                $timeout(function () {
+                    $(".button.button--small.button--label-off.button--play").css({'background-color': 'green'});
+                }, 1000);
+            } else {
+                $("body").removeClass("guest");
+            }
+
             $rootScope.translationWorkspace = {
                 workspace: WegasTranslations.workspaces.PLAYER[$translate.use()]
             };

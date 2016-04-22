@@ -41,8 +41,8 @@
             white-space: nowrap;
 
             &.line--primary{
-                font-size:$card-text-size + 1;
-                line-height: $card-text-size + 1;
+                font-size:$card-text-size + 2;
+                line-height: $card-text-size + 2;
                 padding-bottom:$card-base-padding - 1;
                 padding-top: 0px;
                 font-weight:500;
@@ -218,11 +218,12 @@
 
     &.card--player-session{
         .card__description{
-            width:calc(100% - 262px);
+            width:calc(100% - 276px); /* was 262px */
             box-sizing:border-box;
         }
 
-        @media screen and (max-width: 579px) {
+        @media screen and (max-width: 600px) { /* was 579px */
+            max-width: 450px;
             .card__description{
                 width: calc(100% - 80px);
             }
@@ -239,7 +240,7 @@
 
     &.card--trainer-session{
         .card__description{
-            width:calc(100% - 502px);
+            width:calc(100% - 540px); /* was 542px */
             box-sizing:border-box;
         }
 
@@ -249,8 +250,9 @@
                 display:block;
                 position:relative;
                 float:left;
-                width:190px;
+                /* width:230px; */
                 height:100%;
+                white-space: nowrap;
 
                 .line{
                     font-size:13px;
@@ -267,13 +269,17 @@
 
                 .choice{
                     float:left;
+                    margin-right:5px;
                 }
                 .key-label{
-                    width:142px;
+                    width: 190px;
                     height:24px;
-                    padding-left:8px;
+                    padding-left:2px;
+                    padding-top: 3px;
                     box-sizing: border-box;
-                    float:left;
+                    /* float:left; */
+                    white-space: nowrap;
+                    cursor: pointer !important;
 
                     &:before{
                         display: block;
@@ -289,7 +295,7 @@
                     .key{
                         display:block;
                         border:none;
-                        width: calc(100% - 24px);
+                        width: calc(100% - 79px); /* was 100% - 24px */
                         text-overflow:ellipsis;
                         overflow:hidden;
                         white-space: nowrap;
@@ -298,10 +304,14 @@
 
                 }
                 &.card__actions__access--close{
+                    padding-top: 12px;
                     .line--title-close{
                         display:block;
+                        overflow:hidden;
+                        text-overflow:ellipsis;
                     }
                     .key-label{
+                        display:block;
                         &:before{
                             color:#a9a9a9;
                         }
@@ -312,14 +322,20 @@
                 }
 
                 &.card__actions__access--open{
+                    /* top: 4px; */
+                    padding-top: 12px;
                     .line--title-open{
                         display:block;
+                        overflow:hidden;
+                        text-overflow:ellipsis;
+                        color: #4caf50;
                     }
                 }
             }
+
         }
 
-        @media screen and (max-width: 1116px) {
+        @media print and (max-width: 850px) { /* was screen and 1116px */
             .card__description{
                 width: calc(100% - 412px);
             }
@@ -336,7 +352,6 @@
                     }
 
                     &.card__actions__access--open{
-                        padding-top:4px;
                         .line--title-open{
                             display:none;
                         }
@@ -346,6 +361,7 @@
                         float:none;
                         width:auto;
                         &:before{
+                            display:none;
                             padding-left:4px;
                         }
                         .key{
@@ -357,7 +373,9 @@
             }
         }
 
-        @media screen and (max-width: 700px) {
+        @media screen and (max-width: 800px) { /* was 700 */
+            max-width: 450px;
+
             .card__description{
                 width: calc(100% - 80px);
             }
@@ -370,10 +388,11 @@
 
     &.card--scenarist-scenario{
         .card__description{
-            width:calc(100% - 362px);
+            width:calc(100% - 426px);  /* was 362px then 412px */
             box-sizing:border-box;
         }
-        @media screen and (max-width: 659px) {
+        @media screen and (max-width: 700px) { /* was 659px */
+            max-width: 370px;
             .card__description{
                 width:calc(100% - 80px);
             }
