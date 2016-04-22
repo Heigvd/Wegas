@@ -208,7 +208,7 @@ public class TaskInstance extends VariableInstance {
         val.setTaskInstance(this);
     }
 
-    public void addRequirement(WRequirement req){
+    public void addRequirement(WRequirement req) {
         this.getRequirements().add(req);
         req.setTaskInstance(this);
     }
@@ -223,27 +223,27 @@ public class TaskInstance extends VariableInstance {
             TaskInstance other = (TaskInstance) a;
             this.setActive(other.getActive());
             //this.setDuration(other.getDuration());
-            this.properties.clear();
-            this.properties.putAll(other.getProperties());
+            this.setProperties(new HashMap());
+            this.getProperties().putAll(other.getProperties());
             ListUtils.ListKeyToMap<String, WRequirement> converter;
             converter = new WRequirementToNameConverter();
             Map<String, WRequirement> reqMap = ListUtils.listAsMap(requirements, converter);
-            this.requirements.clear();
+            this.setRequirements(new ArrayList());
             for (WRequirement req : other.getRequirements()) {
                 WRequirement r;
                 if (reqMap.containsKey(req.getName()) && req.getId() != null) {
                     r = reqMap.get(req.getName());
                     r.merge(req);
-                    this.requirements.add(r);
+                    this.getRequirements().add(r);
                 } else {
                     r = new WRequirement();
                     r.merge(req);
                     r.setTaskInstance(this); // @fixme
-                    this.requirements.add(r);
+                    this.getRequirements().add(r);
                 }
             }
-            this.plannification.clear();
-            this.plannification.addAll(other.getPlannification());
+            this.setPlannification(new ArrayList());
+            this.getPlannification().addAll(other.getPlannification());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
