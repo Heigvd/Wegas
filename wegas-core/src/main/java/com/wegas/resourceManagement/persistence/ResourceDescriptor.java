@@ -53,8 +53,8 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
             super.merge(a);
             ResourceDescriptor other = (ResourceDescriptor) a;
             this.setDescription(other.getDescription());
-            this.properties.clear();
-            this.properties.putAll(other.getProperties());
+            this.setProperties(new HashMap());
+            this.getProperties().putAll(other.getProperties());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
