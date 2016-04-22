@@ -16,6 +16,7 @@
     </div>
 </div>
 <div class="clear"></div>
+<div >
 <div class="card card--group"
   ng-repeat="group in adminGroupsCtrl.groups">
     <div class="card__illustration illustration illustration--icon"
@@ -34,11 +35,12 @@
           ui-sref="wegas.private.admin.groups.members({id: group.id})">
             <span class="button__label">{{'ADMIN-GROUPS-CARD-MEMBER-BTN' | translate}}</span>
         </a>
-        <a class="button button--small button--round button--danger-reverse button--label-off button--trash"
+        <a class="button button--small button--round button--default-reverse button--label-off button--trash"
           title="{{'ADMIN-GROUPS-CARD-DELETE-BTN' | translate}}"
           confirmed-click="adminGroupsCtrl.removeGroup(group)"
           ng-confirm-click="{{'ADMIN-GROUPS-CARD-DELETE-CONFIRM' | translate}}">
             <span class="button__label">{{'ADMIN-GROUPS-CARD-DELETE-BTN' | translate}}</span>
         </a>
     </div>
+</div>
 </div>

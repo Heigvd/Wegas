@@ -18,7 +18,7 @@ angular.module('private.player.directives', [])
                 ctrl.loading = false;
                 if (!response.isErroneous()) {
                     ctrl.teams = response.data || [];
-                    if (ctrl.teams.length<1) {
+                    if (ctrl.teams.length<1) { // Maybe wait for page header to be rendered before expanding the token entry form?
                         $scope.$emit('expand');
                     }
                 } else {

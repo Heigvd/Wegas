@@ -76,6 +76,17 @@ angular.module('wegas.models.teams', [])
             teams.cache = null;
         };
 
+        /* Initialize an empty cache for a new player (right after signup) */
+        /* NB: does not work with upgraded Guest accounts !!
+        model.initCacheForNewPlayer = function() {
+            teams.cache = {
+                data: null,
+                loading: false
+            };
+            teams.cache.data = [];
+        }
+        */
+
         /* Ask for all teams for current user. */
         model.getTeams = function() {
             var deferred = $q.defer();

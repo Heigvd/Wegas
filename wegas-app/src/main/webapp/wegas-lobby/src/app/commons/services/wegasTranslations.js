@@ -11,6 +11,7 @@ angular.module('wegas.service.wegasTranslations', [])
                 return translationsToReturn;
             },
             default: function() {
+                $translateProvider.useSanitizeValueStrategy('escape'); // Minimal security required against XSS, prevents HTML inside translations.
                 if (localStorage.getObject("wegas-config")) {
                     $translateProvider.preferredLanguage(localStorage.getObject("wegas-config").commons.language);
                 } else {
@@ -197,8 +198,8 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Veuillez renseigner l'email et le mot de passe"
                         },
                         'CREATE-ACCOUNT-LABEL': {
-                            'en': "New player?",
-                            'fr': "Nouveau joueur ?"
+                            'en': "New user?",
+                            'fr': "Nouvel utilisateur ?"
                         },
                         'CREATE-ACCOUNT-BTN': {
                             'en': "Create account",
@@ -296,8 +297,8 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Erreur durant la génération du mot de passe"
                         },
                         'COMMONS-AUTH-CREATE-ACCOUNT-FLASH-SUCCESS': {
-                            'en': "Welcome to Wegas",
-                            'fr': "Bienvenue dans Wegas"
+                            'en': "AlbaSim - Wegas",
+                            'fr': "AlbaSim - Wegas"
                         },
                         'COMMONS-AUTH-CREATE-ACCOUNT-FLASH-ERROR': {
                             'en': "Error while creating account",
@@ -1193,12 +1194,16 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Aucune " + keywords.session.singular.fr + " en cours avec le nom "
                         },
                         'TRAINER-CARD-ACCESS-CLOSE': {
-                            'en': "Close to new " + keywords.player.plural.en,
+                            'en': "Closed to new " + keywords.player.plural.en,
                             'fr': "Fermé aux nouveaux " + keywords.player.plural.fr
                         },
                         'TRAINER-CARD-ACCESS-OPEN': {
                             'en': "Open to new " + keywords.player.plural.en,
                             'fr': "Ouvert aux nouveaux " + keywords.player.plural.fr
+                        },
+                        'TRAINER-CARD-KEY-ICON': {
+                            'en': "Click to select the " + keywords.token.singular.en,
+                            'fr': "Cliquer pour sélectionner la " + keywords.token.singular.fr
                         },
                         'TRAINER-CARD-SETTINGS-BTN': {
                             'en': "Settings",
@@ -1213,8 +1218,8 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Déplacer vers les archives"
                         },
                         'TRAINER-CARD-MONITORING-BTN': {
-                            'en': "Monitoring " + keywords.session.singular.en,
-                            'fr': "Gérer la " + keywords.session.singular.fr
+                            'en': "Facilitate the " + keywords.session.singular.en,
+                            'fr': "Animer la " + keywords.session.singular.fr
                         },
                         'TRAINER-MODALE-USERS-TAB-PLAYER': {
                             'en': startSentence(keywords.player.plural.en),
@@ -1321,8 +1326,8 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': keywords.scenario.plural.fr + " archivés"
                         },
                         'SCENARIST-INDEX-LIST-TITLE': {
-                            'en': "Current " + keywords.scenario.plural.en,
-                            'fr': startSentence(keywords.scenario.plural.fr) + " en cours"
+                            'en': startSentence(keywords.scenario.plural.en),
+                            'fr': startSentence(keywords.scenario.plural.fr)
                         },
                         'SCENARIST-INDEX-LIST-NO-SCENARIO': {
                             'en': "No current " + keywords.scenario.singular.en + " with the name ",
@@ -1361,6 +1366,10 @@ angular.module('wegas.service.wegasTranslations', [])
                         'SCENARIST-CARD-USERS-BTN': {
                             'en': "Manage users",
                             'fr': "Gérer les utilisateurs"
+                        },
+                        'SCENARIST-CARD-DUPLICATE-BTN': {
+                            'en': "Duplicate this " + keywords.scenario.singular.en,
+                            'fr': "Dupliquer ce " + keywords.scenario.singular.fr
                         },
                         'SCENARIST-CARD-VERSIONS-BTN': {
                             'en': "Manage versions",
@@ -1455,8 +1464,8 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Bienvenue dans la console d'admin"
                         },
                         'ADMIN-INDEX-ACTIONS-TITLE': {
-                            'en': "Available actions",
-                            'fr': "Actions disponibles"
+                            'en': "Please choose among the actions available in the above menu",
+                            'fr': "Veuillez choisir parmi les actions offertes par le menu ci-dessus"
                         },
                         'ADMIN-INDEX-USERS-BTN': {
                             'en': "Users",
@@ -1496,7 +1505,7 @@ angular.module('wegas.service.wegasTranslations', [])
                         },
                         'ADMIN-USERS-MODALE-EDIT-TITLE': {
                             'en': "Edit profile",
-                            'fr': "Modifier le profile"
+                            'fr': "Modifier le profil"
                         },
                         'ADMIN-USERS-MODALE-GROUPS-TITLE': {
                             'en': "Manage user's groups",
@@ -1575,10 +1584,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Expression de la permission"
                         },
                         'UPDGRADE-ACCOUNT': {
-                            'en': "You are connected as \"guest\", please login to preserve your " +
-                                keywords.session.plural.en + ".",
-                            'fr': "Vous êtes connecté en tant qu'\"invité\", connectez-vous pour préserver vos " +
-                                keywords.session.plural.fr + "."
+                            'en': "You are currently a \"guest\": please login or create an account if you want to keep your " +
+                                keywords.session.singular.en + ".",
+                            'fr': "Vous êtes actuellement \"invité\" : connectez-vous ou créez un compte si vous voulez conserver votre " +
+                                keywords.session.singular.fr + "."
                         },
                         // So Long, and Thanks for All the Fish
                         'END': {

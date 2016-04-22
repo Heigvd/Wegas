@@ -1,15 +1,18 @@
-<div class="view view--admin-menu view--bottom" style="padding:10px">
+<div class="view view--admin-menu view--bottom" style="padding:10px;">
     <div style="float:left; margin-right:20px; padding:10px">
-        <button class="button button--success" ui-sref="wegas.private.admin.users">{{'ADMIN-INDEX-USERS-BTN' | translate}}</button>
-        <button class="button button--success" ui-sref="wegas.private.admin.groups">{{'ADMIN-INDEX-GROUPS-BTN' | translate}}</button>
-        <a class="button button--success" href="{{ServiceURL}}wa.html" target="_blank">{{'ADMIN-INDEX-SESSIONS-BTN' | translate}} &nbsp; <i class="fa fa-external-link same-color"></i></a>
-        <a class="button button--success" href="{{ServiceURL}}stats.html" target="_blank">Stats &nbsp; <i class="fa fa-external-link same-color"></i></a>
+        <button class="button button--success" ui-sref="wegas.private.admin.users" style="margin:2px;">{{'ADMIN-INDEX-USERS-BTN' | translate}}</button>
+        <button class="button button--success" ui-sref="wegas.private.admin.groups" style="margin:2px;">{{'ADMIN-INDEX-GROUPS-BTN' | translate}}</button>
+        <a class="button button--success" href="{{ServiceURL}}wa.html" target="_blank" style="margin:2px;">{{'ADMIN-INDEX-SESSIONS-BTN' | translate}} &nbsp; <i class="fa fa-external-link same-color"></i></a>
+        <a class="button button--success" href="{{ServiceURL}}stats.html" target="_blank" style="margin:2px;">Stats &nbsp; <i class="fa fa-external-link same-color"></i></a>
     </div>
     <div style="float:left; padding:10px">
         <h3 style="margin-top:-5px; margin-bottom:5px">{{'ADMIN-INDEX-UPLOAD-TITLE' | translate}}</h3>
         <input id="import-json-scenario" type="file" value="upload a scenario" scenario-create-upload />
     </div>
 </div>
-<div class="view view--admin-content view--middle" ui-view="admin-container">
-    <h3>{{'ADMIN-INDEX-TITLE' | translate}}</h3>
+<div class="view view--admin-content view--middle" ui-view="admin-container" style="height:auto;">
+    <h3>{{'ADMIN-INDEX-TITLE' | translate}}<br/>
+        <span style="font-size:65%; font-weight:300;">{{'ADMIN-INDEX-ACTIONS-TITLE' | translate}}</span>
+    </h3>
 </div>
+<div style="height:100%; background-color: #f9f9f9"></div>

@@ -16,6 +16,7 @@ angular.module('private.logout', [])
         function LogoutController($state, Auth, SessionsModel, ScenariosModel, TeamsModel, UsersModel, GroupsModel) {
             "use strict";
             Auth.logout().then(function(response) {
+                $("body").removeClass("player scenarist trainer admin");
                 SessionsModel.clearCache();
                 ScenariosModel.clearCache();
                 TeamsModel.clearCache();

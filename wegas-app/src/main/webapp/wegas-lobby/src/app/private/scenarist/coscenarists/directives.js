@@ -14,6 +14,14 @@ angular
                 ctrl.scenario = {};
                 ctrl.permissions = [];
 
+                ctrl.coscenarists = function() {
+                    var result = [];
+                    for (var i=0; i<ctrl.permissions.length; i++){
+                        result.push(ctrl.permissions[i].user);
+                    }
+                    return result;
+                };
+
                 ctrl.updateScenario = function() {
                     // Searching for current scenario
                     ScenariosModel.getScenario("LIVE", $stateParams.scenarioId).then(function(response) {
@@ -49,6 +57,8 @@ angular
             link: function(scope, element, attrs, parentCtrl) {
 
                 scope.restrictRoles = ["Administrator", "Scenarist", "Trainer"];
+
+                scope.exclude = parentCtrl.coscenarists;
 
                 scope.callbackSearchUser = function(selection) {
                     scope.selected_user = selection;
