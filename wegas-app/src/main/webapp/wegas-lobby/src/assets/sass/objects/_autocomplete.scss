@@ -24,6 +24,10 @@
   line-height: 35px;
   margin: 0;
 }
+.ac-container .ac-menu .ac-menu-item .row {
+  margin-left: 0;
+  margin-right: 3px;
+}
 .ac-container .ac-menu .ac-menu-item:last-child {
   border-bottom: 0;
 }
@@ -50,5 +54,5 @@
   top: auto !important;
   bottom: 55px !important;
   left: 16px !important;
-  width: 70% !important;
+  width: 100% !important;
 }

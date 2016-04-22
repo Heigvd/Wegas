@@ -566,7 +566,9 @@ public class Helper {
         if (text == null) {
             return false;
         }
-        String unescapedText = StringEscapeUtils.unescapeJava(text);
+        
+        String unescapedText = StringEscapeUtils.unescapeJava(text); // seems useless, nope ? 
+        
         return Pattern.compile(Pattern.quote(criteria), Pattern.CASE_INSENSITIVE).matcher(StringEscapeUtils.unescapeHtml4(text)).find();
     }
 

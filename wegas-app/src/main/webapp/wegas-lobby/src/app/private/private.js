@@ -33,6 +33,7 @@ angular.module('private', [
     "use strict";
     var privateCtrl = this;
     privateCtrl.loading = 0;
+    /*
     $scope.$on('cfpLoadingBar:loading', function () {
         if (privateCtrl.loading === 0) {
             $('.view--top').addClass('view--loading');
@@ -50,6 +51,7 @@ angular.module('private', [
             $('.view--top').removeClass('view--loading');
         }
     });
+    */
     Auth.getAuthenticatedUser().then(function(user){
         if(user === null){
             $state.go("wegas.public");

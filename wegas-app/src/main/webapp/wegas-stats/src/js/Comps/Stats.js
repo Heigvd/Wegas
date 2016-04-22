@@ -50,7 +50,7 @@ class Stats extends React.Component {
         });
     }
     render() {
-        const {groups, currentQuestion} = this.state;
+        const { groups, currentQuestion } = this.state;
         return (
             <div>
               <h2>{ this.props.routeParams.LogId }</h2>
@@ -72,9 +72,7 @@ class Stats extends React.Component {
             );
     }
 }
-export default connect(state => {
-    return {
+export default connect(state => ({
         games: state.games.available,
         snapshot: state.variables.snapshot,
-    };
-})(Stats);
+}))(Stats);

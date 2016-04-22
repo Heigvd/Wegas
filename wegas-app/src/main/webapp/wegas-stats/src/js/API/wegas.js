@@ -15,6 +15,7 @@ export function getGameModelForGame(gameId) {
     return Axios.get(`${basePath(PUBLIC)}Game/${gameId}`)
         .then(res => res.data.gameModelId);
 }
+
 export function getGames() {
     return Axios.get(`${basePath(PUBLIC)}Game`)
         .then(res => res.data);

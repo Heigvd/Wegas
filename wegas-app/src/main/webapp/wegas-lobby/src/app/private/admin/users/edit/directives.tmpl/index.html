@@ -63,9 +63,12 @@
         </div>
     </div>
     <div class="modal__tools">
-        <a class="modal__tools__button button button--small button--success button--valid"
+        <a class="modal__tools__button button button--small button--success"
            ng-click="adminUsersEditIndexCtrl.save()">
-            <span class="button__label">{{'ADMIN-MODALE-PERMISSION-SAVE-BTN' | translate}}</span>
+            <span class="button__label">{{'PRIVATE-MODALE-SETTINGS-SAVE-BTN' | translate}}</span>
+        </a>
+        <a class="modal__tools__button button button--small button--default" ng-click="close()">
+            <span class="button__label">{{'PRIVATE-MODALE-SETTINGS-CANCEL-BTN' | translate}}</span>
         </a>
     </div>
 </form>

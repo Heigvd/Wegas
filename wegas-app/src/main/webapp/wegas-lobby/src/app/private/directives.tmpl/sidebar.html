@@ -4,7 +4,7 @@
         <label class="btn--menu" for="menu-toggler">
             <span></span>
             <h2 id="roleMenuTitle" class="view__headding-workspace" ng-click="menuClick($event)">
-                <a class="button button--default-reverse" ng-class="'button--'+currentRole.toLowerCase()"
+                <a id="roleMenuTitleBtn" class="button button--default-reverse" ng-class="'button--'+currentRole.toLowerCase()"
                    style="line-height:16px">{{'PRIVATE-WS-TITLE-NAME' | translate: translationWorkspace}}</a>
             </h2>
         </label>
@@ -33,7 +33,7 @@
     </div>
 
     <div ng-if="!(user.isTrainer || user.isScenarist || user.isAdmin)">
-        <h2 class="view__headding-workspace" style="margin-left:10px; cursor:default">{{'COMMONS-AUTH-CREATE-ACCOUNT-FLASH-SUCCESS' | translate}} </h2>
+        <h2 class="view__headding-workspace" style="margin-left:42px; cursor:default">{{'COMMONS-AUTH-CREATE-ACCOUNT-FLASH-SUCCESS' | translate}} </h2>
     </div>
 
     <ul class="view__sub-menu">
@@ -57,7 +57,7 @@
                 class="button__label">{{ user.username }}</span></a>
         </li>
         <li ng-if="user.isGuest" class="action">
-            <a class="button button--default-reverse button--user button-without-label"><span class="button__label">GUEST</span></a>
+            <a class="button button--default-reverse button--user button-without-label unclickable"><span class="button__label">GUEST</span></a>
         </li>
     </ul>
 

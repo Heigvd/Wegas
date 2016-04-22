@@ -63,5 +63,5 @@ class LoginForm extends React.Component {
     }
 }
 export default connect(state => ({
-        user: state.user,
+    user: state.user,
 }))(LoginForm);

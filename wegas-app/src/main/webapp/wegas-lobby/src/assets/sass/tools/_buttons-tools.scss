@@ -111,7 +111,7 @@ $buttons-icon : (
 .button:focus.button--trainer:hover:before,
 .button:focus.button--trainer:active:before,
 .button:focus.button--trainer:visited:before {
-    font-size: 30px !important;
+    font-size: 2.5em !important;
 }
 
 .button.button--small.non-collapsible-expander-button {
@@ -120,12 +120,22 @@ $buttons-icon : (
 }
 
 .button.button--close.non-collapsible-close-button {
+    position: absolute;
+    right: 0;
+    top: 0;
+    /*
     position:relative;
     float:right;
     margin-right:-64px;
     padding-right:0;
     right:0;
     top: 18px;
+    */
+}
+
+.button.glyphicon-duplicate:before {
+    font-size:1.4em;
+    margin-left: -7px;
 }
 
 .same-color-larger {

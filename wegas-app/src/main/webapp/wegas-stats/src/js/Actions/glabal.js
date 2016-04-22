@@ -5,6 +5,7 @@ export function showOverlay() {
         type: SHOW_OVERLAY,
     };
 }
+
 export function hideOverlay() {
     return {
         type: HIDE_OVERLAY,
