@@ -15,11 +15,12 @@ import org.junit.Test;
  */
 public class PMGTest extends PMGameAbstractTest {
 
-    /*@Test
+    @Test
     public void testSimplePMG() {
         this.evalScript("PMGTest.testAll()");
-    }*/
+    }
 
+    /*
     @Test
     public void testNormalAssign() {
         this.evalScript("PMGTest.testNormalAssignment()");
@@ -144,6 +145,7 @@ public class PMGTest extends PMGameAbstractTest {
     public void testUnworkwesReq() {
         this.evalScript("PMGTest.testUnworkedReq()");
     }
+*/
 
     @Override
     protected String getGameModelPath() {
