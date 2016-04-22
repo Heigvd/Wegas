@@ -360,7 +360,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         getEntityManager().flush();
         //gameModel.propagateGameModel();  -> propagation is now done automatically after descriptor creation
         gameModel.propagateDefaultInstance(gameModel);
-        //getEntityManager().flush(); // DA FU    ()  -> NO IDEA WHY IT WAS HERE
+        getEntityManager().flush();
         // Send an reset event (for the state machine and other)
         resetEvent.fire(new ResetEvent(gameModel));
     }
@@ -379,8 +379,8 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         }
 
         fileController.createFile(gameModelId, name + ".json", "/" + HISTORYPATH,
-                "application/octet-stream", null, null,
-                new ByteArrayInputStream(serializedGameModel.getBytes("UTF-8")), false);// Create a file containing the version
+            "application/octet-stream", null, null,
+            new ByteArrayInputStream(serializedGameModel.getBytes("UTF-8")), false);// Create a file containing the version
     }
 
     /**
@@ -421,8 +421,8 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
             if (!found) {
                 this.createVersion(model.getId(),
-                        new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date()) + "-" + hash + ".json",
-                        serialized);
+                    new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date()) + "-" + hash + ".json",
+                    serialized);
             }
 
             //System.gc();
