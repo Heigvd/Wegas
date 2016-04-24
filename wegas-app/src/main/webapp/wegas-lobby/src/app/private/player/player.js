@@ -2,7 +2,8 @@ angular.module('private.player', [
     'private.player.join',
     'private.player.team',
     'private.player.directives',
-    'public.login'
+    'public.login',
+    'ngSanitize'
 ])
     .config(function($stateProvider) {
         "use strict";
@@ -30,18 +31,31 @@ angular.module('private.player', [
                 }
             });
     })
-    .controller('PlayerCtrl', function PlayerCtrl($rootScope, $scope, $state, Auth, WegasTranslations, $translate, $timeout) {
+    .controller('PlayerCtrl', function PlayerCtrl($rootScope, $scope, $state, Auth, WegasTranslations, $translate, $timeout, $sce) {
         "use strict";
         $scope.message = "";
+
+        // Add a safe HTML onclick attribute to the words "login" or "connecter":
+        var createLoginLink = function(val){
+            var link = "<a onclick=\"$(\'#login-form\').slideToggle()\" style=\"text-decoration:underline; cursor:pointer; \">";
+            var msg = val;
+            if ($translate.use()=='fr'){
+                msg = msg.replace('connecter', link+'connecter</a>');
+            } else {
+                msg = msg.replace('login', link + 'login</a>');
+            }
+            return $sce.trustAsHtml(msg);
+        };
+
         Auth.getAuthenticatedUser().then(function(user) {
             var detach;
             if (user.isGuest) {
-                $translate('UPDGRADE-ACCOUNT').then(function(val) {
-                    $scope.message = val;
+                $translate('UPGRADE-ACCOUNT').then(function(val) {
+                    $scope.message = createLoginLink(val);
                 });
                 detach = $rootScope.$on('$translateChangeSuccess', function () {
-                    $translate('UPDGRADE-ACCOUNT').then(function(val) {
-                        $scope.message = val;
+                    $translate('UPGRADE-ACCOUNT').then(function(val) {
+                        $scope.message = createLoginLink(val);
                     });
                 });
                 $scope.$on("$destroy", function(){
@@ -55,6 +69,12 @@ angular.module('private.player', [
 
             if (user.isGuest) {
                 $("body").addClass("guest");
+                // Swap positions of game card and login form (does not stay)
+                /*
+                var gameCard = $('.view.view--played-sessions-list');
+                var loginForm = ($('.view.view--join-session')).detach();
+                gameCard.append(loginForm);
+                */
                 // Make the start button green after a slight delay :-)
                 $timeout(function () {
                     $(".button.button--small.button--label-off.button--play").css({'background-color': 'green'});

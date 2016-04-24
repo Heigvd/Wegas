@@ -1,7 +1,7 @@
-<form class="view__login-form view--reverse-middle form" ng-submit="login()">
+<span class="view__first-subtitle" ng-bind-html="message"> </span>
+<form id="login-form" class="view__login-form view--reverse-middle form" ng-submit="login()">
     <div class="row">
-        <h1 id="wegas-icon-title"  class="view__first-header">{{'WEGAS-TITLE' | translate}}</h1>
-        <span class="view__first-subtitle" style="font-weight: bold; ">{{message}}</span>
+        <h1 id="wegas-icon-title" class="view__first-header">{{'WEGAS-TITLE' | translate}}</h1>
     </div>
 
     <div class="form__row">
@@ -21,6 +21,4 @@
                value="{{ 'LOGIN-BTN' | translate }}"/>
     </div>
 </form>
-<div class="view__first-subtitle subtitle--center subtitle--account" style="width: 380px; margin-top: 30px; "><span style="line-height:3em">{{ 'CREATE-ACCOUNT-LABEL' | translate }}</span><a
-    class="link link--simple-primary" ui-sref="wegas.public.signup" style="text-decoration:none; float:right; font-weight: 300;"><button id="create-account" class="button button--small button--success-reverse" type="button" ><i class="fa fa-plus-circle same-color-larger">&nbsp;</i> {{'CREATE-ACCOUNT-BTN' | translate}}</button></a>
-</div>
+<a class="link link--simple-primary" ui-sref="wegas.public.signup"><button id="create-account" class="button button--small button--success-reverse" type="button"><i class="fa fa-plus-circle same-color-larger">&nbsp;</i> {{'CREATE-ACCOUNT-BTN' | translate}}</button></a>

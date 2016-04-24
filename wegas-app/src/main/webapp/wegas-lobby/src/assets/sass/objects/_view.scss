@@ -32,6 +32,23 @@
         background-color: $background-default-secondary !important;
         @include make-sm-column(12);
         @include make-xs-column(12);
+
+        .link--simple-primary {
+            text-decoration:none;
+            margin:20px auto 0;
+            display:block;
+
+            #create-account {
+                margin:0 auto;
+                display:block;
+                font-weight: normal;
+            }
+        }
+
+        .link--simple-primary:hover {
+            text-decoration: none;
+        }
+
     }
 
     &.view--public-forms {
@@ -595,6 +612,7 @@
         display: block;
         position: relative;
         width: 360px;
+        height: 40px;
         margin: auto;
         .view__logo-albasim {
             display: block;
@@ -746,6 +764,11 @@
             border-color: $admin-color;
             transition: .3s;
         }
+        .view__list--loading {
+            float: left;
+            margin-top: 24px;
+            margin-left: 20px;
+        }
     }
 }
 
@@ -766,15 +789,34 @@
     .view.view--join-session {
         position: relative;
         height: auto;
-        top: 5px;
         transition: none;
 
+        .view__first-subtitle {
+            max-width: 200%;
+            width: 200%;
+            padding: 0;
+            margin: 20px -40% 20px;
+        }
+        .view__login-form {
+            margin: auto;
+            display: none; /* initially hidden */
+        }
         #wegas-icon-title {
             display: none;
         }
+        .link--simple-primary {
+            display: block;
+            margin: 20px auto 30px !important;
+            text-decoration: none;
 
-        #create-account {
-            font-weight: normal;
+            #create-account {
+                display: block;
+                margin: 0 auto;
+                font-weight: normal;
+            }
+            #create-account:hover {
+                background-color: lightgray;
+            }
         }
     }
 }

@@ -9,6 +9,11 @@
         <h3 style="margin-top:-5px; margin-bottom:5px">{{'ADMIN-INDEX-UPLOAD-TITLE' | translate}}</h3>
         <input id="import-json-scenario" type="file" value="upload a scenario" scenario-create-upload />
     </div>
+    <div ng-if="adminCtrl.loading"
+         class="view__list view__list--loading"
+         content-loading="{{'COMMONS-SCENARIO-UPLOADING' | translate}}">
+    </div>
+
 </div>
 <div class="view view--admin-content view--middle" ui-view="admin-container" style="height:auto;">
     <h3>{{'ADMIN-INDEX-TITLE' | translate}}<br/>

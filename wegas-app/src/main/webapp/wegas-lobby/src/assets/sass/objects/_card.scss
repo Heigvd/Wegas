@@ -422,7 +422,7 @@
     }
     &.card--team-joinable{
         .card__description{
-            width:calc(100% - 494px);
+            width:calc(100% - 515px); /* Was 494px */
         }
         @media screen and (max-width: 619px) {
             .card__description{

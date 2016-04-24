@@ -59,14 +59,14 @@ angular.module('private.scenarist.directives', [
         ctrl.duplicate = function(scenario) {
             if (ctrl.duplicating) return;
             ctrl.duplicating = true;
-            $('#dupe-'+scenario.id).addClass('active');
+            $('#dupe-'+scenario.id).addClass('busy-button');
             ScenariosModel.copyScenario(scenario.id).then(function(response) {
                 if (response.isErroneous()) {
                     response.flash();
                 } else {
                     $rootScope.$emit('changeScenarios', true);
                 }
-                $('#dupe-'+scenario.id).removeClass('active');
+                $('#dupe-'+scenario.id).removeClass('busy-button');
                 ctrl.duplicating = false;
             });
         };

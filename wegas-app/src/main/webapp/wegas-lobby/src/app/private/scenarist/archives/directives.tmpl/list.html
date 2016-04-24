@@ -2,7 +2,7 @@
 <div class="modal__content__list" ng-if="!loading && ((scenarios | filter:{name: search}).length > 0)">
     <div class="card card--archive card--archive-scenarist" ng-repeat="scenario in scenarios | orderBy: 'createdTime':true | filter : { name: search }"">
         <div class="card__illustration illustration illustration--icon" illustration="{{scenario.properties.iconUri}}"></div>
-        <div class="card__description" 
+        <div class="card__description"
              ng-class="  {true:'card__description--two-lines', false:'card__description--three-lines'}[scenario.comments == null || scenario.comments == '']" >
             <div class="line line--primary">{{scenario.name}}</div>
             <div class="line">{{scenario.createdTime | date:"dd.MM.yyyy"}}</div>
@@ -12,13 +12,13 @@
             <a class="button button--small button--round button--default-reverse button--label-off button--undo" title="{{'SCENARIST-MODALE-ARCHIVE-MOVE-CURRENT-BTN' | translate}}" ng-click="unarchive(scenario)">
                 <span class="button__label">{{'SCENARIST-MODALE-ARCHIVE-MOVE-CURRENT-BTN' | translate}}</span>
             </a>
-            <a 
-                class="button button--small button--round button--danger-reverse button--label-off button--trash" 
-                title="{{'SCENARIST-MODALE-ARCHIVE-DELETE-BTN' | translate}}" 
-                confirmed-click="delete(scenario)" 
+            <a
+                class="button button--small button--round button--default-reverse button--label-off button--trash"
+                title="{{'SCENARIST-MODALE-ARCHIVE-DELETE-BTN' | translate}}"
+                confirmed-click="delete(scenario)"
                 ng-confirm-click="{{'SCENARIST-MODALE-ARCHIVE-DELETE-CONFIRM' | translate}}">
                 <span class="button__label">{{'SCENARIST-MODALE-ARCHIVE-DELETE-BTN' | translate}}</span>
-            </a> 
+            </a>
         </div>
     </div>
 </div>

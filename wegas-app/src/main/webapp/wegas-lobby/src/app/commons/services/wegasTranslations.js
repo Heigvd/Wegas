@@ -567,6 +567,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Loading " + keywords.scenario.plural.en,
                             'fr': "Chargement des " + keywords.scenario.plural.fr
                         },
+                        'COMMONS-SCENARIO-UPLOADING': {
+                            'en': "Loading " + keywords.scenario.singular.en,
+                            'fr': "Chargement du " + keywords.scenario.singular.fr
+                        },
                         'COMMONS-SCENARIOS-NO-SCENARIO-FLASH-ERROR': {
                             'en': "No " + keywords.scenario.singular.en + " selected",
                             'fr': "Aucun " + keywords.scenario.singular.fr + " choisi"
@@ -1583,11 +1587,13 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Permission chain",
                             'fr': "Expression de la permission"
                         },
-                        'UPDGRADE-ACCOUNT': {
-                            'en': "You are currently a \"guest\": please login or create an account if you want to keep your " +
-                                keywords.session.singular.en + ".",
-                            'fr': "Vous êtes actuellement \"invité\" : connectez-vous ou créez un compte si vous voulez conserver votre " +
-                                keywords.session.singular.fr + "."
+                        'UPGRADE-ACCOUNT': {
+                            // This string is processed dynamically to add an onclick event to the words "login" and "connecter".
+                            // The code is in module "private.player" (file player.js, controller 'PlayerCtrl').
+                            'en': "You can start the game now. But if you want to keep this " + keywords.session.singular.en +
+                                  ", you should first login or create a user account.",
+                            'fr': "Vous pouvez commencer le jeu. Mais si vous voulez conserver cette " +
+                                  keywords.session.singular.fr + ", il faut d'abord vous connecter ou créer un compte."
                         },
                         // So Long, and Thanks for All the Fish
                         'END': {

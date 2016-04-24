@@ -1,10 +1,10 @@
 <div class="view__users-team" ng-repeat="team in teams">
 	<h4>
             <span>{{team.name}}</span>
-             <a 
-	    	class="button button--small button--round button--danger-reverse button--label-off button--trash" 
+             <a
+	    	class="button button--small button--round button--default-reverse button--label-off button--trash"
 	    	title="{{'TRAINER-MODALE-USERS-REMOVE-TEAM-BTN' | translate}}"
-                    confirmed-click="remove(team.id)" 
+                    confirmed-click="remove(team.id)"
                     ng-confirm-click="{{'TRAINER-MODALE-USERS-REMOVE-TEAM-CONFIRM' | translate}}">
 	    	<span class="button__label">{{'TRAINER-MODALE-USERS-REMOVE-TEAM-BTN' | translate}}</span>
 	    </a>

@@ -73,7 +73,7 @@ angular.module('public.signup.directives', [])
                                                 } else {
                                                     $scope.username = $scope.p1 = "";
                                                     // clear cache after a Login. We do not want to have previous user's cache
-                                                    //TeamsModel.clearCache();
+                                                    TeamsModel.clearCache();
                                                     SessionsModel.clearCache();
                                                     ScenariosModel.clearCache();
                                                     // Pre-load teams into local cache to speed up first login:
