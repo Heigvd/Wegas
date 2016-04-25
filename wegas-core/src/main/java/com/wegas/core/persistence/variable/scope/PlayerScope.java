@@ -91,7 +91,9 @@ public class PlayerScope extends AbstractScope {
         VariableDescriptor vd = getVariableDescriptor();
         VariableInstance vi = this.getVariableInstances().get(p.getId());
         if (vi == null) {
-            this.setVariableInstance(p.getId(), vd.getDefaultInstance().clone());
+            VariableInstance clone = vd.getDefaultInstance().clone();
+            p.getPrivateInstances().add(clone);
+            this.setVariableInstance(p.getId(), clone);
         } else {
             vi.merge(vd.getDefaultInstance());
         }

@@ -151,8 +151,8 @@ public class PlayerFacade extends BaseFacade<Player> {
     @Override
     public void remove(final Player player) {
         //List<VariableInstance> instances = this.getAssociatedInstances(player);
-        this.getEntityManager().remove(player);
         player.getTeam().getPlayers().remove(player);
+        this.getEntityManager().remove(player);
         //for (VariableInstance i : instances) {
         //    this.getEntityManager().remove(i);
         //}

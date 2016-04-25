@@ -75,7 +75,9 @@ public class GameScope extends AbstractScope {
         VariableDescriptor vd = this.getVariableDescriptor();
         VariableInstance vi = this.getVariableInstances().get(g.getId());
         if (vi == null) {
-            this.setVariableInstance(g.getId(), vd.getDefaultInstance().clone());
+            VariableInstance clone = vd.getDefaultInstance().clone();
+            g.getPrivateInstances().add(clone);
+            this.setVariableInstance(g.getId(), clone);
         } else {
             vi.merge(vd.getDefaultInstance());
         }
@@ -83,18 +85,16 @@ public class GameScope extends AbstractScope {
 
     @Override
     public void propagateDefaultInstance(AbstractEntity context) {
-        if (context instanceof Player){
+        if (context instanceof Player) {
             // Since player's game already exists, nothing to propagate
-        } else if (context instanceof Team){
+        } else if (context instanceof Team) {
             // Since teams's game already exists, nothing to propagate
-        } else if (context instanceof Game){
-            propagate((Game)context);
+        } else if (context instanceof Game) {
+            propagate((Game) context);
         } else {
             propagate(getVariableDescriptor().getGameModel());
         }
     }
-
-
 
     @Override
     public void merge(AbstractEntity a) {

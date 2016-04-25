@@ -118,6 +118,7 @@ public class TeamFacade extends BaseFacade<Team> {
         //for (VariableInstance i : this.getAssociatedInstances(entity)) {
         //    this.getEntityManager().remove(i);
         //}
+        entity.getGame().getTeams().remove(entity);
         this.getEntityManager().remove(entity);
     }
 

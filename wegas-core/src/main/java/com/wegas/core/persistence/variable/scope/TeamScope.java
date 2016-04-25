@@ -106,7 +106,9 @@ public class TeamScope extends AbstractScope {
         VariableDescriptor vd = this.getVariableDescriptor();
         VariableInstance vi = this.getVariableInstances().get(t.getId());
         if (vi == null) {
-            this.setVariableInstance(t.getId(), vd.getDefaultInstance().clone());
+            VariableInstance clone = vd.getDefaultInstance().clone();
+            t.getPrivateInstances().add(clone);
+            this.setVariableInstance(t.getId(), clone);
         } else {
             vi.merge(vd.getDefaultInstance());
         }

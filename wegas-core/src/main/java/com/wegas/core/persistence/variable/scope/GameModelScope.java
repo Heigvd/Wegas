@@ -57,7 +57,8 @@ public class GameModelScope extends AbstractScope {
         VariableDescriptor vd = this.getVariableDescriptor();
         VariableInstance vi = this.getVariableInstance();
         if (vi == null) {
-            this.setVariableInstance(Long.valueOf(0), vd.getDefaultInstance().clone());
+            VariableInstance clone = vd.getDefaultInstance().clone();
+            this.setVariableInstance(Long.valueOf(0), clone);
         } else {
             vi.merge(vd.getDefaultInstance());
         }
