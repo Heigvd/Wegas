@@ -90,44 +90,50 @@ public class ResourceInstance extends VariableInstance {
             if (other.getAssignments() != null) {
                 //ListUtils.mergeLists(this.getAssignments(), other.getAssignments());
                 this.setAssignments(
-                        ListUtils.mergeLists(this.getAssignments(), other.getAssignments(), new ListUtils.Updater() {
-                    @Override
-                    public void addEntity(AbstractEntity entity) {
-                        if (entity instanceof Assignment) {
-                            Assignment assignment = (Assignment) entity;
-                            TaskDescriptor parent = (TaskDescriptor) VariableDescriptorFacade.lookup().find(assignment.getTaskDescriptorId());
-                            if (parent == null) {
-                                parent = assignment.getTaskDescriptor();
+                    ListUtils.mergeLists(this.getAssignments(), other.getAssignments(), new ListUtils.Updater() {
+                        @Override
+                        public void addEntity(AbstractEntity entity) {
+                            if (entity instanceof Assignment) {
+                                Assignment assignment = (Assignment) entity;
+                                TaskDescriptor parent = (TaskDescriptor) VariableDescriptorFacade.lookup().find(assignment.getTaskDescriptorId());
+                                if (parent == null) {
+                                    parent = assignment.getTaskDescriptor();
+                                }
+                                parent.addAssignment(assignment);
                             }
-                            parent.addAssignment(assignment);
                         }
-                    }
 
-                    @Override
-                    public void removeEntity(AbstractEntity entity) {
-                        if (entity instanceof Assignment) {
-                            Assignment assignment = (Assignment) entity;
-                            TaskDescriptor parent = (TaskDescriptor) VariableDescriptorFacade.lookup().find(assignment.getTaskDescriptorId());
-                            if (parent != null) {
-                                parent.removeAssignment(assignment);
+                        @Override
+                        public void removeEntity(AbstractEntity entity) {
+                            if (entity instanceof Assignment) {
+                                Assignment assignment = (Assignment) entity;
+                                TaskDescriptor parent = (TaskDescriptor) VariableDescriptorFacade.lookup().find(assignment.getTaskDescriptorId());
+                                if (parent != null) {
+                                    parent.removeAssignment(assignment);
+                                }
                             }
                         }
-                    }
-                }));
+                    }));
             }
             if (other.getActivities() != null) {
                 this.setActivities(ListUtils.mergeLists(this.getActivities(), other.getActivities(), new ListUtils.Updater() {
                     @Override
                     public void addEntity(AbstractEntity entity) {
                         Activity activity = (Activity) entity;
-                        activity.getTaskDescriptor().addActivity(activity);
+                        TaskDescriptor tdParent = (TaskDescriptor) VariableDescriptorFacade.lookup().find(activity.getTaskDescriptorId());
+                        if (tdParent != null) {
+                            tdParent.addActivity(activity);
+                        }
                         activity.getRequirement().addActivity(activity);
                     }
 
                     @Override
                     public void removeEntity(AbstractEntity entity) {
                         Activity activity = (Activity) entity;
-                        activity.getTaskDescriptor().removeActivity(activity);
+                        TaskDescriptor tdParent = (TaskDescriptor) VariableDescriptorFacade.lookup().find(activity.getTaskDescriptorId());
+                        if (tdParent != null) {
+                            tdParent.removeActivity(activity);
+                        }
                         activity.getRequirement().removeActivity(activity);
                     }
                 }));

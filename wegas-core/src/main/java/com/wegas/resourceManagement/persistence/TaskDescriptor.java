@@ -470,9 +470,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      * @param activity
      */
     public void removeActivity(Activity activity) {
-        if (this.activities.remove(activity)) {
-            activity.setTaskDescriptor(null);
-        }
+        this.activities.remove(activity);
     }
 
     /**
