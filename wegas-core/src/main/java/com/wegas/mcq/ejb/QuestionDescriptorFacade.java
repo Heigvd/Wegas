@@ -242,47 +242,6 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     }
 
     /**
-     * FOR TEST USAGE ONLY
-     *
-     * @param choiceId
-     * @param playerId
-     * @return
-     * @throws WegasRuntimeException
-     */
-    public Reply selectAndValidateChoiceTEST(Long choiceId, Long playerId) throws WegasRuntimeException {
-        Reply reply = this.selectChoiceTEST(choiceId, playerFacade.find(playerId), (long) 0);
-        try {
-            this.validateReply(playerId, reply.getId());
-        } catch (WegasRuntimeException e) {
-            this.cancelReply(playerId, reply.getId());
-            throw e;
-        }
-
-        requestFacade.commit();
-        return reply;
-    }
-
-    /**
-     * FOR TEST USAGE ONLY
-     *
-     * @param choiceId
-     * @param player
-     * @param startTime
-     * @return
-     */
-    public Reply selectChoiceTEST(Long choiceId, Player player, Long startTime) {
-        Reply reply = questionSingleton.createReplyUntransactionnal(choiceId, player, startTime);
-        try {
-            scriptEvent.fire(player, "replySelect", new ReplyValidate(reply));
-        } catch (WegasScriptException e) {
-            // GOTCHA no eventManager is instantiated
-            logger.error("EventListener error (\"replySelect\") (TEST)", e);
-        }
-
-        return reply;
-    }
-
-    /**
      * @param playerId
      * @param replyId
      * @return
