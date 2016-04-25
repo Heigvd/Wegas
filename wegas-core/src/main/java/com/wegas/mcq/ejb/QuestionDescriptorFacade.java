@@ -248,11 +248,11 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      */
     public Reply cancelReplyTransactionnal(Long playerId, Long replyId) {
         Reply reply = questionSingleton.cancelReplyTransactionnal(playerId, replyId);
-        //try {
-        //scriptEvent.fire(playerFacade.find(playerId), "replyCancel", new ReplyValidate(reply));// Throw an event
-        //} catch (WegasRuntimeException e) {
-        // GOTCHA no eventManager is instantiated
-        //}
+        try {
+            scriptEvent.fire(playerFacade.find(playerId), "replyCancel", new ReplyValidate(reply));// Throw an event
+        } catch (WegasRuntimeException e) {
+            // GOTCHA no eventManager is instantiated
+        }
         return reply;
     }
 
