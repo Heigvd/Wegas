@@ -262,17 +262,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      * @return
      */
     public Reply cancelReply(Long playerId, Long replyId) {
-
-        final Reply reply = getEntityManager().find(Reply.class, replyId);
-        getEntityManager().remove(reply);
-
-        try {
-            scriptEvent.fire(playerFacade.find(playerId), "replyCancel", new ReplyValidate(reply));// Throw an event
-        } catch (WegasRuntimeException e) {
-            // GOTCHA no eventManager is instantiated
-        }
-
-        return reply;
+        return this.cancelReplyTransactionnal(playerId, replyId);
     }
 
     /**
