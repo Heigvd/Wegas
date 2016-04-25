@@ -360,7 +360,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         getEntityManager().flush();
         //gameModel.propagateGameModel();  -> propagation is now done automatically after descriptor creation
         gameModel.propagateDefaultInstance(gameModel);
-        getEntityManager().flush();
+//        getEntityManager().flush();
         // Send an reset event (for the state machine and other)
         resetEvent.fire(new ResetEvent(gameModel));
     }

@@ -87,10 +87,7 @@ public class InboxInstance extends VariableInstance {
     public void merge(AbstractEntity a) {
         if (a instanceof InboxInstance) {
             InboxInstance other = (InboxInstance) a;
-            ListUtils.mergeLists(this.getMessages(), other.getMessages());
-            for (Message m : this.getMessages()) {
-                m.setInboxInstance(this);
-            }
+            this.setMessages(ListUtils.mergeLists(this.getMessages(), other.getMessages()));
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }

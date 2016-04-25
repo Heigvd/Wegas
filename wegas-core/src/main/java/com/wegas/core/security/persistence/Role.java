@@ -11,45 +11,45 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+
 import javax.persistence.*;
+import java.util.*;
 
 /**
- *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
 @Table(name = "roles", uniqueConstraints = {
-    @UniqueConstraint(columnNames = "name")
+        @UniqueConstraint(columnNames = "name")
 })
 @Cacheable(true)
 @NamedQueries({
-    @NamedQuery(name = "Role.findByName", query = "SELECT a FROM Role a WHERE a.name = :name")})
+        @NamedQuery(name = "Role.findByName", query = "SELECT a FROM Role a WHERE a.name = :name")})
 public class Role extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
+
     /**
      *
      */
     @Id
     @GeneratedValue
     private Long id;
+
     /**
      *
      */
     @Basic(optional = false)
     @Column(length = 100)
     private String name;
+
     /**
      *
      */
     @Basic(optional = false)
     @Column(length = 255)
     private String description;
+
     /**
      *
      */
@@ -74,7 +74,6 @@ public class Role extends AbstractEntity {
     }
 
     /**
-     *
      * @param name
      */
     public Role(String name) {
@@ -87,14 +86,13 @@ public class Role extends AbstractEntity {
             Role r = (Role) other;
             this.setName(r.getName());
             this.setDescription(r.getDescription());
-            ListUtils.mergeLists(this.permissions, r.getPermissions());
+            this.setPermissions(ListUtils.mergeLists(this.getPermissions(), r.getPermissions()));
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
         }
     }
 
     /**
-     *
      * @return
      */
     @Override
@@ -103,7 +101,6 @@ public class Role extends AbstractEntity {
     }
 
     /**
-     *
      * @param id
      */
     public void setId(Long id) {
@@ -111,7 +108,6 @@ public class Role extends AbstractEntity {
     }
 
     /**
-     *
      * @return
      */
     public String getName() {
@@ -119,7 +115,6 @@ public class Role extends AbstractEntity {
     }
 
     /**
-     *
      * @param name
      */
     public void setName(String name) {
@@ -127,7 +122,6 @@ public class Role extends AbstractEntity {
     }
 
     /**
-     *
      * @return
      */
     public String getDescription() {
@@ -135,7 +129,6 @@ public class Role extends AbstractEntity {
     }
 
     /**
-     *
      * @param description
      */
     public void setDescription(String description) {
@@ -143,7 +136,6 @@ public class Role extends AbstractEntity {
     }
 
     /**
-     *
      * @return
      */
     public List<Permission> getPermissions() {
@@ -151,7 +143,6 @@ public class Role extends AbstractEntity {
     }
 
     /**
-     *
      * @param permissions
      */
     public void setPermissions(List<Permission> permissions) {
@@ -162,7 +153,6 @@ public class Role extends AbstractEntity {
     }
 
     /**
-     *
      * @param permission
      * @return
      */
@@ -171,7 +161,6 @@ public class Role extends AbstractEntity {
     }
 
     /**
-     *
      * @param permission
      * @return
      */
@@ -185,7 +174,6 @@ public class Role extends AbstractEntity {
     }
 
     /**
-     *
      * @param permission
      * @return
      */
@@ -245,7 +233,6 @@ public class Role extends AbstractEntity {
     public void removeUser(User user) {
         this.users.remove(user);
     }
-
 
 
     @Override
