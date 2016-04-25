@@ -8,19 +8,19 @@
 package com.wegas.mcq.ejb;
 
 import com.wegas.core.ejb.AbstractEJBTest;
-import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.mcq.persistence.*;
-import javax.naming.NamingException;
-import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
+import javax.naming.NamingException;
+
+import static org.junit.Assert.assertEquals;
+
 /**
- *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
@@ -59,6 +59,36 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         vdf.duplicate(choice.getId());
 
         vdf.remove(question.getId());                                           // Clean up
+    }
+
+    @Test
+    public void testSelectAndCancel() throws NamingException {
+        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);// Lookup Ejb's
+        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
+        final QuestionDescriptorFacade qdf = lookupBy(QuestionDescriptorFacade.class);
+
+        final NumberDescriptor myNumber = new NumberDescriptor();              // Create a number descriptor
+        myNumber.setName("mynumber");
+        myNumber.setDefaultInstance(new NumberInstance(0));
+        vdf.create(gameModel.getId(), myNumber);
+        QuestionDescriptor question = new QuestionDescriptor();                 // Create a question descriptor
+        question.setDefaultInstance(new QuestionInstance());
+        vdf.create(gameModel.getId(), question);
+
+        ChoiceDescriptor choice = new ChoiceDescriptor();                       // Add a choice descriptor
+        choice.setDefaultInstance(new ChoiceInstance());
+        choice.setName("testChoice");
+        Result r = new Result("result");
+        r.setImpact(new Script("mynumber.value = 10"));
+        choice.addResult(r);
+        vdf.createChild(question.getId(), choice);
+
+        final Reply reply = qdf.selectChoice(choice.getId(), player.getId());
+        assertEquals(((NumberInstance)vif.find(myNumber.getId(), player.getId())).getValue(), 0, 0.0); // Nothing happened
+        assertEquals(((QuestionInstance)vif.find(question.getId(), player.getId())).getReplies().size(), 1);
+        qdf.cancelReply(player.getId(), reply.getId());
+        assertEquals(((QuestionInstance)vif.find(question.getId(), player.getId())).getReplies().size(), 0);
+        vdf.remove(question.getId());
     }
 
     @Test
@@ -127,7 +157,7 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
 
         ChoiceDescriptor duplicate = (ChoiceDescriptor) vdf.duplicate(choice.getId());
         duplicate = (ChoiceDescriptor) vdf.find(duplicate.getId());
-        
+
         duplicate.getDefaultInstance().getResult().getName();
         // Restart to propagate default instance value change
         gameModelFacade.reset(gameModel.getId());
