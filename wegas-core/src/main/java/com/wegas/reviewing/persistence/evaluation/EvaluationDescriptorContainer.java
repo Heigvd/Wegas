@@ -10,19 +10,16 @@ package com.wegas.reviewing.persistence.evaluation;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.reviewing.persistence.*;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.rest.util.Views;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Simple wrapper to group several evaluation descriptor
@@ -35,6 +32,7 @@ import org.slf4j.LoggerFactory;
 public class EvaluationDescriptorContainer extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
+
     private static final Logger logger = LoggerFactory.getLogger(EvaluationDescriptorContainer.class);
 
     @Id
@@ -67,7 +65,6 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
     }
 
     /**
-     *
      * set the evaluation descriptions
      *
      * @param evaluations list of evaluation descriptor
@@ -85,7 +82,7 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
     public void merge(AbstractEntity a) {
         if (a instanceof EvaluationDescriptorContainer) {
             EvaluationDescriptorContainer other = (EvaluationDescriptorContainer) a;
-            this.evaluations = ListUtils.mergeLists(this.getEvaluations(), other.getEvaluations());
+            this.setEvaluations(ListUtils.mergeLists(this.getEvaluations(), other.getEvaluations()));
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
