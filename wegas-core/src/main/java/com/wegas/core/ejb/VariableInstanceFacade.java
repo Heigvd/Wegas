@@ -255,6 +255,20 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
     @Override
     public void remove(VariableInstance entity) {
         getEntityManager().remove(entity);
+/*
+        if (entity.getPlayerScopeKey() != null) {
+            Player find = playerFacade.find(entity.getPlayerScopeKey());
+            find.getPrivateInstances().remove(entity);
+        } else if (entity.getTeamScopeKey() != null) {
+            Team find = teamFacade.find(entity.getTeamScopeKey());
+            find.getPrivateInstances().remove(entity);
+        } else if (entity.getGameScopeKey() != null) {
+            Game find = gameFacade.find(entity.getGameScopeKey());
+            find.getPrivateInstances().remove(entity);
+        } else if (entity.getGameModelScope() != null) {
+            //find.getPrivateInstances().remove(entity);
+        }
+*/
         entity.getScope().getVariableInstances().remove(entity.getId());
     }
 

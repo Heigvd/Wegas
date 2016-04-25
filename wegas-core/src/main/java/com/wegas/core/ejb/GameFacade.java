@@ -381,6 +381,7 @@ public class GameFacade extends BaseFacade<Game> {
     public Player joinTeam(Team team, User user) {
         // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
         Player p = new Player(user, team);
+        user.getPlayers().add(p);
         this.joinTeam(team, p);
         this.addRights(user, p.getGame());
         return p;

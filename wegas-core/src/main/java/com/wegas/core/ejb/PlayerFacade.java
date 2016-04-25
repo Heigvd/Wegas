@@ -140,7 +140,7 @@ public class PlayerFacade extends BaseFacade<Player> {
     public void create(Player entity) {
         getEntityManager().persist(entity);
         getEntityManager().find(Team.class, entity.getTeam().getId()).addPlayer(entity);
-        if(entity.getUser() != null) {
+        if (entity.getUser() != null) {
             getEntityManager().find(User.class, entity.getUser().getId()).getPlayers().add(entity);
         }
     }
@@ -152,7 +152,12 @@ public class PlayerFacade extends BaseFacade<Player> {
     public void remove(final Player player) {
         //List<VariableInstance> instances = this.getAssociatedInstances(player);
         player.getTeam().getPlayers().remove(player);
+        if (player.getUser() != null) {
+            player.getUser().getPlayers().remove(player);
+        }
+        
         this.getEntityManager().remove(player);
+
         //for (VariableInstance i : instances) {
         //    this.getEntityManager().remove(i);
         //}

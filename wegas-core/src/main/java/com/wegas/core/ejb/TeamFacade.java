@@ -9,6 +9,7 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.AccountFacade;
@@ -23,6 +24,7 @@ import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -112,9 +114,9 @@ public class TeamFacade extends BaseFacade<Team> {
      */
     @Override
     public void remove(Team entity) {
-        //for (Player p : entity.getPlayers()) {
-        //    playerFacade.remove(p);
-        //}
+        for (Player p : entity.getPlayers()) {
+            p.getUser().getPlayers().remove(p);
+        }
         //for (VariableInstance i : this.getAssociatedInstances(entity)) {
         //    this.getEntityManager().remove(i);
         //}
@@ -141,7 +143,6 @@ public class TeamFacade extends BaseFacade<Team> {
         super(Team.class);
     }
 
-
     /**
      * Reset a team
      *
@@ -155,7 +156,6 @@ public class TeamFacade extends BaseFacade<Team> {
         // Send an reset event (for the state machine and other)
         resetEvent.fire(new ResetEvent(team));
     }
-
 
     /**
      * Reset a team
