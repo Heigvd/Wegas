@@ -133,8 +133,8 @@ public class GameAdmin extends AbstractEntity {
     public void merge(AbstractEntity other) {
         if (other instanceof GameAdmin) {
             GameAdmin o = (GameAdmin) other;
-            this.status = o.status;
-            this.comments = o.comments;
+            this.setStatus(o.getStatus());
+            this.setComments(o.getComments());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
         }

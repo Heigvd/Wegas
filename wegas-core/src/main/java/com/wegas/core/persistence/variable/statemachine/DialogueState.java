@@ -53,7 +53,7 @@ public class DialogueState extends State {
     @Override
     public void merge(AbstractEntity other) {
         if (other instanceof DialogueState) {
-            this.text = ((DialogueState) other).text;
+            this.setText(((DialogueState) other).getText());
             super.merge(other);
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");

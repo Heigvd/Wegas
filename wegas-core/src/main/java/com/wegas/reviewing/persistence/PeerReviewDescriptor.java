@@ -131,8 +131,8 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
             this.setDescription(other.getDescription());
             this.setToReview(other.getToReview());
             this.setToReviewName(other.getToReviewName());
-            this.feedback.merge(other.getFeedback());
-            this.fbComments.merge(other.getFbComments());
+            this.getFeedback().merge(other.getFeedback());
+            this.getFbComments().merge(other.getFbComments());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }

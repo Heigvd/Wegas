@@ -68,8 +68,8 @@ public class StringDescriptor extends VariableDescriptor<StringInstance> {
             StringDescriptor other = (StringDescriptor) a;
             this.setValidationPattern(other.getValidationPattern());
 
-            this.allowedValues = new ArrayList<>();
-            this.allowedValues.addAll(other.getAllowedValues());
+            this.setAllowedValues(new ArrayList<>());
+            this.getAllowedValues().addAll(other.getAllowedValues());
             super.merge(a);
 
             /*String value = this.getDefaultInstance().getValue();

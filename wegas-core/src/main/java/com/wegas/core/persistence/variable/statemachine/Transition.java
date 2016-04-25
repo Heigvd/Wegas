@@ -174,10 +174,10 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
     public void merge(AbstractEntity other) {
         if (other instanceof Transition) {
             Transition newTranstion = (Transition) other;
-            this.nextStateId = newTranstion.nextStateId;
-            this.preStateImpact = newTranstion.preStateImpact;
-            this.triggerCondition = newTranstion.triggerCondition;
-            this.index = newTranstion.index;
+            this.setNextStateId(newTranstion.getNextStateId());
+            this.setPreStateImpact(newTranstion.getPreStateImpact());
+            this.setTriggerCondition(newTranstion.getTriggerCondition());
+            this.setIndex(newTranstion.getIndex());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
         }

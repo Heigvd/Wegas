@@ -154,10 +154,10 @@ public class TriggerDescriptor extends StateMachineDescriptor {
         if (a instanceof TriggerDescriptor) {
             TriggerDescriptor entity = (TriggerDescriptor) a;
             entity.buildStateMachine();
-            this.oneShot = entity.isOneShot();
-            this.disableSelf = entity.isDisableSelf();
-            this.postTriggerEvent = entity.getPostTriggerEvent();
-            this.triggerEvent = entity.getTriggerEvent();
+            this.setOneShot(entity.isOneShot());
+            this.setDisableSelf(entity.isDisableSelf());
+            this.setPostTriggerEvent(entity.getPostTriggerEvent());
+            this.setTriggerEvent(entity.getTriggerEvent());
             super.merge(entity);
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");

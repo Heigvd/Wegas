@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.Broadcastable;
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -192,7 +193,9 @@ public class Message extends NamedEntity implements Broadcastable {
             this.setDate(other.getDate());
             this.setSubject(other.getSubject());
             this.setToken(other.getToken());
-            this.setAttachements(other.attachements);
+            this.setAttachements(new ArrayList<>());
+            this.getAttachements().addAll(other.getAttachements());
+            //this.setAttachements(other.attachements);
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }

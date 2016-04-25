@@ -425,7 +425,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
                 this.setComments(other.getComments());
                 this.getDefaultInstance().merge(other.getDefaultInstance());
                 if (other.getScope() != null) {
-                    this.scope.setBroadcastScope(other.getScope().getBroadcastScope());
+                    this.getScope().setBroadcastScope(other.getScope().getBroadcastScope());
                 }
             } catch (PersistenceException pe) {
                 throw WegasErrorMessage.error("The name is already in use");

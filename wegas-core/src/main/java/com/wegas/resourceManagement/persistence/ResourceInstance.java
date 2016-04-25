@@ -116,7 +116,21 @@ public class ResourceInstance extends VariableInstance {
                 }));
             }
             if (other.getActivities() != null) {
-                this.setActivities(other.getActivities());
+                this.setActivities(ListUtils.mergeLists(this.getActivities(), other.getActivities(), new ListUtils.Updater() {
+                    @Override
+                    public void addEntity(AbstractEntity entity) {
+                        Activity activity = (Activity) entity;
+                        activity.getTaskDescriptor().addActivity(activity);
+                        activity.getRequirement().addActivity(activity);
+                    }
+
+                    @Override
+                    public void removeEntity(AbstractEntity entity) {
+                        Activity activity = (Activity) entity;
+                        activity.getTaskDescriptor().removeActivity(activity);
+                        activity.getRequirement().removeActivity(activity);
+                    }
+                }));
             }
             if (other.getOccupations() != null) {
                 this.setOccupations(ListUtils.mergeLists(this.getOccupations(), other.getOccupations()));

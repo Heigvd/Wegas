@@ -228,7 +228,8 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
         if (a instanceof ListDescriptor) {
             super.merge(a);
             ListDescriptor o = (ListDescriptor) a;
-            this.setAllowedTypes(o.getAllowedTypes());
+            this.setAllowedTypes(new ArrayList<>());
+            this.getAllowedTypes().addAll(o.getAllowedTypes());
             if (o.getAddShortcut() == null || o.getAddShortcut().isEmpty() || isAuthorized(o.getAddShortcut())) {
                 this.setAddShortcut(o.getAddShortcut());
             } else {

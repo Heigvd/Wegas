@@ -122,9 +122,10 @@ public class StateMachineInstance extends VariableInstance {
         return transitionHistory;
     }
 
-//    public void setTransitionHistory(List<Long> transitionHistory) {
-//        this.transitionHistory = transitionHistory;
-//    }
+    public void setTransitionHistory(List<Long> transitionHistory) {
+        this.transitionHistory = transitionHistory;
+    }
+
     /**
      *
      * @param id
@@ -136,9 +137,11 @@ public class StateMachineInstance extends VariableInstance {
     @Override
     public void merge(AbstractEntity a) {
         if (a instanceof StateMachineInstance) {
-            this.currentStateId = ((StateMachineInstance) a).getCurrentStateId();
-            this.enabled = ((StateMachineInstance) a).getEnabled();
-            this.transitionHistory = ((StateMachineInstance) a).getTransitionHistory();
+            StateMachineInstance other = (StateMachineInstance) a;
+            this.setCurrentStateId(other.getCurrentStateId());
+            this.setEnabled(other.getEnabled());
+            this.setTransitionHistory(new ArrayList());
+            this.getTransitionHistory().addAll(other.getTransitionHistory());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
