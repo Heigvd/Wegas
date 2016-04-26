@@ -14,7 +14,7 @@
     &.view--menu {
         @include make-row(0px);
         width: 100%;
-        height: 54px;
+        height: 50px; /* was 54px */
         z-index: 4;
         overflow: visible;
     }
@@ -119,6 +119,8 @@
         @include make-md-column(3, 96px);
         overflow-x: hidden;
         width: 100% !important;
+        background-color: transparent !important;
+        border-bottom: 2px solid $admin-color;
         .form {
             margin: 0px;
             padding: 0px;
@@ -474,7 +476,8 @@
     }
 
     .view--separate-primary {
-        border-top: solid 4px #fff;
+        background-color: $background-default-secondary;
+        border-top: none; /* solid 4px $background-default-secondary; */
         border-bottom: solid 2px #fff;
     }
 
@@ -731,7 +734,7 @@
     @extend .centered-page;
     .view {
         &.view--menu {
-            border-color: $player-color;
+            border-bottom-color: $player-color;
             transition: .3s;
         }
     }
@@ -741,7 +744,7 @@
     @extend .centered-page;
     .view {
         &.view--menu {
-            border-color: $trainer-color;
+            border-bottom-color: $trainer-color;
             transition: .3s;
         }
     }

@@ -1073,8 +1073,8 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Rejoindre une " + keywords.session.singular.fr
                         },
                         'PLAYER-INDEX-JOIN-LINK': {
-                            'en': "New " + keywords.session.singular.en,
-                            'fr': "Nouvelle " + keywords.session.singular.fr
+                            'en': "Join a " + keywords.session.singular.en,
+                            'fr': "Rejoindre une " + keywords.session.singular.fr
                         },
                         'PLAYER-INDEX-JOIN-BTN': {
                             'en': "Join",
