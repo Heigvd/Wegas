@@ -8,7 +8,7 @@ angular.module('private.trainer.directives', [
             controller: "TrainerIndexController as trainerIndexCtrl"
         }
     })
-    .controller("TrainerIndexController", function TrainerIndexController($rootScope, $scope, $translate, SessionsModel, Flash) {
+    .controller("TrainerIndexController", function TrainerIndexController($rootScope, $scope, $translate, SessionsModel, Flash, $timeout) {
         "use strict";
         var ctrl = this,
             initMaxSessionsDisplayed = function() {
@@ -64,6 +64,7 @@ angular.module('private.trainer.directives', [
         };
 
         ctrl.archiveSession = function(sessionToArchive) {
+            $('#archive-'+sessionToArchive.id).removeClass('button--archive').addClass('busy-button');
             if (sessionToArchive) {
                 SessionsModel.archiveSession(sessionToArchive).then(function(response) {
                     if (!response.isErroneous()) {
@@ -72,10 +73,16 @@ angular.module('private.trainer.directives', [
                     } else {
                         response.flash();
                     }
+                    $timeout(function(){
+                        $('#archive-'+sessionToArchive.id).removeClass('busy-button').addClass('button--archive');
+                    }, 500);
                 });
             } else {
                 $translate('COMMONS-SCENARIOS-NO-SCENARIO-FLASH-ERROR').then(function(message) {
                     Flash.danger(message);
+                    $timeout(function(){
+                        $('#archive-'+sessionToArchive.id).removeClass('busy-button').addClass('button--archive');
+                    }, 500);
                 });
             }
         };
@@ -120,14 +127,16 @@ angular.module('private.trainer.directives', [
             link: function(scope, element, attrs, parentCtrl) {
                 scope.scenarios = [];
                 scope.loadingScenarios = false;
-                var loadScenario = function() {
-                    scope.loadingScenarios = true;
-                    ScenariosModel.getScenarios("LIVE").then(function(response) {
-                        if (!response.isErroneous()) {
-                            scope.loadingScenarios = false;
-                            scope.scenarios = response.data;
-                        }
-                    });
+                var loadScenarios = function() {
+                    if (scope.scenarios.length==0) {
+                        scope.loadingScenarios = true;
+                        ScenariosModel.getScenarios("LIVE").then(function (response) {
+                            if (!response.isErroneous()) {
+                                scope.loadingScenarios = false;
+                                scope.scenarios = response.data;
+                            }
+                        });
+                    }
                 };
                 scope.newSession = {
                     name: "",
@@ -174,14 +183,8 @@ angular.module('private.trainer.directives', [
                     }
                 };
 
-                scope.$watch(function() {
-                    return scope.newSession.name;
-                }, function(newValue) {
-                    if (newValue) {
-                        if (!scope.loadingScenarios && scope.scenarios.length === 0) {
-                            loadScenario();
-                        }
-                    }
+                scope.$on('expand', function() {
+                    loadScenarios();
                 });
             }
         };

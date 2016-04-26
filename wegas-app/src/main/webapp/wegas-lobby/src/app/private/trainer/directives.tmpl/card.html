@@ -28,7 +28,8 @@
     <a class="button button--small button--round button--default-reverse button--label-off button--user" title="{{'TRAINER-CARD-USERS-BTN' | translate}}" ui-sref=".users({id: session.id})">
       <span class="button__label">{{'TRAINER-CARD-USERS-BTN' | translate}}</span>
     </a>
-    <a class="button button--small button--round button--default-reverse button--label-off button--archive" title="{{'TRAINER-CARD-MOVE-ARCHIVE-BTN' | translate}}" ng-click="archive(session)">
+    <a id="archive-{{session.id}}"
+        class="button button--small button--round button--default-reverse button--label-off button--archive" title="{{'TRAINER-CARD-MOVE-ARCHIVE-BTN' | translate}}" ng-click="archive(session)">
       <span class="button__label">{{'TRAINER-CARD-MOVE-ARCHIVE-BTN' | translate}}</span>
     </a>
     <a class="button button--small button--round button--default button--label-off button--trainer action--button" title="{{'TRAINER-CARD-MONITORING-BTN' | translate}}" href="{{ServiceURL}}host.html?gameId={{session.id}}" target="_blank">

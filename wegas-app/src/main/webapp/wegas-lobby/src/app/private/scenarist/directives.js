@@ -1,7 +1,7 @@
 angular.module('private.scenarist.directives', [
     'wegas.behaviours.repeat.autoload'
 ])
-    .controller('ScenaristIndexController', function ScenaristIndexController($q, $scope, $rootScope, ScenariosModel) {
+    .controller('ScenaristIndexController', function ScenaristIndexController($q, $scope, $rootScope, ScenariosModel, $timeout) {
         "use strict";
         var ctrl = this,
             initMaxScenariosDisplayed = function() {
@@ -47,12 +47,16 @@ angular.module('private.scenarist.directives', [
         };
 
         ctrl.archiveScenario = function(scenario) {
+            $('#archive-'+scenario.id).removeClass('button--archive').addClass('busy-button');
             ScenariosModel.archiveScenario(scenario).then(function(response) {
                 if (response.isErroneous()) {
                     response.flash();
                 } else {
                     $rootScope.$emit('changeScenarios', true);
                 }
+                $timeout(function(){
+                    $('#archive-'+scenario.id).removeClass('busy-button').addClass('button--archive');
+                }, 500);
             });
         };
 

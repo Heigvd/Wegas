@@ -131,6 +131,7 @@
     &.view--history-download {
         max-height: 100%;
         width: 100% !important;
+        overflow-y: hidden;
         /* @include make-xs-column(12, 96px); */
         /* @include make-md-column(3, 96px); */
 
@@ -775,6 +776,7 @@
 .guest {
     .view.view--middle {
         background-color: inherit;
+        margin-top: 40px;
     }
 
     .view.view--played-sessions-list {
@@ -784,9 +786,17 @@
         #player-join-session-button {
             display: none;
         }
+        .button--play {
+            background-color: $success-color;
+        }
     }
 
     .view.view--join-session {
+        height: 0;
+
+        /* NB: everything below should be removed when this layout becomes definitive */
+
+        /*
         position: relative;
         height: auto;
         transition: none;
@@ -799,7 +809,6 @@
         }
         .view__login-form {
             margin: auto;
-            display: none; /* initially hidden */
         }
         #wegas-icon-title {
             display: none;
@@ -818,5 +827,6 @@
                 background-color: lightgray;
             }
         }
+        */
     }
 }

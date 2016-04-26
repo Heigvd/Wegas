@@ -68,7 +68,11 @@ angular.module('Wegas', [
             if (user === null) {
                 $state.go("wegas.public");
             } else {
-                if (user.isScenarist || user.isTrainer) {
+                if (user.isGuest) {
+                    Auth.logout().then(function() {
+                        $state.go("wegas.public.login");
+                    });
+                } else if (user.isScenarist || user.isTrainer) {
                     $state.go("wegas.private.trainer");
                 } else {
                     $state.go("wegas.private.player");
