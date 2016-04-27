@@ -456,7 +456,7 @@ public class ContentConnector implements AutoCloseable {
             final Node rootNode = session.getRootNode();
             session.save();
             session.getWorkspace().importXML("/", input, ImportUUIDBehavior.IMPORT_UUID_COLLISION_THROW);
-            final NodeIterator nodes = rootNode.getNode(EXPORT_NODE_NAME).getNodes("wfs:*");
+            final NodeIterator nodes = rootNode.getNode(EXPORT_NODE_NAME).getNodes(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + "*");
             while (nodes.hasNext()) {
                 final Node node = nodes.nextNode();
                 session.getWorkspace().move(node.getPath(), "/" + node.getName());
