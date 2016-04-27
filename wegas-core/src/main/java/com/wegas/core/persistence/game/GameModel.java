@@ -110,7 +110,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.LAZY)
     //@XmlTransient
     @JsonIgnore
-    private List<VariableDescriptor> variableDescriptors;
+    private List<VariableDescriptor> variableDescriptors = new ArrayList();
 
     /**
      * A list of Variable Descriptors that are at the root level of the
@@ -122,7 +122,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @OrderColumn
     @JsonView(Views.Export.class)
     //@JsonManagedReference
-    private List<VariableDescriptor> childVariableDescriptors;
+    private List<VariableDescriptor> childVariableDescriptors = new ArrayList();
 
     /**
      *
@@ -375,10 +375,9 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      * @param variableDescriptors
      */
     public void setChildVariableDescriptors(List<VariableDescriptor> variableDescriptors) {
-        this.childVariableDescriptors = variableDescriptors;
-        //this.variableDescriptors.addAll(variableDescriptors);
-        for (VariableDescriptor vd : getChildVariableDescriptors()) {
-            vd.setGameModel(this);
+        this.childVariableDescriptors = new ArrayList<>();
+        for (VariableDescriptor vd : variableDescriptors) {
+            this.addItem(vd);
         }
     }
 
@@ -396,6 +395,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @Override
     public void addItem(int index, VariableDescriptor variableDescriptor) {
         this.getChildVariableDescriptors().add(index, variableDescriptor);
+        this.getVariableDescriptors().add(variableDescriptor);
         variableDescriptor.setGameModel(this);
         variableDescriptor.setRootGameModel(this);
     }
@@ -541,7 +541,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @JsonIgnore
     public void setItems(List<VariableDescriptor> items) {
         this.setChildVariableDescriptors(items);
-//        this.addItem(null);
     }
 
     @Override
