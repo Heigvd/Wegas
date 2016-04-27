@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.Helper;
 import com.wegas.core.event.internal.PlayerAction;
 import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
@@ -34,6 +35,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import javax.naming.NamingException;
 
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -455,5 +457,14 @@ public class GameFacade extends BaseFacade<Game> {
      */
     public void reset(Long gameId) {
         this.reset(this.find(gameId));
+    }
+
+    public static GameFacade lookup() {
+        try {
+            return Helper.lookupBy(GameFacade.class);
+        } catch (NamingException ex) {
+            logger.error("Error retrieving game facade", ex);
+            return null;
+        }
     }
 }

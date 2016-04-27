@@ -7,9 +7,9 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.Helper;
 import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.AccountFacade;
@@ -23,9 +23,11 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import javax.naming.NamingException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -33,6 +35,8 @@ import java.util.List;
 @Stateless
 @LocalBean
 public class TeamFacade extends BaseFacade<Team> {
+
+    private static final Logger logger = LoggerFactory.getLogger(TeamFacade.class);
 
     /**
      *
@@ -114,9 +118,9 @@ public class TeamFacade extends BaseFacade<Team> {
      */
     @Override
     public void remove(Team entity) {
-        for (Player p : entity.getPlayers()) {
-            p.getUser().getPlayers().remove(p);
-        }
+        //for (Player p : entity.getPlayers()) {
+        //    p.getUser().getPlayers().remove(p);
+        //}
         //for (VariableInstance i : this.getAssociatedInstances(entity)) {
         //    this.getEntityManager().remove(i);
         //}
@@ -164,5 +168,17 @@ public class TeamFacade extends BaseFacade<Team> {
      */
     public void reset(Long teamId) {
         this.reset(this.find(teamId));
+    }
+
+    /**
+     * @return
+     */
+    public static TeamFacade lookup() {
+        try {
+            return Helper.lookupBy(TeamFacade.class);
+        } catch (NamingException ex) {
+            logger.error("Error retrieving team facade", ex);
+            return null;
+        }
     }
 }

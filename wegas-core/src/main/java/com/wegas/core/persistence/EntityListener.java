@@ -82,5 +82,9 @@ public class EntityListener {
                 }
             }
         }
+
+        if (o instanceof AbstractEntity) {
+            ((AbstractEntity) o).updateCacheOnDelete();
+        }
     }
 }

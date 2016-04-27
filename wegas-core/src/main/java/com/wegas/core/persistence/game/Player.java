@@ -16,8 +16,10 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.security.ejb.UserFacade;
 import java.util.List;
 import java.util.Map;
 
@@ -181,8 +183,8 @@ public class Player extends AbstractEntity implements Broadcastable {
     }
 
     /**
-     * 
-     * @param teamId 
+     *
+     * @param teamId
      */
     public void setTeamId(Long teamId) {
         this.teamId = teamId;
@@ -312,5 +314,21 @@ public class Player extends AbstractEntity implements Broadcastable {
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
         return this.getTeam().getEntities();
+    }
+
+    @Override
+    public void updateCacheOnDelete() {
+        if (this.getUser() != null) {
+            User theUser = UserFacade.lookup().find(this.getUserId());
+            if (theUser != null) {
+                theUser.getPlayers().remove(this);
+            }
+        }
+        if (this.getTeam() != null) {
+            Team find = TeamFacade.lookup().find(this.getTeamId());
+            if (find != null) {
+                find.getPlayers().remove(this);
+            }
+        }
     }
 }

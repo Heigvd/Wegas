@@ -11,6 +11,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.GameFacade;
+import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.TeamFacade;
+import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.game.Game;
@@ -417,12 +421,64 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      */
     @Override
     public String toString() {
-        if (this.defaultDescriptor != null) {
-            return "Default " + this.getClass().getSimpleName() + "( " + getId() + ") for " + this.defaultDescriptor.getName();
+        if (this.getDefaultDescriptor() != null) {
+            return "Default " + this.getClass().getSimpleName() + "( " + getId() + ") for " + this.getDefaultDescriptor().getName();
         } else if (this.getDescriptor() != null) {
             return this.getClass().getSimpleName() + "( " + getId() + ") for " + this.getDescriptor().getName();
         } else {
             return this.getClass().getSimpleName() + "( " + getId() + ") NO DESC";
+        }
+    }
+
+    @Override
+    public void updateCacheOnDelete() {
+        // do not update anything for default instances
+        if (this.getDefaultDescriptor() == null) {
+            VariableDescriptor variableDescriptor = VariableDescriptorFacade.lookup().find(this.getScope().getVariableDescriptor().getId());
+
+            // if variable descriptor does not exists, it means it has been removed too
+            if (variableDescriptor != null) {
+
+                // When a player/team/game is removed, its instances are deleted too (JPA Casacding)
+                // Scopes for each deleted variables shall be updated too
+                AbstractScope scope = variableDescriptor.getScope();
+
+                if (scope != null) {
+                    if (scope instanceof PlayerScope) {
+                        scope.getVariableInstances().remove(this.getPlayerScopeKey());
+                    } else if (scope instanceof TeamScope) {
+                        scope.getVariableInstances().remove(this.getTeamScopeKey());
+                    } else if (scope instanceof GameScope) {
+                        scope.getVariableInstances().remove(this.getGameScopeKey());
+                    } else if (this.gameModelScope != null) {
+                    }
+                }
+            }
+
+            AbstractScope scope = this.getScope();
+
+            if (scope != null) {
+                // When a descriptor is deleted, all of its instances are removed too (JPA cascading)
+                // References to those instances shall be remove from owner private instances list
+                if (scope instanceof PlayerScope) {
+                    Player find = PlayerFacade.lookup().find(this.getPlayerScopeKey());
+                    if (find != null) {
+                        find.getPrivateInstances().remove(this);
+                    }
+                } else if (scope instanceof TeamScope) {
+                    Team find = TeamFacade.lookup().find(this.getTeamScopeKey());
+                    if (find != null) {
+                        find.getPrivateInstances().remove(this);
+                    }
+                } else if (scope instanceof GameScope) {
+                    Game find = GameFacade.lookup().find(this.getGameScopeKey());
+                    if (find != null) {
+                        find.getPrivateInstances().remove(this);
+                    }
+                } else if (this.gameModelScope != null) {
+                    // noop
+                }
+            }
         }
     }
 }

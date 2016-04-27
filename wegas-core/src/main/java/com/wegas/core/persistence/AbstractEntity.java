@@ -157,4 +157,14 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
     public String toString() {
         return this.getClass().getSimpleName() + "( " + getId() + " )";
     }
+
+    /**
+     * Default behaviour is to do nothing
+     * 
+     * Overriding this method may helps to maintain cache integrity after cascaded
+     * entity deletion
+     * 
+     */
+    public void updateCacheOnDelete() {
+    }
 }

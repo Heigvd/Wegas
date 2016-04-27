@@ -42,6 +42,7 @@ import javax.persistence.Query;
 import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import java.util.*;
+import javax.naming.NamingException;
 
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -151,7 +152,7 @@ public class UserFacade extends BaseFacade<User> {
             // GOTCHA
             // E-Mail not yet registered -> proceed
         }
-        */
+         */
 
         getEntityManager().persist(user);
         try {
@@ -315,7 +316,7 @@ public class UserFacade extends BaseFacade<User> {
         final Permission p = new Permission(permissionStr);
         final String splitedPermission[] = permissionStr.split(":");
         if (splitedPermission[0].equals(Game.class.getSimpleName()) // If current permission is on game
-                && !splitedPermission[1].equals("Token")) {                     // and is not a Token access
+            && !splitedPermission[1].equals("Token")) {                     // and is not a Token access
             final Long gameId = Long.parseLong(splitedPermission[2].substring(1));
             final Game g = gameFacade.find(gameId);
             p.setInducedPermission("GameModel:View:gm" + g.getGameModelId());   // grant view access on its parent game model
@@ -411,7 +412,7 @@ public class UserFacade extends BaseFacade<User> {
         findByToken.setParameter("instance", "%:" + instance);
         List<User> users = (List<User>) findByToken.getResultList();
         for (User user : users) {
-            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext(); ) {
+            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext();) {
                 Permission p = sit.next();
                 String splitedPermission[] = p.getValue().split(":");
                 if (splitedPermission.length >= 3) {
@@ -430,10 +431,10 @@ public class UserFacade extends BaseFacade<User> {
     public void deleteUserPermissionByInstanceAndUser(String instance, Long userId) {
         final TypedQuery<User> findByToken = getEntityManager().createNamedQuery("User.findUserWithPermission", User.class);
         findByToken.setParameter("permission", "%:" + instance)
-                .setParameter("userId", userId);
+            .setParameter("userId", userId);
         try {
             User user = findByToken.getSingleResult();
-            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext(); ) {
+            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext();) {
                 String p = sit.next().getValue();
                 String splitedPermission[] = p.split(":");
                 if (splitedPermission.length >= 3) {
@@ -458,10 +459,10 @@ public class UserFacade extends BaseFacade<User> {
     public void deleteUserPermissionByPermissionAndAccount(String permission, Long userId) {
         final TypedQuery<User> findByToken = getEntityManager().createNamedQuery("User.findUserWithPermission", User.class);
         findByToken.setParameter("permission", permission)
-                .setParameter("userId", userId);
+            .setParameter("userId", userId);
         try {
             User user = findByToken.getSingleResult();
-            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext(); ) {
+            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext();) {
                 String p = sit.next().getValue();
                 String splitedPermission[] = p.split(":");
                 if (splitedPermission.length >= 3 && p.equals(permission)) {
@@ -522,7 +523,7 @@ public class UserFacade extends BaseFacade<User> {
     public void removeIdleGuests() {
         logger.info("removeIdleGuests(): unused guest accounts will be removed");
         Query findIdleGuests = getEntityManager().createQuery("SELECT DISTINCT account FROM GuestJpaAccount account "
-                + "WHERE account.createdTime < :idletime");
+            + "WHERE account.createdTime < :idletime");
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - 3);
         findIdleGuests.setParameter("idletime", calendar.getTime(), TemporalType.DATE);
@@ -640,5 +641,17 @@ public class UserFacade extends BaseFacade<User> {
         User u = this.find(uId);
         Role r = roleFacade.find(rId);
         this.addRole(u, r);
+    }
+
+    /**
+     * @return
+     */
+    public static UserFacade lookup() {
+        try {
+            return Helper.lookupBy(UserFacade.class);
+        } catch (NamingException ex) {
+            logger.error("Error retrieving user facade", ex);
+            return null;
+        }
     }
 }

@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.Helper;
 import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.DebugGame;
@@ -26,6 +27,9 @@ import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.List;
+import javax.naming.NamingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -33,6 +37,8 @@ import java.util.List;
 @Stateless
 @LocalBean
 public class PlayerFacade extends BaseFacade<Player> {
+
+    private static final Logger logger = LoggerFactory.getLogger(PlayerFacade.class);
 
     /**
      *
@@ -155,7 +161,7 @@ public class PlayerFacade extends BaseFacade<Player> {
         if (player.getUser() != null) {
             player.getUser().getPlayers().remove(player);
         }
-        
+
         this.getEntityManager().remove(player);
 
         //for (VariableInstance i : instances) {
@@ -283,5 +289,17 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     public void reset(Long playerId) {
         this.reset(this.find(playerId));
+    }
+
+    /**
+     * @return
+     */
+    public static PlayerFacade lookup() {
+        try {
+            return Helper.lookupBy(PlayerFacade.class);
+        } catch (NamingException ex) {
+            logger.error("Error retrieving player facade", ex);
+            return null;
+        }
     }
 }
