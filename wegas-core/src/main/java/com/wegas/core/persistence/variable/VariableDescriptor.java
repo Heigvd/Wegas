@@ -262,6 +262,9 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     public void setRootGameModel(GameModel rootGameModel) {
         this.rootGameModel = rootGameModel;
+        if (this.rootGameModel != null) {
+            this.setParentList(null);
+        }
     }
 
     public ListDescriptor getParentList() {
@@ -270,6 +273,9 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     public void setParentList(ListDescriptor parentList) {
         this.parentList = parentList;
+        if (this.parentList != null) {
+            this.setRootGameModel(null);
+        }
     }
 
     @JsonIgnore

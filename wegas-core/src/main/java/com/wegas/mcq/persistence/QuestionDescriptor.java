@@ -295,6 +295,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
 
     @Override
     public boolean remove(ChoiceDescriptor item) {
+        this.getGameModel().removeFromVariableDescriptors(item);
         return this.items.remove(item);
     }
 

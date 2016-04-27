@@ -359,7 +359,10 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      * @param variableDescriptors
      */
     public void setVariableDescriptors(List<VariableDescriptor> variableDescriptors) {
-        this.variableDescriptors = variableDescriptors;
+        this.variableDescriptors = new ArrayList<>();
+        for (VariableDescriptor vd : variableDescriptors) {
+            this.addToVariableDescriptors(vd);
+        }
     }
 
     /**
@@ -555,7 +558,9 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
 
     @Override
     public boolean remove(VariableDescriptor item) {
+        this.getVariableDescriptors().remove(item);
         return this.getChildVariableDescriptors().remove(item);
+
     }
 
     @PostPersist

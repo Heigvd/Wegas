@@ -335,6 +335,10 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     @JsonBackReference
     public void setQuestion(QuestionDescriptor question) {
         this.question = question;
+        if (question != null) { // Hum... question should never be null...
+            this.setRootGameModel(null);
+            this.setParentList(null);
+        }
     }
 
     @Override

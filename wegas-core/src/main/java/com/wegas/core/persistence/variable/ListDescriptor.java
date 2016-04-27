@@ -220,6 +220,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
      */
     @Override
     public boolean remove(VariableDescriptor item) {
+        this.getGameModel().removeFromVariableDescriptors(item);
         return this.getItems().remove(item);
     }
 
