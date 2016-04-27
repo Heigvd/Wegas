@@ -462,85 +462,84 @@ YUI.add('wegas-datasource', function(Y) {
          */
         updateCache: function(method, entity, updateEvent) {
             //Y.log("updateCache(" + method + ", " + entity + ")", "log", "Y.Wegas.WegasCache");
-            switch (method) {
-                case "DELETE":
-                    if (this.find(ID, entity, Y.bind(function(entity, needle) {
-                        var parent = this.findParentDescriptor(entity),
-                            children, index;
-                        if (parent) {
-                            children = this.getChildren(parent);
-                        } else {
-                            children = this.getCache();
-                        }
-                        index = children.indexOf(entity);
-
-                        if (index >= 0) {
-                            children.splice(index, 1);
-                            this.deleteFromIndexes(entity);
-                            this.get(HOST).fire("delete", {"entity": entity});
-                        }
-                        return true;
-                    }, this))) {
-                        return true;
+            if (method === DELETE) {
+                if (this.find(ID, entity.get("id"), Y.bind(function(entity, needle) {
+                    var parent = this.findParentDescriptor(entity),
+                        children, index;
+                    if (parent) {
+                        children = this.getChildren(parent);
+                    } else {
+                        children = this.getCache();
                     }
-                    break;
-                default:
-                    if (this.find(ID, entity, Y.bind(function(entity, needle) {
-                        var oldAttrs, newAttrs, newEntity;
-                        oldAttrs = entity.getAttrs();
-                        newAttrs = needle.getAttrs();
-                        // oldAttrs // newAttrs
-                        entity.setAttrs(newAttrs);
+                    index = children.indexOf(entity);
 
-                        if (this.oldIds) {
-                            // NEW ENTITY IN PARENT
-
-                            // oldIds is filled by VarDescCache.post when adding a variable as
-                            // a child. oldIds contains new variable siblings ids
-
-                            // Since return entity is not the new one but its parent,
-                            // this statement search an entity with an unknown id (ie not in oldIds) within
-                            // the parent items (ie children).
-                            newEntity = Y.Array.find(entity.get("items"), function(i) {
-                                return Y.Array.indexOf(this.oldIds, i.get("id")) < 0;
-                            }, this);
-
-
-                            // Index the new Entity and its children
-                            this.insertIntoIndexes(newEntity);
-
-                            this.get(HOST).fire("added", {// New entity as children
-                                entity: newEntity,
-                                parent: entity
-                            });
-                            this.oldIds = null;
-                        } else {
-                            this.updateIndexes(oldAttrs, newAttrs); // OK
-                            // Update Entity (anywhere)
-                            this.get(HOST).fire("updatedDescriptor", {
-                                entity: entity
-                            });
-                        }
-                        return true;
-                    }, this))) {
-                        return true;
+                    if (index >= 0) {
+                        children.splice(index, 1);
+                        this.deleteFromIndexes(entity);
+                        this.get(HOST).fire("delete", {"entity": entity});
                     }
-                    break;
+                    return true;
+                }, this))) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                if (this.find(ID, entity, Y.bind(function(entity, needle) {
+                    var oldAttrs, newAttrs, newEntity;
+                    oldAttrs = entity.getAttrs();
+                    newAttrs = needle.getAttrs();
+                    // oldAttrs // newAttrs
+                    entity.setAttrs(newAttrs);
+
+                    if (this.oldIds) {
+                        // NEW ENTITY IN PARENT
+
+                        // oldIds is filled by VarDescCache.post when adding a variable as
+                        // a child. oldIds contains new variable siblings ids
+
+                        // Since return entity is not the new one but its parent,
+                        // this statement search an entity with an unknown id (ie not in oldIds) within
+                        // the parent items (ie children).
+                        newEntity = Y.Array.find(entity.get("items"), function(i) {
+                            return Y.Array.indexOf(this.oldIds, i.get("id")) < 0;
+                        }, this);
+
+
+                        // Index the new Entity and its children
+                        this.insertIntoIndexes(newEntity);
+
+                        this.get(HOST).fire("added", {// New entity as children
+                            entity: newEntity,
+                            parent: entity
+                        });
+                        this.oldIds = null;
+                    } else {
+                        this.updateIndexes(oldAttrs, newAttrs); // OK
+                        // Update Entity (anywhere)
+                        this.get(HOST).fire("updatedDescriptor", {
+                            entity: entity
+                        });
+                    }
+                    return true;
+                }, this))) {
+                    return true;
+                }
+
+                // FALLBACK: new root level entity
+                this.addToCache(entity); // In case we still have not found anything
+
+                // Index the new entity and its children
+                this.insertIntoIndexes(entity);
+
+                if (updateEvent) {
+                    this.get(HOST).fire("added", {// New Entity  (no parent)
+                        entity: entity,
+                        parent: null
+                    });
+                }
+                return true;
             }
-
-            // FALLBACK: new root level entity
-            this.addToCache(entity); // In case we still have not found anything
-
-            // Index the new entity and its children
-            this.insertIntoIndexes(entity);
-
-            if (updateEvent) {
-                this.get(HOST).fire("added", {// New Entity  (no parent)
-                    entity: entity,
-                    parent: null
-                });
-            }
-            return true;
         },
         /**
          * @function
