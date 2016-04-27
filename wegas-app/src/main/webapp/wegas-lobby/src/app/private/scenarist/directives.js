@@ -5,8 +5,8 @@ angular.module('private.scenarist.directives', [
         "use strict";
         var ctrl = this,
             initMaxScenariosDisplayed = function() {
-                if (ctrl.scenarios.length > 12) {
-                    ctrl.maxScenariosDisplayed = 10;
+                if (ctrl.scenarios.length > 22) {
+                    ctrl.maxScenariosDisplayed = 20;
                 } else {
                     ctrl.maxScenariosDisplayed = ctrl.scenarios.length;
                 }
@@ -18,7 +18,7 @@ angular.module('private.scenarist.directives', [
                     if (ctrl.maxScenariosDisplayed >= ctrl.scenarios.length) {
                         ctrl.maxScenariosDisplayed = ctrl.scenarios.length;
                     } else {
-                        ctrl.maxScenariosDisplayed = ctrl.maxScenariosDisplayed + 5;
+                        ctrl.maxScenariosDisplayed = ctrl.maxScenariosDisplayed + 50;
                     }
                 }
             };

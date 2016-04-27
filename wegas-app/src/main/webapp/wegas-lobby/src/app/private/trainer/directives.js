@@ -12,8 +12,8 @@ angular.module('private.trainer.directives', [
         "use strict";
         var ctrl = this,
             initMaxSessionsDisplayed = function() {
-                if (ctrl.sessions.length > 12) {
-                    ctrl.maxSessionsDisplayed = 10;
+                if (ctrl.sessions.length > 22) {
+                    ctrl.maxSessionsDisplayed = 20;
                 } else {
                     ctrl.maxSessionsDisplayed = ctrl.sessions.length;
                 }
@@ -25,7 +25,7 @@ angular.module('private.trainer.directives', [
                     if (ctrl.maxSessionsDisplayed >= ctrl.sessions.length) {
                         ctrl.maxSessionsDisplayed = ctrl.sessions.length;
                     } else {
-                        ctrl.maxSessionsDisplayed = ctrl.maxSessionsDisplayed + 5;
+                        ctrl.maxSessionsDisplayed = ctrl.maxSessionsDisplayed + 50;
                     }
                 }
             };
