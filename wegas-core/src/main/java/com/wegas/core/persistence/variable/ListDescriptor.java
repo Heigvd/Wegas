@@ -121,8 +121,10 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
     @Override
     public void addItem(VariableDescriptor item) {
         if (isAuthorized(item)) {
+            if (this.getGameModel() != null) {
+                this.getGameModel().addToVariableDescriptors(item);
+            }
             this.getItems().add(item);
-            item.setGameModel(this.getGameModel());
             item.setParentList(this);
         } else {
             throw WegasErrorMessage.error(item.getClass().getSimpleName() + " not allowed in this folder");
@@ -132,8 +134,10 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
     @Override
     public void addItem(int index, VariableDescriptor item) {
         if (isAuthorized(item)) {
+            if (this.getGameModel() != null) {
+                this.getGameModel().addToVariableDescriptors(item);
+            }
             this.getItems().add(index, item);
-            item.setGameModel(this.getGameModel());
             item.setParentList(this);
         } else {
             throw WegasErrorMessage.error(item.getClass().getSimpleName() + " not allowed in this folder");

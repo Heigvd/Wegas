@@ -335,21 +335,31 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         final String VALUE1 = "test_value";
 
         VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+        GameModel gm;
 
         // 1st case: move from descriptor to descriptor
         ListDescriptor list1 = new ListDescriptor(LISTNAME1);
         list1.setDefaultInstance(new ListInstance());
         vdf.create(gameModel.getId(), list1);
+        gm = gameModelFacade.find(gameModel.getId());
+        Assert.assertEquals(1, gm.getVariableDescriptors().size());
+        Assert.assertEquals(1, gm.getChildVariableDescriptors().size());
 
         StringDescriptor vd1 = new StringDescriptor(VARIABLENAME1);
         vd1.setDefaultInstance(new StringInstance(VALUE1));
         vdf.createChild(list1.getId(), vd1);
+        gm = gameModelFacade.find(gameModel.getId());
+        Assert.assertEquals(2, gm.getVariableDescriptors().size());
+        Assert.assertEquals(1, gm.getChildVariableDescriptors().size());
 
         StringDescriptor vd2 = new StringDescriptor(VARIABLENAME2);
         vd2.setDefaultInstance(new StringInstance(VALUE1));
         vdf.createChild(list1.getId(), vd2);
         List<VariableDescriptor> childrenDescriptors = vdf.findByGameModelId(gameModel.getId());
         Assert.assertEquals(VARIABLENAME1, ((ListDescriptor) childrenDescriptors.get(0)).item(0).getName());// Check if item was successfully added
+        gm = gameModelFacade.find(gameModel.getId());
+        Assert.assertEquals(3, gm.getVariableDescriptors().size());
+        Assert.assertEquals(1, gm.getChildVariableDescriptors().size());
 
         vdf.move(vd1.getId(), list1.getId(), 1);                                // Move first item to second position
         childrenDescriptors = vdf.findByGameModelId(gameModel.getId());         // Refresh
