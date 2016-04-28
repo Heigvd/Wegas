@@ -99,8 +99,6 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         List<String> usedNames = this.findDistinctNames(gameModel);
         List<String> usedLabels = this.findDistinctLabels(list);
 
-        list.addItem(entity);
-
         boolean hasName = !Helper.isNullOrEmpty(entity.getName());
         boolean hasLabel = !Helper.isNullOrEmpty(entity.getLabel());
 
@@ -113,6 +111,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         Helper.setUniqueName(entity, usedNames);
         Helper.setUniqueLabel(entity, usedLabels);
 
+        list.addItem(entity);
         this.revive(gameModel, entity);
         return list;
     }
