@@ -291,11 +291,9 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     @JsonView(Views.IndexI.class)
     public Long getParentDescriptorId() {
-        if (parentList != null) {
-            return parentList.getId();
-        } else if (rootGameModel != null) {
-            return rootGameModel.getId();
-        } else {
+        try {
+            return this.getParent().getId();
+        } catch (WegasNotFoundException e) {
             return null;
         }
     }
