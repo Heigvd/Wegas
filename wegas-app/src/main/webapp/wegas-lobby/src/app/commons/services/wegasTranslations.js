@@ -160,8 +160,8 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "English"
                         },
                         'LOADING': {
-                            'en': "Loading",
-                            'fr': "Chargement"
+                            'en': "Loading ...",
+                            'fr': "Chargement ..."
                         },
                         'MODALE-CLOSE': {
                             'en': "Close",

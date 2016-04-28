@@ -18,7 +18,7 @@ angular.module('private.scenarist.directives', [
                     if (ctrl.maxScenariosDisplayed >= ctrl.scenarios.length) {
                         ctrl.maxScenariosDisplayed = ctrl.scenarios.length;
                     } else {
-                        ctrl.maxScenariosDisplayed = ctrl.maxScenariosDisplayed + 50;
+                        ctrl.maxScenariosDisplayed = ctrl.maxScenariosDisplayed + 100;
                     }
                 }
             };
@@ -31,19 +31,26 @@ angular.module('private.scenarist.directives', [
         ctrl.maxScenariosDisplayed = null;
 
         ctrl.updateScenarios = function(updateDisplay) {
-            ctrl.loading = true;
-            if (updateDisplay) {
-                ScenariosModel.countArchivedScenarios().then(function(response) {
-                    ctrl.nbArchives = response.data;
-                });
+            var hideScrollbarDuringInitialRender = (ctrl.scenarios.length===0);
+            if (hideScrollbarDuringInitialRender) {
+                $('#scenarist-scenarios-list').css('overflow-y', 'hidden');
             }
+            ctrl.loading = true;
             ScenariosModel.getScenarios('LIVE').then(function(response) {
                 ctrl.loading = false;
                 ctrl.scenarios = response.data || [];
                 if (updateDisplay) {
                     updateDisplayScenarios();
                 }
+                if (hideScrollbarDuringInitialRender) {
+                    $timeout(function () { $('#scenarist-scenarios-list').css('overflow-y', 'auto'); }, 1000);
+                }
             });
+            if (updateDisplay) {
+                ScenariosModel.countArchivedScenarios().then(function(response) {
+                    ctrl.nbArchives = response.data;
+                });
+            }
         };
 
         ctrl.archiveScenario = function(scenario) {

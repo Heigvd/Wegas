@@ -25,7 +25,7 @@ angular.module('private.trainer.directives', [
                     if (ctrl.maxSessionsDisplayed >= ctrl.sessions.length) {
                         ctrl.maxSessionsDisplayed = ctrl.sessions.length;
                     } else {
-                        ctrl.maxSessionsDisplayed = ctrl.maxSessionsDisplayed + 50;
+                        ctrl.maxSessionsDisplayed = ctrl.maxSessionsDisplayed + 100;
                     }
                 }
             };
@@ -37,6 +37,10 @@ angular.module('private.trainer.directives', [
         ctrl.maxSessionsDisplayed = null;
 
         ctrl.updateSessions = function(updateDisplay) {
+            var hideScrollbarDuringInitialRender = (ctrl.sessions.length===0);
+            if (hideScrollbarDuringInitialRender) {
+                $('#trainer-sessions-list').css('overflow-y', 'hidden');
+            }
             ctrl.sessions = [];
             ctrl.loading = true;
             SessionsModel.getSessions("LIVE").then(function(response) {
@@ -44,6 +48,9 @@ angular.module('private.trainer.directives', [
                 ctrl.sessions = response.data || [];
                 if (updateDisplay) {
                     updateDisplaySessions();
+                }
+                if (hideScrollbarDuringInitialRender) {
+                    $timeout(function () { $('#trainer-sessions-list').css('overflow-y', 'auto'); }, 1000);
                 }
             });
             if (updateDisplay) {

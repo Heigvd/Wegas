@@ -6,13 +6,17 @@ angular.module('private.player.directives', [])
             controller: 'PlayerController as playerCtrl'
         };
     }).controller("PlayerController",
-    function PlayerController($q, $rootScope, $scope, $state, $translate, TeamsModel, SessionsModel, Flash) {
+    function PlayerController($q, $rootScope, $scope, $state, $translate, TeamsModel, SessionsModel, Flash, $timeout) {
         /* Assure access to ctrl. */
         "use strict";
         var ctrl = this,
 
         // Method used to update sessions:
         updateTeams = function() {
+            var hideScrollbarDuringInitialRender = (ctrl.teams.length===0);
+            if (hideScrollbarDuringInitialRender) {
+                $('#player-teams-list').css('overflow-y', 'hidden');
+            }
             ctrl.loading = true;
             TeamsModel.getTeams().then(function(response) {
                 ctrl.loading = false;
@@ -23,6 +27,9 @@ angular.module('private.player.directives', [])
                     }
                 } else {
                     ctrl.teams = [];
+                }
+                if (hideScrollbarDuringInitialRender) {
+                    $timeout(function () { $('#player-teams-list').css('overflow-y', 'auto'); }, 1000);
                 }
             });
         };

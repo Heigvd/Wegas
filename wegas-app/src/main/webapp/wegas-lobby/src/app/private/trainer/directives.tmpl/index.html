@@ -1,7 +1,8 @@
 <div class="view view--new-session view--bottom" expandable>
     <trainer-sessions-add></trainer-sessions-add>
 </div>
-<div class="view view--managed-sessions-list view--middle">
+<div id="trainer-sessions-list"
+     class="view view--managed-sessions-list view--middle">
     <h3>{{'TRAINER-INDEX-LIST-TITLE' | translate}}</h3>
     <a class="button button--small button--success-reverse non-collapsible-expander-button" expander>
         <span class="button__label"><i class="fa fa-plus-circle same-color-larger">&nbsp;</i>{{'TRAINER-INDEX-ADD-TITLE' | translate}}</span>
@@ -10,7 +11,7 @@
 	<div
 		ng-if="!trainerIndexCtrl.loading"
 		ng-class="{true:'view__list--with-archive', false:''}[trainerIndexCtrl.nbArchives > 0]"
-		class="view__list"
+        class="view__list"
 		sessions="trainerIndexCtrl.sessions"
 		maximum="trainerIndexCtrl.maxSessionsDisplayed"
 		search="trainerIndexCtrl.search"
