@@ -212,7 +212,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     @Override
     public void setGameModel(GameModel gm) {
         super.setGameModel(gm);
-        for (ChoiceDescriptor cd : this.items) {
+        for (ChoiceDescriptor cd : this.getItems()) {
             cd.setGameModel(gm);
         }
     }
@@ -253,11 +253,10 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      */
     @Override
     public void setItems(List<ChoiceDescriptor> items) {
+        this.items = new ArrayList<>();
         for (ChoiceDescriptor cd : items) {                                     //@todo: due to duplication, fix this
-            cd.setQuestion(this);
-            // cd.setGameModel(this.getGameModel());
+            this.addItem(cd);
         }
-        this.items = items;
     }
 
     /**
@@ -267,7 +266,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      */
     @Override
     public ChoiceDescriptor item(int index) {
-        return this.items.get(index);
+        return this.getItems().get(index);
     }
 
     /**
@@ -276,27 +275,31 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      */
     @Override
     public void addItem(ChoiceDescriptor item) {
-        this.items.add(item);
+        this.getItems().add(item);
         item.setQuestion(this);
-        item.setGameModel(this.getGameModel());
+        if (this.getGameModel() != null) {
+            this.getGameModel().addToVariableDescriptors(item);
+        }
     }
 
     @Override
     public void addItem(int index, ChoiceDescriptor item) {
-        this.items.add(index, item);
+        this.getItems().add(index, item);
         item.setQuestion(this);
-        item.setGameModel(this.getGameModel());
+        if (this.getGameModel() != null) {
+            this.getGameModel().addToVariableDescriptors(item);
+        }
     }
 
     @Override
     public int size() {
-        return this.items.size();
+        return this.getItems().size();
     }
 
     @Override
     public boolean remove(ChoiceDescriptor item) {
         this.getGameModel().removeFromVariableDescriptors(item);
-        return this.items.remove(item);
+        return this.getItems().remove(item);
     }
 
     @Override
