@@ -140,7 +140,7 @@ public class StateMachineInstance extends VariableInstance {
             StateMachineInstance other = (StateMachineInstance) a;
             this.setCurrentStateId(other.getCurrentStateId());
             this.setEnabled(other.getEnabled());
-            this.setTransitionHistory(new ArrayList());
+            this.setTransitionHistory(new ArrayList<>());
             this.getTransitionHistory().addAll(other.getTransitionHistory());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
