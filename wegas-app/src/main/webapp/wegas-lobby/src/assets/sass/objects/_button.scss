@@ -255,14 +255,14 @@
         margin-left: 14px;
     }
 
-    &.active{
+    &.busy-button{
         background-color: #ddd
     }
-    &.active:before{
-        @extend .button--disable;
+    &.busy-button:before{
         @extend .button--spinner;
         @extend .button--rotate;
         margin-left: 0;
+        cursor: default;
     }
 
     &.unclickable:hover{

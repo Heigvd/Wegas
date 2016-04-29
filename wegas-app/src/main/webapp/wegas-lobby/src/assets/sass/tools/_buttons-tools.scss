@@ -103,15 +103,8 @@ $buttons-icon : (
     margin-left: -9px;
 }
 
-.button.button--trainer:before,
-.button.button--trainer:hover:before,
-.button.button--trainer:active:before,
-.button.button--trainer:visited:before,
-.button:focus.button--trainer:before,
-.button:focus.button--trainer:hover:before,
-.button:focus.button--trainer:active:before,
-.button:focus.button--trainer:visited:before {
-    font-size: 2.5em !important;
+.button.button--trainer:before {
+    font-size: 29px !important;
 }
 
 .button.button--small.non-collapsible-expander-button {

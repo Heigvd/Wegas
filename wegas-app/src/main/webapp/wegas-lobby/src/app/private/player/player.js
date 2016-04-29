@@ -2,7 +2,8 @@ angular.module('private.player', [
     'private.player.join',
     'private.player.team',
     'private.player.directives',
-    'public.login'
+    'public.login',
+    'ngSanitize'
 ])
     .config(function($stateProvider) {
         "use strict";
@@ -30,23 +31,39 @@ angular.module('private.player', [
                 }
             });
     })
-    .controller('PlayerCtrl', function PlayerCtrl($rootScope, $scope, $state, Auth, WegasTranslations, $translate, $timeout) {
+    .controller('PlayerCtrl', function PlayerCtrl($rootScope, $scope, $state, Auth, WegasTranslations, $translate) {
         "use strict";
+        /*
         $scope.message = "";
+
+        var createLoginLink = function(val){ // Adds a safe HTML onclick attribute to the words "login" or "connecter" (needs parameter $sce to function PlayerCtrl)
+         var link = "<a onclick=\"$(\'#login-form\').slideToggle()\" style=\"text-decoration:underline; cursor:pointer; \">";
+            var msg = val;
+            if ($translate.use()=='fr'){
+                msg = msg.replace('connecter', link+'connecter</a>');
+            } else {
+                msg = msg.replace('login', link + 'login</a>');
+            }
+            return $sce.trustAsHtml(msg);
+        };
+        */
+
         Auth.getAuthenticatedUser().then(function(user) {
-            var detach;
             if (user.isGuest) {
-                $translate('UPDGRADE-ACCOUNT').then(function(val) {
+                /*
+                var detach;
+                $translate('UPGRADE-ACCOUNT').then(function(val) {
                     $scope.message = val;
                 });
                 detach = $rootScope.$on('$translateChangeSuccess', function () {
-                    $translate('UPDGRADE-ACCOUNT').then(function(val) {
+                    $translate('UPGRADE-ACCOUNT').then(function(val) {
                         $scope.message = val;
                     });
                 });
                 $scope.$on("$destroy", function(){
                     detach();
                 });
+                */
                 $state.go("wegas.private.guest");
             } else if ($state.current.name === 'wegas.private.guest') {
                 $state.go("wegas.private.player");
@@ -55,10 +72,6 @@ angular.module('private.player', [
 
             if (user.isGuest) {
                 $("body").addClass("guest");
-                // Make the start button green after a slight delay :-)
-                $timeout(function () {
-                    $(".button.button--small.button--label-off.button--play").css({'background-color': 'green'});
-                }, 1000);
             } else {
                 $("body").removeClass("guest");
             }

@@ -11,7 +11,7 @@ angular.module('wegas.service.wegasTranslations', [])
                 return translationsToReturn;
             },
             default: function() {
-                $translateProvider.useSanitizeValueStrategy('escape'); // Minimal security required against XSS, prevents HTML inside translations.
+                $translateProvider.useSanitizeValueStrategy('escape'); // Minimal security required against XSS, but it prevents HTML inside translation strings.
                 if (localStorage.getObject("wegas-config")) {
                     $translateProvider.preferredLanguage(localStorage.getObject("wegas-config").commons.language);
                 } else {
@@ -160,8 +160,8 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "English"
                         },
                         'LOADING': {
-                            'en': "Loading",
-                            'fr': "Chargement"
+                            'en': "Loading ...",
+                            'fr': "Chargement ..."
                         },
                         'MODALE-CLOSE': {
                             'en': "Close",
@@ -410,6 +410,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Error while creating " + keywords.team.singular.en,
                             'fr': "Erreur durant la création de l'" + keywords.team.singular.fr
                         },
+                        'COMMONS-TEAMS-GUEST-JOINING': {
+                            'en': "Preparation of guest account ...",
+                            'fr': "Préparation du compte invité ..."
+                        },
 
                         // Commons Sessions Model
                         'COMMONS-SESSIONS-LOADING': {
@@ -460,17 +464,17 @@ angular.module('wegas.service.wegasTranslations', [])
                         },
                         'COMMONS-SESSIONS-TEAM-REMOVE-FLASH-ERROR': {
                             'en': "Error during deletion of " + keywords.team.singular.en,
-                            'fr': "Une erreur a été rencontrée durant la suppression de l'" + keywords.team.singular.fr
+                            'fr': "Une erreur est survenue durant la suppression de l'" + keywords.team.singular.fr
                         },
                         'COMMONS-SESSIONS-PLAYER-REMOVE-FLASH-SUCCESS': {
                             'en': startSentence(keywords.player.singular.en) + " has been removed from the " +
                                 keywords.session.singular.en,
-                            'fr': "Le " + keywords.player.singular.fr + " a été supprimé de la " +
+                            'fr': "Le " + keywords.player.singular.fr + " a été retiré de la " +
                                 keywords.session.singular.fr
                         },
                         'COMMONS-SESSIONS-PLAYER-REMOVE-FLASH-ERROR': {
                             'en': "Error during deletion of " + keywords.player.singular.en,
-                            'fr': "Une erreur a été rencontrée durant la suppression du " + keywords.player.singular.fr
+                            'fr': "Une erreur est survenue durant la suppression du " + keywords.player.singular.fr
                         },
                         'COMMONS-SESSIONS-REFRESH-SUCCESS': {
                             'en': startSentence(keywords.session.singular.en) + " refreshed",
@@ -478,7 +482,7 @@ angular.module('wegas.service.wegasTranslations', [])
                         },
                         'COMMONS-SESSIONS-REFRESH-ERROR': {
                             'en': "Error while refreshing " + keywords.session.singular.en,
-                            'fr': "Une erreur a été rencontrée durant le rafraichissement du " +
+                            'fr': "Une erreur est survenue durant le rafraichissement du " +
                                 keywords.session.singular.fr
                         },
                         'COMMONS-SESSIONS-EDIT-ACCESS-SUCCESS': {
@@ -487,7 +491,7 @@ angular.module('wegas.service.wegasTranslations', [])
                         },
                         'COMMONS-SESSIONS-EDIT-ACCESS-ERROR': {
                             'en': "Error while editing " + keywords.session.singular.en + " access",
-                            'fr': "Une erreur a été rencontrée durant l'édition de l'accès à la " +
+                            'fr': "Une erreur est survenue durant l'édition de l'accès à la " +
                                 keywords.session.singular.fr
                         },
                         'COMMONS-SESSIONS-CREATE-SUCCESS': {
@@ -496,7 +500,7 @@ angular.module('wegas.service.wegasTranslations', [])
                         },
                         'COMMONS-SESSIONS-CREATE-ERROR': {
                             'en': "Error while creating " + keywords.session.singular.en,
-                            'fr': "Une erreur a été rencontrée durant la création de la " + keywords.session.singular.fr
+                            'fr': "Une erreur est survenue durant la création de la " + keywords.session.singular.fr
                         },
                         'COMMONS-SESSIONS-NO-NAME-FLASH-ERROR': {
                             'en': "Please give a name to the " + keywords.session.singular.en,
@@ -508,7 +512,7 @@ angular.module('wegas.service.wegasTranslations', [])
                         },
                         'COMMONS-SESSIONS-ADD-TRAINER-ERROR': {
                             'en': "Error while adding " + keywords.trainer.singular.en,
-                            'fr': "Une erreur a été rencontrée durant l'ajout du " + keywords.trainer.singular.fr
+                            'fr': "Une erreur est survenue durant l'ajout du " + keywords.trainer.singular.fr
                         },
                         'COMMONS-SESSIONS-ALREADY-TRAINER-INFO': {
                             'en': "This user is already a " + keywords.trainer.singular.en + " for this " +
@@ -536,7 +540,7 @@ angular.module('wegas.service.wegasTranslations', [])
                         },
                         'COMMONS-SESSIONS-ARCHIVE-ERROR': {
                             'en': "Error while archiving " + keywords.session.singular.en,
-                            'fr': "Une erreur a été rencontrée durant l'archivage de la " + keywords.session.singular.fr
+                            'fr': "Une erreur est survenue durant l'archivage de la " + keywords.session.singular.fr
                         },
                         'COMMONS-SESSIONS-UNARCHIVE-SUCCESS': {
                             'en': startSentence(keywords.session.singular.en) + " unarchived",
@@ -544,7 +548,7 @@ angular.module('wegas.service.wegasTranslations', [])
                         },
                         'COMMONS-SESSIONS-UNARCHIVE-ERROR': {
                             'en': "Error while unarchiving " + keywords.session.singular.en,
-                            'fr': "Une erreur a été rencontrée durant le désarchivage de la " +
+                            'fr': "Une erreur est survenue durant le désarchivage de la " +
                                 keywords.session.singular.fr
                         },
                         'COMMONS-SESSIONS-SUPPRESSION-SUCCESS': {
@@ -553,7 +557,7 @@ angular.module('wegas.service.wegasTranslations', [])
                         },
                         'COMMONS-SESSIONS-SUPPRESSION-ERROR': {
                             'en': "Error while unarchiving " + keywords.session.singular.en,
-                            'fr': "Une erreur a été rencontrée durant le désarchivage de la " +
+                            'fr': "Une erreur est survenue durant le désarchivage de la " +
                                 keywords.session.singular.fr
                         },
                         'COMMONS-SESSIONS-WRONG-OBJECT-ERROR': {
@@ -566,6 +570,10 @@ angular.module('wegas.service.wegasTranslations', [])
                         'COMMONS-SCENARIOS-LOADING': {
                             'en': "Loading " + keywords.scenario.plural.en,
                             'fr': "Chargement des " + keywords.scenario.plural.fr
+                        },
+                        'COMMONS-SCENARIO-UPLOADING': {
+                            'en': "Loading " + keywords.scenario.singular.en,
+                            'fr': "Chargement du " + keywords.scenario.singular.fr
                         },
                         'COMMONS-SCENARIOS-NO-SCENARIO-FLASH-ERROR': {
                             'en': "No " + keywords.scenario.singular.en + " selected",
@@ -672,7 +680,7 @@ angular.module('wegas.service.wegasTranslations', [])
                         },
                         'COMMONS-SCENARIOS-ARCHIVE-FLASH-ERROR': {
                             'en': "Error while archiving " + keywords.scenario.singular.en,
-                            'fr': "Une erreur a été rencontrée durant l'archivage du " + keywords.scenario.singular.fr
+                            'fr': "Une erreur est survenue durant l'archivage du " + keywords.scenario.singular.fr
                         },
                         'COMMONS-SCENARIOS-UNARCHIVE-FLASH-SUCCESS': {
                             'en': startSentence(keywords.scenario.singular.en) + " unarchived",
@@ -680,7 +688,7 @@ angular.module('wegas.service.wegasTranslations', [])
                         },
                         'COMMONS-SCENARIOS-UNARCHIVE-FLASH-ERROR': {
                             'en': "Error while unarchiving " + keywords.scenario.singular.en,
-                            'fr': "Une erreur a été rencontrée durant le désarchivage du " +
+                            'fr': "Une erreur est survenue durant le désarchivage du " +
                                 keywords.scenario.singular.fr
                         },
                         'COMMONS-SCENARIOS-SUPPRESSION-FLASH-SUCCESS': {
@@ -689,7 +697,7 @@ angular.module('wegas.service.wegasTranslations', [])
                         },
                         'COMMONS-SCENARIOS-SUPPRESSION-FLASH-ERROR': {
                             'en': "Error while unarchiving " + keywords.scenario.singular.en,
-                            'fr': "Une erreur a été rencontrée durant le désarchivage de la " +
+                            'fr': "Une erreur est survenue durant le désarchivage de la " +
                                 keywords.scenario.singular.fr
                         },
                         'COMMONS-SCENARIOS-WRONG-OBJECT-FLASH-ERROR': {
@@ -1065,8 +1073,8 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Rejoindre une " + keywords.session.singular.fr
                         },
                         'PLAYER-INDEX-JOIN-LINK': {
-                            'en': "New " + keywords.session.singular.en,
-                            'fr': "Nouvelle " + keywords.session.singular.fr
+                            'en': "Join a " + keywords.session.singular.en,
+                            'fr': "Rejoindre une " + keywords.session.singular.fr
                         },
                         'PLAYER-INDEX-JOIN-BTN': {
                             'en': "Join",
@@ -1583,12 +1591,14 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Permission chain",
                             'fr': "Expression de la permission"
                         },
-                        'UPDGRADE-ACCOUNT': {
-                            'en': "You are currently a \"guest\": please login or create an account if you want to keep your " +
-                                keywords.session.singular.en + ".",
-                            'fr': "Vous êtes actuellement \"invité\" : connectez-vous ou créez un compte si vous voulez conserver votre " +
-                                keywords.session.singular.fr + "."
+                        /*
+                        'UPGRADE-ACCOUNT': {
+                            'en': "You can start the game now. But if you want to keep this " + keywords.session.singular.en +
+                                  ", you should first login or create a user account.",
+                            'fr': "Vous pouvez commencer le jeu. Mais si vous voulez conserver cette " +
+                                  keywords.session.singular.fr + ", il faut d'abord vous connecter ou créer un compte."
                         },
+                        */
                         // So Long, and Thanks for All the Fish
                         'END': {
                             'en': "This is the end",

@@ -1,5 +1,7 @@
 $wif-path : "../fonts/wegas-icons-font/";
 
+$wif-version: "v=28042016";
+
 $wif-archive: "a";
 $wif-eye: "b";
 $wif-group: "c";
@@ -17,11 +19,12 @@ $wif-trainer: "m";
 @charset "UTF-8";
 @font-face {
   font-family: "wegas-icons-font";
-  src:url($wif-path + "wegas-icons-font.eot");
-  src:url($wif-path + "wegas-icons-font.eot?#iefix") format("embedded-opentype"),
-    url($wif-path + "wegas-icons-font.woff") format("woff"),
-    url($wif-path + "wegas-icons-font.ttf") format("truetype"),
-    url($wif-path + "wegas-icons-font.svg#wegas-icons-font") format("svg");
+  src:url($wif-path + "wegas-icons-font.eot?" + $wif-version);
+  src:url($wif-path + "wegas-icons-font.eot?#iefix&" + $wif-version) format("embedded-opentype"),
+    url($wif-path + "wegas-icons-font.woff2?" + $wif-version) format("woff2"),
+    url($wif-path + "wegas-icons-font.woff?" + $wif-version) format("woff"),
+    url($wif-path + "wegas-icons-font.ttf?" + $wif-version) format("truetype"),
+    url($wif-path + "wegas-icons-font.svg#wegas-icons-font?" + $wif-version) format("svg");
   font-weight: normal;
   font-style: normal;
 

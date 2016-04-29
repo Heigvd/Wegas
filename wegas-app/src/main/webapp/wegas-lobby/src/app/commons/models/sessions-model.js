@@ -394,7 +394,7 @@ angular.module('wegas.models.sessions', [])
                     var newSession = {
                         "@class": "Game",
                         "gameModelId": scenarioId,
-                        "access": "CLOSE",
+                        "access": "OPEN",
                         "name": sessionName
                     };
                     $http.post(ServiceURL + "rest/GameModel/" + newSession.gameModelId + "/Game?view=EditorExtended", newSession).success(function(data) {

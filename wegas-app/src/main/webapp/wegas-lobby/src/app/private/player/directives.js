@@ -6,23 +6,30 @@ angular.module('private.player.directives', [])
             controller: 'PlayerController as playerCtrl'
         };
     }).controller("PlayerController",
-    function PlayerController($q, $rootScope, $scope, $state, $translate, TeamsModel, SessionsModel, Flash) {
+    function PlayerController($q, $rootScope, $scope, $state, $translate, TeamsModel, SessionsModel, Flash, $timeout) {
         /* Assure access to ctrl. */
         "use strict";
         var ctrl = this,
 
         // Method used to update sessions:
         updateTeams = function() {
+            var hideScrollbarDuringInitialRender = (ctrl.teams.length===0);
+            if (hideScrollbarDuringInitialRender) {
+                $('#player-teams-list').css('overflow-y', 'hidden');
+            }
             ctrl.loading = true;
             TeamsModel.getTeams().then(function(response) {
                 ctrl.loading = false;
                 if (!response.isErroneous()) {
                     ctrl.teams = response.data || [];
-                    if (ctrl.teams.length<1) { // Maybe wait for page header to be rendered before expanding the token entry form?
+                    if (ctrl.teams.length<1) {
                         $scope.$emit('expand');
                     }
                 } else {
                     ctrl.teams = [];
+                }
+                if (hideScrollbarDuringInitialRender) {
+                    $timeout(function () { $('#player-teams-list').css('overflow-y', 'auto'); }, 1000);
                 }
             });
         };

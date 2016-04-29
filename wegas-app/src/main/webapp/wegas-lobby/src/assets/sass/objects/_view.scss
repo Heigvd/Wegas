@@ -14,7 +14,7 @@
     &.view--menu {
         @include make-row(0px);
         width: 100%;
-        height: 54px;
+        height: 50px; /* was 54px */
         z-index: 4;
         overflow: visible;
     }
@@ -30,8 +30,27 @@
     &.view--public-index {
         height: 100%;
         background-color: $background-default-secondary !important;
+        overflow: hidden;
+
         @include make-sm-column(12);
         @include make-xs-column(12);
+
+        .link--simple-primary {
+            text-decoration:none;
+            margin:20px auto 0;
+            display:block;
+
+            #create-account {
+                margin:0 auto;
+                display:block;
+                font-weight: normal;
+            }
+        }
+
+        .link--simple-primary:hover {
+            text-decoration: none;
+        }
+
     }
 
     &.view--public-forms {
@@ -102,6 +121,8 @@
         @include make-md-column(3, 96px);
         overflow-x: hidden;
         width: 100% !important;
+        background-color: transparent !important;
+        border-bottom: 2px solid $admin-color;
         .form {
             margin: 0px;
             padding: 0px;
@@ -114,6 +135,7 @@
     &.view--history-download {
         max-height: 100%;
         width: 100% !important;
+        overflow-y: hidden;
         /* @include make-xs-column(12, 96px); */
         /* @include make-md-column(3, 96px); */
 
@@ -236,7 +258,8 @@
             }
             &.view__list--loading {
                 @include loading-message();
-                height: 800px;
+                overflow-y:hidden;
+                /* height: 800px; */
             }
             &.view__list--with-archive {
                 height: calc(100% - 160px);
@@ -343,6 +366,7 @@
             }
             &.view__list--loading {
                 @include loading-message();
+                overflow-y:hidden;
             }
             &.view__list--with-archive {
                 height: calc(100% - 160px);
@@ -456,7 +480,8 @@
     }
 
     .view--separate-primary {
-        border-top: solid 4px #fff;
+        background-color: $background-default-secondary;
+        border-top: none; /* solid 4px $background-default-secondary; */
         border-bottom: solid 2px #fff;
     }
 
@@ -549,7 +574,7 @@
         display: block;
         position: relative;
         width: 100%;
-        height: 100%;
+        height: 48px; /* was 100% */
         float: left;
         overflow: visible;
 
@@ -559,6 +584,9 @@
             li {
                 float: right;
                 list-style-type: none;
+            }
+            .action {
+                height: 48px;
             }
         }
     }
@@ -595,6 +623,7 @@
         display: block;
         position: relative;
         width: 360px;
+        height: 40px;
         margin: auto;
         .view__logo-albasim {
             display: block;
@@ -705,14 +734,14 @@
 .centered-page {
     max-width: 1024px;
     margin: 0 auto;
-    position: relative;
+    /* position: relative; */
 }
 
 .player {
     @extend .centered-page;
     .view {
         &.view--menu {
-            border-color: $player-color;
+            border-bottom-color: $player-color;
             transition: .3s;
         }
     }
@@ -722,7 +751,7 @@
     @extend .centered-page;
     .view {
         &.view--menu {
-            border-color: $trainer-color;
+            border-bottom-color: $trainer-color;
             transition: .3s;
         }
     }
@@ -746,12 +775,18 @@
             border-color: $admin-color;
             transition: .3s;
         }
+        .view__list--loading {
+            float: left;
+            margin-top: 24px;
+            margin-left: 20px;
+        }
     }
 }
 
 .guest {
     .view.view--middle {
         background-color: inherit;
+        margin-top: 40px;
     }
 
     .view.view--played-sessions-list {
@@ -761,20 +796,47 @@
         #player-join-session-button {
             display: none;
         }
+        .button--play {
+            background-color: $success-color;
+        }
     }
 
     .view.view--join-session {
+        height: 0;
+
+        /* NB: everything below should be removed when this layout becomes definitive */
+
+        /*
         position: relative;
         height: auto;
-        top: 5px;
         transition: none;
 
+        .view__first-subtitle {
+            max-width: 200%;
+            width: 200%;
+            padding: 0;
+            margin: 20px -40% 20px;
+        }
+        .view__login-form {
+            margin: auto;
+        }
         #wegas-icon-title {
             display: none;
         }
+        .link--simple-primary {
+            display: block;
+            margin: 20px auto 30px !important;
+            text-decoration: none;
 
-        #create-account {
-            font-weight: normal;
+            #create-account {
+                display: block;
+                margin: 0 auto;
+                font-weight: normal;
+            }
+            #create-account:hover {
+                background-color: lightgray;
+            }
         }
+        */
     }
 }

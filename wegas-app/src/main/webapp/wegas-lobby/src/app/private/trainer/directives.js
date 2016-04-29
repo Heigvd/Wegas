@@ -8,12 +8,12 @@ angular.module('private.trainer.directives', [
             controller: "TrainerIndexController as trainerIndexCtrl"
         }
     })
-    .controller("TrainerIndexController", function TrainerIndexController($rootScope, $scope, $translate, SessionsModel, Flash) {
+    .controller("TrainerIndexController", function TrainerIndexController($rootScope, $scope, $translate, SessionsModel, Flash, $timeout) {
         "use strict";
         var ctrl = this,
             initMaxSessionsDisplayed = function() {
-                if (ctrl.sessions.length > 12) {
-                    ctrl.maxSessionsDisplayed = 10;
+                if (ctrl.sessions.length > 22) {
+                    ctrl.maxSessionsDisplayed = 20;
                 } else {
                     ctrl.maxSessionsDisplayed = ctrl.sessions.length;
                 }
@@ -25,7 +25,7 @@ angular.module('private.trainer.directives', [
                     if (ctrl.maxSessionsDisplayed >= ctrl.sessions.length) {
                         ctrl.maxSessionsDisplayed = ctrl.sessions.length;
                     } else {
-                        ctrl.maxSessionsDisplayed = ctrl.maxSessionsDisplayed + 5;
+                        ctrl.maxSessionsDisplayed = ctrl.maxSessionsDisplayed + 100;
                     }
                 }
             };
@@ -37,6 +37,10 @@ angular.module('private.trainer.directives', [
         ctrl.maxSessionsDisplayed = null;
 
         ctrl.updateSessions = function(updateDisplay) {
+            var hideScrollbarDuringInitialRender = (ctrl.sessions.length===0);
+            if (hideScrollbarDuringInitialRender) {
+                $('#trainer-sessions-list').css('overflow-y', 'hidden');
+            }
             ctrl.sessions = [];
             ctrl.loading = true;
             SessionsModel.getSessions("LIVE").then(function(response) {
@@ -44,6 +48,9 @@ angular.module('private.trainer.directives', [
                 ctrl.sessions = response.data || [];
                 if (updateDisplay) {
                     updateDisplaySessions();
+                }
+                if (hideScrollbarDuringInitialRender) {
+                    $timeout(function () { $('#trainer-sessions-list').css('overflow-y', 'auto'); }, 1000);
                 }
             });
             if (updateDisplay) {
@@ -64,6 +71,7 @@ angular.module('private.trainer.directives', [
         };
 
         ctrl.archiveSession = function(sessionToArchive) {
+            $('#archive-'+sessionToArchive.id).removeClass('button--archive').addClass('busy-button');
             if (sessionToArchive) {
                 SessionsModel.archiveSession(sessionToArchive).then(function(response) {
                     if (!response.isErroneous()) {
@@ -72,10 +80,16 @@ angular.module('private.trainer.directives', [
                     } else {
                         response.flash();
                     }
+                    $timeout(function(){
+                        $('#archive-'+sessionToArchive.id).removeClass('busy-button').addClass('button--archive');
+                    }, 500);
                 });
             } else {
                 $translate('COMMONS-SCENARIOS-NO-SCENARIO-FLASH-ERROR').then(function(message) {
                     Flash.danger(message);
+                    $timeout(function(){
+                        $('#archive-'+sessionToArchive.id).removeClass('busy-button').addClass('button--archive');
+                    }, 500);
                 });
             }
         };
@@ -120,14 +134,16 @@ angular.module('private.trainer.directives', [
             link: function(scope, element, attrs, parentCtrl) {
                 scope.scenarios = [];
                 scope.loadingScenarios = false;
-                var loadScenario = function() {
-                    scope.loadingScenarios = true;
-                    ScenariosModel.getScenarios("LIVE").then(function(response) {
-                        if (!response.isErroneous()) {
-                            scope.loadingScenarios = false;
-                            scope.scenarios = response.data;
-                        }
-                    });
+                var loadScenarios = function() {
+                    if (scope.scenarios.length==0) {
+                        scope.loadingScenarios = true;
+                        ScenariosModel.getScenarios("LIVE").then(function (response) {
+                            if (!response.isErroneous()) {
+                                scope.loadingScenarios = false;
+                                scope.scenarios = response.data;
+                            }
+                        });
+                    }
                 };
                 scope.newSession = {
                     name: "",
@@ -174,14 +190,8 @@ angular.module('private.trainer.directives', [
                     }
                 };
 
-                scope.$watch(function() {
-                    return scope.newSession.name;
-                }, function(newValue) {
-                    if (newValue) {
-                        if (!scope.loadingScenarios && scope.scenarios.length === 0) {
-                            loadScenario();
-                        }
-                    }
+                scope.$on('expand', function() {
+                    loadScenarios();
                 });
             }
         };

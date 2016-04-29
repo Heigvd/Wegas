@@ -55,22 +55,23 @@ angular.module('private', [
     Auth.getAuthenticatedUser().then(function(user){
         if(user === null){
             $state.go("wegas.public");
-        }
-        WegasPusher.start();
-        privateCtrl.user = user;
-        var config = localStorage.getObject("wegas-config");
-        if(config.users[user.email]){
-            if(config.commons.language !== config.users[user.email].language){
-                config.commons.language = config.users[user.email].language;
+        } else {
+            WegasPusher.start();
+            privateCtrl.user = user;
+            var config = localStorage.getObject("wegas-config");
+            if (config.users[user.email]) {
+                if (config.commons.language !== config.users[user.email].language) {
+                    config.commons.language = config.users[user.email].language;
+                    localStorage.setObject("wegas-config", config);
+                }
+                $translate.use(config.users[user.email].language);
+            } else {
+                config.users[user.email] = {
+                    language: config.commons.language
+                };
                 localStorage.setObject("wegas-config", config);
+                $translate.use(config.users[user.email].language);
             }
-            $translate.use(config.users[user.email].language);
-        }else{
-            config.users[user.email] = {
-                language : config.commons.language
-            };
-            localStorage.setObject("wegas-config", config);
-            $translate.use(config.users[user.email].language);
         }
     });
 });

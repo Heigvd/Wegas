@@ -9,9 +9,12 @@ body{
     position:absolute;
     top:0px;
     left:0px;
+    right:0px;
     height:100%;
     width:100%;
-    background-color:$background-default;
+    max-width:1024px;
+    margin: 0 auto;
+    background-color:$background-default-secondary;
     overflow-x:hidden;
     overflow-y:auto;
 

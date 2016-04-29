@@ -15,8 +15,13 @@ angular.module('autologin', [
             });
     })
     .controller('AutologinCtrl',
-        function AutologinCtrl(Auth, Flash, $scope, $state, $stateParams, TeamsModel, SessionsModel) {
+        function AutologinCtrl(Auth, Flash, $scope, $state, $stateParams, TeamsModel, SessionsModel, $translate) {
             "use strict";
+
+            $translate('COMMONS-TEAMS-GUEST-JOINING').then(function(message) {
+                $scope.message = message;
+            });
+
             var errorRedirect = function(response) {
                     response.flash();
                     $state.go("wegas");

@@ -1,12 +1,12 @@
 angular.module('private.scenarist.directives', [
     'wegas.behaviours.repeat.autoload'
 ])
-    .controller('ScenaristIndexController', function ScenaristIndexController($q, $scope, $rootScope, ScenariosModel) {
+    .controller('ScenaristIndexController', function ScenaristIndexController($q, $scope, $rootScope, ScenariosModel, $timeout) {
         "use strict";
         var ctrl = this,
             initMaxScenariosDisplayed = function() {
-                if (ctrl.scenarios.length > 12) {
-                    ctrl.maxScenariosDisplayed = 10;
+                if (ctrl.scenarios.length > 22) {
+                    ctrl.maxScenariosDisplayed = 20;
                 } else {
                     ctrl.maxScenariosDisplayed = ctrl.scenarios.length;
                 }
@@ -18,7 +18,7 @@ angular.module('private.scenarist.directives', [
                     if (ctrl.maxScenariosDisplayed >= ctrl.scenarios.length) {
                         ctrl.maxScenariosDisplayed = ctrl.scenarios.length;
                     } else {
-                        ctrl.maxScenariosDisplayed = ctrl.maxScenariosDisplayed + 5;
+                        ctrl.maxScenariosDisplayed = ctrl.maxScenariosDisplayed + 100;
                     }
                 }
             };
@@ -31,42 +31,53 @@ angular.module('private.scenarist.directives', [
         ctrl.maxScenariosDisplayed = null;
 
         ctrl.updateScenarios = function(updateDisplay) {
-            ctrl.loading = true;
-            if (updateDisplay) {
-                ScenariosModel.countArchivedScenarios().then(function(response) {
-                    ctrl.nbArchives = response.data;
-                });
+            var hideScrollbarDuringInitialRender = (ctrl.scenarios.length===0);
+            if (hideScrollbarDuringInitialRender) {
+                $('#scenarist-scenarios-list').css('overflow-y', 'hidden');
             }
+            ctrl.loading = true;
             ScenariosModel.getScenarios('LIVE').then(function(response) {
                 ctrl.loading = false;
                 ctrl.scenarios = response.data || [];
                 if (updateDisplay) {
                     updateDisplayScenarios();
                 }
+                if (hideScrollbarDuringInitialRender) {
+                    $timeout(function () { $('#scenarist-scenarios-list').css('overflow-y', 'auto'); }, 1000);
+                }
             });
+            if (updateDisplay) {
+                ScenariosModel.countArchivedScenarios().then(function(response) {
+                    ctrl.nbArchives = response.data;
+                });
+            }
         };
 
         ctrl.archiveScenario = function(scenario) {
+            $('#archive-'+scenario.id).removeClass('button--archive').addClass('busy-button');
             ScenariosModel.archiveScenario(scenario).then(function(response) {
                 if (response.isErroneous()) {
                     response.flash();
                 } else {
                     $rootScope.$emit('changeScenarios', true);
                 }
+                $timeout(function(){
+                    $('#archive-'+scenario.id).removeClass('busy-button').addClass('button--archive');
+                }, 500);
             });
         };
 
         ctrl.duplicate = function(scenario) {
             if (ctrl.duplicating) return;
             ctrl.duplicating = true;
-            $('#dupe-'+scenario.id).addClass('active');
+            $('#dupe-'+scenario.id).addClass('busy-button');
             ScenariosModel.copyScenario(scenario.id).then(function(response) {
                 if (response.isErroneous()) {
                     response.flash();
                 } else {
                     $rootScope.$emit('changeScenarios', true);
                 }
-                $('#dupe-'+scenario.id).removeClass('active');
+                $('#dupe-'+scenario.id).removeClass('busy-button');
                 ctrl.duplicating = false;
             });
         };
