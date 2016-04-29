@@ -14,9 +14,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.Broadcastable;
-import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -27,7 +24,7 @@ import java.util.Map;
 @Table(indexes = {
     @Index(columnList = "variableinstance_id")
 })
-public class Occupation extends AbstractAssignement implements Broadcastable {
+public class Occupation extends AbstractAssignement /* implements Broadcastable */ {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -109,11 +106,11 @@ public class Occupation extends AbstractAssignement implements Broadcastable {
      private void onUpdate() {
      this.getResourceInstance().onInstanceUpdate();
      }
-     */
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
         return this.getResourceInstance().getEntities();
     }
+     */
 
     @Override
     public Long getId() {

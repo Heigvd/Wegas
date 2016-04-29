@@ -30,7 +30,7 @@ import java.util.Map;
     @Index(columnList = "variableinstance_id"),
     @Index(columnList = "result_id")
 })
-public class Reply extends AbstractEntity implements Broadcastable {
+public class Reply extends AbstractEntity /*implements Broadcastable */ {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -84,16 +84,17 @@ public class Reply extends AbstractEntity implements Broadcastable {
     /**
      * @return the ignored status.
      */
-    public Boolean getIgnored(){
+    public Boolean getIgnored() {
         return ignored;
     }
-    
+
     /**
      * @param ignored the ignored status to set.
      */
-    public void setIgnored(Boolean ignored){
+    public void setIgnored(Boolean ignored) {
         this.ignored = ignored;
     }
+
     /**
      *
      * @PostPersist
@@ -102,11 +103,11 @@ public class Reply extends AbstractEntity implements Broadcastable {
      * public void onUpdate() {
      * this.getQuestionInstance().onInstanceUpdate();
      * }
-     */
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
         return this.getQuestionInstance().getEntities();
     }
+     */
 
     @Override
     public Long getId() {

@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 //import javax.xml.bind.annotation.XmlType;
-
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */

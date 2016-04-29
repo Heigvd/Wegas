@@ -191,9 +191,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
 
         final ObjectMapper mapper = JacksonMapperProvider.getMapper();          // Retrieve a jackson mapper instance
         final String serialized = mapper.writerWithView(Views.Export.class).
-                writeValueAsString(oldEntity);                                  // Serialize the entity
+            writeValueAsString(oldEntity);                                  // Serialize the entity
         final VariableDescriptor newEntity
-                = mapper.readValue(serialized, oldEntity.getClass());           // and deserialize it
+            = mapper.readValue(serialized, oldEntity.getClass());           // and deserialize it
 
         final DescriptorListI list = oldEntity.getParent();
         this.createChild(oldEntity.getGameModel(), list, newEntity);
@@ -309,8 +309,8 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         final CriteriaQuery<VariableDescriptor> cq = cb.createQuery(VariableDescriptor.class);
         final Root<VariableDescriptor> variableDescriptor = cq.from(VariableDescriptor.class);
         cq.where(cb.and(
-                cb.equal(variableDescriptor.get("gameModel"), gameModel),
-                cb.equal(variableDescriptor.get("label"), label)));
+            cb.equal(variableDescriptor.get("gameModel"), gameModel),
+            cb.equal(variableDescriptor.get("label"), label)));
         final TypedQuery<VariableDescriptor> q = getEntityManager().createQuery(cq);
         try {
             return q.getSingleResult();
@@ -329,8 +329,8 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         final CriteriaQuery<VariableDescriptor> cq = cb.createQuery(VariableDescriptor.class);
         final Root<VariableDescriptor> variableDescriptor = cq.from(VariableDescriptor.class);
         cq.where(cb.and(
-                cb.equal(variableDescriptor.get("gameModel"), gameModel),
-                cb.equal(variableDescriptor.get("title"), title)));
+            cb.equal(variableDescriptor.get("gameModel"), gameModel),
+            cb.equal(variableDescriptor.get("title"), title)));
         final TypedQuery<VariableDescriptor> q = getEntityManager().createQuery(cq);
         return q.getResultList();
     }

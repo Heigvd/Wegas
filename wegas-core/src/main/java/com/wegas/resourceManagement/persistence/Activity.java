@@ -29,7 +29,7 @@ import java.util.Map;
 @Table(indexes = {
     @Index(columnList = "variableinstance_id")
 })
-public class Activity extends AbstractAssignement implements Broadcastable {
+public class Activity extends AbstractAssignement /*implements Broadcastable */ {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -126,11 +126,11 @@ public class Activity extends AbstractAssignement implements Broadcastable {
      @PostRemove
      private void onUpdate() {
      this.getResourceInstance().onInstanceUpdate();
-     }*/
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
         return this.getResourceInstance().getEntities();
     }
+     }*/
 
     @Override
     public Long getId() {

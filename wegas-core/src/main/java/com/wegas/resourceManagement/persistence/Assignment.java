@@ -35,7 +35,7 @@ import java.util.Map;
     )
 })
 @Entity
-public class Assignment extends AbstractAssignement implements Broadcastable {
+public class Assignment extends AbstractAssignement /*implements Broadcastable */{
 
     private static final long serialVersionUID = 1L;
     /**
@@ -99,7 +99,6 @@ public class Assignment extends AbstractAssignement implements Broadcastable {
      *
      * @return parent resource entities or null if assignment has been removed
      * @todo do no use other entity through this method...
-     */
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
         if (this.getResourceInstance() != null) {
@@ -108,6 +107,7 @@ public class Assignment extends AbstractAssignement implements Broadcastable {
             return null;
         }
     }
+     */
 
     @Override
     public Long getId() {
