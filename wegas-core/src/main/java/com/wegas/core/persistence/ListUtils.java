@@ -82,6 +82,10 @@ public class ListUtils {
      */
     public static <E extends AbstractEntity> List<E> mergeLists(List<E> oldList, List<E> newList, Updater callback) {
         List<E> newElements = new ArrayList<>();
+        //do NOT modify newList
+        List<E> tmpList = new ArrayList<>();
+        tmpList.addAll(newList);
+        newList = tmpList;
         for (Iterator<E> it = newList.iterator(); it.hasNext();) {                 //remove AbstractEntities without id and store them
             E element = it.next();
             if (element.getId() == null) {
@@ -170,36 +174,5 @@ public class ListUtils {
             }
         }
         return updatedList;
-    }
-
-    /**
-     * make the old list content the same as newlist one
-     * only references are copied, elements are not merged ever
-     *
-     * @param <E>     extends (@see AbstractEntity) the element type
-     * @param oldList The list containing old elements
-     * @param newList The list containing new elements
-     * @return A merged list
-     */
-    public static <E extends AbstractEntity> List<E> updateList(List<E> oldList, List<E> newList) {
-
-        ListUtils.ListKeyToMap<Long, E> converter = new ListUtils.ListKeyToMap<Long, E>() {
-            @Override
-            public Long getKey(E item) {
-                return item.getId();
-            }
-        };
-        Map<Long, E> elementMap = ListUtils.listAsMap(newList, converter);      //Create a map with new list ids
-
-        for (Iterator<E> it = oldList.iterator(); it.hasNext();) {
-            E element = it.next();
-            if (elementMap.containsKey(element.getId())) {                      //old element still exists
-                elementMap.remove(element.getId());                             //remove element from map
-            } else {
-                it.remove();                                                    //else remove that old element
-            }
-        }
-        oldList.addAll(elementMap.values());                                    //Add all new elements
-        return oldList;
     }
 }

@@ -84,7 +84,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     public void merge(AbstractEntity a) {
         if (a instanceof StateMachineDescriptor) {
             StateMachineDescriptor smDescriptor = (StateMachineDescriptor) a;
-            this.mergeStates((HashMap<Long, State>) smDescriptor.getStates());
+            this.mergeStates(smDescriptor.getStates());
             super.merge(smDescriptor);
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
@@ -130,7 +130,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
         return !this.getInstance(p).getEnabled();
     }
 
-    private void mergeStates(HashMap<Long, State> newStates) {
+    private void mergeStates(Map<Long, State> newStates) {
         for (Iterator<Entry<Long, State>> it = this.states.entrySet().iterator(); it.hasNext();) {
             Entry<Long, State> oldState = it.next();
             Long oldKeys = oldState.getKey();
@@ -143,7 +143,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
         for (Iterator<Entry<Long, State>> it = newStates.entrySet().iterator(); it.hasNext();) {
             Entry<Long, State> newState = it.next();
             Long newKey = newState.getKey();
-            this.states.putIfAbsent(newKey, newState.getValue());
+            this.getStates().putIfAbsent(newKey, newState.getValue());
         }
     }
 
