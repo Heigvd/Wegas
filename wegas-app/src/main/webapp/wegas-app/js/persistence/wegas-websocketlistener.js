@@ -78,7 +78,7 @@ YUI.add('wegas-websocketlistener', function(Y) {
         },
         onEntityUpdatedEvent: function(data) {
             var i, event = Y.JSON.parse(data), entity,
-                datasource;
+                datasource, dsId, remappedEntities = {};
             Y.log("Websocket event received.", "info", "Wegas.WebsocketListener");
 
             for (i = 0; i < event.updatedEntities.length; i += 1) {
@@ -86,9 +86,17 @@ YUI.add('wegas-websocketlistener', function(Y) {
                 entity = Y.Wegas.Editable.revive(event.updatedEntities[i]);
                 datasource = this.getDatasourceFromEntity(entity);
                 if (datasource) {
-                    datasource.cache.fire("EntityUpdatedEvent", {
+                    dsId = datasource._yuid;
+                    remappedEntities[dsId] = remappedEntities[dsId] || {entities: [], datasource: datasource};
+                    remappedEntities[dsId].entities.push(entity);
+                }
+            }
+
+            for (dsId in remappedEntities) {
+                if (remappedEntities.hasOwnProperty(dsId)) {
+                    remappedEntities[dsId].datasource.cache.fire("EntityUpdatedEvent", {
                         "@class": "EntityUpdatedEvent",
-                        updatedEntities: [entity]
+                        updatedEntities: remappedEntities[dsId].entities
                     });
                 }
             }
