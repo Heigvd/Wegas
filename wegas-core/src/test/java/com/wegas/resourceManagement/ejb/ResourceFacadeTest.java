@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import javax.naming.NamingException;
 import org.junit.Assert;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -252,7 +252,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
             + "rF.assign(paulI.getId(), task.getId());\n";
 
         scriptFacade.eval(player, new Script("javascript", script), null);
-        
+
         String script2 = "var rF = new javax.naming.InitialContext().lookup('java:module/ResourceFacade');\n"
             + "var paul = Variable.find(gameModel, \"paul\");\n"
             + "var paulI = paul.getInstance(self);\n"
@@ -260,7 +260,6 @@ public class ResourceFacadeTest extends AbstractEJBTest {
             + "rF.removeAssignment(rF.findAssignment(paulI.getId(), task.getId()).getId());\n";
 
         scriptFacade.eval(player, new Script("javascript", script2), null);
-
 
         // Clean
         vdf.remove(res.getId());
@@ -663,5 +662,69 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         // Clean
         vdf.remove(task.getId());
         vdf.remove(task3.getId());
+    }
+
+    @Test
+    public void testAssignemntCascadedDeletion() throws NamingException {
+        // Lookup Ejb's
+        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
+        final ResourceFacade resourceFacade = lookupBy(ResourceFacade.class);
+
+        // Create a resource
+        ResourceDescriptor paul = new ResourceDescriptor();
+        paul.setLabel("Paul");
+        paul.setDefaultInstance(new ResourceInstance());
+        vdf.create(gameModel.getId(), paul);
+
+        // Create a resource
+        ResourceDescriptor roger = new ResourceDescriptor();
+        roger.setLabel("Roger");
+        roger.setDefaultInstance(new ResourceInstance());
+        vdf.create(gameModel.getId(), roger);
+
+        // Create a task
+        TaskDescriptor task1 = new TaskDescriptor();
+        task1.setLabel("My task");
+        task1.setDefaultInstance(new TaskInstance());
+        vdf.create(gameModel.getId(), task1);
+        gameModelFacade.reset(gameModel.getId());
+
+        // Assign resource to task
+        resourceFacade.assign(paul.getInstance(player).getId(), task1.getId());
+        resourceFacade.assign(roger.getInstance(player).getId(), task1.getId());
+
+        ResourceInstance paulI;
+        ResourceInstance rogerI;
+        task1 = ((TaskDescriptor) vdf.find(task1.getId()));
+        paulI = ((ResourceDescriptor) vdf.find(paul.getId())).getInstance(player);
+        rogerI = ((ResourceDescriptor) vdf.find(roger.getId())).getInstance(player);
+
+        assertEquals(2, task1.getAssignments().size());
+        assertNotNull(task1.getAssignments().get(0));
+        assertNotNull(task1.getAssignments().get(1));
+
+        assertEquals(1, rogerI.getAssignments().size());
+        assertNotNull(rogerI.getAssignments().get(0));
+
+        assertEquals(1, paulI.getAssignments().size());
+        assertNotNull(paulI.getAssignments().get(0));
+
+        vdf.remove(paul.getId());
+
+        task1 = ((TaskDescriptor) vdf.find(task1.getId()));
+        rogerI = ((ResourceDescriptor) vdf.find(roger.getId())).getInstance(player);
+
+        assertEquals(1, task1.getAssignments().size());
+        assertNotNull(task1.getAssignments().get(0));
+
+        assertEquals(1, rogerI.getAssignments().size());
+        assertNotNull(rogerI.getAssignments().get(0));
+
+        vdf.remove(task1.getId());
+
+        rogerI = ((ResourceDescriptor) vdf.find(roger.getId())).getInstance(player);
+
+        assertEquals(0, rogerI.getAssignments().size());
     }
 }

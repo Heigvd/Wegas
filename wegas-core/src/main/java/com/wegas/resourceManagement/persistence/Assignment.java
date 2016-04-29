@@ -15,6 +15,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.Broadcastable;
 import java.util.List;
@@ -35,7 +37,7 @@ import java.util.Map;
     )
 })
 @Entity
-public class Assignment extends AbstractAssignement /*implements Broadcastable */{
+public class Assignment extends AbstractAssignement /*implements Broadcastable */ {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -99,16 +101,15 @@ public class Assignment extends AbstractAssignement /*implements Broadcastable *
      *
      * @return parent resource entities or null if assignment has been removed
      * @todo do no use other entity through this method...
-    @Override
-    public Map<String, List<AbstractEntity>> getEntities() {
-        if (this.getResourceInstance() != null) {
-            return this.getResourceInstance().getEntities();
-        } else {
-            return null;
-        }
-    }
+     * @Override
+     * public Map<String, List<AbstractEntity>> getEntities() {
+     * if (this.getResourceInstance() != null) {
+     * return this.getResourceInstance().getEntities();
+     * } else {
+     * return null;
+     * }
+     * }
      */
-
     @Override
     public Long getId() {
         return this.id;
@@ -155,5 +156,24 @@ public class Assignment extends AbstractAssignement /*implements Broadcastable *
     @JsonProperty
     public void setTaskDescriptor(TaskDescriptor taskDescriptor) {
         this.taskDescriptor = taskDescriptor;
+    }
+
+    @Override
+    public void updateCacheOnDelete() {
+        TaskDescriptor theTask = this.getTaskDescriptor();
+        ResourceInstance theResource = this.getResourceInstance();
+
+        if (theTask != null) {
+            theTask = ((TaskDescriptor) VariableDescriptorFacade.lookup().find(theTask.getId()));
+            if (theTask != null) {
+                theTask.getAssignments().remove(this);
+            }
+        }
+        if (theResource != null) {
+            theResource = ((ResourceInstance) VariableInstanceFacade.lookup().find(theResource.getId()));
+            if (theResource != null) {
+                theResource.getAssignments().remove(this);
+            }
+        }
     }
 }
