@@ -279,9 +279,7 @@ public class ResourceInstance extends VariableInstance {
     }
 
     public void removeOccupation(Occupation occupation) {
-        if (this.getOccupations().remove(occupation)) {
-            occupation.setResourceInstance(null);
-        }
+        this.getOccupations().remove(occupation);
     }
 
     /**
