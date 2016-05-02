@@ -70,7 +70,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     /**
      *
      */
-    @OneToMany(mappedBy = "question", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @OneToMany(mappedBy = "question", cascade = {CascadeType.ALL}/*, orphanRemoval = true*/)
     //@BatchFetch(BatchFetchType.IN)
     @JoinColumn(referencedColumnName = "variabledescriptor_id")
     @JsonManagedReference
@@ -275,20 +275,20 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      */
     @Override
     public void addItem(ChoiceDescriptor item) {
-        this.getItems().add(item);
-        item.setQuestion(this);
         if (this.getGameModel() != null) {
             this.getGameModel().addToVariableDescriptors(item);
         }
+        this.getItems().add(item);
+        item.setQuestion(this);
     }
 
     @Override
     public void addItem(int index, ChoiceDescriptor item) {
-        this.getItems().add(index, item);
-        item.setQuestion(this);
         if (this.getGameModel() != null) {
             this.getGameModel().addToVariableDescriptors(item);
         }
+        this.getItems().add(index, item);
+        item.setQuestion(this);
     }
 
     @Override
