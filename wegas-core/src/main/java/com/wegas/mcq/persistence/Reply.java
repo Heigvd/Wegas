@@ -14,8 +14,10 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.Broadcastable;
+import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import java.util.List;
 import java.util.Map;
 
@@ -103,12 +105,11 @@ public class Reply extends AbstractEntity /*implements Broadcastable */ {
      * public void onUpdate() {
      * this.getQuestionInstance().onInstanceUpdate();
      * }
-    @Override
-    public Map<String, List<AbstractEntity>> getEntities() {
-        return this.getQuestionInstance().getEntities();
-    }
+     * @Override
+     * public Map<String, List<AbstractEntity>> getEntities() {
+     * return this.getQuestionInstance().getEntities();
+     * }
      */
-
     @Override
     public Long getId() {
         return this.id;
@@ -180,5 +181,28 @@ public class Reply extends AbstractEntity /*implements Broadcastable */ {
      */
     public void setResult(Result result) {
         this.result = result;
+    }
+
+    @Override
+    public void updateCacheOnDelete() {
+        QuestionDescriptorFacade qF = QuestionDescriptorFacade.lookup();
+        VariableInstanceFacade vif = VariableInstanceFacade.lookup();
+        QuestionInstance qInst = this.getQuestionInstance();
+        if (qInst != null) {
+            qInst = (QuestionInstance) vif.find(qInst.getId());
+            if (qInst != null) {
+                qInst.removeReply(this);
+            }
+        }
+
+        Result theResult = this.getResult();
+        if (theResult != null) {
+            theResult = qF.findResult(theResult.getId());
+            if (theResult != null) {
+                theResult.removeReply(this);
+            }
+        }
+
+        super.updateCacheOnDelete();
     }
 }

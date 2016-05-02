@@ -7,6 +7,7 @@
  */
 package com.wegas.mcq.ejb;
 
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.*;
 import com.wegas.core.event.internal.DescriptorRevivedEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -24,6 +25,7 @@ import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.naming.NamingException;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
@@ -90,6 +92,10 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         }
     }
 
+    public Result findResult(Long id) {
+        return this.getEntityManager().find(Result.class, id);
+    }
+
     /**
      * @param event
      */
@@ -108,8 +114,8 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
                     throw WegasErrorMessage.error("Error while setting current result");
                 }
             } else if (defaultInstance.getCurrentResultIndex() != null
-                    && defaultInstance.getCurrentResultIndex() >= 0
-                    && defaultInstance.getCurrentResultIndex() < choice.getResults().size()) {
+                && defaultInstance.getCurrentResultIndex() >= 0
+                && defaultInstance.getCurrentResultIndex() < choice.getResults().size()) {
 
                 Result cr = choice.getResults().get(defaultInstance.getCurrentResultIndex());
                 //defaultInstance.setCurrentResult(cr);
@@ -125,13 +131,17 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         super(ChoiceDescriptor.class);
     }
 
+    public Reply findReply(Long id) {
+        return this.getEntityManager().find(Reply.class, id);
+    }
+
     /**
      * @param replyId
      * @param r
      * @return
      */
     public Reply updateReply(Long replyId, Reply r) {
-        final Reply oldEntity = this.getEntityManager().find(Reply.class, replyId);
+        final Reply oldEntity = this.findReply(replyId);
         oldEntity.merge(r);
         return oldEntity;
     }
@@ -187,7 +197,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         if (questionDescriptor.getCbx() && !questionDescriptor.getAllowMultipleReplies()) {
             for (Reply r : questionDescriptor.getInstance(player).getReplies()) {
                 if (!r.getResult().getChoiceDescriptor().equals(choice)
-                        && !r.getIgnored()) {
+                    && !r.getIgnored()) {
                     this.cancelReply(player.getId(), r.getId());
                 }
             }
@@ -434,6 +444,18 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
             this.question = null;
             this.player = null;
         }
+    }
 
+
+    /**
+     * @return
+     */
+    public static QuestionDescriptorFacade lookup() {
+        try {
+            return Helper.lookupBy(QuestionDescriptorFacade.class);
+        } catch (NamingException ex) {
+            logger.error("Error retrieving var inst f", ex);
+            return null;
+        }
     }
 }

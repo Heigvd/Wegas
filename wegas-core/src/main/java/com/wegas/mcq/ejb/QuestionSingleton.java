@@ -60,21 +60,23 @@ public class QuestionSingleton {
 
         Boolean isCbx = questionDescriptor.getCbx();
         if (!isCbx
-                && !questionDescriptor.getAllowMultipleReplies()
-                && this.findReplyCount(questionInstance.getId()) > 0) {         // @fixme Need to check reply count this way, otherwise in case of double request, both will be added
+            && !questionDescriptor.getAllowMultipleReplies()
+            && this.findReplyCount(questionInstance.getId()) > 0) {         // @fixme Need to check reply count this way, otherwise in case of double request, both will be added
             //if (!questionDescriptor.getAllowMultipleReplies()
             //&& !questionInstance.getReplies().isEmpty()) {                    // Does not work when sending 2 requests at once
             throw WegasErrorMessage.error("You have already answered this question");
         }
 
         Reply reply = new Reply();
-        if (isCbx && startTime<0){ // Hack to signal ignoration
+        if (isCbx && startTime < 0) { // Hack to signal ignoration
             reply.setStartTime(0L);
             reply.setIgnored(true);
         } else {
             reply.setStartTime(startTime);
         }
-        reply.setResult(choice.getInstance(player).getResult());
+        Result result = choice.getInstance(player).getResult();
+        reply.setResult(result);
+        result.addReply(reply);
         questionInstance.addReply(reply);
         //em.persist(reply);
         em.flush();
@@ -87,7 +89,6 @@ public class QuestionSingleton {
         return createReplyUntransactionnal(choiceId, player, startTime);
     }
 
-    
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)                // cancelReply
     public Reply cancelReplyTransactionnal(Long playerId, Long replyId) {
         final Reply reply = em.find(Reply.class, replyId);

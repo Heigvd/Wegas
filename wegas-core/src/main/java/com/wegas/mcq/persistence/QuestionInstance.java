@@ -113,6 +113,10 @@ public class QuestionInstance extends VariableInstance {
         reply.setQuestionInstance(this);
     }
 
+    void removeReply(Reply reply) {
+        this.replies.remove(reply);
+    }
+
     /**
      *
      * @param replies

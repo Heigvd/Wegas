@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
@@ -42,7 +43,7 @@ import java.util.List;
     }
 )
 @NamedQueries({
-        @NamedQuery(name="Result.findByName", query = "SELECT DISTINCT res FROM Result res WHERE res.choiceDescriptor=:choicedescriptor AND res.name LIKE :name")
+    @NamedQuery(name = "Result.findByName", query = "SELECT DISTINCT res FROM Result res WHERE res.choiceDescriptor=:choicedescriptor AND res.name LIKE :name")
 })
 public class Result extends NamedEntity implements Searchable, Scripted, LabelledEntity {
 
@@ -359,5 +360,25 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
 
     public boolean removeChoiceInstance(ChoiceInstance choiceInstance) {
         return this.choiceInstances.remove(choiceInstance);
+    }
+
+    public void addReply(Reply reply) {
+        this.replies.add(reply);
+    }
+
+    void removeReply(Reply reply) {
+        this.replies.remove(reply);
+    }
+
+    @Override
+    public void updateCacheOnDelete() {
+        VariableInstanceFacade vif = VariableInstanceFacade.lookup();
+
+        for (ChoiceInstance cInstance : this.getChoiceInstances()) {
+            cInstance = (ChoiceInstance) vif.find(cInstance.getId());
+            if (cInstance != null) {
+                cInstance.setCurrentResult(null);
+            }
+        }
     }
 }
