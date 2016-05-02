@@ -44,6 +44,16 @@ angular.module('wegas.service.wegasTranslations', [])
             },
             $get: function() {
                 var keywords = {
+                        'user': {
+                            singular: {
+                                en: "user",
+                                fr: "utilisateur"
+                            },
+                            plural: {
+                                en: "users",
+                                fr: "utilisateurs"
+                            }
+                        },
                         'player': {
                             singular: {
                                 en: "player",
@@ -1478,6 +1488,10 @@ angular.module('wegas.service.wegasTranslations', [])
                         'ADMIN-INDEX-USERS-BTN': {
                             'en': "Users",
                             'fr': "Utilisateurs"
+                        },
+                        'ADMIN-USERS-LOADING': {
+                            'en': "Loading " + keywords.user.plural.en,
+                            'fr': "Chargement des " + keywords.user.plural.fr
                         },
                         'ADMIN-INDEX-GROUPS-BTN': {
                             'en': "Groups",

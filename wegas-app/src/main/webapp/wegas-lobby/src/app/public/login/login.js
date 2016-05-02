@@ -26,6 +26,13 @@ angular.module('public.login', [])
                             TeamsModel.clearCache();
                             SessionsModel.clearCache();
                             ScenariosModel.clearCache();
+                            // Pre-load sessions and scenarios into local cache to speed up admin sessions:
+                            Auth.getAuthenticatedUser().then(function(user) {
+                                if (user.isAdmin) {
+                                    SessionsModel.getSessions("LIVE");
+                                    ScenariosModel.getScenarios("LIVE");
+                                }
+                            });
                             $state.go('wegas');
                         }
                     });

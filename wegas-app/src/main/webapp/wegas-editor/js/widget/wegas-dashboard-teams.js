@@ -34,12 +34,15 @@ YUI.add('wegas-teams-dashboard', function(Y) {
                         cardsData.push(data);
                     }
                 });
-                // sort by title alphabetically
+                // sort by title alphabetically, case insensitive (unless identical).
                 cardsData.sort(function(a, b) {
-                    if (a.title < b.title) {
+                    var aUp = a.title.toUpperCase(),
+                        bUp = b.title.toUpperCase(),
+                        equalUp = (aUp === bUp);
+                    if (aUp < bUp || (equalUp && a.title < b.title)) {
                         return -1;
                     }
-                    if (a.title > b.title) {
+                    if (aUp > bUp || (equalUp && a.title > b.title)) {
                         return 1;
                     }
                     return 0;
