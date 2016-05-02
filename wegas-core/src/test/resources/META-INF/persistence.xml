@@ -16,7 +16,6 @@
       <property name="eclipselink.logging.logger" value="com.wegas.core.Slf4jSessionLogger"/>
       <property name="eclipselink.logging.level" value="FINEST"/>
       <property name="eclipselink.logging.level.sql" value="FINE"/>
-      <property name="eclipselink.logging.level.sql" value="FINE"/>
       <property name="eclipselink.logging.level.cache" value="ALL"/>
       <property name="eclipselink.logging.parameters" value="true"/>
       <property name="eclipselink.cache.type.default" value="Soft"/>

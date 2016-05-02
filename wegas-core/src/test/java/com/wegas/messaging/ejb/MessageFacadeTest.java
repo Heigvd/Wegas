@@ -4,8 +4,12 @@ import com.wegas.core.ejb.*;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
+import com.wegas.core.persistence.variable.primitive.NumberInstance;
+import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
+import com.wegas.core.rest.ScriptController;
 import com.wegas.messaging.persistence.InboxDescriptor;
 import com.wegas.messaging.persistence.InboxInstance;
 import com.wegas.messaging.persistence.Message;
@@ -251,6 +255,58 @@ public class MessageFacadeTest extends AbstractEJBTest {
         // Clean up
         vdf.remove(inbox.getId());
         vdf.remove(trigger.getId());
+    }
+
+    @Test
+    public void testTriggeredMessage() throws NamingException {
+        logger.info("send inbox trigger");
+        // Lookup Ejb's
+        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
+        final ScriptFacade scriptFacade = lookupBy(ScriptFacade.class);
+        final ScriptController scriptController = lookupBy(ScriptController.class);
+
+        NumberDescriptor number = new NumberDescriptor();
+        number.setName("testnumber");
+        number.setDefaultInstance(new NumberInstance(0));
+        number.setScope(new PlayerScope());
+        vdf.create(gameModel.getId(), number);
+        // Create a inbox descriptor
+        InboxDescriptor inbox = new InboxDescriptor();
+        inbox.setName("inbox");
+        inbox.setCapped(false);
+        inbox.setDefaultInstance(new InboxInstance());
+        vdf.create(gameModel.getId(), inbox);
+        // Create a trigger
+        TriggerDescriptor trigger = new TriggerDescriptor();
+        trigger.setDefaultInstance(new TriggerInstance());
+        trigger.setTriggerEvent(new Script("Variable.find(gameModel,'testnumber').getValue(self) > 0"));
+        trigger.setOneShot(false);
+        trigger.setDisableSelf(false);
+        trigger.setPostTriggerEvent(
+                new Script("Variable.find(gameModel, 'inbox').sendDatedMessage(self, \"test\", \"now\" ,\"test\", \"msg1\", []);\n"));
+        vdf.create(gameModel.getId(), trigger);
+
+        TriggerDescriptor trig = new TriggerDescriptor();
+        trig.setDefaultInstance(new TriggerInstance());
+        trig.setTriggerEvent(new Script("false"));
+        trig.setOneShot(false);
+        trig.setDisableSelf(false);
+        trig.setPostTriggerEvent(
+                new Script(""));
+        vdf.create(gameModel.getId(), trig);
+
+        gameModelFacade.reset(gameModel.getId());
+
+        InboxInstance ii = ((InboxInstance) vif.find(inbox.getId(), player));
+        assertEquals(0, ((InboxInstance) vif.find(inbox.getId(), player)).getMessages().size());
+        //This MAY Fail
+        scriptController.run(gameModel.getId(), player.getId(), null, new Script("Variable.find(gameModel,'testnumber').setValue(self,2)"));
+        // This NEVER fails
+//        scriptFacade.eval(player.getId(), new Script("Variable.find(gameModel,'testnumber').setValue(self,2)"), null);
+//        lookupBy(RequestFacade.class).commit();
+        assertEquals(1, ((InboxInstance) vif.find(inbox.getId(), player)).getMessages().size());
+        assertEquals("msg1", ((InboxInstance) vif.find(inbox.getId(), player)).getMessages().get(0).getBody());
     }
 
     @Test
