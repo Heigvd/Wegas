@@ -15,6 +15,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.Broadcastable;
 import java.util.List;
@@ -131,7 +133,6 @@ public class Activity extends AbstractAssignement /*implements Broadcastable */ 
         return this.getResourceInstance().getEntities();
     }
      }*/
-
     @Override
     public Long getId() {
         return this.id;
@@ -234,5 +235,37 @@ public class Activity extends AbstractAssignement /*implements Broadcastable */ 
      */
     public void setRequirement(WRequirement requirement) {
         this.requirement = requirement;
+    }
+
+    @Override
+    public void updateCacheOnDelete() {
+        TaskDescriptor theTask = this.getTaskDescriptor();
+        ResourceInstance theResource = this.getResourceInstance();
+        WRequirement theReq = this.getRequirement();
+
+        if (theTask != null) {
+            theTask = ((TaskDescriptor) VariableDescriptorFacade.lookup().find(theTask.getId()));
+            if (theTask != null) {
+                theTask.getAssignments().remove(this);
+            }
+        }
+        if (theResource != null) {
+            theResource = ((ResourceInstance) VariableInstanceFacade.lookup().find(theResource.getId()));
+            if (theResource != null) {
+                theResource.getAssignments().remove(this);
+            }
+        }
+        if (theReq != null) {
+            TaskInstance taskInstance = theReq.getTaskInstance();
+            if (taskInstance != null) {
+                taskInstance = ((TaskInstance) VariableInstanceFacade.lookup().find(taskInstance.getId()));
+                if (taskInstance != null) {
+                    theReq = taskInstance.getRequirementById(theReq.getId());
+                    if (theReq != null) {
+                        theReq.removeActivity(this);
+                    }
+                }
+            }
+        }
     }
 }

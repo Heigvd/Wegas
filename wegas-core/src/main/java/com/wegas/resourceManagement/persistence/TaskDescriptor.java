@@ -29,7 +29,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.resourceManagement.ejb.IterationFacade;
 import java.util.Iterator;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -98,6 +101,10 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     @JsonIgnore
     private List<Assignment> assignments = new ArrayList<>();
 
+    @ManyToMany(mappedBy = "tasks")
+    @JsonView(Views.ExtendedI.class)
+    private List<Iteration> iterations;
+
     /**
      *
      *
@@ -116,22 +123,6 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
             this.getProperties().putAll(other.getProperties());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
-    }
-
-    /**
-     *
-     */
-    @PreDestroy
-    public void preDestroy() {
-        for (Iterator<TaskDescriptor> it = this.dependencies.iterator(); it.hasNext();) {
-            TaskDescriptor t = it.next();
-            t.removePredecessor(this);
-        }
-
-        for (Iterator<TaskDescriptor> it = this.predecessors.iterator(); it.hasNext();) {
-            TaskDescriptor t = it.next();
-            this.removePredecessor(t);
         }
     }
 
@@ -206,7 +197,35 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      */
     public void removePredecessor(final TaskDescriptor taskDescriptor) {
         this.predecessors.remove(taskDescriptor);
-        taskDescriptor.dependencies.remove(this);
+    }
+
+    public List<TaskDescriptor> getDependencies() {
+        return dependencies;
+    }
+
+    /**
+     * @param taskDescriptor
+     */
+    public void removeDependency(final TaskDescriptor taskDescriptor) {
+        this.dependencies.remove(taskDescriptor);
+    }
+
+    /**
+     *
+     * @return
+     */
+    @JsonIgnore
+    public List<Iteration> getIterations() {
+        return iterations;
+    }
+
+    /**
+     *
+     * @param iterations
+     */
+    @JsonIgnore
+    public void setIterations(List<Iteration> iterations) {
+        this.iterations = iterations;
     }
 
     /**
@@ -504,5 +523,37 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     public Boolean containsAll(List<String> criterias) {
         return Helper.insensitiveContainsAll(this.getDescription(), criterias)
             || super.containsAll(criterias);
+    }
+
+    @Override
+    public void updateCacheOnDelete() {
+        VariableDescriptorFacade vdf = VariableDescriptorFacade.lookup();
+        IterationFacade iteF = IterationFacade.lookup();
+
+        for (TaskDescriptor theTask : this.dependencies) {
+            theTask = (TaskDescriptor) vdf.find(theTask.getId());
+            if (theTask != null) {
+                theTask.removePredecessor(this);
+            }
+        }
+        this.dependencies = new ArrayList<>();
+
+        for (TaskDescriptor theTask : this.predecessors) {
+            theTask = (TaskDescriptor) vdf.find(theTask.getId());
+            if (theTask != null) {
+                theTask.removeDependency(this);
+            }
+        }
+        this.setPredecessors(new ArrayList<>());
+
+        for (Iteration iteration : this.getIterations()) {
+            iteration = iteF.find(iteration.getId());
+            if (iteration != null) {
+                iteration.removeTask(this);
+            }
+        }
+        this.setIterations(new ArrayList<>());
+
+        super.updateCacheOnDelete();
     }
 }

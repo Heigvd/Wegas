@@ -55,7 +55,9 @@ public class EntityListener {
             if (b instanceof GameModel) {
                 /* Since a serialized gameModel differs according to whom request it...
                  it's not possible to broadcast the new version -> Outdate it */
-                requestManager.addOutofdateEntities(b.getEntities());
+
+                // GameModel is not broadcastable ...
+                /// requestManager.addOutofdateEntities(b.getEntities());
             } else if (b instanceof AbstractEntity) {
                 logger.debug("Propagate: " + b);
                 Map<String, List<AbstractEntity>> entities = b.getEntities();

@@ -323,9 +323,7 @@ public class WRequirement extends AbstractEntity {
     }
 
     public void removeActivity(Activity activity) {
-        if (this.activities.remove(activity)) {
-            activity.setRequirement(null);
-        }
+        this.activities.remove(activity);
     }
 
     @Override

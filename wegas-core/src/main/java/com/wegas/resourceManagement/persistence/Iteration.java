@@ -13,6 +13,8 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.Broadcastable;
 import java.util.ArrayList;
@@ -81,8 +83,16 @@ public class Iteration extends AbstractEntity implements Broadcastable {
     /**
      * Tasks composing the iteration
      */
-    @OneToMany
     @JsonIgnore
+    @ManyToMany
+    @JoinTable(name = "iteration_taskdescriptor",
+        joinColumns = {
+            @JoinColumn(name = "iteration_id", referencedColumnName = "id")
+        },
+        inverseJoinColumns = {
+            @JoinColumn(name = "tasks_variabledescriptor_id", referencedColumnName = "variabledescriptor_id")
+        }
+    )
     private List<TaskDescriptor> tasks;
 
     /**
@@ -251,6 +261,10 @@ public class Iteration extends AbstractEntity implements Broadcastable {
         this.tasks.add(taskD);
     }
 
+    public void removeTask(TaskDescriptor task) {
+        this.tasks.remove(task);
+    }
+
     public List<Long> getTaskDescriptorsId() {
         List<Long> ids = new ArrayList<>();
         for (TaskDescriptor td : getTasks()) {
@@ -307,4 +321,25 @@ public class Iteration extends AbstractEntity implements Broadcastable {
     public Map<String, List<AbstractEntity>> getEntities() {
         return this.getBurndownInstance().getEntities();
     }
+
+    @Override
+    public void updateCacheOnDelete() {
+        VariableDescriptorFacade lookup = VariableDescriptorFacade.lookup();
+        BurndownInstance theBdI = this.getBurndownInstance();
+
+        if (theBdI != null) {
+            theBdI = (BurndownInstance) VariableInstanceFacade.lookup().find(theBdI.getId());
+            if (theBdI != null) {
+                theBdI.getIterations().remove(this);
+            }
+        }
+        for (TaskDescriptor task : this.getTasks()) {
+            task = (TaskDescriptor) lookup.find(task.getId());
+            if (task != null) {
+                task.getIterations().remove(this);
+            }
+        }
+        this.setTasks(new ArrayList());
+    }
+
 }
