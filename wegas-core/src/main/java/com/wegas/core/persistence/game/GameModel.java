@@ -110,7 +110,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.LAZY)
     //@XmlTransient
     @JsonIgnore
-    private List<VariableDescriptor> variableDescriptors = new ArrayList();
+    private List<VariableDescriptor> variableDescriptors = new ArrayList<>();
 
     /**
      * A list of Variable Descriptors that are at the root level of the
@@ -122,7 +122,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @OrderColumn
     @JsonView(Views.Export.class)
     //@JsonManagedReference
-    private List<VariableDescriptor> childVariableDescriptors = new ArrayList();
+    private List<VariableDescriptor> childVariableDescriptors = new ArrayList<>();
 
     /**
      *
@@ -235,8 +235,8 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     /**
      * @param list
      */
-    private void propagateGameModel(final DescriptorListI list) {
-        for (VariableDescriptor vd : (List<VariableDescriptor>) list.getItems()) {
+    private void propagateGameModel(final DescriptorListI<VariableDescriptor> list) {
+        for (VariableDescriptor vd : list.getItems()) {
             this.addToVariableDescriptors(vd);
             if (vd instanceof DescriptorListI) {
                 this.propagateGameModel((DescriptorListI) vd);

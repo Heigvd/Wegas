@@ -230,7 +230,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
                 connector.cloneWorkspace(srcGameModel.getId());
                 newGameModel.setPages(srcGameModel.getPages());
             } catch (RepositoryException ex) {
-                System.err.println(ex);
+                logger.error("Duplicating repository {} failure", entityId, ex);
             }
 
             return newGameModel;
@@ -269,7 +269,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         try (ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(gameModel.getId())) {
             connector.deleteWorkspace();
         } catch (RepositoryException ex) {
-            System.err.println(ex);
+            logger.error("Error suppressing repository {}", id, ex);
         }
     }
 
@@ -379,8 +379,8 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         }
 
         fileController.createFile(gameModelId, name + ".json", "/" + HISTORYPATH,
-            "application/octet-stream", null, null,
-            new ByteArrayInputStream(serializedGameModel.getBytes("UTF-8")), false);// Create a file containing the version
+                "application/octet-stream", null, null,
+                new ByteArrayInputStream(serializedGameModel.getBytes("UTF-8")), false);// Create a file containing the version
     }
 
     /**
@@ -421,8 +421,8 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
             if (!found) {
                 this.createVersion(model.getId(),
-                    new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date()) + "-" + hash + ".json",
-                    serialized);
+                        new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date()) + "-" + hash + ".json",
+                        serialized);
             }
 
             //System.gc();

@@ -155,7 +155,7 @@ public class GameFacade extends BaseFacade<Game> {
         } catch (WegasNoResultException ex) {
             logger.error("Unable to find Role: Public");
         }
-        gameCreatedEvent.fire(new EntityCreated(game));
+        gameCreatedEvent.fire(new EntityCreated<>(game));
     }
 
     /**
@@ -217,7 +217,7 @@ public class GameFacade extends BaseFacade<Game> {
 
     @Override
     public void remove(final Game entity) {
-        gameRemovedEvent.fire(new PreEntityRemoved(entity));
+        gameRemovedEvent.fire(new PreEntityRemoved<>(entity));
 
         // This is for retrocompatibility w/ game models that do not habe DebugGame
         if (entity.getGameModel().getGames().size() <= 1

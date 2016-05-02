@@ -94,7 +94,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      * @param entity
      * @return
      */
-    public DescriptorListI createChild(final GameModel gameModel, final DescriptorListI list, final VariableDescriptor entity) {
+    public DescriptorListI createChild(final GameModel gameModel, final DescriptorListI<VariableDescriptor> list, final VariableDescriptor entity) {
 
         List<String> usedNames = this.findDistinctNames(gameModel);
         List<String> usedLabels = this.findDistinctLabels(list);
@@ -261,7 +261,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      * @param container
      * @return
      */
-    public List<String> findDistinctLabels(final DescriptorListI container) {
+    public List<String> findDistinctLabels(final DescriptorListI<? extends VariableDescriptor> container) {
         if (container instanceof GameModel) {
             TypedQuery<String> distinctLabels = getEntityManager().createNamedQuery("GameModel.findDistinctChildrenLabels", String.class);
             distinctLabels.setParameter("container", container);
@@ -277,7 +277,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         } else {
             // fallback case
             List<String> list = new ArrayList<>();
-            for (VariableDescriptor child : (List<VariableDescriptor>) container.getItems()) {
+            for (VariableDescriptor child : container.getItems()) {
                 list.add(child.getLabel());
             }
             return list;
@@ -372,7 +372,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         //return findVariableDescriptorsByClass.getResultList();
     }
 
-    private void move(final Long descriptorId, final DescriptorListI targetListDescriptor, final int index) {
+    private void move(final Long descriptorId, final DescriptorListI<VariableDescriptor> targetListDescriptor, final int index) {
         final VariableDescriptor vd = this.find(descriptorId);                  // Remove from the previous list
         vd.getParent().remove(vd);
         targetListDescriptor.addItem(index, vd);                                // Then add to the new one

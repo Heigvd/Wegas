@@ -49,7 +49,7 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> {
 
         ObjectDescriptor other = (ObjectDescriptor) a;
         this.setDescription(other.getDescription());
-        this.setProperties(new HashMap());
+        this.setProperties(new HashMap<>());
         this.getProperties().putAll(other.getProperties());
     }
 

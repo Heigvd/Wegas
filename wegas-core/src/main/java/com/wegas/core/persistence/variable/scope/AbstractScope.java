@@ -7,51 +7,55 @@
  */
 package com.wegas.core.persistence.variable.scope;
 
-import com.wegas.core.ejb.RequestFacade;
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.rest.util.Views;
-import java.util.Map;
-import javax.persistence.*;
-////import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.ejb.RequestFacade;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.rest.util.Views;
+
+import javax.persistence.*;
+import java.util.Map;
+
+////import javax.xml.bind.annotation.XmlTransient;
 
 /**
- *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity                                                                         // Database serialization
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "GameModelScope", value = GameModelScope.class),
-    @JsonSubTypes.Type(name = "GameScope", value = GameScope.class),
-    @JsonSubTypes.Type(name = "TeamScope", value = TeamScope.class),
-    @JsonSubTypes.Type(name = "PlayerScope", value = PlayerScope.class)
+        @JsonSubTypes.Type(name = "GameModelScope", value = GameModelScope.class),
+        @JsonSubTypes.Type(name = "GameScope", value = GameScope.class),
+        @JsonSubTypes.Type(name = "TeamScope", value = TeamScope.class),
+        @JsonSubTypes.Type(name = "PlayerScope", value = PlayerScope.class)
 })
 @Table(indexes = {
-    @Index(columnList = "variableinstance_variableinstance_id")
+        @Index(columnList = "variableinstance_variableinstance_id")
 })
 abstract public class AbstractScope extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
+
     /**
      *
      */
     @Id
     @GeneratedValue
     private Long id;
+
     /**
      *
      */
     @OneToOne
     //@JsonBackReference
     private VariableDescriptor variableDescriptor;
+
     /**
      *
      */
@@ -60,28 +64,24 @@ abstract public class AbstractScope extends AbstractEntity {
     private String broadcastScope = PlayerScope.class.getSimpleName();
 
     /**
-     *
      * @param key
      * @param v
      */
     abstract public void setVariableInstance(Long key, VariableInstance v);
 
     /**
-     *
      * @param player
      * @return
      */
     abstract public VariableInstance getVariableInstance(Player player);
 
     /**
-     *
      * @return
      */
     @JsonView(Views.Editor.class)
     abstract public Map<Long, VariableInstance> getVariableInstances();
 
     /**
-     *
      * @return The variable instance associated to the current player, which is
      *         stored in the RequestManager.
      */
@@ -90,7 +90,6 @@ abstract public class AbstractScope extends AbstractEntity {
     abstract public Map<Long, VariableInstance> getPrivateInstances();
 
     /**
-     *
      * @return
      */
     //@XmlTransient
@@ -149,7 +148,6 @@ abstract public class AbstractScope extends AbstractEntity {
     abstract public void propagateDefaultInstance(AbstractEntity context);
 
     /**
-     *
      * @return
      */
     // @fixme here we cannot use the back-reference on an abstract reference
@@ -161,7 +159,6 @@ abstract public class AbstractScope extends AbstractEntity {
     }
 
     /**
-     *
      * @param varDesc
      */
     //@JsonBackReference
@@ -170,7 +167,6 @@ abstract public class AbstractScope extends AbstractEntity {
     }
 
     /**
-     *
      * @return
      */
     @Override

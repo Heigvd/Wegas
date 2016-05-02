@@ -18,13 +18,12 @@ import java.io.Serializable;
 public class RequestCommit implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private EntityUpdatedEvent request;
 
     /**
      *
      * @param request
      */
     public RequestCommit(EntityUpdatedEvent request) {
-        this.request = request;
+        EntityUpdatedEvent request1 = request;
     }
 }

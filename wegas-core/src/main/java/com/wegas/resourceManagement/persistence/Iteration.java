@@ -78,7 +78,7 @@ public class Iteration extends AbstractEntity implements Broadcastable {
      * indicates the total remaining workload for the corresponding period.
      */
     @OneToMany(mappedBy = "iteration", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Workload> workloads = new ArrayList();
+    private List<Workload> workloads = new ArrayList<>();
 
     /**
      * Tasks composing the iteration

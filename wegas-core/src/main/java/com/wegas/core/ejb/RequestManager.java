@@ -228,7 +228,7 @@ public class RequestManager {
      * @param e
      */
     public void addException(WegasRuntimeException e) {
-        ArrayList<WegasRuntimeException> exceptions = new ArrayList();
+        ArrayList<WegasRuntimeException> exceptions = new ArrayList<>();
         exceptions.add(e);
         this.addEvent(new ExceptionEvent(exceptions));
     }

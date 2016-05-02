@@ -95,7 +95,7 @@ public class PublicGameController {
     @GET
     @Path("RegisteredGames/{userId : [1-9][0-9]*}/{gameModelId : [1-9][0-9]*}")
     public Collection<Game> registeredGames(@PathParam("userId") Long userId, @PathParam("gameModelId") Long gameModelId) {
-        return (Collection) gameFacade.findRegisteredGames(userId, gameModelId);
+        return gameFacade.findRegisteredGames(userId, gameModelId);
     }
 
     /**
@@ -106,6 +106,6 @@ public class PublicGameController {
     @GET
     @Path("RegisteredGames/{userId : [1-9][0-9]*}/")
     public Collection<Game> registeredGames(@PathParam("userId") Long userId) {
-        return (Collection) gameFacade.findRegisteredGames(userId);
+        return gameFacade.findRegisteredGames(userId);
     }
 }

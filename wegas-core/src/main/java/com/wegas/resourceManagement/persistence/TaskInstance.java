@@ -223,12 +223,12 @@ public class TaskInstance extends VariableInstance {
             TaskInstance other = (TaskInstance) a;
             this.setActive(other.getActive());
             //this.setDuration(other.getDuration());
-            this.setProperties(new HashMap());
+            this.setProperties(new HashMap<>());
             this.getProperties().putAll(other.getProperties());
             ListUtils.ListKeyToMap<String, WRequirement> converter;
             converter = new WRequirementToNameConverter();
             Map<String, WRequirement> reqMap = ListUtils.listAsMap(requirements, converter);
-            this.setRequirements(new ArrayList());
+            this.setRequirements(new ArrayList<>());
             for (WRequirement req : other.getRequirements()) {
                 WRequirement r;
                 if (reqMap.containsKey(req.getName()) && req.getId() != null) {
@@ -242,7 +242,7 @@ public class TaskInstance extends VariableInstance {
                     this.getRequirements().add(r);
                 }
             }
-            this.setPlannification(new ArrayList());
+            this.setPlannification(new ArrayList<>());
             this.getPlannification().addAll(other.getPlannification());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");

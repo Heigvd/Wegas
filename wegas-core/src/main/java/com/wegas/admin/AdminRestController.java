@@ -38,7 +38,7 @@ public class AdminRestController {
         if (type == null) {
             return adminFacade.findAll();
         } else {
-            List<GameAdmin.Status> statuses = new ArrayList();
+            List<GameAdmin.Status> statuses = new ArrayList<>();
             for (int i = 0; i < types.length; i++) {
                 try {
                     statuses.add(GameAdmin.Status.valueOf(types[i].toUpperCase()));

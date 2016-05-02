@@ -79,7 +79,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     public Player findByGameIdAndUserId(final Long gameId, final Long userId) throws WegasNoResultException {
         try {
-            final TypedQuery<Player> findByGameIdAndUserId = getEntityManager().createNamedQuery("findPlayerByGameIdAndUserId", Player.class);
+            final TypedQuery<Player> findByGameIdAndUserId = getEntityManager().createNamedQuery("Player.findPlayerByGameIdAndUserId", Player.class);
             findByGameIdAndUserId.setParameter("gameId", gameId);
             findByGameIdAndUserId.setParameter("userId", userId);
             return findByGameIdAndUserId.getSingleResult();
@@ -95,7 +95,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     public Player checkExistingPlayer(final Long gameId, final Long userId) {
         try {
-            final TypedQuery<Player> findByGameIdAndUserId = getEntityManager().createNamedQuery("findPlayerByGameIdAndUserId", Player.class);
+            final TypedQuery<Player> findByGameIdAndUserId = getEntityManager().createNamedQuery("Player.findPlayerByGameIdAndUserId", Player.class);
             findByGameIdAndUserId.setParameter("gameId", gameId);
             findByGameIdAndUserId.setParameter("userId", userId);
             return findByGameIdAndUserId.getSingleResult();
@@ -111,7 +111,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     public Player checkExistingPlayerInTeam(final Long teamId, final Long userId) {
         try {
-            final TypedQuery<Player> find = getEntityManager().createNamedQuery("findPlayerByTeamIdAndUserId", Player.class);
+            final TypedQuery<Player> find = getEntityManager().createNamedQuery("Player.findPlayerByTeamIdAndUserId", Player.class);
             find.setParameter("teamId", teamId);
             find.setParameter("userId", userId);
             return find.getSingleResult();
@@ -174,7 +174,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      * @return
      */
     public List<Player> getByGameId(Long gameId) {
-        Query findByGameId = getEntityManager().createNamedQuery("findPlayerByGameId");
+        TypedQuery<Player> findByGameId = getEntityManager().createNamedQuery("Player.findPlayerByGameId", Player.class);
         findByGameId.setParameter("gameId", gameId);
         return findByGameId.getResultList();
     }
@@ -202,7 +202,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      * @return
      */
     public List<Player> getByGameModelId(Long gameModelId) {
-        Query findByGameId = getEntityManager().createQuery("SELECT player FROM Player player WHERE player.team.game.gameModel.id = :gameModelId");
+        TypedQuery<Player> findByGameId = getEntityManager().createQuery("SELECT player FROM Player player WHERE player.team.game.gameModel.id = :gameModelId", Player.class);
         findByGameId.setParameter("gameModelId", gameModelId);
         return findByGameId.getResultList();
     }

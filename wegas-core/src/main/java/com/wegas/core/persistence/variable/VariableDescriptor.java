@@ -279,7 +279,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     @JsonIgnore
-    public DescriptorListI getParent() {
+    public DescriptorListI<VariableDescriptor> getParent() {
         if (parentList != null) {
             return parentList;
         } else if (rootGameModel != null) {

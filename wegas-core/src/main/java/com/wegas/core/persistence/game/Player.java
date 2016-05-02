@@ -29,9 +29,9 @@ import java.util.Map;
  */
 @Entity
 @NamedQueries({
-    @NamedQuery(name = "findPlayerByGameId", query = "SELECT player FROM Player player WHERE player.team.game.id = :gameId"),
-    @NamedQuery(name = "findPlayerByGameIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.game.id = :gameId"),
-    @NamedQuery(name = "findPlayerByTeamIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.id = :teamId")
+    @NamedQuery(name = "Player.findPlayerByGameId", query = "SELECT player FROM Player player WHERE player.team.game.id = :gameId"),
+    @NamedQuery(name = "Player.findPlayerByGameIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.game.id = :gameId"),
+    @NamedQuery(name = "Player.findPlayerByTeamIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.id = :teamId")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Table(indexes = {

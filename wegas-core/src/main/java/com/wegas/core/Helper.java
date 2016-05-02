@@ -55,7 +55,7 @@ public class Helper {
      * @return
      * @throws NamingException
      */
-    public static <T> T lookupBy(Context context, Class<T> type, Class service) throws NamingException {
+    public static <T> T lookupBy(Context context, Class<T> type, Class<?> service) throws NamingException {
         try {
             return (T) context.lookup("java:module/" + service.getSimpleName() + "!" + type.getName());
         } catch (NamingException ex) {
@@ -94,7 +94,7 @@ public class Helper {
      * @return
      * @throws NamingException
      */
-    public static <T> T lookupBy(Class<T> type, Class service) throws NamingException {
+    public static <T> T lookupBy(Class<T> type, Class<?> service) throws NamingException {
         return lookupBy(new InitialContext(), type, service);
     }
 

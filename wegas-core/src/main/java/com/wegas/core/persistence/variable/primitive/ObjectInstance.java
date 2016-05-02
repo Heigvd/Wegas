@@ -45,7 +45,7 @@ public class ObjectInstance extends VariableInstance {
         if (a != null) {
             if (a instanceof ObjectInstance) {
                 ObjectInstance other = (ObjectInstance) a;
-                this.setProperties(new HashMap());
+                this.setProperties(new HashMap<>());
                 this.getProperties().putAll(other.getProperties());
             } else {
                 throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");

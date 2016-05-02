@@ -76,20 +76,18 @@ public class UpdateController {
      */
     @GET
     public String index() {
-        StringBuilder ret = new StringBuilder();
         //Long nbOrphans = this.countOrphans();
         //List<Game> noDebugTeamGames = this.findNoDebugTeamGames();
 
         //ret.append("<a href=\"Update/KillOrphans\">Kill Ulvide and 3000 Orphans (" + nbOrphans + " orphans)</a> <br />");
         //ret.append("<a href=\"Update/RestoreDebugTeams\">Restore 25 Debug Teams and Kill Ulvide (" + noDebugTeamGames.size() + " games)</a> <br />");
-        ret.append("<a href=\"RtsUpdateScope/10901\">RTS Update Scopes</a> <br />");
-        ret.append("<a href=\"RtsNewScope/10901\">RTS New Scopes</a> <br />");
         //ret.append("<a href=\"Update/PMG_UPGRADE\">PMG upgrade</a> <br />");
         // for (GameModel gm : gameModelFacade.findAll()) {
         //    ret.append("<a href=\"Encode/").append(gm.getId()).append("\">Update variable names ").append(gm.getId()).append("</a> | ");
         //    ret.append("<a href=\"UpdateScript/").append(gm.getId()).append("\">Update script ").append(gm.getId()).append("</a><br />");
         //}
-        return ret.toString();
+        return "<a href=\"RtsUpdateScope/10901\">RTS Update Scopes</a> <br />" +
+                "<a href=\"RtsNewScope/10901\">RTS New Scopes</a> <br />";
     }
 
     /**

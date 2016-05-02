@@ -119,7 +119,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
             this.setIndex(other.getIndex());
             this.setPredecessorNames(other.getImportedPredecessorNames());
             // this.setPredecessors(ListUtils.updateList(this.getPredecessors(), other.getPredecessors()));
-            this.setProperties(new HashMap());
+            this.setProperties(new HashMap<>());
             this.getProperties().putAll(other.getProperties());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
