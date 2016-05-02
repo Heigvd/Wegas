@@ -52,7 +52,7 @@ YUI.add('wegas-dashboard', function(Y) {
                         }
                     }));
                     this.toolbar.add(new Y.Wegas.Button({
-                        label: '<span class="wegas-icon wegas-icon-refresh"></span> Refresh all',
+                        label: '<span class="wegas-icon wegas-icon-refresh"></span> Refresh teams/players list',
                         on: {
                             click: Y.bind(function(event) {
                                 location.reload(); // That's stupid, same as {@see phenixize}
@@ -65,7 +65,7 @@ YUI.add('wegas-dashboard', function(Y) {
                 this.handlers.push(Y.Wegas.Facade.Game.after("update", this.phenixize, this));
             },
             /**
-             * BEURK... Dirty Solution 
+             * BEURK... Dirty Solution
              * @todo replace fuckin dirty clone'n'suicide pattern with slightly more intelligent sync
              * @returns {undefined}
              */
