@@ -70,16 +70,16 @@ public class InboxInstance extends VariableInstance {
      * @param message
      */
     public void addMessage(Message message) {
-        InboxDescriptor descr = (InboxDescriptor) this.findDescriptor();
-        if (descr.getCapped()) {
-            /*
-             Multiple message in same transaction will end in null object with List#clear
-             MessageFacadeTest#testInboxSendMultipleCapped
-             */
-            this.setMessages(new ArrayList<>());
+        final ArrayList<Message> newArrayList = new ArrayList<>();
+        final InboxDescriptor descr = (InboxDescriptor) this.findDescriptor();
+        /*
+        Cache seems to handle messages correctly when a new list is created.
+        */
+        if (!descr.getCapped()) {
+            newArrayList.addAll(this.getMessages());
         }
-        this.getMessages().add(0, message);
-        message.setInboxInstance(this);
+        newArrayList.add(0, message);
+        this.setMessages(newArrayList);
     }
 
     @Override
