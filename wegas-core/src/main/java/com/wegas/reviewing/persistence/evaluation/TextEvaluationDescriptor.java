@@ -1,4 +1,4 @@
- /*
+/*
  * Wegas
  * http://wegas.albasim.ch
  *
@@ -32,9 +32,7 @@ public class TextEvaluationDescriptor extends EvaluationDescriptor<TextEvaluatio
     }
 
     @Override
-    public TextEvaluationInstance createInstance() {
-        TextEvaluationInstance i = new TextEvaluationInstance();
-        i.setDescriptor(this);
-        return i;
+    protected TextEvaluationInstance newInstance() {
+        return new TextEvaluationInstance();
     }
 }

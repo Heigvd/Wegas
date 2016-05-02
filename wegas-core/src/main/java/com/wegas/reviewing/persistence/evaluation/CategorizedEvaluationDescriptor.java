@@ -84,9 +84,7 @@ public class CategorizedEvaluationDescriptor extends EvaluationDescriptor<Catego
     }
 
     @Override
-    public CategorizedEvaluationInstance createInstance() {
-        CategorizedEvaluationInstance cei = new CategorizedEvaluationInstance();
-        cei.setDescriptor(this);
-        return cei;
+    protected CategorizedEvaluationInstance newInstance() {
+        return new CategorizedEvaluationInstance();
     }
 }

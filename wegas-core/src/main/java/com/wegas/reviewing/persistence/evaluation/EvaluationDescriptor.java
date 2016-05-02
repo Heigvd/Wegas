@@ -41,7 +41,7 @@ import javax.persistence.*;
 })
 public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends NamedEntity {
 
-    @OneToMany(mappedBy = "evaluationDescriptor", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "evaluationDescriptor", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<EvaluationInstance> evaluationInstances;
 
     private static final long serialVersionUID = 1L;
@@ -57,7 +57,6 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
      * Evaluation name as displayed to players
      */
     private String name;
-
 
     /**
      * Textual descriptor to be displayed to players
@@ -141,7 +140,6 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
         this.name = name;
     }
 
-
     /**
      * @return the description
      */
@@ -183,10 +181,36 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
         this.container = container;
     }
 
+    @JsonIgnore
+    public List<EvaluationInstance> getEvaluationInstances() {
+        return evaluationInstances;
+    }
+
+    public void setEvaluationInstances(List<EvaluationInstance> evaluationInstances) {
+        this.evaluationInstances = evaluationInstances;
+    }
+
     /**
      * Create an EvaluationInstance
+     *
      * @return new evaluationInstance
      */
-    public abstract T createInstance();
+    @JsonIgnore
+    public T createInstance() {
+        T newInstance = this.newInstance();
+        newInstance.setDescriptor(this);
+        this.evaluationInstances.add(newInstance);
+        return newInstance;
+    }
 
+    /**
+     * Create an EvaluationInstance
+     *
+     * @return new evaluationInstance
+     */
+    protected abstract T newInstance();
+
+    public void removeInstance(EvaluationInstance instance) {
+        this.evaluationInstances.remove(instance);
+    }
 }

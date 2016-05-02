@@ -44,6 +44,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.slf4j.Logger;
@@ -113,6 +114,16 @@ public class ReviewingFacade {
      */
     public EvaluationInstance findEvaluationInstance(Long evId) {
         return em.find(EvaluationInstance.class, evId);
+    }
+
+    /**
+     * Get an evaluationDescriptor by Id
+     *
+     * @param evId evaluation descriptor id
+     * @return the evaluation descriptor or null
+     */
+    public EvaluationDescriptor findEvaluationDescriptor(Long evId) {
+        return em.find(EvaluationDescriptor.class, evId);
     }
 
     /**
@@ -511,6 +522,19 @@ public class ReviewingFacade {
                 logger.error("Failed te revive ReviewDescriptor", ex);
                 reviewD.setToReview(null);
             }
+        }
+    }
+
+    /**
+     * 
+     * @return 
+     */
+    public static ReviewingFacade lookup() {
+        try {
+            return Helper.lookupBy(ReviewingFacade.class);
+        } catch (NamingException ex) {
+            logger.error("Error retrieving p2p facade", ex);
+            return null;
         }
     }
 }
