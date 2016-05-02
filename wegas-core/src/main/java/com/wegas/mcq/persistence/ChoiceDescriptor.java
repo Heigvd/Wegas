@@ -321,7 +321,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
 
     @JsonIgnore
     @Override
-    public DescriptorListI getParent() {
+    public DescriptorListI<? extends VariableDescriptor> getParent() {
         if (this.getQuestion() != null) {
             return this.getQuestion();
         } else {

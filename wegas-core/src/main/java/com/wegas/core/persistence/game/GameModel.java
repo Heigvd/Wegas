@@ -235,11 +235,11 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     /**
      * @param list
      */
-    private void propagateGameModel(final DescriptorListI<VariableDescriptor> list) {
+    private void propagateGameModel(final DescriptorListI<? extends VariableDescriptor> list) {
         for (VariableDescriptor vd : list.getItems()) {
             this.addToVariableDescriptors(vd);
             if (vd instanceof DescriptorListI) {
-                this.propagateGameModel((DescriptorListI) vd);
+                this.propagateGameModel((DescriptorListI<? extends VariableDescriptor>) vd);
             }
         }
     }

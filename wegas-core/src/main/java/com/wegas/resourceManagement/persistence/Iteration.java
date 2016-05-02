@@ -339,7 +339,7 @@ public class Iteration extends AbstractEntity implements Broadcastable {
                 task.getIterations().remove(this);
             }
         }
-        this.setTasks(new ArrayList());
+        this.setTasks(new ArrayList<>());
     }
 
 }
