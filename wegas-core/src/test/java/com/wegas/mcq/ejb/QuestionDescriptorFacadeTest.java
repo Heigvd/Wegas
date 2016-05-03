@@ -61,6 +61,61 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         vdf.remove(question.getId());                                           // Clean up
     }
 
+    /**
+     * Test of selectChoice method, of class QuestionController.
+     * The question is of type "checkbox" with ignoration impact on one choice.
+     */
+    @Test
+    public void testSelectAndValidateCBX() throws Exception {
+
+        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);// Lookup Ejb's
+        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
+        final QuestionDescriptorFacade qdf = lookupBy(QuestionDescriptorFacade.class);
+
+        final NumberDescriptor myNumber1 = new NumberDescriptor();              // Create a number descriptor
+        myNumber1.setName("mynumber1");
+        myNumber1.setDefaultInstance(new NumberInstance(0));
+        vdf.create(gameModel.getId(), myNumber1);
+
+        final NumberDescriptor myNumber2 = new NumberDescriptor();              // Create a 2nd number descriptor for ignoration impact
+        myNumber2.setName("mynumber2");
+        myNumber2.setDefaultInstance(new NumberInstance(0));
+        vdf.create(gameModel.getId(), myNumber2);
+
+        QuestionDescriptor question = new QuestionDescriptor();                 // Create a question descriptor
+        question.setDefaultInstance(new QuestionInstance());
+        question.setCbx(true);
+        vdf.create(gameModel.getId(), question);
+
+        ChoiceDescriptor choice1 = new ChoiceDescriptor();                       // Add a choice descriptor
+        choice1.setDefaultInstance(new ChoiceInstance());
+        choice1.setName("testChoice1");
+        Result r1 = new Result("result1");
+        r1.setImpact(new Script("Variable.find(gameModel, \"mynumber1\").setValue(self, 10);"));
+        choice1.addResult(r1);
+        vdf.createChild(question.getId(), choice1);
+
+        ChoiceDescriptor choice2 = new ChoiceDescriptor();                       // Add a 2nd choice descriptor for ignored answer
+        choice2.setDefaultInstance(new ChoiceInstance());
+        choice2.setName("testChoice2");
+        Result r2 = new Result("result2");
+        //r2.setIgnorationImpact(new Script("mynumber2.value = 50;"));
+        r2.setIgnorationImpact(new Script("Variable.find(gameModel, \"mynumber2\").setValue(self, 50);"));
+        choice2.addResult(r2);
+        vdf.createChild(question.getId(), choice2);
+
+        qdf.selectChoice(choice1.getId(), player.getId());                       // Select reply and validate question
+        QuestionInstance qif = question.getInstance(player);
+        qdf.validateQuestion(qif.getId(), player.getId());
+        assertEquals(10.0, ((NumberInstance) vif.find(myNumber1.getId(), player.getId())).getValue(), 0.1);
+        assertEquals(50.0, ((NumberInstance) vif.find(myNumber2.getId(), player.getId())).getValue(), 0.1);
+
+        vdf.duplicate(question.getId());                                        // Test duplication of question
+
+        vdf.remove(question.getId());                                           // Clean up
+    }
+
+
     @Test
     public void testSelectAndCancel() throws NamingException {
         final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);// Lookup Ejb's
@@ -135,7 +190,7 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         Result r2 = new Result("result_2");
         choice.addResult(r2);
         // And the default reply is the second
-        // ((ChoiceInstance) choice.getDefaultInstance()).setCurrentResult(r2); 
+        // ((ChoiceInstance) choice.getDefaultInstance()).setCurrentResult(r2);
         vdf.createChild(question.getId(), choice);
         choice = (ChoiceDescriptor) vdf.find(choice.getId());
         r = choice.getResultByName("result");
