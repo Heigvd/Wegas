@@ -173,7 +173,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
             logger.error("ignoreChoice() invoked on a Question which is not of checkbox type");
         }
 
-        Reply reply = questionSingleton.createReply(choiceId, player, -1L); // Negative startTime: hack to signal ignoration
+        Reply reply = questionSingleton.createReplyTransactional(choiceId, player, -1L); // Negative startTime: hack to signal ignoration
         try {
             scriptEvent.fire(player, "replyIgnore", new ReplyValidate(reply));
         } catch (WegasScriptException e) {
@@ -203,7 +203,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
             }
         }
 
-        Reply reply = questionSingleton.createReply(choiceId, player, startTime);
+        Reply reply = questionSingleton.createReplyTransactional(choiceId, player, startTime);
         try {
             scriptEvent.fire(player, "replySelect", new ReplyValidate(reply));
         } catch (WegasScriptException e) {
@@ -245,7 +245,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
             this.validateReply(player, reply.getId());
         } catch (WegasRuntimeException e) {
             logger.error("CANCEL REPLY", e);
-            this.cancelReplyTransactionnal(playerId, reply.getId());
+            this.cancelReplyTransactional(playerId, reply.getId());
             throw e;
         }
         return reply;
@@ -256,8 +256,8 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      * @param replyId
      * @return
      */
-    public Reply cancelReplyTransactionnal(Long playerId, Long replyId) {
-        Reply reply = questionSingleton.cancelReplyTransactionnal(playerId, replyId);
+    public Reply cancelReplyTransactional(Long playerId, Long replyId) {
+        Reply reply = questionSingleton.cancelReplyTransactional(playerId, replyId);
         try {
             scriptEvent.fire(playerFacade.find(playerId), "replyCancel", new ReplyValidate(reply));// Throw an event
         } catch (WegasRuntimeException e) {
@@ -272,7 +272,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      * @return
      */
     public Reply cancelReply(Long playerId, Long replyId) {
-        return this.cancelReplyTransactionnal(playerId, replyId);
+        return this.cancelReplyTransactional(playerId, replyId);
     }
 
     /**

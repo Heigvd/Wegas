@@ -52,7 +52,7 @@ public class QuestionSingleton {
      * @param startTime
      * @return
      */
-    private Reply createReplyUntransactionnal(Long choiceId, Player player, Long startTime) {
+    private Reply createReplyNonTransactional(Long choiceId, Player player, Long startTime) {
         ChoiceDescriptor choice = em.find(ChoiceDescriptor.class, choiceId);
 
         QuestionDescriptor questionDescriptor = choice.getQuestion();
@@ -85,12 +85,12 @@ public class QuestionSingleton {
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)                // Require new transaction
-    public Reply createReply(Long choiceId, Player player, Long startTime) {
-        return createReplyUntransactionnal(choiceId, player, startTime);
+    public Reply createReplyTransactional(Long choiceId, Player player, Long startTime) {
+        return createReplyNonTransactional(choiceId, player, startTime);
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)                // cancelReply
-    public Reply cancelReplyTransactionnal(Long playerId, Long replyId) {
+    public Reply cancelReplyTransactional(Long playerId, Long replyId) {
         final Reply reply = em.find(Reply.class, replyId);
         reply.getQuestionInstance().getReplies().remove(reply);
         em.remove(reply);
