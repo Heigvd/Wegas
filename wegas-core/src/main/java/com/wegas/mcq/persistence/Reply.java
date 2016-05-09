@@ -7,30 +7,28 @@
  */
 package com.wegas.mcq.persistence;
 
-import com.wegas.core.persistence.AbstractEntity;
-import javax.persistence.*;
-////import javax.xml.bind.annotation.XmlTransient;
-//import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.Broadcastable;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
-import java.util.List;
-import java.util.Map;
+
+import javax.persistence.*;
 
 /**
- *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
 //@XmlType(name = "Reply")
 @JsonTypeName(value = "Reply")
 @Table(name = "MCQReply", indexes = {
-    @Index(columnList = "variableinstance_id"),
-    @Index(columnList = "result_id")
+        @Index(columnList = "variableinstance_id"),
+        @Index(columnList = "result_id")
+})
+@NamedQueries({
+        @NamedQuery(name = "Reply.countForInstance", query = "SELECT COUNT(r) FROM Reply r WHERE r.questionInstance.id = :instanceId")
 })
 public class Reply extends AbstractEntity /*implements Broadcastable */ {
 
@@ -67,7 +65,6 @@ public class Reply extends AbstractEntity /*implements Broadcastable */ {
     private QuestionInstance questionInstance;
 
     /**
-     *
      * @param a
      */
     @Override
@@ -98,15 +95,12 @@ public class Reply extends AbstractEntity /*implements Broadcastable */ {
     }
 
     /**
-     *
      * @PostPersist
      * @PostUpdate
-     * @PostRemove
-     * public void onUpdate() {
+     * @PostRemove public void onUpdate() {
      * this.getQuestionInstance().onInstanceUpdate();
      * }
-     * @Override
-     * public Map<String, List<AbstractEntity>> getEntities() {
+     * @Override public Map<String, List<AbstractEntity>> getEntities() {
      * return this.getQuestionInstance().getEntities();
      * }
      */
@@ -136,8 +130,8 @@ public class Reply extends AbstractEntity /*implements Broadcastable */ {
     /*
      * @return the unread
      */
+
     /**
-     *
      * @return
      */
     public Boolean getUnread() {
@@ -152,10 +146,6 @@ public class Reply extends AbstractEntity /*implements Broadcastable */ {
     }
 
     /**
-     *
-     * /
-     *
-     **
      * @return the startTime
      */
     public Long getStartTime() {
