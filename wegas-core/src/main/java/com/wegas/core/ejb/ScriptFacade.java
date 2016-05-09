@@ -29,6 +29,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.ObserverException;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
@@ -134,7 +135,7 @@ public class ScriptFacade {
         }
 
         try {
-            engine.put(ScriptEngine.FILENAME, script.getContent()); //@TODO: JAVA 8 filename in scope
+            engine.getContext().setAttribute(ScriptEngine.FILENAME, script.getContent(), ScriptContext.ENGINE_SCOPE);
             return engine.eval(script.getContent());
         } catch (ScriptException ex) {
             throw new WegasScriptException(script.getContent(), ex.getLineNumber(), ex.getMessage());
@@ -164,7 +165,7 @@ public class ScriptFacade {
         this.injectStaticScript(evt);
         for (Entry<String, GameModelContent> arg
                 : evt.getPlayer().getGameModel().getScriptLibrary().entrySet()) { // Inject the script library
-            evt.getEngine().put(ScriptEngine.FILENAME, "Server script " + arg.getKey()); //@TODO: JAVA 8 filename in scope
+            evt.getEngine().getContext().setAttribute(ScriptEngine.FILENAME, "Server script " + arg.getKey(), ScriptContext.ENGINE_SCOPE);
             try {
                 evt.getEngine().eval(arg.getValue().getContent());
             } catch (ScriptException ex) { // script exception (Java -> JS -> throw)
@@ -214,7 +215,7 @@ public class ScriptFacade {
         }
 
         for (String f : getJavaScriptsRecursively(root, files)) {
-            evt.getEngine().put(ScriptEngine.FILENAME, "Script file " + f); //@TODO: JAVA 8 filename in scope
+            evt.getEngine().getContext().setAttribute(ScriptEngine.FILENAME, "Script file " + f, ScriptContext.ENGINE_SCOPE);
             try {
 
                 java.io.FileInputStream fis = new FileInputStream(f);
