@@ -39,7 +39,6 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.naming.NamingException;
 import javax.persistence.NoResultException;
-import javax.persistence.Query;
 import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import java.util.*;
@@ -137,7 +136,7 @@ public class UserFacade extends BaseFacade<User> {
 
     @Override
     public void create(User user) {
-        AbstractAccount account = user.getMainAccount();
+//        AbstractAccount account = user.getMainAccount();
         /*
         // The following check is now done by caller UserController.signup()
         try {

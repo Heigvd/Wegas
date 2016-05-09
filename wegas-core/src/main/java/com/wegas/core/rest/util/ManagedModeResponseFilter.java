@@ -117,11 +117,11 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                 }
 
                 if (request.getMethod().equalsIgnoreCase("DELETE")) {
-                    updatedEntities = new ArrayList();
+                    updatedEntities = new ArrayList<>();
                     deletedEntities = entities;
                 } else {
                     updatedEntities = entities;
-                    deletedEntities = new ArrayList();
+                    deletedEntities = new ArrayList<>();
                 }
 
                 response.setStatus(HttpStatus.SC_OK);

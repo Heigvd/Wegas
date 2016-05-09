@@ -13,12 +13,12 @@ import javax.persistence.PersistenceException;
 import javax.transaction.RollbackException;
 import javax.transaction.TransactionRolledbackException;
 import javax.ws.rs.core.Response;
+
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 public abstract class AbstractExceptionMapper {
@@ -26,17 +26,15 @@ public abstract class AbstractExceptionMapper {
     final static private Logger logger = LoggerFactory.getLogger(AbstractExceptionMapper.class);
 
     /**
-     *
      * @param exception
      * @return
      */
     public static Response processException(Throwable exception) {
         logger.warn("ProcessException: " + exception);
 
-        if (exception instanceof RollbackException){
-           return Response.status(Response.Status.FORBIDDEN).entity(exception).build();
-       } else if (exception instanceof RollbackException
-                || exception instanceof TransactionRolledbackException
+        if (exception instanceof RollbackException) {
+            return Response.status(Response.Status.FORBIDDEN).entity(exception).build();
+        } else if (exception instanceof TransactionRolledbackException
                 || exception instanceof ObserverException
                 || exception instanceof PersistenceException
                 //                || exception instanceof javax.persistence.PersistenceException

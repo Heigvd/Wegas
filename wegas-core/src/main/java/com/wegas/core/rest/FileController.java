@@ -609,9 +609,7 @@ public class FileController {
         }
         if (fileDescriptor instanceof FileDescriptor) {
             ret = new BufferedInputStream(((FileDescriptor) fileDescriptor).getBase64Data(), 512);
-            if (connector != null) {
-                connector.save();
-            }
+            connector.save();
         }
         return ret;
     }

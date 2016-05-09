@@ -196,7 +196,7 @@ public class Helper {
     }
 
     public static void setNameAndLabelForResult(Result r,
-        List<String> usedNames, List<String> usedLabels) {
+                                                List<String> usedNames, List<String> usedLabels) {
         boolean hasLabel = !isNullOrEmpty(r.getLabel());
         boolean hasName = !isNullOrEmpty(r.getName());
         if (hasLabel && !hasName) {
@@ -383,7 +383,7 @@ public class Helper {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < array.length; ++i) {
             sb.append(Integer.toHexString((array[i]
-                & 0xFF) | 0x100).substring(1, 3));
+                    & 0xFF) | 0x100).substring(1, 3));
         }
         return sb.toString();
     }
@@ -395,7 +395,7 @@ public class Helper {
     public static String md5Hex(String message) {
         try {
             MessageDigest md
-                = MessageDigest.getInstance("MD5");
+                    = MessageDigest.getInstance("MD5");
             return hex(md.digest(message.getBytes("CP1252")));
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
         }
@@ -566,9 +566,6 @@ public class Helper {
         if (text == null) {
             return false;
         }
-        
-        String unescapedText = StringEscapeUtils.unescapeJava(text); // seems useless, nope ? 
-        
         return Pattern.compile(Pattern.quote(criteria), Pattern.CASE_INSENSITIVE).matcher(StringEscapeUtils.unescapeHtml4(text)).find();
     }
 
