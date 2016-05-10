@@ -22,6 +22,24 @@ public class ListUtils {
     }
 
     /**
+     * Clone a list, not its content
+     * @param list the list to clone
+     * @param <E> parametrized list type
+     * @return a new list with the same content as the original list
+     */
+    public static <E> List<E> clone(final List<E> list) {
+        List<E> newInstance;
+        try {
+            newInstance = list.getClass().newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            //fallback to ArrayList
+            newInstance = new ArrayList<>();
+        }
+        newInstance.addAll(list);
+        return newInstance;
+    }
+
+    /**
      * Convert a list of object to a map. The key is based on a unique
      * identifier.<br/> Example:
      * <pre>{@code
@@ -38,8 +56,8 @@ public class ListUtils {
      * @param key  ListKeyToMap object
      * @return Map
      */
-    public static <K, V> Map<K, V> listAsMap(Collection<V> list, ListKeyToMap<K, V> key) {
-        Map<K, V> map = new HashMap<>();
+    public static <K, V> Map<K, V> listAsMap(final Collection<V> list, final ListKeyToMap<K, V> key) {
+        final Map<K, V> map = new HashMap<>();
         for (V item : list) {
             map.put(key.getKey(item), item);
         }
@@ -83,10 +101,8 @@ public class ListUtils {
     public static <E extends AbstractEntity> List<E> mergeLists(List<E> oldList, List<E> newList, Updater callback) {
         List<E> newElements = new ArrayList<>();
         //do NOT modify newList
-        List<E> tmpList = new ArrayList<>();
-        tmpList.addAll(newList);
-        newList = tmpList;
-        for (Iterator<E> it = newList.iterator(); it.hasNext();) {                 //remove AbstractEntities without id and store them
+        newList = clone(newList);
+        for (Iterator<E> it = newList.iterator(); it.hasNext(); ) {                 //remove AbstractEntities without id and store them
             E element = it.next();
             if (element.getId() == null) {
                 newElements.add(element);
@@ -100,7 +116,7 @@ public class ListUtils {
             }
         };
         Map<Long, E> elementMap = ListUtils.listAsMap(newList, converter);      //Create a map with newList based on Ids
-        for (Iterator<E> it = oldList.iterator(); it.hasNext();) {
+        for (Iterator<E> it = oldList.iterator(); it.hasNext(); ) {
             E element = it.next();
             if (elementMap.containsKey(element.getId())) {                      //old element still exists
                 element.merge(elementMap.get(element.getId()));                 //Then merge them
@@ -112,7 +128,7 @@ public class ListUtils {
                 it.remove();                                                    //else remove that old element
             }
         }
-        for (Iterator<E> it = elementMap.values().iterator(); it.hasNext();) {  //Process remaining elements
+        for (Iterator<E> it = elementMap.values().iterator(); it.hasNext(); ) {  //Process remaining elements
             try {
                 E element = it.next();
                 E newElement = (E) element.getClass().newInstance();
@@ -159,7 +175,7 @@ public class ListUtils {
             }
         };
         Map<Long, E> elementMap = ListUtils.listAsMap(oldList, converter);      //Create a map with oldList based on Ids
-      //  oldList.clear();
+        //  oldList.clear();
         for (E element : newList) {
             if (elementMap.containsKey(element.getId())) {                      //old element still exists
                 elementMap.get(element.getId()).merge(element);                 //Then merge them

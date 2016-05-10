@@ -180,7 +180,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
             // GOTCHA no eventManager is instantiated
             logger.error("EventListener error (\"replySelect\")", e);
         }
-        return getEntityManager().find(Reply.class, reply.getId()); // Cache reply entity in that transaction
+        return reply;
     }
 
     /**
@@ -211,7 +211,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
             logger.error("EventListener error (\"replySelect\")", e);
         }
 
-        return getEntityManager().find(Reply.class, reply.getId()); // Cache reply entity in that transaction
+        return reply;
     }
 
     /**

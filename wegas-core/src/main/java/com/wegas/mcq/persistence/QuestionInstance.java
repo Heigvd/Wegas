@@ -7,23 +7,21 @@
  */
 package com.wegas.mcq.persistence;
 
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.VariableInstance;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.wegas.core.exception.client.WegasIncompatibleType;
-import static java.lang.Boolean.FALSE;
-import javax.persistence.OrderBy;
+import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.variable.VariableInstance;
 import org.eclipse.persistence.annotations.BatchFetch;
 import org.eclipse.persistence.annotations.BatchFetchType;
 
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.lang.Boolean.FALSE;
+
 /**
- *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
@@ -56,7 +54,6 @@ public class QuestionInstance extends VariableInstance {
     private Boolean validated = FALSE;
 
     /**
-     *
      * @param a
      */
     @Override
@@ -105,12 +102,12 @@ public class QuestionInstance extends VariableInstance {
     }
 
     /**
-     *
      * @param reply
      */
     public void addReply(Reply reply) {
         this.getReplies().add(reply);
         reply.setQuestionInstance(this);
+        this.setReplies(ListUtils.clone(this.getReplies()));
     }
 
     void removeReply(Reply reply) {
@@ -118,7 +115,6 @@ public class QuestionInstance extends VariableInstance {
     }
 
     /**
-     *
      * @param replies
      */
     public void addReplies(List<Reply> replies) {
@@ -142,6 +138,7 @@ public class QuestionInstance extends VariableInstance {
     }
 
     // *** Sugar *** //
+
     /**
      *
      */
@@ -171,7 +168,6 @@ public class QuestionInstance extends VariableInstance {
     }
 
     /**
-     *
      * @param index
      * @return
      */
