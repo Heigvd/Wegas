@@ -8,6 +8,7 @@
 package com.wegas.mcq.ejb;
 
 import com.wegas.core.ejb.AbstractEJBTest;
+import com.wegas.core.ejb.TestHelper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.game.Script;
@@ -137,11 +138,12 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         r.setImpact(new Script("mynumber.value = 10"));
         choice.addResult(r);
         vdf.createChild(question.getId(), choice);
-
+        TestHelper.wipeEmCache();
         final Reply reply = qdf.selectChoice(choice.getId(), player.getId());
         assertEquals(((NumberInstance)vif.find(myNumber.getId(), player.getId())).getValue(), 0, 0.0); // Nothing happened
         assertEquals(((QuestionInstance)vif.find(question.getId(), player.getId())).getReplies().size(), 1);
-        qdf.cancelReply(player.getId(), reply.getId());
+        final Reply reply1 = qdf.cancelReply(player.getId(), reply.getId());
+        assertEquals(0, reply1.getQuestionInstance().getReplies().size());
         assertEquals(((QuestionInstance)vif.find(question.getId(), player.getId())).getReplies().size(), 0);
         vdf.remove(question.getId());
     }
