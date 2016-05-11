@@ -230,7 +230,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
                 connector.cloneWorkspace(srcGameModel.getId());
                 newGameModel.setPages(srcGameModel.getPages());
             } catch (RepositoryException ex) {
-                logger.error("Duplicating repository {} failure", entityId, ex);
+                logger.error("Duplicating repository {} failure, {}", entityId, ex.getMessage());
             }
 
             return newGameModel;
@@ -269,7 +269,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         try (ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(gameModel.getId())) {
             connector.deleteWorkspace();
         } catch (RepositoryException ex) {
-            logger.error("Error suppressing repository {}", id, ex);
+            logger.error("Error suppressing repository {}, {}", id, ex.getMessage());
         }
     }
 
