@@ -14,6 +14,7 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
@@ -29,10 +30,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.ObserverException;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
+import javax.script.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -174,15 +172,83 @@ public class ScriptFacade {
                 throw new WegasScriptException("Server script " + arg.getKey(), ex.getMessage());
             }
         }
+//        injectNamedInstances(evt.getEngine(), evt.getPlayer().getGameModel());
+        injectRootNamedInstances(evt.getEngine(), evt.getPlayer());
+    }
 
-        for (VariableDescriptor vd
-                : evt.getPlayer().getGameModel().getChildVariableDescriptors()) { // Inject the variable instances in the script
-            VariableInstance vi = vd.getInstance(evt.getPlayer());
-            try {
-                evt.getEngine().put(vd.getName(), vi);
-            } catch (IllegalArgumentException ex) {
-                //logger.error("Missing name for Variable label [" + vd.getLabel() + "]");
+    /**
+     * Inject GameModel's named instance into engine's global scope.
+     * instance are available on their script alias
+     *
+     * @param engine    engine to populate
+     * @param gameModel GameModel containing variables to inject
+     * @throws WegasScriptException
+     */
+    private void injectNamedInstances(ScriptEngine engine, GameModel gameModel) throws WegasScriptException {
+        /**
+         * Fastest function I've found out to have every variables available on their name.
+         * Still needs some test
+         */
+        /*
+        (function(global){
+            function configFor(name) {
+                return {
+                    set:function(v){
+                        this.val = v;
+                        this.set = true;
+                    },
+                    get:function(){
+                        return this.set ? this.val : Variable.find(gameModel, name).getInstance(self);
+                    }
+                }
             }
+            for(var i in _distinctNames){
+                Object.defineProperty(global, _distinctNames[i], configFor(_distinctNames[i]))
+            }
+        })(this)
+        */
+
+        final List<String> distinctNames = variableDescriptorFacade.findDistinctNames(gameModel);
+        final ScriptContext ctx = new SimpleScriptContext();
+        ctx.setBindings(engine.getBindings(ScriptContext.ENGINE_SCOPE), ScriptContext.ENGINE_SCOPE);
+        final Bindings bindings = new SimpleBindings();
+        bindings.put("_distinctNames", distinctNames);
+        ctx.setBindings(bindings, ScriptContext.GLOBAL_SCOPE);
+        try {
+
+            engine.eval("(function(global){\n" +
+                    "    function configFor(name) {\n" +
+                    "        return {\n" +
+                    "            set:function(v){\n" +
+                    "                this.val = v;\n" +
+                    "                this.set = true;\n" +
+                    "            },\n" +
+                    "            get:function(){\n" +
+                    "                return this.set ? this.val : Variable.find(gameModel, name).getInstance(self);\n" +
+                    "            }\n" +
+                    "        }\n" +
+                    "    }\n" +
+                    "    for(var i in _distinctNames){\n" +
+                    "        Object.defineProperty(global, _distinctNames[i], configFor(_distinctNames[i]))\n" +
+                    "    }\n" +
+                    "})(this)", ctx);
+        } catch (ScriptException e) {
+            throw new WegasScriptException("Variables injection script failed", e.getMessage());
+        }
+    }
+
+    /**
+     * Inject GameModel's named root instance into engine's global scope.
+     * instance are available on their script alias
+     *
+     * @param engine engine to populate
+     * @param player Player to find instance from
+     */
+    private void injectRootNamedInstances(ScriptEngine engine, Player player) {
+        for (VariableDescriptor vd
+                : player.getGameModel().getChildVariableDescriptors()) { // Inject the variable instances in the script
+            VariableInstance vi = vd.getInstance(player);
+            engine.put(vd.getName(), vi);
         }
     }
 
