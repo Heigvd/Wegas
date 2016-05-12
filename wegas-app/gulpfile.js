@@ -3,7 +3,7 @@
 var gulp = require('gulp'),
     chug = require('gulp-chug'),
     uglify = require("gulp-uglify"),
-    minifycss = require('gulp-cssmin'),
+    minifycss = require('gulp-csso'),
     sourcemaps = require("gulp-sourcemaps"),
     rename = require("gulp-rename"),
     cache = require("gulp-cache"),
