@@ -23,8 +23,9 @@ public class ListUtils {
 
     /**
      * Clone a list, not its content
+     *
      * @param list the list to clone
-     * @param <E> parametrized list type
+     * @param <E>  parametrized list type
      * @return a new list with the same content as the original list
      */
     public static <E> List<E> clone(final List<E> list) {
@@ -37,6 +38,21 @@ public class ListUtils {
         }
         newInstance.addAll(list);
         return newInstance;
+    }
+
+    /**
+     * Clone a list and add N element to it.
+     *
+     * @param list    List to clone
+     * @param element vararg N element to add to the cloned list
+     * @param <E>     parametrized list type
+     * @return a new list with same content as the original list. element added
+     */
+    @SafeVarargs
+    public static <E> List<E> cloneAdd(final List<E> list, final E... element) {
+        final List<E> retList = clone(list);
+        Collections.addAll(retList, element);
+        return retList;
     }
 
     /**

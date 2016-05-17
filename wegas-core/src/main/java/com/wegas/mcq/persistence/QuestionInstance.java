@@ -105,9 +105,8 @@ public class QuestionInstance extends VariableInstance {
      * @param reply
      */
     public void addReply(Reply reply) {
-        this.getReplies().add(reply);
         reply.setQuestionInstance(this);
-        this.setReplies(ListUtils.clone(this.getReplies()));
+        this.setReplies(ListUtils.cloneAdd(this.getReplies(), reply));
     }
 
     void removeReply(Reply reply) {
