@@ -446,8 +446,8 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     //@PrePersist
     public void prePersist() {
         /*if (this.getScope() == null) {
-			this.setScope(new TeamScope());
-		}*/
+            this.setScope(new TeamScope());
+        }*/
     }
 
     /**
