@@ -8,6 +8,7 @@
 package com.wegas.resourceManagement.ejb;
 
 import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.ScriptEventFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
@@ -81,6 +82,9 @@ public class ResourceFacade {
     @Inject
     private ScriptEventFacade scriptEvent;
 
+    @Inject
+    private RequestManager requestManager;
+
     /**
      *
      * @param id
@@ -119,8 +123,8 @@ public class ResourceFacade {
         TaskDescriptor taskDescriptor = em.find(TaskDescriptor.class, taskDescriptorId);
         ResourceInstance resourceInstance = em.find(ResourceInstance.class, resourceId);
         Query query = em.createNamedQuery("Assignment.findByResourceInstanceAndTaskDescriptor").
-            setParameter("resourceInstance", resourceInstance).
-            setParameter("taskDescriptor", taskDescriptor);
+                setParameter("resourceInstance", resourceInstance).
+                setParameter("taskDescriptor", taskDescriptor);
         return (Assignment) query.getSingleResult();
     }
 
@@ -235,8 +239,8 @@ public class ResourceFacade {
      * @return
      */
     public Occupation addOccupation(Long resourceInstanceId,
-        Boolean editable,
-        double time) {
+            Boolean editable,
+            double time) {
         ResourceInstance resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstanceId);
         Occupation newOccupation = new Occupation(time);
         newOccupation.setEditable(editable);
@@ -280,7 +284,10 @@ public class ResourceFacade {
      * @return
      */
     public TaskInstance plan(Long playerId, Long taskInstanceId, Integer period) {
-        return plan(playerFacade.find(playerId), taskInstanceId, period);
+        Player player = playerFacade.find(playerId);
+        TaskInstance ti = findTaskInstance(taskInstanceId);
+        requestManager.lock("TaskPlan-" + ti.getAudience());
+        return plan(player, taskInstanceId, period);
     }
 
     /**
@@ -309,7 +316,10 @@ public class ResourceFacade {
      * @return
      */
     public TaskInstance unplan(Long playerId, Long taskInstanceId, Integer period) {
-        return this.unplan(playerFacade.find(playerId), taskInstanceId, period);
+        Player player = playerFacade.find(playerId);
+        TaskInstance ti = findTaskInstance(taskInstanceId);
+        requestManager.lock("TaskPlan-" + ti.getAudience());
+        return this.unplan(player, taskInstanceId, period);
     }
 
     /**
@@ -319,7 +329,6 @@ public class ResourceFacade {
      */
     public void descriptorRevivedEvent(@Observes DescriptorRevivedEvent event) throws WegasNoResultException {
         logger.debug("Received DescriptorRevivedEvent event");
-
         if (event.getEntity() instanceof TaskDescriptor) {
             TaskDescriptor task = (TaskDescriptor) event.getEntity();
             Double duration = task.getDefaultInstance().getDuration();
