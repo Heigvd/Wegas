@@ -246,7 +246,7 @@
                                     <version>${project.version}</version>
                                     <type>war</type>
                                     <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
-                                    <excludes>WEB-INF,META-INF</excludes>
+                                    <excludes>WEB-INF/**,META-INF/**</excludes>
                                 </artifactItem>
                             </artifactItems>
                             <overWriteSnapshots>true</overWriteSnapshots>
