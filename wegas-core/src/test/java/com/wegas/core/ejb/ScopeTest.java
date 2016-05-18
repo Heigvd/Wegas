@@ -20,20 +20,20 @@ import static org.junit.Assert.assertEquals;
  */
 public class ScopeTest extends AbstractEJBTest {
 
-	@Test
-	public void createVariableTest() throws NamingException {
+    @Test
+    public void createVariableTest() throws NamingException {
 
-		final TeamFacade tf = lookupBy(TeamFacade.class);
-		final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
-		final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
+        final TeamFacade tf = lookupBy(TeamFacade.class);
+        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
 
-		final NumberDescriptor myNumber = new NumberDescriptor();
-		myNumber.setName("mynumber");
-		myNumber.setDefaultInstance(new NumberInstance(0));
-		vdf.create(gameModel.getId(), myNumber);
+        final NumberDescriptor myNumber = new NumberDescriptor();
+        myNumber.setName("mynumber");
+        myNumber.setDefaultInstance(new NumberInstance(0));
+        vdf.create(gameModel.getId(), myNumber);
 
-		team = tf.find(team.getId());
-		team.getPrivateInstances();
-		assertEquals(1, team.getPrivateInstances().size());
-	}
+        team = tf.find(team.getId());
+        team.getPrivateInstances();
+        assertEquals(1, team.getPrivateInstances().size());
+    }
 }

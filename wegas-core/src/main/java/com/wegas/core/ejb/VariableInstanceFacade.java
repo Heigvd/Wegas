@@ -71,7 +71,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
      * @return
      */
     public VariableInstance find(Long variableDescriptorId,
-        Player player) {
+            Player player) {
         VariableDescriptor vd = variableDescriptorFacade.find(variableDescriptorId);
         return vd.getInstance(player);
     }
@@ -83,7 +83,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
      * @return
      */
     public VariableInstance find(Long variableDescriptorId,
-        Long playerId) {
+            Long playerId) {
         return this.find(variableDescriptorId, playerFacade.find(playerId));
     }
 
@@ -168,7 +168,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
      * @throws NoPlayerException
      */
     public Player findAPlayer(VariableInstance instance)
-        throws NoPlayerException {
+            throws NoPlayerException {
         Player p;
         try {
             if (instance.getScope() instanceof PlayerScope) {
@@ -231,7 +231,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
      * @return
      */
     public VariableInstance update(Long variableDescriptorId,
-        Long playerId, VariableInstance variableInstance) {
+            Long playerId, VariableInstance variableInstance) {
 
         VariableDescriptor vd = variableDescriptorFacade.find(variableDescriptorId);
         VariableInstance vi = vd.getScope().getVariableInstance(playerFacade.find(playerId));
@@ -255,7 +255,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
     @Override
     public void remove(VariableInstance entity) {
         getEntityManager().remove(entity);
-/*
+        /*
         if (entity.getPlayerScopeKey() != null) {
             Player find = playerFacade.find(entity.getPlayerScopeKey());
             find.getPrivateInstances().remove(entity);
@@ -268,7 +268,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
         } else if (entity.getGameModelScope() != null) {
             //find.getPrivateInstances().remove(entity);
         }
-*/
+         */
         entity.getScope().getVariableInstances().remove(entity.getId());
     }
 

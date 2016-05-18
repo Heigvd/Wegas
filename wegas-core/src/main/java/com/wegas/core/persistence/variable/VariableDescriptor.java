@@ -51,461 +51,461 @@ import java.util.Map;
 @Inheritance(strategy = InheritanceType.JOINED)
 //@EntityListeners({GmVariableDescriptorListener.class})
 @Table(uniqueConstraints = {
-	@UniqueConstraint(columnNames = {"gamemodel_gamemodelid", "name"}) // Name has to be unique for the whole game model
+    @UniqueConstraint(columnNames = {"gamemodel_gamemodelid", "name"}) // Name has to be unique for the whole game model
 // @UniqueConstraint(columnNames = {"variabledescriptor_id", "name"})           // Name has to be unique within a list
 // @UniqueConstraint(columnNames = {"rootgamemodel_id", "name"})                // Names have to be unique at the base of a game model (root elements)
 }, indexes = {
-	@Index(columnList = "defaultinstance_variableinstance_id"),
-	@Index(columnList = "items_variabledescriptor_id"),
-	@Index(columnList = "rootgamemodel_id"),
-	@Index(columnList = "dtype")
+    @Index(columnList = "defaultinstance_variableinstance_id"),
+    @Index(columnList = "items_variabledescriptor_id"),
+    @Index(columnList = "rootgamemodel_id"),
+    @Index(columnList = "dtype")
 })
 @NamedQueries({
-	@NamedQuery(
-			name = "VariableDescriptor.findByRootGameModelId",
-			query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.gameModel AS gm WHERE gm.id = :gameModelId"
-	),
-	@NamedQuery(
-			name = "VariableDescriptor.findByGameModelAndName",
-			query = "SELECT vd FROM VariableDescriptor vd where vd.gameModel = :gameModel AND vd.name LIKE :name"
-	)
+    @NamedQuery(
+            name = "VariableDescriptor.findByRootGameModelId",
+            query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.gameModel AS gm WHERE gm.id = :gameModelId"
+    ),
+    @NamedQuery(
+            name = "VariableDescriptor.findByGameModelAndName",
+            query = "SELECT vd FROM VariableDescriptor vd where vd.gameModel = :gameModel AND vd.name LIKE :name"
+    )
 })
 @JsonSubTypes(value = {
-	@JsonSubTypes.Type(name = "ListDescriptor", value = ListDescriptor.class),
-	@JsonSubTypes.Type(name = "StringDescriptor", value = StringDescriptor.class),
-	@JsonSubTypes.Type(name = "TextDescriptor", value = TextDescriptor.class),
-	@JsonSubTypes.Type(name = "BooleanDescriptor", value = BooleanDescriptor.class),
-	@JsonSubTypes.Type(name = "NumberDescriptor", value = NumberDescriptor.class),
-	@JsonSubTypes.Type(name = "InboxDescriptor", value = InboxDescriptor.class),
-	@JsonSubTypes.Type(name = "FSMDescriptor", value = StateMachineDescriptor.class),
-	@JsonSubTypes.Type(name = "ResourceDescriptor", value = ResourceDescriptor.class),
-	@JsonSubTypes.Type(name = "TaskDescriptor", value = TaskDescriptor.class),
-	@JsonSubTypes.Type(name = "QuestionDescriptor", value = QuestionDescriptor.class),
-	@JsonSubTypes.Type(name = "ChoiceDescriptor", value = ChoiceDescriptor.class),
-	@JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class),
-	@JsonSubTypes.Type(name = "ObjectDescriptor", value = ObjectDescriptor.class),
-	@JsonSubTypes.Type(name = "PeerReviewDescriptor", value = PeerReviewDescriptor.class),
-	@JsonSubTypes.Type(name = "BurndownDescriptor", value = BurndownDescriptor.class)
+    @JsonSubTypes.Type(name = "ListDescriptor", value = ListDescriptor.class),
+    @JsonSubTypes.Type(name = "StringDescriptor", value = StringDescriptor.class),
+    @JsonSubTypes.Type(name = "TextDescriptor", value = TextDescriptor.class),
+    @JsonSubTypes.Type(name = "BooleanDescriptor", value = BooleanDescriptor.class),
+    @JsonSubTypes.Type(name = "NumberDescriptor", value = NumberDescriptor.class),
+    @JsonSubTypes.Type(name = "InboxDescriptor", value = InboxDescriptor.class),
+    @JsonSubTypes.Type(name = "FSMDescriptor", value = StateMachineDescriptor.class),
+    @JsonSubTypes.Type(name = "ResourceDescriptor", value = ResourceDescriptor.class),
+    @JsonSubTypes.Type(name = "TaskDescriptor", value = TaskDescriptor.class),
+    @JsonSubTypes.Type(name = "QuestionDescriptor", value = QuestionDescriptor.class),
+    @JsonSubTypes.Type(name = "ChoiceDescriptor", value = ChoiceDescriptor.class),
+    @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class),
+    @JsonSubTypes.Type(name = "ObjectDescriptor", value = ObjectDescriptor.class),
+    @JsonSubTypes.Type(name = "PeerReviewDescriptor", value = PeerReviewDescriptor.class),
+    @JsonSubTypes.Type(name = "BurndownDescriptor", value = BurndownDescriptor.class)
 })
 abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity implements Searchable, LabelledEntity, Broadcastable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 *
-	 */
-	@Lob
-	@JsonView(value = Views.EditorI.class)
-	@Column(name = "Descriptor_comments")
-	private String comments;
+    /**
+     *
+     */
+    @Lob
+    @JsonView(value = Views.EditorI.class)
+    @Column(name = "Descriptor_comments")
+    private String comments;
 
-	/**
-	 * Here we cannot use type T, otherwise jpa won't handle the db ref
-	 * correctly
-	 */
-	@OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, optional = false)
-	@JsonView(value = Views.EditorExtendedI.class)
-	private VariableInstance defaultInstance;
+    /**
+     * Here we cannot use type T, otherwise jpa won't handle the db ref
+     * correctly
+     */
+    @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, optional = false)
+    @JsonView(value = Views.EditorExtendedI.class)
+    private VariableInstance defaultInstance;
 
-	/**
-	 *
-	 */
-	//@JsonBackReference
-	@ManyToOne
-	@JoinColumn
-	//@CacheIndex
-	private GameModel gameModel;
+    /**
+     *
+     */
+    //@JsonBackReference
+    @ManyToOne
+    @JoinColumn
+    //@CacheIndex
+    private GameModel gameModel;
 
-	/**
-	 *
-	 */
-	@Id
-	@Column(name = "variabledescriptor_id")
-	@GeneratedValue
-	@JsonView(Views.IndexI.class)
-	private Long id;
+    /**
+     *
+     */
+    @Id
+    @Column(name = "variabledescriptor_id")
+    @GeneratedValue
+    @JsonView(Views.IndexI.class)
+    private Long id;
 
-	@ManyToOne
-	@JoinColumn(name = "items_variabledescriptor_id")
-	@JsonIgnore
-	private ListDescriptor parentList;
+    @ManyToOne
+    @JoinColumn(name = "items_variabledescriptor_id")
+    @JsonIgnore
+    private ListDescriptor parentList;
 
-	@ManyToOne
-	@JoinColumn(name = "rootgamemodel_id")
-	@JsonIgnore
-	private GameModel rootGameModel;
+    @ManyToOne
+    @JoinColumn(name = "rootgamemodel_id")
+    @JsonIgnore
+    private GameModel rootGameModel;
 
-	/**
-	 *
-	 */
-	//@JsonView(Views.EditorI.class)
-	private String label;
+    /**
+     *
+     */
+    //@JsonView(Views.EditorI.class)
+    private String label;
 
-	/*
+    /*
      * @OneToOne(cascade = CascadeType.ALL) @NotNull @JoinColumn(name
      * ="SCOPE_ID", unique = true, nullable = false, insertable = true,
      * updatable = true)
-	 */
-	//@BatchFetch(BatchFetchType.JOIN)
-	//@JsonManagedReference
-	@OneToOne(cascade = {CascadeType.ALL}, orphanRemoval = true, optional = false)
-	@JoinFetch
-	@JsonView(value = Views.WithScopeI.class)
-	private AbstractScope scope;
+     */
+    //@BatchFetch(BatchFetchType.JOIN)
+    //@JsonManagedReference
+    @OneToOne(cascade = {CascadeType.ALL}, orphanRemoval = true, optional = false)
+    @JoinFetch
+    @JsonView(value = Views.WithScopeI.class)
+    private AbstractScope scope;
 
-	/**
-	 * Title displayed in the for the player, should be removed from variable
-	 * descriptor and placed in the required entities (MCQQuestionDrescriptor,
-	 * TriggerDescriptor, aso)
-	 */
-	@Column(name = "editorLabel")
-	private String title;
+    /**
+     * Title displayed in the for the player, should be removed from variable
+     * descriptor and placed in the required entities (MCQQuestionDrescriptor,
+     * TriggerDescriptor, aso)
+     */
+    @Column(name = "editorLabel")
+    private String title;
 
-	/**
-	 *
-	 */
-	//@JsonView(Views.EditorExtendedI.class)
-	@NotNull
-	@Basic(optional = false)
-	//@CacheIndex
-	protected String name;
+    /**
+     *
+     */
+    //@JsonView(Views.EditorExtendedI.class)
+    @NotNull
+    @Basic(optional = false)
+    //@CacheIndex
+    protected String name;
 
-	/**
-	 *
-	 */
-	//@ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-	//@JoinTable(joinColumns = {
-	//    @JoinColumn(referencedColumnName = "variabledescriptor_id")},
-	//        inverseJoinColumns = {
-	//    @JoinColumn(referencedColumnName = "tag_id")})
-	//@XmlTransient
-	//private List<Tag> tags;
-	/**
-	 *
-	 */
-	public VariableDescriptor() {
-	}
+    /**
+     *
+     */
+    //@ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    //@JoinTable(joinColumns = {
+    //    @JoinColumn(referencedColumnName = "variabledescriptor_id")},
+    //        inverseJoinColumns = {
+    //    @JoinColumn(referencedColumnName = "tag_id")})
+    //@XmlTransient
+    //private List<Tag> tags;
+    /**
+     *
+     */
+    public VariableDescriptor() {
+    }
 
-	/**
-	 * @param name
-	 */
-	public VariableDescriptor(String name) {
-		this.name = name;
-	}
+    /**
+     * @param name
+     */
+    public VariableDescriptor(String name) {
+        this.name = name;
+    }
 
-	/**
-	 * @param name
-	 * @param defaultInstance
-	 */
-	public VariableDescriptor(String name, T defaultInstance) {
-		this.name = name;
-		this.defaultInstance = defaultInstance;
-	}
+    /**
+     * @param name
+     * @param defaultInstance
+     */
+    public VariableDescriptor(String name, T defaultInstance) {
+        this.name = name;
+        this.defaultInstance = defaultInstance;
+    }
 
-	/**
-	 * @param defaultInstance
-	 */
-	public VariableDescriptor(T defaultInstance) {
-		this.defaultInstance = defaultInstance;
-	}
+    /**
+     * @param defaultInstance
+     */
+    public VariableDescriptor(T defaultInstance) {
+        this.defaultInstance = defaultInstance;
+    }
 
-	/**
-	 * @return
-	 */
-	public String getComments() {
-		return comments;
-	}
+    /**
+     * @return
+     */
+    public String getComments() {
+        return comments;
+    }
 
-	/**
-	 * @param comments
-	 */
-	public void setComments(String comments) {
-		this.comments = comments;
-	}
+    /**
+     * @param comments
+     */
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
 
-	/**
-	 * @return the defaultInstance
-	 */
-	public T getDefaultInstance() {
-		return (T) defaultInstance;
-	}
+    /**
+     * @return the defaultInstance
+     */
+    public T getDefaultInstance() {
+        return (T) defaultInstance;
+    }
 
-	/**
-	 * @param defaultInstance the defaultValue to set
-	 */
-	public void setDefaultInstance(T defaultInstance) {
-		this.defaultInstance = defaultInstance;
-		if (this.defaultInstance != null) {
-			this.defaultInstance.setDefaultDescriptor(this);
-		}
-	}
+    /**
+     * @param defaultInstance the defaultValue to set
+     */
+    public void setDefaultInstance(T defaultInstance) {
+        this.defaultInstance = defaultInstance;
+        if (this.defaultInstance != null) {
+            this.defaultInstance.setDefaultDescriptor(this);
+        }
+    }
 
-	/**
-	 * @return
-	 */
-	@JsonIgnore
-	public GameModel getGameModel() {
-		return this.gameModel;
-	}
+    /**
+     * @return
+     */
+    @JsonIgnore
+    public GameModel getGameModel() {
+        return this.gameModel;
+    }
 
-	/**
-	 * @param gameModel
-	 */
-	public void setGameModel(GameModel gameModel) {
-		this.gameModel = gameModel;
-	}
+    /**
+     * @param gameModel
+     */
+    public void setGameModel(GameModel gameModel) {
+        this.gameModel = gameModel;
+    }
 
-	@JsonIgnore
-	public GameModel getRootGameModel() {
-		return rootGameModel;
-	}
+    @JsonIgnore
+    public GameModel getRootGameModel() {
+        return rootGameModel;
+    }
 
-	public void setRootGameModel(GameModel rootGameModel) {
-		this.rootGameModel = rootGameModel;
-		if (this.rootGameModel != null) {
-			this.setParentList(null);
-		}
-	}
+    public void setRootGameModel(GameModel rootGameModel) {
+        this.rootGameModel = rootGameModel;
+        if (this.rootGameModel != null) {
+            this.setParentList(null);
+        }
+    }
 
-	public ListDescriptor getParentList() {
-		return parentList;
-	}
+    public ListDescriptor getParentList() {
+        return parentList;
+    }
 
-	public void setParentList(ListDescriptor parentList) {
-		this.parentList = parentList;
-		if (this.parentList != null) {
-			this.setRootGameModel(null);
-		}
-	}
+    public void setParentList(ListDescriptor parentList) {
+        this.parentList = parentList;
+        if (this.parentList != null) {
+            this.setRootGameModel(null);
+        }
+    }
 
-	@JsonIgnore
-	public DescriptorListI<? extends VariableDescriptor> getParent() {
-		if (parentList != null) {
-			return parentList;
-		} else if (rootGameModel != null) {
-			return rootGameModel;
-		} else {
-			throw new WegasNotFoundException("ORPHAN DESCRIPTOR");
-		}
-	}
+    @JsonIgnore
+    public DescriptorListI<? extends VariableDescriptor> getParent() {
+        if (parentList != null) {
+            return parentList;
+        } else if (rootGameModel != null) {
+            return rootGameModel;
+        } else {
+            throw new WegasNotFoundException("ORPHAN DESCRIPTOR");
+        }
+    }
 
-	@JsonView(Views.IndexI.class)
-	public Long getParentDescriptorId() {
-		try {
-			return this.getParent().getId();
-		} catch (WegasNotFoundException e) {
-			return null;
-		}
-	}
+    @JsonView(Views.IndexI.class)
+    public Long getParentDescriptorId() {
+        try {
+            return this.getParent().getId();
+        } catch (WegasNotFoundException e) {
+            return null;
+        }
+    }
 
-	public void setParentDescriptorId(Long id) {
-		// nothing to do
-	}
+    public void setParentDescriptorId(Long id) {
+        // nothing to do
+    }
 
-	/**
-	 * @return
-	 */
-	@JsonIgnore
-	public int getGameModelId() {
-		return this.gameModel.getId().intValue();
-	}
+    /**
+     * @return
+     */
+    @JsonIgnore
+    public int getGameModelId() {
+        return this.gameModel.getId().intValue();
+    }
 
-	/**
-	 * @return
-	 */
-	@Override
-	public Long getId() {
-		return id;
-	}
+    /**
+     * @return
+     */
+    @Override
+    public Long getId() {
+        return id;
+    }
 
-	/**
-	 * @param player
-	 * @return
-	 */
-	public T getInstance(Player player) {
-		return (T) this.getScope().getVariableInstance(player);
-	}
+    /**
+     * @param player
+     * @return
+     */
+    public T getInstance(Player player) {
+        return (T) this.getScope().getVariableInstance(player);
+    }
 
-	/**
-	 * @return
-	 */
-	@JsonIgnore
-	public T getInstance() {
-		return (T) this.getScope().getInstance();
-	}
+    /**
+     * @return
+     */
+    @JsonIgnore
+    public T getInstance() {
+        return (T) this.getScope().getInstance();
+    }
 
-	/**
-	 * @param defaultInstance
-	 * @param player
-	 * @return
-	 */
-	@JsonIgnore
-	public T getInstance(Boolean defaultInstance, Player player) {
-		if (defaultInstance) {
-			return this.getDefaultInstance();
-		} else {
-			return this.getInstance(player);
-		}
-	}
+    /**
+     * @param defaultInstance
+     * @param player
+     * @return
+     */
+    @JsonIgnore
+    public T getInstance(Boolean defaultInstance, Player player) {
+        if (defaultInstance) {
+            return this.getDefaultInstance();
+        } else {
+            return this.getInstance(player);
+        }
+    }
 
-	/**
-	 * @return the label
-	 */
-	@Override
-	public String getLabel() {
-		return label;
-	}
+    /**
+     * @return the label
+     */
+    @Override
+    public String getLabel() {
+        return label;
+    }
 
-	/**
-	 * @param label the label to set
-	 */
-	@Override
-	public void setLabel(String label) {
-		this.label = label;
-	}
+    /**
+     * @param label the label to set
+     */
+    @Override
+    public void setLabel(String label) {
+        this.label = label;
+    }
 
-	/**
-	 * @return
-	 */
-	@Override
-	public String getName() {
-		return name;
-	}
+    /**
+     * @return
+     */
+    @Override
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * @param name
-	 */
-	@Override
-	public void setName(String name) {
-		this.name = name;
-	}
+    /**
+     * @param name
+     */
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	/**
-	 * @return the scope
-	 */
-	public AbstractScope getScope() {
-		return scope;
-	}
+    /**
+     * @return the scope
+     */
+    public AbstractScope getScope() {
+        return scope;
+    }
 
-	/**
-	 * @param scope the scope to set
-	 * @fixme here we cannot use managed references since this.class is
-	 * abstract.
-	 */
-	//@JsonManagedReference
-	public void setScope(AbstractScope scope) {
-		this.scope = scope;
-		if (scope != null) {
-			scope.setVariableDescscriptor(this);
-		}
-	}
+    /**
+     * @param scope the scope to set
+     * @fixme here we cannot use managed references since this.class is
+     * abstract.
+     */
+    //@JsonManagedReference
+    public void setScope(AbstractScope scope) {
+        this.scope = scope;
+        if (scope != null) {
+            scope.setVariableDescscriptor(this);
+        }
+    }
 
-	/**
-	 * @return title
-	 */
-	public String getTitle() {
-		return title;
-	}
+    /**
+     * @return title
+     */
+    public String getTitle() {
+        return title;
+    }
 
-	/**
-	 * @param title
-	 */
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    /**
+     * @param title
+     */
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-	/**
-	 * @param a
-	 */
-	@Override
-	public void merge(AbstractEntity a) {
-		if (a instanceof VariableDescriptor) {
-			try {
-				super.merge(a);
-				VariableDescriptor other = (VariableDescriptor) a;
-				this.setName(other.getName());
-				this.setLabel(other.getLabel());
-				this.setTitle(other.getTitle());
-				this.setComments(other.getComments());
-				this.getDefaultInstance().merge(other.getDefaultInstance());
-				if (other.getScope() != null) {
-					this.getScope().setBroadcastScope(other.getScope().getBroadcastScope());
-				}
-			} catch (PersistenceException pe) {
-				throw WegasErrorMessage.error("The name is already in use");
-			}
-			//this.scope.merge(vd.getScope());
-		} else {
-			throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-		}
-	}
+    /**
+     * @param a
+     */
+    @Override
+    public void merge(AbstractEntity a) {
+        if (a instanceof VariableDescriptor) {
+            try {
+                super.merge(a);
+                VariableDescriptor other = (VariableDescriptor) a;
+                this.setName(other.getName());
+                this.setLabel(other.getLabel());
+                this.setTitle(other.getTitle());
+                this.setComments(other.getComments());
+                this.getDefaultInstance().merge(other.getDefaultInstance());
+                if (other.getScope() != null) {
+                    this.getScope().setBroadcastScope(other.getScope().getBroadcastScope());
+                }
+            } catch (PersistenceException pe) {
+                throw WegasErrorMessage.error("The name is already in use");
+            }
+            //this.scope.merge(vd.getScope());
+        } else {
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
+        }
+    }
 
-	/**
-	 *
-	 */
-	//@PrePersist
-	public void prePersist() {
-		/*if (this.getScope() == null) {
+    /**
+     *
+     */
+    //@PrePersist
+    public void prePersist() {
+        /*if (this.getScope() == null) {
 			this.setScope(new TeamScope());
 		}*/
-	}
+    }
 
-	/**
-	 * @param context allow to circumscribe the propagation within the given
-	 * context. It may be an instance of GameModel, Game, Team, or Player
-	 */
-	public void propagateDefaultInstance(AbstractEntity context) {
-		int sFlag = 0;
-		if (scope instanceof GameModelScope) { // gms
-			sFlag = 4;
-		} else if (scope instanceof GameScope) { // gs
-			sFlag = 3;
-		} else if (scope instanceof TeamScope) { // ts
-			sFlag = 2;
-		} else if (scope instanceof PlayerScope) { // ps
-			sFlag = 1;
-		}
+    /**
+     * @param context allow to circumscribe the propagation within the given
+     * context. It may be an instance of GameModel, Game, Team, or Player
+     */
+    public void propagateDefaultInstance(AbstractEntity context) {
+        int sFlag = 0;
+        if (scope instanceof GameModelScope) { // gms
+            sFlag = 4;
+        } else if (scope instanceof GameScope) { // gs
+            sFlag = 3;
+        } else if (scope instanceof TeamScope) { // ts
+            sFlag = 2;
+        } else if (scope instanceof PlayerScope) { // ps
+            sFlag = 1;
+        }
 
-		if ((context == null) // no-context
-				|| (context instanceof GameModel) // gm ctx -> do not skip anything
-				|| (context instanceof Game && sFlag < 4) // g ctx -> skip gms
-				|| (context instanceof Team && sFlag < 3) // t ctx -> skip gms, gs
-				|| (context instanceof Player && sFlag < 2)) { // p ctx -> skip gms, gs, ts
-			scope.propagateDefaultInstance(context);
-		}
-	}
+        if ((context == null) // no-context
+                || (context instanceof GameModel) // gm ctx -> do not skip anything
+                || (context instanceof Game && sFlag < 4) // g ctx -> skip gms
+                || (context instanceof Team && sFlag < 3) // t ctx -> skip gms, gs
+                || (context instanceof Player && sFlag < 2)) { // p ctx -> skip gms, gs, ts
+            scope.propagateDefaultInstance(context);
+        }
+    }
 
-	@Override
-	public Map<String, List<AbstractEntity>> getEntities() {
-		Map<String, List<AbstractEntity>> map = new HashMap<>();
-		ArrayList<AbstractEntity> entities = new ArrayList<>();
-		entities.add(this);
-		//logger.error("CHANNEL TOKEN: " + Helper.getAudienceToken(this.getGameModel()));
-		map.put(Helper.getAudienceToken(this.getGameModel()), entities);
-		return map;
-	}
+    @Override
+    public Map<String, List<AbstractEntity>> getEntities() {
+        Map<String, List<AbstractEntity>> map = new HashMap<>();
+        ArrayList<AbstractEntity> entities = new ArrayList<>();
+        entities.add(this);
+        //logger.error("CHANNEL TOKEN: " + Helper.getAudienceToken(this.getGameModel()));
+        map.put(Helper.getAudienceToken(this.getGameModel()), entities);
+        return map;
+    }
 
-	/**
-	 * @param criterias
-	 * @return
-	 */
-	@Override
-	public Boolean containsAll(final List<String> criterias) {
-		Boolean found = Helper.insensitiveContainsAll(this.getName(), criterias)
-				|| Helper.insensitiveContainsAll(this.getLabel(), criterias)
-				|| Helper.insensitiveContainsAll(this.getTitle(), criterias)
-				|| Helper.insensitiveContainsAll(this.getComments(), criterias);
-		if (!found && (this.getDefaultInstance() instanceof Searchable)) {
-			return ((Searchable) this.getDefaultInstance()).containsAll(criterias);
-		}
-		return found;
-	}
+    /**
+     * @param criterias
+     * @return
+     */
+    @Override
+    public Boolean containsAll(final List<String> criterias) {
+        Boolean found = Helper.insensitiveContainsAll(this.getName(), criterias)
+                || Helper.insensitiveContainsAll(this.getLabel(), criterias)
+                || Helper.insensitiveContainsAll(this.getTitle(), criterias)
+                || Helper.insensitiveContainsAll(this.getComments(), criterias);
+        if (!found && (this.getDefaultInstance() instanceof Searchable)) {
+            return ((Searchable) this.getDefaultInstance()).containsAll(criterias);
+        }
+        return found;
+    }
 
-	/**
-	 * @return
-	 */
-	@Override
-	public String toString() {
-		return this.getClass().getSimpleName() + "( " + getId() + ", " + this.getName() + ")";
-	}
+    /**
+     * @return
+     */
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + "( " + getId() + ", " + this.getName() + ")";
+    }
 }

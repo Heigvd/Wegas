@@ -33,114 +33,114 @@ import org.slf4j.LoggerFactory;
 @JsonPropertyOrder(value = {"@class", "id", "name"})
 public class GameModelScope extends AbstractScope {
 
-	private static final long serialVersionUID = 1L;
-	private static final Logger logger = LoggerFactory.getLogger(GameModelScope.class);
-	/**
-	 *
-	 */
-	@OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
-	//@XmlTransient
-	@JsonIgnore
-	private VariableInstance variableInstance;
+    private static final long serialVersionUID = 1L;
+    private static final Logger logger = LoggerFactory.getLogger(GameModelScope.class);
+    /**
+     *
+     */
+    @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    //@XmlTransient
+    @JsonIgnore
+    private VariableInstance variableInstance;
 
-	/**
-	 *
-	 */
-	//@PrePersist
-	public void prePersist() {
-		//this.propagateDefaultInstance(null);
-	}
+    /**
+     *
+     */
+    //@PrePersist
+    public void prePersist() {
+        //this.propagateDefaultInstance(null);
+    }
 
-	@Override
-	protected void propagate(GameModel gameModel) {
-		VariableDescriptor vd = this.getVariableDescriptor();
-		VariableInstance vi = this.getVariableInstance();
-		if (vi == null) {
-			VariableInstance clone = vd.getDefaultInstance().clone();
-			this.setVariableInstance(Long.valueOf(0), clone);
-		} else {
-			vi.merge(vd.getDefaultInstance());
-		}
-	}
+    @Override
+    protected void propagate(GameModel gameModel) {
+        VariableDescriptor vd = this.getVariableDescriptor();
+        VariableInstance vi = this.getVariableInstance();
+        if (vi == null) {
+            VariableInstance clone = vd.getDefaultInstance().clone();
+            this.setVariableInstance(Long.valueOf(0), clone);
+        } else {
+            vi.merge(vd.getDefaultInstance());
+        }
+    }
 
-	/**
-	 *
-	 * @param context
-	 */
-	@JsonIgnore
-	@Override
-	public void propagateDefaultInstance(AbstractEntity context) {
-		if (context instanceof Player) {
-			// Since player's gamemodel already exists, nothing to propagate
-		} else if (context instanceof Team) {
-			// Since team's gamemodel already exists, nothing to propagate
-		} else if (context instanceof Game) {
-			// Since game's gamemodel already exists, nothing to propagate
-		} else {
-			propagate(getVariableDescriptor().getGameModel());
-		}
-	}
+    /**
+     *
+     * @param context
+     */
+    @JsonIgnore
+    @Override
+    public void propagateDefaultInstance(AbstractEntity context) {
+        if (context instanceof Player) {
+            // Since player's gamemodel already exists, nothing to propagate
+        } else if (context instanceof Team) {
+            // Since team's gamemodel already exists, nothing to propagate
+        } else if (context instanceof Game) {
+            // Since game's gamemodel already exists, nothing to propagate
+        } else {
+            propagate(getVariableDescriptor().getGameModel());
+        }
+    }
 
-	/**
-	 *
-	 * @return
-	 */
-	@Override
-	public Map<Long, VariableInstance> getVariableInstances() {
-		Map<Long, VariableInstance> ret = new HashMap<>();
-		ret.put(Long.valueOf("0"), getVariableInstance());
-		return ret;
-	}
+    /**
+     *
+     * @return
+     */
+    @Override
+    public Map<Long, VariableInstance> getVariableInstances() {
+        Map<Long, VariableInstance> ret = new HashMap<>();
+        ret.put(Long.valueOf("0"), getVariableInstance());
+        return ret;
+    }
 
-	/**
-	 *
-	 * @param a
-	 */
-	@Override
-	public void merge(AbstractEntity a) {
-	}
+    /**
+     *
+     * @param a
+     */
+    @Override
+    public void merge(AbstractEntity a) {
+    }
 
-	/**
-	 *
-	 * @param player
-	 * @return
-	 */
-	@Override
-	public VariableInstance getVariableInstance(Player player) {
-		return this.variableInstance;
-	}
+    /**
+     *
+     * @param player
+     * @return
+     */
+    @Override
+    public VariableInstance getVariableInstance(Player player) {
+        return this.variableInstance;
+    }
 
-	/**
-	 *
-	 * @param userId
-	 * @param v
-	 */
-	@Override
-	public void setVariableInstance(Long userId, VariableInstance v) {
-		this.setVariableInstance(v);
-		v.setGameModelScope(this);
-	}
+    /**
+     *
+     * @param userId
+     * @param v
+     */
+    @Override
+    public void setVariableInstance(Long userId, VariableInstance v) {
+        this.setVariableInstance(v);
+        v.setGameModelScope(this);
+    }
 
-	/**
-	 * @return the variableInstance
-	 */
-	//@XmlTransient
-	@JsonIgnore
-	public VariableInstance getVariableInstance() {
-		return variableInstance;
-	}
+    /**
+     * @return the variableInstance
+     */
+    //@XmlTransient
+    @JsonIgnore
+    public VariableInstance getVariableInstance() {
+        return variableInstance;
+    }
 
-	/**
-	 * @param variableInstance the variableInstance to set
-	 */
-	//@XmlTransient
-	@JsonIgnore
-	public void setVariableInstance(VariableInstance variableInstance) {
-		this.variableInstance = variableInstance;
-	}
+    /**
+     * @param variableInstance the variableInstance to set
+     */
+    //@XmlTransient
+    @JsonIgnore
+    public void setVariableInstance(VariableInstance variableInstance) {
+        this.variableInstance = variableInstance;
+    }
 
-	@Override
-	public Map<Long, VariableInstance> getPrivateInstances() {
-		return this.getVariableInstances();
-	}
+    @Override
+    public Map<Long, VariableInstance> getPrivateInstances() {
+        return this.getVariableInstances();
+    }
 }
