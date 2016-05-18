@@ -20,6 +20,7 @@ import javax.persistence.*;
 ////import javax.xml.bind.annotation.XmlTransient;
 //import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wegas.core.persistence.ListUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,108 +32,114 @@ import org.slf4j.LoggerFactory;
 //@XmlType(name = "TeamScope")
 public class TeamScope extends AbstractScope {
 
-    private static final long serialVersionUID = 1L;
-    private static final Logger logger = LoggerFactory.getLogger(TeamScope.class.getName());
-    /*
+	private static final long serialVersionUID = 1L;
+	private static final Logger logger = LoggerFactory.getLogger(TeamScope.class.getName());
+	/*
      * FIXME Here we should use Team reference and add a key deserializer
      * module. @JoinTable(joinColumns = @JoinColumn(name = "teamscope_id",
      * referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name =
      * "variableinstance_id", referencedColumnName = "variableinstance_id"))
-     */
-    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "teamScope")
-    @JoinColumn(name = "teamscope_id", referencedColumnName = "id")
-    //@XmlTransient
-    @JsonIgnore
-    private Map<Long, VariableInstance> teamVariableInstances = new HashMap<>();
+	 */
+	@OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "teamScope")
+	@JoinColumn(name = "teamscope_id", referencedColumnName = "id")
+	//@XmlTransient
+	@JsonIgnore
+	private Map<Long, VariableInstance> teamVariableInstances = new HashMap<>();
 
-    /**
-     *
-     * @return
-     */
-    @Override
-    public Map<Long, VariableInstance> getVariableInstances() {
-        return this.teamVariableInstances;
-    }
+	/**
+	 *
+	 * @return
+	 */
+	@Override
+	public Map<Long, VariableInstance> getVariableInstances() {
+		return this.teamVariableInstances;
+	}
 
-    /**
-     *
-     * @param player
-     * @return
-     */
-    @Override
-    public VariableInstance getVariableInstance(Player player) {
-        return this.getVariableInstances().get(player.getTeam().getId());
-    }
+	public void setVariableInstances(Map<Long, VariableInstance> teamVariableInstances) {
+		this.teamVariableInstances = teamVariableInstances;
+	}
 
-    @Override
-    public Map<Long, VariableInstance> getPrivateInstances() {
-        Map<Long, VariableInstance> ret = new HashMap<>();
-        Player cPlayer = RequestFacade.lookup().getPlayer();
+	/**
+	 *
+	 * @param player
+	 * @return
+	 */
+	@Override
+	public VariableInstance getVariableInstance(Player player) {
+		return this.getVariableInstances().get(player.getTeam().getId());
+	}
 
-        if (cPlayer != null) {
-            if (this.getBroadcastScope().equals(GameScope.class.getSimpleName())) {
-                for (Team t : cPlayer.getGame().getTeams()) {
-                    ret.put(t.getId(), this.getVariableInstances().get(t.getId()));
-                }
-            } else {
-                ret.put(cPlayer.getTeam().getId(), this.getVariableInstance(cPlayer));
-            }
-        }
-        return ret;
-    }
+	@Override
+	public Map<Long, VariableInstance> getPrivateInstances() {
+		Map<Long, VariableInstance> ret = new HashMap<>();
+		Player cPlayer = RequestFacade.lookup().getPlayer();
 
-    /**
-     *
-     * @param teamId
-     * @param v
-     */
-    @Override
-    public void setVariableInstance(Long teamId, VariableInstance v) {
-        this.getVariableInstances().put(teamId, v);
-        v.setTeamScopeKey(teamId);
-        v.setTeamScope(this);
-    }
+		if (cPlayer != null) {
+			if (this.getBroadcastScope().equals(GameScope.class.getSimpleName())) {
+				for (Team t : cPlayer.getGame().getTeams()) {
+					ret.put(t.getId(), this.getVariableInstances().get(t.getId()));
+				}
+			} else {
+				ret.put(cPlayer.getTeam().getId(), this.getVariableInstance(cPlayer));
+			}
+		}
+		return ret;
+	}
 
-    /**
-     *
-     */
-    @PrePersist
-    public void prePersist() {
-        this.propagateDefaultInstance(null);
-    }
+	/**
+	 *
+	 * @param teamId
+	 * @param v
+	 */
+	@Override
+	public void setVariableInstance(Long teamId, VariableInstance v) {
+		this.getVariableInstances().put(teamId, v);
+		v.setTeamScopeKey(teamId);
+		v.setTeamScope(this);
+	}
 
-    @Override
-    protected void propagate(Team t) {
-        VariableDescriptor vd = this.getVariableDescriptor();
-        VariableInstance vi = this.getVariableInstances().get(t.getId());
-        if (vi == null) {
-            VariableInstance clone = vd.getDefaultInstance().clone();
-            t.getPrivateInstances().add(clone);
-            this.setVariableInstance(t.getId(), clone);
-        } else {
-            vi.merge(vd.getDefaultInstance());
-        }
-    }
+	/**
+	 *
+	 */
+	@PrePersist
+	public void prePersist() {
+		this.propagateDefaultInstance(null);
+	}
 
-    @Override
-    public void propagateDefaultInstance(AbstractEntity context) {
-        //logger.info("Propagating default instance for VariableDescriptor: {}", this.getVariableDescriptor());
-        if (context instanceof Player) {
-            // No need to propagate since the team already exists
-        } else if (context instanceof Team) {
-            propagate((Team) context);
-        } else if (context instanceof Game) {
-            propagate((Game) context);
-        } else {
-            propagate(getVariableDescriptor().getGameModel());
-        }
-    }
+	@Override
+	protected void propagate(Team t) {
+		VariableDescriptor vd = this.getVariableDescriptor();
+		VariableInstance vi = this.getVariableInstances().get(t.getId());
+		if (vi == null) {
+			VariableInstance newInstance = vd.getDefaultInstance().clone();
 
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
-    }
+			t.setPrivateInstance(ListUtils.cloneAdd(t.getPrivateInstances(), newInstance));
+			this.setVariableInstance(t.getId(), newInstance);
+
+		} else {
+			vi.merge(vd.getDefaultInstance());
+		}
+	}
+
+	@Override
+	public void propagateDefaultInstance(AbstractEntity context) {
+		//logger.info("Propagating default instance for VariableDescriptor: {}", this.getVariableDescriptor());
+		if (context instanceof Player) {
+			// No need to propagate since the team already exists
+		} else if (context instanceof Team) {
+			propagate((Team) context);
+		} else if (context instanceof Game) {
+			propagate((Game) context);
+		} else {
+			propagate(getVariableDescriptor().getGameModel());
+		}
+	}
+
+	/**
+	 *
+	 * @param a
+	 */
+	@Override
+	public void merge(AbstractEntity a) {
+	}
 }
