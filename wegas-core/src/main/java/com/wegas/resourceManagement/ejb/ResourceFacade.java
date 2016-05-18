@@ -82,8 +82,8 @@ public class ResourceFacade {
 	@Inject
 	private ScriptEventFacade scriptEvent;
 
-	@Inject
-	private RequestManager requestManager;
+	/*@Inject
+	private RequestManager requestManager;*/
 
 	/**
 	 *
@@ -339,8 +339,8 @@ public class ResourceFacade {
 	 */
 	public TaskInstance plan(Long playerId, Long taskInstanceId, Integer period) {
 		Player player = playerFacade.find(playerId);
-		TaskInstance ti = findTaskInstance(taskInstanceId);
-		requestManager.lock("TaskPlan-" + ti.getAudience());
+		//TaskInstance ti = findTaskInstance(taskInstanceId);
+		//requestManager.lock("TaskPlan-" + ti.getAudience());
 		return plan(player, taskInstanceId, period);
 	}
 
@@ -371,8 +371,8 @@ public class ResourceFacade {
 	 */
 	public TaskInstance unplan(Long playerId, Long taskInstanceId, Integer period) {
 		Player player = playerFacade.find(playerId);
-		TaskInstance ti = findTaskInstance(taskInstanceId);
-		requestManager.lock("TaskPlan-" + ti.getAudience());
+		//TaskInstance ti = findTaskInstance(taskInstanceId);
+		//requestManager.lock("TaskPlan-" + ti.getAudience());
 		return this.unplan(player, taskInstanceId, period);
 	}
 
