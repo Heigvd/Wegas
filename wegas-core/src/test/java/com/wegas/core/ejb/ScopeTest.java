@@ -26,7 +26,6 @@ public class ScopeTest extends AbstractEJBTest {
 		final TeamFacade tf = lookupBy(TeamFacade.class);
 		final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
 		final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
-		
 
 		final NumberDescriptor myNumber = new NumberDescriptor();
 		myNumber.setName("mynumber");

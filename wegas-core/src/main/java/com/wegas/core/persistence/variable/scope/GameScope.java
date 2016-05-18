@@ -20,9 +20,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import javax.persistence.PrePersist;
-////import javax.xml.bind.annotation.XmlTransient;
-//import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.persistence.game.Team;
 import org.slf4j.Logger;
@@ -48,9 +45,9 @@ public class GameScope extends AbstractScope {
     /**
      *
      */
-    @PrePersist
+    //@PrePersist
     public void prePersist() {
-        this.propagateDefaultInstance(null);
+        //this.propagateDefaultInstance(null);
     }
 
     @Override

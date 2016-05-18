@@ -101,9 +101,9 @@ public class TeamScope extends AbstractScope {
 	/**
 	 *
 	 */
-	@PrePersist
+	//@PrePersist
 	public void prePersist() {
-		this.propagateDefaultInstance(null);
+		//this.propagateDefaultInstance(null);
 	}
 
 	@Override
@@ -112,8 +112,8 @@ public class TeamScope extends AbstractScope {
 		VariableInstance vi = this.getVariableInstances().get(t.getId());
 		if (vi == null) {
 			VariableInstance newInstance = vd.getDefaultInstance().clone();
-
-			t.setPrivateInstance(ListUtils.cloneAdd(t.getPrivateInstances(), newInstance));
+			//t.setPrivateInstance(ListUtils.cloneAdd(t.getPrivateInstances(), newInstance));
+			t.getPrivateInstances().add(newInstance);
 			this.setVariableInstance(t.getId(), newInstance);
 
 		} else {

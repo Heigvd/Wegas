@@ -10,6 +10,7 @@ package com.wegas.core.persistence.variable.scope;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
@@ -18,8 +19,6 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.*;
-////import javax.xml.bind.annotation.XmlTransient;
-//import javax.xml.bind.annotation.XmlType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,9 +75,9 @@ public class PlayerScope extends AbstractScope {
     /**
      *
      */
-    @PrePersist
+    //@PrePersist
     public void prePersist() {
-        this.propagateDefaultInstance(null);
+        //this.propagateDefaultInstance(null);
     }
 
     /**
