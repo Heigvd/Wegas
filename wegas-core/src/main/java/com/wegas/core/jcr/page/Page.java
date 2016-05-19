@@ -21,7 +21,7 @@ import javax.jcr.RepositoryException;
 import java.io.IOException;
 
 /**
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 //@XmlRootElement
 public class Page {

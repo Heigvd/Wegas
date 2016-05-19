@@ -12,7 +12,7 @@ import com.wegas.core.persistence.AbstractEntity;
 
 /**
  * LifeCycleEvent, fired before entity has been removed
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class PreEntityRemoved<T extends AbstractEntity> extends LifeCycleEvent<T> {
 

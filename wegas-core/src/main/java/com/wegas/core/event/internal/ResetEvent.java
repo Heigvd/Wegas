@@ -18,7 +18,7 @@ import java.util.List;
 
 /**
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class ResetEvent implements Serializable {
 

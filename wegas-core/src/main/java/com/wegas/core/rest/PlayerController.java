@@ -26,7 +26,7 @@ import javax.ws.rs.core.Response;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
 @Path("GameModel/{gameModelId : ([1-9][0-9]*)?}{sep: /?}Game/{gameId : ([1-9][0-9]*)?}{sep2: /?}Team/{teamId : [1-9][0-9]*}/Player")

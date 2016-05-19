@@ -24,7 +24,7 @@ import java.util.Calendar;
 ////import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 //@XmlRootElement
 public class FileDescriptor extends AbstractContentDescriptor {

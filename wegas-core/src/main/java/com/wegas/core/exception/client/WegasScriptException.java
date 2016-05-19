@@ -9,7 +9,7 @@ package com.wegas.core.exception.client;
 
 /**
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class WegasScriptException extends WegasRuntimeException {
 

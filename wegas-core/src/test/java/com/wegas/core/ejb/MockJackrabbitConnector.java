@@ -13,7 +13,7 @@ import javax.inject.Singleton;
 
 /**
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 //@Specializes
 @Singleton

@@ -36,7 +36,7 @@ import javax.persistence.PersistenceContext;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
 @Path("GameModel/{gameModelId : ([1-9][0-9]*)?}{sep: /?}Game/")

@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  *
  * @param <T>
  * @param <U>
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

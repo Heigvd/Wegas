@@ -32,7 +32,7 @@ import javax.ejb.DependsOn;
 
 //import javax.annotation.PostConstruct;
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Named("RequestManager")
 @RequestScoped

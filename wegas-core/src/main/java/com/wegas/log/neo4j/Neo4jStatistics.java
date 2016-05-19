@@ -24,7 +24,7 @@ import javax.ws.rs.core.MediaType;
  * be shown on screen.
  *
  * @author Gérald Eberle
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Stateless
 @Path("Statistics")

@@ -15,7 +15,7 @@ import org.apache.shiro.subject.SimplePrincipalCollection;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class FacebookAuthenticationInfo implements AuthenticationInfo {
 

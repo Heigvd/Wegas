@@ -26,7 +26,7 @@ import javax.enterprise.event.Observes;
 import java.util.List;
 
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
 @LocalBean
@@ -78,7 +78,7 @@ public class MessageFacade extends BaseFacade<Message> {
      * @param subject
      * @param body
      * @param from
-     * @return
+     * @return sent message
      */
     public Message send(Player p, String subject, String body, String from) {
         Message msg = new Message();
@@ -95,7 +95,8 @@ public class MessageFacade extends BaseFacade<Message> {
      * @param body
      * @param from
      * @param attachements
-     * @return
+     * @return sent message
+     *
      */
     public Message send(Player p, String subject, String body, String from, List<String> attachements) {
         Message msg = new Message();

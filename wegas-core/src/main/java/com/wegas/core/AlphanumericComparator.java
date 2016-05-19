@@ -12,7 +12,7 @@ import java.util.Comparator;
 
 /**
  * @param <T> the type of objects that may be compared by this comparator
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class AlphanumericComparator<T extends CharSequence> implements Comparator<T>, Serializable {
 

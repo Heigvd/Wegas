@@ -31,7 +31,7 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
 @LocalBean
@@ -78,8 +78,8 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      *
      * @param choiceDescriptor
      * @param name
-     * @return
-     * @throws WegasNoResultException
+     * @return the given ChoiceDescriptor Result that matches the name
+     * @throws WegasNoResultException if not found
      */
     public Result findResult(final ChoiceDescriptor choiceDescriptor, final String name) throws WegasNoResultException {
         final TypedQuery<Result> query = getEntityManager().createNamedQuery("Result.findByName", Result.class);
@@ -114,8 +114,8 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
                     throw WegasErrorMessage.error("Error while setting current result");
                 }
             } else if (defaultInstance.getCurrentResultIndex() != null
-                && defaultInstance.getCurrentResultIndex() >= 0
-                && defaultInstance.getCurrentResultIndex() < choice.getResults().size()) {
+                    && defaultInstance.getCurrentResultIndex() >= 0
+                    && defaultInstance.getCurrentResultIndex() < choice.getResults().size()) {
 
                 Result cr = choice.getResults().get(defaultInstance.getCurrentResultIndex());
                 //defaultInstance.setCurrentResult(cr);
@@ -138,7 +138,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     /**
      * @param replyId
      * @param r
-     * @return
+     * @return the updated reply
      */
     public Reply updateReply(Long replyId, Reply r) {
         final Reply oldEntity = this.findReply(replyId);
@@ -147,8 +147,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     }
 
     /**
-     * @return
-     * @deprecated @param instanceId
+     * @return @deprecated @param instanceId
      */
     public int findReplyCount(Long instanceId) {
         final Query query = getEntityManager().createQuery("SELECT COUNT(r) FROM Reply r WHERE r.questionInstance.id = :id");
@@ -161,9 +160,11 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     }
 
     /**
+     * Create an ignoration Reply
+     *
      * @param choiceId
      * @param player
-     * @return
+     * @return new reply
      */
     public Reply ignoreChoice(Long choiceId, Player player) {
 
@@ -184,10 +185,12 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     }
 
     /**
-     * @param choiceId
-     * @param player
-     * @param startTime
-     * @return
+     * create a reply for given player based on given choice
+     *
+     * @param choiceId selected choice
+     * @param player player who select the choice
+     * @param startTime time the player select the choice
+     * @return the new reply
      */
     public Reply selectChoice(Long choiceId, Player player, Long startTime) {
 
@@ -197,7 +200,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         if (questionDescriptor.getCbx() && !questionDescriptor.getAllowMultipleReplies()) {
             for (Reply r : questionDescriptor.getInstance(player).getReplies()) {
                 if (!r.getResult().getChoiceDescriptor().equals(choice)
-                    && !r.getIgnored()) {
+                        && !r.getIgnored()) {
                     this.cancelReply(player.getId(), r.getId());
                 }
             }
@@ -215,28 +218,35 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     }
 
     /**
+     * {@link #selectChoice(java.lang.Long, java.lang.Long, java.lang.Long) selectChoice}
+     * with startTime = 0
+     *
      * @param choiceId
      * @param playerId
-     * @return
+     * @return the new reply
      */
     public Reply selectChoice(Long choiceId, Long playerId) {
         return this.selectChoice(choiceId, playerFacade.find(playerId), (long) 0);
     }
 
     /**
-     * @param choiceId
-     * @param playerId
-     * @param startTime
-     * @return
+     * @param choiceId selected choice id
+     * @param playerId id of player who select the choice
+     * @param startTime time the player select the choice
+     * @return the new reply
      */
     public Reply selectChoice(Long choiceId, Long playerId, Long startTime) {
         return this.selectChoice(choiceId, playerFacade.find(playerId), startTime);
     }
 
     /**
-     * @param choiceId
-     * @param playerId
-     * @return
+     *
+     * {@link #selectChoice(java.lang.Long, com.wegas.core.persistence.game.Player, java.lang.Long)  selectChoice} + {@link #validateReply(com.wegas.core.persistence.game.Player, java.lang.Long)  validateReply}
+     * in one shot
+     *
+     * @param choiceId selected choice id
+     * @param playerId id of player who select the choice
+     * @return the new validated reply
      */
     public Reply selectAndValidateChoice(Long choiceId, Long playerId) {
         Player player = playerFacade.find(playerId);
@@ -252,9 +262,10 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     }
 
     /**
-     * @param playerId
-     * @param replyId
-     * @return
+     *
+     * @param playerId id of player who wants to cancel the reply
+     * @param replyId id of reply to cancel
+     * @return reply being canceled
      */
     public Reply cancelReplyTransactional(Long playerId, Long replyId) {
         Reply reply = questionSingleton.cancelReplyTransactional(playerId, replyId);
@@ -267,9 +278,9 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     }
 
     /**
-     * @param playerId
-     * @param replyId
-     * @return
+     * @param playerId id of player who wants to cancel the reply
+     * @param replyId id of reply to cancel
+     * @return reply being canceled
      */
     public Reply cancelReply(Long playerId, Long replyId) {
         return this.cancelReplyTransactional(playerId, replyId);
@@ -321,8 +332,8 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
 
     /**
      * Validates a question that's marked as checkbox type: sequentially
-     * validates all replies (i.e. selected choices)
-     * and processes all other choices as "ignored".
+     * validates all replies (i.e. selected choices) and processes all other
+     * choices as "ignored".
      *
      * @param validateQuestion
      * @param player
@@ -446,9 +457,8 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         }
     }
 
-
     /**
-     * @return
+     * @return looked-up EJB
      */
     public static QuestionDescriptorFacade lookup() {
         try {

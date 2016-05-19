@@ -41,7 +41,7 @@ import java.util.*;
 import java.util.Map.Entry;
 
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
 @LocalBean

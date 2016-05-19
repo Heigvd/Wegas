@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
 /**
  *
  * @deprecated since it's the default behaviour, no needed anymore
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})

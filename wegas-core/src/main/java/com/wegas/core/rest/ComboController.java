@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * This servlet allows to retrieve several resources in a single request. Used
  * to combine .js and .css files.
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  * @todo Resulting files should be cached. For example check
  * https://github.com/smaring/javascript-combo-service/blob/master/src/main/java/org/maring/util/js/JavascriptComboService.java
  */

@@ -23,7 +23,7 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 
 /**
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Stateless
 @Path("Download")

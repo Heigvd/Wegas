@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * @see com.wegas.core.ejb.RequestManager . Available view are "Index",
  * "Public", "Private" and "Export", "Editor" and "PrivatEditor"
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Provider
 @PreMatching

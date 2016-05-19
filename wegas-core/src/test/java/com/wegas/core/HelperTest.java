@@ -12,7 +12,7 @@ import org.junit.*;
 
 /**
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class HelperTest {
 

@@ -44,7 +44,7 @@ import javax.persistence.PersistenceContext;
 /**
  * Run state machines.
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Stateless
 @LocalBean

@@ -23,7 +23,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Entity
 @NamedQueries({

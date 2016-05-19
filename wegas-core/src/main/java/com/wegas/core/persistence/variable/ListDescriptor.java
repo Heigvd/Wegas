@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 @NamedQuery(name = "ListDescriptor.findDistinctChildrenLabels",

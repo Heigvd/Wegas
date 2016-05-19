@@ -31,7 +31,7 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Provider
 public class ManagedModeResponseFilter implements ContainerResponseFilter {

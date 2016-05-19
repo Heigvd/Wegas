@@ -13,7 +13,7 @@ import java.util.Comparator;
 /**
  * Sort Content
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class ContentComparator implements Comparator<AbstractContentDescriptor>, Serializable {
 

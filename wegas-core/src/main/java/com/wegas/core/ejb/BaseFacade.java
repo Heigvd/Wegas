@@ -20,8 +20,8 @@ import javax.persistence.criteria.Root;
  * This is the default implementation of the AbstractFacade pattern defined in
  * Wegas, to be extended.
  *
- * @param <T>
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @param <T> AbstractEntity subclass to template this facade
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFacade<T> {
 
@@ -29,15 +29,16 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
     private EntityManager em;
 
     /**
+     * get the entity manager
      *
-     * @return
+     * @return the wegasPU entityManager
      */
     protected EntityManager getEntityManager() {
         return em;
     }
 
     /**
-     *
+     * the Class the facade manage
      */
     final Class<T> entityClass;
 
@@ -50,7 +51,7 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
     }
 
     /**
-     *
+     * EntityManager Flush
      */
     @Override
     public void flush() {
@@ -58,8 +59,9 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
     }
 
     /**
+     * Refresh an entity. Reload it from DB and revert any uncommitted change
      *
-     * @param entity
+     * @param entity the entity to refresh
      */
     public void refresh(final T entity) {
         getEntityManager().flush();
@@ -78,7 +80,7 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
      *
      * @param entityId
      * @param entity
-     * @return
+     * @return the very updated entity
      */
     @Override
     public T update(final Long entityId, final T entity) {
@@ -88,9 +90,10 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
     }
 
     /**
+     * Merge the given entity
      *
      * @param entity
-     * @return
+     * @return the merged entity
      */
     public T merge(final T entity) {
         this.getEntityManager().merge(entity);
@@ -103,8 +106,8 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
      * serializing it back.
      *
      * @param entityId
-     * @return
      * @throws IOException
+     * @return a copy of entity identified by entityId
      */
     @Override
     public T duplicate(final Long entityId) throws IOException {
@@ -115,6 +118,7 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
     }
 
     /**
+     * Destroy entity identify by entityId
      *
      * @param entityId
      */
@@ -125,8 +129,10 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
 
     /**
      *
-     * @param entityId
-     * @return
+     * find T instance by id
+     *
+     * @param entityId id to look for
+     * @return entity matching given id
      */
     @Override
     public T find(final Long entityId) {
@@ -134,8 +140,9 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
     }
 
     /**
+     * Find all entities which are instanceof T
      *
-     * @return
+     * @return all instances of type T
      */
     @Override
     public List<T> findAll() {
@@ -145,9 +152,11 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
     }
 
     /**
+     * Just like findAll but paginate the output
      *
-     * @param range
-     * @return
+     * @param range int array containing two elements... it's quite ugly...
+     * @return all entities matching the range filter
+     * @deprecated 
      */
     @Override
     public List<T> findRange(int[] range) {
@@ -160,8 +169,9 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
     }
 
     /**
+     * How many entity of T type exists ?
      *
-     * @return
+     * @return the total number of entity of type T
      */
     @Override
     public int count() {

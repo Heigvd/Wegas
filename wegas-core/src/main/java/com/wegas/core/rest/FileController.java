@@ -42,7 +42,7 @@ import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipOutputStream;
 
 /**
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Stateless
 @Path("GameModel/{gameModelId : ([1-9][0-9]*)?}/File")

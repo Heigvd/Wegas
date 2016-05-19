@@ -18,9 +18,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.Broadcastable;
-import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -95,14 +92,9 @@ public class Activity extends AbstractAssignement /*implements Broadcastable */ 
 
     /**
      *
-     * @param taskDescriptor
-     *                       public Activity(TaskDescriptor taskDescriptor) {
-     *                       this.taskDescriptor = taskDescriptor;
-     *                       this.time = 0D;
-     *                       this.completion = 0.0D;
-     *                       this.description = "";
-     *                       this.requirement = null;
-     *                       }
+     * @param taskDescriptor public Activity(TaskDescriptor taskDescriptor) {
+     * this.taskDescriptor = taskDescriptor; this.time = 0D; this.completion =
+     * 0.0D; this.description = ""; this.requirement = null; }
      */
     /**
      *
@@ -172,7 +164,7 @@ public class Activity extends AbstractAssignement /*implements Broadcastable */ 
 
     /**
      *
-     * @return
+     * @return id of the task descriptor this activity is linked to
      */
     public Long getTaskDescriptorId() {
         return this.getTaskDescriptor().getId();

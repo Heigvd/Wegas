@@ -32,8 +32,8 @@ import java.util.Map;
 })
 @NamedQueries({
     @NamedQuery(
-        name = "Assignment.findByResourceInstanceAndTaskDescriptor",
-        query = "SELECT a FROM Assignment a where a.resourceInstance = :resourceInstance AND a.taskDescriptor = :taskDescriptor"
+            name = "Assignment.findByResourceInstanceAndTaskDescriptor",
+            query = "SELECT a FROM Assignment a where a.resourceInstance = :resourceInstance AND a.taskDescriptor = :taskDescriptor"
     )
 })
 @Entity
@@ -89,27 +89,6 @@ public class Assignment extends AbstractAssignement /*implements Broadcastable *
         }
     }
 
-    /*
-     @PostPersist
-     @PostUpdate
-     @PostRemove
-     private void onUpdate() {
-     this.getResourceInstance().onInstanceUpdate();
-     }
-     */
-    /**
-     *
-     * @return parent resource entities or null if assignment has been removed
-     * @todo do no use other entity through this method...
-     * @Override
-     * public Map<String, List<AbstractEntity>> getEntities() {
-     * if (this.getResourceInstance() != null) {
-     * return this.getResourceInstance().getEntities();
-     * } else {
-     * return null;
-     * }
-     * }
-     */
     @Override
     public Long getId() {
         return this.id;
@@ -135,7 +114,7 @@ public class Assignment extends AbstractAssignement /*implements Broadcastable *
 
     /**
      *
-     * @return
+     * @return id of the task descriptor this assignment is linked to
      */
     public Long getTaskDescriptorId() {
         return this.getTaskDescriptor().getId();

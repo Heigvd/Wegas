@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Implementation specific garbageCollector
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Startup
 @Singleton

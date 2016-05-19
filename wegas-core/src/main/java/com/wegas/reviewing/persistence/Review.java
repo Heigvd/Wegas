@@ -111,7 +111,7 @@ public class Review extends AbstractEntity implements Broadcastable {
     /**
      * get Review status
      *
-     * @return
+     * @return current review status
      */
     public ReviewState getReviewState() {
         return reviewState;

@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Yannick Lagger <lagger.yannick@gmail.com>
+ * @author Yannick Lagger (lagger.yannick.com)
  */
 @Stateless
 @Path("Pusher/")

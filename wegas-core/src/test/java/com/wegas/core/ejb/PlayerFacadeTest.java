@@ -19,7 +19,7 @@ import org.junit.Test;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class PlayerFacadeTest extends AbstractEJBTest {
 

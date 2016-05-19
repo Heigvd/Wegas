@@ -86,12 +86,12 @@ public class Iteration extends AbstractEntity implements Broadcastable {
     @JsonIgnore
     @ManyToMany
     @JoinTable(name = "iteration_taskdescriptor",
-        joinColumns = {
-            @JoinColumn(name = "iteration_id", referencedColumnName = "id")
-        },
-        inverseJoinColumns = {
-            @JoinColumn(name = "tasks_variabledescriptor_id", referencedColumnName = "variabledescriptor_id")
-        }
+            joinColumns = {
+                @JoinColumn(name = "iteration_id", referencedColumnName = "id")
+            },
+            inverseJoinColumns = {
+                @JoinColumn(name = "tasks_variabledescriptor_id", referencedColumnName = "variabledescriptor_id")
+            }
     )
     private List<TaskDescriptor> tasks;
 
@@ -155,7 +155,7 @@ public class Iteration extends AbstractEntity implements Broadcastable {
      * Get the total iteration workloads as it was on the beginning of the
      * iteration
      *
-     * @return
+     * @return iteration total workload
      */
     public Double getTotalWorkload() {
         return totalWorkload;
@@ -174,7 +174,7 @@ public class Iteration extends AbstractEntity implements Broadcastable {
      * get the workload for each iteration period period number are relative to
      * beginAt attribute
      *
-     * @return
+     * @return planned workload, mapped by relative period number
      */
     public Map<Long, Double> getPlannedWorkloads() {
         return plannedWorkloads;
@@ -192,7 +192,7 @@ public class Iteration extends AbstractEntity implements Broadcastable {
     /**
      * get effective workload (for past and current periods)
      *
-     * @return
+     * @return get effective workloads (ie. work done by resources)
      */
     public List<Workload> getWorkloads() {
         return workloads;
@@ -242,7 +242,7 @@ public class Iteration extends AbstractEntity implements Broadcastable {
     /**
      * retrieve the list of tasks composing the iteration
      *
-     * @return
+     * @return get all tasks
      */
     public List<TaskDescriptor> getTasks() {
         return tasks;

@@ -24,7 +24,7 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
 
 /**
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class ContentConnector implements AutoCloseable {
 

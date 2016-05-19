@@ -10,7 +10,7 @@ package com.wegas.core.persistence;
 import java.util.*;
 
 /**
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class ListUtils {
 

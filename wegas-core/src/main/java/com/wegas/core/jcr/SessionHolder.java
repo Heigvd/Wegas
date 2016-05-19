@@ -20,7 +20,7 @@ import javax.jcr.SimpleCredentials;
 
 /**
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Singleton
 @DependsOn("JackrabbitConnector")

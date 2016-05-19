@@ -18,7 +18,7 @@ import static java.lang.Boolean.FALSE;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 //@XmlType(name = "InboxDescriptor")
@@ -37,8 +37,9 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
     private Boolean capped = FALSE;
 
     /**
+     * Merge descriptor
      *
-     * @param a
+     * @param a descriptor to read value from
      */
     @Override
     public void merge(AbstractEntity a) {
@@ -74,16 +75,17 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
     public void setCapped(Boolean capped) {
         this.capped = capped;
     }
+
     /**
      *
      * Sugar to be used from scripts.
      *
-     * @param p
-     * @param from
-     * @param subject
-     * @param body
-     * @return {
-     * @see Message} The sent message
+     * @param p message recipient
+     * @param from sender
+     * @param subject message subject
+     * @param body message body
+     * @return The sent message
+     * @see Message
      */
     public Message sendMessage(Player p, String from, String subject, String body) {
         return this.getInstance(p).sendMessage(from, subject, body);
@@ -93,13 +95,15 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      *
      * Sugar to be used from scripts.
      *
-     * @param p
-     * @param from
-     * @param subject
-     * @param body
-     * @param token
-     * @return {
-     * @see Message} The sent message
+     * @param p message recipient
+     * @param from message sender
+     * @param subject message subject
+     * @param body message body
+     * @param token internal message identifier (can be used within a
+     * {@link #isTokenMarkedAsRead script condition} to check whether or not
+     * message has been read)
+     * @return The sent message
+     * @see Message
      */
     public Message sendMessageWithToken(Player p, String from, String subject, String body, String token) {
         return this.getInstance(p).sendMessage(from, subject, body, null, token, null);
@@ -109,13 +113,14 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      *
      * Sugar to be used from scripts.
      *
-     * @param p
-     * @param from
-     * @param subject
-     * @param body
-     * @param date
-     * @return {
-     * @see Message} The sent message
+     * @param p message recipient
+     * @param from message sender
+     * @param subject message subject
+     * @param body message body
+     * @param date the date the message has been sent (free text, eg. 'Monday
+     * Morning', 'may the 4th', 'thrid period', and so on)
+     * @return The sent message
+     * @see Message
      */
     public Message sendDatedMessage(Player p, String from, String date, String subject, String body) {
         return this.getInstance(p).sendMessage(from, subject, body, date);
@@ -125,10 +130,10 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      *
      * Sugar to be used from scripts.
      *
-     * @param p
-     * @param from
-     * @param subject
-     * @param body
+     * @param p message recipient
+     * @param from message sender
+     * @param subject message subject
+     * @param body message body
      * @param attachements
      * @return {@link Message} the sent message
      */
@@ -140,11 +145,12 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      *
      * Sugar to be used from scripts.
      *
-     * @param p
-     * @param from
-     * @param subject
-     * @param body
-     * @param date
+     * @param p message recipient
+     * @param from message sender
+     * @param subject message subject
+     * @param body message body
+     * @param date the date the message has been sent (free text, eg. 'Monday
+     * Morning', 'may the 4th', 'thrid period', and so on)
      * @param attachements
      * @return {@link Message} the sent message
      */
@@ -156,12 +162,15 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      *
      * Sugar to be used from scripts.
      *
-     * @param p
-     * @param from
-     * @param subject
-     * @param body
-     * @param date
-     * @param token
+     * @param p message recipient
+     * @param from message sender
+     * @param subject message subject
+     * @param body message body
+     * @param date the date the message has been sent (free text, eg. 'Monday
+     * Morning', 'may the 4th', 'thrid period', and so on)
+     * @param token internal message identifier (can be used within a
+     * {@link #isTokenMarkedAsRead script condition} to check whether or not
+     * message has been read)
      * @param attachements
      * @return {@link Message} the sent message
      */
@@ -172,7 +181,7 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
     /**
      *
      * @param p
-     * @return
+     * @return check if the given player's inbox is empty
      */
     public boolean isEmpty(Player p) {
         return this.getInstance(p).getMessages().isEmpty();
@@ -188,11 +197,12 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
     }
 
     /**
-     * Return true is a message identified by the token exists and has been read
+     * Check message read status
      *
      * @param self
      * @param token
-     * @return
+     * @return true is a message identified by the token exists and has been
+     * read, false otherwise
      */
     public boolean isTokenMarkedAsRead(Player self, String token) {
         return this.getInstance(self).isTokenMarkedAsRead(token);

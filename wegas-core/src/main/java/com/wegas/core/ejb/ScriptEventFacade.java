@@ -22,7 +22,7 @@ import org.apache.commons.collections.map.MultiValueMap;
 
 /**
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @RequestScoped
 public class ScriptEventFacade {

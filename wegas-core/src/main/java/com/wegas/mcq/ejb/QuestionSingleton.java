@@ -21,7 +21,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Singleton
 @LocalBean
@@ -32,7 +32,7 @@ public class QuestionSingleton {
 
     /**
      * @param instanceId
-     * @return
+     * @return count the number of reply for the given question
      */
     public int findReplyCount(Long instanceId) {
         final TypedQuery<Long> query = em.createNamedQuery("Reply.countForInstance", Long.class);

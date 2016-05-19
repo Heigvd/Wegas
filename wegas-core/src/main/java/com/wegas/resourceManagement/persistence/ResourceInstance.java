@@ -24,7 +24,7 @@ import com.wegas.core.persistence.ListUtils;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 @Access(AccessType.FIELD)
@@ -90,30 +90,30 @@ public class ResourceInstance extends VariableInstance {
             if (other.getAssignments() != null) {
                 //ListUtils.mergeLists(this.getAssignments(), other.getAssignments());
                 this.setAssignments(
-                    ListUtils.mergeLists(this.getAssignments(), other.getAssignments(), new ListUtils.Updater() {
-                        @Override
-                        public void addEntity(AbstractEntity entity) {
-                            if (entity instanceof Assignment) {
-                                Assignment assignment = (Assignment) entity;
-                                TaskDescriptor parent = (TaskDescriptor) VariableDescriptorFacade.lookup().find(assignment.getTaskDescriptorId());
-                                if (parent == null) {
-                                    parent = assignment.getTaskDescriptor();
+                        ListUtils.mergeLists(this.getAssignments(), other.getAssignments(), new ListUtils.Updater() {
+                            @Override
+                            public void addEntity(AbstractEntity entity) {
+                                if (entity instanceof Assignment) {
+                                    Assignment assignment = (Assignment) entity;
+                                    TaskDescriptor parent = (TaskDescriptor) VariableDescriptorFacade.lookup().find(assignment.getTaskDescriptorId());
+                                    if (parent == null) {
+                                        parent = assignment.getTaskDescriptor();
+                                    }
+                                    parent.addAssignment(assignment);
                                 }
-                                parent.addAssignment(assignment);
                             }
-                        }
 
-                        @Override
-                        public void removeEntity(AbstractEntity entity) {
-                            if (entity instanceof Assignment) {
-                                Assignment assignment = (Assignment) entity;
-                                TaskDescriptor parent = (TaskDescriptor) VariableDescriptorFacade.lookup().find(assignment.getTaskDescriptorId());
-                                if (parent != null) {
-                                    parent.removeAssignment(assignment);
+                            @Override
+                            public void removeEntity(AbstractEntity entity) {
+                                if (entity instanceof Assignment) {
+                                    Assignment assignment = (Assignment) entity;
+                                    TaskDescriptor parent = (TaskDescriptor) VariableDescriptorFacade.lookup().find(assignment.getTaskDescriptorId());
+                                    if (parent != null) {
+                                        parent.removeAssignment(assignment);
+                                    }
                                 }
                             }
-                        }
-                    }));
+                        }));
             }
             if (other.getActivities() != null) {
                 this.setActivities(ListUtils.mergeLists(this.getActivities(), other.getActivities(), new ListUtils.Updater() {
@@ -181,12 +181,9 @@ public class ResourceInstance extends VariableInstance {
     /**
      *
      * @param task
-     * @return
-     *         public Assignment assign(TaskDescriptor task) {
-     *         final Assignment assignment = new Assignment(task);
-     *         this.addAssignment(assignment);
-     *         return assignment;
-     *         }
+     * @return public Assignment assign(TaskDescriptor task) { final Assignment
+     * assignment = new Assignment(task); this.addAssignment(assignment); return
+     * assignment; }
      */
     /**
      * @return the activities
@@ -233,12 +230,9 @@ public class ResourceInstance extends VariableInstance {
     /**
      *
      * @param task
-     * @return the activity
-     *         public Activity createActivity(TaskDescriptor task) {
-     *         final Activity activity = new Activity(task);
-     *         this.addActivity(activity);
-     *         return activity;
-     *         }
+     * @return the activity public Activity createActivity(TaskDescriptor task)
+     * { final Activity activity = new Activity(task);
+     * this.addActivity(activity); return activity; }
      */
     /**
      * @return the activities
@@ -284,12 +278,8 @@ public class ResourceInstance extends VariableInstance {
 
     /**
      *
-     * @return
-     *         public Occupation addOccupation() {
-     *         Occupation occupation = new Occupation();
-     *         this.addOccupation(occupation);
-     *         return occupation;
-     *         }
+     * @return public Occupation addOccupation() { Occupation occupation = new
+     * Occupation(); this.addOccupation(occupation); return occupation; }
      */
     /**
      * @return the active
@@ -346,16 +336,18 @@ public class ResourceInstance extends VariableInstance {
     /**
      *
      * @param key
-     * @return
+     * @return true is the resourceInstance is active
      */
     public String getProperty(String key) {
         return this.properties.get(key);
     }
 
     /**
+     * get property by key, cast to double
      *
      * @param key
-     * @return
+     * @return the value mapped by key, cast to double
+     * @throws NumberFormatException if the property is not a number
      */
     public double getPropertyD(String key) {
         return Double.valueOf(this.properties.get(key));
@@ -387,7 +379,7 @@ public class ResourceInstance extends VariableInstance {
     }
 
     /**
-     * Set the confidence's value
+     * Set the confidence value
      *
      * @param confidence the confidence to set
      */
@@ -399,7 +391,8 @@ public class ResourceInstance extends VariableInstance {
      *
      * @param currentPosition
      * @param nextPosition
-     * @return
+     * @return assignment list with up to date order
+     * @deprecated
      */
     public List<Assignment> moveAssignemnt(Integer currentPosition, Integer nextPosition) {
         Assignment assignment = this.assignments.remove(currentPosition.intValue());

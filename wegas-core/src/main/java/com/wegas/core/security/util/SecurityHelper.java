@@ -15,7 +15,7 @@ import org.apache.shiro.authz.AuthorizationException;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public abstract class SecurityHelper {
 

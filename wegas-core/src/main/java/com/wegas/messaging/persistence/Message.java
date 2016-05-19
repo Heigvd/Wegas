@@ -27,7 +27,7 @@ import java.util.Map;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 //@XmlType(name = "Message")
@@ -201,11 +201,7 @@ public class Message extends NamedEntity implements Broadcastable {
         }
     }
 
-    /**
-     *
-     * @PostPersist @PostUpdate @PostRemove public void onUpdate() {
-     * this.getInboxInstance().onInstanceUpdate(); }
-     */
+
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
         return this.getInboxInstance().getEntities();
@@ -238,22 +234,26 @@ public class Message extends NamedEntity implements Broadcastable {
     }
 
     /**
+     * Get the message subject
      *
-     * @return
+     * @return the message subject
      */
     public String getSubject() {
         return this.subject;
     }
 
     /**
+     * Update the message subject
      *
-     * @param subject
+     * @param subject new subject
      */
     public void setSubject(String subject) {
         this.subject = subject;
     }
 
     /**
+     * Get message body
+     *
      * @return the body
      */
     public String getBody() {
@@ -287,7 +287,7 @@ public class Message extends NamedEntity implements Broadcastable {
     /**
      * get the token
      *
-     * @return
+     * @return the message token (null if there is no token)
      */
     public String getToken() {
         return token;
@@ -321,7 +321,7 @@ public class Message extends NamedEntity implements Broadcastable {
     /**
      * return the date
      *
-     * @return
+     * @return message sent time
      */
     public String getDate() {
         return date;

@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/StateMachine/")

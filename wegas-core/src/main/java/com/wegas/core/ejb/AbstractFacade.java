@@ -14,13 +14,14 @@ import java.util.List;
 /**
  *
  * @param <T>
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public interface AbstractFacade<T extends AbstractEntity> {
 
     /**
+     * persists a new T instance
      *
-     * @param entity
+     * @param entity entity to persist
      */
     void create(T entity);
 
@@ -33,58 +34,67 @@ public interface AbstractFacade<T extends AbstractEntity> {
      *
      * @param entityId
      * @param entity
-     * @return
+     * @return updated entity
      */
     T update(final Long entityId, final T entity);
 
     /**
      *
      * @param entityId
-     * @return
+     * @return entity copy
      * @throws IOException
      */
     T duplicate(final Long entityId) throws IOException;
 
     /**
+     * Destroy the given entity
      *
      * @param entity
      */
     void remove(T entity);
 
     /**
+     * destroy entity identified by id
      *
-     * @param id
+     * @param id id of the entity to destroy
      */
     void remove(Long id);
 
     /**
+     * find T instance by id
      *
-     * @param id
-     * @return
+     * @param id id to look for
+     * @return entity matching given id
      */
     T find(final Long id);
 
     /**
+     * How many entity of T type exists ?
      *
-     * @return
+     * @return the total number of entity of type T
      */
     int count();
 
     /**
      *
-     * @return
+     * Find all entities which are instanceof T
+     *
+     * @return all instances of type T
      */
     List<T> findAll();
 
     /**
      *
-     * @param range
-     * @return
+     * Just like findAll but paginate the output
+     *
+     * @param range int array containing two elements... it's quite ugly...
+     * @return all entities matching the range filter
+     * @deprecated 
      */
     List<T> findRange(int[] range);
 
     /**
-     *
+     * EntityManager Flush
      */
     void flush();
 }

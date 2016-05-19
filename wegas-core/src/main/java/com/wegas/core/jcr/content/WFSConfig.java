@@ -13,7 +13,7 @@ import java.util.Map;
 
 /**
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 final class WFSConfig {
 

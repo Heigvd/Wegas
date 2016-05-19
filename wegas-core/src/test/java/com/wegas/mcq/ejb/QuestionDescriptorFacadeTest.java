@@ -22,7 +22,7 @@ import javax.naming.NamingException;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
 

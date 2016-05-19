@@ -45,7 +45,7 @@ import java.util.Map;
 
 /**
  * @param <T>
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -210,7 +210,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     /**
-     * @return
+     * @return descriptor comments
      */
     public String getComments() {
         return comments;
@@ -241,7 +241,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     /**
-     * @return
+     * @return the gameMobel this belongs to
      */
     @JsonIgnore
     public GameModel getGameModel() {
@@ -303,7 +303,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     /**
-     * @return
+     * @return id of gameModel this belongs to
      */
     @JsonIgnore
     public int getGameModelId() {
@@ -311,7 +311,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     /**
-     * @return
+     * @return descriptor id
      */
     @Override
     public Long getId() {
@@ -319,15 +319,17 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     /**
+     * Fetch variable instance for the given player
+     *
      * @param player
-     * @return
+     * @return variableInstance belonging to the player
      */
     public T getInstance(Player player) {
         return (T) this.getScope().getVariableInstance(player);
     }
 
     /**
-     * @return
+     * @return get instance belonging to the current player
      */
     @JsonIgnore
     public T getInstance() {
@@ -335,9 +337,10 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     /**
-     * @param defaultInstance
-     * @param player
-     * @return
+     * @param defaultInstance indicate whether one wants the default instance r
+     * the one belonging to player
+     * @param player the player
+     * @return either the default instance of the one belonging to player
      */
     @JsonIgnore
     public T getInstance(Boolean defaultInstance, Player player) {
@@ -365,7 +368,9 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     /**
-     * @return
+     * Get the descriptor internal name (aka scriptAlias)
+     *
+     * @return the descriptor name
      */
     @Override
     public String getName() {
@@ -486,8 +491,11 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     /**
+     * true if this descriptor or (if applicable) its default instance matches
+     * all the given criterias
+     *
      * @param criterias
-     * @return
+     * @return return true if there is a match
      */
     @Override
     public Boolean containsAll(final List<String> criterias) {
@@ -502,7 +510,8 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     /**
-     * @return
+     *
+     * @return Class simple name + id
      */
     @Override
     public String toString() {

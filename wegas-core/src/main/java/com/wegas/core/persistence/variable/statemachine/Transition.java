@@ -24,7 +24,7 @@ import java.util.List;
 
 //import javax.xml.bind.annotation.XmlRootElement;
 /**
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Entity
 @Access(AccessType.FIELD)

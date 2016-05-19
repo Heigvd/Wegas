@@ -18,7 +18,7 @@ import javax.persistence.Transient;
 /**
  * Account matching a specific Game
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Entity
 @Deprecated

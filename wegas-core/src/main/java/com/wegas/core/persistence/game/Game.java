@@ -25,8 +25,8 @@ import javax.validation.constraints.NotNull;
 import java.util.*;
 
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Entity
 @Table(

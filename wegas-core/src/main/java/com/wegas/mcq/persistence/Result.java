@@ -28,19 +28,19 @@ import java.util.List;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 //@XmlType(name = "Result")
 @JsonTypeName(value = "Result")
 @Table(
-    name = "MCQResult",
-    uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"choicedescriptor_id", "name"}),
-        @UniqueConstraint(columnNames = {"choicedescriptor_id", "label"}),},
-    indexes = {
-        @Index(columnList = "choicedescriptor_id")
-    }
+        name = "MCQResult",
+        uniqueConstraints = {
+            @UniqueConstraint(columnNames = {"choicedescriptor_id", "name"}),
+            @UniqueConstraint(columnNames = {"choicedescriptor_id", "label"}),},
+        indexes = {
+            @Index(columnList = "choicedescriptor_id")
+        }
 )
 @NamedQueries({
     @NamedQuery(name = "Result.findByName", query = "SELECT DISTINCT res FROM Result res WHERE res.choiceDescriptor=:choicedescriptor AND res.name LIKE :name")
@@ -97,9 +97,9 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     @Embedded
     @AttributeOverrides({
         @AttributeOverride(name = "content", column
-            = @Column(name = "ignoration_content")),
+                = @Column(name = "ignoration_content")),
         @AttributeOverride(name = "lang", column
-            = @Column(name = "ignoration_language"))
+                = @Column(name = "ignoration_language"))
     })
     @JsonView(Views.EditorExtendedI.class)
     private Script ignorationImpact;
@@ -152,10 +152,10 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     @Override
     public Boolean containsAll(final List<String> criterias) {
         return Helper.insensitiveContainsAll(this.getName(), criterias)
-            || Helper.insensitiveContainsAll(this.getAnswer(), criterias)
-            || (this.getImpact() != null && this.getImpact().containsAll(criterias))
-            || Helper.insensitiveContainsAll(this.getIgnorationAnswer(), criterias)
-            || (this.getIgnorationImpact() != null && this.getIgnorationImpact().containsAll(criterias));
+                || Helper.insensitiveContainsAll(this.getAnswer(), criterias)
+                || (this.getImpact() != null && this.getImpact().containsAll(criterias))
+                || Helper.insensitiveContainsAll(this.getIgnorationAnswer(), criterias)
+                || (this.getIgnorationImpact() != null && this.getIgnorationImpact().containsAll(criterias));
     }
 
     @Override
@@ -223,7 +223,7 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
 
     /**
      *
-     * @return
+     * @return id from the parent choice descriptor
      */
     @JsonView(Views.IndexI.class)
     public Long getChoiceDescriptorId() {

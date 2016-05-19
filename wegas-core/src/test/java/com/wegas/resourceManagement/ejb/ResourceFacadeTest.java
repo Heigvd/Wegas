@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>, Benjamin Gerber
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com), Benjamin Gerber
  * <ger.benjamin@gmail.com>
  */
 public class ResourceFacadeTest extends AbstractEJBTest {

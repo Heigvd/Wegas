@@ -28,7 +28,7 @@ import javax.persistence.Transient;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 
@@ -133,7 +133,7 @@ public class TaskInstance extends VariableInstance {
     /**
      *
      * @param key
-     * @return
+     * @return the instance property mapped by the given key
      */
     public String getProperty(String key) {
         return this.properties.get(key);
@@ -142,7 +142,7 @@ public class TaskInstance extends VariableInstance {
     /**
      *
      * @param key
-     * @return
+     * @return the instance property mapped by the given key, double castes
      */
     public double getPropertyD(String key) {
         return Double.valueOf(this.properties.get(key));
@@ -160,7 +160,7 @@ public class TaskInstance extends VariableInstance {
     /**
      *
      * @param id
-     * @return
+     * @return requirement matching given id
      */
     public WRequirement getRequirementById(Long id) {
         WRequirement requirement = null;

@@ -44,7 +44,7 @@ import java.util.zip.GZIPOutputStream;
 import org.apache.shiro.SecurityUtils;
 
 /**
- * @author Yannick Lagger <lagger.yannick@gmail.com>
+ * @author Yannick Lagger (lagger.yannick.com)
  */
 @Stateless
 @LocalBean

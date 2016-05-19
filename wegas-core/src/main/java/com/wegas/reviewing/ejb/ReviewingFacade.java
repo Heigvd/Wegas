@@ -360,7 +360,7 @@ public class ReviewingFacade {
      *
      * @param pri   peer review instance containing the review
      * @param other the review to merge within pri
-     * @return
+     * @return up to date review
      */
     public Review saveReview(PeerReviewInstance pri, Review other) {
         Review review = this.findReview(other.getId());
@@ -461,7 +461,7 @@ public class ReviewingFacade {
      * The Reviewing will be completely finished after closing
      *
      * @param prd
-     * @return
+     * @return all peerReviewInstance that have been closed
      */
     public List<PeerReviewInstance> close(PeerReviewDescriptor prd) {
         List<PeerReviewInstance> pris = new ArrayList(prd.getScope().getVariableInstances().values());
@@ -527,7 +527,7 @@ public class ReviewingFacade {
 
     /**
      * 
-     * @return 
+     * @return Lookup-ed ReviewFacade EJB
      */
     public static ReviewingFacade lookup() {
         try {

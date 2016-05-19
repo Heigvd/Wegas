@@ -141,7 +141,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
     /**
      * Return the variable that will be reviewed
      *
-     * @return
+     * @return the variable that will be reviewed
      */
     public VariableDescriptor getToReview() {
         return toReview;
@@ -168,7 +168,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
     /**
      * Used to fetch the JSON de-serialised variable name
      *
-     * @return
+     * @return the name of the variable that will be reviewed, as imported from a JSON
      */
     @JsonIgnore
     public String getImportedToReviewName() {

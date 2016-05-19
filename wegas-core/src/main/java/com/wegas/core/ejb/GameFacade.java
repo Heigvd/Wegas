@@ -38,8 +38,8 @@ import java.util.List;
 import javax.naming.NamingException;
 
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Stateless
 @LocalBean

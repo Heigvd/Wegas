@@ -35,7 +35,7 @@ import java.util.Date;
  * objects in the neo4j database.
  *
  * @author Gérald Eberle
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 @Singleton

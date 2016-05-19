@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Jersey CacheMaxAge default cache controle to public, 1 day
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})

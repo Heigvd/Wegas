@@ -22,7 +22,7 @@ import javax.ws.rs.core.MediaType;
 
 /**
  *
- * @author Yannick Lagger <lagger.yannick@gmail.com>
+ * @author Yannick Lagger (lagger.yannick.com)
  */
 @Stateless
 @Path("/")

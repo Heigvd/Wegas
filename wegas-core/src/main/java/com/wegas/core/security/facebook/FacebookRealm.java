@@ -26,7 +26,7 @@ import org.apache.shiro.subject.PrincipalCollection;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class FacebookRealm extends AuthorizingRealm {
 

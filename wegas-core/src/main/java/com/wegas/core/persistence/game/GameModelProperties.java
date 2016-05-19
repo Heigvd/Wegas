@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Embeddable
 //@XmlRootElement

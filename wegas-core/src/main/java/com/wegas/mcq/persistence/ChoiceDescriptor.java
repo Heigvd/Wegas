@@ -29,7 +29,7 @@ import com.wegas.core.persistence.variable.Scripted;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 @Table(name = "MCQChoiceDescriptor",
@@ -242,9 +242,10 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     }
 
     /**
+     * Is the player instance active ?
      *
      * @param p <p>
-     * @return
+     * @return player instance active status
      */
     public boolean isActive(Player p) {
         return this.getInstance(p).getActive();

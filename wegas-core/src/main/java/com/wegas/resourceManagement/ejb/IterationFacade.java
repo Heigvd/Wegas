@@ -97,7 +97,7 @@ public class IterationFacade extends BaseFacade<Iteration> {
     }
 
     /**
-     * @return
+     * @return fetch IterationFacade EJB
      */
     public static IterationFacade lookup() {
         try {

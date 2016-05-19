@@ -20,7 +20,7 @@ import org.apache.shiro.authc.AuthenticationException;
  * page confirming login successfull.
  *
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  *
  */
 public class FacebookLoginServlet extends HttpServlet {
@@ -53,7 +53,8 @@ public class FacebookLoginServlet extends HttpServlet {
      * @param response
      * @throws ServletException
      * @throws IOException
-     * @see HttpServlet.Post(HttpServletRequest request, HttpServletResponse)
+     * @see HttpServlet#doPost(javax.servlet.http.HttpServletRequest,
+     * javax.servlet.http.HttpServletResponse)
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,

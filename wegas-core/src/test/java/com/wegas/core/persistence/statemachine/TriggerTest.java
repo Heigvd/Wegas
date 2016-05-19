@@ -18,7 +18,7 @@ import org.junit.Test;
 /**
  * Testing Triggers, class TriggerInstance and class TriggerDescriptor
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class TriggerTest {
 

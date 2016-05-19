@@ -27,7 +27,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
 @Path("Role")

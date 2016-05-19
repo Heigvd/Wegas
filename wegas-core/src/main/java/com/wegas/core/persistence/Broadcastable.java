@@ -1,4 +1,4 @@
-  /*
+/*
  * Wegas
  * http://wegas.albasim.ch
  *
@@ -17,11 +17,14 @@ import java.util.Map;
  */
 public interface Broadcastable {
 
-      /**
+    /**
+     * get all entities that should be propagated when this has been
+     * created/updated/deleted, sorted by audience
+     *
      * key identifier may be: GameModel-<ID>, Game-<ID>, Team-<ID> or
      * Player-<ID>
      *
-     * @return
+     * @return map of touched entities
      */
     @JsonIgnore
     Map<String, List<AbstractEntity>> getEntities();

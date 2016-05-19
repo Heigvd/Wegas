@@ -22,7 +22,7 @@ import java.util.List;
 import static java.lang.Boolean.FALSE;
 
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 @Table(name = "MCQQuestionInstance")
@@ -168,7 +168,7 @@ public class QuestionInstance extends VariableInstance {
 
     /**
      * @param index
-     * @return
+     * @return iest choiceDescriptor
      */
     public ChoiceDescriptor item(int index) {
         return ((QuestionDescriptor) this.getDescriptor()).item(index);

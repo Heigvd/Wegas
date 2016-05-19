@@ -16,7 +16,7 @@ import javax.persistence.Lob;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 public class DialogueTransition extends Transition {

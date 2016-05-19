@@ -13,7 +13,7 @@ import javax.inject.Singleton;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Specializes
 @Singleton

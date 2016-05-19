@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  * @param <T>
  */
 public interface DescriptorListI<T extends VariableDescriptor> {
@@ -43,21 +43,21 @@ public interface DescriptorListI<T extends VariableDescriptor> {
 
     /**
      *
-     * @return
+     * @return number of children
      */
     int size();
 
     /**
      *
      * @param index
-     * @return
+     * @return iest child
      */
     T item(int index);
 
     /**
      *
      * @param item
-     * @return
+     * @return true if item has successfully been removed
      */
     boolean remove(T item);
 }

@@ -27,7 +27,7 @@ import java.util.logging.Level;
 import static java.util.logging.Logger.getLogger;
 
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class TestHelper {
 

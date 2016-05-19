@@ -29,7 +29,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class StateMachineITest extends AbstractEJBTest {
 

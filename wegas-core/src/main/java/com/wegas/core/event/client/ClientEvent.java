@@ -18,7 +18,7 @@ import java.io.Serializable;
 
 /**
  *
- * @author Yannick Lagger <lagger.yannick at gmail.com>
+ * @author Yannick Lagger (lagger.yannick at gmail.com)
  */
 //@XmlRootElement
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")

@@ -16,7 +16,7 @@ import javax.persistence.Entity;
  * (opposedTrigger)<br/> else S1->(T1)->S1 (loop).<br/> OneShot and
  * OpposedTrigger are exclusive. OneShot wins.
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Entity
 //@XmlRootElement

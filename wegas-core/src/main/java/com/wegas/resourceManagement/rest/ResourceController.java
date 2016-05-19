@@ -23,7 +23,7 @@ import javax.ws.rs.core.MediaType;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/ResourceDescriptor/")
@@ -35,6 +35,7 @@ public class ResourceController {
     private ResourceFacade resourceFacade;
 
     /**
+     * Assign a resource to a task
      *
      * @param resourceInstanceId
      * @param taskDescriptorId
@@ -42,17 +43,18 @@ public class ResourceController {
     @POST
     @Path("Assign/{resourceId : [1-9][0-9]*}/{taskDescriptorId : [1-9][0-9]*}")
     public void addAssignment(
-        @PathParam("resourceId") Long resourceInstanceId,
-        @PathParam("taskDescriptorId") Long taskDescriptorId
+            @PathParam("resourceId") Long resourceInstanceId,
+            @PathParam("taskDescriptorId") Long taskDescriptorId
     ) {
         resourceFacade.assign(resourceInstanceId, taskDescriptorId);
     }
 
     /**
+     * Change assignment priority
      *
      * @param assignmentId
      * @param index
-     * @return
+     * @return the resourceInstance with up to date assignment order
      */
     @PUT
     @Path("MoveAssignment/{assignmentId : [1-9][0-9]*}/{index : [0-9]*}")
@@ -61,9 +63,10 @@ public class ResourceController {
     }
 
     /**
+     * Unassign a resource from a task
      *
      * @param assignmentId
-     * @return
+     * @return the resourceInstance with up to date assignments
      */
     @DELETE
     @Path("Assign/{assignmentId : [1-9][0-9]*}")
@@ -94,16 +97,17 @@ public class ResourceController {
     }
 
     /**
+     * Plan a task to be worked on at the given period number
      *
      * @param playerId
      * @param taskInstanceId
      * @param period
-     * @return
+     * @return TaskInstance with new planning
      */
     @POST
     @Path("Player/{playerId : [1-9][0-9]*}/Plan/{taskInstanceId : [1-9][0-9]*}/{period : [0-9]*}")
     public TaskInstance plan(@PathParam("playerId") Long playerId, @PathParam("taskInstanceId") Long taskInstanceId,
-        @PathParam("period") Integer period) {
+            @PathParam("period") Integer period) {
         return resourceFacade.plan(playerId, taskInstanceId, period);
     }
 
@@ -112,12 +116,12 @@ public class ResourceController {
      * @param playerId
      * @param taskInstanceId
      * @param period
-     * @return
+     * @return TaskInstance with new planning
      */
     @DELETE
     @Path("Player/{playerId : [1-9][0-9]*}/Plan/{taskInstanceId : [1-9][0-9]*}/{periode : [0-9]*}")
     public TaskInstance unplan(@PathParam("playerId") Long playerId, @PathParam("taskInstanceId") Long taskInstanceId,
-        @PathParam("periode") Integer period) {
+            @PathParam("periode") Integer period) {
         return resourceFacade.unplan(playerId, taskInstanceId, period);
     }
 }

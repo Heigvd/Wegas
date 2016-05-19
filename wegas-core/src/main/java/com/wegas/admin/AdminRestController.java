@@ -20,7 +20,7 @@ import java.util.List;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 
 /**
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Stateless
 @Path("Admin/")

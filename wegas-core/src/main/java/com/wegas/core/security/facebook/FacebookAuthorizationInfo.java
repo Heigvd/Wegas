@@ -13,7 +13,7 @@ import org.apache.shiro.authz.Permission;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class FacebookAuthorizationInfo implements AuthorizationInfo {
 

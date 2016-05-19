@@ -11,7 +11,7 @@ import java.util.Objects;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public abstract class NamedEntity extends AbstractEntity {
 
@@ -25,8 +25,9 @@ public abstract class NamedEntity extends AbstractEntity {
     }
 
     /**
+     * Get the entity internal name
      *
-     * @return
+     * @return the entity name
      */
     public abstract String getName();
 
@@ -38,7 +39,7 @@ public abstract class NamedEntity extends AbstractEntity {
 
     /**
      *
-     * @return
+     * @return class simple name, id and name
      */
     @Override
     public String toString() {
@@ -54,9 +55,8 @@ public abstract class NamedEntity extends AbstractEntity {
     }
 
     /**
-     *
-     * @param entity
-     * @return
+     * @param entity entity to compare to
+     * @return true if entity equals this
      */
     @Override
     public boolean equals(Object entity) {

@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Script validation bean
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Stateless
 @LocalBean

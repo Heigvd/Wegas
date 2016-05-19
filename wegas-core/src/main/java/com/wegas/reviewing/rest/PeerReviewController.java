@@ -204,7 +204,7 @@ public class PeerReviewController {
      * from NOTIFIED to COMPLETED
      *
      * @param review review to submit
-     * @return
+     * @return peerReviewInstance with up to date reviews
      */
     @POST
     @Path("/SubmitReview")

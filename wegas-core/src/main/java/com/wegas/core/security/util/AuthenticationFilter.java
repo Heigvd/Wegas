@@ -21,7 +21,7 @@ import org.apache.shiro.web.util.WebUtils;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class AuthenticationFilter extends PassThruAuthenticationFilter {
 

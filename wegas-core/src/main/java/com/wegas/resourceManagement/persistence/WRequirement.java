@@ -37,10 +37,10 @@ import javax.persistence.Index;
 @Entity
 
 @Table(uniqueConstraints = @UniqueConstraint(
-    columnNames = {"requirements_variableinstance_id", "wrequirement_name"}),
-    indexes = {
-        @Index(columnList = "requirements_variableinstance_id")
-    }
+        columnNames = {"requirements_variableinstance_id", "wrequirement_name"}),
+        indexes = {
+            @Index(columnList = "requirements_variableinstance_id")
+        }
 )
 public class WRequirement extends AbstractEntity {
 
@@ -148,7 +148,7 @@ public class WRequirement extends AbstractEntity {
 
     /**
      *
-     * @return
+     * @return get requirement unique name
      */
     public String getName() {
         return name;
@@ -248,9 +248,8 @@ public class WRequirement extends AbstractEntity {
 
     /**
      *
-     * @return
+     * @return the task instance the requirement belongs to
      */
-    //@XmlTransient
     @JsonIgnore
     public TaskInstance getTaskInstance() {
         return taskInstance;
@@ -268,8 +267,9 @@ public class WRequirement extends AbstractEntity {
 
     /**
      *
+     * @deprecated (I hope so)
      * @param variable
-     * @return
+     * @return just not a clue...
      */
     public double getVariableValue(String variable) {
         switch (variable) {

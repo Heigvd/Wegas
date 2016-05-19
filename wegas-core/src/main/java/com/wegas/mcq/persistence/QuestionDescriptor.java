@@ -35,7 +35,7 @@ import javax.persistence.NamedQuery;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 @Table(name = "MCQQuestionDescriptor")
@@ -116,7 +116,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     /**
      *
      * @param p
-     * @return
+     * @return the player instance active status
      */
     public boolean isActive(Player p) {
         QuestionInstance instance = this.getInstance(p);
@@ -175,7 +175,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     }
 
     /**
-     * @param cb: if the checkbox mode is set
+     * @param cb if the checkbox mode is set
      */
     public void setCbx(Boolean cb) {
         this.cbx = cb;
@@ -189,7 +189,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     }
 
     /**
-     * @param tab: if the tabular layout mode is set
+     * @param tab if the tabular layout mode is set
      */
     public void setTabular(Boolean tab) {
         this.tabular = tab;
@@ -220,7 +220,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     /**
      *
      * @param p
-     * @return
+     * @return true if the player has already answers this question
      */
     public boolean isReplied(Player p) {
         QuestionInstance instance = this.getInstance(p);
@@ -232,9 +232,10 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     }
 
     /**
+     * {@link #isReplied ...}
      *
      * @param p
-     * @return
+     * @return true if the player has not yet answers this question
      */
     public boolean isNotReplied(Player p) {
         return !this.isReplied(p);
@@ -262,7 +263,8 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     /**
      *
      * @param index
-     * @return
+     * @return the iest choiceDescriptor
+     * @throws IndexOutOfBoundsException
      */
     @Override
     public ChoiceDescriptor item(int index) {
@@ -305,7 +307,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     @Override
     public Boolean containsAll(List<String> criterias) {
         return Helper.insensitiveContainsAll(this.getDescription(), criterias)
-            || super.containsAll(criterias);
+                || super.containsAll(criterias);
     }
 
     public int getUnreadCount(Player player) {

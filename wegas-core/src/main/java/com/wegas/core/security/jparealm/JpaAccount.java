@@ -23,7 +23,7 @@ import javax.persistence.*;
 /**
  * Simple class that represents any User domain entity in any application.
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 /*@Table(uniqueConstraints = {

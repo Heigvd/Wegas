@@ -13,7 +13,7 @@ import org.apache.shiro.authc.credential.CredentialsMatcher;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class FacebookCredentialsMatcher implements CredentialsMatcher {
 

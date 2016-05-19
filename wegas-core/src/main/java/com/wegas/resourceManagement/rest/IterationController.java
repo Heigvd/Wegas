@@ -37,7 +37,7 @@ public class IterationController {
      *
      * @param burndownInstanceId id of the burndown instance we look iterations
      *                           for
-     * @return
+     * @return all iterations contained within the given burndown instance
      */
     @GET
     public Collection<Iteration> getIterations(@PathParam("brnDwnId") Long burndownInstanceId) {

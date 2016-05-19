@@ -21,11 +21,13 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import org.slf4j.LoggerFactory;
 
-/**
- * @fixme @important The mail should be sent in an async queue, so they don't
+/*
+ * @todo @important The mail should be sent in an async queue, so they don't
  * hang the reply endlessly
+ */
+/**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
 @LocalBean
@@ -37,7 +39,7 @@ public class EMailFacade {
      *
      * @param to
      * @param from
-     * @param replyTo     effective from
+     * @param replyTo effective from
      * @param subject
      * @param body
      * @param toType
@@ -119,7 +121,7 @@ public class EMailFacade {
     public void listener(@Observes MessageEvent messageEvent) {
         // @fixme remove this hardcoded condition w/ some db values or at least a line in the prop file
 //        if (messageEvent.getType().equals("important")) {
-//            this.send("fx@red-agent.com", "admin@wegas.com",
+//            this.send("fx at red-agent.com", "admin@wegas.com",
 //                    messageEvent.getMessage().getSubject(),
 //                    messageEvent.getMessage().getBody());
 //        }

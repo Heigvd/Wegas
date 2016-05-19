@@ -19,7 +19,7 @@ import javax.jcr.RepositoryException;
 import java.util.*;
 
 /**
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 //@XmlRootElement
 public class Pages implements AutoCloseable {

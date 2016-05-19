@@ -106,7 +106,7 @@ public class PeerReviewInstance extends VariableInstance {
     /**
      * Get the list of feedback written by others authors
      *
-     * @return
+     * @return all feedbacks from others
      */
     public List<Review> getReviewed() {
         return reviewed;

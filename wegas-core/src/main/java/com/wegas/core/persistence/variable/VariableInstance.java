@@ -41,18 +41,17 @@ import java.util.List;
 import java.util.Map;
 
 ////import javax.xml.bind.annotation.XmlTransient;
-
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @NamedQueries({
-        //@NamedQuery(name = "findTeamInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.teamScopeKey = :teamid"),
-        //@NamedQuery(name = "findPlayerInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.playerScopeKey = :playerid"),
-        @NamedQuery(name = "findInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE EXISTS "
-                + "(SELECT player From Player player WHERE player.id = :playerid AND "
-                + "(variableinstance.playerScopeKey = player.id OR variableinstance.teamScopeKey = player.teamId OR variableinstance.gameScopeKey = player.team.gameId))")
+    //@NamedQuery(name = "findTeamInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.teamScopeKey = :teamid"),
+    //@NamedQuery(name = "findPlayerInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.playerScopeKey = :playerid"),
+    @NamedQuery(name = "findInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE EXISTS "
+            + "(SELECT player From Player player WHERE player.id = :playerid AND "
+            + "(variableinstance.playerScopeKey = player.id OR variableinstance.teamScopeKey = player.teamId OR variableinstance.gameScopeKey = player.team.gameId))")
 })
 
 /*@Indexes(value = { // JPA 2.0 eclipse link extension TO BE REMOVED
@@ -64,30 +63,30 @@ import java.util.Map;
 
  /* JPA2.1 (GlassFish4) Indexes */
 @Table(indexes = {
-        @Index(columnList = "gamescope_id"),
-        @Index(columnList = "teamscope_id"),
-        @Index(columnList = "playerscope_id"),
-        @Index(columnList = "variableinstances_key"),
-        @Index(columnList = "teamvariableinstances_key"),
-        @Index(columnList = "gamevariableinstances_key")
+    @Index(columnList = "gamescope_id"),
+    @Index(columnList = "teamscope_id"),
+    @Index(columnList = "playerscope_id"),
+    @Index(columnList = "variableinstances_key"),
+    @Index(columnList = "teamvariableinstances_key"),
+    @Index(columnList = "gamevariableinstances_key")
 })
 
 //@JsonIgnoreProperties(value={"descriptorId"})
 @JsonSubTypes(value = {
-        @JsonSubTypes.Type(name = "StringInstance", value = StringInstance.class),
-        @JsonSubTypes.Type(name = "TextInstance", value = TextInstance.class),
-        @JsonSubTypes.Type(name = "BooleanInstance", value = BooleanInstance.class),
-        @JsonSubTypes.Type(name = "ListInstance", value = ListInstance.class),
-        @JsonSubTypes.Type(name = "NumberInstance", value = NumberInstance.class),
-        @JsonSubTypes.Type(name = "InboxInstance", value = InboxInstance.class),
-        @JsonSubTypes.Type(name = "FSMInstance", value = StateMachineInstance.class),
-        @JsonSubTypes.Type(name = "QuestionInstance", value = QuestionInstance.class),
-        @JsonSubTypes.Type(name = "ChoiceInstance", value = ChoiceInstance.class),
-        @JsonSubTypes.Type(name = "ResourceInstance", value = ResourceInstance.class),
-        @JsonSubTypes.Type(name = "TaskInstance", value = TaskInstance.class),
-        @JsonSubTypes.Type(name = "ObjectInstance", value = ObjectInstance.class),
-        @JsonSubTypes.Type(name = "PeerReviewInstance", value = PeerReviewInstance.class),
-        @JsonSubTypes.Type(name = "BurndownInstance", value = BurndownInstance.class)
+    @JsonSubTypes.Type(name = "StringInstance", value = StringInstance.class),
+    @JsonSubTypes.Type(name = "TextInstance", value = TextInstance.class),
+    @JsonSubTypes.Type(name = "BooleanInstance", value = BooleanInstance.class),
+    @JsonSubTypes.Type(name = "ListInstance", value = ListInstance.class),
+    @JsonSubTypes.Type(name = "NumberInstance", value = NumberInstance.class),
+    @JsonSubTypes.Type(name = "InboxInstance", value = InboxInstance.class),
+    @JsonSubTypes.Type(name = "FSMInstance", value = StateMachineInstance.class),
+    @JsonSubTypes.Type(name = "QuestionInstance", value = QuestionInstance.class),
+    @JsonSubTypes.Type(name = "ChoiceInstance", value = ChoiceInstance.class),
+    @JsonSubTypes.Type(name = "ResourceInstance", value = ResourceInstance.class),
+    @JsonSubTypes.Type(name = "TaskInstance", value = TaskInstance.class),
+    @JsonSubTypes.Type(name = "ObjectInstance", value = ObjectInstance.class),
+    @JsonSubTypes.Type(name = "PeerReviewInstance", value = PeerReviewInstance.class),
+    @JsonSubTypes.Type(name = "BurndownInstance", value = BurndownInstance.class)
 })
 abstract public class VariableInstance extends AbstractEntity implements Broadcastable {
 
@@ -176,7 +175,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     private Team team;
 
     /**
-     * @return
+     * @return instance copy
      */
     @Override
     public VariableInstance clone() {
@@ -243,9 +242,10 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * @return
+     * Get instance descriptor through its scope.
+     *
+     * @return the descriptor or null if this is a default instance
      */
-    //@XmlTransient
     @JsonIgnore
     public VariableDescriptor getDescriptor() {
         if (this.getScope() != null) {
@@ -256,7 +256,9 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * @return
+     * Get instance descriptor's id through its scope
+     *
+     * @return descriptor id of -1 if this is a default instance
      */
     @JsonView(Views.IndexI.class)
     public Long getDescriptorId() {
@@ -268,6 +270,8 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
+     * Dummy so that jaxb doesnt yell
+     *
      * @param l
      */
     public void setDescriptorId(Long l) {
@@ -304,7 +308,9 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * @return
+     * Id of the team owning the instance
+     *
+     * @return team's id or null if instance is not a team instance
      */
     @JsonIgnore
     public Long getTeamScopeKey() {
@@ -319,7 +325,9 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * @return
+     * Id of player owning the instance
+     *
+     * @return player's id or null if this is not a player instance
      */
     @JsonIgnore
     public Long getPlayerScopeKey() {
@@ -327,7 +335,8 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * @return the gameScope
+     *
+     * @return the gameScope or null if this instance doesn't belong to a game
      */
     @JsonIgnore
     public GameScope getGameScope() {
@@ -357,7 +366,8 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * @return the teamScope
+     * @return the team or null if this instance doesn't belong to a team
+     * (belonging to the game for instance)
      */
     @JsonIgnore
     public TeamScope getTeamScope() {
@@ -400,7 +410,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      * return instance descriptor equals the instance is a default or effective
      * one
      *
-     * @return
+     * @return instance descriptor
      * @deprecated {@link #findDescriptor()}
      */
     @JsonIgnore
@@ -416,7 +426,10 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * @return
+      * return instance descriptor equals the instance is a default or effective
+     * one
+     *
+     * @return instance descriptor
      */
     public VariableDescriptor findDescriptor() {
         if (this.getScope() != null) {
@@ -434,7 +447,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * @return the gameModelScope
+     * @return the gameModelScope of instance id gameModel scoped, null otherwise
      */
     public GameModelScope getGameModelScope() {
         return gameModelScope;
@@ -448,7 +461,8 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * @return
+     * 
+     * @return string representation of the instance (class name, id, default or not, ...)
      */
     @Override
     public String toString() {

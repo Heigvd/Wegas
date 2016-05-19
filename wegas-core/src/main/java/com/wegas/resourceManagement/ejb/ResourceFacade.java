@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
 @LocalBean
@@ -88,7 +88,7 @@ public class ResourceFacade {
     /**
      *
      * @param id
-     * @return
+     * @return occupation identified by id
      */
     public Occupation findOccupation(Long id) {
         return getEntityManager().find(Occupation.class, id);
@@ -97,7 +97,7 @@ public class ResourceFacade {
     /**
      *
      * @param id
-     * @return
+     * @return activity identified by id
      */
     public Activity findActivity(Long id) {
         return getEntityManager().find(Activity.class, id);
@@ -106,17 +106,19 @@ public class ResourceFacade {
     /**
      *
      * @param id
-     * @return
+     * @return assignment identified by id
      */
     public Assignment findAssignment(Long id) {
         return getEntityManager().find(Assignment.class, id);
     }
 
     /**
+     * Is the given resource assign to the given task descriptor ?
      *
-     * @param resourceId
-     * @param taskDescriptorId
-     * @return null if NotFound
+     * @param resourceId resourceInstance id
+     * @param taskDescriptorId taskDescripto id
+     * @return the assignment id resource is assigned to the task, null
+     * otherwise
      */
     public Assignment findAssignment(Long resourceId, Long taskDescriptorId) {
         EntityManager em = getEntityManager();
@@ -129,19 +131,21 @@ public class ResourceFacade {
     }
 
     /**
+     * Find a taskInstance by id
      *
-     * @param id
-     * @return
+     * @param id task instance id
+     * @return task instance matching id
      */
     public TaskInstance findTaskInstance(Long id) {
         return getEntityManager().find(TaskInstance.class, id);
     }
 
     /**
+     * Assign a resource to a task
      *
      * @param resourceInstanceId
      * @param taskDescriptorId
-     * @return
+     * @return the new assignment
      */
     public Assignment assign(Long resourceInstanceId, Long taskDescriptorId) {
         ResourceInstance resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstanceId);
@@ -155,10 +159,11 @@ public class ResourceFacade {
     }
 
     /**
+     * Change assignment priority
      *
      * @param assignmentId
      * @param index
-     * @return
+     * @return assigned resource containing assignment in the new order
      */
     public ResourceInstance moveAssignment(final Long assignmentId, final int index) {
         final Assignment assignment = this.findAssignment(assignmentId);
@@ -169,9 +174,11 @@ public class ResourceFacade {
     }
 
     /**
+     * Remove an assignment
      *
      * @param assignmentId
-     * @return
+     * @return the resource instance who was assigned, with the updated list of
+     * assignments
      */
     public ResourceInstance removeAssignment(final Long assignmentId) {
         final Assignment assignment = this.getEntityManager().find(Assignment.class, assignmentId);
@@ -179,9 +186,11 @@ public class ResourceFacade {
     }
 
     /**
+     * Remove
      *
-     * @param assignmentId
-     * @return
+     * @param assignment
+     * @return the resource instance who was assigned, with the updated list of
+     * assignments
      */
     public ResourceInstance removeAssignment(Assignment assignment) {
         ResourceInstance resourceInstance = (ResourceInstance) variableInstanceFacade.find(assignment.getResourceInstance().getId());
@@ -195,12 +204,13 @@ public class ResourceFacade {
         return resourceInstance;
     }
 
-
     /**
+     * Create an Activity (ie. a resourceInstance worked on a specific
+     * taskDescriptor)
      *
      * @param resourceInstanceId
      * @param taskDescriptorId
-     * @return
+     * @return the new activity
      */
     public Activity createActivity(Long resourceInstanceId, Long taskDescriptorId) {
         ResourceInstance resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstanceId);
@@ -213,6 +223,16 @@ public class ResourceFacade {
         return activity;
     }
 
+    /**
+     * Change activity sub requirements. If a resource continue to work on the
+     * same task, but on a different requirements,
+     *
+     * THIS BEHAVIOUD SHOULD NOT EXIST. IMO, different req means different
+     * activity
+     *
+     * @param activity
+     * @param newReq
+     */
     public void changeActivityReq(Activity activity, WRequirement newReq) {
         WRequirement oldReq = activity.getRequirement();
         if (oldReq != null) {
@@ -221,6 +241,12 @@ public class ResourceFacade {
         newReq.addActivity(activity);
     }
 
+    /**
+     * Destroy an activity
+     *
+     * @param activityId id of activity to destroy
+     *
+     */
     public void deleteActivity(Long activityId) {
         Activity activity = this.findActivity(activityId);
         activity.getResourceInstance().removeActivity(activity);
@@ -236,7 +262,7 @@ public class ResourceFacade {
      * @param resourceInstanceId
      * @param editable
      * @param time
-     * @return
+     * @return the new resource occupation
      */
     public Occupation addOccupation(Long resourceInstanceId,
             Boolean editable,
@@ -250,6 +276,11 @@ public class ResourceFacade {
         return newOccupation;
     }
 
+    /**
+     * Remove an occupation
+     *
+     * @param occupationId
+     */
     public void removeOccupation(Long occupationId) {
         Occupation occupation = this.findOccupation(occupationId);
         occupation.getResourceInstance().removeOccupation(occupation);
@@ -257,10 +288,12 @@ public class ResourceFacade {
 
     /**
      *
+     * plan a taskInstance at a specific period
+     *
      * @param player
      * @param taskInstanceId
      * @param period
-     * @return
+     * @return the taskInstance, which contains the new planning
      */
     public TaskInstance plan(Player player, Long taskInstanceId, Integer period) {
         TaskInstance ti = findTaskInstance(taskInstanceId);
@@ -277,11 +310,12 @@ public class ResourceFacade {
     }
 
     /**
+     * plan a taskInstance at a specific period
      *
      * @param playerId
      * @param taskInstanceId
      * @param period
-     * @return
+     * @return the taskInstance, which contains the new planning
      */
     public TaskInstance plan(Long playerId, Long taskInstanceId, Integer period) {
         Player player = playerFacade.find(playerId);
@@ -294,7 +328,7 @@ public class ResourceFacade {
      * @param player
      * @param taskInstanceId
      * @param period
-     * @return
+     * @return the taskInstance, which contains the new planning
      */
     public TaskInstance unplan(Player player, Long taskInstanceId, Integer period) {
         TaskInstance ti = findTaskInstance(taskInstanceId);
@@ -312,7 +346,7 @@ public class ResourceFacade {
      * @param playerId
      * @param taskInstanceId
      * @param period
-     * @return
+     * @return the taskInstance, which contains the new planning
      */
     public TaskInstance unplan(Long playerId, Long taskInstanceId, Integer period) {
         Player player = playerFacade.find(playerId);

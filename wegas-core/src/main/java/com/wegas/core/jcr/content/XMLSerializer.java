@@ -18,7 +18,7 @@ import org.xml.sax.*;
 /**
  * Serilalize SAX Events to outputStream
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class XMLSerializer implements ContentHandler {
 

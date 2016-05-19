@@ -11,7 +11,7 @@ import org.apache.shiro.authc.AuthenticationToken;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class FacebookToken implements AuthenticationToken {
 

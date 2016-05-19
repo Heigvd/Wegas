@@ -18,7 +18,7 @@ import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import javax.persistence.*;
 
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 //@XmlType(name = "Reply")
@@ -94,16 +94,6 @@ public class Reply extends AbstractEntity /*implements Broadcastable */ {
         this.ignored = ignored;
     }
 
-    /**
-     * @PostPersist
-     * @PostUpdate
-     * @PostRemove public void onUpdate() {
-     * this.getQuestionInstance().onInstanceUpdate();
-     * }
-     * @Override public Map<String, List<AbstractEntity>> getEntities() {
-     * return this.getQuestionInstance().getEntities();
-     * }
-     */
     @Override
     public Long getId() {
         return this.id;
@@ -127,12 +117,8 @@ public class Reply extends AbstractEntity /*implements Broadcastable */ {
         this.questionInstance = questionInstance;
     }
 
-    /*
-     * @return the unread
-     */
-
     /**
-     * @return
+     * @return true if the reply has not yet been read by a player
      */
     public Boolean getUnread() {
         return unread;

@@ -22,7 +22,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
 @Path("User/{userId :([1-9][0-9]*)?}{userSep: /?}Account")

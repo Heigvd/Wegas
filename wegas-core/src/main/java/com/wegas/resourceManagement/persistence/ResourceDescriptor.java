@@ -24,7 +24,7 @@ import com.wegas.core.exception.client.WegasIncompatibleType;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
@@ -98,18 +98,21 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
     }
 
     /**
+     * get property by key
      *
      * @param key
-     * @return
+     * @return the key property or null
      */
     public String getProperty(String key) {
         return this.properties.get(key);
     }
 
     /**
+     * get property by key, cast to double
      *
      * @param key
-     * @return
+     * @return the value mapped by key, cast to double
+     * @throws NumberFormatException if the property is not a number
      */
     public double getPropertyD(String key) {
         return Double.valueOf(this.properties.get(key));
@@ -146,7 +149,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
     /**
      *
      * @param p
-     * @return
+     * @return resource moral
      * @deprecated
      */
     public Integer getMoral(Player p) {
@@ -174,10 +177,12 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
     }
 
     /**
+     * Get a resource instance property, cast to double
      *
      * @param p
      * @param key
-     * @return
+     * @return value matching the key from given player's instance, cast to
+     * double, or Double.NaN
      */
     public double getNumberInstanceProperty(Player p, String key) {
         String value = this.getInstance(p).getProperty(key);
@@ -194,7 +199,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
      *
      * @param p
      * @param key
-     * @return
+     * @return value matching the key from given player's instance
      */
     public String getStringInstanceProperty(Player p, String key) {
         return this.getInstance(p).getProperty(key);
@@ -343,10 +348,11 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
     /**
      *
      * @param p
+     * @return true is the player's resourceInstance is active
      */
-    public void getActive(Player p) {
+    public boolean getActive(Player p) {
         ResourceInstance instance = this.getInstance(p);
-        instance.getActive();
+        return instance.getActive();
     }
 
     /**

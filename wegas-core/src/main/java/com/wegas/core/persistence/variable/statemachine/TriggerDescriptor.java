@@ -24,7 +24,7 @@ import com.wegas.core.exception.client.WegasIncompatibleType;
 
 /**
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Entity
 //@XmlRootElement

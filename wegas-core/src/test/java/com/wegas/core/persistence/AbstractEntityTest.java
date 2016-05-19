@@ -25,7 +25,7 @@ import static junit.framework.Assert.assertNull;
 /**
  * CRUD testunit for Entities (Integration test)<br/> Setup embedded-glassfish
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public abstract class AbstractEntityTest<T extends AbstractEntity> {
 
