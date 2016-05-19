@@ -77,7 +77,7 @@ public class QuestionSingleton {
         result.addReply(reply);
         questionInstance.addReply(reply);
         //em.persist(reply);
-        em.flush();
+//        em.flush();
         return reply;
     }
 

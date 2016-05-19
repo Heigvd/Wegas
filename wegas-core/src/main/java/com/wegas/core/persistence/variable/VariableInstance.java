@@ -41,17 +41,18 @@ import java.util.List;
 import java.util.Map;
 
 ////import javax.xml.bind.annotation.XmlTransient;
+
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @NamedQueries({
-    //@NamedQuery(name = "findTeamInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.teamScopeKey = :teamid"),
-    //@NamedQuery(name = "findPlayerInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.playerScopeKey = :playerid"),
-    @NamedQuery(name = "findInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE EXISTS "
-        + "(SELECT player From Player player WHERE player.id = :playerid AND "
-        + "(variableinstance.playerScopeKey = player.id OR variableinstance.teamScopeKey = player.teamId OR variableinstance.gameScopeKey = player.team.gameId))")
+        //@NamedQuery(name = "findTeamInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.teamScopeKey = :teamid"),
+        //@NamedQuery(name = "findPlayerInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.playerScopeKey = :playerid"),
+        @NamedQuery(name = "findInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE EXISTS "
+                + "(SELECT player From Player player WHERE player.id = :playerid AND "
+                + "(variableinstance.playerScopeKey = player.id OR variableinstance.teamScopeKey = player.teamId OR variableinstance.gameScopeKey = player.team.gameId))")
 })
 
 /*@Indexes(value = { // JPA 2.0 eclipse link extension TO BE REMOVED
@@ -63,30 +64,30 @@ import java.util.Map;
 
  /* JPA2.1 (GlassFish4) Indexes */
 @Table(indexes = {
-    @Index(columnList = "gamescope_id"),
-    @Index(columnList = "teamscope_id"),
-    @Index(columnList = "playerscope_id"),
-    @Index(columnList = "variableinstances_key"),
-    @Index(columnList = "teamvariableinstances_key"),
-    @Index(columnList = "gamevariableinstances_key")
+        @Index(columnList = "gamescope_id"),
+        @Index(columnList = "teamscope_id"),
+        @Index(columnList = "playerscope_id"),
+        @Index(columnList = "variableinstances_key"),
+        @Index(columnList = "teamvariableinstances_key"),
+        @Index(columnList = "gamevariableinstances_key")
 })
 
 //@JsonIgnoreProperties(value={"descriptorId"})
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "StringInstance", value = StringInstance.class),
-    @JsonSubTypes.Type(name = "TextInstance", value = TextInstance.class),
-    @JsonSubTypes.Type(name = "BooleanInstance", value = BooleanInstance.class),
-    @JsonSubTypes.Type(name = "ListInstance", value = ListInstance.class),
-    @JsonSubTypes.Type(name = "NumberInstance", value = NumberInstance.class),
-    @JsonSubTypes.Type(name = "InboxInstance", value = InboxInstance.class),
-    @JsonSubTypes.Type(name = "FSMInstance", value = StateMachineInstance.class),
-    @JsonSubTypes.Type(name = "QuestionInstance", value = QuestionInstance.class),
-    @JsonSubTypes.Type(name = "ChoiceInstance", value = ChoiceInstance.class),
-    @JsonSubTypes.Type(name = "ResourceInstance", value = ResourceInstance.class),
-    @JsonSubTypes.Type(name = "TaskInstance", value = TaskInstance.class),
-    @JsonSubTypes.Type(name = "ObjectInstance", value = ObjectInstance.class),
-    @JsonSubTypes.Type(name = "PeerReviewInstance", value = PeerReviewInstance.class),
-    @JsonSubTypes.Type(name = "BurndownInstance", value = BurndownInstance.class)
+        @JsonSubTypes.Type(name = "StringInstance", value = StringInstance.class),
+        @JsonSubTypes.Type(name = "TextInstance", value = TextInstance.class),
+        @JsonSubTypes.Type(name = "BooleanInstance", value = BooleanInstance.class),
+        @JsonSubTypes.Type(name = "ListInstance", value = ListInstance.class),
+        @JsonSubTypes.Type(name = "NumberInstance", value = NumberInstance.class),
+        @JsonSubTypes.Type(name = "InboxInstance", value = InboxInstance.class),
+        @JsonSubTypes.Type(name = "FSMInstance", value = StateMachineInstance.class),
+        @JsonSubTypes.Type(name = "QuestionInstance", value = QuestionInstance.class),
+        @JsonSubTypes.Type(name = "ChoiceInstance", value = ChoiceInstance.class),
+        @JsonSubTypes.Type(name = "ResourceInstance", value = ResourceInstance.class),
+        @JsonSubTypes.Type(name = "TaskInstance", value = TaskInstance.class),
+        @JsonSubTypes.Type(name = "ObjectInstance", value = ObjectInstance.class),
+        @JsonSubTypes.Type(name = "PeerReviewInstance", value = PeerReviewInstance.class),
+        @JsonSubTypes.Type(name = "BurndownInstance", value = BurndownInstance.class)
 })
 abstract public class VariableInstance extends AbstractEntity implements Broadcastable {
 
@@ -130,7 +131,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "variableInstance")
     @JsonIgnore
     private GameModelScope gameModelScope;
-
     /**
      *
      */
@@ -143,26 +143,36 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      */
     @Column(name = "variableinstances_key", insertable = false, updatable = false, columnDefinition = "bigint")
     private Long playerScopeKey;
-
+    /**
+     *
+     */
     @JoinColumn(name = "variableinstances_key", insertable = false, updatable = false)
+    @ManyToOne
+    @JsonIgnore
     private Player player;
-
     /**
      *
      */
     @Column(name = "gamevariableinstances_key", insertable = false, updatable = false, columnDefinition = "bigint")
     private Long gameScopeKey;
-
+    /**
+     *
+     */
     @JoinColumn(name = "gamevariableinstances_key", insertable = false, updatable = false)
+    @ManyToOne
+    @JsonIgnore
     private Game game;
-
     /**
      *
      */
     @Column(name = "teamvariableinstances_key", insertable = false, updatable = false, columnDefinition = "bigint")
     private Long teamScopeKey;
-
+    /**
+     *
+     */
     @JoinColumn(name = "teamvariableinstances_key", insertable = false, updatable = false)
+    @ManyToOne
+    @JsonIgnore
     private Team team;
 
     /**
@@ -262,6 +272,27 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      */
     public void setDescriptorId(Long l) {
         // Dummy so that jaxb doesnt yell
+    }
+
+    /**
+     * @return player if any
+     */
+    public Player getPlayer() {
+        return player;
+    }
+
+    /**
+     * @return game if any
+     */
+    public Game getGame() {
+        return game;
+    }
+
+    /**
+     * @return team if any
+     */
+    public Team getTeam() {
+        return team;
     }
 
     /**
@@ -369,8 +400,8 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      * return instance descriptor equals the instance is a default or effective
      * one
      *
-     * @deprecated {@link #findDescriptor()}
      * @return
+     * @deprecated {@link #findDescriptor()}
      */
     @JsonIgnore
     public VariableDescriptor getDescriptorOrDefaultDescriptor() {
