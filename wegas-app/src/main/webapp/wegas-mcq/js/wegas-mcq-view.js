@@ -345,17 +345,18 @@ YUI.add('wegas-mcq-view', function(Y) {
                     } else {
                         var noTitle = (choiceD.get("title").trim() == '');
                         var noDescr = (currDescr.trim() == '');
-                        ret.push('<div class="mcq-choice-vertical">');
+                        ret.push('<div class="mcq-choice-vertical', (noTitle&&noDescr ? ' nohover' : ''), '">');
                         ret.push('<div class="mcq-choice', (answerable || isChosenReply) ? (noTitle&&noDescr ? ' notitle' : '') : ' spurned', '">');
                         title = noTitle ? "&nbsp;" : choiceD.get("title");
-                        ret.push('<div class="mcq-choice-name',(noTitle&&noDescr ? ' notitle' : ''),'">', title, '</div>');
+                        ret.push('<div class="mcq-choice-name',(noTitle&&noDescr ? ' notitle' : (!noTitle&&!noDescr ? ' colspan' : '')),'">', title, '</div>');
                         if (!noDescr)
                             ret.push('<div class="mcq-choice-description">', currDescr, '</div>');
                         ret.push('</div>'); // end cell mcq-choice
                         ret.push('<div class="mcq-choices-vertical-submit',
                             (answerable || isChosenReply) ? '' : ' spurned',
                             (noTitle ? ' notitle' : ''),
-                            (noDescr ? ' nodescr' : ''), '">');
+                            (noDescr ? ' nodescr' : ''),
+                            (!noTitle&&!noDescr ? ' colspan' : ''), '">');
                         if (!noDescr)  // Previous width of this div: 115px (if allowMultiple) and else 95px
                             ret.push('<div class="mcq-choice-name" style="padding:0; width:100%">&nbsp;</div>'); // Finish line with same style as below
                         ret.push('<div class="mcq-checkbox-container">');
