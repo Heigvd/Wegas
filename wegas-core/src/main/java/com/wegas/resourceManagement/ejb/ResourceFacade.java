@@ -285,8 +285,7 @@ public class ResourceFacade {
      */
     public TaskInstance plan(Long playerId, Long taskInstanceId, Integer period) {
         Player player = playerFacade.find(playerId);
-        TaskInstance ti = findTaskInstance(taskInstanceId);
-        requestManager.lock("TaskPlan-" + ti.getAudience());
+        requestManager.lock("TaskPlan-" + taskInstanceId);
         return plan(player, taskInstanceId, period);
     }
 
@@ -317,8 +316,7 @@ public class ResourceFacade {
      */
     public TaskInstance unplan(Long playerId, Long taskInstanceId, Integer period) {
         Player player = playerFacade.find(playerId);
-        TaskInstance ti = findTaskInstance(taskInstanceId);
-        requestManager.lock("TaskPlan-" + ti.getAudience());
+        requestManager.lock("TaskPlan-" + taskInstanceId);
         return this.unplan(player, taskInstanceId, period);
     }
 
