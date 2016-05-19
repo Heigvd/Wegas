@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Stores error message in session.
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @ManagedBean(name = "error")
 public class ErrorController implements Serializable {

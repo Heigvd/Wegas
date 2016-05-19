@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class AbstractGameController implements Serializable {
 

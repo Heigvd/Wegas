@@ -16,7 +16,7 @@ import org.junit.Before;
 /**
  *
  * @author Maxence Laurent <maxence.laurent at gmail.com>
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 //abstract public class PMGameAbstractTest extends AbstractEmbeddedGlassfishTest {
 abstract public class PMGameAbstractTest extends AbstractEJBContainerTest {
