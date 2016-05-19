@@ -62,15 +62,15 @@
 .wegas-mcqview .mcq-choice-vertical .mcq-choice:hover {
     background-color: rgb(245,245,245);
 }
-
+.wegas-mcqview .mcq-choice-vertical.nohover:hover {
+    background-color: transparent;
+}
 .wegas-mcqview .mcq-choices-vertical-checkbox,
 .wegas-mcqview .mcq-choices-vertical-submit,
 .wegas-mcqview .mcq-choice-vertical {
     border-top-right-radius: 3px;
     border-bottom-right-radius: 3px;
 }
-
-
 .wegas-mcqview .mcq-choice-horizontal .mcq-choice {
     border-top-left-radius: 3px;
     border-bottom-left-radius: 3px;
@@ -98,6 +98,9 @@
     background: transparent;
     vertical-align: baseline;
     border: none;
+}
+.wegas-mcqview .mcq-choices-vertical-submit.colspan {
+    position: inherit;
 }
 .wegas-mcqview .mcq-choices-vertical-finalsubmit {
     display: table-cell;
@@ -149,13 +152,22 @@
 .wegas-mcqview .mcq-choice.notitle {
     border: none;
 }
+.wegas-mcqview .mcq-choice.notitle:hover {
+    background-color: transparent;
+}
 .wegas-mcqview .mcq-choice-name.notitle {
     line-height: 35px;
-    background: transparent;
+    background-color: transparent;
+}
+.wegas-mcqview .mcq-choice-vertical .mcq-choice-name.colspan {
+    z-index: 2;
+    padding-right: 0;
+    width: 119.5%; /* 1/82% */
 }
 .wegas-mcqview .mcq-choices-vertical-submit.spurned,
 .wegas-mcqview .mcq-choices-vertical-checkbox.spurned,
-.wegas-mcqview .mcq-choice.spurned {
+.wegas-mcqview .mcq-choice.spurned,
+.wegas-mcqview .mcq-choice.spurned:hover {
     background: #eeeeee;
     color: #aaa;
 }
@@ -184,6 +196,7 @@
 .wegas-mcqview .mcq-question button {
     display: inline-block;
     position: relative;
+    z-index: 3;
     background: #69bd7f;
     text-transform: uppercase;
     height: 24px;
