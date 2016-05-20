@@ -31,32 +31,32 @@ public class ManagedResponse {
     }
 
     /**
-     * 
-     * @return 
+     *
+     * @return all entities that have been destroyed during the request
      */
     public List<AbstractEntity> getDeletedEntities() {
         return deletedEntities;
     }
 
     /**
-     * 
-     * @param deletedEntities 
+     *
+     * @param deletedEntities
      */
     public void setDeletedEntities(List<AbstractEntity> deletedEntities) {
         this.deletedEntities = deletedEntities;
     }
 
     /**
-     * 
-     * @return 
+     *
+     * @return all entities that have been updated during the request
      */
     public List<AbstractEntity> getUpdatedEntities() {
         return updatedEntities;
     }
 
     /**
-     * 
-     * @param updatedEntities 
+     *
+     * @param updatedEntities
      */
     public void setUpdatedEntities(List<AbstractEntity> updatedEntities) {
         this.updatedEntities = updatedEntities;

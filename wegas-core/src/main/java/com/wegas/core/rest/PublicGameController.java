@@ -22,8 +22,10 @@ import javax.ws.rs.core.MediaType;
 
 /**
  *
+ * @deprecated ou bien ?
  * @author Yannick Lagger (lagger.yannick.com)
  */
+@Deprecated
 @Stateless
 @Path("/")
 @Produces(MediaType.APPLICATION_JSON)
@@ -37,8 +39,7 @@ public class PublicGameController {
 
     /**
      *
-     * @param userId
-     * @return
+     * @return all public games
      */
     @GET
     @Path("PublicGames")
@@ -49,7 +50,7 @@ public class PublicGameController {
     /**
      *
      * @param userId
-     * @return
+     * @return all public game + games current user plays in (?)
      */
     @GET
     @Path("PublicGames/{userId : [1-9][0-9]*}")
@@ -90,7 +91,7 @@ public class PublicGameController {
      *
      * @param userId
      * @param gameModelId
-     * @return
+     * @return all games from gameModel the user plays in
      */
     @GET
     @Path("RegisteredGames/{userId : [1-9][0-9]*}/{gameModelId : [1-9][0-9]*}")
@@ -101,7 +102,7 @@ public class PublicGameController {
     /**
      *
      * @param userId
-     * @return
+     * @return all games the user plays in
      */
     @GET
     @Path("RegisteredGames/{userId : [1-9][0-9]*}/")

@@ -28,15 +28,17 @@ public class AuthenticationFilter extends PassThruAuthenticationFilter {
     /**
      * Extend to authorize remembered login
      *
-     * @todo It should not be authorized to do sensitive operations like pwd
      * edition if credentials were not give for the current session.
+     *
      * @param request
      * @param response
      * @param mappedValue
-     * @return
+     * @return true if current user is already logged in or if an automatic
+     *         guest login has been done
      */
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
+        // @todo It should not be authorized to do sensitive operations like pwd
         Subject subject = getSubject(request, response);
         if (subject.isAuthenticated() || subject.isRemembered()) {
             return true;

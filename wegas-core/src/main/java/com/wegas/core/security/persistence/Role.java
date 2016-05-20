@@ -20,11 +20,11 @@ import java.util.*;
  */
 @Entity
 @Table(name = "roles", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "name")
+    @UniqueConstraint(columnNames = "name")
 })
 @Cacheable(true)
 @NamedQueries({
-        @NamedQuery(name = "Role.findByName", query = "SELECT a FROM Role a WHERE a.name = :name")})
+    @NamedQuery(name = "Role.findByName", query = "SELECT a FROM Role a WHERE a.name = :name")})
 public class Role extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
@@ -74,7 +74,9 @@ public class Role extends AbstractEntity {
     }
 
     /**
-     * @param name
+     * Create a role with the specified name
+     *
+     * @param name role name
      */
     public Role(String name) {
         this.name = name;
@@ -92,9 +94,6 @@ public class Role extends AbstractEntity {
         }
     }
 
-    /**
-     * @return
-     */
     @Override
     public Long getId() {
         return id;
@@ -108,7 +107,9 @@ public class Role extends AbstractEntity {
     }
 
     /**
-     * @return
+     * Get the role name
+     *
+     * @return the role name
      */
     public String getName() {
         return name;
@@ -122,7 +123,9 @@ public class Role extends AbstractEntity {
     }
 
     /**
-     * @return
+     * get role description
+     *
+     * @return the role description
      */
     public String getDescription() {
         return description;
@@ -136,7 +139,7 @@ public class Role extends AbstractEntity {
     }
 
     /**
-     * @return
+     * @return all role permissions
      */
     public List<Permission> getPermissions() {
         return permissions;
@@ -154,7 +157,7 @@ public class Role extends AbstractEntity {
 
     /**
      * @param permission
-     * @return
+     * @return true if the permission has successfully been added
      */
     public boolean addPermission(String permission) {
         return this.addPermission(new Permission(permission));
@@ -162,7 +165,7 @@ public class Role extends AbstractEntity {
 
     /**
      * @param permission
-     * @return
+     * @return true if the permission has successfully been added
      */
     public boolean addPermission(Permission permission) {
         if (!this.permissions.contains(permission)) {
@@ -175,7 +178,7 @@ public class Role extends AbstractEntity {
 
     /**
      * @param permission
-     * @return
+     * @return true if the permission has successfully been removed
      */
     public boolean removePermission(String permission) {
         Permission perm = new Permission(permission);
@@ -192,12 +195,21 @@ public class Role extends AbstractEntity {
         return returnVal;
     }
 
+    /**
+     * count the number of user with this role
+     *
+     * @return member's count
+     */
     public int getNumberOfMember() {
         return users.size();
-        //return abstractAccounts.size();
     }
 
+    /**
+     *
+     * @param numberOfMember
+     */
     public void setNumberOfMember(int numberOfMember) {
+        // NoOp
     }
 
     /**
@@ -219,7 +231,9 @@ public class Role extends AbstractEntity {
     }
 
     /**
-     * @param role
+     * register new user within the role
+     *
+     * @param user
      */
     public void addUser(User user) {
         this.users.add(user);
@@ -228,12 +242,11 @@ public class Role extends AbstractEntity {
     /**
      * strike out this account from the role
      *
-     * @param role
+     * @param user user to remove
      */
     public void removeUser(User user) {
         this.users.remove(user);
     }
-
 
     @Override
     public String toString() {

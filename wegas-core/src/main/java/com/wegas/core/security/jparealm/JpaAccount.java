@@ -98,7 +98,7 @@ public class JpaAccount extends AbstractAccount {
     public void preUpdate() {
         if (this.password != null && !this.password.isEmpty()) {
             this.passwordHex = new Sha256Hash(this.password,
-                (new SimpleByteSource(this.getSalt())).getBytes()).toHex();
+                    (new SimpleByteSource(this.getSalt())).getBytes()).toHex();
         }
     }
 
@@ -154,7 +154,7 @@ public class JpaAccount extends AbstractAccount {
     }
 
     /**
-     * @return
+     * @return md5 address hash
      */
     public String getHash() {
         if (email != null) {

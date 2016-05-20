@@ -179,13 +179,6 @@ public class ResourceInstance extends VariableInstance {
     }
 
     /**
-     *
-     * @param task
-     * @return public Assignment assign(TaskDescriptor task) { final Assignment
-     * assignment = new Assignment(task); this.addAssignment(assignment); return
-     * assignment; }
-     */
-    /**
      * @return the activities
      */
     public List<Activity> getActivities() {
@@ -231,8 +224,8 @@ public class ResourceInstance extends VariableInstance {
      *
      * @param task
      * @return the activity public Activity createActivity(TaskDescriptor task)
-     * { final Activity activity = new Activity(task);
-     * this.addActivity(activity); return activity; }
+     *         { final Activity activity = new Activity(task);
+     *         this.addActivity(activity); return activity; }
      */
     /**
      * @return the activities
@@ -279,7 +272,8 @@ public class ResourceInstance extends VariableInstance {
     /**
      *
      * @return public Occupation addOccupation() { Occupation occupation = new
-     * Occupation(); this.addOccupation(occupation); return occupation; }
+     *         Occupation(); this.addOccupation(occupation); return occupation;
+     *         }
      */
     /**
      * @return the active

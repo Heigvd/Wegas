@@ -268,40 +268,40 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     /**
      * For serialization
      *
-     * @return
+     * @return true if current user has view permission on this
      */
     @JsonView(Views.IndexI.class)
     public Boolean getCanView() {
+        // I DO NOT LIKE VERY MUCH USING SHIRO WITHIN ENTITIES...
         return SecurityUtils.getSubject().isPermitted("GameModel:View:gm" + this.id);
     }
 
     /**
-     * @return
+     * @return true if current user has edit permission on this
      */
     @JsonView(Views.IndexI.class)
     public Boolean getCanEdit() {
+        // I DO NOT LIKE VERY MUCH USING SHIRO WITHIN ENTITIES...
         return SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + this.id);
     }
 
     /**
-     * @return
+     * @return true if current user has duplicate permission on this
      */
     @JsonView(Views.IndexI.class)
     public Boolean getCanDuplicate() {
+        // I DO NOT LIKE VERY MUCH USING SHIRO WITHIN ENTITIES...
         return SecurityUtils.getSubject().isPermitted("GameModel:Duplicate:gm" + this.id);
     }
 
     /**
-     * @return
+     * @return true if current user has instantiate permission on this
      */
     @JsonView(Views.IndexI.class)
     public Boolean getCanInstantiate() {
         return SecurityUtils.getSubject().isPermitted("GameModel:Instantiate:gm" + this.id);
     }
 
-    /**
-     * @return
-     */
     @Override
     public Long getId() {
         return id;
@@ -314,17 +314,11 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         this.id = id;
     }
 
-    /**
-     * @return
-     */
     @Override
     public String getName() {
         return name;
     }
 
-    /**
-     * @param name
-     */
     @Override
     public void setName(String name) {
         this.name = name;
@@ -347,9 +341,8 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
-     * @return
+     * @return all variable descriptors
      */
-    //@XmlTransient
     @JsonIgnore
     public List<VariableDescriptor> getVariableDescriptors() {
         return variableDescriptors;
@@ -384,9 +377,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         }
     }
 
-    /**
-     * @param variableDescriptor
-     */
     @Override
     public void addItem(VariableDescriptor variableDescriptor) {
         this.getChildVariableDescriptors().add(variableDescriptor);
@@ -406,7 +396,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     /**
      * @return the games
      */
-    //@XmlTransient
     @JsonIgnore
     public List<Game> getGames() {
         return games;
@@ -446,7 +435,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
-     * @return
+     * @return all players from all teams and all games
      */
     @JsonIgnore
     public List<Player> getPlayers() {
@@ -619,7 +608,8 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
-     * @return
+     * @return name of the user who created this or null if user no longer
+     *         exists
      */
     public String getCreatedByName() {
         if (this.getCreatedBy() != null) {

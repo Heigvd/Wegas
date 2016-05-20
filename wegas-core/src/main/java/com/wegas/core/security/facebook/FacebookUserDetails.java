@@ -74,7 +74,7 @@ public class FacebookUserDetails {
 
     /**
      *
-     * @return
+     * @return facebook user id
      */
     public String getId() {
         return id;
@@ -90,7 +90,7 @@ public class FacebookUserDetails {
 
     /**
      *
-     * @return
+     * @return facebook user firsname
      */
     public String getFirstname() {
         return firstname;
@@ -106,7 +106,7 @@ public class FacebookUserDetails {
 
     /**
      *
-     * @return
+     * @return facebook user lastname
      */
     public String getLastname() {
         return lastname;
@@ -122,7 +122,7 @@ public class FacebookUserDetails {
 
     /**
      *
-     * @return
+     * @return facebook user email
      */
     public String getEmail() {
         return email;

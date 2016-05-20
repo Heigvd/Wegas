@@ -55,7 +55,7 @@ public class RoleFacade extends BaseFacade<Role> {
     /**
      *
      * @param name
-     * @return
+     * @return role matching the given name
      * @throws WegasNoResultException role not found
      */
     public Role findByName(String name) throws WegasNoResultException {

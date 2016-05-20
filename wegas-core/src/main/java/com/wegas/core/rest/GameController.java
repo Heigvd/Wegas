@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 
 /**
@@ -73,7 +74,9 @@ public class GameController {
 
     /**
      * @param entityId
-     * @return
+     * @return game matching entityId
+     * @throws AuthorizationException current user doesn't have access to the
+     *                                requested game
      */
     @GET
     @Path("{entityId : [1-9][0-9]*}")
@@ -86,7 +89,7 @@ public class GameController {
 
     /**
      * @param gameModelId
-     * @return
+     * @return all gameModel games
      */
     @GET
     public Collection<Game> index(@PathParam("gameModelId") String gameModelId) {
@@ -104,9 +107,11 @@ public class GameController {
     }
 
     /**
+     * Create a new game based on a given gameModel copy.
+     *
      * @param gameModelId
      * @param entity
-     * @return
+     * @return the new game with its debug team filtered out
      * @throws IOException
      */
     @POST
@@ -119,9 +124,11 @@ public class GameController {
     }
 
     /**
+     * Create a new game within the given game model
+     *
      * @param gameModelId
      * @param entity
-     * @return
+     * @return the new game with its debug team filtered out
      * @throws IOException
      */
     @POST
@@ -138,7 +145,7 @@ public class GameController {
      *
      * @param gameModelId
      * @param entity
-     * @return
+     * @return the new game with its debug team
      * @throws IOException
      */
     @POST
@@ -150,7 +157,7 @@ public class GameController {
     /**
      * @param entityId
      * @param entity
-     * @return
+     * @return up to date game
      */
     @PUT
     @Path("{entityId: [1-9][0-9]*}")
@@ -161,6 +168,13 @@ public class GameController {
         return gameFacade.update(entityId, entity);
     }
 
+    /**
+     * Change game status (bin, live, delete)
+     *
+     * @param entityId
+     * @param status
+     * @return the game with up to date status
+     */
     @PUT
     @Path("{entityId: [1-9][0-9]*}/status/{status: [A-Z]*}")
     public Game changeStatus(@PathParam("entityId") Long entityId, @PathParam("status") final Game.Status status) {
@@ -180,6 +194,12 @@ public class GameController {
         return game;
     }
 
+    /**
+     * Get all game with given status
+     *
+     * @param status
+     * @return all game having the given status
+     */
     @GET
     @Path("status/{status: [A-Z]*}")
     public Collection<Game> findByStatus(@PathParam("status") final Game.Status status) {
@@ -193,6 +213,12 @@ public class GameController {
         return retGames;
     }
 
+    /**
+     * Count games by status
+     *
+     * @param status
+     * @return number of game having the given status
+     */
     @GET
     @Path("status/{status: [A-Z]*}/count")
     public int countByStatus(@PathParam("status") final Game.Status status) {
@@ -221,6 +247,10 @@ public class GameController {
         }
     }
 
+    /**
+     *
+     * @return all games which gave been deleted
+     */
     @DELETE
     public Collection<Game> deleteAll() {
         final Collection<Game> retGames = new ArrayList<>();
@@ -269,6 +299,12 @@ public class GameController {
         return r;
     }
 
+    /**
+     * Filter out the debug team
+     *
+     * @param game
+     * @return the game without the debug team
+     */
     private Game getGameWithoutDebugTeam(Game game) {
         if (game != null) {
             em.detach(game);
@@ -285,7 +321,7 @@ public class GameController {
 
     /**
      * @param token
-     * @return
+     * @return game which matches the token, without its debug team
      */
     @GET
     @Path("/FindByToken/{token : .*}/")
@@ -297,8 +333,8 @@ public class GameController {
     /**
      * Resets all the variables of a given game
      *
-     * @param gameId gameId
-     * @return OK
+     * @param gameId gameId id of game to reset
+     * @return HTTP 200 Ok
      */
     @GET
     @Path("{gameId : [1-9][0-9]*}/Reset")

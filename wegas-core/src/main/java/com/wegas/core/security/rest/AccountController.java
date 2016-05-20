@@ -18,6 +18,7 @@ import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 
 /**
@@ -47,9 +48,10 @@ public class AccountController {
     private TeamFacade teamFacade;
 
     /**
+     * Create a new account
      *
-     * @param entity
-     * @return
+     * @param entity new account to create
+     * @return the user the account has been created for
      */
     @POST
     @RequiresPermissions("User:Edit")
@@ -61,8 +63,10 @@ public class AccountController {
 
     /**
      *
+     * Retrieve an account
+     *
      * @param entityId
-     * @return
+     * @return AbstractAccount matching given entityId
      */
     @GET
     @Path("{entityId : [1-9][0-9]*}")
@@ -75,10 +79,14 @@ public class AccountController {
     }
 
     /**
+     * Update an account
      *
      * @param accountId
      * @param entity
-     * @return
+     * @return up-to-date account
+     * @throws AuthorizationException if currentUser cannot edit users or
+     *                                targeted account does not belongs to
+     *                                current user
      */
     @PUT
     @Path("{accountId: [1-9][0-9]*}")
@@ -96,9 +104,10 @@ public class AccountController {
     }
 
     /**
+     * Delete an account
      *
      * @param accountId
-     * @return
+     * @return the just deleted account
      */
     @DELETE
     @Path("{accountId: [1-9][0-9]*}")
@@ -115,9 +124,11 @@ public class AccountController {
     }
 
     /**
+     * Get all account linked to team's players Account email addresses will be
+     * altered (by hiding some parts) so they can be publicly displayed
      *
-     * @param teamId
-     * @return
+     * @param teamId id of the team we want players from
+     * @return List of abstractAccount which are players of the team
      */
     @GET
     @Path("FindByTeamId/{teamId: [1-9][0-9]*}")

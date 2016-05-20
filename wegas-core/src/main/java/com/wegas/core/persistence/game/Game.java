@@ -30,12 +30,12 @@ import java.util.*;
  */
 @Entity
 @Table(
-    uniqueConstraints = {
-        //    @UniqueConstraint(columnNames = {"name"}), 
-        @UniqueConstraint(columnNames = {"token"})},
-    indexes = {
-        @Index(columnList = "gamemodelid")
-    }
+        uniqueConstraints = {
+            //    @UniqueConstraint(columnNames = {"name"}), 
+            @UniqueConstraint(columnNames = {"token"})},
+        indexes = {
+            @Index(columnList = "gamemodelid")
+        }
 )
 @NamedQueries({
     @NamedQuery(name = "Game.findByStatus", query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status = :status ORDER BY g.createdTime ASC"),
@@ -214,7 +214,7 @@ public class Game extends NamedEntity implements Broadcastable {
     }
 
     /**
-     * @return
+     * @return all players from all teams
      */
     @JsonIgnore
     public List<Player> getPlayers() {
@@ -251,32 +251,23 @@ public class Game extends NamedEntity implements Broadcastable {
         this.gameModel = gameModel;
     }
 
-    /**
-     * @return
-     */
     @Override
     public Long getId() {
         return id;
     }
 
-    /**
-     * @return
-     */
     @Override
     public String getName() {
         return name;
     }
 
-    /**
-     * @param name
-     */
     @Override
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * @return
+     * @return short game name (10 first chars)
      */
     @JsonIgnore
     public String getShortName() {
@@ -345,7 +336,7 @@ public class Game extends NamedEntity implements Broadcastable {
     }
 
     /**
-     * @return
+     * @return game creator name or null if the user doesn't exists anymore
      */
     public String getCreatedByName() {
         if (this.getCreatedBy() != null) {
@@ -383,20 +374,21 @@ public class Game extends NamedEntity implements Broadcastable {
     }
 
     /**
-     * @return
+     * @return gameModel name
      */
     public String getGameModelName() {
         return this.getGameModel().getName();
     }
 
     /**
-     *
+     * NoOp make jackson happy
      */
     public void setGameModelName() {
+        // NoOp
     }
 
     /**
-     * @return
+     * @return get gameModel properties
      */
     public GameModelProperties getProperties() {
         return this.getGameModel().getProperties();

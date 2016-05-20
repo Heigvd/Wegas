@@ -21,6 +21,7 @@ import com.wegas.core.jcr.content.ContentConnectorFactory;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.GameModel.Status;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -112,9 +113,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         super(GameModel.class);
     }
 
-    /**
-     * @param entity
-     */
     @Override
     public void create(final GameModel entity) {
 
@@ -141,9 +139,9 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
     /**
      * @param toUpdate GameModel to update
-     * @param source GameModel to fetch instance from
-     * @param player instances owner
-     * @return
+     * @param source   GameModel to fetch instance from
+     * @param player   instances owner
+     * @return the gameModel with default instance merged with player's ones
      */
     public GameModel setDefaultInstancesFromPlayer(GameModel toUpdate, GameModel source, Player player) {
         try {
@@ -160,10 +158,22 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         }
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @param playerId
+     * @return the gameModel with default instance merged with player's ones
+     */
     public GameModel setDefaultInstancesFromPlayer(Long gameModelId, Long playerId) {
         return setDefaultInstancesFromPlayer(this.find(gameModelId), this.find(gameModelId), playerFacade.find(playerId));
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @param playerId
+     * @return a new gameModel with default instance merged with player's ones
+     */
     public GameModel createFromPlayer(Long gameModelId, Long playerId) {
         try {
             GameModel duplicata = this.duplicate(gameModelId);
@@ -199,7 +209,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      * Find a unique name for this new game (e.g. Oldname(1))
      *
      * @param oName
-     * @return
+     * @return new unique name
      */
     public String findUniqueName(String oName) {
         int suffix = 2;
@@ -241,7 +251,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
     /**
      * @param gameModelId
-     * @return
+     * @return gameModel copy
      * @throws IOException
      */
     public GameModel duplicateWithDebugGame(final Long gameModelId) throws IOException {
@@ -274,30 +284,30 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
-     * Set gameModel status, changing to {@link GameModel.Status#LIVE}
+     * Set gameModel status, changing to {@link Status#LIVE}
      *
      * @param entity GameModel
      */
     public void live(GameModel entity) {
-        entity.setStatus(GameModel.Status.LIVE);
+        entity.setStatus(Status.LIVE);
     }
 
     /**
-     * Set gameModel status, changing to {@link GameModel.Status#BIN}
+     * Set gameModel status, changing to {@link Status#BIN}
      *
      * @param entity GameModel
      */
     public void bin(GameModel entity) {
-        entity.setStatus(GameModel.Status.BIN);
+        entity.setStatus(Status.BIN);
     }
 
     /**
-     * Set gameModel status, changing to {@link GameModel.Status#DELETE}
+     * Set gameModel status, changing to {@link Status#DELETE}
      *
      * @param entity GameModel
      */
     public void delete(GameModel entity) {
-        entity.setStatus(GameModel.Status.DELETE);
+        entity.setStatus(Status.DELETE);
     }
 
     @Override
@@ -306,6 +316,11 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         return query.getResultList();
     }
 
+    /**
+     *
+     * @param status
+     * @return all gameModel matching the given status
+     */
     public List<GameModel> findByStatus(final GameModel.Status status) {
         final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findByStatus", GameModel.class);
         query.setParameter("status", status);
@@ -313,7 +328,9 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
-     * @return
+     * Template gameModels are editable scenrios
+     *
+     * @return all template GameModels
      */
     public List<GameModel> findTemplateGameModels() {
         final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findTemplate", GameModel.class);
@@ -321,7 +338,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
-     * @return
+     * @return all teamplate gameModel matching the given status
      */
     public List<GameModel> findTemplateGameModelsByStatus(final GameModel.Status status) {
         final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findTemplateByStatus", GameModel.class);
@@ -331,9 +348,8 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
     /**
      * @param name
-     * @return
-     * @throws NoResultException
-     * @throws com.wegas.core.exception.internal.WegasNoResultException
+     * @return the gameModel with the given name
+     * @throws WegasNoResultException gameModel not exists
      */
     public GameModel findByName(final String name) throws NonUniqueResultException, WegasNoResultException {
         final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findByName", GameModel.class);
@@ -430,9 +446,11 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
+     * create gameModel from a JSON version file
+     *
      * @param gameModelId
      * @param path
-     * @return
+     * @return the new gameModel
      * @throws IOException
      */
     public GameModel createFromVersion(Long gameModelId, String path) throws IOException {
@@ -461,7 +479,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
-     * @return
+     * @return looked-up EJB
      */
     public static GameModelFacade lookup() {
         try {

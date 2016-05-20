@@ -61,7 +61,7 @@ public class WebsocketController {
      * @param channelName
      * @param socketId
      *
-     * @return
+     * @return authentication result to return to client
      */
     @POST
     @Path("auth")
@@ -79,7 +79,7 @@ public class WebsocketController {
      * @param eventType
      * @param entityId
      *
-     * @return
+     * @return result of websocketFacade send
      *
      * @throws java.io.IOException
      */

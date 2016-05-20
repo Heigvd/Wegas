@@ -52,7 +52,7 @@ public class VariableInstanceController {
      *
      * @param entityId
      * @param entity
-     * @return
+     * @return up to date instance
      */
     @PUT
     @Path("{entityId: [1-9][0-9]*}")
@@ -73,12 +73,12 @@ public class VariableInstanceController {
     /**
      *
      * @param variableDescriptorId
-     * @fixme Is this method still in use?
      *
-     * @return
+     * @return all instances from variableDescriptor (but the default ones)
      */
     @GET
     public Collection<VariableInstance> index(@PathParam("variableDescriptorId") Long variableDescriptorId) {
+        // @fixme Is this method still in use?
 
         VariableDescriptor vd = variableDescriptorFacade.find(variableDescriptorId);
 
@@ -87,14 +87,20 @@ public class VariableInstanceController {
         return vd.getScope().getVariableInstances().values();
     }
 
+    /**
+     *
+     * @param variableDescriptorId
+     * @param playerId
+     * @return variable instance from descriptor belonging to the given player
+     */
     @GET
     @Path("player/{playerId: [1-9][0-9]*}")
     public VariableInstance find(@PathParam("variableDescriptorId") Long variableDescriptorId, @PathParam("playerId") Long playerId) {
 
         VariableInstance vi = variableInstanceFacade.find(variableDescriptorId, playerId);
         if (SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + vi.findDescriptor().getGameModelId()) // Can edit the game model
-            || SecurityUtils.getSubject().isPermitted("Game:Edit:g" + variableInstanceFacade.findGame(vi)) // or can edit the game
-            || userFacade.matchCurrentUser(playerId)) { // current user is the player
+                || SecurityUtils.getSubject().isPermitted("Game:Edit:g" + variableInstanceFacade.findGame(vi)) // or can edit the game
+                || userFacade.matchCurrentUser(playerId)) { // current user is the player
             return vi;
         } else {
             throw new WegasErrorMessage("error", "Forbidden");
@@ -106,7 +112,8 @@ public class VariableInstanceController {
      * @param variableDescriptorId
      * @param variableInstanceId
      *
-     * @return
+     * @return the instance or null if the instance is not instance of the given
+     *         variable descriptor
      */
     @GET
     @Path("{variableInstanceId: [1-9][0-9]*}")
@@ -122,21 +129,21 @@ public class VariableInstanceController {
 
     /**
      *
-     * @fixme Is this method still in use?
      *
      * @param gameModelId
      * @param variableDescriptorId
      * @param userId
      * @param newInstance
-     * @return
+     * @return up to date instance
      */
     @POST
     @Path("user/{userId : [1-9][0-9]*}")
     public VariableInstance setVariableInstance(
-        @PathParam("gameModelId") Long gameModelId,
-        @PathParam("variableDescriptorId") Long variableDescriptorId,
-        @PathParam("userId") Long userId,
-        VariableInstance newInstance) {
+            // @fixme Is this method still in use?
+            @PathParam("gameModelId") Long gameModelId,
+            @PathParam("variableDescriptorId") Long variableDescriptorId,
+            @PathParam("userId") Long userId,
+            VariableInstance newInstance) {
         return variableInstanceFacade.update(variableDescriptorId, userId, newInstance);
     }
 }

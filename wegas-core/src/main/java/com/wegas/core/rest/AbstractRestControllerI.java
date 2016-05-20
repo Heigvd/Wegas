@@ -24,19 +24,19 @@ import java.util.Collection;
 public interface AbstractRestControllerI<T extends AbstractFacade, U extends AbstractEntity> {
 
     /**
-     * Index : retrieve the game model list
+     * Index: get all entities this controller is designed for
      *
-     * @return
+     * @return all entities this controller is designed for
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     Collection<U> index();
 
     /**
-     * Retrieve a specific game model
+     * Retrieve a specific entity
      *
      * @param entityId
-     * @return OK
+     * @return entity matching given id
      */
     @GET
     @Path("{entityId : [1-9][0-9]*}")
@@ -44,8 +44,10 @@ public interface AbstractRestControllerI<T extends AbstractFacade, U extends Abs
     U get(@PathParam("entityId") Long entityId);
 
     /**
+     * Create a new entity
+     *
      * @param entity
-     * @return
+     * @return new entity
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -53,9 +55,11 @@ public interface AbstractRestControllerI<T extends AbstractFacade, U extends Abs
     U create(U entity);
 
     /**
+     * Update an entity
+     *
      * @param entityId
      * @param entity
-     * @return
+     * @return up to date entity
      */
     @PUT
     @Path("{entityId: [1-9][0-9]*}")
@@ -64,8 +68,10 @@ public interface AbstractRestControllerI<T extends AbstractFacade, U extends Abs
     U update(@PathParam("entityId") Long entityId, U entity);
 
     /**
+     * Duplicate an entity
+     *
      * @param entityId
-     * @return
+     * @return entity copy
      * @throws IOException
      */
     @POST
@@ -75,8 +81,10 @@ public interface AbstractRestControllerI<T extends AbstractFacade, U extends Abs
     U duplicate(@PathParam("entityId") Long entityId) throws IOException;
 
     /**
-     * @param entityId
-     * @return
+     * Delete an entity
+     *
+     * @param entityId id of entity to delete
+     * @return the just destroyed entity
      */
     @DELETE
     @Path("{entityId: [1-9][0-9]*}")

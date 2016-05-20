@@ -26,7 +26,7 @@ public class DefaultExceptionMapper extends AbstractExceptionMapper
     /**
      *
      * @param exception
-     * @return
+     * @return processed exception
      */
     @Override
     public Response toResponse(Exception exception) {

@@ -85,7 +85,8 @@ public class RequestFacade {
 
     /**
      *
-     * @return @deprecated
+     * @return current request view
+     * @deprecated
      */
     public Class getView() {
         return this.requestManager.getView();
@@ -111,7 +112,7 @@ public class RequestFacade {
 
     /**
      *
-     * @return
+     * @return Looked-up EJB
      */
     public static RequestFacade lookup() {
         try {
@@ -198,15 +199,17 @@ public class RequestFacade {
 
     /**
      *
-     * @return
+     * @return all entities which were updated during the transaction
      */
     public Map<String, List<AbstractEntity>> getUpdatedEntities() {
         return requestManager.getUpdatedEntities();
     }
 
     /**
+     * An outdated entity in an entity we know clients do not have the last
+     * version and we can not figure out how to send them the updated one
      *
-     * @return
+     * @return all entities marked as outdated during the transaction
      */
     public Map<String, List<AbstractEntity>> getOutdatedEntities() {
         return requestManager.getOutdatedEntities();
@@ -214,7 +217,7 @@ public class RequestFacade {
 
     /*
      *
-     * @return
+     * @return all entities which were destroyed during the transaction
      */
     public Map<String, List<AbstractEntity>> getDestroyedEntities() {
         return requestManager.getDestroyedEntities();

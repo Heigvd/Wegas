@@ -15,6 +15,7 @@ import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.*;
+import com.wegas.core.persistence.game.Game.Status;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
@@ -146,9 +147,9 @@ public class GameFacade extends BaseFacade<Game> {
         gameModelFacade.reset(gameModel);                                       // Reset the game so the default player will have instances
 
         userFacade.addUserPermission(currentUser,
-            "Game:View,Edit:g" + game.getId());                             // Grant permission to creator
+                "Game:View,Edit:g" + game.getId());                             // Grant permission to creator
         userFacade.addUserPermission(currentUser,
-            "Game:View:g" + game.getId());                                  // Grant play to creator
+                "Game:View:g" + game.getId());                                  // Grant play to creator
 
         try {                                                                   // By default games can be join w/ token
             roleFacade.findByName("Public").addPermission("Game:Token:g" + game.getId());
@@ -221,7 +222,7 @@ public class GameFacade extends BaseFacade<Game> {
 
         // This is for retrocompatibility w/ game models that do not habe DebugGame
         if (entity.getGameModel().getGames().size() <= 1
-            && !(entity.getGameModel().getGames().get(0) instanceof DebugGame)) {// This is for retrocompatibility w/ game models that do not habe DebugGame
+                && !(entity.getGameModel().getGames().get(0) instanceof DebugGame)) {// This is for retrocompatibility w/ game models that do not habe DebugGame
             gameModelFacade.remove(entity.getGameModel());
         } else {
             getEntityManager().remove(entity);
@@ -252,7 +253,7 @@ public class GameFacade extends BaseFacade<Game> {
 
     /**
      * @param search
-     * @return
+     * @return all game matching the search token
      */
     public List<Game> findByName(final String search) {
         final TypedQuery<Game> query = getEntityManager().createNamedQuery("Game.findByNameLike", Game.class);
@@ -262,36 +263,38 @@ public class GameFacade extends BaseFacade<Game> {
 
     /**
      * @param gameModelId
-     * @param orderBy
-     * @return
+     * @param orderBy     not used...
+     * @return all games belonging to the gameModel identified by gameModelId
+     *         but DebugGames, ordered by creation time
      */
     public List<Game> findByGameModelId(final Long gameModelId, final String orderBy) {
         return getEntityManager().createQuery("SELECT game FROM Game game "
-            + "WHERE TYPE(game) != DebugGame AND game.gameModel.id = :gameModelId ORDER BY game.createdTime DESC", Game.class)
-            .setParameter("gameModelId", gameModelId)
-            .getResultList();
+                + "WHERE TYPE(game) != DebugGame AND game.gameModel.id = :gameModelId ORDER BY game.createdTime DESC", Game.class)
+                .setParameter("gameModelId", gameModelId)
+                .getResultList();
     }
 
     /**
      * @param status
-     * @return
+     * @return all games which match the given status
      */
     public List<Game> findAll(final Game.Status status) {
         return getEntityManager().createNamedQuery("Game.findByStatus", Game.class).setParameter("status", status).getResultList();
     }
 
     /**
+     *
      * @param userId
-     * @return
+     * @return all non deleted games the given user plays in
      */
     public List<Game> findRegisteredGames(final Long userId) {
         final Query getByGameId = getEntityManager().createQuery("SELECT game, p FROM Game game "
-            + "LEFT JOIN game.teams t LEFT JOIN  t.players p "
-            + "WHERE t.gameId = game.id AND p.teamId = t.id "
-            + "AND p.user.id = :userId AND "
-            + "(game.status = com.wegas.core.persistence.game.Game.Status.LIVE OR game.status = com.wegas.core.persistence.game.Game.Status.BIN) "
-            + "ORDER BY p.joinTime ASC", Game.class)
-            .setParameter("userId", userId);
+                + "LEFT JOIN game.teams t LEFT JOIN  t.players p "
+                + "WHERE t.gameId = game.id AND p.teamId = t.id "
+                + "AND p.user.id = :userId AND "
+                + "(game.status = com.wegas.core.persistence.game.Game.Status.LIVE OR game.status = com.wegas.core.persistence.game.Game.Status.BIN) "
+                + "ORDER BY p.joinTime ASC", Game.class)
+                .setParameter("userId", userId);
 
         return this.findRegisterdGames(getByGameId);
     }
@@ -299,23 +302,23 @@ public class GameFacade extends BaseFacade<Game> {
     /**
      * @param userId
      * @param gameModelId
-     * @return
+     * @return all LIVE games of the given GameModel the given user plays in
      */
     public List<Game> findRegisteredGames(final Long userId, final Long gameModelId) {
         final Query getByGameId = getEntityManager().createQuery("SELECT game, p FROM Game game "
-            + "LEFT JOIN game.teams t LEFT JOIN  t.players p "
-            + "WHERE t.gameId = game.id AND p.teamId = t.id AND p.user.id = :userId AND game.gameModel.id = :gameModelId "
-            + "AND game.status = com.wegas.core.persistence.game.Game.Status.LIVE "
-            + "ORDER BY p.joinTime ASC", Game.class)
-            .setParameter("userId", userId)
-            .setParameter("gameModelId", gameModelId);
+                + "LEFT JOIN game.teams t LEFT JOIN  t.players p "
+                + "WHERE t.gameId = game.id AND p.teamId = t.id AND p.user.id = :userId AND game.gameModel.id = :gameModelId "
+                + "AND game.status = com.wegas.core.persistence.game.Game.Status.LIVE "
+                + "ORDER BY p.joinTime ASC", Game.class)
+                .setParameter("userId", userId)
+                .setParameter("gameModelId", gameModelId);
 
         return this.findRegisterdGames(getByGameId);
     }
 
     /**
      * @param q
-     * @return
+     * @return Game query result plus createdTime hack
      */
     private List<Game> findRegisterdGames(final Query q) {
         final List<Game> games = new ArrayList<>();
@@ -331,7 +334,7 @@ public class GameFacade extends BaseFacade<Game> {
 
     /**
      * @param roleName
-     * @return
+     * @return all game the give role has access to
      */
     public Collection<Game> findPublicGamesByRole(String roleName) {
         Collection<Game> games = new ArrayList<>();
@@ -367,7 +370,7 @@ public class GameFacade extends BaseFacade<Game> {
     /**
      * @param teamId
      * @param p
-     * @return
+     * @return the player who just joined the team
      */
     public Player joinTeam(Long teamId, Player p) {
         // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
@@ -378,7 +381,7 @@ public class GameFacade extends BaseFacade<Game> {
     /**
      * @param team
      * @param user
-     * @return
+     * @return a new player, linked to user, who just joined the team
      */
     public Player joinTeam(Team team, User user) {
         // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
@@ -392,7 +395,7 @@ public class GameFacade extends BaseFacade<Game> {
     /**
      * @param teamId
      * @param userId
-     * @return
+     * @return a new player, linked to user, who just joined the team
      */
     public Player joinTeam(Long teamId, Long userId) {
         // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
@@ -405,12 +408,12 @@ public class GameFacade extends BaseFacade<Game> {
      */
     public void addRights(User user, Game game) {
         user.addPermission(
-            "Game:View:g" + game.getId(), // Add "View" right on game,
-            "GameModel:View:gm" + game.getGameModel().getId());             // and also "View" right on its associated game model
+                "Game:View:g" + game.getId(), // Add "View" right on game,
+                "GameModel:View:gm" + game.getGameModel().getId());             // and also "View" right on its associated game model
     }
 
     /**
-     * Bin given game, changing it's status to {@link Game.Status#BIN}
+     * Bin given game, changing it's status to {@link Status#BIN}
      *
      * @param entity Game
      */
@@ -419,7 +422,7 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     * Set game status, changing to {@link Game.Status#LIVE}
+     * Set game status, changing to {@link Status#LIVE}
      *
      * @param entity Game
      */
@@ -428,7 +431,7 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     * Set game status, changing to {@link Game.Status#DELETE}
+     * Set game status, changing to {@link Status#DELETE}
      *
      * @param entity GameModel
      */

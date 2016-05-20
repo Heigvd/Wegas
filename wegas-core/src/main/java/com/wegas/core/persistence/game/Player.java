@@ -116,25 +116,17 @@ public class Player extends AbstractEntity implements Broadcastable {
     @PreUpdate
     public void preUpdate() {
         if ((this.getName() == null || this.getName().equals(""))
-            && this.getUser() != null) {                                    // User may be null for test players
+                && this.getUser() != null) {                                    // User may be null for test players
             this.name = this.getUser().getName();
         }
     }
 
-    /**
-     *
-     * @param a
-     */
     @Override
     public void merge(AbstractEntity a) {
         Player p = (Player) a;
         this.setName(p.getName());
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public Long getId() {
         return id;
@@ -203,9 +195,8 @@ public class Player extends AbstractEntity implements Broadcastable {
     // *** Sugar *** //
     /**
      *
-     * @return
+     * @return gameModel the player is linked to
      */
-    //@XmlTransient
     @JsonIgnore
     public GameModel getGameModel() {
         return this.getTeam().getGame().getGameModel();
@@ -213,7 +204,7 @@ public class Player extends AbstractEntity implements Broadcastable {
 
     /**
      *
-     * @return
+     * @return id of gameModel the player is linked to
      */
     //@XmlTransient
     @JsonIgnore
@@ -223,9 +214,8 @@ public class Player extends AbstractEntity implements Broadcastable {
 
     /**
      *
-     * @return
+     * @return game the player is linked to
      */
-    //@XmlTransient
     @JsonIgnore
     public Game getGame() {
         return this.getTeam().getGame();
@@ -233,7 +223,7 @@ public class Player extends AbstractEntity implements Broadcastable {
 
     /**
      *
-     * @return
+     * @return id of the game the player is linked to
      */
     //@XmlTransient
     @JsonIgnore
@@ -279,6 +269,10 @@ public class Player extends AbstractEntity implements Broadcastable {
         return privateInstances;
     }
 
+    /**
+     *
+     * @param privateInstances
+     */
     public void setPrivateInstances(List<VariableInstance> privateInstances) {
         this.privateInstances = privateInstances;
     }
@@ -288,11 +282,6 @@ public class Player extends AbstractEntity implements Broadcastable {
         return "Player{" + this.getName() + ", " + this.getId() + ")";
     }
 
-    /**
-     *
-     * @param player
-     * @return
-     */
     @Override
     public boolean equals(Object player) {
         return super.equals(player) && this.hashCode() == player.hashCode();

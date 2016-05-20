@@ -72,7 +72,7 @@ public class UpdateController {
     private EntityManager em;
 
     /**
-     * @return
+     * @return Some String encoded HTML
      */
     @GET
     public String index() {
@@ -86,15 +86,15 @@ public class UpdateController {
         //    ret.append("<a href=\"Encode/").append(gm.getId()).append("\">Update variable names ").append(gm.getId()).append("</a> | ");
         //    ret.append("<a href=\"UpdateScript/").append(gm.getId()).append("\">Update script ").append(gm.getId()).append("</a><br />");
         //}
-        return "<a href=\"RtsUpdateScope/10901\">RTS Update Scopes</a> <br />" +
-                "<a href=\"RtsNewScope/10901\">RTS New Scopes</a> <br />";
+        return "<a href=\"RtsUpdateScope/10901\">RTS Update Scopes</a> <br />"
+                + "<a href=\"RtsNewScope/10901\">RTS New Scopes</a> <br />";
     }
 
     /**
      * Retrieve
      *
      * @param gameModelId
-     * @return
+     * @return static "Finished" string...
      */
     @GET
     @Path("Encode/{gameModelId : ([1-9][0-9]*)}")
@@ -114,7 +114,7 @@ public class UpdateController {
 
     /**
      * @param gameModelId
-     * @return
+     * @return static "Finished" string...
      */
     @GET
     @Path("UpdateScript/{gameModelId : ([1-9][0-9]*)}")
@@ -278,7 +278,7 @@ public class UpdateController {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
 
-        for (Iterator<VariableDescriptor> it = variableDescriptors.iterator(); it.hasNext(); ) {
+        for (Iterator<VariableDescriptor> it = variableDescriptors.iterator(); it.hasNext();) {
             VariableDescriptor vd = it.next();
             if ("question".equals(vd.getLabel().toLowerCase())) {
                 if (!(vd.getScope() instanceof GameModelScope)) {

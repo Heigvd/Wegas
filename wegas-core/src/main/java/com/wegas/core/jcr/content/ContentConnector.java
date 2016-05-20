@@ -36,7 +36,7 @@ public class ContentConnector implements AutoCloseable {
 
     /**
      * @param bytes
-     * @return
+     * @return string representation
      */
     public static String bytesToHumanReadable(Long bytes) {
         Integer unit = 1024;
@@ -304,7 +304,6 @@ public class ContentConnector implements AutoCloseable {
     /*
      * Return content Bytes size
      */
-
     /**
      * @param absolutePath
      * @return

@@ -26,10 +26,10 @@ import java.util.Map;
  */
 @Entity
 @Table(
-    uniqueConstraints = @UniqueConstraint(columnNames = {"name", "parentgame_id"}),
-    indexes = {
-        @Index(columnList = "parentgame_id")
-    }
+        uniqueConstraints = @UniqueConstraint(columnNames = {"name", "parentgame_id"}),
+        indexes = {
+            @Index(columnList = "parentgame_id")
+        }
 )
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonSubTypes(value = {
@@ -162,24 +162,18 @@ public class Team extends AbstractEntity implements Broadcastable {
         this.players = players;
     }
 
-    /**
-     * @return
-     */
     @Override
     public String toString() {
         return this.name;
     }
 
-    /**
-     * @return
-     */
     @Override
     public Long getId() {
         return id;
     }
 
     /**
-     * @return
+     * @return the team name
      */
     public String getName() {
         return name;
@@ -194,7 +188,7 @@ public class Team extends AbstractEntity implements Broadcastable {
 
     /**
      *
-     * @return
+     * @return teacher notes
      */
     public String getNotes() {
         return notes;
@@ -215,6 +209,10 @@ public class Team extends AbstractEntity implements Broadcastable {
         return gameId;
     }
 
+    /**
+     *
+     * @param gameId
+     */
     public void setGameId(Long gameId) {
         this.gameId = gameId;
     }

@@ -35,7 +35,7 @@ public class ExceptionEvent extends ClientEvent {
 
     /**
      *
-     * @return
+     * @return all exceptions
      */
     public List<WegasRuntimeException> getExceptions() {
         return exceptions;

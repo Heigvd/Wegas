@@ -68,7 +68,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
      *
      * @param variableDescriptorId
      * @param player
-     * @return
+     * @return variableDescriptor instance owned by player
      */
     public VariableInstance find(Long variableDescriptorId,
             Player player) {
@@ -80,7 +80,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
      *
      * @param variableDescriptorId
      * @param playerId
-     * @return
+     * @return variableDescriptor instance owned by player
      */
     public VariableInstance find(Long variableDescriptorId,
             Long playerId) {
@@ -88,9 +88,13 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
     }
 
     /**
+     * Get all players owning the given entity. For a player scoped entity,
+     * there will be only one player, for a team scopes one, all players from
+     * the team. A game scoped instance will returns every players and the game
+     * and a gameModel scoped, every players known in the gameModel
      *
      * @param instance
-     * @return
+     * @return list of instance owners
      */
     public List<Player> findAllPlayer(VariableInstance instance) {
         if (instance.getScope() instanceof PlayerScope) {
@@ -114,9 +118,11 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
     }
 
     /**
+     * From an instance, retrieve the game it is part of
      *
      * @param instance
-     * @return
+     * @return the corresponding game
+     * @throws UnsupportedOperationException when instance is a default instance
      */
     public Game findGame(VariableInstance instance) {
         if (instance.getScope() instanceof PlayerScope) {
@@ -134,8 +140,13 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
 
     /**
      *
+     * From an instance, retrieve the team it is part f
+     *
      * @param instance
-     * @return
+     * @return the team the instance belongs to
+     * @throws UnsupportedOperationException when instance is a default
+     *                                       instance, a gameModel scoped or
+     *                                       game scoped one
      */
     public Team findTeam(VariableInstance instance) {
         if (instance.getScope() instanceof PlayerScope) {
@@ -153,19 +164,24 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
     }
 
     /**
+     * Such a method should in a so-called GameFacade, nope ? Something like
+     * {@link GameFacade#find(java.lang.Long) GameFacade.find()}
      *
      * @param instanceId
-     * @return
+     * @return the game matching the id.
      */
     public Game findGame(Long instanceId) {
         return this.findGame(this.find(instanceId));
     }
 
     /**
+     * from the given instance, return any player who own it (eg.
+     * Descriptor.getInstance(player) = instance)
      *
      * @param instance
-     * @return
-     * @throws NoPlayerException
+     * @return any player
+     * @throws NoPlayerException             if there is no such a player
+     * @throws UnsupportedOperationException for default instances
      */
     public Player findAPlayer(VariableInstance instance)
             throws NoPlayerException {
@@ -228,7 +244,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
      * @param variableDescriptorId
      * @param playerId
      * @param variableInstance
-     * @return
+     * @return up to date instance
      */
     public VariableInstance update(Long variableDescriptorId,
             Long playerId, VariableInstance variableInstance) {
@@ -280,7 +296,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
     }
 
     /**
-     * @return
+     * @return Looked-up EJB
      */
     public static VariableInstanceFacade lookup() {
         try {

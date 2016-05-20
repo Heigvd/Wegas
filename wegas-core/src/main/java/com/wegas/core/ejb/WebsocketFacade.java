@@ -83,6 +83,14 @@ public class WebsocketFacade {
     @EJB
     private PlayerFacade playerFacade;
 
+    /**
+     * Check if current user has access to type/id entity
+     *
+     * @param type
+     * @param id
+     * @param currentPlayer
+     * @return true if current user has access to
+     */
     private boolean hasPermission(String type, Long id, Player currentPlayer) {
         if ("GameModel".equals(type)) {
             return SecurityUtils.getSubject().isPermitted("GameModel:View:gm" + id);
@@ -121,6 +129,13 @@ public class WebsocketFacade {
         return false;
     }
 
+    /**
+     * can current user subscribe to given channel ?
+     *
+     * @param channel
+     * @param currentPlayer
+     * @return true if access granted
+     */
     public boolean hasPermission(String channel, Player currentPlayer) {
         String[] split = channel.split("-");
         if (split.length != 2) {
@@ -130,6 +145,12 @@ public class WebsocketFacade {
         }
     }
 
+    /**
+     * Get all channels based on entites
+     *
+     * @param entities
+     * @return according to entities, all concerned channels
+     */
     public List<String> getChannels(List<AbstractEntity> entities) {
         List<String> channels = new ArrayList<>();
         String channel = null;
@@ -189,6 +210,12 @@ public class WebsocketFacade {
         sendLifeCycleEvent(GLOBAL_CHANNEL, status, socketId);
     }
 
+    /**
+     *
+     * @param channel
+     * @param message
+     * @param socketId
+     */
     public void sendPopup(String channel, String message, final String socketId) {
         if (this.pusher != null) {
             pusher.trigger(channel, "CustomEvent",
@@ -196,6 +223,10 @@ public class WebsocketFacade {
         }
     }
 
+    /**
+     * @param property
+     * @return the property value
+     */
     private String getProperty(String property) {
         try {
             return Helper.getWegasProperty(property);
@@ -205,6 +236,9 @@ public class WebsocketFacade {
         }
     }
 
+    /**
+     * Initialize Pusher Connection
+     */
     public WebsocketFacade() {
         Pusher tmp;
         try {
@@ -272,9 +306,16 @@ public class WebsocketFacade {
         propagate(outdatedEntities, socketId, OutdatedEntitiesEvent.class);
     }
 
+    /**
+     *
+     * @param <T>
+     * @param container
+     * @param socketId
+     * @param eventClass
+     */
     private <T extends ClientEvent> void propagate(Map<String, List<AbstractEntity>> container, String socketId, Class<T> eventClass) {
         try {
-            for (Map.Entry<String, List<AbstractEntity>> entry : container.entrySet()){
+            for (Map.Entry<String, List<AbstractEntity>> entry : container.entrySet()) {
                 String audience = entry.getKey();
                 List<AbstractEntity> toPropagate = entry.getValue();
                 //logger.error(eventClass.getSimpleName() + " entities: " + audience + ": " + toPropagate.size());
@@ -288,6 +329,13 @@ public class WebsocketFacade {
         }
     }
 
+    /**
+     * Gzip some string
+     *
+     * @param data
+     * @return gzipped data
+     * @throws IOException
+     */
     private String gzip(String data) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         GZIPOutputStream gzos = new GZIPOutputStream(baos);
@@ -310,6 +358,13 @@ public class WebsocketFacade {
         return sb.toString();
     }
 
+    /**
+     * Send data through pusher
+     *
+     * @param clientEvent
+     * @param audience
+     * @param socketId
+     */
     private void propagate(ClientEvent clientEvent, String audience, final String socketId) {
         try {
             String eventName = clientEvent.getClass().getSimpleName() + ".gz";
@@ -319,7 +374,6 @@ public class WebsocketFacade {
             //    content = clientEvent.toJson();
             //}
             Result result = pusher.trigger(audience, eventName, content, socketId);
-
 
             if (result.getHttpStatus() == 403) {
                 logger.error("403 QUOTA REACHED");
@@ -341,6 +395,13 @@ public class WebsocketFacade {
         }
     }
 
+    /**
+     * Pusher authentication
+     *
+     * @param socketId
+     * @param channel
+     * @return complete body to return to the client requesting authentication
+     */
     public String pusherAuth(final String socketId, final String channel) {
         if (channel.startsWith("presence")) {
             final Map<String, String> userInfo = new HashMap<>();

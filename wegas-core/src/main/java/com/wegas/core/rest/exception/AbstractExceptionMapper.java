@@ -26,8 +26,11 @@ public abstract class AbstractExceptionMapper {
     final static private Logger logger = LoggerFactory.getLogger(AbstractExceptionMapper.class);
 
     /**
+     * Unstack exceptions to get rid of interning uninteresting layers and embed
+     * result within such a HTTP Bad Request response
+     *
      * @param exception
-     * @return
+     * @return HTTP BadRequest
      */
     public static Response processException(Throwable exception) {
         logger.warn("ProcessException: " + exception);

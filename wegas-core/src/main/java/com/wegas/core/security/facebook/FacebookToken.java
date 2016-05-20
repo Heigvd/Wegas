@@ -38,7 +38,7 @@ public class FacebookToken implements AuthenticationToken {
 
     /**
      *
-     * @return
+     * @return the token
      */
     public String getCode() {
         return code;

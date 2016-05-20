@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * This is f*cking useless since its only inherited once (by RoleController)
  *
  * @param <T>
  * @param <U>
@@ -29,6 +30,9 @@ import org.slf4j.LoggerFactory;
 @Consumes(MediaType.APPLICATION_JSON)
 public abstract class AbstractRestController<T extends AbstractFacade<U>, U extends AbstractEntity> implements AbstractRestControllerI<T, U> {
 
+    /**
+     *
+     */
     private static final Logger logger = LoggerFactory.getLogger(AbstractRestController.class);
     /**
      *
@@ -38,14 +42,14 @@ public abstract class AbstractRestController<T extends AbstractFacade<U>, U exte
 
     /**
      *
-     * @return
+     * @return the facade this controller is designed for
      */
     protected abstract T getFacade();
 
     /**
-     * Index : retrieve the game model list
+     * Index: get all entities this controller is designed for
      *
-     * @return
+     * @return all entities this controller is designed for
      */
     @GET
     @Override
@@ -54,10 +58,10 @@ public abstract class AbstractRestController<T extends AbstractFacade<U>, U exte
     }
 
     /**
-     * Retrieve a specific game model
+     * Retrieve a specific entity
      *
      * @param entityId
-     * @return OK
+     * @return entity matching given id
      */
     @GET
     @Path("{entityId : [1-9][0-9]*}")
@@ -66,9 +70,10 @@ public abstract class AbstractRestController<T extends AbstractFacade<U>, U exte
     }
 
     /**
+     * Create a new entity
      *
      * @param entity
-     * @return
+     * @return new entity
      */
     @POST
     @Override
@@ -79,10 +84,11 @@ public abstract class AbstractRestController<T extends AbstractFacade<U>, U exte
     }
 
     /**
+     * Update an entity
      *
      * @param entityId
      * @param entity
-     * @return
+     * @return up to date entity
      */
     @PUT
     @Path("{entityId: [1-9][0-9]*}")
@@ -92,9 +98,10 @@ public abstract class AbstractRestController<T extends AbstractFacade<U>, U exte
     }
 
     /**
+     * Duplicate an entity
      *
      * @param entityId
-     * @return
+     * @return entity copy
      * @throws IOException
      */
     @POST
@@ -105,9 +112,10 @@ public abstract class AbstractRestController<T extends AbstractFacade<U>, U exte
     }
 
     /**
+     * Delete an entity
      *
-     * @param entityId
-     * @return
+     * @param entityId id of entity to delete
+     * @return the just destroyed entity
      */
     @DELETE
     @Path("{entityId: [1-9][0-9]*}")
@@ -121,7 +129,7 @@ public abstract class AbstractRestController<T extends AbstractFacade<U>, U exte
     /**
      *
      * @param name
-     * @return
+     * @return this controller path param
      */
     protected String getPathParam(String name) {
         return this.uriInfo.getPathParameters().get(name).get(0);

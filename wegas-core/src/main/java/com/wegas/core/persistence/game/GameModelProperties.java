@@ -165,7 +165,7 @@ public class GameModelProperties implements Serializable {
 
     /**
      *
-     * @return
+     * @return static server script URI
      */
     public String getScriptUri() {
         return scriptUri;

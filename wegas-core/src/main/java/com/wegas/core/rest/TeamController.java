@@ -46,7 +46,7 @@ public class TeamController {
     /**
      *
      * @param teamId
-     * @return
+     * @return the team
      */
     @GET
     @Path("{teamId : [1-9][0-9]*}")
@@ -59,7 +59,7 @@ public class TeamController {
     /**
      *
      * @param gameId
-     * @return
+     * @return all teams in the game
      */
     @GET
     public Collection<Team> index(@PathParam("gameId") Long gameId) {
@@ -72,24 +72,24 @@ public class TeamController {
      *
      * @param gameId
      * @param entity
-     * @return
+     * @return HTTP created containing the new team or HTTP Conflict (?)
      */
     @POST
     public Response create(@PathParam("gameId") Long gameId, Team entity) {
         Response r = Response.status(Response.Status.CONFLICT).build();
         Game g = gameFacade.find(gameId);
-        if(g.getAccess() == Game.GameAccess.OPEN){
+        if (g.getAccess() == Game.GameAccess.OPEN) {
             this.teamFacade.create(gameId, entity);
             r = Response.status(Response.Status.CREATED).entity(entity).build();
         }
         return r;
     }
-    
+
     /**
      *
      * @param teamId
      * @param entity
-     * @return
+     * @return up to date team
      */
     @PUT
     @Path("{teamId : [1-9][0-9]*}")
@@ -101,7 +101,7 @@ public class TeamController {
     /**
      *
      * @param teamId
-     * @return
+     * @return just delete team
      */
     @DELETE
     @Path("{teamId: [1-9][0-9]*}")

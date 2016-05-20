@@ -34,7 +34,7 @@ public class DownloadController {
      * @param contentType
      * @param filename
      * @param data
-     * @return
+     * @return requested data
      */
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)

@@ -47,6 +47,8 @@ import org.slf4j.LoggerFactory;
  * to combine .js and .css files.
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
+ */
+/*
  * @todo Resulting files should be cached. For example check
  * https://github.com/smaring/javascript-combo-service/blob/master/src/main/java/org/maring/util/js/JavascriptComboService.java
  */
@@ -87,7 +89,7 @@ public class ComboController {
      * Retrieve
      *
      * @param req
-     * @return
+     * @return HTTP 200 with requested data or HTTP forbidden response
      * @throws IOException
      */
     @GET

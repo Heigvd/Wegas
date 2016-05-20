@@ -71,6 +71,13 @@ public class TeamFacade extends BaseFacade<Team> {
     @Inject
     private Event<ResetEvent> resetEvent;
 
+    /**
+     * Get all account linked to team's players Account email addresses will be
+     * altered (by hiding some parts) so they can be publicly displayed
+     *
+     * @param teamId
+     * @return List of abstractAccount which are players of the team
+     */
     public List<AbstractAccount> getDetachedAccounts(Long teamId) {
         Team entity = this.find(teamId);
         ArrayList<AbstractAccount> accounts = accountFacade.findByTeam(entity);

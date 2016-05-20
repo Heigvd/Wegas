@@ -115,10 +115,10 @@ public class ResourceFacade {
     /**
      * Is the given resource assign to the given task descriptor ?
      *
-     * @param resourceId resourceInstance id
+     * @param resourceId       resourceInstance id
      * @param taskDescriptorId taskDescripto id
      * @return the assignment id resource is assigned to the task, null
-     * otherwise
+     *         otherwise
      */
     public Assignment findAssignment(Long resourceId, Long taskDescriptorId) {
         EntityManager em = getEntityManager();
@@ -178,7 +178,7 @@ public class ResourceFacade {
      *
      * @param assignmentId
      * @return the resource instance who was assigned, with the updated list of
-     * assignments
+     *         assignments
      */
     public ResourceInstance removeAssignment(final Long assignmentId) {
         final Assignment assignment = this.getEntityManager().find(Assignment.class, assignmentId);
@@ -190,7 +190,7 @@ public class ResourceFacade {
      *
      * @param assignment
      * @return the resource instance who was assigned, with the updated list of
-     * assignments
+     *         assignments
      */
     public ResourceInstance removeAssignment(Assignment assignment) {
         ResourceInstance resourceInstance = (ResourceInstance) variableInstanceFacade.find(assignment.getResourceInstance().getId());
@@ -227,7 +227,7 @@ public class ResourceFacade {
      * Change activity sub requirements. If a resource continue to work on the
      * same task, but on a different requirements,
      *
-     * THIS BEHAVIOUD SHOULD NOT EXIST. IMO, different req means different
+     * THIS BEHAVIOUR SHOULD NOT EXIST. IMO, different req means different
      * activity
      *
      * @param activity

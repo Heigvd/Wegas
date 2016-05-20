@@ -52,7 +52,7 @@ public class Helper {
      * @param context
      * @param type
      * @param service
-     * @return
+     * @return looked-up EJB instance
      * @throws NamingException
      */
     public static <T> T lookupBy(Context context, Class<T> type, Class<?> service) throws NamingException {
@@ -80,7 +80,7 @@ public class Helper {
      * @param <T>
      * @param context
      * @param type
-     * @return
+     * @return looked-up EJB instance
      * @throws NamingException
      */
     public static <T> T lookupBy(Context context, Class<T> type) throws NamingException {
@@ -91,7 +91,7 @@ public class Helper {
      * @param <T>
      * @param type
      * @param service
-     * @return
+     * @return looked-up EJB instance
      * @throws NamingException
      */
     public static <T> T lookupBy(Class<T> type, Class<?> service) throws NamingException {
@@ -101,17 +101,37 @@ public class Helper {
     /**
      * @param <T>
      * @param type
-     * @return
+     * @return looked-up EJB instance
      * @throws NamingException
      */
     public static <T> T lookupBy(Class<T> type) throws NamingException {
         return lookupBy(type, type);
     }
 
+    /**
+     * Check if the given string is null or empty (without trimming)
+     *
+     * @param t a string
+     * @return true if t is null or empty
+     */
     public static boolean isNullOrEmpty(final String t) {
         return t == null || t.isEmpty();
     }
 
+    /**
+     * Given a list of names and a name, generate a new name that is not already
+     * used (ie not in usedNames).
+     *
+     * If the initial name is already in use, it will be suffixes with an
+     * ordinal. Pattern must be used to detect the name baseName.
+     *
+     * @param name      initial name
+     * @param usedNames names already in use
+     * @param pattern   to detect the baseName from a full name
+     * @param preSuff   some string to put before the ordinal suffix
+     * @param postSuff  some string to put after the ordinal suffix
+     * @return name to use in place on initial one
+     */
     private static String findUniqueName(final String name, List<String> usedNames, String pattern, String preSuff, String postSuff) {
 
         Pattern p = Pattern.compile(pattern);
@@ -136,27 +156,63 @@ public class Helper {
         return newName;
     }
 
+    /**
+     * Generate a unique name (within usedNames) based on name. If the initial
+     * name is contained in usedNames, it will be suffix with the first
+     * available ordinal, like in this example:
+     * <ul>
+     * <li>Name: "myName" </li>
+     * <li>UsedName: "myName", "myName_1", "myName_3" </li>
+     * <li>Generated new name : "myName_2"</li>
+     * </ul>
+     *
+     *
+     * @param name      initial name
+     * @param usedNames names already in use
+     * @return new unique name to use in place of initial one
+     */
     public static String findUniqueName(final String name, List<String> usedNames) {
         return findUniqueName(name, usedNames, "(.*)_(\\d+)", "_", "");
     }
 
+    /**
+     * Generate a unique label (within usedLabels) based on label. If the
+     * initial label is contained in usedLabel, it will be suffix with the first
+     * available ordinal, like in this example:
+     * <ul>
+     * <li>Label: "My Label" </li>
+     * <li>UsedLabel: "My Label", "Ma Label (1)", "My Label (3)" </li>
+     * <li>Generated new label : "My Label (2)"</li>
+     * </ul>
+     *
+     *
+     * @param label      initial label
+     * @param usedLabels labels already in use
+     * @return new unique label to use in place of initial one
+     */
     public static String findUniqueLabel(final String label, List<String> usedLabels) {
         return findUniqueName(label, usedLabels, "(.*) \\((\\d+)\\)", " (", ")");
     }
 
     /**
+     * Shortcut for
+     * {@link #setUniqueNameForEntity(com.wegas.core.persistence.NamedEntity, java.util.List, java.lang.String, boolean) setUniqueNameForEntity}
+     * with defaultName = {@link #DEFAULT_VARIABLE_NAME} and encodeName = true
+     *
      * @param entity    entity to rename
-     * @param usedNames
+     * @param usedNames names already in use
      */
     public static void setUniqueNameForEntity(final NamedEntity entity, List<String> usedNames) {
         setUniqueNameForEntity(entity, usedNames, DEFAULT_VARIABLE_NAME, true);
     }
 
     /**
+     * Rename an entity with a unique name
+     *
      * @param entity      entity to rename
-     * @param usedNames
+     * @param usedNames   names already in use
      * @param defaultName name to use if entity one is unset
-     * @param encodeName
+     * @param encodeName  replace special character with ASCII ones
      */
     public static void setUniqueNameForEntity(final NamedEntity entity, List<String> usedNames, String defaultName, boolean encodeName) {
         if (isNullOrEmpty(entity.getName())) {
@@ -172,8 +228,8 @@ public class Helper {
     /**
      * Set Unique Names for the given VariableDescriptor and its children
      *
-     * @param entity
-     * @param usedLabels
+     * @param entity     entity to label
+     * @param usedLabels labels already in use
      */
     public static void setUniqueLabel(final LabelledEntity entity, List<String> usedLabels) {
         setUniqueLabel(entity, usedLabels, DEFAULT_VARIABLE_LABEL);
@@ -182,8 +238,8 @@ public class Helper {
     /**
      * Set Unique Names for the given VariableDescriptor and its children
      *
-     * @param entity
-     * @param usedLabels
+     * @param entity       entity to label
+     * @param usedLabels   labels already in use
      * @param defaultLabel label to set if entity one is unset
      */
     public static void setUniqueLabel(final LabelledEntity entity, List<String> usedLabels, String defaultLabel) {
@@ -195,8 +251,15 @@ public class Helper {
         usedLabels.add(newLabel);
     }
 
+    /**
+     * ChoiceDescriptor's result renaming helper
+     *
+     * @param r          result to rename / relabel
+     * @param usedNames  result sibling's names
+     * @param usedLabels result sibling's label
+     */
     public static void setNameAndLabelForResult(Result r,
-                                                List<String> usedNames, List<String> usedLabels) {
+            List<String> usedNames, List<String> usedLabels) {
         boolean hasLabel = !isNullOrEmpty(r.getLabel());
         boolean hasName = !isNullOrEmpty(r.getName());
         if (hasLabel && !hasName) {
@@ -232,6 +295,12 @@ public class Helper {
         }
     }
 
+    /**
+     * Replace special characters with ASCII ones
+     *
+     * @param s
+     * @return s with special characters replaced
+     */
     public static String encodeVariableName(String s) {
         return replaceSpecialCharacters(camelCasify(s));
     }
@@ -258,7 +327,7 @@ public class Helper {
      * Encode a String to look like a JavaScript variable.
      *
      * @param name String to encode
-     * @return a String wich will be undestandable by JavaScript as a var
+     * @return a String which will be understandable by JavaScript as a var
      */
     public static String camelCasify(String name) {
         if (name.isEmpty()) {
@@ -311,8 +380,10 @@ public class Helper {
     }
 
     /**
+     * Given a label ending with a bracketed number, return the number
+     *
      * @param label
-     * @return
+     * @return the number in brackets at the very end of the label or 0
      */
     public static int getLabelSuffix(String label) {
         Pattern pattern = Pattern.compile("^(.*)\\((\\d+)\\)$");
@@ -363,9 +434,13 @@ public class Helper {
     }
 
     /**
+     * Like {@link #getWegasProperty(java.lang.String) getWegasProperty()} but
+     * return the given default value if the property does not exists
+     *
      * @param propertyName
      * @param defaultValue
-     * @return
+     * @return the wegasProperty or the defaultValue if the property does not
+     *         exists
      */
     public static String getWegasProperty(String propertyName, String defaultValue) {
         try {
@@ -376,8 +451,10 @@ public class Helper {
     }
 
     /**
+     * Given a byte array, return its hexadecimal string representation
+     *
      * @param array
-     * @return
+     * @return hexadecimal string representation of byte array
      */
     public static String hex(byte[] array) {
         StringBuilder sb = new StringBuilder();
@@ -389,8 +466,10 @@ public class Helper {
     }
 
     /**
+     * MD5 digest
+     *
      * @param message
-     * @return
+     * @return the MD5 digest or null if the system does not support MD5 digest
      */
     public static String md5Hex(String message) {
         try {
@@ -403,8 +482,10 @@ public class Helper {
     }
 
     /**
+     * Transform an Integer list into a int array
+     *
      * @param list
-     * @return
+     * @return array copy
      */
     public static int[] toArray(List<Integer> list) {
         int[] ret = new int[list.size()];
@@ -504,7 +585,6 @@ public class Helper {
      }
      return sb.toString();
      }*/
-
     /**
      * print ENV variables to log
      */
@@ -529,6 +609,11 @@ public class Helper {
         logger.info(output.toString());
     }
 
+    /**
+     *
+     * @param file
+     * @throws IOException
+     */
     public static void recursiveDelete(File file) throws IOException {
         if (file.isDirectory()) {
             if (file.list().length == 0) {
@@ -569,6 +654,11 @@ public class Helper {
         return Pattern.compile(Pattern.quote(criteria), Pattern.CASE_INSENSITIVE).matcher(StringEscapeUtils.unescapeHtml4(text)).find();
     }
 
+    /**
+     * @param text
+     * @param criterias
+     * @return true if text matches all criterias
+     */
     public static Boolean insensitiveContainsAll(String text, List<String> criterias) {
         for (String c : criterias) {
             if (!insensitiveContains(text, c)) {
@@ -591,6 +681,12 @@ public class Helper {
         return (int) value;
     }
 
+    /**
+     * Make sure target map contains all other map entities
+     *
+     * @param target
+     * @param other
+     */
     public static void merge(Map<String, List<AbstractEntity>> target, Map<String, List<AbstractEntity>> other) {
         for (Map.Entry<String, List<AbstractEntity>> entry : other.entrySet()) {
             String key = entry.getKey();
@@ -608,42 +704,100 @@ public class Helper {
         }
     }
 
+    /**
+     * Ugly hack used by IntegrationTest
+     *
+     * @return root directory to read static script from
+     */
     public static String getWegasRootDirectory() {
         return WEGAS_ROOT_DIRECTORY;
     }
 
+    /**
+     * Ugly hack used by IntegrationTest
+     *
+     * @param wegasRootDirectory
+     */
     public static void setWegasRootDirectory(String wegasRootDirectory) {
         Helper.WEGAS_ROOT_DIRECTORY = wegasRootDirectory;
     }
 
+    /**
+     * Generation Pusher token for a gameModel
+     *
+     * @param id gamemodel id
+     * @return token for the game model
+     */
     public static String getAudienceTokenForGameModel(Long id) {
         return "GameModel-" + id;
     }
 
+    /**
+     * Generation Pusher token for a game
+     *
+     * @param id game id
+     * @return token for the game
+     */
     public static String getAudienceTokenForGame(Long id) {
         return "Game-" + id;
     }
 
+    /**
+     * Generation Pusher token for a team
+     *
+     * @param id team id
+     * @return token for the team
+     */
     public static String getAudienceTokenForTeam(Long id) {
         return "Team-" + id;
     }
 
+    /**
+     * Generation Pusher token for a player
+     *
+     * @param id player id
+     * @return token for the player
+     */
     public static String getAudienceTokenForPlayer(Long id) {
         return "Player-" + id;
     }
 
+    /**
+     * Generation Pusher token for a game
+     *
+     * @param game the game
+     * @return token for the game
+     */
     public static String getAudienceToken(Game game) {
         return Helper.getAudienceTokenForGame(game.getId());
     }
 
+    /**
+     * Generation Pusher token for a game model
+     *
+     * @param gameModel the game model
+     * @return token for the game model
+     */
     public static String getAudienceToken(GameModel gameModel) {
         return Helper.getAudienceTokenForGameModel(gameModel.getId());
     }
 
+    /**
+     * Generation Pusher token for a team
+     *
+     * @param team the team
+     * @return token for the team
+     */
     public static String getAudienceToken(Team team) {
         return Helper.getAudienceTokenForTeam(team.getId());
     }
 
+    /**
+     * Generation Pusher token for a player
+     *
+     * @param player the player
+     * @return token for the player
+     */
     public static String getAudienceToken(Player player) {
         return Helper.getAudienceTokenForPlayer(player.getId());
     }

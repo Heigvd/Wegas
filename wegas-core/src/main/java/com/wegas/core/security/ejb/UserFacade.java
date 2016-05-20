@@ -84,7 +84,10 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     * @return
+     * Login as guest
+     *
+     * @return the just logged user
+     * @throws WegasErrorMessage when guest not allowed
      */
     public User guestLogin() {
         if (Helper.getWegasProperty("guestallowed").equals("true")) {
@@ -183,7 +186,8 @@ public class UserFacade extends BaseFacade<User> {
 
     /**
      * @param user
-     * @return
+     * @return try to
+     * @deprecated
      */
     public User findOrCreate(User user) {
         try {
@@ -206,7 +210,8 @@ public class UserFacade extends BaseFacade<User> {
 
     /**
      * @param accounts
-     * @return
+     * @return list of user
+     * @deprecated
      */
     public List<User> findOrCreate(List<AbstractAccount> accounts) {
         List<User> ret = new ArrayList<>();
@@ -220,10 +225,13 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     * Get all GameModel permissions by GameModel id
+     * Get all roles which have some permissions on the given instance..
+     *
+     * Map is { id : role id, name: role name, permissions: list of permissions
+     * related to instance}
      *
      * @param instance
-     * @return
+     * @return list of "Role"
      */
     public List<Map> findRolePermissionByInstance(String instance) {
         TypedQuery<Role> findByToken = getEntityManager().createQuery("SELECT DISTINCT roles FROM Role roles JOIN roles.permissions p WHERE p.value LIKE :instance", Role.class);//@fixme Unable to select role with a like w/ embeddebale
@@ -257,24 +265,41 @@ public class UserFacade extends BaseFacade<User> {
     /**
      * Create role_permissions
      *
-     * @param roleId
-     * @param permission
-     * @return
+     * @param roleId     id of the role to add permission too
+     * @param permission permission to add
+     * @return true if the permission has successfully been added
      */
     public boolean addRolePermission(final Long roleId, final String permission) {
         final Role r = roleFacade.find(roleId);
         return r.addPermission(this.generatePermisssion(permission));
     }
 
+    /**
+     *
+     * @param userId     id of the user
+     * @param permission permission to add
+     * @return true if the permission has successfully been added
+     */
     public boolean addUserPermission(final Long userId, final String permission) {
         return this.addUserPermission(userId, this.generatePermisssion(permission));
     }
 
+    /**
+     * @param userId id of the user
+     * @param p      permission to add
+     * @return true if the permission has successfully been added
+     */
     public boolean addUserPermission(final Long userId, final Permission p) {
         final User user = this.find(userId);
         return user.addPermission(p);
     }
 
+    /**
+     *
+     * @param user
+     * @param permission
+     * @return true if the permission has successfully been added
+     */
     public boolean addUserPermission(final User user, final String permission) {
         return user.addPermission(this.generatePermisssion(permission));
     }
@@ -282,7 +307,7 @@ public class UserFacade extends BaseFacade<User> {
     /**
      * @param abstractAccountId
      * @param permission
-     * @return
+     * @return true if the permission has successfully been added
      */
     public boolean addAccountPermission(final Long abstractAccountId, final String permission) {
         return this.addAccountPermission(abstractAccountId, this.generatePermisssion(permission));
@@ -291,7 +316,7 @@ public class UserFacade extends BaseFacade<User> {
     /**
      * @param abstractAccountId
      * @param p
-     * @return
+     * @return true if the permission has successfully been added
      */
     public boolean addAccountPermission(final Long abstractAccountId, final Permission p) {
         final AbstractAccount a = accountFacade.find(abstractAccountId);
@@ -301,15 +326,17 @@ public class UserFacade extends BaseFacade<User> {
     /**
      * @param a
      * @param permission
-     * @return
+     * @return true if the permission has successfully been added
      */
     public boolean addAccountPermission(final AbstractAccount a, final String permission) {
         return a.getUser().addPermission(this.generatePermisssion(permission));
     }
 
     /**
-     * @param permissionStr
-     * @return
+     * Generate a Permission based on its string representation
+     *
+     * @param permissionStr string representation of the permission
+     * @return the generated permission
      */
     public Permission generatePermisssion(final String permissionStr) {
         final Permission p = new Permission(permissionStr);
@@ -329,7 +356,7 @@ public class UserFacade extends BaseFacade<User> {
      *
      * @param roleId
      * @param permission
-     * @return
+     * @return true if the permission has successfully been removed
      */
     public boolean deleteRolePermission(Long roleId, String permission) {
         Role r = roleFacade.find(roleId);
@@ -341,7 +368,7 @@ public class UserFacade extends BaseFacade<User> {
      *
      * @param roleId
      * @param instance
-     * @return
+     * @return if permissions have been removed
      */
     public boolean deleteRolePermissionsByIdAndInstance(Long roleId, String instance) {
         ArrayList<Permission> currentPermissions = new ArrayList<>();
@@ -382,7 +409,7 @@ public class UserFacade extends BaseFacade<User> {
 
     /**
      * @param instance
-     * @return
+     * @return all user which have a permission related to the given instance
      */
     public List<User> findUserPermissionByInstance(String instance) {
         final TypedQuery<User> findByToken = getEntityManager().createNamedQuery("User.findUserPermissions", User.class);
@@ -390,7 +417,16 @@ public class UserFacade extends BaseFacade<User> {
         return findByToken.getResultList();
     }
 
+    /**
+     * Get all users is
+     *
+     * @param role_id
+     * @return all role members
+     */
     public List<User> findUsersWithRole(Long role_id) {
+        /* Why not using JPA ?
+        return roleFacade.find(role_id).getUsers(); ??????
+         */
         final TypedQuery<User> findWithRole = getEntityManager().createNamedQuery("User.findUsersWithRole", User.class);
         findWithRole.setParameter("role_id", role_id);
         return findWithRole.getResultList();
@@ -411,7 +447,7 @@ public class UserFacade extends BaseFacade<User> {
         findByToken.setParameter("instance", "%:" + instance);
         List<User> users = findByToken.getResultList();
         for (User user : users) {
-            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext(); ) {
+            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext();) {
                 Permission p = sit.next();
                 String splitedPermission[] = p.getValue().split(":");
                 if (splitedPermission.length >= 3) {
@@ -433,7 +469,7 @@ public class UserFacade extends BaseFacade<User> {
                 .setParameter("userId", userId);
         try {
             User user = findByToken.getSingleResult();
-            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext(); ) {
+            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext();) {
                 String p = sit.next().getValue();
                 String splitedPermission[] = p.split(":");
                 if (splitedPermission.length >= 3) {
@@ -461,7 +497,7 @@ public class UserFacade extends BaseFacade<User> {
                 .setParameter("userId", userId);
         try {
             User user = findByToken.getSingleResult();
-            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext(); ) {
+            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext();) {
                 String p = sit.next().getValue();
                 String splitedPermission[] = p.split(":");
                 if (splitedPermission.length >= 3 && p.equals(permission)) {
@@ -515,8 +551,11 @@ public class UserFacade extends BaseFacade<User> {
         emailFacade.send(to.toString(), email.getFrom(), email.getReplyTo(), email.getSubject(), email.getBody(), Message.RecipientType.BCC, "text/html", false);
     }
 
-    /**
+    /*
      * @FIXME Should also remove players, created games and game models
+     */
+    /**
+     * Remove old idle guests
      */
     @Schedule(hour = "4", minute = "12")
     public void removeIdleGuests() {
@@ -537,8 +576,11 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
+     * Is the given playerId identify a player owned by the current user players
+     * ?
+     *
      * @param playerId
-     * @return
+     * @return true if the player is owned by the current user
      */
     public boolean matchCurrentUser(Long playerId) {
         return this.getCurrentUser().equals(playerFacade.find(playerId).getUser());
@@ -547,7 +589,7 @@ public class UserFacade extends BaseFacade<User> {
     /**
      * @param accountRoles
      * @param compareRoles
-     * @return
+     * @return true if at least a value exists in both lists
      */
     public boolean hasRoles(ArrayList<String> accountRoles, ArrayList<Role> compareRoles) {
         for (int i = 0; i < accountRoles.size(); i++) {
@@ -643,7 +685,7 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     * @return
+     * @return Looked-up EJB
      */
     public static UserFacade lookup() {
         try {

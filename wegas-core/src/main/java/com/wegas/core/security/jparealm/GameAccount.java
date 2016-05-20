@@ -38,11 +38,9 @@ public class GameAccount extends JpaAccount {
     }
 
     /**
-     *
-     * @return
+     * @return the game this account give access to
      */
     @ManyToOne
-    //@XmlTransient
     @JsonIgnore
     public Game getGame() {
         return game;
@@ -50,7 +48,7 @@ public class GameAccount extends JpaAccount {
 
     /**
      *
-     * @return
+     * @return the game token
      */
     @Transient
     public String getToken() {

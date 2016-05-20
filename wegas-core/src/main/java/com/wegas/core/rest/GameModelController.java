@@ -56,7 +56,7 @@ public class GameModelController {
     /**
      *
      * @param gm
-     * @return
+     * @return the new game model
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -71,7 +71,7 @@ public class GameModelController {
      *
      * @param templateGameModelId
      * @param gm
-     * @return
+     * @return the new game model
      * @throws IOException
      */
     @POST
@@ -88,10 +88,20 @@ public class GameModelController {
         return duplicate;
     }
 
+    /**
+     * EXPERIMENTAL
+     *
+     * update default instance based on given player ones
+     *
+     * @param templateGameModelId
+     * @param playerId
+     * @return up to date reseted gamemodel
+     * @throws IOException
+     */
     @PUT
     @Path("{templateGameModelId : [1-9][0-9]*}/UpdateFromPlayer/{playerId: [1-9][0-9]*}")
     public GameModel updateFromPlayer(@PathParam("templateGameModelId") Long templateGameModelId,
-        @PathParam("playerId") Long playerId) throws IOException {
+            @PathParam("playerId") Long playerId) throws IOException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + templateGameModelId);
 
@@ -101,10 +111,24 @@ public class GameModelController {
         return gm;
     }
 
+    /**
+     * EXPERIMENTAL & BUGGY
+     *
+     * Create a new gameModel based on given player instances status (new
+     * gameModel default instance fetch from player ones)
+     *
+     * This one is Buggy since several instances merge are not cross-gameModel
+     * compliant
+     *
+     * @param templateGameModelId
+     * @param playerId
+     * @return the new gameModel
+     * @throws IOException
+     */
     @POST
     @Path("{templateGameModelId : [1-9][0-9]*}/CreateFromPlayer/{playerId: [1-9][0-9]*}")
     public GameModel createFromPlayer(@PathParam("templateGameModelId") Long templateGameModelId,
-        @PathParam("playerId") Long playerId) throws IOException {
+            @PathParam("playerId") Long playerId) throws IOException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Duplicate:gm" + templateGameModelId);
         GameModel duplicate = gameModelFacade.createFromPlayer(templateGameModelId, playerId);
@@ -116,13 +140,13 @@ public class GameModelController {
      *
      * @param file
      * @param details
-     * @return
+     * @return the new uploaded gameModel
      * @throws IOException
      */
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public GameModel upload(@FormDataParam("file") InputStream file,
-        @FormDataParam("file") FormDataBodyPart details) throws IOException {
+            @FormDataParam("file") FormDataBodyPart details) throws IOException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Create");
 
@@ -138,7 +162,7 @@ public class GameModelController {
     /**
      *
      * @param entityId
-     * @return
+     * @return the requested GameModel
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON + "; charset=utf-8")                   // @hack force utf-8 charset
@@ -155,14 +179,14 @@ public class GameModelController {
     @Path("{entityId : [1-9][0-9]*}/{filename: .*}.json")                       // @hack allow to add a filename with *.json to have a nice file
     public Response downloadJSON(@PathParam("entityId") Long entityId, @PathParam("filename") String filename) {
         return Response.ok(this.get(entityId))
-            .header("Content-Disposition", "attachment; filename=" + filename).build();
+                .header("Content-Disposition", "attachment; filename=" + filename).build();
     }
 
     /**
      *
      * @param entityId
      * @param entity
-     * @return
+     * @return up to date gameModel
      */
     @PUT
     @Path("{entityId: [1-9][0-9]*}")
@@ -176,7 +200,7 @@ public class GameModelController {
     /**
      *
      * @param entityId
-     * @return
+     * @return game model Copy
      * @throws IOException
      */
     @POST
@@ -190,7 +214,7 @@ public class GameModelController {
 
     /**
      *
-     * @return
+     * @return all gameModel the current user can see
      */
     @GET
     public Collection<GameModel> index() {
@@ -201,14 +225,21 @@ public class GameModelController {
         for (GameModel gm : gameModelFacade.findTemplateGameModelsByStatus(GameModel.Status.LIVE)) {
             //if (s.isPermitted("GameModel:" + r +":gm" + aGm.getId())) {
             if (s.isPermitted("GameModel:View:gm" + gm.getId())
-                || s.isPermitted("GameModel:Instantiate:gm" + gm.getId())
-                || s.isPermitted("GameModel:Duplicate:gm" + gm.getId())) {
+                    || s.isPermitted("GameModel:Instantiate:gm" + gm.getId())
+                    || s.isPermitted("GameModel:Duplicate:gm" + gm.getId())) {
                 games.add(gm);
             }
         }
         return games;
     }
 
+    /**
+     * Update gameModel status (bin, live, etc)(
+     *
+     * @param entityId
+     * @param status
+     * @return the game model with up to date status
+     */
     @PUT
     @Path("{entityId: [1-9][0-9]*}/status/{status: [A-Z]*}")
     public GameModel changeStatus(@PathParam("entityId") Long entityId, @PathParam("status") final GameModel.Status status) {
@@ -218,8 +249,8 @@ public class GameModelController {
         switch (status) {
             case LIVE:
                 if (s.isPermitted("GameModel:View:gm" + gm.getId())
-                    || s.isPermitted("GameModel:Instantiate:gm" + gm.getId())
-                    || s.isPermitted("GameModel:Duplicate:gm" + gm.getId())) {
+                        || s.isPermitted("GameModel:Instantiate:gm" + gm.getId())
+                        || s.isPermitted("GameModel:Duplicate:gm" + gm.getId())) {
                     gameModelFacade.live(gm);
                 }
                 break;
@@ -238,6 +269,12 @@ public class GameModelController {
         return gm;
     }
 
+    /**
+     * Get all gameModel with given status
+     *
+     * @param status
+     * @return all gameModels with given status the user has access too
+     */
     @GET
     @Path("status/{status: [A-Z]*}")
     public Collection<GameModel> findByStatus(@PathParam("status") final GameModel.Status status) {
@@ -245,14 +282,21 @@ public class GameModelController {
         Subject s = SecurityUtils.getSubject();
         for (GameModel gm : gameModelFacade.findTemplateGameModelsByStatus(status)) {
             if (s.isPermitted("GameModel:View:gm" + gm.getId())
-                || s.isPermitted("GameModel:Instantiate:gm" + gm.getId())
-                || s.isPermitted("GameModel:Duplicate:gm" + gm.getId())) {
+                    || s.isPermitted("GameModel:Instantiate:gm" + gm.getId())
+                    || s.isPermitted("GameModel:Duplicate:gm" + gm.getId())) {
                 games.add(gm);
             }
         }
         return games;
     }
 
+    /**
+     * count gameModel with given status
+     *
+     * @param status
+     * @return the number of gameModel with the given status the current user
+     *         has access too
+     */
     @GET
     @Path("status/{status: [A-Z]*}/count")
     public int countByStatus(@PathParam("status") final GameModel.Status status) {
@@ -260,8 +304,8 @@ public class GameModelController {
         Subject s = SecurityUtils.getSubject();
         for (GameModel gm : gameModelFacade.findTemplateGameModelsByStatus(status)) {
             if (s.isPermitted("GameModel:View:gm" + gm.getId())
-                || s.isPermitted("GameModel:Instantiate:gm" + gm.getId())
-                || s.isPermitted("GameModel:Duplicate:gm" + gm.getId())) {
+                    || s.isPermitted("GameModel:Instantiate:gm" + gm.getId())
+                    || s.isPermitted("GameModel:Duplicate:gm" + gm.getId())) {
                 games.add(gm);
             }
         }
@@ -269,9 +313,10 @@ public class GameModelController {
     }
 
     /**
+     * Move to bin a LIVE gameModel, Delete a bin one
      *
      * @param entityId
-     * @return
+     * @return the just movedToBin/deleted gameModel
      */
     @DELETE
     @Path("{entityId: [1-9][0-9]*}")
@@ -290,6 +335,12 @@ public class GameModelController {
         return entity;
     }
 
+    /**
+     * Delete all gameModel the current user has access too (set status =
+     * delete)
+     *
+     * @return all deleted gameModel
+     */
     @DELETE
     public Collection<GameModel> deleteAll() {
         Collection<GameModel> games = new ArrayList<>();
@@ -304,16 +355,17 @@ public class GameModelController {
     }
 
     /**
+     * Create a new gameModel based on a JSON version
      *
      * @param gameModelId
      * @param path
-     * @return
+     * @return the restored gameModel
      * @throws IOException
      */
     @GET
     @Path("{gameModelId: [1-9][0-9]*}/Restore/{path: .*}")
     public GameModel restoreVersion(@PathParam("gameModelId") Long gameModelId,
-        @PathParam("path") String path) throws IOException {
+            @PathParam("path") String path) throws IOException {
 
         //SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
         //InputStream file = fileController.getFile(gameModelId, path);           // Retrieve file from content repository
@@ -332,13 +384,13 @@ public class GameModelController {
      *
      * @param gameModelId
      * @param path
-     * @return
+     * @return the restored gameModel
      * @throws IOException
      */
     @GET
     @Path("{gameModelId: [1-9][0-9]*}/CreateFromVersion/{path: .*}")
     public GameModel createFromVersion(@PathParam("gameModelId") Long gameModelId,
-        @PathParam("path") String path) throws IOException {
+            @PathParam("path") String path) throws IOException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
@@ -355,7 +407,7 @@ public class GameModelController {
     @POST
     @Path("{gameModelId: [1-9][0-9]*}/CreateVersion/{version: .*}")
     public void createVersion(@PathParam("gameModelId") Long gameModelId,
-        @PathParam("version") String name) throws RepositoryException, IOException {
+            @PathParam("version") String name) throws RepositoryException, IOException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
         gameModelFacade.createVersion(gameModelId, name);
@@ -373,7 +425,7 @@ public class GameModelController {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
         gameModelFacade.createVersion(gameModelId, new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date())
-            + " by " + userFacade.getCurrentUser().getName());
+                + " by " + userFacade.getCurrentUser().getName());
     }
 
     /**
