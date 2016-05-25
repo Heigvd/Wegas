@@ -10,10 +10,6 @@ package com.wegas.core.ejb;
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.game.*;
 import com.wegas.core.security.ejb.UserFacade;
-import javax.ejb.embeddable.EJBContainer;
-import javax.naming.Context;
-import javax.naming.NamingException;
-import javax.persistence.EntityTransaction;
 import junit.framework.Assert;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -21,8 +17,12 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ejb.embeddable.EJBContainer;
+import javax.naming.Context;
+import javax.naming.NamingException;
+import javax.persistence.EntityTransaction;
+
 /**
- *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class GameModelFacadeTest {
@@ -115,7 +115,41 @@ public class GameModelFacadeTest {
         gameModelFacade.remove(gameModel.getId());
     }
 
+    @Test
+    public void createMultipleTeam() throws NamingException, InterruptedException {
+        GameFacade gf = lookupBy(GameFacade.class);
+
+        GameModel gameModel = new GameModel("TESTGM");
+        gameModelFacade.create(gameModel);
+
+        Game g = new Game("TESTGAME", "xxx");
+        gf.create(gameModel.getId(), g);
+        Team t1 = new Team();
+        Team t2 = new Team();
+        t1.setName("test-team");
+        t2.setName("test-team");
+        final Thread thread1 = threadCreateTeam(g, t1);
+        final Thread thread2 = threadCreateTeam(g, t2);
+        thread1.join();
+        thread2.join();
+        Assert.assertNotSame(t1.getName(), t2.getName());
+    }
+
     public static <T> T lookupBy(Class<T> type) throws NamingException {
         return Helper.lookupBy(context, type);
+    }
+
+    private Thread threadCreateTeam(final Game game, final Team team) {
+        final Thread thread = new Thread(() -> {
+            try {
+                final TeamFacade teamFacade = lookupBy(TeamFacade.class);
+                teamFacade.create(game.getId(), team);
+            } catch (NamingException e) {
+                System.out.println("FAILED");
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+        return thread;
     }
 }
