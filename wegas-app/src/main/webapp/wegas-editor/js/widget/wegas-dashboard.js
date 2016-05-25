@@ -124,12 +124,16 @@ YUI.add('wegas-dashboard', function(Y) {
                         };
                         this.add(new Y.Wegas.Card(card));
                     }, this);
-                    if (this.get("resize")) {
-                        this.plug(Y.Wegas.CardsResizable);
-                        this.CardsResizable.resetClassSize();
-                        this.CardsResizable.resize();
+                    try {
+                        if (this.get("resize")) {
+                            this.plug(Y.Wegas.CardsResizable);
+                            this.CardsResizable.resetClassSize();
+                            this.CardsResizable.resize();
+                        }
+                    } catch (e){
+                    } finally {
+                        return this.get("cardsData");
                     }
-                    return this.get("cardsData");
                 }, this));
             },
             _addOriginalBloc: function(idCard, originalBloc) {
