@@ -11,9 +11,12 @@ import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
-import java.util.Objects;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Objects;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * Testing Triggers, class TriggerInstance and class TriggerDescriptor
@@ -48,15 +51,16 @@ public class TriggerTest {
     public void testGenerateTrigger() {
         System.out.println("OneShotTrigger");
         this.triggerDescriptor.setOneShot(true);
-        this.triggerDescriptor.buildStateMachine();
-        assert this.triggerDescriptor.getStates().get(1L).getTransitions().get(0).getNextStateId() == 2L;
-        assert this.triggerDescriptor.getStates().get(2L).getTransitions().isEmpty();
-        assert this.triggerDescriptor.getDefaultInstance().getCurrentStateId() == 1L;
+        assertTrue(this.triggerDescriptor.getStates().get(1L).getTransitions().get(0).getNextStateId() == 2L);
+        assertTrue(this.triggerDescriptor.getStates().get(2L).getTransitions().isEmpty());
+        assertTrue(this.triggerDescriptor.getDefaultInstance().getCurrentStateId() == 1L);
+        assertTrue(triggerDescriptor.getStates().get(2L).getOnEnterEvent().equals(this.triggerDescriptor.getPostTriggerEvent()));
         //testing onLoad method
         this.triggerDescriptor.setTriggerEvent(null);
         this.triggerDescriptor.setPostTriggerEvent(null);
-        assert this.triggerDescriptor.getPostTriggerEvent().equals(this.scriptEntity);
-        assert this.triggerDescriptor.getTriggerEvent().equals(this.scriptEntity);
+        assertTrue(this.triggerDescriptor.getPostTriggerEvent() == null);
+        assertTrue(this.triggerDescriptor.getTriggerEvent() == null);
+        assertTrue(triggerDescriptor.getStates().get(2L).getOnEnterEvent() == null);
     }
 
     /**
@@ -67,14 +71,15 @@ public class TriggerTest {
         System.out.println("LoopTrigger");
         this.triggerDescriptor.setOneShot(false);
         this.triggerDescriptor.buildStateMachine();
-        assert this.triggerDescriptor.getStates().get(1L).getTransitions().get(0).getNextStateId() == 1L;
-        assert this.triggerDescriptor.getStates().size() == 1;
-        assert this.triggerDescriptor.getDefaultInstance().getCurrentStateId() == 1L;
+        assertTrue(this.triggerDescriptor.getStates().get(1L).getTransitions().get(0).getNextStateId() == 1L);
+        assertTrue(this.triggerDescriptor.getStates().size() == 1);
+        assertTrue(this.triggerDescriptor.getDefaultInstance().getCurrentStateId() == 1L);
+        assertTrue(triggerDescriptor.getStates().get(1L).getOnEnterEvent().equals(scriptEntity));
         //testing onLoad method
         this.triggerDescriptor.setTriggerEvent(null);
         this.triggerDescriptor.setPostTriggerEvent(null);
-        assert this.triggerDescriptor.getPostTriggerEvent().equals(this.scriptEntity);
-        assert this.triggerDescriptor.getTriggerEvent().equals(this.scriptEntity);
+        assertTrue(this.triggerDescriptor.getPostTriggerEvent() == null);
+        assertTrue(this.triggerDescriptor.getTriggerEvent() == null);
     }
 
     @Test
@@ -86,8 +91,8 @@ public class TriggerTest {
         this.triggerDescriptor.buildStateMachine();
         this.triggerDescriptor.setPostTriggerEvent(this.scriptEntity);
         this.triggerDescriptor.setTriggerEvent(this.scriptEntity);
-        assert this.triggerDescriptor.getPostTriggerEvent() == null;
-        assert this.triggerDescriptor.getTriggerEvent() == null;
+        assertTrue(this.triggerDescriptor.getPostTriggerEvent().equals(scriptEntity));
+        assertTrue(this.triggerDescriptor.getTriggerEvent().equals(scriptEntity));
     }
 
     @Test
@@ -111,13 +116,13 @@ public class TriggerTest {
         newTrigger.setDefaultInstance(instanceEntity);
         newTrigger.setTriggerEvent(newTestScript);
         this.triggerDescriptor.merge(newTrigger);
-        // assert this.triggerDescriptor.getId() == 4L;
-        assert this.triggerDescriptor.getPostTriggerEvent().equals(newTestScript);
-        assert this.triggerDescriptor.getTriggerEvent().equals(newTestScript);
-        assert (this.triggerDescriptor.getPostTriggerEvent().getContent() == null ? newTestScript.getContent() == null : this.triggerDescriptor.getPostTriggerEvent().getContent().equals(newTestScript.getContent()));
-        assert (this.triggerDescriptor.getPostTriggerEvent().getLanguage() == null ? newTestScript.getLanguage() == null : this.triggerDescriptor.getPostTriggerEvent().getLanguage().equals(newTestScript.getLanguage()));
-        assert this.triggerDescriptor.getScope().getClass().equals(TeamScope.class);
-        assert this.triggerDescriptor.getDefaultInstance().getCurrentStateId().equals(instanceEntity.getCurrentStateId());
-        assert Objects.equals(this.triggerDescriptor.getDefaultInstance().getId(), this.trigger.getId());
+        // assertTrue(this.triggerDescriptor.getId() == 4L);
+        assertTrue(this.triggerDescriptor.getPostTriggerEvent().equals(newTestScript));
+        assertTrue(this.triggerDescriptor.getTriggerEvent().equals(newTestScript));
+        assertTrue((this.triggerDescriptor.getPostTriggerEvent().getContent() == null ? newTestScript.getContent() == null : this.triggerDescriptor.getPostTriggerEvent().getContent().equals(newTestScript.getContent())));
+        assertTrue((this.triggerDescriptor.getPostTriggerEvent().getLanguage() == null ? newTestScript.getLanguage() == null : this.triggerDescriptor.getPostTriggerEvent().getLanguage().equals(newTestScript.getLanguage())));
+        assertTrue(this.triggerDescriptor.getScope().getClass().equals(TeamScope.class));
+        assertTrue(this.triggerDescriptor.getDefaultInstance().getCurrentStateId().equals(instanceEntity.getCurrentStateId()));
+        assertTrue(Objects.equals(this.triggerDescriptor.getDefaultInstance().getId(), this.trigger.getId()));
     }
 }
