@@ -96,6 +96,13 @@ public class TestHelper {
         }
     }
 
+
+    public static Thread start(Runnable r) {
+        final Thread thread = new Thread(r);
+        thread.start();
+        return thread;
+    }
+
     public static synchronized void closeContainer() {
         //it closes itself on vm shutdown
 //        if (container != null) {
