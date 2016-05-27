@@ -7,47 +7,24 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.Helper;
 import com.wegas.core.persistence.game.*;
-import com.wegas.core.security.ejb.UserFacade;
 import junit.framework.Assert;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.embeddable.EJBContainer;
-import javax.naming.Context;
 import javax.naming.NamingException;
-import javax.persistence.EntityTransaction;
+import java.util.function.Function;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-public class GameModelFacadeTest {
+public class GameModelFacadeTest extends AbstractEJBTest {
 
     private static final Logger logger = LoggerFactory.getLogger(GameModelFacadeTest.class);
-    protected static EntityTransaction tx;
-    private static EJBContainer ejbContainer;
-    private static Context context;
-    private static GameModelFacade gameModelFacade;
-
-    @BeforeClass
-    public static void setUp() throws NamingException {
-        ejbContainer = TestHelper.getEJBContainer();
-        context = ejbContainer.getContext();
-        gameModelFacade = lookupBy(GameModelFacade.class);
-        lookupBy(UserFacade.class).guestLogin();
-    }
-
-    @AfterClass
-    public static void tearDown() {
-        TestHelper.closeContainer();
-    }
 
     @Test
-    public void createGameModel() throws NamingException {
+    public void createGameModels() throws NamingException {
         logger.info("createGameModel()");
         final String name = "test";
         final String SCRIPTNAME = "defaultScript";
@@ -60,8 +37,9 @@ public class GameModelFacadeTest {
         gameModel.getCssLibrary().put(SCRIPTNAME, new GameModelContent(SCRIPTCONTENT));
         gameModel.getProperties().setPagesUri(SCRIPTCONTENT);
 
+        final int size = gameModelFacade.findAll().size();
         gameModelFacade.create(gameModel);
-        Assert.assertEquals(1, gameModelFacade.findAll().size());
+        Assert.assertEquals(size + 1, gameModelFacade.findAll().size());
 
         gameModel = gameModelFacade.find(gameModel.getId());
         Assert.assertEquals(name, gameModel.getName());
@@ -71,7 +49,7 @@ public class GameModelFacadeTest {
         Assert.assertEquals(SCRIPTCONTENT, gameModel.getScriptLibrary().get(SCRIPTNAME).getContent());
 
         gameModelFacade.remove(gameModel.getId());
-        Assert.assertEquals(0, gameModelFacade.findAll().size());
+        Assert.assertEquals(size, gameModelFacade.findAll().size());
     }
 
     @Test
@@ -80,7 +58,7 @@ public class GameModelFacadeTest {
         final String GAMENAME = "test-gamemodel";
         final String GAMENAME2 = "test-gamemodel2";
         final String NAME = "test-game";
-        final String TOKEN = "test-game-token";
+        final String TOKEN = "token-for-testGame";
 
         GameFacade gf = lookupBy(GameFacade.class);
         TeamFacade tf = lookupBy(TeamFacade.class);
@@ -88,8 +66,9 @@ public class GameModelFacadeTest {
 
         // Create a game model
         GameModel gameModel = new GameModel(GAMENAME);
+        final int size = gameModelFacade.findAll().size();
         gameModelFacade.create(gameModel);
-        Assert.assertEquals(1, gameModelFacade.findAll().size());
+        Assert.assertEquals(size + 1, gameModelFacade.findAll().size());
 
         // Edit this gam
         GameModel gm2 = gameModelFacade.update(gameModel.getId(), new GameModel(GAMENAME2));
@@ -119,7 +98,7 @@ public class GameModelFacadeTest {
     @Test
     public void createMultipleTeam() throws NamingException, InterruptedException {
         GameFacade gf = lookupBy(GameFacade.class);
-
+        final TeamFacade teamFacade = lookupBy(TeamFacade.class);
         GameModel gameModel = new GameModel("TESTGM");
         gameModelFacade.create(gameModel);
 
@@ -129,31 +108,14 @@ public class GameModelFacadeTest {
         Team t2 = new Team();
         t1.setName("test-team");
         t2.setName("test-team");
-        final Thread thread1 = threadCreateTeam(g, t1);
-        final Thread thread2 = threadCreateTeam(g, t2);
+        final Function<Team, Runnable> runCreateTeam = (Team team) -> () -> teamFacade.create(g.getId(), team);
+        final Thread thread1 = TestHelper.start(runCreateTeam.apply(t1));
+        final Thread thread2 = TestHelper.start(runCreateTeam.apply(t2));
         thread1.join();
         thread2.join();
         Assert.assertNotSame(t1.getName(), t2.getName());
 
         gameModelFacade.remove(gameModel.getId());
         Assert.assertEquals(0, gameModelFacade.findAll().size());
-    }
-
-    public static <T> T lookupBy(Class<T> type) throws NamingException {
-        return Helper.lookupBy(context, type);
-    }
-
-    private Thread threadCreateTeam(final Game game, final Team team) {
-        final Thread thread = new Thread(() -> {
-            try {
-                final TeamFacade teamFacade = lookupBy(TeamFacade.class);
-                teamFacade.create(game.getId(), team);
-            } catch (NamingException e) {
-                System.out.println("FAILED");
-                e.printStackTrace();
-            }
-        });
-        thread.start();
-        return thread;
     }
 }
