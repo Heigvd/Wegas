@@ -121,6 +121,11 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      * @param propagate indicate whether default instance should be propagated
      */
     public void revive(GameModel gameModel, VariableDescriptor entity, boolean propagate) {
+        /*
+         * This flush is required by several DescriptorRevivedEvent listener, 
+         * which opperate some SQL queries (which didn't return anything before
+         * entites has been flushed to database
+         */
         this.getEntityManager().flush();
 
         if (entity.getScope() == null) {
