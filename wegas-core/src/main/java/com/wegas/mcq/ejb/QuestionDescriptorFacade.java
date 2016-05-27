@@ -82,6 +82,18 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      * @throws WegasNoResultException if not found
      */
     public Result findResult(final ChoiceDescriptor choiceDescriptor, final String name) throws WegasNoResultException {
+        if (!Helper.isNullOrEmpty(name)) {
+            for (Result result : choiceDescriptor.getResults()) {
+                if (name.equals(result.getName())) {
+                    return result;
+                }
+            }
+        }
+
+        throw new WegasNoResultException("Result \"" + name + "\" not found");
+    }
+
+    public Result findResultTQ(final ChoiceDescriptor choiceDescriptor, final String name) throws WegasNoResultException {
         final TypedQuery<Result> query = getEntityManager().createNamedQuery("Result.findByName", Result.class);
         query.setParameter("choicedescriptor", choiceDescriptor);
         query.setParameter("name", name);
@@ -187,8 +199,8 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     /**
      * create a reply for given player based on given choice
      *
-     * @param choiceId selected choice
-     * @param player player who select the choice
+     * @param choiceId  selected choice
+     * @param player    player who select the choice
      * @param startTime time the player select the choice
      * @return the new reply
      */
@@ -230,8 +242,8 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     }
 
     /**
-     * @param choiceId selected choice id
-     * @param playerId id of player who select the choice
+     * @param choiceId  selected choice id
+     * @param playerId  id of player who select the choice
      * @param startTime time the player select the choice
      * @return the new reply
      */
@@ -264,7 +276,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     /**
      *
      * @param playerId id of player who wants to cancel the reply
-     * @param replyId id of reply to cancel
+     * @param replyId  id of reply to cancel
      * @return reply being canceled
      */
     public Reply cancelReplyTransactional(Long playerId, Long replyId) {
@@ -279,7 +291,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
 
     /**
      * @param playerId id of player who wants to cancel the reply
-     * @param replyId id of reply to cancel
+     * @param replyId  id of reply to cancel
      * @return reply being canceled
      */
     public Reply cancelReply(Long playerId, Long replyId) {
@@ -377,7 +389,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
 
         getEntityManager().refresh(validateQuestion);
         validateQuestion.setValidated(true);
-        getEntityManager().flush();
+        //getEntityManager().flush();
     }
 
     /**
