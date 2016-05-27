@@ -18,9 +18,11 @@ angular.module('public.password.directives', [])
         var remindPassword = function() {
            if (publicPasswordCtrl.formInfo.email !== "") {
                 Auth.remindPassword(publicPasswordCtrl.formInfo.email).then(function(response) {
-                    response.flash();
                     if (!response.isErroneous()) {
+                        window.alert(response.message);
                         $scope.close();
+                    } else {
+                        response.flash();
                     }
                 });
             } else {
