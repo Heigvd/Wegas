@@ -20,6 +20,7 @@ import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.UserFacade;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -52,7 +53,7 @@ public class Player extends AbstractEntity implements Broadcastable {
 
     @JsonIgnore
     @OneToMany(mappedBy = "player", cascade = CascadeType.REMOVE)
-    private List<VariableInstance> privateInstances;
+    private List<VariableInstance> privateInstances = new ArrayList<>();
 
     /**
      *
