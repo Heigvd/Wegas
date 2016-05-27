@@ -131,6 +131,10 @@ public class RequestFacade {
      * @param player
      */
     public void commit(Player player) {
+        /*
+         * Flush is required to triggered EntityListener's lifecycles events which populate 
+         * requestManager touched (deleted, updated and so on) entities
+         */
         em.flush();
         if (requestManager.getUpdatedEntities().size() > 0 || scriptEvent.isEventFired()) {
             playerActionEvent.fire(new PlayerAction(player));
@@ -162,7 +166,10 @@ public class RequestFacade {
              // }
              // PlayerAction action = new PlayerAction();
              // playerActionEvent.fire(action);
-             }*/
+             }
+             */
+
+            // TODO Test whether this flush is required when a state machine triggered such an other one
             em.flush();
         }
     }

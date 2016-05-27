@@ -58,6 +58,12 @@ public class AbstractEJBTest {
         TestHelper.closeContainer();
     }
 
+    /**
+     * Create a GameModel and a game with two teams (test-team and test-team2),
+     * with, respectively, one and two players ("Player", "Player2", and
+     * "Player21").
+     *
+     */
     @Before
     public void createGameModel() {
         gameModel = new GameModel();                                            // Create a game model

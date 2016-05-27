@@ -109,7 +109,6 @@ public class TeamFacade extends BaseFacade<Team> {
         t = this.find(t.getId()); //get it managed. created in other transaction
         gameFacade.addRights(userFacade.getCurrentUser(), g);  // @fixme Should only be done for a player, but is done here since it will be needed in later requests to add a player
 
-        getEntityManager().flush();
         g.getGameModel().propagateDefaultInstance(t);
         return t;
     }
@@ -161,9 +160,11 @@ public class TeamFacade extends BaseFacade<Team> {
      */
     public void reset(final Team team) {
         // Need to flush so prepersit events will be thrown (for example Game will add default teams)
-        getEntityManager().flush();
+        // F*cking flush
+        //getEntityManager().flush();
         team.getGame().getGameModel().propagateDefaultInstance(team);
-        getEntityManager().flush(); // DA FU    ()
+        // F*cking flush
+        //getEntityManager().flush(); // DA FU    ()
         // Send an reset event (for the state machine and other)
         resetEvent.fire(new ResetEvent(team));
     }

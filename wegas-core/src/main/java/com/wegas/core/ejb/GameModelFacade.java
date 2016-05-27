@@ -122,8 +122,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         final User currentUser = userFacade.getCurrentUser();
         entity.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
 
-        this.addDebugGame(entity);
-
         variableDescriptorFacade.reviveItems(entity, entity, true);                           // Revive entities
         createdGameModelEvent.fire(new EntityCreated<>(entity));
         userFacade.getCurrentUser().addPermission("GameModel:View,Edit,Delete,Duplicate,Instantiate:gm" + entity.getId());
@@ -395,10 +393,10 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      */
     public void reset(final GameModel gameModel) {
         // Need to flush so prepersit events will be thrown (for example Game will add default teams)
-        getEntityManager().flush();
+        //getEntityManager().flush();
         //gameModel.propagateGameModel();  -> propagation is now done automatically after descriptor creation
         gameModel.propagateDefaultInstance(gameModel);
-//        getEntityManager().flush();
+        //getEntityManager().flush();
         // Send an reset event (for the state machine and other)
         resetEvent.fire(new ResetEvent(gameModel));
     }

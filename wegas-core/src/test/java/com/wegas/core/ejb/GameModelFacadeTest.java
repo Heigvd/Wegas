@@ -113,6 +113,7 @@ public class GameModelFacadeTest {
         Assert.assertNotNull(p.getId());
 
         gameModelFacade.remove(gameModel.getId());
+        Assert.assertEquals(0, gameModelFacade.findAll().size());
     }
 
     @Test
@@ -133,6 +134,9 @@ public class GameModelFacadeTest {
         thread1.join();
         thread2.join();
         Assert.assertNotSame(t1.getName(), t2.getName());
+
+        gameModelFacade.remove(gameModel.getId());
+        Assert.assertEquals(0, gameModelFacade.findAll().size());
     }
 
     public static <T> T lookupBy(Class<T> type) throws NamingException {

@@ -142,9 +142,12 @@ public class GameFacade extends BaseFacade<Game> {
             throw WegasErrorMessage.error("This token is already in use.");
         }
         getEntityManager().persist(game);
+
         game.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
         gameModel.addGame(game);
         this.addDebugTeam(game);
+
+        this.flush();
 
         gameModelFacade.reset(gameModel);                                       // Reset the game so the default player will have instances
 
@@ -463,9 +466,9 @@ public class GameFacade extends BaseFacade<Game> {
      */
     public void reset(final Game game) {
         // Need to flush so prepersit events will be thrown (for example Game will add default teams)
-        getEntityManager().flush();
+        //getEntityManager().flush();
         game.getGameModel().propagateDefaultInstance(game);
-        getEntityManager().flush(); // DA FU    ()
+        //getEntityManager().flush(); // DA FU    ()
         // Send an reset event (for the state machine and other)
         resetEvent.fire(new ResetEvent(game));
     }

@@ -63,8 +63,8 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
     }
 
     /**
-     * Test of selectChoice method, of class QuestionController.
-     * The question is of type "checkbox" with ignoration impact on one choice.
+     * Test of selectChoice method, of class QuestionController. The question is
+     * of type "checkbox" with ignoration impact on one choice.
      */
     @Test
     public void testSelectAndValidateCBX() throws Exception {
@@ -111,11 +111,13 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         assertEquals(10.0, ((NumberInstance) vif.find(myNumber1.getId(), player.getId())).getValue(), 0.1);
         assertEquals(50.0, ((NumberInstance) vif.find(myNumber2.getId(), player.getId())).getValue(), 0.1);
 
+        qif = (QuestionInstance) vif.find(qif.getId());
+        assertEquals(2, qif.getReplies().size());
+
         vdf.duplicate(question.getId());                                        // Test duplication of question
 
         vdf.remove(question.getId());                                           // Clean up
     }
-
 
     @Test
     public void testSelectAndCancel() throws NamingException {
@@ -140,11 +142,11 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         vdf.createChild(question.getId(), choice);
         TestHelper.wipeEmCache();
         final Reply reply = qdf.selectChoice(choice.getId(), player.getId());
-        assertEquals(((NumberInstance)vif.find(myNumber.getId(), player.getId())).getValue(), 0, 0.0); // Nothing happened
-        assertEquals(((QuestionInstance)vif.find(question.getId(), player.getId())).getReplies().size(), 1);
+        assertEquals(((NumberInstance) vif.find(myNumber.getId(), player.getId())).getValue(), 0, 0.0); // Nothing happened
+        assertEquals(((QuestionInstance) vif.find(question.getId(), player.getId())).getReplies().size(), 1);
         final Reply reply1 = qdf.cancelReply(player.getId(), reply.getId());
         assertEquals(0, reply1.getQuestionInstance().getReplies().size());
-        assertEquals(((QuestionInstance)vif.find(question.getId(), player.getId())).getReplies().size(), 0);
+        assertEquals(((QuestionInstance) vif.find(question.getId(), player.getId())).getReplies().size(), 0);
         vdf.remove(question.getId());
     }
 

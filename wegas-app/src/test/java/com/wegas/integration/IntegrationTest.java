@@ -104,11 +104,11 @@ public class IntegrationTest {
 
     public void login() throws IOException {
         HttpPost post = new HttpPost(baseURL + "/rest/User/Authenticate");
-        String content = "{\"@class\" : \"AuthenticationInformation\","+
-                "\"login\": \"root@root.com\"," +
-                "\"password\": \"1234\"," +
-                "\"remember\": \"true\"" +
-                "}";
+        String content = "{\"@class\" : \"AuthenticationInformation\","
+                + "\"login\": \"root@root.com\","
+                + "\"password\": \"1234\","
+                + "\"remember\": \"true\""
+                + "}";
 
         StringEntity strEntity = new StringEntity(content);
         strEntity.setContentType("application/json");
@@ -186,6 +186,21 @@ public class IntegrationTest {
 
         return getEntityAsString(response.getEntity());
 
+    }
+
+    @Test
+    public void testUpdateAndCreateGame() throws IOException, JSONException {
+        String postJSONFromFile = postJSONFromFile("/rest/GameModel", "src/test/resources/gmScope.json");
+        JSONObject jsonObject = new JSONObject(postJSONFromFile);
+        JSONArray jsonArray = jsonObject.getJSONArray("updatedEntities");
+        Long gmId = jsonArray.getJSONObject(0).getLong("id");
+
+        postJSON("/rest/GameModel/" + gmId + "/Game", "{\"@class\":\"Game\",\"gameModelId\":\"" + gmId + "\",\"access\":\"OPEN\",\"name\":\"My Test Game\"}");
+    }
+
+    @Test
+    public void createGameTest() throws IOException {
+        postJSON("/rest/GameModel/" + this.artosId + "/Game", "{\"@class\":\"Game\",\"gameModelId\":\"" + this.artosId + "\",\"access\":\"OPEN\",\"name\":\"My Artos Game\"}");
     }
 
     @Test

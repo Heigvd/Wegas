@@ -17,10 +17,7 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.*;
-////import javax.xml.bind.annotation.XmlTransient;
-//import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wegas.core.persistence.ListUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +27,7 @@ import org.slf4j.LoggerFactory;
  */
 @Entity
 //@XmlType(name = "TeamScope")
-public class TeamScope extends AbstractScope {
+public class TeamScope extends AbstractScope<Team> {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(TeamScope.class.getName());
@@ -44,18 +41,18 @@ public class TeamScope extends AbstractScope {
     @JoinColumn(name = "teamscope_id", referencedColumnName = "id")
     //@XmlTransient
     @JsonIgnore
-    private Map<Long, VariableInstance> teamVariableInstances = new HashMap<>();
+    private Map<Team, VariableInstance> teamVariableInstances = new HashMap<>();
 
     /**
      *
      * @return
      */
     @Override
-    public Map<Long, VariableInstance> getVariableInstances() {
+    public Map<Team, VariableInstance> getVariableInstances() {
         return this.teamVariableInstances;
     }
 
-    public void setVariableInstances(Map<Long, VariableInstance> teamVariableInstances) {
+    public void setVariableInstances(Map<Team, VariableInstance> teamVariableInstances) {
         this.teamVariableInstances = teamVariableInstances;
     }
 
@@ -66,21 +63,21 @@ public class TeamScope extends AbstractScope {
      */
     @Override
     public VariableInstance getVariableInstance(Player player) {
-        return this.getVariableInstances().get(player.getTeam().getId());
+        return this.getVariableInstances().get(player.getTeam());
     }
 
     @Override
-    public Map<Long, VariableInstance> getPrivateInstances() {
-        Map<Long, VariableInstance> ret = new HashMap<>();
+    public Map<Team, VariableInstance> getPrivateInstances() {
+        Map<Team, VariableInstance> ret = new HashMap<>();
         Player cPlayer = RequestFacade.lookup().getPlayer();
 
         if (cPlayer != null) {
             if (this.getBroadcastScope().equals(GameScope.class.getSimpleName())) {
                 for (Team t : cPlayer.getGame().getTeams()) {
-                    ret.put(t.getId(), this.getVariableInstances().get(t.getId()));
+                    ret.put(t, this.getVariableInstances().get(t));
                 }
             } else {
-                ret.put(cPlayer.getTeam().getId(), this.getVariableInstance(cPlayer));
+                ret.put(cPlayer.getTeam(), this.getVariableInstance(cPlayer));
             }
         }
         return ret;
@@ -92,9 +89,10 @@ public class TeamScope extends AbstractScope {
      * @param v
      */
     @Override
-    public void setVariableInstance(Long teamId, VariableInstance v) {
-        this.getVariableInstances().put(teamId, v);
-        v.setTeamScopeKey(teamId);
+    public void setVariableInstance(Team key, VariableInstance v) {
+        this.getVariableInstances().put(key, v);
+        //v.setTeamScopeKey(key.getId());
+        v.setTeam(key);
         v.setTeamScope(this);
     }
 
@@ -109,12 +107,12 @@ public class TeamScope extends AbstractScope {
     @Override
     protected void propagate(Team t) {
         VariableDescriptor vd = this.getVariableDescriptor();
-        VariableInstance vi = this.getVariableInstances().get(t.getId());
+        VariableInstance vi = this.getVariableInstances().get(t);
         if (vi == null) {
             VariableInstance newInstance = vd.getDefaultInstance().clone();
             //t.setPrivateInstance(ListUtils.cloneAdd(t.getPrivateInstances(), newInstance));
             t.getPrivateInstances().add(newInstance);
-            this.setVariableInstance(t.getId(), newInstance);
+            this.setVariableInstance(t, newInstance);
 
         } else {
             vi.merge(vd.getDefaultInstance());

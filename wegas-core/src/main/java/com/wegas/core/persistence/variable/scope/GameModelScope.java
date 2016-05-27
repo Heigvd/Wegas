@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  */
 @Entity
 @JsonPropertyOrder(value = {"@class", "id", "name"})
-public class GameModelScope extends AbstractScope {
+public class GameModelScope extends AbstractScope<GameModel> {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(GameModelScope.class);
@@ -57,7 +57,7 @@ public class GameModelScope extends AbstractScope {
         VariableInstance vi = this.getVariableInstance();
         if (vi == null) {
             VariableInstance clone = vd.getDefaultInstance().clone();
-            this.setVariableInstance(Long.valueOf(0), clone);
+            this.setVariableInstance(gameModel, clone);
         } else {
             vi.merge(vd.getDefaultInstance());
         }
@@ -86,9 +86,9 @@ public class GameModelScope extends AbstractScope {
      * @return
      */
     @Override
-    public Map<Long, VariableInstance> getVariableInstances() {
-        Map<Long, VariableInstance> ret = new HashMap<>();
-        ret.put(Long.valueOf("0"), getVariableInstance());
+    public Map<GameModel, VariableInstance> getVariableInstances() {
+        Map<GameModel, VariableInstance> ret = new HashMap<>();
+        ret.put(null, getVariableInstance());
         return ret;
     }
 
@@ -116,7 +116,7 @@ public class GameModelScope extends AbstractScope {
      * @param v
      */
     @Override
-    public void setVariableInstance(Long userId, VariableInstance v) {
+    public void setVariableInstance(GameModel key, VariableInstance v) {
         this.setVariableInstance(v);
         v.setGameModelScope(this);
     }
@@ -140,7 +140,7 @@ public class GameModelScope extends AbstractScope {
     }
 
     @Override
-    public Map<Long, VariableInstance> getPrivateInstances() {
+    public Map<GameModel, VariableInstance> getPrivateInstances() {
         return this.getVariableInstances();
     }
 }

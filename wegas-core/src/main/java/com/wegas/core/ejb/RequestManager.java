@@ -153,7 +153,7 @@ public class RequestManager {
         if (this.currentPlayer == null || !this.currentPlayer.equals(currentPlayer)) {
             this.setCurrentEngine(null);
         }
-        this.currentPlayer = currentPlayer != null ? playerFacade.find(currentPlayer.getId()) : null;
+        this.currentPlayer = currentPlayer != null ? (currentPlayer.getId() != null ? playerFacade.find(currentPlayer.getId()) : currentPlayer) : null;
     }
 
     /**

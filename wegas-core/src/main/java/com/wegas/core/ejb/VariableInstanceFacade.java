@@ -99,14 +99,14 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
     public List<Player> findAllPlayer(VariableInstance instance) {
         if (instance.getScope() instanceof PlayerScope) {
             List<Player> players = new ArrayList<>();
-            players.add(playerFacade.find(instance.getPlayerScopeKey()));
+            players.add(playerFacade.find(instance.getPlayer().getId()));
             return players;
         } else if (instance.getScope() instanceof TeamScope) {
-            return teamFacade.find(instance.getTeamScopeKey()).getPlayers();
+            return teamFacade.find(instance.getTeam().getId()).getPlayers();
         } else if (instance.getScope() instanceof GameScope) {
             List<Player> players = new ArrayList<>();
 
-            for (Team t : gameFacade.find(instance.getGameScopeKey()).getTeams()) {
+            for (Team t : gameFacade.find(instance.getGame().getId()).getTeams()) {
                 players.addAll(t.getPlayers());
             }
             return players;
@@ -126,11 +126,11 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
      */
     public Game findGame(VariableInstance instance) {
         if (instance.getScope() instanceof PlayerScope) {
-            return playerFacade.find(instance.getPlayerScopeKey()).getGame();
+            return playerFacade.find(instance.getPlayer().getId()).getGame();
         } else if (instance.getScope() instanceof TeamScope) {
-            return teamFacade.find(instance.getTeamScopeKey()).getGame();
+            return teamFacade.find(instance.getTeam().getId()).getGame();
         } else if (instance.getScope() instanceof GameScope) {
-            return gameFacade.find(instance.getGameScopeKey());
+            return gameFacade.find(instance.getGame().getId());
         } else if (instance.getScope() instanceof GameModelScope) {
             return instance.getDescriptor().getGameModel().getGames().get(0);
         } else {
@@ -150,9 +150,9 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
      */
     public Team findTeam(VariableInstance instance) {
         if (instance.getScope() instanceof PlayerScope) {
-            return playerFacade.find(instance.getPlayerScopeKey()).getTeam();
+            return playerFacade.find(instance.getPlayer().getId()).getTeam();
         } else if (instance.getScope() instanceof TeamScope) {
-            return teamFacade.find(instance.getTeamScopeKey());
+            return teamFacade.find(instance.getTeam().getId());
         } else if (instance.getScope() instanceof GameScope) {
             throw new UnsupportedOperationException();  // Should never be called
         } else if (instance.getScope() instanceof GameModelScope) {
@@ -188,24 +188,24 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
         Player p;
         try {
             if (instance.getScope() instanceof PlayerScope) {
-                p = playerFacade.find(instance.getPlayerScopeKey());
+                p = playerFacade.find(instance.getPlayer().getId());
                 if (p == null) {
                     throw new NoPlayerException();
                 }
                 return p;
             } else if (instance.getScope() instanceof TeamScope) {
                 try {
-                    p = teamFacade.find(instance.getTeamScopeKey()).getPlayers().get(0);
+                    p = teamFacade.find(instance.getTeam().getId()).getPlayers().get(0);
                 } catch (ArrayIndexOutOfBoundsException ex) {
-                    throw new NoPlayerException("Team [" + teamFacade.find(instance.getTeamScopeKey()).getName() + "] has no player");
+                    throw new NoPlayerException("Team [" + teamFacade.find(instance.getTeam().getId()).getName() + "] has no player");
                 }
                 return p;
             } else if (instance.getScope() instanceof GameScope) {
 
                 try {
-                    p = gameFacade.find(instance.getGameScopeKey()).getPlayers().get(0);
+                    p = gameFacade.find(instance.getGame().getId()).getPlayers().get(0);
                 } catch (ArrayIndexOutOfBoundsException ex) {
-                    throw new NoPlayerException("Team [" + teamFacade.find(instance.getTeamScopeKey()).getName() + "] has no player");
+                    throw new NoPlayerException("Team [" + teamFacade.find(instance.getTeam().getId()).getName() + "] has no player");
                 }
                 return p;                          // @fixme
             } else if (instance.getScope() instanceof GameModelScope) {

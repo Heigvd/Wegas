@@ -49,8 +49,9 @@ public class TeamSingleton {
     }
 
     /**
-     * Nest name definition within a brand new transaction with a lock prevent two
-     * team have the same name within the same game
+     * Nest name definition within a brand new transaction with a lock prevent
+     * two team have the same name within the same game
+     *
      * @param g the game
      * @param t the team the name to be set
      */
@@ -78,8 +79,8 @@ public class TeamSingleton {
             }
         }
         game.addTeam(t);
-        em.flush();
-        em.refresh(game);
-        em.refresh(t);
+        //em.flush();
+        //em.refresh(game);
+        //em.refresh(t);
     }
 }
