@@ -639,6 +639,22 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         this.template = template;
     }
 
+    /**
+     *
+     * TODO: select game.* FROM GAME where dtype like 'DEBUGGAME' and
+     * gamemodelid = this.getId()
+     *
+     * @return true if the gameModel has a DebugGame
+     */
+    public boolean hasDebugGame() {
+        for (Game g : getGames()) {
+            if (g instanceof DebugGame) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /*@Override
     public Map<String, List<AbstractEntity>> getEntities() {
         Map<String, List<AbstractEntity>> map = new HashMap<>();

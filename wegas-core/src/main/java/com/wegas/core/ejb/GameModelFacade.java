@@ -19,6 +19,7 @@ import com.wegas.core.jcr.content.AbstractContentDescriptor;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.ContentConnectorFactory;
 import com.wegas.core.persistence.game.DebugGame;
+import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel.Status;
@@ -121,7 +122,8 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         final User currentUser = userFacade.getCurrentUser();
         entity.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
 
-        this.getEntityManager().flush();
+        this.addDebugGame(entity);
+
         variableDescriptorFacade.reviveItems(entity, entity, true);                           // Revive entities
         createdGameModelEvent.fire(new EntityCreated<>(entity));
         userFacade.getCurrentUser().addPermission("GameModel:View,Edit,Delete,Duplicate,Instantiate:gm" + entity.getId());
@@ -130,11 +132,30 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
+     * Add a DebugGame (and debug team) within the given game model unless it
+     * already exists
+     *
+     * @param gameModel
+     * @return true if a new debugGame has been added, false if the gameModel
+     *         already has one
+     */
+    public boolean addDebugGame(GameModel gameModel) {
+        if (!gameModel.hasDebugGame()) {
+            DebugGame debugGame = new DebugGame();
+            debugGame.addTeam(new DebugTeam());
+
+            this.addGame(gameModel, debugGame);
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * @param gm
      */
     public void createWithDebugGame(final GameModel gm) {
         this.create(gm);
-        this.addGame(gm, new DebugGame());
+        this.addDebugGame(gm);
     }
 
     /**
@@ -177,13 +198,13 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     public GameModel createFromPlayer(Long gameModelId, Long playerId) {
         try {
             GameModel duplicata = this.duplicate(gameModelId);
-            this.getEntityManager().flush();
+            //this.getEntityManager().flush();
 
             GameModel source = this.find(gameModelId);
             Player player = playerFacade.findLive(playerId);
             setDefaultInstancesFromPlayer(duplicata, source, player);
 
-            this.addGame(duplicata, new DebugGame());
+            this.addDebugGame(duplicata);
 
             return duplicata;
         } catch (IOException ex) {
@@ -197,7 +218,8 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      */
     public void addGame(final GameModel gameModel, final Game game) {
         gameModel.addGame(game);
-        this.reset(gameModel);                                                  // Reset the game model
+        // Should reset the new game only? nope ?  -> gameFacade.reset(game.getId());
+        this.reset(gameModel);
     }
 
     @Asynchronous
@@ -230,10 +252,10 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     public GameModel duplicate(final Long entityId) throws IOException {
         final GameModel srcGameModel = this.find(entityId);                     // Retrieve the entity to duplicate
         if (srcGameModel != null) {
-            final GameModel newGameModel = (GameModel) srcGameModel.duplicate();    // Duplicate it
+            final GameModel newGameModel = (GameModel) srcGameModel.duplicate();
 
-            newGameModel.setName(this.findUniqueName(srcGameModel.getName()));      // Find a unique name for this new game (e.g. Oldname(1))
-            this.create(newGameModel);                                              // Create the new game model
+            newGameModel.setName(this.findUniqueName(srcGameModel.getName()));
+            this.create(newGameModel);
 
             try {                                                                   // Clone files and pages
                 ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(newGameModel.getId());
@@ -256,7 +278,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      */
     public GameModel duplicateWithDebugGame(final Long gameModelId) throws IOException {
         GameModel gm = this.duplicate(gameModelId);
-        this.addGame(gm, new DebugGame());
+        this.addDebugGame(gm);
 //        userFacade.duplicatePermissionByInstance("gm" + gameModelId, "gm" + gm.getId());
         return gm;
     }

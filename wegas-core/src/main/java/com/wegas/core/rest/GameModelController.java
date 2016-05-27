@@ -10,7 +10,6 @@ package com.wegas.core.rest;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import com.wegas.core.ejb.GameModelFacade;
-import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.security.ejb.UserFacade;
@@ -82,8 +81,8 @@ public class GameModelController {
         SecurityUtils.getSubject().checkPermission("GameModel:Duplicate:gm" + templateGameModelId);
         GameModel duplicate = gameModelFacade.duplicate(templateGameModelId);
         duplicate.setName(gm.getName());
-        gameModelFacade.addGame(duplicate, new DebugGame());
-        //duplicate.merge(gm);
+
+        gameModelFacade.addDebugGame(duplicate);
 
         return duplicate;
     }

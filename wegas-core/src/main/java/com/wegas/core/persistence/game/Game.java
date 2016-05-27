@@ -108,7 +108,7 @@ public class Game extends NamedEntity implements Broadcastable {
 
     @JsonIgnore
     @OneToMany(mappedBy = "game", cascade = CascadeType.REMOVE)
-    private List<VariableInstance> privateInstances;
+    private List<VariableInstance> privateInstances = new ArrayList<>();
 
     /**
      *
@@ -164,9 +164,11 @@ public class Game extends NamedEntity implements Broadcastable {
     @PrePersist
     public void prePersist() {
         this.setCreatedTime(new Date());
+        /*
         if (this.getTeams().isEmpty()) {
             this.addTeam(new DebugTeam());
         }
+         */
         this.preUpdate();
     }
 
@@ -417,6 +419,18 @@ public class Game extends NamedEntity implements Broadcastable {
      */
     public void setPrivateInstances(List<VariableInstance> privateInstances) {
         this.privateInstances = privateInstances;
+    }
+
+    /**
+     * @return true if such a debugteam exists
+     */
+    public boolean hasDebugTeam() {
+        for (Team t : this.getTeams()) {
+            if (t instanceof DebugTeam) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

@@ -22,7 +22,7 @@ public class DebugTeam extends Team {
      *
      */
     public DebugTeam() {
-        this.setName("Test team");                                              // Name is fixed
+        this.setName("Test team");
         this.addPlayer(new Player("Test player"));
     }
 

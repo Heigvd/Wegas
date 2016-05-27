@@ -144,6 +144,8 @@ public class GameFacade extends BaseFacade<Game> {
         getEntityManager().persist(game);
         game.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
         gameModel.addGame(game);
+        this.addDebugTeam(game);
+
         gameModelFacade.reset(gameModel);                                       // Reset the game so the default player will have instances
 
         userFacade.addUserPermission(currentUser,
@@ -157,6 +159,21 @@ public class GameFacade extends BaseFacade<Game> {
             logger.error("Unable to find Role: Public");
         }
         gameCreatedEvent.fire(new EntityCreated<>(game));
+    }
+
+    /**
+     * Add a debugteam within the game, unless such a team already exists
+     *
+     * @param game the game
+     * @return
+     */
+    public boolean addDebugTeam(Game game) {
+        if (!game.hasDebugTeam()) {
+            game.addTeam(new DebugTeam());
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
