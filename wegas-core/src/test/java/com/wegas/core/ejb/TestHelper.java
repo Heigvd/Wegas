@@ -20,9 +20,13 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import static java.util.logging.Logger.getLogger;
 
@@ -96,11 +100,44 @@ public class TestHelper {
         }
     }
 
-
+    /**
+     * Start a thread from a runnable
+     *
+     * @param r Runnable to start
+     * @return the started thread
+     */
     public static Thread start(Runnable r) {
         final Thread thread = new Thread(r);
         thread.start();
         return thread;
+    }
+
+    /**
+     * Shortcut: Transform varargs into a list
+     *
+     * @param element varargs elements to add to the list
+     * @param <E>     element type
+     * @return list of given elements
+     */
+    @SafeVarargs
+    public static <E> List<E> toList(E... element) {
+        return Arrays.stream(element).collect(Collectors.toList());
+    }
+
+    /**
+     * Shortcut: Transform 2 lists into a map
+     * !Both list must have same length!
+     * to inline everything see: {@link #toList}
+     *
+     * @param keys   keys of the map
+     * @param values values of the map
+     * @param <K>    key type
+     * @param <V>    value type
+     * @return a map constructed from both input list
+     */
+    public static <K, V> Map<K, V> toMap(List<K> keys, List<V> values) {
+        assert keys.size() == values.size();
+        return keys.stream().collect(Collectors.toMap(Function.identity(), k -> values.get(keys.indexOf(k))));
     }
 
     public static synchronized void closeContainer() {

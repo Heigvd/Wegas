@@ -13,8 +13,6 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
-import javax.ejb.embeddable.EJBContainer;
-import javax.naming.NamingException;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -22,15 +20,17 @@ import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ejb.embeddable.EJBContainer;
+import javax.naming.NamingException;
+
 /**
- *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class AbstractEJBTest {
 
     // *** Static *** //
     private static final Logger logger = LoggerFactory.getLogger(AbstractEJBTest.class);
-    protected static EJBContainer ejbContainer;
+    private static EJBContainer ejbContainer;
     protected static GameModelFacade gameModelFacade;
     protected static VariableDescriptorFacade descriptorFacade;
     // *** Fields *** //

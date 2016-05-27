@@ -8,7 +8,6 @@
 package com.wegas.core.ejb.statemachine;
 
 import com.wegas.core.ejb.*;
-import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
@@ -17,23 +16,21 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
-import com.wegas.core.persistence.variable.statemachine.State;
-import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
-import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
-import com.wegas.core.persistence.variable.statemachine.Transition;
-import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
-import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import javax.naming.NamingException;
-import static org.junit.Assert.assertEquals;
+import com.wegas.core.persistence.variable.statemachine.*;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.naming.NamingException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import static com.wegas.core.ejb.TestHelper.toList;
+import static com.wegas.core.ejb.TestHelper.toMap;
+import static org.junit.Assert.assertEquals;
+
 /**
- *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class StateMachineFacadeTest extends AbstractEJBTest {
@@ -42,6 +39,7 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
 
     /**
      * Test of entityUpdateListener method, of class StateMachineFacade.
+     *
      * @throws javax.naming.NamingException
      */
     @Test
@@ -194,6 +192,38 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         // Clean up
         vdf.remove(number.getId());
         vdf.remove(sm.getId());
+    }
+
+    @Test
+    public void testDialogue() throws NamingException {
+        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
+        final GameModelFacade gmf = lookupBy(GameModelFacade.class);
+        final StateMachineFacade stateMachineFacade = lookupBy(StateMachineFacade.class);
+
+
+        DialogueDescriptor dial = new DialogueDescriptor();
+        dial.setName("dial");
+        StateMachineInstance dialI = new StateMachineInstance();
+        dialI.setCurrentStateId(1L);
+        dial.setDefaultInstance(dialI);
+        dial.setScope(new PlayerScope());
+
+        DialogueState ds1 = new DialogueState();
+        DialogueState ds2 = new DialogueState();
+        ds1.setText("Hello");
+        ds2.setText("World");
+        dial.setStates(toMap(toList(1L, 2L), toList(ds1, ds2)));
+
+        DialogueTransition s1ToS2 = new DialogueTransition();
+        s1ToS2.setNextStateId(2L);
+        s1ToS2.setActionText(", ");
+        ds1.setTransitions(toList(s1ToS2));
+        vdf.create(gameModel.getId(), dial);
+        gmf.reset(gameModel.getId());
+        assertEquals("Hello", (((DialogueState) ((StateMachineInstance) vif.find(dial.getId(), player.getId())).getCurrentState()).getText()));
+        stateMachineFacade.doTransition(gameModel.getId(), player.getId(), dial.getId(), s1ToS2.getId());
+        assertEquals("World", (((DialogueState) ((StateMachineInstance) vif.find(dial.getId(), player.getId())).getCurrentState()).getText()));
     }
 
     @Test
