@@ -71,7 +71,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
      *
      * @param states
      */
-    public void setStates(HashMap<Long, State> states) {
+    public void setStates(Map<Long, State> states) {
         this.states = states;
     }
 
