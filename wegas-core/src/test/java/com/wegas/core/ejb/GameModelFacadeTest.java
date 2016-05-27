@@ -92,13 +92,16 @@ public class GameModelFacadeTest extends AbstractEJBTest {
         Assert.assertNotNull(p.getId());
 
         gameModelFacade.remove(gameModel.getId());
-        Assert.assertEquals(0, gameModelFacade.findAll().size());
+        Assert.assertEquals(size, gameModelFacade.findAll().size());
     }
 
     @Test
     public void createMultipleTeam() throws NamingException, InterruptedException {
         GameFacade gf = lookupBy(GameFacade.class);
         final TeamFacade teamFacade = lookupBy(TeamFacade.class);
+
+        final int size = gameModelFacade.findAll().size();
+
         GameModel gameModel = new GameModel("TESTGM");
         gameModelFacade.create(gameModel);
 
@@ -114,8 +117,9 @@ public class GameModelFacadeTest extends AbstractEJBTest {
         thread1.join();
         thread2.join();
         Assert.assertNotSame(t1.getName(), t2.getName());
+        Assert.assertEquals(size + 1, gameModelFacade.findAll().size());
 
         gameModelFacade.remove(gameModel.getId());
-        Assert.assertEquals(0, gameModelFacade.findAll().size());
+        Assert.assertEquals(size, gameModelFacade.findAll().size());
     }
 }
