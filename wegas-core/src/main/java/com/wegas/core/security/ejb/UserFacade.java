@@ -168,6 +168,9 @@ public class UserFacade extends BaseFacade<User> {
             //logger.error("Unable to find Role: Registered", ex);
             logger.error("Unable to find Role: Registered");
         }
+        /*
+         * Very strange behaviour: without this flush, RequestManaged failed to be injected within others beans...
+         */
         this.getEntityManager().flush();
     }
 
