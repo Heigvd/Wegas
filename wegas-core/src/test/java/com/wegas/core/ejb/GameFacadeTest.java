@@ -99,5 +99,9 @@ public class GameFacadeTest extends AbstractEJBTest {
         newGame.setGameModelId(gameModel.getId());
 
         gameController.create(gameModel.getId(), newGame);
+        newGame = gameFacade.find(newGame.getId());
+
+        assertEquals(1, newGame.getTeams().size()); // Is debug team here ?
+        assertEquals(1, newGame.getTeams().get(0).getPlayers().size()); // Is anybody within debug team ?
     }
 }

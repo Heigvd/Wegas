@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.naming.NamingException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import static com.wegas.core.ejb.TestHelper.toList;
@@ -160,23 +159,16 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         state1.setOnEnterEvent(new Script("testnumber.value += 5"));
         State state2 = new State();
         state2.setOnEnterEvent(new Script("testnumber.value += 10"));
-        HashMap<Long, State> states = new HashMap<>();
-        states.put(1L, state0);
-        states.put(2L, state1);
-        states.put(3L, state2);
-        sm.setStates(states);
+        sm.setStates(toMap(toList(1L, 2L, 3L), toList(state0, state1, state2)));
         Transition t1 = new Transition();
         t1.setPreStateImpact(new Script("testnumber.value +=1"));
         Transition t2 = new Transition();
         t2.setPreStateImpact(new Script("testnumber.value +=2"));
-        List<Transition> at1 = new ArrayList<>();
-        at1.add(t1);
-        List<Transition> at2 = new ArrayList<>();
-        at2.add(t2);
+
         t1.setNextStateId(2L);
         t2.setNextStateId(3L);
-        state0.setTransitions(at1);
-        state1.setTransitions(at2);
+        state0.setTransitions(toList(t1));
+        state1.setTransitions(toList(t2));
         vdf.create(gameModel.getId(), sm);
         gmf.reset(gameModel.getId());
         //Test for all players.
@@ -251,18 +243,12 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         State state2 = new State();
         //Second state will read an object parameter
         state2.setOnEnterEvent(new Script("VariableDescriptorFacade.findByName(gameModel, 'testnumber').setValue(self, VariableDescriptorFacade.findByName(gameModel, 'testnumber').getValue(self) + param.increment)"));
-        HashMap<Long, State> states = new HashMap<>();
-        states.put(1L, state0);
-        states.put(2L, state1);
-        states.put(3L, state2);
-        sm.setStates(states);
+        sm.setStates(toMap(toList(1L, 2L, 3L), toList(state0, state1, state2)));
 
         Transition t1 = new Transition();
         t1.setTriggerCondition(new Script("Event.fired('event')"));
         t1.setNextStateId(2L);
-        List<Transition> at1 = new ArrayList<>();
-        at1.add(t1);
-        state0.setTransitions(at1);
+        state0.setTransitions(toList(t1));
 
         Transition t2 = new Transition();
         t2.setTriggerCondition(new Script("Event.fired('event')"));
