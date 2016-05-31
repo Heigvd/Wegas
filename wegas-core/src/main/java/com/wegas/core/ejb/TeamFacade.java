@@ -17,6 +17,8 @@ import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.jparealm.GameAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -26,8 +28,6 @@ import javax.inject.Inject;
 import javax.naming.NamingException;
 import java.util.ArrayList;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -104,13 +104,11 @@ public class TeamFacade extends BaseFacade<Team> {
             //&& t.getName() == null ) {
             t.setName(((GameAccount) userFacade.getCurrentUser().getMainAccount()).getEmail());
         }
-
-        teamSingleton.addTeamToGame(g, t);
-        t = this.find(t.getId()); //get it managed. created in other transaction
+        g.addTeam(t);
         gameFacade.addRights(userFacade.getCurrentUser(), g);  // @fixme Should only be done for a player, but is done here since it will be needed in later requests to add a player
-
         g.getGameModel().propagateDefaultInstance(t);
-        return t;
+
+        return teamSingleton.persistTeam(t);
     }
 
     @Override
