@@ -20,9 +20,13 @@ import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.SecurityHelper;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.AuthorizationException;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -31,10 +35,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import org.apache.shiro.authz.AuthorizationException;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -110,17 +110,22 @@ public class GameController {
      * Create a new game based on a given gameModel copy.
      *
      * @param gameModelId
-     * @param entity
+     * @param game
      * @return the new game with its debug team filtered out
      * @throws IOException
      */
     @POST
-    public Game create(@PathParam("gameModelId") Long gameModelId, Game entity) throws IOException {
+    public Game create(@PathParam("gameModelId") Long gameModelId, Game game) throws IOException {
         SecurityUtils.getSubject().checkPermission("GameModel:Instantiate:gm" + gameModelId);
 
-        gameFacade.publishAndCreate(gameModelId, entity);
-        //gameFacade.create(gameModelId, entity);
-        return getGameWithoutDebugTeam(entity);
+        gameFacade.publishAndCreate(gameModelId, game);
+        //@Dirty: those lines exist to get a new game pointer. Cache is messing with it
+        // removing debug team will stay in cache as this game pointer is new. work around
+        em.flush();
+        em.detach(game);
+        game = em.find(Game.class, game.getId());
+        //gameFacade.create(gameModelId, game);
+        return getGameWithoutDebugTeam(game);
     }
 
     /**
@@ -248,7 +253,6 @@ public class GameController {
     }
 
     /**
-     *
      * @return all games which gave been deleted
      */
     @DELETE
