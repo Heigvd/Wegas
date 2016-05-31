@@ -29,6 +29,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import javax.naming.NamingException;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
@@ -36,7 +37,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javax.naming.NamingException;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -147,7 +147,7 @@ public class GameFacade extends BaseFacade<Game> {
         gameModel.addGame(game);
         this.addDebugTeam(game);
 
-        this.flush();
+//        this.flush();
 
         gameModelFacade.reset(gameModel);                                       // Reset the game so the default player will have instances
 
@@ -196,7 +196,7 @@ public class GameFacade extends BaseFacade<Game> {
                 length += 1;
                 maxRequest += 400;
             }
-            String genLetter = this.genRandomLetter(length);
+            String genLetter = Helper.genRandomLetters(length);
             key = prefixKey + "-" + genLetter;
 
             Game foundGameByToken = this.findByToken(key);
@@ -206,19 +206,6 @@ public class GameFacade extends BaseFacade<Game> {
             counter += 1;
         }
         return key;
-    }
-
-    private String genRandomLetter(long length) {
-        final String tokenElements = "abcdefghijklmnopqrstuvwxyz";
-        final Integer digits = tokenElements.length();
-        length = Math.min(50, length); // max 50 length;
-        StringBuilder sb = new StringBuilder();
-        Integer random = (int) (Math.random() * digits);
-        sb.append(tokenElements.charAt(random));
-        if (length > 1) {
-            sb.append(genRandomLetter(length - 1));
-        }
-        return sb.toString();
     }
 
     @Override
@@ -285,7 +272,7 @@ public class GameFacade extends BaseFacade<Game> {
      * @param gameModelId
      * @param orderBy     not used...
      * @return all games belonging to the gameModel identified by gameModelId
-     *         but DebugGames, ordered by creation time
+     * but DebugGames, ordered by creation time
      */
     public List<Game> findByGameModelId(final Long gameModelId, final String orderBy) {
         return getEntityManager().createQuery("SELECT game FROM Game game "
@@ -303,7 +290,6 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     *
      * @param userId
      * @return all non deleted games the given user plays in
      */

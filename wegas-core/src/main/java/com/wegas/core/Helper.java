@@ -121,7 +121,7 @@ public class Helper {
     /**
      * Given a list of names and a name, generate a new name that is not already
      * used (ie not in usedNames).
-     *
+     * <p>
      * If the initial name is already in use, it will be suffixes with an
      * ordinal. Pattern must be used to detect the name baseName.
      *
@@ -166,7 +166,6 @@ public class Helper {
      * <li>Generated new name : "myName_2"</li>
      * </ul>
      *
-     *
      * @param name      initial name
      * @param usedNames names already in use
      * @return new unique name to use in place of initial one
@@ -184,7 +183,6 @@ public class Helper {
      * <li>UsedLabel: "My Label", "Ma Label (1)", "My Label (3)" </li>
      * <li>Generated new label : "My Label (2)"</li>
      * </ul>
-     *
      *
      * @param label      initial label
      * @param usedLabels labels already in use
@@ -259,7 +257,7 @@ public class Helper {
      * @param usedLabels result sibling's label
      */
     public static void setNameAndLabelForResult(Result r,
-            List<String> usedNames, List<String> usedLabels) {
+                                                List<String> usedNames, List<String> usedLabels) {
         boolean hasLabel = !isNullOrEmpty(r.getLabel());
         boolean hasName = !isNullOrEmpty(r.getName());
         if (hasLabel && !hasName) {
@@ -440,7 +438,7 @@ public class Helper {
      * @param propertyName
      * @param defaultValue
      * @return the wegasProperty or the defaultValue if the property does not
-     *         exists
+     * exists
      */
     public static String getWegasProperty(String propertyName, String defaultValue) {
         try {
@@ -585,6 +583,7 @@ public class Helper {
      }
      return sb.toString();
      }*/
+
     /**
      * print ENV variables to log
      */
@@ -610,7 +609,6 @@ public class Helper {
     }
 
     /**
-     *
      * @param file
      * @throws IOException
      */
@@ -802,4 +800,22 @@ public class Helper {
         return Helper.getAudienceTokenForPlayer(player.getId());
     }
 
+    /**
+     * Generate random lowercase letters (a-z) of given length
+     *
+     * @param length number of letters to return (max 50)
+     * @return random letters
+     */
+    public static String genRandomLetters(int length) {
+        final String tokenElements = "abcdefghijklmnopqrstuvwxyz";
+        final int digits = tokenElements.length();
+        length = Math.min(50, length); // max 50 length;
+        StringBuilder sb = new StringBuilder();
+        int random = (int) (Math.random() * digits);
+        sb.append(tokenElements.charAt(random));
+        if (length > 1) {
+            sb.append(genRandomLetters(length - 1));
+        }
+        return sb.toString();
+    }
 }
