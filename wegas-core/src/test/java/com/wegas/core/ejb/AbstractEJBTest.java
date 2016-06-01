@@ -72,6 +72,7 @@ public class AbstractEJBTest {
         game = new Game();                                                      // Create a game
         game.setName(GAMENAME);
         game.setToken(GAMETOKEN);
+        game.setAccess(Game.GameAccess.OPEN);
         gameModel.addGame(game);
 
         team = new Team();                                                      // a team and a player
