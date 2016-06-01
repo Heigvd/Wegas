@@ -199,8 +199,24 @@ public class IntegrationTest {
     }
 
     @Test
-    public void createGameTest() throws IOException {
-        postJSON("/rest/GameModel/" + this.artosId + "/Game", "{\"@class\":\"Game\",\"gameModelId\":\"" + this.artosId + "\",\"access\":\"OPEN\",\"name\":\"My Artos Game\"}");
+    public void createGameTest() throws IOException, JSONException {
+        String postJSON = postJSON("/rest/GameModel/" + this.artosId + "/Game", "{\"@class\":\"Game\",\"gameModelId\":\"" + this.artosId + "\",\"access\":\"OPEN\",\"name\":\"My Artos Game\"}");
+        JSONObject response = new JSONObject(postJSON);
+        JSONArray entities = response.getJSONArray("updatedEntities");
+        Long gameId = entities.getJSONObject(0).getLong("id");
+
+        String httpGetAsJSON = httpGetAsJSON("/rest/GameModel/Game/" + gameId);
+
+        response = new JSONObject(httpGetAsJSON);
+        entities = response.getJSONArray("updatedEntities");
+
+        JSONArray teams = (JSONArray) entities.getJSONObject(0).get("teams");
+
+        /* Is the debug team present */
+        Assert.assertEquals(1, teams.length());
+        JSONArray players = teams.getJSONObject(0).getJSONArray("players");
+
+        Assert.assertEquals(1, players.length());
     }
 
     @Test
