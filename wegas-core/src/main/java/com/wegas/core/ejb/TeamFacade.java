@@ -20,9 +20,7 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
+import javax.ejb.*;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.naming.NamingException;
@@ -96,6 +94,7 @@ public class TeamFacade extends BaseFacade<Team> {
      * @param t
      * @return managed newly created team
      */
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public Team create(Long gameId, Team t) {
         Game g = gameFacade.find(gameId);
 

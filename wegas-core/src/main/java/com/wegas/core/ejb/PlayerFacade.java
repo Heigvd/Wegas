@@ -17,19 +17,19 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import javax.naming.NamingException;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.List;
-import javax.naming.NamingException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -68,11 +68,10 @@ public class PlayerFacade extends BaseFacade<Player> {
      * @param user
      */
     public void create(final Team team, final User user) {
-        gameFacade.joinTeam(team, user);
+        gameFacade.joinTeam(getEntityManager().find(Team.class, team.getId()), user);
     }
 
     /**
-     *
      * Look for a user player withing game
      *
      * @param gameId game id
