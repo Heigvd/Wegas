@@ -116,7 +116,7 @@ public class GameModelFacadeTest extends AbstractEJBTest {
         final Thread thread2 = TestHelper.start(runCreateTeam.apply(t2));
         thread1.join();
         thread2.join();
-        Assert.assertNotSame(t1.getName(), t2.getName());
+        Assert.assertFalse(t1.getName().equals(t2.getName()));
         Assert.assertEquals(size + 1, gameModelFacade.findAll().size());
 
         gameModelFacade.remove(gameModel.getId());
