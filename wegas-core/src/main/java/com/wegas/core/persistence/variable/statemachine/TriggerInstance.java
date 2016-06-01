@@ -25,6 +25,11 @@ public class TriggerInstance extends StateMachineInstance {
 
     private static final long serialVersionUID = 1L;
 
+    public TriggerInstance() {
+        super();
+        this.setCurrentStateId(1L);
+    }
+
     @Override
     public String toString() {
         return "TriggerInstance{" + "id=" + this.getId() + ", currentStateId=" + this.getCurrentStateId() + '}';

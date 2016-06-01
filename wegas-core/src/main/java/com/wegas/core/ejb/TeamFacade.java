@@ -20,7 +20,9 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.*;
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.naming.NamingException;
@@ -94,7 +96,6 @@ public class TeamFacade extends BaseFacade<Team> {
      * @param t
      * @return managed newly created team
      */
-//    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void create(Long gameId, Team t) {
         Game g = gameFacade.find(gameId);
 
@@ -105,6 +106,8 @@ public class TeamFacade extends BaseFacade<Team> {
         }
 //        g.addTeam(t);
         teamSingleton.persistTeam(g, t);
+        g = gameFacade.find(gameId);
+        t = this.find(t.getId());
         gameFacade.addRights(userFacade.getCurrentUser(), g);  // @fixme Should only be done for a player, but is done here since it will be needed in later requests to add a player
         g.getGameModel().propagateDefaultInstance(t);
 

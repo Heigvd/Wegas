@@ -23,6 +23,7 @@ public class GameControllerTest extends AbstractEJBTest {
         final GameFacade gameFacade = lookupBy(GameFacade.class);
         final VariableDescriptorFacade variableDescriptorFacade = lookupBy(VariableDescriptorFacade.class);
         final VariableInstanceFacade variableInstanceFacade = lookupBy(VariableInstanceFacade.class);
+        final PlayerController playerController = lookupBy(PlayerController.class);
 
         gameModel.getProperties().setFreeForAll(true);
         gameModelFacade.update(gameModel.getId(), gameModel);
@@ -39,6 +40,8 @@ public class GameControllerTest extends AbstractEJBTest {
         final Player p = g.getTeams().get(g.getTeams().size() - 1).getPlayers().get(0);
         final VariableInstance variableInstance = variableInstanceFacade.find(trigg.getId(), p.getId());
         Assert.assertTrue(variableInstance instanceof TriggerInstance);
+
+        playerController.delete(p.getId());
     }
 
 }
