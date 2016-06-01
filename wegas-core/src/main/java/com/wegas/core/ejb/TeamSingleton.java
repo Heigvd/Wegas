@@ -8,10 +8,13 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Team;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -28,14 +31,14 @@ public class TeamSingleton {
     private EntityManager em;
 
     /**
-     * @param gameModelId
+     * @param gameId
      * @param name
      * @return
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
-    public Team findByName(Long gameModelId, String name) throws WegasNoResultException {
+    public Team findByName(Long gameId, String name) throws WegasNoResultException {
         final TypedQuery<Team> query = em.createNamedQuery("Team.findByGameIdAndName", Team.class);
-        query.setParameter("gameId", gameModelId);
+        query.setParameter("gameId", gameId);
         query.setParameter("name", name);
         try {
             return query.getSingleResult();
@@ -50,8 +53,9 @@ public class TeamSingleton {
      * @param team to persist
      * @return persisted team
      */
-    public Team persistTeam(Team team) {
-
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public Team persistTeam(Game game, Team team) {
+        game = em.find(Game.class, game.getId());
         final String baseName =
                 team.getName() == null || team.getName().isEmpty()
                         ? team.getGame().getShortName()
@@ -60,7 +64,7 @@ public class TeamSingleton {
         String name = baseName;
         do {
             try {
-                findByName(team.getGame().getId(), name);
+                findByName(game.getId(), name);
                 team.setName(null);
                 name = baseName + "-" + suffix; // Generate a new name
             } catch (WegasNoResultException e) {
@@ -69,7 +73,7 @@ public class TeamSingleton {
             }
         } while (team.getName() == null);
 //        game.addTeam(team);
-        em.persist(team);
+        game.addTeam(team);
         em.flush(); // register name
         return team;
     }

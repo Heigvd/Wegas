@@ -292,7 +292,7 @@ public class GameController {
                     if (player == null) {
                         if (game.getGameModel().getProperties().getFreeForAll()) {
                             Team team = new Team("Individually-" + Helper.genToken(20));
-                            team = teamFacade.create(game.getId(), team); // return managed team
+                            teamFacade.create(game.getId(), team); // return managed team
                             playerFacade.create(team, currentUser);
                             r = Response.status(Response.Status.CREATED).entity(team).build();
                         }

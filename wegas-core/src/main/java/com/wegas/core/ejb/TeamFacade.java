@@ -94,8 +94,8 @@ public class TeamFacade extends BaseFacade<Team> {
      * @param t
      * @return managed newly created team
      */
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public Team create(Long gameId, Team t) {
+//    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void create(Long gameId, Team t) {
         Game g = gameFacade.find(gameId);
 
         // @Hack If user is on a game account, use it as team name
@@ -103,11 +103,11 @@ public class TeamFacade extends BaseFacade<Team> {
             //&& t.getName() == null ) {
             t.setName(((GameAccount) userFacade.getCurrentUser().getMainAccount()).getEmail());
         }
-        g.addTeam(t);
+//        g.addTeam(t);
+        teamSingleton.persistTeam(g, t);
         gameFacade.addRights(userFacade.getCurrentUser(), g);  // @fixme Should only be done for a player, but is done here since it will be needed in later requests to add a player
         g.getGameModel().propagateDefaultInstance(t);
 
-        return teamSingleton.persistTeam(t);
     }
 
     @Override
