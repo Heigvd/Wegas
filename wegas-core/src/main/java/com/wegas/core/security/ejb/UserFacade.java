@@ -184,6 +184,10 @@ public class UserFacade extends BaseFacade<User> {
             accountFacade.remove(aa);
         }
 
+        for (Player player : entity.getPlayers()){
+            player.setUser(null);
+        }
+
         getEntityManager().remove(entity);
     }
 
@@ -575,7 +579,7 @@ public class UserFacade extends BaseFacade<User> {
             this.remove(account.getUser());
         }
 
-        logger.info("removeIdleGuests(): " + resultList.size() + " unused guest accounts removed");
+        logger.info("removeIdleGuests(): " + resultList.size() + " unused guest accounts removed (idle since: " + calendar.getTime() + ")");
     }
 
     /**
