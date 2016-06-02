@@ -223,7 +223,7 @@ public class ReviewingFacade {
                         // 1 instance per team: evict empty team instances
                         if (team.getPlayers().isEmpty() || team instanceof DebugTeam) {
                             TeamScope tScope = (TeamScope) scope;
-                            PeerReviewInstance instance = (PeerReviewInstance) tScope.getVariableInstances().get(team.getId());
+                            PeerReviewInstance instance = (PeerReviewInstance) tScope.getVariableInstances().get(team);
                             // Discared instance
                             instance.setReviewState(PeerReviewDescriptor.ReviewingState.DISCARDED);
                             pris.remove(instance);
@@ -280,7 +280,7 @@ public class ReviewingFacade {
         for (i = 0; i < pris.size(); i++) {
             PeerReviewInstance author = pris.get(i);
             if (author.getReviewState() == PeerReviewDescriptor.ReviewingState.SUBMITTED
-                || author.getReviewState() == PeerReviewDescriptor.ReviewingState.NOT_STARTED) {
+                    || author.getReviewState() == PeerReviewDescriptor.ReviewingState.NOT_STARTED) {
                 logger.warn("Dispatch Author");
                 //List<Review> reviewed = author.getReviewed();
                 for (j = 1; j <= numberOfReview; j++) {
@@ -469,7 +469,7 @@ public class ReviewingFacade {
         for (PeerReviewInstance pri : pris) {
             for (Review review : pri.getReviewed()) {
                 if (review.getReviewState() == Review.ReviewState.NOTIFIED
-                    || review.getReviewState() == Review.ReviewState.COMPLETED) {
+                        || review.getReviewState() == Review.ReviewState.COMPLETED) {
                     review.setReviewState(Review.ReviewState.CLOSED);
                 }
             }
@@ -485,6 +485,7 @@ public class ReviewingFacade {
      * Reviewing phase is over -> author will be able to see feedbacks
      *
      * @param peerReviewDescriptorId
+     * @return 
      */
     public List<PeerReviewInstance> close(Long peerReviewDescriptorId) {
         VariableDescriptor vd = variableDescriptorFacade.find(peerReviewDescriptorId);
@@ -526,7 +527,7 @@ public class ReviewingFacade {
     }
 
     /**
-     * 
+     *
      * @return Lookup-ed ReviewFacade EJB
      */
     public static ReviewingFacade lookup() {

@@ -285,7 +285,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
             //find.getPrivateInstances().remove(entity);
         }
          */
-        entity.getScope().getVariableInstances().remove(entity.getId());
+        entity.getScope().getVariableInstances().remove(entity);
     }
 
     /**
