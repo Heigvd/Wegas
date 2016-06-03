@@ -14,20 +14,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.internal.NoPlayerException;
-import com.wegas.core.persistence.NumberListener;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
-import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.Reply;
 import org.apache.commons.lang3.StringEscapeUtils;
 
-import javax.annotation.Resource;
-import javax.ejb.*;
-import javax.enterprise.event.Observes;
+import javax.annotation.PostConstruct;
+import javax.ejb.LocalBean;
+import javax.ejb.Schedule;
+import javax.ejb.Singleton;
 import java.util.Date;
 
 /**
@@ -37,11 +36,12 @@ import java.util.Date;
  * @author Gérald Eberle
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-@ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 @Singleton
+@LocalBean
 public class Neo4jPlayerReply {
 
     private static final ObjectMapper objectMapper;
+    private boolean dbUp;
 
     static {
         objectMapper = new ObjectMapper();
@@ -55,29 +55,15 @@ public class Neo4jPlayerReply {
         NUMBER
     }
 
-    @Resource
-    private SessionContext sessionContext;
-
-    public void onReplyValidate(@Observes QuestionDescriptorFacade.ReplyValidate event) throws JsonProcessingException {
-        sessionContext.getBusinessObject(Neo4jPlayerReply.class).addPlayerReply(event.player, event.reply, (ChoiceDescriptor) event.choice.getDescriptor(), (QuestionDescriptor) event.question.getDescriptor());
-    }
-
-    public void onNumberUpdate(@Observes NumberListener.NumberUpdate update) throws NoPlayerException, JsonProcessingException {
-        sessionContext.getBusinessObject(Neo4jPlayerReply.class).addNumberUpdate(update.player, update.number);
-    }
-
-    @Asynchronous
-    private void addNumberUpdate(final Player player, final NumberInstance numberInstance) throws NoPlayerException, JsonProcessingException {
+    public void addNumberUpdate(final Player player, final NumberInstance numberInstance) throws NoPlayerException, JsonProcessingException {
         if (player == null || player.getGame() instanceof DebugGame || player.getTeam() instanceof DebugTeam
                 || Helper.isNullOrEmpty(player.getGameModel().getProperties().getLogID())
-                || !Neo4jUtils.checkDataBaseIsRunning()) {
+                || !dbUp) {
             return;
         }
         final String key = nodeKey(player, TYPE.NUMBER);
-        synchronized (player) {
-            ObjectNode newNode = createJsonNode(player, numberInstance.getDescriptor().getName(), numberInstance.getValue());
-            createLinkedToYoungest(key, "gamelink", newNode, player.getGameModel().getName());
-        }
+        ObjectNode newNode = createJsonNode(player, numberInstance.getDescriptor().getName(), numberInstance.getValue());
+        createLinkedToYoungest(key, "gamelink", newNode, player.getGameModel().getName());
     }
 
     /**
@@ -90,18 +76,15 @@ public class Neo4jPlayerReply {
      * @param questionDescriptor the selected question description
      * @throws JsonProcessingException
      */
-    @Asynchronous
-    private synchronized void addPlayerReply(final Player player, Reply reply, final ChoiceDescriptor choiceDescriptor, final QuestionDescriptor questionDescriptor) throws JsonProcessingException {
+    public void addPlayerReply(final Player player, Reply reply, final ChoiceDescriptor choiceDescriptor, final QuestionDescriptor questionDescriptor) throws JsonProcessingException {
         if (player.getGame() instanceof DebugGame
                 || Helper.isNullOrEmpty(player.getGameModel().getProperties().getLogID())
-                || !Neo4jUtils.checkDataBaseIsRunning()) {
+                || !dbUp) {
             return;
         }
         String key = nodeKey(player, TYPE.QUESTION);
-        synchronized (player) {
-            ObjectNode newNode = createJsonNode(player, reply, choiceDescriptor, questionDescriptor);
-            createLinkedToYoungest(key, "gamelink", newNode, player.getGameModel().getName());
-        }
+        ObjectNode newNode = createJsonNode(player, reply, choiceDescriptor, questionDescriptor);
+        createLinkedToYoungest(key, "gamelink", newNode, player.getGameModel().getName());
     }
 
     /**
@@ -200,5 +183,12 @@ public class Neo4jPlayerReply {
             return;
         }
         throw new RuntimeException(err);
+    }
+
+    @Schedule(hour = "*", minute = "*/15")
+    @PostConstruct
+    private void checkDB() {
+        dbUp = Neo4jUtils.checkDataBaseIsRunning();
+        System.out.println("I'm checking DB !" + dbUp);
     }
 }
