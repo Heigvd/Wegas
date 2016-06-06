@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
@@ -27,20 +28,23 @@ import java.util.List;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 //@XmlType(name = "Result")
 @JsonTypeName(value = "Result")
 @Table(
-    name = "MCQResult",
-    uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"choicedescriptor_id", "name"}),
-        @UniqueConstraint(columnNames = {"choicedescriptor_id", "label"}),},
-    indexes = {
-        @Index(columnList = "choicedescriptor_id")
-    }
+        name = "MCQResult",
+        uniqueConstraints = {
+            @UniqueConstraint(columnNames = {"choicedescriptor_id", "name"}),
+            @UniqueConstraint(columnNames = {"choicedescriptor_id", "label"}),},
+        indexes = {
+            @Index(columnList = "choicedescriptor_id")
+        }
 )
+@NamedQueries({
+    @NamedQuery(name = "Result.findByName", query = "SELECT DISTINCT res FROM Result res WHERE res.choiceDescriptor=:choicedescriptor AND res.name LIKE :name")
+})
 public class Result extends NamedEntity implements Searchable, Scripted, LabelledEntity {
 
     private static final long serialVersionUID = 1L;
@@ -93,9 +97,9 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     @Embedded
     @AttributeOverrides({
         @AttributeOverride(name = "content", column
-            = @Column(name = "ignoration_content")),
+                = @Column(name = "ignoration_content")),
         @AttributeOverride(name = "lang", column
-            = @Column(name = "ignoration_language"))
+                = @Column(name = "ignoration_language"))
     })
     @JsonView(Views.EditorExtendedI.class)
     private Script ignorationImpact;
@@ -112,7 +116,7 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     @OneToMany(mappedBy = "currentResult", cascade = CascadeType.MERGE)
     //@XmlTransient
     @JsonIgnore
-    private List<ChoiceInstance> choiceInstances;
+    private List<ChoiceInstance> choiceInstances = new ArrayList<>();
     /**
      * This field is here so deletion will be propagated to replies.
      */
@@ -148,10 +152,10 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     @Override
     public Boolean containsAll(final List<String> criterias) {
         return Helper.insensitiveContainsAll(this.getName(), criterias)
-            || Helper.insensitiveContainsAll(this.getAnswer(), criterias)
-            || (this.getImpact() != null && this.getImpact().containsAll(criterias))
-            || Helper.insensitiveContainsAll(this.getIgnorationAnswer(), criterias)
-            || (this.getIgnorationImpact() != null && this.getIgnorationImpact().containsAll(criterias));
+                || Helper.insensitiveContainsAll(this.getAnswer(), criterias)
+                || (this.getImpact() != null && this.getImpact().containsAll(criterias))
+                || Helper.insensitiveContainsAll(this.getIgnorationAnswer(), criterias)
+                || (this.getIgnorationImpact() != null && this.getIgnorationImpact().containsAll(criterias));
     }
 
     @Override
@@ -219,7 +223,7 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
 
     /**
      *
-     * @return
+     * @return id from the parent choice descriptor
      */
     @JsonView(Views.IndexI.class)
     public Long getChoiceDescriptorId() {
@@ -346,5 +350,35 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
      */
     public void setChoiceInstances(List<ChoiceInstance> choiceInstances) {
         this.choiceInstances = choiceInstances;
+    }
+
+    public void addChoiceInstance(ChoiceInstance choiceInstance) {
+        if (!this.choiceInstances.contains(choiceInstance)) {
+            this.choiceInstances.add(choiceInstance);
+        }
+    }
+
+    public boolean removeChoiceInstance(ChoiceInstance choiceInstance) {
+        return this.choiceInstances.remove(choiceInstance);
+    }
+
+    public void addReply(Reply reply) {
+        this.replies.add(reply);
+    }
+
+    void removeReply(Reply reply) {
+        this.replies.remove(reply);
+    }
+
+    @Override
+    public void updateCacheOnDelete() {
+        VariableInstanceFacade vif = VariableInstanceFacade.lookup();
+
+        for (ChoiceInstance cInstance : this.getChoiceInstances()) {
+            cInstance = (ChoiceInstance) vif.find(cInstance.getId());
+            if (cInstance != null) {
+                cInstance.setCurrentResult(null);
+            }
+        }
     }
 }

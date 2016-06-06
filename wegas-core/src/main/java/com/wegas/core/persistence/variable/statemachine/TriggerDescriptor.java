@@ -8,23 +8,26 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.rest.util.Views;
+
+import javax.persistence.Entity;
+import javax.persistence.PrePersist;
+import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.persistence.*;
+
 ////import javax.xml.bind.annotation.XmlRootElement;
 ////import javax.xml.bind.annotation.XmlTransient;
 //import javax.xml.bind.annotation.XmlType;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.exception.client.WegasIncompatibleType;
 
 /**
- *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Entity
 //@XmlRootElement
@@ -63,7 +66,6 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     }
 
     /**
-     *
      * @return
      */
     public Boolean isOneShot() {
@@ -77,6 +79,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      */
     public void setOneShot(Boolean oneShot) {
         this.oneShot = oneShot;
+        this.buildStateMachine();
     }
 
     public Boolean isDisableSelf() {
@@ -88,7 +91,6 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     }
 
     /**
-     *
      * @return
      */
     public Script getPostTriggerEvent() {
@@ -111,10 +113,10 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      */
     public void setPostTriggerEvent(Script postTriggerEvent) {
         this.postTriggerEvent = postTriggerEvent;
+        this.buildStateMachine();
     }
 
     /**
-     *
      * @return
      */
     public Script getTriggerEvent() {
@@ -147,6 +149,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      */
     public void setTriggerEvent(Script triggerEvent) {
         this.triggerEvent = triggerEvent;
+        this.buildStateMachine();
     }
 
     @Override
@@ -167,7 +170,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     /**
      *
      */
-    @PrePersist
+//    @PrePersist
     public void buildStateMachine() {
         State initialState = new State();
         Transition transition = new Transition();
@@ -186,7 +189,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
             initialState.setOnEnterEvent(this.postTriggerEvent);
             transition.setNextStateId(1L);
         }
-        ((TriggerInstance) this.getDefaultInstance()).setCurrentStateId(1L);
+        this.getDefaultInstance().setCurrentStateId(1L);
         this.setStates(states);
     }
 

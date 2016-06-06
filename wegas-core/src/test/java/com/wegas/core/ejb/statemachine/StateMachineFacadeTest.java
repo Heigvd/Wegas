@@ -8,7 +8,6 @@
 package com.wegas.core.ejb.statemachine;
 
 import com.wegas.core.ejb.*;
-import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
@@ -17,24 +16,21 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
-import com.wegas.core.persistence.variable.statemachine.State;
-import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
-import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
-import com.wegas.core.persistence.variable.statemachine.Transition;
-import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
-import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import javax.naming.NamingException;
-import static org.junit.Assert.assertEquals;
+import com.wegas.core.persistence.variable.statemachine.*;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.naming.NamingException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.wegas.core.ejb.TestHelper.toList;
+import static com.wegas.core.ejb.TestHelper.toMap;
+import static org.junit.Assert.assertEquals;
+
 /**
- *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class StateMachineFacadeTest extends AbstractEJBTest {
 
@@ -42,6 +38,7 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
 
     /**
      * Test of entityUpdateListener method, of class StateMachineFacade.
+     *
      * @throws javax.naming.NamingException
      */
     @Test
@@ -162,23 +159,16 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         state1.setOnEnterEvent(new Script("testnumber.value += 5"));
         State state2 = new State();
         state2.setOnEnterEvent(new Script("testnumber.value += 10"));
-        HashMap<Long, State> states = new HashMap<>();
-        states.put(1L, state0);
-        states.put(2L, state1);
-        states.put(3L, state2);
-        sm.setStates(states);
+        sm.setStates(toMap(toList(1L, 2L, 3L), toList(state0, state1, state2)));
         Transition t1 = new Transition();
         t1.setPreStateImpact(new Script("testnumber.value +=1"));
         Transition t2 = new Transition();
         t2.setPreStateImpact(new Script("testnumber.value +=2"));
-        List<Transition> at1 = new ArrayList<>();
-        at1.add(t1);
-        List<Transition> at2 = new ArrayList<>();
-        at2.add(t2);
+
         t1.setNextStateId(2L);
         t2.setNextStateId(3L);
-        state0.setTransitions(at1);
-        state1.setTransitions(at2);
+        state0.setTransitions(toList(t1));
+        state1.setTransitions(toList(t2));
         vdf.create(gameModel.getId(), sm);
         gmf.reset(gameModel.getId());
         //Test for all players.
@@ -194,6 +184,38 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         // Clean up
         vdf.remove(number.getId());
         vdf.remove(sm.getId());
+    }
+
+    @Test
+    public void testDialogue() throws NamingException {
+        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
+        final GameModelFacade gmf = lookupBy(GameModelFacade.class);
+        final StateMachineFacade stateMachineFacade = lookupBy(StateMachineFacade.class);
+
+
+        DialogueDescriptor dial = new DialogueDescriptor();
+        dial.setName("dial");
+        StateMachineInstance dialI = new StateMachineInstance();
+        dialI.setCurrentStateId(1L);
+        dial.setDefaultInstance(dialI);
+        dial.setScope(new PlayerScope());
+
+        DialogueState ds1 = new DialogueState();
+        DialogueState ds2 = new DialogueState();
+        ds1.setText("Hello");
+        ds2.setText("World");
+        dial.setStates(toMap(toList(1L, 2L), toList(ds1, ds2)));
+
+        DialogueTransition s1ToS2 = new DialogueTransition();
+        s1ToS2.setNextStateId(2L);
+        s1ToS2.setActionText(", ");
+        ds1.setTransitions(toList(s1ToS2));
+        vdf.create(gameModel.getId(), dial);
+        gmf.reset(gameModel.getId());
+        assertEquals("Hello", (((DialogueState) ((StateMachineInstance) vif.find(dial.getId(), player.getId())).getCurrentState()).getText()));
+        stateMachineFacade.doTransition(gameModel.getId(), player.getId(), dial.getId(), s1ToS2.getId());
+        assertEquals("World", (((DialogueState) ((StateMachineInstance) vif.find(dial.getId(), player.getId())).getCurrentState()).getText()));
     }
 
     @Test
@@ -221,18 +243,12 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         State state2 = new State();
         //Second state will read an object parameter
         state2.setOnEnterEvent(new Script("VariableDescriptorFacade.findByName(gameModel, 'testnumber').setValue(self, VariableDescriptorFacade.findByName(gameModel, 'testnumber').getValue(self) + param.increment)"));
-        HashMap<Long, State> states = new HashMap<>();
-        states.put(1L, state0);
-        states.put(2L, state1);
-        states.put(3L, state2);
-        sm.setStates(states);
+        sm.setStates(toMap(toList(1L, 2L, 3L), toList(state0, state1, state2)));
 
         Transition t1 = new Transition();
         t1.setTriggerCondition(new Script("Event.fired('event')"));
         t1.setNextStateId(2L);
-        List<Transition> at1 = new ArrayList<>();
-        at1.add(t1);
-        state0.setTransitions(at1);
+        state0.setTransitions(toList(t1));
 
         Transition t2 = new Transition();
         t2.setTriggerCondition(new Script("Event.fired('event')"));

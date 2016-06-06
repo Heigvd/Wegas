@@ -11,16 +11,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+
 import javax.persistence.*;
+import java.util.*;
 
 /**
- *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 @Table(name = "roles", uniqueConstraints = {
@@ -32,24 +28,28 @@ import javax.persistence.*;
 public class Role extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
+
     /**
      *
      */
     @Id
     @GeneratedValue
     private Long id;
+
     /**
      *
      */
     @Basic(optional = false)
     @Column(length = 100)
     private String name;
+
     /**
      *
      */
     @Basic(optional = false)
     @Column(length = 255)
     private String description;
+
     /**
      *
      */
@@ -74,8 +74,9 @@ public class Role extends AbstractEntity {
     }
 
     /**
+     * Create a role with the specified name
      *
-     * @param name
+     * @param name role name
      */
     public Role(String name) {
         this.name = name;
@@ -87,23 +88,18 @@ public class Role extends AbstractEntity {
             Role r = (Role) other;
             this.setName(r.getName());
             this.setDescription(r.getDescription());
-            ListUtils.mergeLists(this.permissions, r.getPermissions());
+            this.setPermissions(ListUtils.mergeLists(this.getPermissions(), r.getPermissions()));
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
         }
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public Long getId() {
         return id;
     }
 
     /**
-     *
      * @param id
      */
     public void setId(Long id) {
@@ -111,15 +107,15 @@ public class Role extends AbstractEntity {
     }
 
     /**
+     * Get the role name
      *
-     * @return
+     * @return the role name
      */
     public String getName() {
         return name;
     }
 
     /**
-     *
      * @param name
      */
     public void setName(String name) {
@@ -127,15 +123,15 @@ public class Role extends AbstractEntity {
     }
 
     /**
+     * get role description
      *
-     * @return
+     * @return the role description
      */
     public String getDescription() {
         return description;
     }
 
     /**
-     *
      * @param description
      */
     public void setDescription(String description) {
@@ -143,15 +139,13 @@ public class Role extends AbstractEntity {
     }
 
     /**
-     *
-     * @return
+     * @return all role permissions
      */
     public List<Permission> getPermissions() {
         return permissions;
     }
 
     /**
-     *
      * @param permissions
      */
     public void setPermissions(List<Permission> permissions) {
@@ -162,18 +156,16 @@ public class Role extends AbstractEntity {
     }
 
     /**
-     *
      * @param permission
-     * @return
+     * @return true if the permission has successfully been added
      */
     public boolean addPermission(String permission) {
         return this.addPermission(new Permission(permission));
     }
 
     /**
-     *
      * @param permission
-     * @return
+     * @return true if the permission has successfully been added
      */
     public boolean addPermission(Permission permission) {
         if (!this.permissions.contains(permission)) {
@@ -185,9 +177,8 @@ public class Role extends AbstractEntity {
     }
 
     /**
-     *
      * @param permission
-     * @return
+     * @return true if the permission has successfully been removed
      */
     public boolean removePermission(String permission) {
         Permission perm = new Permission(permission);
@@ -204,12 +195,21 @@ public class Role extends AbstractEntity {
         return returnVal;
     }
 
+    /**
+     * count the number of user with this role
+     *
+     * @return member's count
+     */
     public int getNumberOfMember() {
         return users.size();
-        //return abstractAccounts.size();
     }
 
+    /**
+     *
+     * @param numberOfMember
+     */
     public void setNumberOfMember(int numberOfMember) {
+        // NoOp
     }
 
     /**
@@ -228,6 +228,24 @@ public class Role extends AbstractEntity {
      */
     public void setUsers(Set<User> users) {
         this.users = users;
+    }
+
+    /**
+     * register new user within the role
+     *
+     * @param user
+     */
+    public void addUser(User user) {
+        this.users.add(user);
+    }
+
+    /**
+     * strike out this account from the role
+     *
+     * @param user user to remove
+     */
+    public void removeUser(User user) {
+        this.users.remove(user);
     }
 
     @Override

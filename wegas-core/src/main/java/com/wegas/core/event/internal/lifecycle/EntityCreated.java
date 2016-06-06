@@ -12,7 +12,7 @@ import com.wegas.core.persistence.AbstractEntity;
 
 /**
  * LifeCycleEvent, fired once entity has been created
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class EntityCreated<T extends AbstractEntity> extends LifeCycleEvent<T> {
 

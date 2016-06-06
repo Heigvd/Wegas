@@ -47,9 +47,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.*;
+import org.apache.shiro.authz.AuthorizationException;
 
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
 @Path("User")
@@ -84,7 +85,9 @@ public class UserController {
     private GameFacade gameFacade;
 
     /**
-     * @return
+     * @return list of all users, sorted by names
+     * @throws AuthorizationException if current doesn't have the permissions to
+     *                                see others users
      */
     @GET
     public Collection<User> index() {
@@ -102,8 +105,13 @@ public class UserController {
     }
 
     /**
-     * @param entityId
-     * @return
+     * Get a specific user
+     *
+     * @param entityId user id to look for
+     * @return the user matching entityId
+     * @throws AuthorizationException if searched users id not the current one
+     *                                or current one doesn't have the
+     *                                permissions to see others users
      */
     @GET
     @Path("{entityId : [1-9][0-9]*}")
@@ -116,8 +124,13 @@ public class UserController {
     }
 
     /**
-     * @param value
-     * @return
+     * Look for jpaAccounts matching given value.
+     *
+     * The value can be part of the first name, last name, email or username.
+     * Case insensitive.
+     *
+     * @param value search token
+     * @return list of JpaAccount matching the token
      */
     @GET
     @Path("AutoComplete/{value}")
@@ -126,12 +139,19 @@ public class UserController {
     }
 
     /**
-     * Return accounts that match given "value" and are not yet member of the
-     * given game
+     * Return accounts that match given "value" (like
+     * {@link #getAutoComplete(java.lang.String) getAutoComplete()} but are not
+     * yet member of the given game.
      *
-     * @param value
-     * @param gameId
-     * @return
+     * Returned Account will also have their email altered so they can be
+     * displayed to anybody (from user@tada.ch to use*****@tada.ch)
+     *
+     * @param value  token to search
+     * @param gameId id of the game targeted account cannot be already
+     *               registered in
+     *
+     * @return list of account matching given search value which are not yet
+     *         member of the given game
      */
     @GET
     @Path("AutoCompleteFull/{value}/{gameId : [1-9][0-9]*}")
@@ -140,13 +160,18 @@ public class UserController {
     }
 
     /**
-     * @param value
-     * @param rolesList
-     * @return
+     * Same as {@link #getAutoComplete(java.lang.String) getAutoComplete} but
+     * account must be member of (at least) one role in rolesList
+     *
+     * @param value     account search token
+     * @param rolesList list of roles targeted account should be members (only
+     *                  one membership is sufficient)
+     * @return list of JpaAccount matching the token that are member of at least
+     *         one given role
      */
     @POST
     @Path("AutoComplete/{value}")
-    public List<JpaAccount> getAutoCompleteByRoles(@PathParam("value") String value, HashMap<String, Object> rolesList) {
+    public List<JpaAccount> getAutoCompleteByRoles(@PathParam("value") String value, HashMap<String, List<String>> rolesList) {
         if (!SecurityUtils.getSubject().isRemembered() && !SecurityUtils.getSubject().isAuthenticated()) {
             throw new UnauthorizedException();
         }
@@ -155,7 +180,8 @@ public class UserController {
 
     /**
      * @param values
-     * @return
+     * @return dunno
+     * @deprecated
      */
     @GET
     @Deprecated
@@ -166,7 +192,8 @@ public class UserController {
 
     /**
      * @param values
-     * @return
+     * @deprecated
+     * @return dunno
      */
     @GET
     @Deprecated
@@ -179,8 +206,12 @@ public class UserController {
     }
 
     /**
-     * @param user
-     * @return
+     * Create a new user
+     *
+     * @param user new user to save
+     * @return the new user
+     * @throws AuthorizationException if the current user doesn't have the
+     *                                permission to create users
      */
     @POST
     public User create(User user) {
@@ -191,9 +222,14 @@ public class UserController {
     }
 
     /**
-     * @param entityId
-     * @param entity
-     * @return
+     * Update a user
+     *
+     * @param entityId id of user to update
+     * @param entity   user to read new values from
+     * @return the updated user
+     * @throws AuthorizationException if current user is not the updated user or
+     *                                if the current user doesn't have the
+     *                                permission to edit others users
      */
     @PUT
     @Path("{entityId: [1-9][0-9]*}")
@@ -207,8 +243,12 @@ public class UserController {
     }
 
     /**
-     * @param accountId
-     * @return
+     * Delete a user by account id (why not by user id ???)
+     *
+     * @param accountId id of account linked to the user to delete
+     * @return the user that has been deleted
+     * @throws AuthorizationException currentUser does not have the permission
+     *                                to delete users
      */
     @DELETE
     @Path("{accountId: [1-9][0-9]*}")
@@ -238,16 +278,16 @@ public class UserController {
      * @param authInfo
      * @param request
      * @param response
-     * @return User the current user, WegasErrorMessage when authInfo values are
-     * incorrect
-     * @throws javax.servlet.ServletException
-     * @throws java.io.IOException
+     * @return User the current user
+     * @throws WegasErrorMessage when authInfo values are incorrect
+     * @throws ServletException
+     * @throws IOException
      */
     @POST
     @Path("Authenticate")
     public User login(AuthenticationInformation authInfo,
-                      @Context HttpServletRequest request,
-                      @Context HttpServletResponse response) throws ServletException, IOException {
+            @Context HttpServletRequest request,
+            @Context HttpServletResponse response) throws ServletException, IOException {
 
         Subject subject = SecurityUtils.getSubject();
 
@@ -277,6 +317,11 @@ public class UserController {
         }
     }
 
+    /**
+     * Logout
+     *
+     * @return 200 OK
+     */
     @GET
     @Path("Logout")
     public Response logout() {
@@ -285,6 +330,8 @@ public class UserController {
     }
 
     /**
+     * Automatic guest login
+     *
      * @param authInfo
      */
     @POST
@@ -294,6 +341,8 @@ public class UserController {
     }
 
     /**
+     * Automatic quest login with scenarist rights
+     *
      * @param authInfo
      */
     @POST
@@ -309,7 +358,9 @@ public class UserController {
     }
 
     /**
-     * @return
+     * Is anybody there ?
+     *
+     * @return true if request initiator is logged in
      */
     @GET
     @Path("LoggedIn")
@@ -322,6 +373,7 @@ public class UserController {
      * only.
      *
      * @param accountId jpaAccount id
+     * @throws AuthorizationException if current user is not an administrator
      */
     @POST
     @Path("Be/{accountId: [1-9][0-9]*}")
@@ -342,35 +394,39 @@ public class UserController {
      * @param firstname
      * @param lastname
      * @param email
+     * @param request
      */
     @POST
     @Path("Signup")
     @Deprecated
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public void signup(@FormParam("username") String username,
-                       @FormParam("password") String password,
-                       @FormParam("firstname") String firstname,
-                       @FormParam("lastname") String lastname,
-                       @FormParam("email") String email) {
+            @FormParam("password") String password,
+            @FormParam("firstname") String firstname,
+            @FormParam("lastname") String lastname,
+            @FormParam("email") String email,
+            @Context HttpServletRequest request) {
         JpaAccount account = new JpaAccount();                                   // Convert post params to entity
         account.setUsername(username);
         account.setPassword(password);
         account.setFirstname(firstname);
         account.setLastname(lastname);
         account.setEmail(email);
-        this.signup(account);                                                   // and forward
+        this.signup(account, request);                                                   // and forward
     }
 
     /**
      * Create a user based with a JpAAccount
      *
      * @param account
+     * @param request
      * @return Response : Status Not acceptable if email is wrong or username
-     * already exist. Created otherwise.
+     *         already exist. Created otherwise.
      */
     @POST
     @Path("Signup")
-    public Response signup(JpaAccount account) {
+    public Response signup(JpaAccount account,
+            @Context HttpServletRequest request) {
         Response r;
         if (this.checkEmailString(account.getEmail())) {
             if (account.getUsername().equals("") || !this.checkExistingUsername(account.getUsername())) {
@@ -381,17 +437,28 @@ public class UserController {
                     GuestJpaAccount from = (GuestJpaAccount) accountFacade.find((Long) subject.getPrincipal());
                     subject.logout();
                     userFacade.upgradeGuest(from, account);
+                    r = Response.status(Response.Status.CREATED).build();
                 } else {
-                    user = new User(account);
-                    userFacade.create(user);
+                    // Check if e-mail is already taken and if yes return a localized error message:
+                    try {
+                        accountFacade.findByEmail(account.getEmail());
+                        String msg = detectBrowserLocale(request).equals("fr") ? "Cette adresse e-mail est déjà prise." : "This email address is already taken.";
+                        r = Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error(msg)).build();
+                    } catch (WegasNoResultException e) {
+                        // GOTCHA
+                        // E-Mail not yet registered -> proceed with account creation
+                        user = new User(account);
+                        userFacade.create(user);
+                        r = Response.status(Response.Status.CREATED).build();
+                    }
                 }
-
-                r = Response.status(Response.Status.CREATED).build();
             } else {
-                r = Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error("The username is already taken.")).build();
+                String msg = detectBrowserLocale(request).equals("fr") ? "Ce nom d'utilisateur est déjà pris." : "This username is already taken.";
+                r = Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error(msg)).build();
             }
         } else {
-            r = Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error("The email isn't correct.")).build();
+            String msg = detectBrowserLocale(request).equals("fr") ? "Cette adresse e-mail n'est pas valide." : "This e-mail address is not valid.";
+            r = Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error(msg)).build();
         }
         return r;
     }
@@ -403,13 +470,20 @@ public class UserController {
     @POST
     @Path("SendNewPassword")
     public void sendNewPassword(AuthenticationInformation authInfo,
-                                @Context HttpServletRequest request) {
+            @Context HttpServletRequest request) {
         userFacade.sendNewPassword(authInfo.getLogin());
     }
 
+    /**
+     *
+     * @param email
+     */
     @POST
     @Path("SendMail")
     public void sendMail(Email email) {
+        // TODO Check persmissions !!!
+        // Current User should have each recipients registered in a game he leads or be such a superuser
+
         AbstractAccount mainAccount = userFacade.getCurrentUser().getMainAccount();
         String name = mainAccount.getName();
         if (name.length() == 0) {
@@ -434,10 +508,17 @@ public class UserController {
     }
 
     /**
-     * Get all GameModel permissions by GameModel id
+     * Get all roles which have some permissions on the given instance..
+     *
+     * Map is { id : role id, name: role name, permissions: list of permissions
+     * related to instance}
+     *
+     * deprecated ?
      *
      * @param instance
-     * @return
+     * @return list of "Role"
+     * @throws AuthorizationException when current user doesn't have edit
+     *                                permission on given instance
      */
     @GET
     @Path("FindPermissionByInstance/{instance}")
@@ -463,7 +544,7 @@ public class UserController {
      * Find all teams for the current user.
      *
      * @return teamsToReturn, the collection of teams where the current user is
-     * a player.
+     *         a player.
      */
     @GET
     @Path("Current/Team")
@@ -514,7 +595,7 @@ public class UserController {
      *
      * @param roleId
      * @param permission
-     * @return
+     * @return true a permission has been removed
      */
     @POST
     @Path("DeletePermission/{roleId : [1-9][0-9]*}/{permission}")
@@ -532,7 +613,7 @@ public class UserController {
      *
      * @param roleId
      * @param permission
-     * @return
+     * @return true if permission has been created
      */
     @POST
     @Path("AddPermission/{roleId : [1-9][0-9]*}/{permission}")
@@ -548,7 +629,7 @@ public class UserController {
     /**
      * @param roleName
      * @param permission
-     * @return
+     * @return true if permission has been created
      */
     @POST
     @Path("AddPermission/{roleName}/{permission}")
@@ -565,12 +646,12 @@ public class UserController {
      *
      * @param roleId
      * @param id
-     * @return
+     * @return if permissions have been removed
      */
     @POST
     @Path("DeleteAllRolePermissions/{roleId : [1-9][0-9]*}/{gameModelId}")
     public boolean deleteAllRolePermissions(@PathParam("roleId") Long roleId,
-                                            @PathParam("gameModelId") String id) {
+            @PathParam("gameModelId") String id) {
 
         checkGmOrGPermission(id, "GameModel:Edit:", "Game:Edit:");
 
@@ -578,14 +659,17 @@ public class UserController {
     }
 
     /**
-     * @param roleName
-     * @param id
-     * @return
+     * Delete all role permission related to gameModel identified by the given
+     * id
+     *
+     * @param roleName name of the role to remove permissions from
+     * @param id       id of the gameModel
+     * @return if permissions have been removed
      */
     @POST
     @Path("DeleteAllRolePermissions/{roleName}/{gameModelId}")
     public boolean deleteAllRolePermissions(@PathParam("roleName") String roleName,
-                                            @PathParam("gameModelId") String id) {
+            @PathParam("gameModelId") String id) {
         try {
             return this.deleteAllRolePermissions(roleFacade.findByName(roleName).getId(), id);
         } catch (WegasNoResultException ex) {
@@ -595,7 +679,8 @@ public class UserController {
 
     /**
      * @param entityId
-     * @return
+     * @return all users having any permissions related to game or gameModel
+     *         identified by entityId
      */
     @GET
     @Path("FindUserPermissionByInstance/{entityId}")
@@ -605,12 +690,20 @@ public class UserController {
 
         return userFacade.findUserPermissionByInstance(entityId);
     }
+
+    /**
+     * Get role members
+     *
+     * @param roleId
+     * @return all members with the given role
+     */
     @GET
     @Path("FindUsersWithRole/{role_id}")
     @RequiresPermissions("User:Edit")
-    public List<User> findUsersWithRole(@PathParam("role_id") Long roleId){
+    public List<User> findUsersWithRole(@PathParam("role_id") Long roleId) {
         return userFacade.findUsersWithRole(roleId);
     }
+
     /**
      * @param permission
      * @param accountId
@@ -618,7 +711,7 @@ public class UserController {
     @POST
     @Path("addAccountPermission/{permission}/{accountId : [1-9][0-9]*}")
     public void addAccountPermission(@PathParam("permission") String permission,
-                                     @PathParam("accountId") Long accountId) {
+            @PathParam("accountId") Long accountId) {
 
         String splitedPermission[] = permission.split(":");
 
@@ -634,7 +727,7 @@ public class UserController {
     @DELETE
     @Path("DeleteAccountPermissionByInstanceAndAccount/{entityId}/{accountId : [1-9][0-9]*}")
     public void deleteAccountPermissionByInstanceAndAccount(@PathParam("entityId") String entityId,
-                                                            @PathParam("accountId") Long accountId) {
+            @PathParam("accountId") Long accountId) {
 
         checkGmOrGPermission(entityId, "GameModel:Edit:", "Game:Edit:");
         AbstractAccount account = accountFacade.find(accountId);
@@ -649,7 +742,7 @@ public class UserController {
     @DELETE
     @Path("DeleteAccountPermissionByPermissionAndAccount/{permission}/{accountId : [1-9][0-9]*}")
     public void deleteAccountPermissionByPermissionAndAccount(@PathParam("permission") String permission,
-                                                              @PathParam("accountId") Long accountId) {
+            @PathParam("accountId") Long accountId) {
 
         String splitedPermission[] = permission.split(":");
 
@@ -659,6 +752,12 @@ public class UserController {
         userFacade.deleteUserPermissionByPermissionAndAccount(permission, account.getUser().getId());
     }
 
+    /**
+     *
+     * @param entityId
+     * @param gmPermission
+     * @param gPermission
+     */
     private void checkGmOrGPermission(String entityId, String gmPermission, String gPermission) {
         if (entityId.substring(0, 2).equals("gm")) {
             SecurityUtils.getSubject().checkPermission(gmPermission + entityId);
@@ -667,6 +766,12 @@ public class UserController {
         }
     }
 
+    /**
+     * Check if email is valid. (Only a string test)
+     *
+     * @param email
+     * @return true if given address is valid
+     */
     private boolean checkEmailString(String email) {
         boolean validEmail = true;
         try {
@@ -678,6 +783,12 @@ public class UserController {
         return validEmail;
     }
 
+    /**
+     * Check is username is already in use
+     *
+     * @param username username to check
+     * @return true is username is already in use
+     */
     private boolean checkExistingUsername(String username) {
         boolean existingUsername = false;
         User user = userFacade.getUserByUsername(username);
@@ -686,4 +797,23 @@ public class UserController {
         }
         return existingUsername;
     }
+
+    /*
+    ** @return the browser's preference among the languages supported by Wegas
+     */
+    private String detectBrowserLocale(HttpServletRequest request) {
+        String supportedLanguages = "en fr";
+
+        Enumeration locales = request.getLocales();
+        while (locales.hasMoreElements()) {
+            Locale locale = (Locale) locales.nextElement();
+            String loc = locale.getLanguage();
+            if (supportedLanguages.contains(loc)) {
+                return loc;
+            }
+        }
+        // No match found, return the default "en":
+        return "en";
+    }
+
 }

@@ -44,14 +44,14 @@ YUI.add('wegas-editable', function(Y) {
                 attrCfgs = this.getAttrCfgs();
 
             for (k in ret) {
-                if (attrCfgs[k] && attrCfgs[k]["transient"]) { // Remove any transient attribute
+                if (attrCfgs[k] && attrCfgs[k]["transient"]) {                  // Remove any transient attribute
                     delete ret[k];
                 }
-            //if(this.constructor.ATTRS[k] && this.constructor.ATTRS[k].value === ret[k]){ /* DEFAULT VALUE REMOVAL */
-            //    delete ret[k];
-            //}
+                //if(this.constructor.ATTRS[k] && this.constructor.ATTRS[k].value === ret[k]){ /* DEFAULT VALUE REMOVAL */
+                //    delete ret[k];
+                //}
             }
-            return ret; // Return a copy of this's fields.
+            return ret;                                                         // Return a copy of this's fields.
         },
         /**
          * Create a new JSON Object from this entity, filtered out by mask
@@ -91,9 +91,9 @@ YUI.add('wegas-editable', function(Y) {
             var i, form, schemaMap, attrCfgs, builder;
             fieldsToIgnore = (fieldsToIgnore || []);
 
-            form = form || this.constructor.EDITFORM; // And if no form is defined we check if there is a default one defined in the entity
+            form = form || this.constructor.EDITFORM;                           // And if no form is defined we check if there is a default one defined in the entity
 
-            if (!form) { // If no edit form could be found, we generate one based on the ATTRS parameter.
+            if (!form) {                                                        // If no edit form could be found, we generate one based on the ATTRS parameter.
                 attrCfgs = this.getAttrCfgs();
 
                 for (i in attrCfgs) {
@@ -135,7 +135,7 @@ YUI.add('wegas-editable', function(Y) {
          * @returns {Array}
          */
         getMenuCfg: function(data) {
-            var menu = this.getStatic("EDITMENU", true)[0] || []; // And if no form is defined we return the default one defined in the entity
+            var menu = this.getStatic("EDITMENU", true)[0] || [];               // And if no form is defined we return the default one defined in the entity
 
             menu = Y.JSON.parse(Y.JSON.stringify(menu)); // CLONE
 
@@ -179,7 +179,7 @@ YUI.add('wegas-editable', function(Y) {
                 ret = [], i;
 
             while (c) {
-                if (c[key]) { // Add to attributes
+                if (c[key]) {                                                   // Add to attributes
                     ret[ret.length] = c[key];
                 }
                 if (withExtensions && c._yuibuild && c._yuibuild.exts) {
@@ -240,13 +240,13 @@ YUI.add('wegas-editable', function(Y) {
         mixMenuCfg: function(elts, data) {
             var i, j;
             for (i = 0; i < elts.length; i += 1) {
-                Y.mix(elts[i], data, true); // Attach self and the provided datasource to the menu items, to allow them to know which entity to update
+                Y.mix(elts[i], data, true);                                     // Attach self and the provided datasource to the menu items, to allow them to know which entity to update
 
                 if (elts[i].children) {
-                    Editable.mixMenuCfg(elts[i].children, data); // push data in children arg
+                    Editable.mixMenuCfg(elts[i].children, data);                // push data in children arg
                 }
                 if (elts[i].wchildren) {
-                    Editable.mixMenuCfg(elts[i].wchildren, data); // push data in wchildren
+                    Editable.mixMenuCfg(elts[i].wchildren, data);               // push data in wchildren
                 }
                 if (elts[i].plugins) {
                     for (j = 0; j < elts[i].plugins.length; j = j + 1) {
@@ -301,9 +301,11 @@ YUI.add('wegas-editable', function(Y) {
                 modules.push(module);
             }
 
-            props = ["children", "entities", "items"]; // Revive array attributes
+            props = ["children", "entities", "items"];                          // Revive array attributes
+            props.push("updatedEntities");
+            props.push("deletedEntities");
             for (i = 0; i < props.length; i += 1) {
-                if (cfg[props[i]]) { // Get definitions from children (for Y.WidgetParent widgets)
+                if (cfg[props[i]]) {                                            // Get definitions from children (for Y.WidgetParent widgets)
                     Y.Array.each(cfg[props[i]], function(field) {
                         if (field) {
                             modules = modules.concat(Editable.getModulesFromDefinition(field));
@@ -311,7 +313,7 @@ YUI.add('wegas-editable', function(Y) {
                     });
                 }
             }
-            if (cfg.plugins) { // Plugins must be revived in the proper way
+            if (cfg.plugins) {                                                  // Plugins must be revived in the proper way
                 Y.Array.each(cfg.plugins, function(field) {
                     field.cfg = field.cfg || {
                     };
@@ -321,7 +323,7 @@ YUI.add('wegas-editable', function(Y) {
                 });
             }
 
-            props = ["left", "right", "center", "top", "bottom"]; // Revive  objects attributes
+            props = ["left", "right", "center", "top", "bottom"];               // Revive  objects attributes
             for (i = 0; i < props.length; i = i + 1) {
                 if (cfg[props[i]]) {
                     modules = modules.concat(Editable.getModulesFromDefinition(cfg[props[i]]));
@@ -360,7 +362,7 @@ YUI.add('wegas-editable', function(Y) {
                     }
                     return Editable.reviver(value);
                 } else {
-                    return value; // Return raw original object
+                    return value;                                               // Return raw original object
                 }
             };
             return walk(data);
@@ -392,7 +394,7 @@ YUI.add('wegas-editable', function(Y) {
          * @param {type} cb
          */
         useAndRevive: function(cfg, cb) {
-            Editable.use(cfg, Y.bind(function(cb) { // Load target class dependencies
+            Editable.use(cfg, Y.bind(function(cb) {                             // Load target class dependencies
                 cb(Editable.revive(this));
             }, cfg, cb));
         },
@@ -412,5 +414,5 @@ YUI.add('wegas-editable', function(Y) {
     });
     Y.namespace("Wegas").Editable = Editable;
 
-    Y.Wegas.use = Y.Wegas.Editable.use; // Set up a shortcut
+    Y.Wegas.use = Y.Wegas.Editable.use;                                         // Set up a shortcut
 });

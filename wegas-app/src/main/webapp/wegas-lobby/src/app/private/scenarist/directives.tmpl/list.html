@@ -2,6 +2,9 @@
       ng-repeat="scenario in scenarios | orderBy: 'createdTime':true | filter: {name: search, canView: true, canEdit: true} | limitTo: maximum"
       scenario="scenario"
       archive="archive"
+      duplicate="duplicate"
+      duplicating="duplicating"
+      isDuplicated="isDuplicated"
       scenario-card >
 </div>
 <div ng-if="(search !== '') && (scenarios | filter:{name: search}).length == 0">

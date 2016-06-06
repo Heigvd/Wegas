@@ -36,8 +36,8 @@ angular.module('wegas.models.scenarios', [])
                             "managed-mode": "true"
                         }
                     }).success(function(data) {
-                        if (data.entities) {
-                            scenarios.cache[status].data = data.entities;
+                        if (data.updatedEntities) {
+                            scenarios.cache[status].data = data.updatedEntities;
                             deferred.resolve(true);
                         } else {
                             scenarios.cache[status].data = [];
@@ -142,7 +142,7 @@ angular.module('wegas.models.scenarios', [])
                         }
                     }).success(function(data) {
                         if (data.events !== undefined && data.events.length === 0) {
-                            var scenario = data.entities[0];
+                            var scenario = data.updatedEntities[0];
                             deferred.resolve(scenario);
                         } else if (data.events !== undefined) {
                             //Responses.danger(data.events[0].exceptions[0].message,
@@ -265,9 +265,9 @@ angular.module('wegas.models.scenarios', [])
                             }
                         }).success(function(data) {
                             if (data.events !== undefined && data.events.length === 0) {
-                                cacheScenario("LIVE", data.entities[0]);
+                                cacheScenario("LIVE", data.updatedEntities[0]);
                                 $translate('COMMONS-SCENARIOS-CREATE-FLASH-SUCCESS').then(function(message) {
-                                    deferred.resolve(Responses.success(message, data.entities[0]));
+                                    deferred.resolve(Responses.success(message, data.updatedEntities[0]));
                                 });
                             } else {
                                 if (data.events !== undefined) {
@@ -315,15 +315,15 @@ angular.module('wegas.models.scenarios', [])
                     }
                 }).success(function(data) {
                     if (data.events !== undefined && data.events.length === 0) {
-                        cacheScenario("LIVE", data.entities[0]);
+                        cacheScenario("LIVE", data.updatedEntities[0]);
                         $translate('COMMONS-SCENARIOS-COPY-FLASH-SUCCESS').then(function(message) {
-                            deferred.resolve(Responses.success(message, data.entities[0]));
+                            deferred.resolve(Responses.success(message, data.updatedEntities[0]));
                         });
                     } else {
                         if (data.events[0] && data.events[0]["@class"] === "CustomEvent") {
-                            cacheScenario("LIVE", data.entities[0]);
+                            cacheScenario("LIVE", data.updatedEntities[0]);
                             $translate('COMMONS-SCENARIOS-COPY-FLASH-SUCCESS').then(function(message) {
-                                deferred.resolve(Responses.success(message, data.entities[0]));
+                                deferred.resolve(Responses.success(message, data.updatedEntities[0]));
                             });
                         } else {
                             console.log("WEGAS LOBBY : Error while copying scenario");
@@ -366,9 +366,9 @@ angular.module('wegas.models.scenarios', [])
                 }
             }).success(function(data) {
                 if (data.events !== undefined && data.events.length === 0) {
-                    cacheScenario("LIVE", data.entities[0]);
+                    cacheScenario("LIVE", data.updatedEntities[0]);
                     $translate('COMMONS-SCENARIOS-CREATE-FLASH-SUCCESS').then(function(message) {
-                        deferred.resolve(Responses.success(message, data.entities[0]));
+                        deferred.resolve(Responses.success(message, data.updatedEntities[0]));
                     });
                 } else {
                     if (data.events !== undefined) {
@@ -431,7 +431,7 @@ angular.module('wegas.models.scenarios', [])
             })
                 .success(function(data) {
                     if (data.events !== undefined && data.events.length === 0) {
-                        var versions = data.entities;
+                        var versions = data.updatedEntities;
                         $translate('COMMONS-SCENARIOS-VERSIONS-FIND-FLASH-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, versions));
                         });
@@ -532,7 +532,7 @@ angular.module('wegas.models.scenarios', [])
                 }
             }).success(function(data) {
                 if (data.events !== undefined && data.events.length === 0) {
-                    var newScenario = data.entities[0];
+                    var newScenario = data.updatedEntities[0];
                     cacheScenario("LIVE", newScenario);
                     $translate('COMMONS-SCENARIOS-VERSIONS-RESTORE-FLASH-SUCCESS', {
                         name: newScenario.name

@@ -131,8 +131,8 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
             this.setDescription(other.getDescription());
             this.setToReview(other.getToReview());
             this.setToReviewName(other.getToReviewName());
-            this.feedback.merge(other.getFeedback());
-            this.fbComments.merge(other.getFbComments());
+            this.getFeedback().merge(other.getFeedback());
+            this.getFbComments().merge(other.getFbComments());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
@@ -141,7 +141,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
     /**
      * Return the variable that will be reviewed
      *
-     * @return
+     * @return the variable that will be reviewed
      */
     public VariableDescriptor getToReview() {
         return toReview;
@@ -168,7 +168,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
     /**
      * Used to fetch the JSON de-serialised variable name
      *
-     * @return
+     * @return the name of the variable that will be reviewed, as imported from a JSON
      */
     @JsonIgnore
     public String getImportedToReviewName() {

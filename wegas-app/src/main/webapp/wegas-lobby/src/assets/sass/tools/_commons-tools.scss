@@ -10,11 +10,11 @@
 @mixin loading-message(){
     p{
         width:100%;
-        margin:24px auto;
+        margin:50px auto;
         text-align:center;
         font-size:24px;
         &, i{
-            color:$default-color-light;
+            color:$default-color;
         }
     }
 }

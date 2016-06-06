@@ -44,7 +44,7 @@ import javax.persistence.PersistenceContext;
 /**
  * Run state machines.
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Stateless
 @LocalBean
@@ -63,6 +63,8 @@ public class StateMachineFacade {
 
     @EJB
     private VariableDescriptorFacade variableDescriptorFacade;
+    @EJB
+    private PlayerFacade playerFacade;
 
     @EJB
     private VariableInstanceFacade variableInstanceFacade;
@@ -153,7 +155,7 @@ public class StateMachineFacade {
 
         for (StateMachineDescriptor sm : stateMachineDescriptors) {
             validTransition = false;
-            smi = (StateMachineInstance) sm.getInstance(player);
+            smi = sm.getInstance(player);
             if (!smi.getEnabled() || smi.getCurrentState() == null) { // a state may not be defined : remove statemachine's state when a player is inside that state
                 continue;
             }
@@ -342,6 +344,60 @@ public class StateMachineFacade {
     private Boolean isNotDefined(Script script) {
         return script == null || script.getContent() == null
             || script.getContent().equals("");
+    }
+
+    public StateMachineInstance doTransition(Long gameModelId, Long playerId, Long stateMachineDescriptorId, Long transitionId) {
+        final Player player = playerFacade.find(playerId);
+        StateMachineDescriptor stateMachineDescriptor
+                = (StateMachineDescriptor) variableDescriptorFacade.find(stateMachineDescriptorId);
+        StateMachineInstance stateMachineInstance = stateMachineDescriptor.getInstance(player);
+        State currentState = stateMachineInstance.getCurrentState();
+        List<Script> impacts = new ArrayList<>();
+
+        Transition transition = findTransition(transitionId);
+
+        if (transition instanceof DialogueTransition && currentState.equals(transition.getState())) {
+            if (isTransitionValid((DialogueTransition) transition, playerId, stateMachineDescriptor)) {
+                if (transition.getPreStateImpact() != null) {
+                    impacts.add(transition.getPreStateImpact());
+                }
+                stateMachineInstance.setCurrentStateId(transition.getNextStateId());
+                stateMachineInstance.transitionHistoryAdd(transitionId);
+                State nextState = stateMachineInstance.getCurrentState();
+
+                requestManager.addEntity(stateMachineInstance.getAudience(), stateMachineInstance, requestManager.getUpdatedEntities());
+                /* Force in case next state == current state */
+
+                if (stateMachineInstance.getCurrentState().getOnEnterEvent() != null) {
+                    impacts.add(stateMachineInstance.getCurrentState().getOnEnterEvent());
+                }
+                scriptManager.eval(player, impacts, stateMachineDescriptor);
+
+                try {
+                    scriptEvent.fire(player, "dialogueResponse", new TransitionTraveled(stateMachineDescriptor, stateMachineInstance, transition, currentState, nextState));
+                } catch (WegasRuntimeException e) {
+                    logger.error("EventListener error (\"dialogueResponse\")", e);
+                    // GOTCHA no eventManager is instantiated
+                }
+            }
+        }
+        return stateMachineInstance;
+    }
+    public static class TransitionTraveled {
+
+        final public StateMachineDescriptor descriptor;
+        final public StateMachineInstance instance;
+        final public Transition transition;
+        final public State from;
+        final public State to;
+
+        public TransitionTraveled(StateMachineDescriptor descriptor, StateMachineInstance instance, Transition transition, State from, State to) {
+            this.descriptor = descriptor;
+            this.instance = instance;
+            this.transition = transition;
+            this.from = from;
+            this.to = to;
+        }
     }
 
     /**

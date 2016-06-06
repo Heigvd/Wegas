@@ -10,13 +10,13 @@
       <span class="button__label">{{'PLAYER-CARD-TEAM-BTN' | translate}}</span>
     </a>
     <a
-      class="button button--small button--round button--danger-reverse button--label-off button--trash"
+      class="button button--small button--round button--default-reverse button--label-off button--trash"
       title="{{'PLAYER-CARD-LEAVE-BTN' | translate}}"
       confirmed-click="leave(team.id)"
       ng-confirm-click="{{'PLAYER-CARD-LEAVE-CONFIRM' | translate}}">
       <span class="button__label">{{'PLAYER-CARD-LEAVE-BTN' | translate}}</span>
     </a>
-    <a class="button button--small button--round button--info button--label-off button--play" title="{{'PLAYER-CARD-PLAY-BTN' | translate}}" href="{{ServiceURL}}game-play.html?gameId={{team.gameId}}" target="_blank">
+    <a class="button button--small button--round button--default button--label-off button--play action--button" title="{{'PLAYER-CARD-PLAY-BTN' | translate}}" href="{{ServiceURL}}game-play.html?gameId={{team.gameId}}" target="_blank">
       <span class="button__label">{{'PLAYER-CARD-PLAY-BTN' | translate}}</span>
     </a>
 </div>

@@ -110,7 +110,10 @@ YUI.add("wegas-entity", function(Y) {
      */
     persistence["ManagedResponse"] = Base.create("ManagedResponse", Entity, [], {}, {
         ATTRS: {
-            entities: {
+            deletedEntities: {
+                value: []
+            },
+            updatedEntities: {
                 value: []
             },
             events: {

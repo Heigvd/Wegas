@@ -10,9 +10,50 @@ package com.wegas.core.persistence;
 import java.util.*;
 
 /**
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class ListUtils {
+
+    public interface Updater {
+
+        void addEntity(AbstractEntity entity);
+
+        void removeEntity(AbstractEntity entity);
+    }
+
+    /**
+     * Clone a list, not its content
+     *
+     * @param list the list to clone
+     * @param <E>  parametrized list type
+     * @return a new list with the same content as the original list
+     */
+    public static <E> List<E> clone(final List<E> list) {
+        List<E> newInstance;
+        try {
+            newInstance = list.getClass().newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            //fallback to ArrayList
+            newInstance = new ArrayList<>();
+        }
+        newInstance.addAll(list);
+        return newInstance;
+    }
+
+    /**
+     * Clone a list and add N element to it.
+     *
+     * @param list    List to clone
+     * @param element vararg N element to add to the cloned list
+     * @param <E>     parametrized list type
+     * @return a new list with same content as the original list. element added
+     */
+    @SafeVarargs
+    public static <E> List<E> cloneAdd(final List<E> list, final E... element) {
+        final List<E> retList = clone(list);
+        Collections.addAll(retList, element);
+        return retList;
+    }
 
     /**
      * Convert a list of object to a map. The key is based on a unique
@@ -31,8 +72,8 @@ public class ListUtils {
      * @param key  ListKeyToMap object
      * @return Map
      */
-    public static <K, V> Map<K, V> listAsMap(Collection<V> list, ListKeyToMap<K, V> key) {
-        Map<K, V> map = new HashMap<>();
+    public static <K, V> Map<K, V> listAsMap(final Collection<V> list, final ListKeyToMap<K, V> key) {
+        final Map<K, V> map = new HashMap<>();
         for (V item : list) {
             map.put(key.getKey(item), item);
         }
@@ -57,7 +98,8 @@ public class ListUtils {
     }
 
     /**
-     * This function takes two lists and merge them. This does not preserve any order.
+     * This function takes two lists and merge them. This does not preserve any
+     * order.
      * <br/> Assumptions:<br/>
      * - An element from the new list is new if it has no <code>ID</code> or if
      * it's <code>ID</code> is missing in the old list<br/>
@@ -66,13 +108,16 @@ public class ListUtils {
      * - An element from the old list has to be removed if its <code>ID</code>
      * is missing in the new list
      *
-     * @param <E>     extends (@see AbstractEntity) the element type
-     * @param oldList The list containing old elements
-     * @param newList The list containing new elements
+     * @param <E>      extends (@see AbstractEntity) the element type
+     * @param oldList  The list containing old elements
+     * @param newList  The list containing new elements
+     * @param callback
      * @return A merged list
      */
-    public static <E extends AbstractEntity> List<E> mergeLists(List<E> oldList, List<E> newList) {
+    public static <E extends AbstractEntity> List<E> mergeLists(List<E> oldList, List<E> newList, Updater callback) {
         List<E> newElements = new ArrayList<>();
+        //do NOT modify newList
+        newList = clone(newList);
         for (Iterator<E> it = newList.iterator(); it.hasNext(); ) {                 //remove AbstractEntities without id and store them
             E element = it.next();
             if (element.getId() == null) {
@@ -93,6 +138,9 @@ public class ListUtils {
                 element.merge(elementMap.get(element.getId()));                 //Then merge them
                 elementMap.remove(element.getId());                             //remove element from map
             } else {
+                if (callback != null) {
+                    callback.removeEntity(element);
+                }
                 it.remove();                                                    //else remove that old element
             }
         }
@@ -102,16 +150,32 @@ public class ListUtils {
                 E newElement = (E) element.getClass().newInstance();
                 newElement.merge(element);
                 newElements.add(newElement);
+
             } catch (InstantiationException | IllegalAccessException ex) {
             }
         }
-        oldList.addAll(newElements);                                            //Add all new elements
-        return oldList;
+        //Add all new elements
+        for (E newEntity : newElements) {
+            oldList.add(newEntity);
+            if (callback != null) {
+                callback.addEntity(newEntity);
+            }
+        }
+        //oldList.addAll(newElements);
+        final List<E> ret = new ArrayList<>();
+        ret.addAll(oldList);
+        return ret;
+    }
+
+    public static <E extends AbstractEntity> List<E> mergeLists(List<E> oldList, List<E> newList) {
+        return mergeLists(oldList, newList, null);
     }
 
     /**
-     * This function takes two lists and replace the content of the first one with the content from the second one.<br/>
-     * Merging elements with same <code>id</code> and preserving second list's order.
+     * This function takes two lists and replace the content of the first one
+     * with the content from the second one.<br/>
+     * Merging elements with same <code>id</code> and preserving second list's
+     * order.
      *
      * @param <E>     extends (@see AbstractEntity) the element type
      * @param oldList The list containing old elements
@@ -119,6 +183,7 @@ public class ListUtils {
      * @return A merged list
      */
     public static <E extends AbstractEntity> List<E> mergeReplace(List<E> oldList, List<E> newList) {
+        final List<E> updatedList = new ArrayList<>();
         ListUtils.ListKeyToMap<Long, E> converter = new ListUtils.ListKeyToMap<Long, E>() {
             @Override
             public Long getKey(E item) {
@@ -126,52 +191,20 @@ public class ListUtils {
             }
         };
         Map<Long, E> elementMap = ListUtils.listAsMap(oldList, converter);      //Create a map with oldList based on Ids
-        oldList.clear();
-        for (Iterator<E> it = newList.iterator(); it.hasNext(); ) {
-            E element = it.next();
+        //  oldList.clear();
+        for (E element : newList) {
             if (elementMap.containsKey(element.getId())) {                      //old element still exists
                 elementMap.get(element.getId()).merge(element);                 //Then merge them
-                oldList.add(elementMap.get(element.getId()));
+                updatedList.add(elementMap.get(element.getId()));
             } else {
                 try {
                     E newElement = (E) element.getClass().newInstance();
                     newElement.merge(element);
-                    oldList.add(newElement);
+                    updatedList.add(newElement);
                 } catch (InstantiationException | IllegalAccessException ex) {
                 }
             }
         }
-        return oldList;
-    }
-
-    /**
-     * make the old list content the same as newlist one
-     * only references are copied, elements are not merged ever
-     * 
-     * @param <E>     extends (@see AbstractEntity) the element type
-     * @param oldList The list containing old elements
-     * @param newList The list containing new elements
-     * @return A merged list
-     */
-    public static <E extends AbstractEntity> List<E> updateList(List<E> oldList, List<E> newList) {
-
-        ListUtils.ListKeyToMap<Long, E> converter = new ListUtils.ListKeyToMap<Long, E>() {
-            @Override
-            public Long getKey(E item) {
-                return item.getId();
-            }
-        };
-        Map<Long, E> elementMap = ListUtils.listAsMap(newList, converter);      //Create a map with new list ids
-
-        for (Iterator<E> it = oldList.iterator(); it.hasNext(); ) {
-            E element = it.next();
-            if (elementMap.containsKey(element.getId())) {                      //old element still exists
-                elementMap.remove(element.getId());                             //remove element from map
-            } else {
-                it.remove();                                                    //else remove that old element
-            }
-        }
-        oldList.addAll(elementMap.values());                                    //Add all new elements
-        return oldList;
+        return updatedList;
     }
 }

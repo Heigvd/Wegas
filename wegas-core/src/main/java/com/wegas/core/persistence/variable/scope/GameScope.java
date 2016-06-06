@@ -10,7 +10,6 @@ package com.wegas.core.persistence.variable.scope;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -21,9 +20,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import javax.persistence.PrePersist;
-////import javax.xml.bind.annotation.XmlTransient;
-//import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.persistence.game.Team;
 import org.slf4j.Logger;
@@ -32,73 +28,70 @@ import org.slf4j.LoggerFactory;
 /**
  * @todo Needs to be implemented
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 //@XmlType(name = "GameScope")
-public class GameScope extends AbstractScope {
+public class GameScope extends AbstractScope<Game> {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(GameScope.class);
-    /**
-     *
-     */
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "gameScope")
     @JoinColumn(name = "gamescope_id", referencedColumnName = "id")
     //@XmlTransient
     @JsonIgnore
-    private Map<Long, VariableInstance> gameVariableInstances = new HashMap<>();
+    private Map<Game, VariableInstance> gameVariableInstances = new HashMap<>();
 
     /**
      *
      */
-    @PrePersist
+    //@PrePersist
     public void prePersist() {
-        this.propagateDefaultInstance(null);
+        //this.propagateDefaultInstance(null);
     }
 
     @Override
-    public void setVariableInstance(Long key, VariableInstance v) {
-        this.gameVariableInstances.put(key, v);
-        v.setGameScopeKey(key);
+    public void setVariableInstance(Game key, VariableInstance v) {
+        this.getVariableInstances().put(key, v);
+        v.setGame(key);
         v.setGameScope(this);
     }
 
     @Override
     public VariableInstance getVariableInstance(Player player) {
-        return this.gameVariableInstances.get(player.getGame().getId());
+        return this.getVariableInstances().get(player.getGame());
     }
 
     @Override
-    public Map<Long, VariableInstance> getVariableInstances() {
+    public Map<Game, VariableInstance> getVariableInstances() {
         return this.gameVariableInstances;
     }
 
     @Override
     protected void propagate(Game g) {
         VariableDescriptor vd = this.getVariableDescriptor();
-        VariableInstance vi = this.gameVariableInstances.get(g.getId());
+        VariableInstance vi = this.getVariableInstances().get(g);
         if (vi == null) {
-            this.setVariableInstance(g.getId(), vd.getDefaultInstance().clone());
+            VariableInstance clone = vd.getDefaultInstance().clone();
+            g.getPrivateInstances().add(clone);
+            this.setVariableInstance(g, clone);
         } else {
             vi.merge(vd.getDefaultInstance());
         }
     }
 
     @Override
-    public void propagateDefaultInstance(Object context) {
-        if (context instanceof Player){
+    public void propagateDefaultInstance(AbstractEntity context) {
+        if (context instanceof Player) {
             // Since player's game already exists, nothing to propagate
-        } else if (context instanceof Team){
+        } else if (context instanceof Team) {
             // Since teams's game already exists, nothing to propagate
-        } else if (context instanceof Game){
-            propagate((Game)context);
+        } else if (context instanceof Game) {
+            propagate((Game) context);
         } else {
             propagate(getVariableDescriptor().getGameModel());
         }
     }
-
-
 
     @Override
     public void merge(AbstractEntity a) {
@@ -106,11 +99,11 @@ public class GameScope extends AbstractScope {
     }
 
     @Override
-    public Map<Long, VariableInstance> getPrivateInstances() {
-        Map<Long, VariableInstance> ret = new HashMap<>();
+    public Map<Game, VariableInstance> getPrivateInstances() {
+        Map<Game, VariableInstance> ret = new HashMap<>();
         Player cPlayer = RequestFacade.lookup().getPlayer();
 
-        ret.put(cPlayer.getGame().getId(), this.getVariableInstance(cPlayer));
+        ret.put(cPlayer.getGame(), this.getVariableInstance(cPlayer));
         return ret;
     }
 }

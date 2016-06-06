@@ -8,7 +8,8 @@
         />
     </div>
 </div>
-<div class="view__list" repeat-auto-load>
+<div ng-if="!adminUsersCtrl.loading"
+     class="view__list" style="height:calc(100% - 80px);" repeat-auto-load >
     <div class="card card--player-session"
          ng-repeat="user in adminUsersCtrl.users | filter: adminUsersCtrl.search | limitTo: adminUsersCtrl.maxUsersDisplayed | orderBy:'account.lastname'"
          user="user">
@@ -32,7 +33,7 @@
                ng-click="adminUsersCtrl.be(user)">
                 <span class="button__label">{{'ADMIN-USERS-CARD-EDIT-BTN' | translate}}</span>
             </a>
-            <a class="button button--small button--round button--danger-reverse button--label-off button--trash"
+            <a class="button button--small button--round button--default-reverse button--label-off button--trash"
                title="{{'ADMIN-USERS-CARD-DELETE-BTN' | translate}}"
                confirmed-click="adminUsersCtrl.deleteUser(user.id)"
                ng-confirm-click="{{'ADMIN-USERS-CARD-DELETE-CONFIRM' | translate}}">
@@ -40,4 +41,8 @@
             </a>
         </div>
     </div>
+</div>
+<div ng-if="adminUsersCtrl.loading"
+     class="view__list view__list--loading"
+     content-loading="{{'ADMIN-USERS-LOADING' | translate}}">
 </div>

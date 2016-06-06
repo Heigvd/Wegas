@@ -7,7 +7,6 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
-import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
@@ -22,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 
@@ -69,8 +68,8 @@ public class StringDescriptor extends VariableDescriptor<StringInstance> {
             StringDescriptor other = (StringDescriptor) a;
             this.setValidationPattern(other.getValidationPattern());
 
-            this.allowedValues.clear();
-            this.allowedValues.addAll(other.getAllowedValues());
+            this.setAllowedValues(new ArrayList<>());
+            this.getAllowedValues().addAll(other.getAllowedValues());
             super.merge(a);
 
             /*String value = this.getDefaultInstance().getValue();

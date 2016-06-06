@@ -15,10 +15,9 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.Broadcastable;
-import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -29,7 +28,7 @@ import java.util.Map;
 @Table(indexes = {
     @Index(columnList = "variableinstance_id")
 })
-public class Activity extends AbstractAssignement implements Broadcastable {
+public class Activity extends AbstractAssignement /*implements Broadcastable */ {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -93,16 +92,10 @@ public class Activity extends AbstractAssignement implements Broadcastable {
 
     /**
      *
-     * @param taskDescriptor
+     * @param taskDescriptor public Activity(TaskDescriptor taskDescriptor) {
+     * this.taskDescriptor = taskDescriptor; this.time = 0D; this.completion =
+     * 0.0D; this.description = ""; this.requirement = null; }
      */
-    public Activity(TaskDescriptor taskDescriptor) {
-        this.taskDescriptor = taskDescriptor;
-        this.time = 0D;
-        this.completion = 0.0D;
-        this.description = "";
-        this.requirement = null;
-    }
-
     /**
      *
      * @param a
@@ -127,12 +120,11 @@ public class Activity extends AbstractAssignement implements Broadcastable {
      @PostRemove
      private void onUpdate() {
      this.getResourceInstance().onInstanceUpdate();
-     }*/
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
         return this.getResourceInstance().getEntities();
     }
-
+     }*/
     @Override
     public Long getId() {
         return this.id;
@@ -172,7 +164,7 @@ public class Activity extends AbstractAssignement implements Broadcastable {
 
     /**
      *
-     * @return
+     * @return id of the task descriptor this activity is linked to
      */
     public Long getTaskDescriptorId() {
         return this.getTaskDescriptor().getId();
@@ -235,5 +227,37 @@ public class Activity extends AbstractAssignement implements Broadcastable {
      */
     public void setRequirement(WRequirement requirement) {
         this.requirement = requirement;
+    }
+
+    @Override
+    public void updateCacheOnDelete() {
+        TaskDescriptor theTask = this.getTaskDescriptor();
+        ResourceInstance theResource = this.getResourceInstance();
+        WRequirement theReq = this.getRequirement();
+
+        if (theTask != null) {
+            theTask = ((TaskDescriptor) VariableDescriptorFacade.lookup().find(theTask.getId()));
+            if (theTask != null) {
+                theTask.getAssignments().remove(this);
+            }
+        }
+        if (theResource != null) {
+            theResource = ((ResourceInstance) VariableInstanceFacade.lookup().find(theResource.getId()));
+            if (theResource != null) {
+                theResource.getAssignments().remove(this);
+            }
+        }
+        if (theReq != null) {
+            TaskInstance taskInstance = theReq.getTaskInstance();
+            if (taskInstance != null) {
+                taskInstance = ((TaskInstance) VariableInstanceFacade.lookup().find(taskInstance.getId()));
+                if (taskInstance != null) {
+                    theReq = taskInstance.getRequirementById(theReq.getId());
+                    if (theReq != null) {
+                        theReq.removeActivity(this);
+                    }
+                }
+            }
+        }
     }
 }

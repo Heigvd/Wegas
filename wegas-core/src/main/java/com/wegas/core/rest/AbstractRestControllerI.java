@@ -10,80 +10,84 @@ package com.wegas.core.rest;
 
 import com.wegas.core.ejb.AbstractFacade;
 import com.wegas.core.persistence.AbstractEntity;
-import java.io.IOException;
-import java.util.Collection;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.io.IOException;
+import java.util.Collection;
 
 /**
- *
  * @param <T>
  * @param <U>
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-public abstract interface AbstractRestControllerI<T extends AbstractFacade, U extends AbstractEntity> {
+public interface AbstractRestControllerI<T extends AbstractFacade, U extends AbstractEntity> {
 
     /**
-     * Index : retrieve the game model list
+     * Index: get all entities this controller is designed for
      *
-     * @return
+     * @return all entities this controller is designed for
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Collection<U> index();
+    Collection<U> index();
 
     /**
-     * Retrieve a specific game model
+     * Retrieve a specific entity
      *
      * @param entityId
-     * @return OK
+     * @return entity matching given id
      */
     @GET
     @Path("{entityId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public U get(@PathParam("entityId") Long entityId);
+    U get(@PathParam("entityId") Long entityId);
 
     /**
+     * Create a new entity
      *
      * @param entity
-     * @return
+     * @return new entity
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public U create(U entity);
+    U create(U entity);
 
     /**
+     * Update an entity
      *
      * @param entityId
      * @param entity
-     * @return
+     * @return up to date entity
      */
     @PUT
     @Path("{entityId: [1-9][0-9]*}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public U update(@PathParam("entityId") Long entityId, U entity);
+    U update(@PathParam("entityId") Long entityId, U entity);
 
     /**
+     * Duplicate an entity
      *
      * @param entityId
-     * @return
+     * @return entity copy
      * @throws IOException
      */
     @POST
     @Path("{entityId: [1-9][0-9]*}/Duplicate")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public U duplicate(@PathParam("entityId") Long entityId) throws IOException;
+    U duplicate(@PathParam("entityId") Long entityId) throws IOException;
 
     /**
+     * Delete an entity
      *
-     * @param entityId
-     * @return
+     * @param entityId id of entity to delete
+     * @return the just destroyed entity
      */
     @DELETE
     @Path("{entityId: [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public U delete(@PathParam("entityId") Long entityId);
+    U delete(@PathParam("entityId") Long entityId);
 }

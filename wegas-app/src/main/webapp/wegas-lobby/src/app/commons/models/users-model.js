@@ -38,10 +38,10 @@ angular.module('wegas.models.users', [])
                         if (data.events !== undefined && data.events.length === 0) {
                             // NB: User has been thought to have multiple account (ways to authenticate)
                             // Actually, there is only one and this explains the below simplification
-                            _.each(data.entities, function(user) {
+                            _.each(data.updatedEntities, function(user) {
                                 user.account = user.accounts[0];
                             });
-                            users.cache.data = data.entities;
+                            users.cache.data = data.updatedEntities;
                             deferred.resolve(true);
                         } else {
                             users.cache.data = [];
@@ -197,9 +197,9 @@ angular.module('wegas.models.users', [])
                 }
             }).success(function(data) {
                 if (data.events !== undefined && data.events.length === 0) {
-                    data.entities[0].account = data.entities[0].accounts[0];
+                    data.updatedEntities[0].account = data.updatedEntities[0].accounts[0];
                     $translate('COMMONS-USERS-FULL-LOAD-FLASH-SUCCESS').then(function(message) {
-                        deferred.resolve(Responses.success(message, data.entities[0]));
+                        deferred.resolve(Responses.success(message, data.updatedEntities[0]));
                     });
                 } else {
                     if (data.events !== undefined) {
@@ -225,7 +225,7 @@ angular.module('wegas.models.users', [])
 
             var deferred = $q.defer();
 
-            console.log(user.password !== user.password2);
+            //console.log(user.password !== user.password2);
             if (user.password !== user.password2 && user.password !== null &&
                 user.password !== undefined && user.password2 !== null && user.password2 !== undefined) {
                 $translate('COMMONS-USERS-UPDATE-PASSWORD-FLASH-ERROR').then(function(message) {
@@ -246,12 +246,15 @@ angular.module('wegas.models.users', [])
                 })
                 .success(function(data) {
                     if (data.events !== undefined && data.events.length === 0) {
+                        /*
                         $translate('COMMONS-USERS-UPDATE-FLASH-SUCCESS').then(function(message) {
-                            deferred.resolve(Responses.success(message, data.entities[0]));
+                            deferred.resolve(Responses.success(message, data.updatedEntities[0]));
                         });
+                        */
+                        deferred.resolve();
                     } else {
                         if (data.events !== undefined) {
-                            console.log("WEGAS LOBBY : Error while updating profil");
+                            console.log("WEGAS LOBBY : Error while updating profile");
                             console.log(data.events);
                         }
                         $translate('COMMONS-USERS-UPDATE-FLASH-ERROR').then(function(message) {
@@ -260,7 +263,7 @@ angular.module('wegas.models.users', [])
                     }
                 }).error(function(data) {
                 if (data.events !== undefined) {
-                    console.log("WEGAS LOBBY : Error while updating profil");
+                    console.log("WEGAS LOBBY : Error while updating profile");
                     console.log(data.events);
                 }
                 $translate('COMMONS-USERS-UPDATE-FLASH-ERROR').then(function(message) {
@@ -286,7 +289,7 @@ angular.module('wegas.models.users', [])
                         users.cache.data = uncacheUser(user);
 
                         $translate('COMMONS-USERS-DELETE-FLASH-SUCCESS').then(function(message) {
-                            deferred.resolve(Responses.success(message, data.entities));
+                            deferred.resolve(Responses.success(message, data.updatedEntities));
                         });
                     } else {
                         if (data.events !== undefined) {

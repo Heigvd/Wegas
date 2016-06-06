@@ -11,12 +11,16 @@ angular.module('wegas.directives.search.users', [
             callback: "=",
             placeholder: "@",
             inputStyle: "@",
-            restrictRoles: "="
+            restrictRoles: "=",
+            exclude: "="
         },
         link: function(scope, element, attrs) {
             function suggestObj(term) {
+                var pt = this;
+                pt.exclude = scope.exclude;
                 return UsersModel.autocomplete(term, scope.restrictRoles).then(function(matches) {
-                    var results = [];
+                    var results = [],
+                        excludes = pt.exclude;
 
                     function highlight(str, term) {
                         var highlightRegex = new RegExp('(' + term + ')', 'gi');
@@ -24,15 +28,29 @@ angular.module('wegas.directives.search.users', [
                             '<strong>$1</strong>');
                     }
 
+                    function alreadyMember(userId){
+                        if (!excludes) return false;
+                        if (typeof excludes==="function")
+                            excludes = excludes();
+
+                        for (var i = 0; i<excludes.length; i++){
+                            if (userId==excludes[i].id)
+                                return true;
+                        }
+                        return false;
+                    }
+
                     for (var i = 0; i < matches.length; i++) {
                         var user = matches[i];
+                        if (alreadyMember(user.id)) continue;
                         results.push({
                             value: user.name + '('+user.email+')',
                             obj: user,
                             label:
                             '<div class="row">' +
                             ' <div class="col-xs-6">' +
-                            '  ' + highlight(user.name, term) +
+                            '  ' + highlight(user.name, term) + ' &nbsp;(' +
+                                   highlight(user.username, term) + ')' +
                             ' </div>' +
                             ' <div class="col-xs-6 text-right">' +
                             highlight(user.email, term) +

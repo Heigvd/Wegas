@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * @see com.wegas.core.ejb.RequestManager . Available view are "Index",
  * "Public", "Private" and "Export", "Editor" and "PrivatEditor"
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Provider
 @PreMatching
@@ -78,7 +78,7 @@ public class ViewRequestFilter implements ContainerRequestFilter {
 
         // Handle language parameter
         if (cr.getHeaderString("lang") != null
-            && !cr.getHeaderString("lang").isEmpty()) {
+                && !cr.getHeaderString("lang").isEmpty()) {
             rmf.setLocale(new Locale(cr.getHeaderString("lang")));
         } else if (cr.getHeaderString("Accept-Language") != null && !cr.getHeaderString("Accept-Language").isEmpty()) {
             rmf.setLocale(new Locale(cr.getHeaderString("Accept-Language")));
@@ -123,12 +123,12 @@ public class ViewRequestFilter implements ContainerRequestFilter {
         }
 
         logger.info("Start Request Processing [" + uniqueIdentifier
-            + "] for user::player::team("
-            + (currentUser != null ? userFacade.getCurrentUser().getId() : "anonymous") + "::"
-            + (currentPlayer != null ? currentPlayer.getId() : "n/a") + "::"
-            + (currentTeam != null ? currentTeam.getId() : "n/a") + "::"
-            + "): " /* + userAgent */ + " " + cr.getMethod() + ": "
-            + cr.getUriInfo().getPath());
+                + "] for user::player::team("
+                + (currentUser != null ? userFacade.getCurrentUser().getId() : "anonymous") + "::"
+                + (currentPlayer != null ? currentPlayer.getId() : "n/a") + "::"
+                + (currentTeam != null ? currentTeam.getId() : "n/a") + "::"
+                + "): " /* + userAgent */ + " " + cr.getMethod() + ": "
+                + cr.getUriInfo().getPath());
 
         try {
             cr.setRequestUri(new URI(newUri));
@@ -149,7 +149,7 @@ public class ViewRequestFilter implements ContainerRequestFilter {
     /**
      *
      * @param str
-     * @return
+     * @return Views.Class matching str or public
      */
     public Class stringToView(String str) {
         switch (str) {

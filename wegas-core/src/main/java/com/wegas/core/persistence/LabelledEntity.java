@@ -14,14 +14,15 @@ package com.wegas.core.persistence;
 public interface LabelledEntity {
 
     /**
+     * Get the entity label. Label is the name to be displayed to end-users
      * 
-     * @return 
+     * @return entity label
      */
-    public String getLabel();
+    String getLabel();
 
     /**
-     * 
-     * @param newLabel
+     * Set entity label
+     * @param newLabel the new label to set
      */
-    public void setLabel(String newLabel);
+    void setLabel(String newLabel);
 }

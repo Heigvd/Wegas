@@ -7,6 +7,7 @@
  */
 package com.wegas.mcq.ejb;
 
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.*;
 import com.wegas.core.event.internal.DescriptorRevivedEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -15,7 +16,6 @@ import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.mcq.persistence.*;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,14 +25,13 @@ import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.naming.NamingException;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import javax.persistence.TypedQuery;
 
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
 @LocalBean
@@ -79,22 +78,34 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      *
      * @param choiceDescriptor
      * @param name
-     * @return
-     * @throws WegasNoResultException
+     * @return the given ChoiceDescriptor Result that matches the name
+     * @throws WegasNoResultException if not found
      */
     public Result findResult(final ChoiceDescriptor choiceDescriptor, final String name) throws WegasNoResultException {
-        final CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        final CriteriaQuery cq = cb.createQuery();
-        Root<Result> result = cq.from(Result.class);
-        cq.where(cb.and(
-                cb.equal(result.get("choiceDescriptor"), choiceDescriptor),
-                cb.like(result.get("name"), name)));
-        final Query q = getEntityManager().createQuery(cq);
+        if (!Helper.isNullOrEmpty(name)) {
+            for (Result result : choiceDescriptor.getResults()) {
+                if (name.equals(result.getName())) {
+                    return result;
+                }
+            }
+        }
+
+        throw new WegasNoResultException("Result \"" + name + "\" not found");
+    }
+
+    public Result findResultTQ(final ChoiceDescriptor choiceDescriptor, final String name) throws WegasNoResultException {
+        final TypedQuery<Result> query = getEntityManager().createNamedQuery("Result.findByName", Result.class);
+        query.setParameter("choicedescriptor", choiceDescriptor);
+        query.setParameter("name", name);
         try {
-            return (Result) q.getSingleResult();
+            return query.getSingleResult();
         } catch (NoResultException ex) {
             throw new WegasNoResultException(ex);
         }
+    }
+
+    public Result findResult(Long id) {
+        return this.getEntityManager().find(Result.class, id);
     }
 
     /**
@@ -105,19 +116,22 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
 
         if (event.getEntity() instanceof ChoiceDescriptor) {
             ChoiceDescriptor choice = (ChoiceDescriptor) event.getEntity();
-            ChoiceInstance defaultInstance = ((ChoiceInstance) choice.getDefaultInstance());
+            ChoiceInstance defaultInstance = choice.getDefaultInstance();
             if (defaultInstance.getDeserializedCurrentResultName() != null && !defaultInstance.getDeserializedCurrentResultName().isEmpty()) {
                 try {
                     Result cr = findResult(choice, defaultInstance.getDeserializedCurrentResultName());
-                    defaultInstance.setCurrentResult(cr);
+                    choice.changeCurrentResult(defaultInstance, cr);
+                    //defaultInstance.setCurrentResult(cr);
                 } catch (WegasNoResultException ex) {
                     throw WegasErrorMessage.error("Error while setting current result");
                 }
             } else if (defaultInstance.getCurrentResultIndex() != null
                     && defaultInstance.getCurrentResultIndex() >= 0
                     && defaultInstance.getCurrentResultIndex() < choice.getResults().size()) {
+
                 Result cr = choice.getResults().get(defaultInstance.getCurrentResultIndex());
-                defaultInstance.setCurrentResult(cr);
+                //defaultInstance.setCurrentResult(cr);
+                choice.changeCurrentResult(defaultInstance, cr);
             }
         }
     }
@@ -129,20 +143,23 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         super(ChoiceDescriptor.class);
     }
 
+    public Reply findReply(Long id) {
+        return this.getEntityManager().find(Reply.class, id);
+    }
+
     /**
      * @param replyId
      * @param r
-     * @return
+     * @return the updated reply
      */
     public Reply updateReply(Long replyId, Reply r) {
-        final Reply oldEntity = this.getEntityManager().find(Reply.class, replyId);
+        final Reply oldEntity = this.findReply(replyId);
         oldEntity.merge(r);
         return oldEntity;
     }
 
     /**
-     * @return 
-     * @deprecated @param instanceId
+     * @return @deprecated @param instanceId
      */
     public int findReplyCount(Long instanceId) {
         final Query query = getEntityManager().createQuery("SELECT COUNT(r) FROM Reply r WHERE r.questionInstance.id = :id");
@@ -154,21 +171,22 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         }
     }
 
-
     /**
+     * Create an ignoration Reply
+     *
      * @param choiceId
      * @param player
-     * @return
+     * @return new reply
      */
     public Reply ignoreChoice(Long choiceId, Player player) {
 
         ChoiceDescriptor choice = getEntityManager().find(ChoiceDescriptor.class, choiceId);
         QuestionDescriptor questionDescriptor = choice.getQuestion();
-        if (!questionDescriptor.getCbx()){
+        if (!questionDescriptor.getCbx()) {
             logger.error("ignoreChoice() invoked on a Question which is not of checkbox type");
         }
 
-        Reply reply = questionSingleton.createReply(choiceId, player, -1L); // Negative startTime: hack to signal ignoration
+        Reply reply = questionSingleton.createReplyTransactional(choiceId, player, -1L); // Negative startTime: hack to signal ignoration
         try {
             scriptEvent.fire(player, "replyIgnore", new ReplyValidate(reply));
         } catch (WegasScriptException e) {
@@ -179,26 +197,28 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     }
 
     /**
-     * @param choiceId
-     * @param player
-     * @param startTime
-     * @return
+     * create a reply for given player based on given choice
+     *
+     * @param choiceId  selected choice
+     * @param player    player who select the choice
+     * @param startTime time the player select the choice
+     * @return the new reply
      */
     public Reply selectChoice(Long choiceId, Player player, Long startTime) {
 
         ChoiceDescriptor choice = getEntityManager().find(ChoiceDescriptor.class, choiceId);
         QuestionDescriptor questionDescriptor = choice.getQuestion();
         // Verify if mutually exclusive replies must be cancelled:
-        if (questionDescriptor.getCbx() && !questionDescriptor.getAllowMultipleReplies()){
+        if (questionDescriptor.getCbx() && !questionDescriptor.getAllowMultipleReplies()) {
             for (Reply r : questionDescriptor.getInstance(player).getReplies()) {
-                if (!r.getResult().getChoiceDescriptor().equals(choice) &&
-                        !r.getIgnored()) {
+                if (!r.getResult().getChoiceDescriptor().equals(choice)
+                        && !r.getIgnored()) {
                     this.cancelReply(player.getId(), r.getId());
                 }
             }
         }
-        
-        Reply reply = questionSingleton.createReply(choiceId, player, startTime);
+
+        Reply reply = questionSingleton.createReplyTransactional(choiceId, player, startTime);
         try {
             scriptEvent.fire(player, "replySelect", new ReplyValidate(reply));
         } catch (WegasScriptException e) {
@@ -210,28 +230,35 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     }
 
     /**
+     * {@link #selectChoice(java.lang.Long, java.lang.Long, java.lang.Long) selectChoice}
+     * with startTime = 0
+     *
      * @param choiceId
      * @param playerId
-     * @return
+     * @return the new reply
      */
     public Reply selectChoice(Long choiceId, Long playerId) {
         return this.selectChoice(choiceId, playerFacade.find(playerId), (long) 0);
     }
 
     /**
-     * @param choiceId
-     * @param playerId
-     * @param startTime
-     * @return
+     * @param choiceId  selected choice id
+     * @param playerId  id of player who select the choice
+     * @param startTime time the player select the choice
+     * @return the new reply
      */
     public Reply selectChoice(Long choiceId, Long playerId, Long startTime) {
         return this.selectChoice(choiceId, playerFacade.find(playerId), startTime);
     }
 
     /**
-     * @param choiceId
-     * @param playerId
-     * @return
+     *
+     * {@link #selectChoice(java.lang.Long, com.wegas.core.persistence.game.Player, java.lang.Long)  selectChoice} + {@link #validateReply(com.wegas.core.persistence.game.Player, java.lang.Long)  validateReply}
+     * in one shot
+     *
+     * @param choiceId selected choice id
+     * @param playerId id of player who select the choice
+     * @return the new validated reply
      */
     public Reply selectAndValidateChoice(Long choiceId, Long playerId) {
         Player player = playerFacade.find(playerId);
@@ -240,85 +267,35 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
             this.validateReply(player, reply.getId());
         } catch (WegasRuntimeException e) {
             logger.error("CANCEL REPLY", e);
-            this.cancelReplyTransactionnal(playerId, reply.getId());
+            this.cancelReplyTransactional(playerId, reply.getId());
             throw e;
         }
         return reply;
     }
 
     /**
-     * FOR TEST USAGE ONLY
      *
-     * @param choiceId
-     * @param playerId
-     * @return
-     * @throws WegasRuntimeException
+     * @param playerId id of player who wants to cancel the reply
+     * @param replyId  id of reply to cancel
+     * @return reply being canceled
      */
-    public Reply selectAndValidateChoiceTEST(Long choiceId, Long playerId) throws WegasRuntimeException {
-        Reply reply = this.selectChoiceTEST(choiceId, playerFacade.find(playerId), (long) 0);
-        try {
-            this.validateReply(playerId, reply.getId());
-        } catch (WegasRuntimeException e) {
-            this.cancelReply(playerId, reply.getId());
-            throw e;
-        }
-
-        requestFacade.commit();
-        return reply;
-    }
-
-    /**
-     * FOR TEST USAGE ONLY
-     *
-     * @param choiceId
-     * @param player
-     * @param startTime
-     * @return
-     */
-    public Reply selectChoiceTEST(Long choiceId, Player player, Long startTime) {
-        Reply reply = questionSingleton.createReplyUntransactionnal(choiceId, player, startTime);
-        try {
-            scriptEvent.fire(player, "replySelect", new ReplyValidate(reply));
-        } catch (WegasScriptException e) {
-            // GOTCHA no eventManager is instantiated
-            logger.error("EventListener error (\"replySelect\") (TEST)", e);
-        }
-
-        return reply;
-    }
-
-    /**
-     * @param playerId
-     * @param replyId
-     * @return
-     */
-    public Reply cancelReplyTransactionnal(Long playerId, Long replyId) {
-        Reply reply = questionSingleton.cancelReplyTransactionnal(playerId, replyId);
-        //try {
-        //scriptEvent.fire(playerFacade.find(playerId), "replyCancel", new ReplyValidate(reply));// Throw an event
-        //} catch (WegasRuntimeException e) {
-        // GOTCHA no eventManager is instantiated
-        //}
-        return reply;
-    }
-
-    /**
-     * @param playerId
-     * @param replyId
-     * @return
-     */
-    public Reply cancelReply(Long playerId, Long replyId) {
-
-        final Reply reply = getEntityManager().find(Reply.class, replyId);
-        getEntityManager().remove(reply);
-
+    public Reply cancelReplyTransactional(Long playerId, Long replyId) {
+        Reply reply = questionSingleton.cancelReplyTransactional(playerId, replyId);
         try {
             scriptEvent.fire(playerFacade.find(playerId), "replyCancel", new ReplyValidate(reply));// Throw an event
         } catch (WegasRuntimeException e) {
             // GOTCHA no eventManager is instantiated
         }
-
         return reply;
+    }
+
+    /**
+     * @param playerId id of player who wants to cancel the reply
+     * @param replyId  id of reply to cancel
+     * @return reply being canceled
+     */
+    public Reply cancelReply(Long playerId, Long replyId) {
+        return this.cancelReplyTransactional(playerId, replyId);
     }
 
     /**
@@ -330,16 +307,18 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         final ChoiceDescriptor choiceDescriptor = validateReply.getResult().getChoiceDescriptor();
         validateReply.setResult(choiceDescriptor.getInstance(player).getResult());// Refresh the current result
 
-        if (validateReply.getIgnored())
+        if (validateReply.getIgnored()) {
             scriptManager.eval(player, validateReply.getResult().getIgnorationImpact(), choiceDescriptor);
-        else    
+        } else {
             scriptManager.eval(player, validateReply.getResult().getImpact(), choiceDescriptor);
+        }
         final ReplyValidate replyValidate = new ReplyValidate(validateReply, choiceDescriptor.getInstance(player), validateReply.getQuestionInstance(), player);
         try {
-            if (validateReply.getIgnored())
+            if (validateReply.getIgnored()) {
                 scriptEvent.fire(player, "replyIgnore", replyValidate);
-            else
+            } else {
                 scriptEvent.fire(player, "replyValidate", replyValidate);
+            }
         } catch (WegasRuntimeException e) {
             logger.error("EventListener error (\"replyValidate\")", e);
             // GOTCHA no eventManager is instantiated
@@ -364,30 +343,30 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     }
 
     /**
-     * Validates a question that's marked as checkbox type: sequentially validates all replies (i.e. selected choices)
-     * and processes all other choices as "ignored".
-     * 
+     * Validates a question that's marked as checkbox type: sequentially
+     * validates all replies (i.e. selected choices) and processes all other
+     * choices as "ignored".
+     *
      * @param validateQuestion
      * @param player
      * @throws com.wegas.core.exception.client.WegasRuntimeException
      */
     public void validateQuestion(final QuestionInstance validateQuestion, final Player player) throws WegasRuntimeException {
-        
+
         final QuestionDescriptor questionDescriptor = (QuestionDescriptor) validateQuestion.getDescriptor();
-        if (!questionDescriptor.getCbx()){
+        if (!questionDescriptor.getCbx()) {
             logger.error("validateQuestion() invoked on a Question which is not of checkbox type");
             return;
         }
-        
+
         // Don't validate questions with no replies
-        if (validateQuestion.getReplies().isEmpty()){
+        if (validateQuestion.getReplies().isEmpty()) {
             throw new WegasErrorMessage(WegasErrorMessage.ERROR, "Please select a reply");
         }
 
         // Loop on all choices: validate all replies (checked choices) and "ignore" all unchecked choices.
         // NB: there should be only one reply per choice for each player.
-       
-        for (ChoiceDescriptor choice : questionDescriptor.getItems()){
+        for (ChoiceDescriptor choice : questionDescriptor.getItems()) {
             // Test if the current choice has been selected, i.e. there is a reply for it.
             boolean found = false;
             for (Reply r : validateQuestion.getReplies()) {
@@ -402,7 +381,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
                     break;
                 }
             }
-            if (!found){
+            if (!found) {
                 Reply ignoredReply = ignoreChoice(choice.getId(), player);
                 this.validateReply(player, ignoredReply);
             }
@@ -410,7 +389,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
 
         getEntityManager().refresh(validateQuestion);
         validateQuestion.setValidated(true);
-        getEntityManager().flush();
+        //getEntityManager().flush();
     }
 
     /**
@@ -427,6 +406,19 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      */
     public void validateQuestion(Long questionInstanceId, Long playerId) {
         this.validateQuestion(questionInstanceId, playerFacade.find(playerId));
+    }
+
+    @Override
+    public void create(ChoiceDescriptor entity) {
+        getEntityManager().persist(entity);
+        entity.getQuestion().addItem(entity);
+    }
+
+    @Override
+    public void remove(ChoiceDescriptor entity) {
+        logger.error("ICI *********************************************** ICI");
+        getEntityManager().remove(entity);
+        entity.getQuestion().remove(entity);
     }
 
     /**
@@ -459,7 +451,6 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
          * @param choice
          * @param question
          */
-
         public ReplyValidate(Reply reply, ChoiceInstance choice, QuestionInstance question, Player player) {
             this.reply = reply;
             this.choice = choice;
@@ -476,6 +467,17 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
             this.question = null;
             this.player = null;
         }
+    }
 
+    /**
+     * @return looked-up EJB
+     */
+    public static QuestionDescriptorFacade lookup() {
+        try {
+            return Helper.lookupBy(QuestionDescriptorFacade.class);
+        } catch (NamingException ex) {
+            logger.error("Error retrieving var inst f", ex);
+            return null;
+        }
     }
 }

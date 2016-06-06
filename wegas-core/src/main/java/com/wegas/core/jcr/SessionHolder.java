@@ -20,7 +20,7 @@ import javax.jcr.SimpleCredentials;
 
 /**
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Singleton
 @DependsOn("JackrabbitConnector")
@@ -37,7 +37,7 @@ public class SessionHolder {
      */
     public static Session getSession(String repository) throws RepositoryException {
         Session session;
-        final Repository repo = (Repository) new JackrabbitConnector().getRepo();
+        final Repository repo = new JackrabbitConnector().getRepo();
         try {
             session = repo.login(admin, repository);
         } catch (javax.jcr.NoSuchWorkspaceException ex) {

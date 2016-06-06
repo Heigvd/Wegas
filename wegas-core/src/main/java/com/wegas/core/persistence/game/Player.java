@@ -16,20 +16,23 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.security.ejb.UserFacade;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 @NamedQueries({
-    @NamedQuery(name = "findPlayerByGameId", query = "SELECT player FROM Player player WHERE player.team.game.id = :gameId"),
-    @NamedQuery(name = "findPlayerByGameIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.game.id = :gameId"),
-    @NamedQuery(name = "findPlayerByTeamIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.id = :teamId")
+    @NamedQuery(name = "Player.findPlayerByGameId", query = "SELECT player FROM Player player WHERE player.team.game.id = :gameId"),
+    @NamedQuery(name = "Player.findPlayerByGameIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.game.id = :gameId"),
+    @NamedQuery(name = "Player.findPlayerByTeamIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.id = :teamId")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Table(indexes = {
@@ -50,7 +53,7 @@ public class Player extends AbstractEntity implements Broadcastable {
 
     @JsonIgnore
     @OneToMany(mappedBy = "player", cascade = CascadeType.REMOVE)
-    private List<VariableInstance> privateInstances;
+    private List<VariableInstance> privateInstances = new ArrayList<>();
 
     /**
      *
@@ -93,15 +96,16 @@ public class Player extends AbstractEntity implements Broadcastable {
     public Player(String name) {
         this.name = name;
     }
+
     /**
-     * 
+     *
      * @param user
-     * @param team 
+     * @param team
      */
     public Player(User user, Team team) {
         this.name = user.getName();
         this.user = user;
-        this.userId =  user.getId();
+        this.userId = user.getId();
         this.team = team;
         this.teamId = team.getId();
     }
@@ -118,20 +122,12 @@ public class Player extends AbstractEntity implements Broadcastable {
         }
     }
 
-    /**
-     *
-     * @param a
-     */
     @Override
     public void merge(AbstractEntity a) {
         Player p = (Player) a;
         this.setName(p.getName());
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public Long getId() {
         return id;
@@ -173,22 +169,35 @@ public class Player extends AbstractEntity implements Broadcastable {
      * @return the teamId
      */
     public Long getTeamId() {
-        return teamId;
+        if (this.teamId == null && this.getTeam() != null) {
+            this.teamId = this.getTeam().getId();
+        }
+        return this.teamId;
+    }
+
+    /**
+     *
+     * @param teamId
+     */
+    public void setTeamId(Long teamId) {
+        this.teamId = teamId;
     }
 
     /**
      * @return the userId
      */
     public Long getUserId() {
-        return userId;
+        if (this.userId == null && this.getUser() != null) {
+            this.userId = this.getUser().getId();
+        }
+        return this.userId;
     }
 
     // *** Sugar *** //
     /**
      *
-     * @return
+     * @return gameModel the player is linked to
      */
-    //@XmlTransient
     @JsonIgnore
     public GameModel getGameModel() {
         return this.getTeam().getGame().getGameModel();
@@ -196,7 +205,7 @@ public class Player extends AbstractEntity implements Broadcastable {
 
     /**
      *
-     * @return
+     * @return id of gameModel the player is linked to
      */
     //@XmlTransient
     @JsonIgnore
@@ -206,9 +215,8 @@ public class Player extends AbstractEntity implements Broadcastable {
 
     /**
      *
-     * @return
+     * @return game the player is linked to
      */
-    //@XmlTransient
     @JsonIgnore
     public Game getGame() {
         return this.getTeam().getGame();
@@ -216,7 +224,7 @@ public class Player extends AbstractEntity implements Broadcastable {
 
     /**
      *
-     * @return
+     * @return id of the game the player is linked to
      */
     //@XmlTransient
     @JsonIgnore
@@ -253,13 +261,19 @@ public class Player extends AbstractEntity implements Broadcastable {
     }
 
     /**
-     * Retrieve all variableInstances that belongs to this player only (ie. playerScoped)
+     * Retrieve all variableInstances that belongs to this player only (ie.
+     * playerScoped)
+     *
      * @return all player playerScoped instances
      */
     public List<VariableInstance> getPrivateInstances() {
         return privateInstances;
     }
 
+    /**
+     *
+     * @param privateInstances
+     */
     public void setPrivateInstances(List<VariableInstance> privateInstances) {
         this.privateInstances = privateInstances;
     }
@@ -269,11 +283,6 @@ public class Player extends AbstractEntity implements Broadcastable {
         return "Player{" + this.getName() + ", " + this.getId() + ")";
     }
 
-    /**
-     *
-     * @param player
-     * @return
-     */
     @Override
     public boolean equals(Object player) {
         return super.equals(player) && this.hashCode() == player.hashCode();
@@ -283,17 +292,33 @@ public class Player extends AbstractEntity implements Broadcastable {
     public int hashCode() {
         int hash = 7;
         hash = 83 * hash + Objects.hashCode(this.id);
-        hash = 83 * hash + Objects.hashCode(this.user);
-        hash = 83 * hash + Objects.hashCode(this.userId);
+        //hash = 83 * hash + Objects.hashCode(this.user);
+        //hash = 83 * hash + Objects.hashCode(this.userId);
         hash = 83 * hash + Objects.hashCode(this.name);
         hash = 83 * hash + Objects.hashCode(this.joinTime);
-        hash = 83 * hash + Objects.hashCode(this.team);
-        hash = 83 * hash + Objects.hashCode(this.teamId);
+        //hash = 83 * hash + Objects.hashCode(this.team);
+        //hash = 83 * hash + Objects.hashCode(this.teamId);
         return hash;
     }
 
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
         return this.getTeam().getEntities();
+    }
+
+    @Override
+    public void updateCacheOnDelete() {
+        if (this.getUser() != null) {
+            User theUser = UserFacade.lookup().find(this.getUserId());
+            if (theUser != null) {
+                theUser.getPlayers().remove(this);
+            }
+        }
+        if (this.getTeam() != null) {
+            Team find = TeamFacade.lookup().find(this.getTeamId());
+            if (find != null) {
+                find.getPlayers().remove(this);
+            }
+        }
     }
 }

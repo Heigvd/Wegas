@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Contains script(s), tells scripts are contained in this object.
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public interface Scripted {
 
@@ -23,6 +23,6 @@ public interface Scripted {
      * @return List all contained scripts
      */
     @JsonIgnore
-    public List<Script> getScripts();
+    List<Script> getScripts();
 
 }

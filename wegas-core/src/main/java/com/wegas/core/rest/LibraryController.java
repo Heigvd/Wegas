@@ -17,10 +17,11 @@ import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.AuthorizationException;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/Library/")
@@ -43,7 +44,9 @@ public class LibraryController {
      *
      * @param gameModelId
      * @param library
-     * @return
+     * @return all gameModel given library entries
+     * @throws AuthorizationException current user doesn't have access to the
+     *                                gameModel
      */
     @GET
     @Path("{library:.*}")
@@ -60,7 +63,9 @@ public class LibraryController {
      * @param gameModelId
      * @param library
      * @param key
-     * @return
+     * @return up to date library entry content
+     * @throws AuthorizationException current user doesn't have access to the
+     *                                gameModel
      */
     @GET
     @Path("{library:.*}/{key : [a-zA-Z0-9_]+}")
@@ -79,7 +84,9 @@ public class LibraryController {
      * @param library
      * @param script
      * @param key
-     * @return p
+     * @return game model with the new library entry
+     * @throws AuthorizationException current user doesn't have access to the
+     *                                gameModel
      */
     @POST
     @Path("{library:.*}/{key : [a-zA-Z0-9_]+}")
@@ -99,7 +106,9 @@ public class LibraryController {
      * @param gameModelId
      * @param library
      * @param key
-     * @return
+     * @return gameModel with up to date library
+     * @throws AuthorizationException current user doesn't have access to the
+     *                                gameModel
      */
     @DELETE
     @Path("{library:.*}/{key : [a-zA-Z0-9_]+}")

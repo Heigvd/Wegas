@@ -10,7 +10,6 @@ package com.wegas.core.jcr.page;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.wegas.core.AlphanumericComparator;
-import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +19,7 @@ import javax.jcr.RepositoryException;
 import java.util.*;
 
 /**
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 //@XmlRootElement
 public class Pages implements AutoCloseable {
@@ -72,10 +71,7 @@ public class Pages implements AutoCloseable {
 
     public Boolean pageExist(String id) throws RepositoryException {
         final Node child = this.connector.getChild(this.gameModelId, id);
-        if (child == null) {
-            return false;
-        }
-        return true;
+        return child != null;
     }
 
     /**

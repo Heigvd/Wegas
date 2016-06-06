@@ -11,7 +11,7 @@ package com.wegas.core.event.internal.lifecycle;
 import com.wegas.core.persistence.AbstractEntity;
 
 /**
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 abstract class LifeCycleEvent<K extends AbstractEntity> {
 

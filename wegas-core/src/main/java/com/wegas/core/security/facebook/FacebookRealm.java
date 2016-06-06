@@ -26,7 +26,7 @@ import org.apache.shiro.subject.PrincipalCollection;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class FacebookRealm extends AuthorizingRealm {
 
@@ -36,10 +36,7 @@ public class FacebookRealm extends AuthorizingRealm {
 
     @Override
     public boolean supports(AuthenticationToken token) {
-        if (token instanceof FacebookToken) {
-            return true;
-        }
-        return false;
+        return token instanceof FacebookToken;
     }
 
     @Override

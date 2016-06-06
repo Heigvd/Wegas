@@ -1,4 +1,5 @@
-<input class="input input--small" type="text" ng-model="newTeam.name" placeholder="{{'PLAYER-MODALE-JOIN-TEAM-CREATE-INPUT' | translate}}" />
+<input class="input input--small" type="text" ng-model="newTeam.name" placeholder="{{'PLAYER-MODALE-JOIN-TEAM-CREATE-INPUT' | translate}}"
+       ng-keyup="$event.keyCode == 13 && newTeam.name.length != 0 && create()"/>
 <a class="button button--create-team button--default" ng-click="create()" ng-class="{true:'button--disable'}[newTeam.alreadyUsed || newTeam.name.length == 0]">
         {{'PLAYER-MODALE-JOIN-TEAM-CREATE-BTN' | translate}}
 </a>

@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/Script/")
@@ -96,14 +96,14 @@ public class ScriptController {
      * @param variableDescritptorId
      * @param script
      *
-     * @return p
+     * @return whatever the evaluated script returns
      */
     @POST
     @Path("Run/{playerId : [1-9][0-9]*}{sep: /?}{variableDescriptorId : ([1-9][0-9]*)?}")
     public Object run(@PathParam("gameModelId") Long gameModelId,
-        @PathParam("playerId") Long playerId,
-        @PathParam("variableDescriptorId") Long variableDescritptorId,
-        Script script) {
+            @PathParam("playerId") Long playerId,
+            @PathParam("variableDescriptorId") Long variableDescritptorId,
+            Script script) {
 
         Player thePlayer = playerFacade.find(playerId);
         Team theTeam;
@@ -111,13 +111,13 @@ public class ScriptController {
         GameModel theGameModel;
 
         if ((thePlayer != null)
-            && ((theTeam = thePlayer.getTeam()) != null)
-            && ((theGame = theTeam.getGame()) != null)
-            && ((theGameModel = theGame.getGameModel()) != null)
-            && (Objects.equals(theGameModel.getId(), gameModelId))
-            && (SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + gameModelId)
-            || SecurityUtils.getSubject().isPermitted("Game:Edit:g" + theGame.getId())
-            || userFacade.matchCurrentUser(playerId))) {
+                && ((theTeam = thePlayer.getTeam()) != null)
+                && ((theGame = theTeam.getGame()) != null)
+                && ((theGameModel = theGame.getGameModel()) != null)
+                && (Objects.equals(theGameModel.getId(), gameModelId))
+                && (SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + gameModelId)
+                || SecurityUtils.getSubject().isPermitted("Game:Edit:g" + theGame.getId())
+                || userFacade.matchCurrentUser(playerId))) {
 
             VariableDescriptor context;
             if (variableDescritptorId != null && variableDescritptorId > 0) {
@@ -137,21 +137,22 @@ public class ScriptController {
 
     /**
      * @param gameModelId
+     * @param variableDescritptorId
      * @param multiplayerScripts
      *
-     * @return
+     * @return list of whatever the evaluated script returns
      */
     @POST
     @Path("Multirun{sep: /?}{variableDescriptorId : ([1-9][0-9]*)?}")
     public List<Object> multirun(@PathParam("gameModelId") Long gameModelId,
-        @PathParam("variableDescriptorId") Long variableDescritptorId,
-        HashMap<String, Object> multiplayerScripts) throws WegasScriptException {
+            @PathParam("variableDescriptorId") Long variableDescritptorId,
+            HashMap<String, Object> multiplayerScripts) throws WegasScriptException {
 
         Script script = new Script();
         ArrayList<Integer> playerIdList = (ArrayList<Integer>) multiplayerScripts.get("playerIdList");
         script.setLanguage(((HashMap<String, String>) multiplayerScripts.get("script")).get("language"));
         script.setContent(((HashMap<String, String>) multiplayerScripts.get("script")).get("content"));
-        ArrayList<Object> results = new ArrayList();
+        ArrayList<Object> results = new ArrayList<>();
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
@@ -186,17 +187,17 @@ public class ScriptController {
         Player player = gmf.find(gameModelId).getPlayers().get(0);
         Map<Long, WegasScriptException> ret = new HashMap<>();
         findAll.stream().filter((descriptor) -> (descriptor instanceof Scripted))
-            .forEach((VariableDescriptor vd) -> {
-                ((Scripted) vd).getScripts().stream().filter(script -> script != null)
-                    .anyMatch((Script script) -> {
-                        WegasScriptException validate = scriptCheck.validate(script, player, vd);
-                        if (validate != null) {
-                            ret.put(vd.getId(), validate);
-                            return true;
-                        }
-                        return false;
-                    });
-            });
+                .forEach((VariableDescriptor vd) -> {
+                    ((Scripted) vd).getScripts().stream().filter(script -> script != null)
+                            .anyMatch((Script script) -> {
+                                WegasScriptException validate = scriptCheck.validate(script, player, vd);
+                                if (validate != null) {
+                                    ret.put(vd.getId(), validate);
+                                    return true;
+                                }
+                                return false;
+                            });
+                });
 
         return ret;
     }

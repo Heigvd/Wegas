@@ -14,6 +14,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Singleton;
+import javax.ejb.Startup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +27,7 @@ import org.slf4j.LoggerFactory;
  */
 @Singleton
 @LocalBean
+@Startup
 public class MutexSingleton {
 
     public class RefCounterLock {
@@ -47,12 +49,10 @@ public class MutexSingleton {
 
     /**
      * Acquire the lock only if it's not held by another thread at invocation
-     * time
      * time.
      *
      * THE CALLING THREAD WILL NEVER BEEING BLOCKED WITHIN THIS METHOD AND WILL
-     * RETURN
-     * EVENT IF IT HAS NOT SUCCESSFULY ACQUIRED THE LOCK !!!
+     * RETURN EVEN IF IT HAS NOT SUCCESSFULY ACQUIRED THE LOCK !!!
      *
      * @param token lock identifier
      * @return true if the lock has been successfully acquired, false otherwise
@@ -82,10 +82,10 @@ public class MutexSingleton {
     /**
      * Acquire the lock only if it's not held by another thread.
      *
-     * The method will return only when the lock will be hell by the calling
+     * The method will return only when the lock will be held by the calling
      * thread.
      *
-     * @param token
+     * @param token lock identifier
      */
     @Lock(LockType.READ)
     public void lock(String token) {
@@ -106,8 +106,8 @@ public class MutexSingleton {
     /**
      * Some internal method to cleanly unlock the lock
      *
-     * @param lock
-     * @param token
+     * @param lock the lock to unlock
+     * @param token lock identifier
      */
     private void unlock(RefCounterLock lock, String token) {
         lock.sem.unlock();
@@ -122,7 +122,7 @@ public class MutexSingleton {
     /**
      * Unlock the lock once
      *
-     * @param token
+     * @param token lock identifier
      */
     @javax.ejb.Lock(LockType.READ)
     public void unlock(String token) {
@@ -138,7 +138,7 @@ public class MutexSingleton {
     /**
      * Force to completely release the lock
      *
-     * @param token
+     * @param token lock identifier
      */
     @javax.ejb.Lock(LockType.READ)
     public void unlockFull(String token) {

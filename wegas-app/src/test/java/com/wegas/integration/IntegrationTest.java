@@ -104,11 +104,11 @@ public class IntegrationTest {
 
     public void login() throws IOException {
         HttpPost post = new HttpPost(baseURL + "/rest/User/Authenticate");
-        String content = "{\"@class\" : \"AuthenticationInformation\","+
-                "\"login\": \"root@root.com\"," +
-                "\"password\": \"1234\"," +
-                "\"remember\": \"true\"" +
-                "}";
+        String content = "{\"@class\" : \"AuthenticationInformation\","
+                + "\"login\": \"root@root.com\","
+                + "\"password\": \"1234\","
+                + "\"remember\": \"true\""
+                + "}";
 
         StringEntity strEntity = new StringEntity(content);
         strEntity.setContentType("application/json");
@@ -127,7 +127,7 @@ public class IntegrationTest {
     private void loadArtos() throws IOException, JSONException {
         String postJSONFromFile = postJSONFromFile("/rest/GameModel", "src/main/webapp/wegas-private/wegas-pmg/db/wegas-pmg-gamemodel-Artos.json");
         JSONObject jsonObject = new JSONObject(postJSONFromFile);
-        JSONArray jsonArray = jsonObject.getJSONArray("entities");
+        JSONArray jsonArray = jsonObject.getJSONArray("updatedEntities");
         this.artosId = jsonArray.getJSONObject(0).getLong("id");
     }
 
@@ -189,9 +189,40 @@ public class IntegrationTest {
     }
 
     @Test
+    public void testUpdateAndCreateGame() throws IOException, JSONException {
+        String postJSONFromFile = postJSONFromFile("/rest/GameModel", "src/test/resources/gmScope.json");
+        JSONObject jsonObject = new JSONObject(postJSONFromFile);
+        JSONArray jsonArray = jsonObject.getJSONArray("updatedEntities");
+        Long gmId = jsonArray.getJSONObject(0).getLong("id");
+
+        postJSON("/rest/GameModel/" + gmId + "/Game", "{\"@class\":\"Game\",\"gameModelId\":\"" + gmId + "\",\"access\":\"OPEN\",\"name\":\"My Test Game\"}");
+    }
+
+    @Test
+    public void createGameTest() throws IOException, JSONException {
+        String postJSON = postJSON("/rest/GameModel/" + this.artosId + "/Game", "{\"@class\":\"Game\",\"gameModelId\":\"" + this.artosId + "\",\"access\":\"OPEN\",\"name\":\"My Artos Game\"}");
+        JSONObject response = new JSONObject(postJSON);
+        JSONArray entities = response.getJSONArray("updatedEntities");
+        Long gameId = entities.getJSONObject(0).getLong("id");
+
+        String httpGetAsJSON = httpGetAsJSON("/rest/GameModel/Game/" + gameId);
+
+        response = new JSONObject(httpGetAsJSON);
+        entities = response.getJSONArray("updatedEntities");
+
+        JSONArray teams = (JSONArray) entities.getJSONObject(0).get("teams");
+
+        /* Is the debug team present */
+        Assert.assertEquals(1, teams.length());
+        JSONArray players = teams.getJSONObject(0).getJSONArray("players");
+
+        Assert.assertEquals(1, players.length());
+    }
+
+    @Test
     public void abstractAssignTest() throws IOException, JSONException {
         JSONObject artosJson = new JSONObject(httpGetAsJSON("/rest/GameModel/" + this.artosId + "/VariableDescriptor"));
-        artosJson.getJSONArray("entities");
+        artosJson.getJSONArray("updatedEntities");
     }
 
     @Test

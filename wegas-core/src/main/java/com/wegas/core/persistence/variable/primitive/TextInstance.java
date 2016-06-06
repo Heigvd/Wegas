@@ -20,7 +20,7 @@ import javax.persistence.Lob;
 import java.util.List;
 
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 public class TextInstance extends VariableInstance implements Searchable {

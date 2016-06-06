@@ -8,6 +8,7 @@
 package com.wegas.core.ejb;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wegas.core.Helper;
 import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
 import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
@@ -18,8 +19,10 @@ import com.wegas.core.jcr.content.AbstractContentDescriptor;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.ContentConnectorFactory;
 import com.wegas.core.persistence.game.DebugGame;
+import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.GameModel.Status;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -30,6 +33,8 @@ import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.User;
 import org.apache.shiro.SecurityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
@@ -38,21 +43,19 @@ import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
-import javax.persistence.*;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import javax.naming.NamingException;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
+import javax.persistence.TypedQuery;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
 @LocalBean
@@ -111,18 +114,15 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         super(GameModel.class);
     }
 
-    /**
-     * @param entity
-     */
     @Override
     public void create(final GameModel entity) {
-        super.create(entity);
+
+        getEntityManager().persist(entity);
 
         final User currentUser = userFacade.getCurrentUser();
         entity.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
 
-        this.getEntityManager().flush();
-        variableDescriptorFacade.reviveItems(entity);                           // Revive entities
+        variableDescriptorFacade.reviveItems(entity, entity, true);                           // Revive entities
         createdGameModelEvent.fire(new EntityCreated<>(entity));
         userFacade.getCurrentUser().addPermission("GameModel:View,Edit,Delete,Duplicate,Instantiate:gm" + entity.getId());
         userFacade.getCurrentUser().addPermission("GameModel:Duplicate:gm" + entity.getId());
@@ -130,19 +130,37 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
+     * Add a DebugGame (and debug team) within the given game model unless it
+     * already exists
+     *
+     * @param gameModel
+     * @return true if a new debugGame has been added, false if the gameModel
+     *         already has one
+     */
+    public boolean addDebugGame(GameModel gameModel) {
+        if (!gameModel.hasDebugGame()) {
+            DebugGame debugGame = new DebugGame();
+            debugGame.addTeam(new DebugTeam());
+
+            this.addGame(gameModel, debugGame);
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * @param gm
      */
     public void createWithDebugGame(final GameModel gm) {
         this.create(gm);
-        this.addGame(gm, new DebugGame());
+        this.addDebugGame(gm);
     }
 
     /**
-     *
      * @param toUpdate GameModel to update
      * @param source   GameModel to fetch instance from
      * @param player   instances owner
-     * @return
+     * @return the gameModel with default instance merged with player's ones
      */
     public GameModel setDefaultInstancesFromPlayer(GameModel toUpdate, GameModel source, Player player) {
         try {
@@ -159,20 +177,32 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         }
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @param playerId
+     * @return the gameModel with default instance merged with player's ones
+     */
     public GameModel setDefaultInstancesFromPlayer(Long gameModelId, Long playerId) {
         return setDefaultInstancesFromPlayer(this.find(gameModelId), this.find(gameModelId), playerFacade.find(playerId));
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @param playerId
+     * @return a new gameModel with default instance merged with player's ones
+     */
     public GameModel createFromPlayer(Long gameModelId, Long playerId) {
         try {
             GameModel duplicata = this.duplicate(gameModelId);
-            this.getEntityManager().flush();
+            //this.getEntityManager().flush();
 
             GameModel source = this.find(gameModelId);
             Player player = playerFacade.findLive(playerId);
             setDefaultInstancesFromPlayer(duplicata, source, player);
 
-            this.addGame(duplicata, new DebugGame());
+            this.addDebugGame(duplicata);
 
             return duplicata;
         } catch (IOException ex) {
@@ -186,7 +216,8 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      */
     public void addGame(final GameModel gameModel, final Game game) {
         gameModel.addGame(game);
-        this.reset(gameModel);                                                  // Reset the game model
+        // Should reset the new game only? nope ?  -> gameFacade.reset(game.getId());
+        this.reset(gameModel);
     }
 
     @Asynchronous
@@ -194,25 +225,11 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         this.remove(id);
     }
 
-    @Override
-    public void remove(final Long id) {
-        userFacade.deleteUserPermissionByInstance("gm" + id);
-        userFacade.deleteRolePermissionsByInstance("gm" + id);
-
-        for (Game g : this.find(id).getGames()) {
-            userFacade.deleteUserPermissionByInstance("g" + g.getId());
-            userFacade.deleteRolePermissionsByInstance("g" + g.getId());
-        }
-        preRemovedGameModelEvent.fire(new PreEntityRemoved<>(this.find(id)));
-        super.remove(id);
-        this.flush();
-    }
-
     /**
      * Find a unique name for this new game (e.g. Oldname(1))
      *
      * @param oName
-     * @return
+     * @return new unique name
      */
     public String findUniqueName(String oName) {
         int suffix = 2;
@@ -233,17 +250,17 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     public GameModel duplicate(final Long entityId) throws IOException {
         final GameModel srcGameModel = this.find(entityId);                     // Retrieve the entity to duplicate
         if (srcGameModel != null) {
-            final GameModel newGameModel = (GameModel) srcGameModel.duplicate();    // Duplicate it
+            final GameModel newGameModel = (GameModel) srcGameModel.duplicate();
 
-            newGameModel.setName(this.findUniqueName(srcGameModel.getName()));      // Find a unique name for this new game (e.g. Oldname(1))
-            this.create(newGameModel);                                              // Create the new game model
+            newGameModel.setName(this.findUniqueName(srcGameModel.getName()));
+            this.create(newGameModel);
 
             try {                                                                   // Clone files and pages
                 ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(newGameModel.getId());
                 connector.cloneWorkspace(srcGameModel.getId());
                 newGameModel.setPages(srcGameModel.getPages());
             } catch (RepositoryException ex) {
-                System.err.println(ex);
+                logger.error("Duplicating repository {} failure, {}", entityId, ex.getMessage());
             }
 
             return newGameModel;
@@ -254,65 +271,76 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
     /**
      * @param gameModelId
-     * @return
+     * @return gameModel copy
      * @throws IOException
      */
     public GameModel duplicateWithDebugGame(final Long gameModelId) throws IOException {
         GameModel gm = this.duplicate(gameModelId);
-        this.addGame(gm, new DebugGame());
+        this.addDebugGame(gm);
 //        userFacade.duplicatePermissionByInstance("gm" + gameModelId, "gm" + gm.getId());
         return gm;
     }
 
     @Override
     public void remove(final GameModel gameModel) {
-        super.remove(gameModel);
+        final Long id = gameModel.getId();
+        userFacade.deleteUserPermissionByInstance("gm" + id);
+        userFacade.deleteRolePermissionsByInstance("gm" + id);
+
+        for (Game g : this.find(id).getGames()) {
+            userFacade.deleteUserPermissionByInstance("g" + g.getId());
+            userFacade.deleteRolePermissionsByInstance("g" + g.getId());
+        }
+        preRemovedGameModelEvent.fire(new PreEntityRemoved<>(this.find(id)));
+        getEntityManager().remove(gameModel);
         //Remove jcr repo.
         // @TODO : in fact, removes all files but not the workspace.
         // @fx Why remove files? The may be referenced in other workspaces
         try (ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(gameModel.getId())) {
             connector.deleteWorkspace();
         } catch (RepositoryException ex) {
-            System.err.println(ex);
+            logger.error("Error suppressing repository {}, {}", id, ex.getMessage());
         }
     }
 
     /**
-     * Set gameModel status, changing to {@link GameModel.Status#LIVE}
+     * Set gameModel status, changing to {@link Status#LIVE}
      *
      * @param entity GameModel
      */
     public void live(GameModel entity) {
-        entity.setStatus(GameModel.Status.LIVE);
+        entity.setStatus(Status.LIVE);
     }
 
     /**
-     * Set gameModel status, changing to {@link GameModel.Status#BIN}
+     * Set gameModel status, changing to {@link Status#BIN}
      *
      * @param entity GameModel
      */
     public void bin(GameModel entity) {
-        entity.setStatus(GameModel.Status.BIN);
+        entity.setStatus(Status.BIN);
     }
 
     /**
-     * Set gameModel status, changing to {@link GameModel.Status#DELETE}
+     * Set gameModel status, changing to {@link Status#DELETE}
      *
      * @param entity GameModel
      */
     public void delete(GameModel entity) {
-        entity.setStatus(GameModel.Status.DELETE);
+        entity.setStatus(Status.DELETE);
     }
 
     @Override
     public List<GameModel> findAll() {
-        final CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
-        final CriteriaQuery query = criteriaBuilder.createQuery();
-        Root e = query.from(entityClass);
-        query.select(e).orderBy(criteriaBuilder.asc(e.get("name")));
-        return getEntityManager().createQuery(query).getResultList();
+        final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findAll", GameModel.class);
+        return query.getResultList();
     }
 
+    /**
+     *
+     * @param status
+     * @return all gameModel matching the given status
+     */
     public List<GameModel> findByStatus(final GameModel.Status status) {
         final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findByStatus", GameModel.class);
         query.setParameter("status", status);
@@ -320,39 +348,28 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
-     * @return
+     * Template gameModels are editable scenrios
+     *
+     * @return all template GameModels
      */
     public List<GameModel> findTemplateGameModels() {
-        final CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
-        final CriteriaQuery query = criteriaBuilder.createQuery();
-        Root e = query.from(entityClass);
-        query.select(e)
-            .where(criteriaBuilder.isTrue(e.get("template")))
-            .orderBy(criteriaBuilder.asc(e.get("name")));
-        return getEntityManager().createQuery(query).getResultList();
+        final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findTemplate", GameModel.class);
+        return query.getResultList();
     }
 
     /**
-     * @return
+     * @return all teamplate gameModel matching the given status
      */
     public List<GameModel> findTemplateGameModelsByStatus(final GameModel.Status status) {
-        final CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
-        final CriteriaQuery query = criteriaBuilder.createQuery();
-
-        Root e = query.from(entityClass);
-        query.select(e)
-            .where(criteriaBuilder.and(
-                criteriaBuilder.equal(e.get("status"), status),
-                criteriaBuilder.isTrue(e.get("template"))))
-            .orderBy(criteriaBuilder.asc(e.get("name")));
-        return getEntityManager().createQuery(query).getResultList();
+        final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findTemplateByStatus", GameModel.class);
+        query.setParameter("status", status);
+        return query.getResultList();
     }
 
     /**
      * @param name
-     * @return
-     * @throws NoResultException
-     * @throws com.wegas.core.exception.internal.WegasNoResultException
+     * @return the gameModel with the given name
+     * @throws WegasNoResultException gameModel not exists
      */
     public GameModel findByName(final String name) throws NonUniqueResultException, WegasNoResultException {
         final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findByName", GameModel.class);
@@ -376,10 +393,10 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      */
     public void reset(final GameModel gameModel) {
         // Need to flush so prepersit events will be thrown (for example Game will add default teams)
-        getEntityManager().flush();
-        gameModel.propagateGameModel();
+        //getEntityManager().flush();
+        //gameModel.propagateGameModel();  -> propagation is now done automatically after descriptor creation
         gameModel.propagateDefaultInstance(gameModel);
-        getEntityManager().flush(); // DA FU    ()
+        //getEntityManager().flush();
         // Send an reset event (for the state machine and other)
         resetEvent.fire(new ResetEvent(gameModel));
     }
@@ -398,8 +415,8 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         }
 
         fileController.createFile(gameModelId, name + ".json", "/" + HISTORYPATH,
-            "application/octet-stream", null, null,
-            new ByteArrayInputStream(serializedGameModel.getBytes("UTF-8")), false);// Create a file containing the version
+                "application/octet-stream", null, null,
+                new ByteArrayInputStream(serializedGameModel.getBytes("UTF-8")), false);// Create a file containing the version
     }
 
     /**
@@ -440,8 +457,8 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
             if (!found) {
                 this.createVersion(model.getId(),
-                    new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date()) + "-" + hash + ".json",
-                    serialized);
+                        new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date()) + "-" + hash + ".json",
+                        serialized);
             }
 
             //System.gc();
@@ -449,9 +466,11 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
+     * create gameModel from a JSON version file
+     *
      * @param gameModelId
      * @param path
-     * @return
+     * @return the new gameModel
      * @throws IOException
      */
     public GameModel createFromVersion(Long gameModelId, String path) throws IOException {
@@ -477,5 +496,17 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      */
     public final void nop(String msg) {
         // for JS breakpoints...
+    }
+
+    /**
+     * @return looked-up EJB
+     */
+    public static GameModelFacade lookup() {
+        try {
+            return Helper.lookupBy(GameModelFacade.class);
+        } catch (NamingException ex) {
+            logger.error("Error retrieving gamemodelfacade", ex);
+            return null;
+        }
     }
 }

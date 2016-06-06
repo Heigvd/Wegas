@@ -1,8 +1,7 @@
-<h3><i class="fa fa-gamepad"></i><span>{{'PLAYER-INDEX-LIST-TITLE' | translate}}</span></h3>
-<a title="{{'PLAYER-INDEX-ADD-TITLE' | translate}}"
-   class="view__button-expand button button--small button--info-reverse" expander>
-    <span class="button__label">{{'PLAYER-INDEX-ADD-TITLE' | translate}}</span>
-</a>
+<h3 id="player-sessions-title">{{'PLAYER-INDEX-LIST-TITLE' | translate}}</h3>
+  <a id="player-join-session-button" class="button button--small button--success-reverse non-collapsible-expander-button" expander >
+      <span class="button__label"><i class="fa fa-plus-circle same-color-larger">&nbsp;</i>{{'PLAYER-INDEX-JOIN-LINK' | translate}}</span>
+  </a>
 <div class="view__list view__list--loading" ng-if="loading"
      content-loading="{{'COMMONS-SESSIONS-LOADING' | translate}}"></div>
 <div class="view__list" ng-if="!loading && teams.length > 0">

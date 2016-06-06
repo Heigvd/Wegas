@@ -11,6 +11,7 @@ A Web Game Authoring System for rapid development of serious games without progr
 *   Dominique Jaccard dominique.jaccard@heig-vd.ch 
 *   Cyril Junod cyril.junod@gmail.com
 *   Maxence Laurent maxence.laurent@gmail.com
+*   Jarle Hulaas jarle.hulaas@heig-vd.ch
 *   Raphaël Schmutz raphael.schmutz@heig-vd.ch
 *   Francois-Xavier Aeberhard fx@red-agent.com
 *   Yannick Lagger lagger.yannick@gmail.com
@@ -18,5 +19,5 @@ A Web Game Authoring System for rapid development of serious games without progr
 *   Anthony Geiser anthony.geiser@he-arc.ch
 
 ### License
-Copyright (C) 2013,2014, 2015 School of Business and Engineering Vaud, Comem  
+Copyright (C) 2013-2016 School of Business and Engineering, University of Applied Sciences of Western Switzerland.  
 Wegas is released under the [MIT License](http://www.opensource.org/licenses/MIT)

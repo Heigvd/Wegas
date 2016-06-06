@@ -8,17 +8,14 @@
 package com.wegas.resourceManagement.rest;
 
 import com.wegas.resourceManagement.ejb.ResourceFacade;
-import com.wegas.resourceManagement.persistence.AbstractAssignement;
-import com.wegas.resourceManagement.persistence.Assignment;
-import com.wegas.resourceManagement.persistence.Occupation;
 import com.wegas.resourceManagement.persistence.ResourceInstance;
-import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.resourceManagement.persistence.TaskInstance;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -26,7 +23,7 @@ import javax.ws.rs.core.MediaType;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/ResourceDescriptor/")
@@ -38,37 +35,43 @@ public class ResourceController {
     private ResourceFacade resourceFacade;
 
     /**
+     * Assign a resource to a task
      *
      * @param resourceInstanceId
-     * @param data
+     * @param taskDescriptorId
      */
     @POST
-    @Path("AbstractAssign/{resourceId : [1-9][0-9]*}")
-    public void save(@PathParam("resourceId") Long resourceInstanceId, AbstractAssignement data) {
-        resourceFacade.addAbstractAssignement(resourceInstanceId, data);
+    @Path("Assign/{resourceId : [1-9][0-9]*}/{taskDescriptorId : [1-9][0-9]*}")
+    public void addAssignment(
+            @PathParam("resourceId") Long resourceInstanceId,
+            @PathParam("taskDescriptorId") Long taskDescriptorId
+    ) {
+        resourceFacade.assign(resourceInstanceId, taskDescriptorId);
     }
 
     /**
+     * Change assignment priority
      *
-     * @param abstractAssignementId
-     * @param type
+     * @param assignmentId
+     * @param index
+     * @return the resourceInstance with up to date assignment order
+     */
+    @PUT
+    @Path("MoveAssignment/{assignmentId : [1-9][0-9]*}/{index : [0-9]*}")
+    public ResourceInstance moveAssignment(@PathParam("assignmentId") Long assignmentId, @PathParam("index") Integer index) {
+        return resourceFacade.moveAssignment(assignmentId, index);
+    }
+
+    /**
+     * Unassign a resource from a task
+     *
+     * @param assignmentId
+     * @return the resourceInstance with up to date assignments
      */
     @DELETE
-    @Path("AbstractRemove/{abstractAssignementId : [1-9][0-9]*}/{type}")
-    public void delete(@PathParam("abstractAssignementId") Long abstractAssignementId,
-            @PathParam("type") String type) {
-        resourceFacade.removeAbstractAssignement(abstractAssignementId, type);
-    }
-
-    /**
-     *
-     * @param resourceInstanceId
-     * @param task
-     */
-    @POST
-    @Path("Assign/{resourceId : [1-9][0-9]*}")
-    public void addAssignment(@PathParam("resourceId") Long resourceInstanceId, TaskDescriptor task) {
-        resourceFacade.addAbstractAssignement(resourceInstanceId, new Assignment(task));
+    @Path("Assign/{assignmentId : [1-9][0-9]*}")
+    public ResourceInstance removeAssignment(@PathParam("assignmentId") Long assignmentId) {
+        return resourceFacade.removeAssignment(assignmentId);
     }
 
     /**
@@ -79,38 +82,27 @@ public class ResourceController {
     @POST
     @Path("Reserve/{resourceId : [1-9][0-9]*}/{time : [1-9][0-9]*}")
     public void addReservation(@PathParam("resourceId") Long resourceInstanceId, @PathParam("time") double time) {
-        resourceFacade.addAbstractAssignement(resourceInstanceId, new Occupation(time));
+        resourceFacade.addOccupation(resourceInstanceId, true, time);
     }
 
     /**
      *
-     * @param assignmentId
-     * @param index
-     * @return
-     */
-    @POST
-    @Path("MoveAssignment/{assignmentId : [1-9][0-9]*}/{index : [0-9]*}")
-    public ResourceInstance moveAssignment(@PathParam("assignmentId") Long assignmentId, @PathParam("index") Integer index) {
-        return resourceFacade.moveAssignment(assignmentId, index);
-    }
-
-    /**
+     * @param occupationId
      *
-     * @param assignmentId
-     * @return
      */
     @DELETE
-    @Path("RemoveAssignment/{assignmentId : [1-9][0-9]*}")
-    public ResourceInstance removeAssignment(@PathParam("assignmentId") Long assignmentId) {
-        return resourceFacade.removeAssignment(assignmentId);
+    @Path("Reserve/{occupationId : [1-9][0-9]*}")
+    public void deleteReservation(@PathParam("occupationId") Long occupationId) {
+        resourceFacade.removeOccupation(occupationId);
     }
 
     /**
+     * Plan a task to be worked on at the given period number
      *
      * @param playerId
      * @param taskInstanceId
      * @param period
-     * @return
+     * @return TaskInstance with new planning
      */
     @POST
     @Path("Player/{playerId : [1-9][0-9]*}/Plan/{taskInstanceId : [1-9][0-9]*}/{period : [0-9]*}")
@@ -124,7 +116,7 @@ public class ResourceController {
      * @param playerId
      * @param taskInstanceId
      * @param period
-     * @return
+     * @return TaskInstance with new planning
      */
     @DELETE
     @Path("Player/{playerId : [1-9][0-9]*}/Plan/{taskInstanceId : [1-9][0-9]*}/{periode : [0-9]*}")

@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 //@XmlRootElement
 abstract public class AbstractContentDescriptor {
@@ -123,7 +123,7 @@ abstract public class AbstractContentDescriptor {
 
     /**
      *
-     * @return
+     * @return true is this is a directory
      */
     public Boolean isDirectory() {
         return this.mimeType.equals(DirectoryDescriptor.MIME_TYPE);
@@ -131,7 +131,7 @@ abstract public class AbstractContentDescriptor {
 
     /**
      *
-     * @return
+     * @return the MIME type
      */
     public String getMimeType() {
         return mimeType;
@@ -139,7 +139,7 @@ abstract public class AbstractContentDescriptor {
 
     /**
      *
-     * @return
+     * @return the name
      */
     public String getName() {
         return name;
@@ -164,7 +164,7 @@ abstract public class AbstractContentDescriptor {
 
     /**
      *
-     * @return
+     * @return path
      */
     public String getPath() {
         return path;
@@ -172,7 +172,7 @@ abstract public class AbstractContentDescriptor {
 
     /**
      *
-     * @return
+     * @return full path
      */
     //@XmlTransient
     @JsonIgnore
@@ -195,7 +195,7 @@ abstract public class AbstractContentDescriptor {
 
     /**
      *
-     * @return
+     * @return note
      */
     public String getNote() {
         return note;
@@ -211,7 +211,7 @@ abstract public class AbstractContentDescriptor {
 
     /**
      *
-     * @return
+     * @return description
      */
     public String getDescription() {
         return description;
@@ -225,17 +225,25 @@ abstract public class AbstractContentDescriptor {
         this.description = description == null ? "" : description;
     }
 
+    /**
+     *
+     * @return true if this is private
+     */
     public Boolean isPrivateContent() {
         return privateContent;
     }
 
+    /**
+     *
+     * @param privateContent
+     */
     public void setPrivateContent(Boolean privateContent) {
         this.privateContent = privateContent;
     }
 
     /**
      *
-     * @return
+     * @return true if is synched
      */
     //@XmlTransient
     @JsonIgnore
@@ -245,7 +253,8 @@ abstract public class AbstractContentDescriptor {
 
     /**
      *
-     * @return @throws RepositoryException
+     * @return truc if node exists
+     * @throws RepositoryException
      */
     //@XmlTransient
     @JsonIgnore
@@ -255,7 +264,8 @@ abstract public class AbstractContentDescriptor {
 
     /**
      *
-     * @return @throws RepositoryException
+     * @return true is this has children
+     * @throws RepositoryException
      */
     //@XmlTransient
     @JsonIgnore
@@ -287,7 +297,7 @@ abstract public class AbstractContentDescriptor {
     /**
      *
      * @param file
-     * @return
+     * @return the child
      * @throws RepositoryException
      */
     //@XmlTransient
@@ -301,7 +311,7 @@ abstract public class AbstractContentDescriptor {
 
     /**
      *
-     * @return
+     * @return node size
      */
     public Long getBytes() {
         return 0L;
@@ -373,7 +383,6 @@ abstract public class AbstractContentDescriptor {
      *
      * @return
      */
-    //@XmlTransient
     @JsonIgnore
     protected ZipEntry getZipEntry() {
         ZipEntry desc = new ZipEntry(this.getFullPath());
@@ -410,7 +419,8 @@ abstract public class AbstractContentDescriptor {
     }
 
     /**
-     * Convert name and path to a fileSystemAbsolutePath, including namespace ({@value WFSConfig#WeGAS_FILE_SYSTEM_PREFIX})
+     * Convert name and path to a fileSystemAbsolutePath, including namespace
+     * ({@value WFSConfig#WeGAS_FILE_SYSTEM_PREFIX})
      */
     //@XmlTransient
     @JsonIgnore

@@ -16,10 +16,10 @@ class LogIdSelector extends React.Component {
     }
 
     render() {
-        const {logIds} = this.props;
+        const { logIds } = this.props;
         const options = logIds.map((logId) => ({
-                value: logId,
-                label: logId,
+            value: logId,
+            label: logId,
         }));
         return (
             <ReactSelect multi={ false }
@@ -33,6 +33,6 @@ LogIdSelector.contextTypes = {
     history: PropTypes.object,
 };
 export default connect(state => ({
-        status: state.logIds.status,
-        logIds: state.logIds.value,
+    status: state.logIds.status,
+    logIds: state.logIds.value,
 }))(LogIdSelector);

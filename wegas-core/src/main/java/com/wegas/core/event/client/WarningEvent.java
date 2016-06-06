@@ -9,7 +9,7 @@ package com.wegas.core.event.client;
 
 /**
  * @deprecated Useless and dirty
- * @author Yannick Lagger <lagger.yannick@gmail.com>
+ * @author Yannick Lagger (lagger.yannick.com)
  */
 public class WarningEvent extends CustomEvent {
 

@@ -22,17 +22,16 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
-import javax.persistence.PrePersist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 @JsonPropertyOrder(value = {"@class", "id", "name"})
-public class GameModelScope extends AbstractScope {
+public class GameModelScope extends AbstractScope<GameModel> {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(GameModelScope.class);
@@ -47,9 +46,9 @@ public class GameModelScope extends AbstractScope {
     /**
      *
      */
-    @PrePersist
+    //@PrePersist
     public void prePersist() {
-        this.propagateDefaultInstance(null);
+        //this.propagateDefaultInstance(null);
     }
 
     @Override
@@ -57,7 +56,8 @@ public class GameModelScope extends AbstractScope {
         VariableDescriptor vd = this.getVariableDescriptor();
         VariableInstance vi = this.getVariableInstance();
         if (vi == null) {
-            this.setVariableInstance(Long.valueOf(0), vd.getDefaultInstance().clone());
+            VariableInstance clone = vd.getDefaultInstance().clone();
+            this.setVariableInstance(gameModel, clone);
         } else {
             vi.merge(vd.getDefaultInstance());
         }
@@ -69,7 +69,7 @@ public class GameModelScope extends AbstractScope {
      */
     @JsonIgnore
     @Override
-    public void propagateDefaultInstance(Object context) {
+    public void propagateDefaultInstance(AbstractEntity context) {
         if (context instanceof Player) {
             // Since player's gamemodel already exists, nothing to propagate
         } else if (context instanceof Team) {
@@ -86,9 +86,9 @@ public class GameModelScope extends AbstractScope {
      * @return
      */
     @Override
-    public Map<Long, VariableInstance> getVariableInstances() {
-        Map<Long, VariableInstance> ret = new HashMap<>();
-        ret.put(Long.valueOf("0"), getVariableInstance());
+    public Map<GameModel, VariableInstance> getVariableInstances() {
+        Map<GameModel, VariableInstance> ret = new HashMap<>();
+        ret.put(null, getVariableInstance());
         return ret;
     }
 
@@ -116,7 +116,7 @@ public class GameModelScope extends AbstractScope {
      * @param v
      */
     @Override
-    public void setVariableInstance(Long userId, VariableInstance v) {
+    public void setVariableInstance(GameModel key, VariableInstance v) {
         this.setVariableInstance(v);
         v.setGameModelScope(this);
     }
@@ -140,7 +140,7 @@ public class GameModelScope extends AbstractScope {
     }
 
     @Override
-    public Map<Long, VariableInstance> getPrivateInstances() {
+    public Map<GameModel, VariableInstance> getPrivateInstances() {
         return this.getVariableInstances();
     }
 }

@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Stateless
 @LocalBean
@@ -151,5 +151,15 @@ public class AdminFacade extends BaseFacade<GameAdmin> {
             this.deleteGame(ga);
         }
         
+    }
+
+    @Override
+    public void create(GameAdmin entity) {
+        getEntityManager().persist(entity);
+    }
+
+    @Override
+    public void remove(GameAdmin entity) {
+        getEntityManager().remove(entity);
     }
 }

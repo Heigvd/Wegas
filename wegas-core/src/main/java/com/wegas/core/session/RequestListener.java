@@ -7,15 +7,12 @@
  */
 package com.wegas.core.session;
 
-import com.sun.faces.application.resource.ResourceCache;
-import com.sun.faces.config.WebConfiguration;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletRequestEvent;
 import javax.servlet.ServletRequestListener;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class RequestListener implements ServletRequestListener {
 

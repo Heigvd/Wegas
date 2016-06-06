@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
 @LocalBean
@@ -85,7 +85,8 @@ public class RequestFacade {
 
     /**
      *
-     * @return @deprecated
+     * @return current request view
+     * @deprecated
      */
     public Class getView() {
         return this.requestManager.getView();
@@ -111,7 +112,7 @@ public class RequestFacade {
 
     /**
      *
-     * @return
+     * @return Looked-up EJB
      */
     public static RequestFacade lookup() {
         try {
@@ -130,6 +131,10 @@ public class RequestFacade {
      * @param player
      */
     public void commit(Player player) {
+        /*
+         * Flush is required to triggered EntityListener's lifecycles events which populate 
+         * requestManager touched (deleted, updated and so on) entities
+         */
         em.flush();
         if (requestManager.getUpdatedEntities().size() > 0 || scriptEvent.isEventFired()) {
             playerActionEvent.fire(new PlayerAction(player));
@@ -161,7 +166,10 @@ public class RequestFacade {
              // }
              // PlayerAction action = new PlayerAction();
              // playerActionEvent.fire(action);
-             }*/
+             }
+             */
+
+            // TODO Test whether this flush is required when a state machine triggered such an other one
             em.flush();
         }
     }
@@ -198,15 +206,17 @@ public class RequestFacade {
 
     /**
      *
-     * @return
+     * @return all entities which were updated during the transaction
      */
     public Map<String, List<AbstractEntity>> getUpdatedEntities() {
         return requestManager.getUpdatedEntities();
     }
 
     /**
+     * An outdated entity in an entity we know clients do not have the last
+     * version and we can not figure out how to send them the updated one
      *
-     * @return
+     * @return all entities marked as outdated during the transaction
      */
     public Map<String, List<AbstractEntity>> getOutdatedEntities() {
         return requestManager.getOutdatedEntities();
@@ -214,7 +224,7 @@ public class RequestFacade {
 
     /*
      *
-     * @return
+     * @return all entities which were destroyed during the transaction
      */
     public Map<String, List<AbstractEntity>> getDestroyedEntities() {
         return requestManager.getDestroyedEntities();

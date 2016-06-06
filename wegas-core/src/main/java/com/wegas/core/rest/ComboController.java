@@ -7,7 +7,6 @@
  */
 package com.wegas.core.rest;
 
-import com.hazelcast.spi.exception.ResponseAlreadySentException;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.internal.WegasForbiddenException;
 import com.wegas.core.rest.util.CacheManagerHolder;
@@ -25,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.servlet.ServletContext;
@@ -48,7 +46,9 @@ import org.slf4j.LoggerFactory;
  * This servlet allows to retrieve several resources in a single request. Used
  * to combine .js and .css files.
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
+ */
+/*
  * @todo Resulting files should be cached. For example check
  * https://github.com/smaring/javascript-combo-service/blob/master/src/main/java/org/maring/util/js/JavascriptComboService.java
  */
@@ -89,7 +89,7 @@ public class ComboController {
      * Retrieve
      *
      * @param req
-     * @return
+     * @return HTTP 200 with requested data or HTTP forbidden response
      * @throws IOException
      */
     @GET
@@ -158,7 +158,7 @@ public class ComboController {
                 throw new WegasForbiddenException("Trying to access a blacklisted content");
             }
             try {
-                InputStream fis = (InputStream) servletContext.getResourceAsStream(fileName);
+                InputStream fis = servletContext.getResourceAsStream(fileName);
                 String content = IOUtils.toString(fis, Helper.getWegasProperty("encoding"));
                 //String content = new Scanner(fis, Helper.getWegasProperty("encoding"))
                 //.useDelimiter("\\A").next();                                  // Use a fake delimiter to read all lines at once

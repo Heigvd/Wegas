@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
@@ -151,7 +151,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
      */
     @Transient
     public double getDefaultValue() {
-        return ((NumberInstance) this.getDefaultInstance()).getValue();
+        return this.getDefaultInstance().getValue();
     }
 
     /**

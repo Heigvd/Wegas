@@ -18,11 +18,10 @@ import org.xml.sax.*;
 /**
  * Serilalize SAX Events to outputStream
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class XMLSerializer implements ContentHandler {
 
-    private final TransformerFactory tf = TransformerFactory.newInstance();
     private ContentHandler ch;
     private Boolean started = false;
 
@@ -33,6 +32,7 @@ public class XMLSerializer implements ContentHandler {
      */
     public XMLSerializer(OutputStream os) throws SAXException {
         try {
+            TransformerFactory tf = TransformerFactory.newInstance();
             final Transformer t = tf.newTransformer();
             t.transform(new SAXSource(new XMLReader() {
                 @Override

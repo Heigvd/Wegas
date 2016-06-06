@@ -13,7 +13,7 @@ import java.util.List;
 
 /**
  *
- * @author Yannick Lagger <lagger.yannick at gmail.com>
+ * @author Yannick Lagger (lagger.yannick at gmail.com)
  */
 public class OutdatedEntitiesEvent extends ClientEvent {
 

@@ -12,6 +12,7 @@ export function fetchGamesForLogId() {
         );
     };
 }
+
 export function fetchVariables(gameId) {
     return (dispatch) => {
         getGameModelForGame(gameId)
@@ -22,6 +23,7 @@ export function fetchVariables(gameId) {
                 }));
     };
 }
+
 export function fetchGames() {
     return dispatch => {
         getGames()

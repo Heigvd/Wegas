@@ -138,7 +138,7 @@ angular.module('wegas.models.permissions', [])
                 }
             }).success(function(data) {
                 if (data.events !== undefined && data.events.length === 0) {
-                    var permissions = mapPermissions(data.entities);
+                    var permissions = mapPermissions(data.updatedEntities);
                     $translate('COMMONS-PERMISSIONS-SCENARIOS-UPDATE-FLASH-SUCCESS').then(function(message) {
                         deferred.resolve(Responses.success(message, permissions));
                     });

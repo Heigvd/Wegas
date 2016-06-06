@@ -7,11 +7,9 @@
  */
 package com.wegas.core.exception.client;
 
-import com.wegas.core.persistence.variable.VariableDescriptor;
-
 /**
  *
- * @author Maxence Laurent <maxence.laurent gmail.com>
+ * @author Maxence Laurent <maxence.laurent at gmail.com>
  */
 public class WegasOutOfBoundException extends WegasRuntimeException {
 

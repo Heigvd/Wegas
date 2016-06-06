@@ -9,7 +9,7 @@ const CHART_BAR_OPT = {
     height: 400,
     axisY: {
         labelInterpolationFnc: function label(value) {
-            return value ? value + '%' : '<b>0%</b>';
+            return value ? `${value}%` : '<b>0%</b>';
         },
         scaleMinSpace: 20,
         onlyInteger: true,
@@ -45,25 +45,28 @@ function inlineSvgStyle(node) {
         currentNode.setAttribute('style', getComputedStyle(currentNode).cssText);
         currentNode = tw.nextNode();
     }
+    return node;
 }
-function svgToPng(node) {
-    inlineSvgStyle(node);
-    return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.src = 'data:image/svg+xml;base64,' + btoa(window.unescape(encodeURIComponent((new XMLSerializer()).serializeToString(node))));
-        img.onload = function onload() {
-            const can = document.createElement('canvas');
-            const ctx = can.getContext('2d');
-            const target = new Image();
-            can.width = img.width;
-            can.height = img.height;
-            ctx.drawImage(img, 0, 0, img.width, img.height);
-            target.src = can.toDataURL();
-            resolve(target);
-        };
-        img.onerror = reject;
-    });
-}
+
+// function svgToPng(node) {
+//     inlineSvgStyle(node);
+//     return new Promise((resolve, reject) => {
+//         const img = new Image();
+//         img.src = 'data:image/svg+xml;base64,' +
+//         btoa(window.unescape(encodeURIComponent((new XMLSerializer()).serializeToString(node))));
+//         img.onload = function onload() {
+//             const can = document.createElement('canvas');
+//             const ctx = can.getContext('2d');
+//             const target = new Image();
+//             can.width = img.width;
+//             can.height = img.height;
+//             ctx.drawImage(img, 0, 0, img.width, img.height);
+//             target.src = can.toDataURL();
+//             resolve(target);
+//         };
+//         img.onerror = reject;
+//     });
+// }
 class Graph extends React.Component {
     constructor(props) {
         super(props);
@@ -98,7 +101,7 @@ class Graph extends React.Component {
 
     genAll() {
         const windowHandler = window.open();
-        const {groups, snapshot, logId} = this.props;
+        const { groups, snapshot, logId } = this.props;
         const tmpChart = new Chartist.Bar(this.refs.tmpChart, {
             labels: [],
             series: [],
@@ -122,13 +125,17 @@ class Graph extends React.Component {
                     tmpChart.update(data);
                     return data;
                 }).then(computeDiffs).then(data => tmpDiff.update(data)).then(() => {
-                    return Promise.all([svgToPng(tmpChart.container.firstChild), svgToPng(tmpDiff.container.firstChild)]);
+                    return Promise.all([
+                        inlineSvgStyle(tmpChart.container.firstChild),
+                        inlineSvgStyle(tmpDiff.container.firstChild),
+                    ]);
                 }).then(([chart, diff]) => {
                     const container = document.createElement('div');
-                    const label = JSON.search(snapshot, `//*[name="${question}"]/ancestor::*[@class="ListDescriptor"]`)
-                            .reduce((pre, cur) => {
-                                return `${pre}${cur.label} \u2192 `;
-                            }, '') + JSON.search(snapshot, `//*[@class='QuestionDescriptor'][name="${question}"]/label`)[0];
+                    const label = JSON.search(snapshot,
+                            `//*[name="${question}"]/ancestor::*[@class="ListDescriptor"]`)
+                            .reduce((pre, cur) => `${pre}${cur.label} → `, '') +
+                        JSON.search(snapshot,
+                            `//*[@class='QuestionDescriptor'][name="${question}"]/label`)[0];
                     container.setAttribute('style', 'white-space:nowrap');
                     container.innerHTML = `<div>${label}</div>`;
                     container.appendChild(chart);
@@ -148,13 +155,11 @@ class Graph extends React.Component {
     }
 
     render() {
-        const legends = this.props.groups.map((val, index) => {
-            return (
-                <span className={ 'color ct-series-' + String.fromCharCode(97 + index) }
-                      key={ index }
-                      style={ legendStyle }>{ 'Group ' + (index + 1) }</span>
-                );
-        });
+        const legends = this.props.groups.map((val, index) => (
+        <span className={ `color ct-series-${String.fromCharCode(97 + index)}` }
+              key={ index }
+              style={ legendStyle }>{ `Group ${(index + 1)}` }</span>
+        ));
         return (
             <div ref="box">
               <span className="legend">{ legends }</span>

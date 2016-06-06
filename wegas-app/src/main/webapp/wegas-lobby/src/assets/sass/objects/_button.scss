@@ -35,7 +35,7 @@
         }
     }
 
-    // Cache le label 
+    // Cache le label
     &.button--label-off{
         padding:$btn-default-size/3 $btn-default-size/2;
         .button__label{
@@ -123,11 +123,11 @@
             &.button--disable{
                 cursor:default;
                 opacity:.5;
-                
+
                 &:hover{
                     background-color:$type-color;
                 }
-                
+
                 .button__label{
                     cursor:default;
                 }
@@ -224,7 +224,7 @@
                 text-transform: none;
                 content: $icon-content;
             }
-            
+
             &.button--rotate{
                 overflow:hidden;
                 &:before{
@@ -248,5 +248,30 @@
     // Donne une ombre au bouton.
     &.button--shadow{
         @include material-shadow(2);
+    }
+
+    &.action--button{
+        background-color: #777;
+        margin-left: 14px;
+    }
+
+    &.busy-button{
+        background-color: #ddd
+    }
+    &.busy-button:before{
+        @extend .button--spinner;
+        @extend .button--rotate;
+        margin-left: 0;
+        cursor: default;
+    }
+
+    &.unclickable:hover{
+        background-color:transparent;
+    }
+    &.unclickable{
+        cursor:inherit !important;
+        & .button__label{
+            cursor:inherit !important;
+        }
     }
 }

@@ -76,6 +76,17 @@ angular.module('wegas.models.teams', [])
             teams.cache = null;
         };
 
+        /* Initialize an empty cache for a new player (right after signup) */
+        /* NB: does not work with upgraded Guest accounts !!
+        model.initCacheForNewPlayer = function() {
+            teams.cache = {
+                data: null,
+                loading: false
+            };
+            teams.cache.data = [];
+        }
+        */
+
         /* Ask for all teams for current user. */
         model.getTeams = function() {
             var deferred = $q.defer();
@@ -301,9 +312,9 @@ angular.module('wegas.models.teams', [])
                             }).success(
                                 function(data) {
                                     var i, team;
-                                    for (i = 0; i < data.entities.length; i += 1) {
-                                        if (data.entities[i]["@class"] === "Team") {
-                                            team = data.entities[i];
+                                    for (i = 0; i < data.updatedEntities.length; i += 1) {
+                                        if (data.updatedEntities[i]["@class"] === "Team") {
+                                            team = data.updatedEntities[i];
                                             break;
                                         }
                                     }
@@ -370,9 +381,9 @@ angular.module('wegas.models.teams', [])
                                 }
                             }).success(function(data) {
                                 var i, team;
-                                for (i = 0; i < data.entities.length; i += 1) {
-                                    if (data.entities[i]["@class"] === "Team") {
-                                        team = data.entities[i];
+                                for (i = 0; i < data.updatedEntities.length; i += 1) {
+                                    if (data.updatedEntities[i]["@class"] === "Team") {
+                                        team = data.updatedEntities[i];
                                         break;
                                     }
                                 }

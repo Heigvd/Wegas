@@ -29,7 +29,7 @@ import com.wegas.core.persistence.variable.Scripted;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 @Table(name = "MCQChoiceDescriptor",
@@ -103,10 +103,10 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
             this.setDuration(other.getDuration());
             this.setCost(other.getCost());
 
-            ListUtils.mergeReplace(this.getResults(), other.getResults());
+            this.setResults(ListUtils.mergeReplace(this.getResults(), other.getResults()));
 
             // Has currentResult been removed ?
-            ChoiceInstance defaultInstance = (ChoiceInstance) this.getDefaultInstance();
+            ChoiceInstance defaultInstance = this.getDefaultInstance();
             if (!this.getResults().contains(defaultInstance.getCurrentResult())) {
                 defaultInstance.setCurrentResult(null);
             }
@@ -151,8 +151,20 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
     public void setCurrentResult(Player player, String resultName) throws WegasNoResultException {
+        ChoiceInstance instance = this.getInstance(player);
         Result resultByName = getResultByName(resultName);
-        this.getInstance(player).setCurrentResult(resultByName);
+        this.changeCurrentResult(instance, resultByName);
+    }
+
+    public void changeCurrentResult(ChoiceInstance choiceInstance, Result newCurrentResult) {
+        Result previousResult = choiceInstance.getCurrentResult();
+        if (previousResult != null) {
+            previousResult.removeChoiceInstance(choiceInstance);
+        }
+
+        newCurrentResult.addChoiceInstance(choiceInstance);
+
+        choiceInstance.setCurrentResult(newCurrentResult);
     }
 
     /**
@@ -230,9 +242,10 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     }
 
     /**
+     * Is the player instance active ?
      *
      * @param p <p>
-     * @return
+     * @return player instance active status
      */
     public boolean isActive(Player p) {
         return this.getInstance(p).getActive();
@@ -309,7 +322,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
 
     @JsonIgnore
     @Override
-    public DescriptorListI getParent() {
+    public DescriptorListI<? extends VariableDescriptor> getParent() {
         if (this.getQuestion() != null) {
             return this.getQuestion();
         } else {
@@ -323,6 +336,10 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     @JsonBackReference
     public void setQuestion(QuestionDescriptor question) {
         this.question = question;
+        if (question != null) { // Hum... question should never be null...
+            this.setRootGameModel(null);
+            this.setParentList(null);
+        }
     }
 
     @Override

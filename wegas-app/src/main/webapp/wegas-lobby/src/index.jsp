@@ -13,7 +13,7 @@
         <!-- css files will be automaticaly insert here -->
         <!-- endinject -->
          <!-- bower:css -->
-        <link rel="stylesheet" href="bower_components/angular-loading-bar/src/loading-bar.css" />
+        <!-- link rel="stylesheet" href="bower_components/angular-loading-bar/src/loading-bar.css" / -->
         <!-- endbower -->
         <!-- endbuild -->
     </head>

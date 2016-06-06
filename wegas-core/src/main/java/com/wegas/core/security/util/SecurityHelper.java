@@ -15,7 +15,7 @@ import org.apache.shiro.authz.AuthorizationException;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public abstract class SecurityHelper {
 
@@ -32,10 +32,11 @@ public abstract class SecurityHelper {
     }
 
     /**
+     * Check if the current user has the given game permission
      *
      * @param game
-     * @param permission
-     * @return
+     * @param permission permission type (edit, read and so on)
+     * @return true if the current user has the permission
      */
     public static boolean isPermitted(final Game game, final String permission) {
         return SecurityUtils.getSubject().isPermitted("Game:" + permission + ":g" + game.getId())
@@ -43,10 +44,12 @@ public abstract class SecurityHelper {
     }
 
     /**
+     * Assert the current user has at least one permission in permissions for
+     * the given game
      *
      * @param game
      * @param permissions
-     * @throws AuthorizationException
+     * @throws AuthorizationException when the user doesn't have any permission
      */
     public static void checkAnyPermission(final Game game, final List<String> permissions) throws AuthorizationException {
         if (!SecurityHelper.isAnyPermitted(game, permissions)) {
@@ -58,7 +61,7 @@ public abstract class SecurityHelper {
      *
      * @param game
      * @param permissions
-     * @return
+     * @return true if the user has at least one permission
      * @throws AuthorizationException
      */
     public static Boolean isAnyPermitted(final Game game, final List<String> permissions) throws AuthorizationException {

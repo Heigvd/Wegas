@@ -9,12 +9,12 @@ export default function variables(
     },
     action) {
     switch (action.type) {
-        case FETCH_VARS:
-            return {
-                tree: upd(action.data, null),
-                snapshot: Defiant.getSnapshot(action.data),
-            };
-        default:
-            return state;
+    case FETCH_VARS:
+        return {
+            tree: upd(action.data, null),
+            snapshot: Defiant.getSnapshot(action.data),
+        };
+    default:
+        return state;
     }
 }

@@ -13,7 +13,7 @@ import net.sf.ehcache.CacheManager;
 
 /**
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Singleton
 public class CacheManagerHolder {

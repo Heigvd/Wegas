@@ -42,7 +42,7 @@ import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipOutputStream;
 
 /**
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Stateless
 @Path("GameModel/{gameModelId : ([1-9][0-9]*)?}/File")
@@ -74,7 +74,8 @@ public class FileController {
      * @param path
      * @param file
      * @param details
-     * @return
+     * @param force       ovveride
+     * @return HTTP 200 if everything ok, 4xx otherwise
      * @throws RepositoryException
      */
     @POST
@@ -82,13 +83,13 @@ public class FileController {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{force: (force/)?}upload{directory : .*?}")
     public Response upload(@PathParam("gameModelId") Long gameModelId,
-                           @FormDataParam("name") String name,
-                           @FormDataParam("note") String note,
-                           @FormDataParam("description") String description,
-                           @PathParam("directory") String path,
-                           @FormDataParam("file") InputStream file,
-                           @FormDataParam("file") FormDataBodyPart details,
-                           @PathParam("force") String force) throws RepositoryException {
+            @FormDataParam("name") String name,
+            @FormDataParam("note") String note,
+            @FormDataParam("description") String description,
+            @PathParam("directory") String path,
+            @FormDataParam("file") InputStream file,
+            @FormDataParam("file") FormDataBodyPart details,
+            @PathParam("force") String force) throws RepositoryException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
         logger.debug("File name: {}", details.getContentDisposition().getFileName());
@@ -131,15 +132,16 @@ public class FileController {
      * @param gameModelId
      * @param name
      * @param request
-     * @return
+     * @param range       partial content range
+     * @return the requested file with http 20x, 4xx if something went wrong
      */
     @GET
     @Path("read{absolutePath : .*?}")
     @CacheMaxAge(time = 48, unit = TimeUnit.HOURS)
     public Response read(@PathParam("gameModelId") Long gameModelId,
-                         @PathParam("absolutePath") String name,
-                         @Context Request request,
-                         @HeaderParam("Range") String range) {
+            @PathParam("absolutePath") String name,
+            @Context Request request,
+            @HeaderParam("Range") String range) {
 
         logger.debug("Asking file (/{})", name);
         AbstractContentDescriptor fileDescriptor;
@@ -240,7 +242,7 @@ public class FileController {
     /**
      * @param gameModelId
      * @param directory
-     * @return
+     * @return list of directory content
      */
     @GET
     @Path("list{absoluteDirectoryPath : .*?}")
@@ -269,7 +271,7 @@ public class FileController {
 
     /**
      * @param gameModelId
-     * @return
+     * @return xml repository export
      * @throws RepositoryException
      * @throws IOException
      */
@@ -297,7 +299,7 @@ public class FileController {
 
     /**
      * @param gameModelId
-     * @return
+     * @return gzipped XML repository export
      * @throws RepositoryException
      */
     @GET
@@ -330,7 +332,7 @@ public class FileController {
 
     /**
      * @param gameModelId
-     * @return
+     * @return ZIP repository export
      * @throws RepositoryException
      */
     @GET
@@ -358,7 +360,7 @@ public class FileController {
      * @param gameModelId
      * @param file
      * @param details
-     * @return
+     * @return imported repository elements
      * @throws RepositoryException
      * @throws IOException
      * @throws SAXException
@@ -370,8 +372,8 @@ public class FileController {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public List<AbstractContentDescriptor> importXML(@PathParam("gameModelId") Long gameModelId,
-                                                     @FormDataParam("file") InputStream file,
-                                                     @FormDataParam("file") FormDataBodyPart details)
+            @FormDataParam("file") InputStream file,
+            @FormDataParam("file") FormDataBodyPart details)
             throws RepositoryException, IOException, SAXException,
             ParserConfigurationException, TransformerException {
 
@@ -403,14 +405,16 @@ public class FileController {
      * @param gameModelId
      * @param absolutePath
      * @param force
-     * @return
+     * @return the destroyed element or HTTP not modified
+     * @throws WegasErrorMessage when deleting a non empty directory without
+     *                           force=true
      */
     @DELETE
     @Path("{force: (force/)?}delete{absolutePath : .*?}")
     @Produces(MediaType.APPLICATION_JSON)
     public Object delete(@PathParam("gameModelId") Long gameModelId,
-                         @PathParam("absolutePath") String absolutePath,
-                         @PathParam("force") String force) {
+            @PathParam("absolutePath") String absolutePath,
+            @PathParam("force") String force) {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
@@ -442,15 +446,15 @@ public class FileController {
      * @param tmpDescriptor
      * @param gameModelId
      * @param absolutePath
-     * @return
+     * @return up to date descriptor
      */
     @PUT
     @Path("update{absolutePath : .*?}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public AbstractContentDescriptor update(AbstractContentDescriptor tmpDescriptor,
-                                            @PathParam("gameModelId") Long gameModelId,
-                                            @PathParam("absolutePath") String absolutePath) {
+            @PathParam("gameModelId") Long gameModelId,
+            @PathParam("absolutePath") String absolutePath) {
 
         AbstractContentDescriptor descriptor;
 
@@ -499,11 +503,12 @@ public class FileController {
      * @param note
      * @param description
      * @param file
-     * @return
+     * @param override
+     * @return new FileDescriptor
      * @throws RepositoryException
      */
     public FileDescriptor createFile(Long gameModelId, String name, String path, String mediaType,
-                                     String note, String description, InputStream file, final Boolean override) throws RepositoryException {
+            String note, String description, InputStream file, final Boolean override) throws RepositoryException {
 
         logger.debug("File name: {}", name);
 
@@ -545,7 +550,7 @@ public class FileController {
      * @param path
      * @param note
      * @param description
-     * @return
+     * @return the new directory
      * @throws RepositoryException
      */
     public DirectoryDescriptor createDirectory(Long gameModelId, String name, String path, String note, String description) throws RepositoryException {
@@ -578,7 +583,7 @@ public class FileController {
     /**
      * @param gameModelId
      * @param path
-     * @return
+     * @return true if the directory exists
      * @throws RepositoryException
      */
     public boolean directoryExists(Long gameModelId, String path) throws RepositoryException {
@@ -590,7 +595,8 @@ public class FileController {
     /**
      * @param gameModelId
      * @param path
-     * @return
+     * @return the file content
+     * @throws WegasErrorMessage when the requested file doesn't exists
      */
     public InputStream getFile(Long gameModelId, String path) {
         logger.debug("Asking file (/{})", path);
@@ -609,9 +615,7 @@ public class FileController {
         }
         if (fileDescriptor instanceof FileDescriptor) {
             ret = new BufferedInputStream(((FileDescriptor) fileDescriptor).getBase64Data(), 512);
-            if (connector != null) {
-                connector.save();
-            }
+            connector.save();
         }
         return ret;
     }

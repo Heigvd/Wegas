@@ -7,30 +7,30 @@
  */
 package com.wegas.mcq.persistence;
 
-import com.wegas.core.persistence.AbstractEntity;
-import javax.persistence.*;
-////import javax.xml.bind.annotation.XmlTransient;
-//import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.Broadcastable;
-import java.util.List;
-import java.util.Map;
+import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.mcq.ejb.QuestionDescriptorFacade;
+
+import javax.persistence.*;
 
 /**
- *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 //@XmlType(name = "Reply")
 @JsonTypeName(value = "Reply")
 @Table(name = "MCQReply", indexes = {
-    @Index(columnList = "variableinstance_id"),
-    @Index(columnList = "result_id")
+        @Index(columnList = "variableinstance_id"),
+        @Index(columnList = "result_id")
 })
-public class Reply extends AbstractEntity implements Broadcastable {
+@NamedQueries({
+        @NamedQuery(name = "Reply.countForInstance", query = "SELECT COUNT(r) FROM Reply r WHERE r.questionInstance.id = :instanceId")
+})
+public class Reply extends AbstractEntity /*implements Broadcastable */ {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -65,7 +65,6 @@ public class Reply extends AbstractEntity implements Broadcastable {
     private QuestionInstance questionInstance;
 
     /**
-     *
      * @param a
      */
     @Override
@@ -84,28 +83,15 @@ public class Reply extends AbstractEntity implements Broadcastable {
     /**
      * @return the ignored status.
      */
-    public Boolean getIgnored(){
+    public Boolean getIgnored() {
         return ignored;
     }
-    
+
     /**
      * @param ignored the ignored status to set.
      */
-    public void setIgnored(Boolean ignored){
+    public void setIgnored(Boolean ignored) {
         this.ignored = ignored;
-    }
-    /**
-     *
-     * @PostPersist
-     * @PostUpdate
-     * @PostRemove
-     * public void onUpdate() {
-     * this.getQuestionInstance().onInstanceUpdate();
-     * }
-     */
-    @Override
-    public Map<String, List<AbstractEntity>> getEntities() {
-        return this.getQuestionInstance().getEntities();
     }
 
     @Override
@@ -131,12 +117,8 @@ public class Reply extends AbstractEntity implements Broadcastable {
         this.questionInstance = questionInstance;
     }
 
-    /*
-     * @return the unread
-     */
     /**
-     *
-     * @return
+     * @return true if the reply has not yet been read by a player
      */
     public Boolean getUnread() {
         return unread;
@@ -150,10 +132,6 @@ public class Reply extends AbstractEntity implements Broadcastable {
     }
 
     /**
-     *
-     * /
-     *
-     **
      * @return the startTime
      */
     public Long getStartTime() {
@@ -179,5 +157,28 @@ public class Reply extends AbstractEntity implements Broadcastable {
      */
     public void setResult(Result result) {
         this.result = result;
+    }
+
+    @Override
+    public void updateCacheOnDelete() {
+        QuestionDescriptorFacade qF = QuestionDescriptorFacade.lookup();
+        VariableInstanceFacade vif = VariableInstanceFacade.lookup();
+        QuestionInstance qInst = this.getQuestionInstance();
+        if (qInst != null) {
+            qInst = (QuestionInstance) vif.find(qInst.getId());
+            if (qInst != null) {
+                qInst.removeReply(this);
+            }
+        }
+
+        Result theResult = this.getResult();
+        if (theResult != null) {
+            theResult = qF.findResult(theResult.getId());
+            if (theResult != null) {
+                theResult.removeReply(this);
+            }
+        }
+
+        super.updateCacheOnDelete();
     }
 }

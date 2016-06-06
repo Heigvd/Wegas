@@ -15,7 +15,7 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 
 /**
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class PageConnector {
 

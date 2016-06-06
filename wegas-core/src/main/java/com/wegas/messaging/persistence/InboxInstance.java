@@ -7,26 +7,26 @@
  */
 package com.wegas.messaging.persistence;
 
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.rest.util.Views;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-//import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.rest.util.Views;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import java.util.ArrayList;
+import java.util.List;
+
+//import javax.xml.bind.annotation.XmlType;
 /**
- *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 //@XmlType(name = "InboxInstance")
@@ -37,7 +37,9 @@ public class InboxInstance extends VariableInstance {
      *
      */
     protected static final org.slf4j.Logger logger = LoggerFactory.getLogger(InboxInstance.class);
+
     private static final long serialVersionUID = 1L;
+
     /**
      *
      */
@@ -51,7 +53,7 @@ public class InboxInstance extends VariableInstance {
      * @return the replies
      */
     public List<Message> getMessages() {
-        return messages;
+        return this.messages;
     }
 
     /**
@@ -65,37 +67,32 @@ public class InboxInstance extends VariableInstance {
     }
 
     /**
-     *
      * @param message
      */
     public void addMessage(Message message) {
-        InboxDescriptor descr = (InboxDescriptor) this.getDescriptor();
-        if (descr!=null && descr.getCapped()) {
-            this.messages.clear();
+        final ArrayList<Message> newArrayList = new ArrayList<>();
+        final InboxDescriptor descr = (InboxDescriptor) this.findDescriptor();
+        /*
+        Cache seems to handle messages correctly when a new list is created.
+         */
+        if (!descr.getCapped()) {
+            newArrayList.addAll(this.getMessages());
         }
-        this.messages.add(message);
-        message.setInboxInstance(this);
+        newArrayList.add(0, message);
+        this.setMessages(newArrayList);
     }
 
     @Override
     public void merge(AbstractEntity a) {
         if (a instanceof InboxInstance) {
             InboxInstance other = (InboxInstance) a;
-            this.messages.clear();
-            for (Message m : other.getMessages()) {
-                try {
-                    this.addMessage((Message) m.duplicate());
-                } catch (IOException ex) {
-                    logger.error("Exception duplicating {}", m);
-                }
-            }
+            this.setMessages(ListUtils.mergeLists(this.getMessages(), other.getMessages()));
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
     }
 
     /**
-     *
      * @param message
      */
     public void sendMessage(Message message) {
@@ -103,11 +100,10 @@ public class InboxInstance extends VariableInstance {
     }
 
     /**
-     *
-     * @param from
-     * @param subject
-     * @param body
-     * @return
+     * @param from message sender
+     * @param subject message subject
+     * @param body message body
+     * @return The sent message
      */
     public Message sendMessage(String from, String subject, String body) {
         Message msg = new Message(from, subject, body, null, null, null);
@@ -116,12 +112,12 @@ public class InboxInstance extends VariableInstance {
     }
 
     /**
-     *
-     * @param from
-     * @param subject
-     * @param body
-     * @param date
-     * @return
+     * @param from message sender
+     * @param subject message subject
+     * @param body message body
+     * @param token
+     * ({@link InboxDescriptor#sendMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.util.List) here}
+     * @return The sent message
      */
     public Message sendWithToken(String from, String subject, String body, String token) {
         Message msg = new Message(from, subject, body, null, token, null);
@@ -130,12 +126,12 @@ public class InboxInstance extends VariableInstance {
     }
 
     /**
-     *
-     * @param from
-     * @param subject
-     * @param body
+     * @param from message sender
+     * @param subject message subject
+     * @param body message body
      * @param date
-     * @return
+     * ({@link InboxDescriptor#sendDatedMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String) here}
+     * @return The sent message
      */
     public Message sendMessage(String from, String subject, String body, String date) {
         Message msg = new Message(from, subject, body, date, null, null);
@@ -144,13 +140,11 @@ public class InboxInstance extends VariableInstance {
     }
 
     /**
-     * /**
-     *
-     * @param from
-     * @param subject
-     * @param body
+     * @param from message sender
+     * @param subject message subject
+     * @param body message body
      * @param attachements
-     * @return
+     * @return The sent message
      */
     public Message sendMessage(final String from, final String subject, final String body, final List<String> attachements) {
         final Message msg = new Message(from, subject, body, null, null, attachements);
@@ -159,13 +153,13 @@ public class InboxInstance extends VariableInstance {
     }
 
     /**
-     *
-     * @param from
-     * @param subject
-     * @param body
+     * @param from message sender
+     * @param subject message subject
+     * @param body message body
      * @param date
+     * ({@link InboxDescriptor#sendDatedMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String) here}
      * @param attachements
-     * @return
+     * @return The sent message
      */
     public Message sendMessage(final String from, final String subject, final String body, final String date, final List<String> attachements) {
         final Message msg = new Message(from, subject, body, date, attachements);
@@ -174,14 +168,15 @@ public class InboxInstance extends VariableInstance {
     }
 
     /**
-     *
-     * @param from
-     * @param subject
-     * @param body
+     * @param from message sender
+     * @param subject message subject
+     * @param body message body
      * @param date
+     * ({@link InboxDescriptor#sendDatedMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String) here}
      * @param token
+     * ({@link InboxDescriptor#sendMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.util.List) here}
      * @param attachements
-     * @return
+     * @return The sent message
      */
     public Message sendMessage(final String from, final String subject, final String body, final String date, String token, final List<String> attachements) {
         final Message msg = new Message(from, subject, body, date, token, attachements);
@@ -190,8 +185,7 @@ public class InboxInstance extends VariableInstance {
     }
 
     /**
-     *
-     * @return int unread message count
+     * @return unread message count
      */
     public int getUnreadCount() {
         int unread = 0;
@@ -205,7 +199,6 @@ public class InboxInstance extends VariableInstance {
     }
 
     /**
-     *
      * @param count
      */
     public void setUnreadCount(int count) {
@@ -213,9 +206,8 @@ public class InboxInstance extends VariableInstance {
     }
 
     /**
-     *
      * @param subject
-     * @return
+     * @return the most recent message that match the given subject
      */
     public Message getMessageBySubject(String subject) {
         for (Message m : this.getMessages()) {
@@ -230,7 +222,7 @@ public class InboxInstance extends VariableInstance {
      * get the first message identified by "token"
      *
      * @param token
-     * @return
+     * @return the first (ie. most recent) message matching the token
      */
     public Message getMessageByToken(String token) {
         if (!Helper.isNullOrEmpty(token)) {
@@ -247,7 +239,7 @@ public class InboxInstance extends VariableInstance {
      * Return true is a message identified by the token exists and has been read
      *
      * @param token
-     * @return
+     * @return true if such a message exists and has been read
      */
     public boolean isTokenMarkedAsRead(String token) {
         Message message = this.getMessageByToken(token);

@@ -25,21 +25,22 @@ import javax.validation.constraints.NotNull;
 import java.util.*;
 
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Entity
 @Table(
-    uniqueConstraints = {
-        //    @UniqueConstraint(columnNames = {"name"}), 
-        @UniqueConstraint(columnNames = {"token"})},
-    indexes = {
-        @Index(columnList = "gamemodelid")
-    }
+        uniqueConstraints = {
+            //    @UniqueConstraint(columnNames = {"name"}), 
+            @UniqueConstraint(columnNames = {"token"})},
+        indexes = {
+            @Index(columnList = "gamemodelid")
+        }
 )
 @NamedQueries({
-    @NamedQuery(name = "game.findByStatus", query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status = :status ORDER BY g.createdTime ASC"),
-    @NamedQuery(name = "game.findByToken", query = "SELECT DISTINCT g FROM Game g WHERE  g.status = :status AND g.token = :token")
+    @NamedQuery(name = "Game.findByStatus", query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status = :status ORDER BY g.createdTime ASC"),
+    @NamedQuery(name = "Game.findByToken", query = "SELECT DISTINCT g FROM Game g WHERE  g.status = :status AND g.token = :token"),
+    @NamedQuery(name = "Game.findByNameLike", query = "SELECT DISTINCT g FROM Game g WHERE  g.name LIKE :name")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Game extends NamedEntity implements Broadcastable {
@@ -107,7 +108,7 @@ public class Game extends NamedEntity implements Broadcastable {
 
     @JsonIgnore
     @OneToMany(mappedBy = "game", cascade = CascadeType.REMOVE)
-    private List<VariableInstance> privateInstances;
+    private List<VariableInstance> privateInstances = new ArrayList<>();
 
     /**
      *
@@ -163,9 +164,11 @@ public class Game extends NamedEntity implements Broadcastable {
     @PrePersist
     public void prePersist() {
         this.setCreatedTime(new Date());
-        if (this.teams.isEmpty()) {
+        /*
+        if (this.getTeams().isEmpty()) {
             this.addTeam(new DebugTeam());
         }
+         */
         this.preUpdate();
     }
 
@@ -213,7 +216,7 @@ public class Game extends NamedEntity implements Broadcastable {
     }
 
     /**
-     * @return
+     * @return all players from all teams
      */
     @JsonIgnore
     public List<Player> getPlayers() {
@@ -230,8 +233,9 @@ public class Game extends NamedEntity implements Broadcastable {
     //@XmlTransient
     @JsonIgnore
     public void addTeam(Team t) {
-        this.teams.add(t);
+        this.getTeams().add(t);
         t.setGame(this);
+        t.setGameId(this.getId());
     }
 
     /**
@@ -249,32 +253,23 @@ public class Game extends NamedEntity implements Broadcastable {
         this.gameModel = gameModel;
     }
 
-    /**
-     * @return
-     */
     @Override
     public Long getId() {
         return id;
     }
 
-    /**
-     * @return
-     */
     @Override
     public String getName() {
         return name;
     }
 
-    /**
-     * @param name
-     */
     @Override
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * @return
+     * @return short game name (10 first chars)
      */
     @JsonIgnore
     public String getShortName() {
@@ -343,7 +338,7 @@ public class Game extends NamedEntity implements Broadcastable {
     }
 
     /**
-     * @return
+     * @return game creator name or null if the user doesn't exists anymore
      */
     public String getCreatedByName() {
         if (this.getCreatedBy() != null) {
@@ -381,20 +376,21 @@ public class Game extends NamedEntity implements Broadcastable {
     }
 
     /**
-     * @return
+     * @return gameModel name
      */
     public String getGameModelName() {
         return this.getGameModel().getName();
     }
 
     /**
-     *
+     * NoOp make jackson happy
      */
     public void setGameModelName() {
+        // NoOp
     }
 
     /**
-     * @return
+     * @return get gameModel properties
      */
     public GameModelProperties getProperties() {
         return this.getGameModel().getProperties();
@@ -423,6 +419,18 @@ public class Game extends NamedEntity implements Broadcastable {
      */
     public void setPrivateInstances(List<VariableInstance> privateInstances) {
         this.privateInstances = privateInstances;
+    }
+
+    /**
+     * @return true if such a debugteam exists
+     */
+    public boolean hasDebugTeam() {
+        for (Team t : this.getTeams()) {
+            if (t instanceof DebugTeam) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

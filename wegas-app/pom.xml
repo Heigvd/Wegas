@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.wegas</groupId>
         <artifactId>wegas-project</artifactId>
-        <version>2.0-SNAPSHOT</version>
+        <version>2.5-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -220,6 +220,12 @@
             <groupId>net.sf.jtidy</groupId>
             <artifactId>jtidy</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>eclipselink</artifactId>
+            <version>2.6.2</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -246,7 +252,7 @@
                                     <version>${project.version}</version>
                                     <type>war</type>
                                     <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
-                                    <excludes>WEB-INF,META-INF</excludes>
+                                    <excludes>WEB-INF/**,META-INF/**</excludes>
                                 </artifactItem>
                             </artifactItems>
                             <overWriteSnapshots>true</overWriteSnapshots>
@@ -294,16 +300,16 @@
                     <warName>${project.build.finalName}</warName>
                 </configuration>
                 <executions>
-                    <!--<execution>-->
-                        <!--<id>default-war</id>-->
-                        <!--<phase>none</phase>-->
-                    <!--</execution>-->
-                    <!--<execution>-->
-                        <!--<id>prepare-war</id>-->
-                        <!--<goals>-->
-                            <!--<goal>exploded</goal>-->
-                        <!--</goals>-->
-                        <!--<phase>prepare-package</phase>-->
+                    <execution>
+                        <id>default-war</id>
+                        <phase>none</phase>
+                    </execution>
+                    <execution>
+                        <id>prepare-war</id>
+                        <goals>
+                            <goal>exploded</goal>
+                        </goals>
+                        <phase>prepare-package</phase>
                         <!--<configuration>-->
                             <!--<overlays>-->
                                 <!--<overlay>-->
@@ -317,14 +323,14 @@
                                 <!--</overlay>-->
                             <!--</overlays>-->
                         <!--</configuration>-->
-                    <!--</execution>-->
-                    <!--<execution>-->
-                        <!--<id>war</id>-->
-                        <!--<goals>-->
-                            <!--<goal>war</goal>-->
-                        <!--</goals>-->
-                        <!--<phase>package</phase>-->
-                    <!--</execution>-->
+                    </execution>
+                    <execution>
+                        <id>war</id>
+                        <goals>
+                            <goal>war</goal>
+                        </goals>
+                        <phase>package</phase>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>

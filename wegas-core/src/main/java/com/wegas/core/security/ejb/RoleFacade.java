@@ -9,11 +9,9 @@ package com.wegas.core.security.ejb;
 
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.exception.internal.WegasNoResultException;
-import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import java.util.Set;
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
@@ -23,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
 @LocalBean
@@ -39,23 +37,25 @@ public class RoleFacade extends BaseFacade<Role> {
     }
 
     @Override
+    public void create(Role entity) {
+        getEntityManager().persist(entity);
+    }
+
+    @Override
     public void remove(Role role) {
         // Strike out all members from the role to avoid pkey violation
         Set<User> users = role.getUsers();
-        logger.error("REMOVE ROLE " + role.getName() + " " + users.size() + " members");
 
         for (User u : users) {
-            logger.error("User: " +  u);
             u.removeRole(role);
         }
-
-        super.remove(role);
+        getEntityManager().remove(role);
     }
 
     /**
      *
      * @param name
-     * @return
+     * @return role matching the given name
      * @throws WegasNoResultException role not found
      */
     public Role findByName(String name) throws WegasNoResultException {

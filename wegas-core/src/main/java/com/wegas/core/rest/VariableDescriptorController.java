@@ -34,7 +34,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
 @Path("GameModel/{gameModelId: ([1-9][0-9]*)?}{sep: /?}VariableDescriptor")
@@ -61,7 +61,7 @@ public class VariableDescriptorController {
 
     /**
      * @param gameModelId
-     * @return
+     * @return all root level variable descriptors
      */
     @GET
     public Collection<VariableDescriptor> index(@PathParam("gameModelId") Long gameModelId) {
@@ -74,7 +74,7 @@ public class VariableDescriptorController {
 
     /**
      * @param entityId
-     * @return
+     * @return variable descriptor with the given id
      */
     @GET
     @Path("{entityId : [1-9][0-9]*}")
@@ -86,6 +86,12 @@ public class VariableDescriptorController {
         return vd;
     }
 
+    /**
+     *
+     * @param gameModelId id of the gameModel
+     * @param playerId    player id
+     * @return all instances from player's game belonging to the player
+     */
     @GET
     @Path("/PlayerInstances/{playerId:[1-9][0-9]*}")
     public Collection<VariableInstance> get(@PathParam("gameModelId") Long gameModelId, @PathParam("playerId") Long playerId) {
@@ -98,11 +104,11 @@ public class VariableDescriptorController {
      *
      * @param gameModelId the game model
      * @param entity      the new descriptor
-     * @return
+     * @return the new variable descriptor
      */
     @POST
     public VariableDescriptor create(@PathParam("gameModelId") Long gameModelId,
-        VariableDescriptor entity) {
+            VariableDescriptor entity) {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
@@ -116,14 +122,15 @@ public class VariableDescriptorController {
      *
      * @param entityId the parent descriptor id
      * @param entity   the new descriptor
-     * @return
+     * @return the up to date parent descriptor container containing the new
+     *         descriptor
      */
     @POST
     @Path("{variableDescriptorId : [1-9][0-9]*}")
     public DescriptorListI createChild(@PathParam("variableDescriptorId") Long entityId, VariableDescriptor entity) {
 
         SecurityUtils.getSubject().
-            checkPermission("GameModel:Edit:gm" + variableDescriptorFacade.find(entityId).getGameModelId());
+                checkPermission("GameModel:Edit:gm" + variableDescriptorFacade.find(entityId).getGameModelId());
 
         return variableDescriptorFacade.createChild(entityId, entity);
     }
@@ -135,16 +142,17 @@ public class VariableDescriptorController {
      * @param gameModelId
      * @param entityName  parent entity, identified by its name
      * @param entity      Entity to add
-     * @return
+     * @return the up to date parent descriptor container containing the new
+     *         descriptor
      */
     @POST
     @Path("{variableDescriptorName : [_a-zA-Z][_a-zA-Z0-9]*}")
     public DescriptorListI createChild(@PathParam("gameModelId") Long gameModelId,
-        @PathParam("variableDescriptorName") String entityName, VariableDescriptor entity) {
+            @PathParam("variableDescriptorName") String entityName, VariableDescriptor entity) {
 
         try {
             SecurityUtils.getSubject().
-                checkPermission("GameModel:Edit:gm" + gameModelId);
+                    checkPermission("GameModel:Edit:gm" + gameModelId);
 
             GameModel gm = gameModelFacade.find(gameModelId);
             VariableDescriptor parent = variableDescriptorFacade.find(gm, entityName);
@@ -162,7 +170,7 @@ public class VariableDescriptorController {
     /**
      * @param entityId
      * @param entity
-     * @return
+     * @return up to date entity
      */
     @PUT
     @Path("{entityId: [1-9][0-9]*}")
@@ -194,8 +202,8 @@ public class VariableDescriptorController {
     @PUT
     @Path("{descriptorId: [1-9][0-9]*}/Move/{parentDescriptorId: [1-9][0-9]*}/{index: [0-9]*}")
     public void move(@PathParam("descriptorId") Long descriptorId,
-        @PathParam("parentDescriptorId") Long parentDescriptorId,
-        @PathParam("index") int index) {
+            @PathParam("parentDescriptorId") Long parentDescriptorId,
+            @PathParam("index") int index) {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + variableDescriptorFacade.find(descriptorId).getGameModelId());
 
@@ -206,7 +214,7 @@ public class VariableDescriptorController {
      * Make a descriptor copy that will stands at the same level
      *
      * @param entityId
-     * @return
+     * @return the new descriptor
      * @throws IOException
      */
     @POST
@@ -233,6 +241,11 @@ public class VariableDescriptorController {
         }
     }
 
+    /**
+     *
+     * @param entityId
+     * @return up to date descriptor container which contains sorted children
+     */
     @GET
     @Path("{entityId: [1-9][0-9]*}/Sort")
     public VariableDescriptor sort(@PathParam("entityId") Long entityId) {
@@ -242,7 +255,7 @@ public class VariableDescriptorController {
 
     /**
      * @param entityId
-     * @return
+     * @return just deleted descriptor
      */
     @DELETE
     @Path("{entityId: [1-9][0-9]*}")
@@ -259,7 +272,7 @@ public class VariableDescriptorController {
      * Resets all the variables of a given game model
      *
      * @param gameModelId game model id
-     * @return OK
+     * @return HTTP 200 OK
      */
     @GET
     @Path("Reset")
@@ -271,6 +284,12 @@ public class VariableDescriptorController {
         return Response.ok().build();
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @param criteria
+     * @return list of descriptor id matching criteria
+     */
     @POST
     @Path("contains")
     @Consumes(MediaType.TEXT_PLAIN)
@@ -286,6 +305,12 @@ public class VariableDescriptorController {
         return matches;
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @param criteria
+     * @return list of descriptor id matching all criterias
+     */
     @POST
     @Path("containsAll")
     @Consumes(MediaType.TEXT_PLAIN)

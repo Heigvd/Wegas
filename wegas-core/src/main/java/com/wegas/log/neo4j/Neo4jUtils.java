@@ -31,7 +31,7 @@ import java.util.Iterator;
  * and relations between the nodes.
  *
  * @author Gérald Eberle
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 
 public class Neo4jUtils {

@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Provider
 public class DefaultExceptionMapper extends AbstractExceptionMapper
@@ -26,7 +26,7 @@ public class DefaultExceptionMapper extends AbstractExceptionMapper
     /**
      *
      * @param exception
-     * @return
+     * @return processed exception
      */
     @Override
     public Response toResponse(Exception exception) {

@@ -15,12 +15,12 @@ angular.module('private.admin.users', [
                 }
             });
     })
-    .controller('AdminUsersCtrl', function AdminUsersCtrl($state, $rootScope, Auth, UsersModel, $http) {
+    .controller('AdminUsersCtrl', function AdminUsersCtrl($state, $rootScope, Auth, UsersModel, $http, $timeout) {
         "use strict";
         var ctrl = this,
             initMaxUsersDisplayed = function() {
-                if (ctrl.users.length > 12) {
-                    ctrl.maxUsersDisplayed = 10;
+                if (ctrl.users.length > 22) {
+                    ctrl.maxUsersDisplayed = 20;
                 } else {
                     ctrl.maxUsersDisplayed = ctrl.users.length;
                 }
@@ -28,21 +28,28 @@ angular.module('private.admin.users', [
         ctrl.maxUsersDisplayed = null;
         ctrl.users = [];
         ctrl.search = "";
+        ctrl.loading = false;
 
         ctrl.updateDisplay = function() {
             if (ctrl.maxUsersDisplayed === null) {
                 initMaxUsersDisplayed();
-            }
-            if (ctrl.maxUsersDisplayed >= ctrl.users.length) {
-                ctrl.maxUsersDisplayed = ctrl.users.length;
             } else {
-                ctrl.maxUsersDisplayed += 15;
+                if (ctrl.maxUsersDisplayed >= ctrl.users.length) {
+                    ctrl.maxUsersDisplayed = ctrl.users.length;
+                } else {
+                    ctrl.maxUsersDisplayed += 100;
+                }
             }
-
         };
 
         ctrl.updateUsersList = function(displayUp) {
+            var hideScrollbarDuringInitialRender = (ctrl.users.length===0);
+            if (hideScrollbarDuringInitialRender) {
+                $('#admin-index-list').css('overflow-y', 'hidden');
+            }
+            ctrl.loading = true;
             UsersModel.getUsers().then(function(response) {
+                ctrl.loading = false;
                 if (response.isErroneous()) {
                     response.flash();
                 } else {
@@ -50,6 +57,9 @@ angular.module('private.admin.users', [
                     if (displayUp) {
                         ctrl.updateDisplay();
                     }
+                }
+                if (hideScrollbarDuringInitialRender) {
+                    $timeout(function () { $('#admin-index-list').css('overflow-y', 'auto'); }, 1000);
                 }
             });
         };
