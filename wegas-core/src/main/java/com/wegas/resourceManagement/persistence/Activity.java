@@ -39,10 +39,18 @@ public class Activity extends AbstractAssignement /*implements Broadcastable */ 
     @JsonView(Views.IndexI.class)
     private Long id;
     /**
-     *
+     * worked time ? strange spelling...
      */
     @Column(name = "wtime")
     private double time;
+
+    /**
+     * Start time
+     */
+    @Column(name = "stime")
+    private double sTime;
+
+
     /**
      *
      */
@@ -107,6 +115,7 @@ public class Activity extends AbstractAssignement /*implements Broadcastable */ 
             this.setRequirement(other.getRequirement());
             this.setResourceInstance(other.getResourceInstance());
             this.setTime(other.getTime());
+            this.setStartTime(other.getStartTime());
             this.setCompletion(other.getCompletion());
             this.setTaskDescriptor(other.getTaskDescriptor());
             this.setDescription(other.getDescription());
@@ -149,7 +158,7 @@ public class Activity extends AbstractAssignement /*implements Broadcastable */ 
     }
 
     /**
-     * @return the time
+     * @return the time 
      */
     public double getTime() {
         return time;
@@ -160,6 +169,22 @@ public class Activity extends AbstractAssignement /*implements Broadcastable */ 
      */
     public void setTime(double time) {
         this.time = time;
+    }
+
+    /**
+     * 
+     * @return the start time (Period.Step)
+     */
+    public double getStartTime() {
+        return sTime;
+    }
+
+    /**
+     * Set startTime
+     * @param sTime 
+     */
+    public void setStartTime(double sTime) {
+        this.sTime = sTime;
     }
 
     /**
