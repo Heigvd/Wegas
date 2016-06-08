@@ -10,7 +10,7 @@ let Z;
 /* global YUI */
 YUI.add('wegas-react-form', Y => {
     Z = Y;
-    require('./wegas-react-form.js');
+    require('./wegas-react-form');
 });
 export function getY() {
     return Z;

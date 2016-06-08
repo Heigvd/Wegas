@@ -13,12 +13,11 @@
             4
         ],
         "comma-dangle": 0,
+        "react/jsx-indent":[2,4],
         "react/jsx-indent-props": [
-            0,
+            2,
             4
-        ],
-        "react/jsx-closing-bracket-location": 0,
-        "react/jsx-space-before-closing": 1
+        ]
     },
     "env": {
         "es6": true,

@@ -1,14 +1,15 @@
 import { setDefaultWidgets } from 'jsoninput';
-import StringView from './Views/string.jsx';
-import BooleanView from './Views/boolean.jsx';
-import UneditableView from './Views/uneditable.jsx';
-import HiddenView from './Views/hidden.jsx';
-import TextareaView from './Views/textarea.jsx';
-import SelectView from './Views/select.jsx';
-import ObjectView from './Views/object.jsx';
-import ArrayView from './Views/array.jsx';
-import HTMLView from './Views/html.jsx';
-import HashlistView from './Views/hashlist.jsx';
+import StringView from './Views/string';
+import BooleanView from './Views/boolean';
+import UneditableView from './Views/uneditable';
+import HiddenView from './Views/hidden';
+import TextareaView from './Views/textarea';
+import SelectView from './Views/select';
+import ObjectView from './Views/object';
+import ArrayView from './Views/array';
+import HTMLView from './Views/html';
+import HashlistView from './Views/hashlist';
+import Script from './Views/script';
 
 setDefaultWidgets({
     object: ObjectView,
@@ -21,5 +22,6 @@ setDefaultWidgets({
     textarea: TextareaView,
     select: SelectView,
     html: HTMLView,
-    hashlist: HashlistView
+    hashlist: HashlistView,
+    script: Script
 });

@@ -2,7 +2,9 @@ import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 import RForm from 'jsoninput';
 import injectTapEventPlugin from 'react-tap-event-plugin';
-import './defaultViews.js';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import './defaultViews';
 import { getY } from './index';
 
 injectTapEventPlugin();
@@ -36,14 +38,20 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
         renderForm(value, schema) {
             if (value && schema) {
                 const boundFire = (val) => {
-                    console.log(val);
                     this.fire('updated', val);
                 };
-                const form = render((<RForm schema={ schema }
-                                            value={ value }
-                                            onChange={ boundFire } />
-                    ), this.get('contentBox').getDOMNode());
-                this.set(FORM, form);
+                render((
+                    <MuiThemeProvider
+                        muiTheme={getMuiTheme()}
+                    >
+                        <RForm
+                            ref={form => this.set(FORM, form)}
+                            schema={schema}
+                            value={value}
+                            onChange={boundFire}
+                        />
+                    </MuiThemeProvider>
+                ), this.get('contentBox').getDOMNode());
             }
         },
         /**
@@ -89,27 +97,27 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
         destroyForm() {
             this.set(FORM, null);
         },
-        setCfg(val) {
-            var cfg = Y.clone(val); // Duplicate so val will be untouched while serializing
-            // Y.mix(cfg, {
-            //     parentEl: this.get('contentBox'),
-            //     type: 'group'
-            // }); // Set up the form parentEl attribute, so it knows where to render
+        // setCfg(val) {
+        //     var cfg = Y.clone(val); // Duplicate so val will be untouched while serializing
+        //     // Y.mix(cfg, {
+        //     //     parentEl: this.get('contentBox'),
+        //     //     type: 'group'
+        //     // }); // Set up the form parentEl attribute, so it knows where to render
 
-        // inputEx.use(val, Y.bind(function(cfg) { // Load form dependencies
-        //     if (this.get('destroyed')) {
-        //         return;
-        //     }
-        //     var form = inputEx(cfg); // Initialize and render form
-        //     form.setValue(this.get('values'), false); // Sync form with 'values' ATTR
-        //     form.removeClassFromState(); // Remove required state
-        //     this.set(FORM, form);
-        //     this.fire('formUpdate');
-        //     form.on('updated', function(e) {
-        //         this.fire('updated', e);
-        //     }, this);
-        // }, this, cfg));
-        },
+        //     // inputEx.use(val, Y.bind(function(cfg) { // Load form dependencies
+        //     //     if (this.get('destroyed')) {
+        //     //         return;
+        //     //     }
+        //     //     var form = inputEx(cfg); // Initialize and render form
+        //     //     form.setValue(this.get('values'), false); // Sync form with 'values' ATTR
+        //     //     form.removeClassFromState(); // Remove required state
+        //     //     this.set(FORM, form);
+        //     //     this.fire('formUpdate');
+        //     //     form.on('updated', function(e) {
+        //     //         this.fire('updated', e);
+        //     //     }, this);
+        //     // }, this, cfg));
+        // },
         save(e) {
             e.halt(true);
 
@@ -121,6 +129,7 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
                 this.showMessage('error', 'Some fields are not valid.');
                 return;
             }
+            console.log(val);
             // if (val.valueselector) {
             //     val = val.valueselector;
             // }
@@ -171,10 +180,10 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
              */
             cfg: {
                 validator: Y.Lang.isObject,
-                setter(val) {
-                    this.renderForm(this.get('values'), val);
-                    this.setCfg(val);
-                    return val;
+                setter(cfg) {
+                    this.renderForm(this.get('values'), cfg);
+                    // this.setCfg(val);
+                    return cfg;
                 },
                 items: {
                     test: {
@@ -203,11 +212,11 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
     });
 
 /* Add relevant plugin*/
-Wegas.Form.ATTRS.plugins = Y.clone(Wegas.Widget.ATTRS.plugins);
-Wegas.Form.ATTRS.plugins._inputex.items.push({
-    type: 'Button',
-    label: 'Save to',
-    data: 'SaveObjectAction'
-});
+// Wegas.Form.ATTRS.plugins = Y.clone(Wegas.Widget.ATTRS.plugins);
+// Wegas.Form.ATTRS.plugins._inputex.items.push({ // eslint-disable-line
+//     type: 'Button',
+//     label: 'Save to',
+//     data: 'SaveObjectAction'
+// });
 
 Wegas.RForm = Form;
