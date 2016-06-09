@@ -5,16 +5,13 @@ function StringView(props) {
     const errorMessage = props.errorMessage && props.errorMessage.length ?
         props.errorMessage :
         undefined;
-    const onChange = function onChange(event) {
-        props.onChange(event.target.value);
-    };
     return (
         <TextField
             className={props.view.className}
-            defaultValue={props.value}
+            value={props.value || ''}
             floatingLabelText={props.view.label || props.path[props.path.length - 1]}
             errorText={errorMessage}
-            onChange={onChange}
+            onChange={e => props.onChange(e.target.value)}
             disabled={props.disabled}
             multiLine={props.multiLine}
             fullWidth

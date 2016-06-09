@@ -3,7 +3,7 @@ import Toggle from 'material-ui/Toggle';
 
 function BooleanView(props) {
     const onChange = function onChange(event) {
-        props.onChange(event.target.value === 'on');
+        props.onChange(event.target.checked);
     };
     return (<Toggle
         className={props.view.className}

@@ -585,7 +585,7 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                     value: "DialogueDescriptor"
                 },
                 title: {
-                    type: STRING,
+                    type: [NULL, STRING],
                     index: -1,
                     view: {
                         label: "Label",
