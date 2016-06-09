@@ -492,7 +492,7 @@ public class UserFacade extends BaseFacade<User> {
             }
         }
         EMailFacade emailFacade = new EMailFacade();
-        emailFacade.send(to.toString(), email.getFrom(), email.getReplyTo(), email.getSubject(), email.getBody(), Message.RecipientType.BCC, "text/html", false);
+        emailFacade.send(to.toString(), email.getFrom(), email.getReplyTo(), email.getSubject(), email.getBody(), Message.RecipientType.TO, "text/html", false);
     }
 
     /**

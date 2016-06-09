@@ -50,7 +50,7 @@ YUI.add('wegas-console-custom', function(Y) {
                     if (this.get("customImpacts").length > 0) {
                         menu = cb.append("" +
                                          "<div class='modal--menu'>" +
-                                         "<button id='basics-impacts-btn' class='modal--tab-btn modal--tab-btn-selected'>Basics impacts</button>" +
+                                         "<button id='basics-impacts-btn' class='modal--tab-btn modal--tab-btn-selected'>Basic impacts</button>" +
                                          "<button id='advanced-impacts-btn' class='modal--tab-btn'>Advanced impacts</button>" +
                                          "</div>").one(".modal--menu");
                         contents = cb.append("" +
@@ -85,7 +85,10 @@ YUI.add('wegas-console-custom', function(Y) {
                     });
                     cb.append(
                         '<div class="wegas-status-bar wegas-status-bar-hidden"><div class="results wegas-advanced-feature"></div><div class="status"></div></div>');
+                    // Remove buttons for advanced features (view source, etc).
                     Y.one(this.srcField.getEl()).all("div > button").remove();
+                    // Correct small scrollbar issue after rendering:
+                    setTimeout(function(){ cb.one('.modal--content-tab').setStyle('overflowY','auto') }, 1000);
                 },
                 bindUI: function() {
                     Y.Wegas.Facade.Variable.on("WegasOutOfBoundException", function(e) {
@@ -184,47 +187,76 @@ YUI.add('wegas-console-custom', function(Y) {
                         script = this.getAdvancedImpactsScript();
                     }
                     if (script) {
+                        // The script is run sequentially on each player of the "player" argument (single object or array).
+                        var arg = this.get("player"),
+                            players = (arg.constructor === Array ? arg : [arg]),
+                            len = players.length;
+
                         running = true;
                         this.get(CONTENTBOX).one(".wegas-status-bar").removeClass("wegas-status-bar-hidden");
                         this.get(CONTENTBOX).one(".status").addClass("status--running");
-                        Y.Wegas.Facade.Variable.script.run(script, {
-                            on: {
-                                success: Y.bind(function(event) {
-                                    running = false;
-                                    this.get(CONTENTBOX).one(".wegas-status-bar").addClass("wegas-status-bar-transition");
-                                    Y.later(200, this, function() {
-                                        this.get(CONTENTBOX).one(".wegas-status-bar").removeClass(
-                                            "wegas-status-bar-transition");
-                                        this.get(CONTENTBOX).one(".status").removeClass("status--running").addClass(
-                                            "status--success");
-                                        this.hideOverlay();
-                                        this.get(CONTENTBOX).one(".results").prepend(
-                                            '<div class="result">Script exectuted. Returned value: ' +
-                                            Y.JSON.stringify(event.response.results.entities[0]) +
-                                            "</div>");
-                                        if (modale) {
-                                            Y.later(1000, null, function() {
-                                                modale.close();
+
+                        var count = 0,
+                            succeeded = 0,
+                            failed = 0,
+                            teamOrPlayer = Y.Wegas.Facade.Game.cache.getCurrentGame().get("properties.freeForAll") ? 'Player ' : 'Team ',
+                            contentBox = this.get(CONTENTBOX),
+                            resDiv;
+
+                        for (var i = 0; i<len; i++) {
+                            var player = players[i];
+
+                            Y.Wegas.Facade.Variable.script.run(script, {
+                                on: {
+                                    success: Y.bind(function (event) {
+                                        count++;
+                                        succeeded++;
+                                        if (len>1 && failed===0) {
+                                            if (!resDiv) {
+                                                resDiv = contentBox.one(".results");
+                                                resDiv.removeClass("wegas-advanced-feature");
+                                            }
+                                            resDiv.setHTML('<div class="result">' + teamOrPlayer + count + '&thinsp;/&thinsp;' + len + '</div>');
+                                        }
+                                        if (count >= len){ // Last iteration:
+                                            running = false;
+                                            contentBox.one(".wegas-status-bar").addClass("wegas-status-bar-transition");
+                                            Y.later(200, this, function () {
+                                                contentBox.one(".wegas-status-bar").removeClass("wegas-status-bar-transition");
+                                                contentBox.one(".status").removeClass("status--running").addClass("status--success");
+                                                this.hideOverlay();
+                                                contentBox.one(".results").setHTML('<div class="result">Terminated.</div>');
+                                                    //' Last returned value: ' + Y.JSON.stringify(event.response.results.entities[0]) + "</div>");
+                                                if (modale) {
+                                                    Y.later((failed>0 ? 5000 : 1000), null, function () {
+                                                        modale.close();
+                                                    });
+                                                }
                                             });
                                         }
-                                    });
-                                }, this),
-                                failure: Y.bind(function(e) {
-                                    running = false;
-                                    this.get(CONTENTBOX).one(".status").removeClass("status--running").addClass(
-                                        "status--error");
-                                    this.hideOverlay();
-                                    this.get(CONTENTBOX).one(".results").prepend(
-                                        '<div class="result error">Error executing script: ' +
-                                        e.response.results.message + "</div>");
-                                    Y.later(2500, this, function() {
-                                        this.get(CONTENTBOX).one(".wegas-status-bar").addClass("wegas-status-bar-hidden");
-                                        this.get(CONTENTBOX).one(".status").removeClass("status--error");
-                                        this.setStatus("");
-                                    });
-                                }, this)
-                            }
-                        }, this.get("player"));
+                                    }, this),
+                                    failure: Y.bind(function (e) {
+                                        count++;
+                                        failed++;
+                                        contentBox.one(".status").removeClass("status--running").addClass("status--error");
+                                        this.hideOverlay();
+                                        if (len>1) {
+                                            contentBox.one(".status").prepend('<div class="result error" style="text-align:center;padding-bottom:5px">' + teamOrPlayer + count + '&thinsp;/&thinsp;' + len +
+                                                    //'<br/>Error executing script: ' + e.response.results.message +
+                                                "&thinsp;:</div>");
+                                        }
+                                        if (count>=len) { // Last iteration:
+                                            running = false;
+                                            Y.later(6000, this, function () {
+                                                this.setStatus("");
+                                                contentBox.one(".wegas-status-bar").addClass("wegas-status-bar-hidden");
+                                                contentBox.one(".status").removeClass("status--error");
+                                            });
+                                        }
+                                    }, this)
+                                }
+                            }, player);
+                        }
                     }
                 },
                 extractForm: function() {

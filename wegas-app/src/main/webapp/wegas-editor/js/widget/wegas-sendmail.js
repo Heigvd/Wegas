@@ -17,40 +17,50 @@ YUI.add('wegas-sendmail', function(Y) {
         SendMail = Y.Base.create("wegas-sendmail", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
             BOUNDING_TEMPLATE: '<div class="wegas-form"></div>',
             renderUI: function() {
-                var cb = this.get(CONTENTBOX), cfg = {
-                    type: "group",
-                    parentEl: cb,
-                    fields: [
-                        {
-                            name: "@class",
-                            type: "hidden",
-                            value: "Email"
-                        },
-                        {
-                            name: "from",
-                            label: "From",
-                            type: "uneditable",
-                            value: Y.Wegas.Facade.User.get("currentUser").get("accounts")[0].get("email")
-                        },
-                        {
-                            name: "to",
-                            type: "hidden",
-                            value: Y.Array.map(this.get("players"), function(e) {
-                                return e.toObject();
-                            })
-                        },
-                        {
-                            type: "string",
-                            name: "subject",
-                            label: "Subject",
-                            required: true
-                        }, {
-                            type: "html",
-                            name: "body",
-                            label: "Body",
-                            required: true
-                        }
-                    ]};
+                var cb = this.get(CONTENTBOX),
+                    emailsList = this.get("emails") || "(Hidden list of e-mails)",
+                    cfg = {
+                        type: "group",
+                        parentEl: cb,
+                        fields: [
+                            {
+                                name: "@class",
+                                type: "hidden",
+                                value: "Email"
+                            },
+                            {
+                                name: "from",
+                                label: "From",
+                                type: "uneditable",
+                                value: Y.Wegas.Facade.User.get("currentUser").get("accounts")[0].get("email")
+                            },
+                            {
+                                name: "to",
+                                label: "To",
+                                type: "hidden",
+                                value: Y.Array.map(this.get("players"), function(e) {
+                                    return e.toObject();
+                                })
+                            },
+                            {
+                                name: "dummy",
+                                label: "To",
+                                type: "uneditable",
+                                value: emailsList
+                            },
+                            {
+                                type: "string",
+                                name: "subject",
+                                label: "Subject",
+                                required: true
+                            }, {
+                                type: "html",
+                                name: "body",
+                                label: "Body",
+                                required: true
+                            }
+                        ]
+                    };
                 inputEx.use(cfg, Y.bind(function() {
                     this._form = new inputEx(cfg);
                 }, this));
@@ -68,12 +78,16 @@ YUI.add('wegas-sendmail', function(Y) {
                 Wegas.Panel.confirm("This will send a real mail", Y.bind(function() {
                     this.setStatus("Sending...");
 
+                    var form = this._form.getValue();
+                    if (form.dummy) {
+                        delete form.dummy;
+                    }
                     Wegas.Facade.User.sendRequest({
                         request: "/SendMail",
                         cfg: {
                             method: "POST",
                             updateEvent: false,
-                            data: this._form.getValue()
+                            data: form
                         },
                         on: {
                             success: Y.bind(function() {
@@ -105,6 +119,9 @@ YUI.add('wegas-sendmail', function(Y) {
             ATTRS: {
                 players: {
                     type: "array"
+                },
+                emails: {
+                    type: "string"
                 }
             }
         });

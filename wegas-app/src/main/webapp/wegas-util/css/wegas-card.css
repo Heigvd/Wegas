@@ -6,7 +6,7 @@
  * Licensed under the MIT License
  */
 .wrapper--card{
-    display:bloc;
+    display:block;
     position:relative;
     width:calc(100% - 64px);
     height:auto;

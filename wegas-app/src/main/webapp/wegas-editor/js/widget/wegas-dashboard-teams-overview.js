@@ -19,6 +19,11 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
             Y.Array.each(this.get("cardsData"), function(data) {
                 data.blocs = this._getBlocs(data.team);
             }, this);
+
+            var ctx = this;
+            Y.on('refresh', function () {
+                ctx.syncUI();
+            });
         },
         syncUI: function() {
             return Y.Wegas.TeamsOverviewDashboard.superclass.constructor.prototype.syncUI.apply(this, arguments)
@@ -45,6 +50,13 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                     "do": function() {
                         new Y.Wegas.ImpactsTeamModal({
                             "team": team
+                            /*
+                            , "on": {
+                                "impacted": function() {
+                                    this.syncUI();
+                                }
+                            }
+                            */
                         }).render();
                     }
                 }, {
@@ -76,7 +88,7 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
     Y.Wegas.TeamCardDetails = Y.Base.create("wegas-team-card-details", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         TITLE_TEMPLATE: "<span class='card__title__content'></span>",
         LINK_TEMPLATE: "<a href='#' class='card__title__link card__title__link--close'>Details</a>",
-        BASE_TEMPLATE: "<div class='wrapper__bloc-details bloc-details--close'>" + "<div class='bloc-details__notes'><textaedrea class='infos-comments' placeholder='Enter a comment here'></textarea></div>" + "</div>",
+        BASE_TEMPLATE: "<div class='wrapper__bloc-details bloc-details--close'>" + "<div class='bloc-details__notes'><textarea class='infos-comments' placeholder='Enter a comment here'></textarea></div>" + "</div>",
         TEAM_LIST_TEMPLATE: "<div class='bloc-details__players'>" + "<h3>Players</h3>" + "<ul class='bloc-details__players__list'></ul>" + "</div>",
         PLAYER_TEMPLATE: "<li class='bloc-details__player'></li>",
         _saveNotes: function(context) {
@@ -169,7 +181,22 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
         initializer: function() {
             var game = Y.Wegas.Facade.Game.cache.getCurrentGame(),
                 team = this.get("team"),
+                gameLevel = team.get("@class") === "Game",
                 actions;
+
+            // Return the first player of each team (in Team mode, impacted variables are shared among team members)
+            function allFirstPlayers(game){
+                var gamePlayers = [];
+                var arr = game.get("teams"),
+                    len = arr.length;
+                for (var i = 0; i < len; i++) {
+                    var t = arr[i];
+                    if (t.get("@class") !== "DebugTeam" && t.get("players").length) {
+                        gamePlayers = gamePlayers.concat(t.get("players")[0]);
+                    }
+                };
+                return gamePlayers;
+            }
 
             if (game && team) {
                 actions = [{
@@ -177,6 +204,9 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                     "label": "Apply impact",
                     "do": function() {
                         this.item(0).run(this);
+                        Y.later(1500, this, function() { // Wait at least 1000+200 ms for the modale to close (see wegas-console-custom.js)
+                            Y.fire("refresh");
+                        });
                     }
                 }, {
                     "label": "Cancel",
@@ -190,11 +220,13 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                         this.item(0).viewSrc();
                     }
                 }];
-                this.set("title", game.get("properties.freeForAll") ?
-                    "Impact player \"" + team.get("players")[0].get("name") + "\"" :
-                    "Impact team \"" + team.get("name") + "\"");
+                this.set("title", gameLevel ?
+                    "Global impact on game \"" + game.get("name") + "\"" :
+                    game.get("properties.freeForAll") ?
+                        "Impact player \"" + team.get("players")[0].get("name") + "\"" :
+                        "Impact team \"" + team.get("name") + "\"");
                 this.add(new Y.Wegas.CustomConsole({
-                    player: team.get("players")[0],
+                    player: gameLevel ? allFirstPlayers(game) : team.get("players")[0],
                     statusNode: Y.Node.create("<span></span>")
                 }));
                 this.set("actions", actions);
@@ -210,32 +242,105 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
         initializer: function() {
             var game = Y.Wegas.Facade.Game.cache.getCurrentGame(),
                 team = this.get("team"),
+                gameLevel = team.get("@class") === "Game",
                 actions;
 
+            function allPlayers(game){
+                var gamePlayers = [];
+                Y.Array.each(game.get("teams"), function(t){
+                    if (t.get("@class") !== "DebugTeam" && t.get("players").length)
+                        gamePlayers = gamePlayers.concat(t.get("players"));
+                });
+                return gamePlayers;
+            }
+
             if (game && team) {
+
+                var ctx = this,
+                    emailsPromise = gameLevel ?
+                        Y.Wegas.TeamsOverviewDashboard.superclass.constructor.prototype._getGameEmails() :
+                        this._getTeamEmails();
+
                 actions = [{
                     "types": ["primary"],
                     "label": "Send",
-                    "do": function() {
+                    "do": function () {
                         this.item(0).send();
                     }
                 }, {
                     "label": 'Cancel',
-                    "do": function() {
+                    "do": function () {
                         this.close();
                     }
                 }];
-                this.set("title", game.get("properties.freeForAll") ?
-                    "Send real E-Mail to player \"" + team.get("players")[0].get("name") + "\"" :
-                    "Send real E-Mail to players of team \"" + team.get("name") + "\"");
-                this.set("icon", game.get("properties.freeForAll") ? "user" : "group");
-                this.add(new Y.Wegas.SendMail({
-                    "players": team.get("players"),
-                    "statusNode": Y.Node.create("<span></span>")
-                }));
-                this.set("actions", actions);
+                ctx.set("title", gameLevel ?
+                "Send <u>real</u> E-Mail to all players of game \"" + game.get("name") + "\"" :
+                    game.get("properties.freeForAll") ?
+                    "Send <u>real</u> E-Mail to player \"" + team.get("players")[0].get("name") + "\"" :
+                    "Send <u>real</u> E-Mail to players of team \"" + team.get("name") + "\"");
+                ctx.set("icon", game.get("properties.freeForAll") ? "user" : "group");
+
+                ctx.set("actions", actions);
+
+                emailsPromise.then(function(emailsArray){
+                    var emailsString = Y.Wegas.TeamsOverviewDashboard.superclass.constructor.prototype.formatEmails(emailsArray),
+                        hasGuests = emailsArray.indexOf("Guest")!==-1;
+
+                    if (emailsString.length===0){
+                        emailsString = '<span style="color:red">No valid e-mail addresses found!</span>';
+                    }
+
+                    ctx.add(new Y.Wegas.SendMail({
+                        "players": gameLevel ? allPlayers(game) : team.get("players"),
+                        "emails": emailsString
+                        , "statusNode": Y.Node.create("<span></span>")
+                    }));
+
+                    if (hasGuests) {
+                        ctx.add(new Y.Wegas.Button({
+                            label: 'NB: Some players are anonymous (no e-mail)',
+                            cssClass: "wegas-warning",
+                        }));
+                    }
+
+                    ctx.add(new Y.Wegas.Button({
+                        label: '<i class="fa fa-envelope-o" style="font-size:120%">&nbsp;</i> Download e-mail addresses',
+                        cssClass: "wegas-emailsbutton",
+                        on: {
+                            click: Y.bind(function (e) {
+                                Y.Wegas.TeamsOverviewDashboard.superclass.constructor.prototype.displayEmails(gameLevel ?
+                                    Y.Wegas.TeamsOverviewDashboard.superclass.constructor.prototype._getGameEmails() :
+                                    ctx._getTeamEmails());
+                            }, ctx)
+                        }
+                    }));
+                });
             }
+        },
+        _getTeamEmails: function () {
+            var ctx = this;
+            return new Y.Promise(function (resolve, reject) {
+                var gameId = Y.Wegas.Facade.Game.cache.getCurrentGame().get("id"),
+                    teamId = ctx.get("team").get("id");
+                Y.io(Y.Wegas.app.get("base") + "rest/Extended/User/Emails/" + gameId + "/" + teamId, {
+                    cfg: {
+                        method: "GET",
+                        headers: {
+                            "Managed-Mode": true
+                        }
+                    },
+                    on: {
+                        success: Y.bind(function (rId, xmlHttpRequest) {
+                            resolve(JSON.parse(xmlHttpRequest.response));
+                        }, this),
+                        failure: Y.bind(function (rId, xmlHttpRequest) {
+                            resolve("PERMISSION-ERROR");
+                        }, this)
+                    }
+                });
+            });
         }
+
     }, {
         "ATTRS": {
             "team": {}
