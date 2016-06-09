@@ -16,7 +16,7 @@
 .yui3-skin-sam .wegas-icon.wegas-icon-impacts {
     background-position: -5px -4px !important;
     background-size: auto 100% !important;
-    background-image:url("../../wegas-app/images/icon_impact.png"); !important;
+    background-image:url("../../wegas-app/images/icon_impact.png") !important;
     margin:0;
     width:48px;
     height:48px;
@@ -26,7 +26,7 @@
 .yui3-skin-sam .wegas-icon.wegas-icon-email {
     background-position: -5px -4px !important;
     background-size: auto 100% !important;
-    background-image:url("../../wegas-app/images/icon_mail.png"); !important;
+    background-image:url("../../wegas-app/images/icon_mail.png") !important;
     margin:0;
     width:48px;
     height:48px;
