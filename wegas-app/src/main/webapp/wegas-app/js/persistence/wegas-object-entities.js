@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
-YUI.add('wegas-object-entities', function(Y) {
+YUI.add('wegas-object-entities', function (Y) {
     "use strict";
 
     var STRING = "string",
@@ -34,109 +34,105 @@ YUI.add('wegas-object-entities', function(Y) {
      * ObjectDescriptor mapper
      */
     persistence.ObjectDescriptor = Y.Base.create("ObjectDescriptor", persistence.VariableDescriptor, [], {
-        getProperty: function(player, key) {
+        getProperty: function (player, key) {
             return this.getInstance(player).get("properties." + key);
         },
-        getIconCss: function() {
+        getIconCss: function () {
             return "fa fa-database";
         }
     }, {
-        ATTRS: {
-            "@class": {
-                value: "ObjectDescriptor"
-            },
-            properties: {
-                optional: false,
-                _inputex: {
-                    label: "Descriptor properties",
-                    _type: HASHLIST,
-                    keyField: NAME,
-                    valueField: VALUE,
-                    wrapperClassName: "inputEx-fieldWrapper",
-                    elementType: {
-                        type: COMBINE,
-                        fields: [{
-                            name: NAME,
-                            typeInvite: NAME,
-                            size: 10
-                        }, {
-                            name: VALUE,
-                            typeInvite: VALUE
-                        }]
-                    }
-                }
-            },
-            defaultInstance: {
-                type: "object",
+            ATTRS: {
+                "@class": {
+                    value: "ObjectDescriptor"
+                },
                 properties: {
-                    '@class': {
+                    type: "object",
+                    defaultProperties: {
                         type: STRING,
-                        value: 'ObjectInstance',
+                        required: true,
                         view: {
-                            type: HIDDEN
+                            label: VALUE
                         }
                     },
-                    id: IDATTRDEF,
-                    descriptorId: IDATTRDEF,
+                    view: {
+                        label: "Descriptor properties",
+                        type: HASHLIST,
+                        keyLabel: NAME
+                    }
+                },
+                defaultInstance: {
+                    type: "object",
                     properties: {
-                        defaultProperties: {
+                        '@class': {
                             type: STRING,
-                            required: true,
+                            value: 'ObjectInstance',
                             view: {
-                                label: VALUE
+                                type: HIDDEN
                             }
                         },
-                        view: {
-                            label: "Default properties",
-                            type: HASHLIST,
-                            keyLabel: NAME
+                        id: IDATTRDEF,
+                        descriptorId: IDATTRDEF,
+                        properties: {
+                            type: "object",
+                            defaultProperties: {
+                                type: STRING,
+                                required: true,
+                                view: {
+                                    label: VALUE
+                                }
+                            },
+                            view: {
+                                label: "Default properties",
+                                type: HASHLIST,
+                                keyLabel: NAME
+                            }
                         }
+                    }
+                },
+                description: {
+                    type: ["null", STRING],
+                    view: {
+                        type: HTML,
+                        label: "Description",
+                        className: 'wegas-advanced-feature'
                     }
                 }
             },
-            description: {
-                type: ["null", STRING],
-                format: HTML,
-                view: {
-                    className: 'wegas-advanced-feature'
+            METHODS: {
+                size: {
+                    label: "size",
+                    returns: "number",
+                    arguments: [{
+                        type: HIDDEN,
+                        value: "self"
+                    }]
+                },
+                getProperty: {
+                    label: "property equals",
+                    returns: STRING,
+                    arguments: [{
+                        type: HIDDEN,
+                        value: "self"
+                    }, {
+                            typeInvite: NAME,
+                            scriptType: STRING
+                        }]
+                },
+                setProperty: {
+                    label: "set property",
+                    arguments: [{
+                        type: HIDDEN,
+                        value: "self"
+                    }, {
+                            typeInvite: NAME,
+                            scriptType: STRING
+                        }, {
+                            typeInvite: VALUE,
+                            scriptType: STRING
+                        }]
                 }
             }
-        },
-        METHODS: {
-            size: {
-                label: "size",
-                returns: "number",
-                arguments: [{
-                    type: HIDDEN,
-                    value: "self"
-                }]
-            },
-            getProperty: {
-                label: "property equals",
-                returns: STRING,
-                arguments: [{
-                    type: HIDDEN,
-                    value: "self"
-                }, {
-                    typeInvite: NAME,
-                    scriptType: STRING
-                }]
-            },
-            setProperty: {
-                label: "set property",
-                arguments: [{
-                    type: HIDDEN,
-                    value: "self"
-                }, {
-                    typeInvite: NAME,
-                    scriptType: STRING
-                }, {
-                    typeInvite: VALUE,
-                    scriptType: STRING
-                }]
-            }
-        }
-    });
+        });
 
     /**
      * ObjectInstance mapper
