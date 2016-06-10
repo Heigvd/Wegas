@@ -9,11 +9,6 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
-import com.wegas.core.security.ejb.AccountFacade;
-import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.persistence.AbstractAccount;
-import com.wegas.core.security.persistence.User;
-import java.util.Calendar;
 import junit.framework.Assert;
 import org.junit.Test;
 
@@ -47,29 +42,5 @@ public class GameControllerTest extends AbstractEJBTest {
         Assert.assertTrue(variableInstance instanceof TriggerInstance);
 
         playerController.delete(p.getId());
-    }
-
-    @Test
-    public void removeIdles() throws Exception {
-        final GameController gameController = lookupBy(GameController.class);
-        final UserFacade userFacade = lookupBy(UserFacade.class);
-        final AccountFacade accountFacade = lookupBy(AccountFacade.class);
-
-        gameModel.getProperties().setFreeForAll(true);
-        gameModelFacade.update(gameModel.getId(), gameModel);
-
-        User user = userFacade.getCurrentUser();                                // Set created time to 3 month ago
-        Calendar calendar = Calendar.getInstance();
-
-        calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - 13);
-        AbstractAccount account = user.getMainAccount();
-
-        account.setCreatedTime(calendar.getTime());
-        accountFacade.merge(account);
-
-        gameController.joinIndividually(game.getId());
-
-        userFacade.removeIdleGuests();
-
     }
 }
