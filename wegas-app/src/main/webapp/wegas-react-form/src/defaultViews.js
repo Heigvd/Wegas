@@ -10,6 +10,8 @@ import ArrayView from './Views/array';
 import HTMLView from './Views/html';
 import HashlistView from './Views/hashlist';
 import Script from './Views/script';
+import WegasUrl from './Views/wegas-url';
+import WegasImageUrl from './Views/wegas-image-url';
 
 setDefaultWidgets({
     object: ObjectView,
@@ -23,5 +25,7 @@ setDefaultWidgets({
     select: SelectView,
     html: HTMLView,
     hashlist: HashlistView,
+    wegasurl: WegasUrl,
+    wegasimageurl: WegasImageUrl,
     script: Script
 });

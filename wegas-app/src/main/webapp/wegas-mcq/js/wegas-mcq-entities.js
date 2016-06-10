@@ -138,8 +138,8 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     items: {
                         type: STRING,
                         view: {
-                            type: "wegasurl",
-                            label: ""
+                            type: "wegasimageurl",
+                            label: "URL"
                         }
                     },
                     view: {
@@ -282,7 +282,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     value: "ChoiceDescriptor"
                 },
                 title: {
-                    type: NULLSTRING,
+                    type: STRING,
                     optional: true,
                     index: -1,
                     view: {
@@ -558,7 +558,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                                 index: 4,
                                 visible: function (val, formVal) {
                                     var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.parentDescriptorId);
-                                    return parent.get("cbx");
+                                    return parent ? parent.get("cbx") : true;
                                 },
                                 view: {
                                     type: HTML,
@@ -570,7 +570,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                                 type: OBJECT,
                                 visible: function (val, formVal) {
                                     var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.parentDescriptorId);
-                                    return parent.get("cbx");
+                                    return parent ? parent.get("cbx") : true;
                                 },
                                 properties: {
                                     "@class": {
@@ -738,7 +738,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     optional: true,
                     visible: function (val, formVal) {
                         var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.choiceDescriptorId);
-                        return parent.parentDescriptor.get("cbx");
+                        return parent ? parent.parentDescriptor.get("cbx") : true;
                     },
                     view: {
                         type: HTML,
@@ -749,7 +749,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     type: OBJECT,
                     visible: function (val, formVal) {
                         var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.choiceDescriptorId);
-                        return parent.parentDescriptor.get("cbx");
+                        return parent ? parent.parentDescriptor.get("cbx") : true;
                     },
                     properties: {
                         "@class": {
