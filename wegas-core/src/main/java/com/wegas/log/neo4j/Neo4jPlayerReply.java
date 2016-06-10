@@ -189,6 +189,5 @@ public class Neo4jPlayerReply {
     @PostConstruct
     private void checkDB() {
         dbUp = Neo4jUtils.checkDataBaseIsRunning();
-        System.out.println("I'm checking DB !" + dbUp);
     }
 }
