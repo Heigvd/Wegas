@@ -20,6 +20,8 @@ import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.SecurityHelper;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.AuthorizationException;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -33,12 +35,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
 @Path("GameModel/{gameModelId : ([1-9][0-9]*)?}{sep: /?}Game/")
@@ -75,7 +74,9 @@ public class GameController {
 
     /**
      * @param entityId
-     * @return
+     * @return game matching entityId
+     * @throws AuthorizationException current user doesn't have access to the
+     *                                requested game
      */
     @GET
     @Path("{entityId : [1-9][0-9]*}")
@@ -88,7 +89,7 @@ public class GameController {
 
     /**
      * @param gameModelId
-     * @return
+     * @return all gameModel games
      */
     @GET
     public Collection<Game> index(@PathParam("gameModelId") String gameModelId) {
@@ -106,24 +107,33 @@ public class GameController {
     }
 
     /**
+     * Create a new game based on a given gameModel copy.
+     *
      * @param gameModelId
-     * @param entity
-     * @return
+     * @param game
+     * @return the new game with its debug team filtered out
      * @throws IOException
      */
     @POST
-    public Game create(@PathParam("gameModelId") Long gameModelId, Game entity) throws IOException {
+    public Game create(@PathParam("gameModelId") Long gameModelId, Game game) throws IOException {
         SecurityUtils.getSubject().checkPermission("GameModel:Instantiate:gm" + gameModelId);
 
-        gameFacade.publishAndCreate(gameModelId, entity);
-        //gameFacade.create(gameModelId, entity);
-        return getGameWithoutDebugTeam(entity);
+        gameFacade.publishAndCreate(gameModelId, game);
+        //@Dirty: those lines exist to get a new game pointer. Cache is messing with it
+        // removing debug team will stay in cache as this game pointer is new. work around
+        em.flush();
+        em.detach(game);
+        game = em.find(Game.class, game.getId());
+        //gameFacade.create(gameModelId, game);
+        return getGameWithoutDebugTeam(game);
     }
 
     /**
+     * Create a new game within the given game model
+     *
      * @param gameModelId
      * @param entity
-     * @return
+     * @return the new game with its debug team filtered out
      * @throws IOException
      */
     @POST
@@ -140,7 +150,7 @@ public class GameController {
      *
      * @param gameModelId
      * @param entity
-     * @return
+     * @return the new game with its debug team
      * @throws IOException
      */
     @POST
@@ -152,7 +162,7 @@ public class GameController {
     /**
      * @param entityId
      * @param entity
-     * @return
+     * @return up to date game
      */
     @PUT
     @Path("{entityId: [1-9][0-9]*}")
@@ -163,6 +173,13 @@ public class GameController {
         return gameFacade.update(entityId, entity);
     }
 
+    /**
+     * Change game status (bin, live, delete)
+     *
+     * @param entityId
+     * @param status
+     * @return the game with up to date status
+     */
     @PUT
     @Path("{entityId: [1-9][0-9]*}/status/{status: [A-Z]*}")
     public Game changeStatus(@PathParam("entityId") Long entityId, @PathParam("status") final Game.Status status) {
@@ -182,6 +199,12 @@ public class GameController {
         return game;
     }
 
+    /**
+     * Get all game with given status
+     *
+     * @param status
+     * @return all game having the given status
+     */
     @GET
     @Path("status/{status: [A-Z]*}")
     public Collection<Game> findByStatus(@PathParam("status") final Game.Status status) {
@@ -195,6 +218,12 @@ public class GameController {
         return retGames;
     }
 
+    /**
+     * Count games by status
+     *
+     * @param status
+     * @return number of game having the given status
+     */
     @GET
     @Path("status/{status: [A-Z]*}/count")
     public int countByStatus(@PathParam("status") final Game.Status status) {
@@ -223,6 +252,9 @@ public class GameController {
         }
     }
 
+    /**
+     * @return all games which gave been deleted
+     */
     @DELETE
     public Collection<Game> deleteAll() {
         final Collection<Game> retGames = new ArrayList<>();
@@ -260,7 +292,7 @@ public class GameController {
                     if (player == null) {
                         if (game.getGameModel().getProperties().getFreeForAll()) {
                             Team team = new Team("Individually-" + Helper.genToken(20));
-                            team = teamFacade.create(game.getId(), team); // return managed team
+                            teamFacade.create(game.getId(), team); // return managed team
                             playerFacade.create(team, currentUser);
                             r = Response.status(Response.Status.CREATED).entity(team).build();
                         }
@@ -271,6 +303,12 @@ public class GameController {
         return r;
     }
 
+    /**
+     * Filter out the debug team
+     *
+     * @param game
+     * @return the game without the debug team
+     */
     private Game getGameWithoutDebugTeam(Game game) {
         if (game != null) {
             em.detach(game);
@@ -287,7 +325,7 @@ public class GameController {
 
     /**
      * @param token
-     * @return
+     * @return game which matches the token, without its debug team
      */
     @GET
     @Path("/FindByToken/{token : .*}/")
@@ -299,8 +337,8 @@ public class GameController {
     /**
      * Resets all the variables of a given game
      *
-     * @param gameId gameId
-     * @return OK
+     * @param gameId gameId id of game to reset
+     * @return HTTP 200 Ok
      */
     @GET
     @Path("{gameId : [1-9][0-9]*}/Reset")

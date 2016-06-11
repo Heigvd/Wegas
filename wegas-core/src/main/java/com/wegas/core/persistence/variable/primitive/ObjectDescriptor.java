@@ -18,7 +18,7 @@ import javax.persistence.Lob;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 
@@ -49,8 +49,8 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> {
 
         ObjectDescriptor other = (ObjectDescriptor) a;
         this.setDescription(other.getDescription());
-        this.properties.clear();
-        this.properties.putAll(other.getProperties());
+        this.setProperties(new HashMap<>());
+        this.getProperties().putAll(other.getProperties());
     }
 
     /**

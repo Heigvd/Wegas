@@ -11,6 +11,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.GameFacade;
+import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.TeamFacade;
+import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.game.Game;
@@ -38,7 +42,7 @@ import java.util.Map;
 
 ////import javax.xml.bind.annotation.XmlTransient;
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -46,8 +50,8 @@ import java.util.Map;
     //@NamedQuery(name = "findTeamInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.teamScopeKey = :teamid"),
     //@NamedQuery(name = "findPlayerInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.playerScopeKey = :playerid"),
     @NamedQuery(name = "findInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE EXISTS "
-        + "(SELECT player From Player player WHERE player.id = :playerid AND "
-        + "(variableinstance.playerScopeKey = player.id OR variableinstance.teamScopeKey = player.teamId OR variableinstance.gameScopeKey = player.team.gameId))")
+            + "(SELECT player From Player player WHERE player.id = :playerid AND "
+            + "(variableinstance.player.id = player.id OR variableinstance.team.id = player.teamId OR variableinstance.game = player.team.gameId))")
 })
 
 /*@Indexes(value = { // JPA 2.0 eclipse link extension TO BE REMOVED
@@ -126,7 +130,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "variableInstance")
     @JsonIgnore
     private GameModelScope gameModelScope;
-
     /**
      *
      */
@@ -136,34 +139,41 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
 
     /**
      *
+     * @Column(name = "variableinstances_key", insertable = false, updatable =
+     * false, columnDefinition = "bigint") private Long playerScopeKey;
      */
-    @Column(name = "variableinstances_key", insertable = false, updatable = false, columnDefinition = "bigint")
-    private Long playerScopeKey;
-
+    /**
+     *
+     */
     @JoinColumn(name = "variableinstances_key", insertable = false, updatable = false)
+    @ManyToOne
+    @JsonIgnore
     private Player player;
-
+    /**
+     *
+     * @Column(name = "gamevariableinstances_key", insertable = false, updatable
+     * = false, columnDefinition = "bigint") private Long gameScopeKey;
+     */
     /**
      *
      */
-    @Column(name = "gamevariableinstances_key", insertable = false, updatable = false, columnDefinition = "bigint")
-    private Long gameScopeKey;
-
     @JoinColumn(name = "gamevariableinstances_key", insertable = false, updatable = false)
+    @ManyToOne
+    @JsonIgnore
     private Game game;
-
+    /**
+     *
+     * @Column(name = "teamvariableinstances_key", insertable = false, updatable
+     * = false, columnDefinition = "bigint") private Long teamScopeKey;
+     */
     /**
      *
      */
-    @Column(name = "teamvariableinstances_key", insertable = false, updatable = false, columnDefinition = "bigint")
-    private Long teamScopeKey;
-
     @JoinColumn(name = "teamvariableinstances_key", insertable = false, updatable = false)
+    @ManyToOne
+    @JsonIgnore
     private Team team;
 
-    /**
-     * @return
-     */
     @Override
     public VariableInstance clone() {
         return (VariableInstance) super.clone();
@@ -171,14 +181,14 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
 
     @JsonIgnore
     public String getAudience() {
-        if (this.teamScopeKey != null) {
-            return Helper.getAudienceTokenForTeam(this.teamScopeKey);
-        } else if (this.playerScopeKey != null) {
-            return Helper.getAudienceTokenForPlayer(this.playerScopeKey);
-        } else if (this.gameScopeKey != null) {
-            return Helper.getAudienceTokenForGame(this.gameScopeKey);
+        if (this.getTeam() != null) {
+            return Helper.getAudienceTokenForTeam(this.getTeam().getId());
+        } else if (this.getPlayer() != null) {
+            return Helper.getAudienceTokenForPlayer(this.getPlayer().getId());
+        } else if (this.getGame() != null) {
+            return Helper.getAudienceTokenForGame(this.getGame().getId());
         } else if (this.gameModelScope != null) {
-            return Helper.getAudienceTokenForGameModel(this.getGameModelScope().getVariableDescriptor().getId());
+            return Helper.getAudienceTokenForGameModel(this.getGameModelScope().getVariableDescriptor().getId()); //  ???????? 
         } else {
             // Default instance
             return null;
@@ -215,23 +225,24 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     //@XmlTransient
     @JsonIgnore
     public AbstractScope getScope() {
-        if (this.teamScopeKey != null) {
-            return this.teamScope;
-        } else if (this.playerScopeKey != null) {
-            return this.playerScope;
-        } else if (this.gameScopeKey != null) {
-            return this.gameScope;
-        } else if (this.gameModelScope != null) {
-            return this.gameModelScope;
+        if (this.getTeamScope() != null) {
+            return this.getTeamScope();
+        } else if (this.getPlayerScope() != null) {
+            return this.getPlayerScope();
+        } else if (this.getGameScope() != null) {
+            return this.getGameScope();
+        } else if (this.getGameModelScope() != null) {
+            return this.getGameModelScope();
         } else {
             return null;
         }
     }
 
     /**
-     * @return
+     * Get instance descriptor through its scope.
+     *
+     * @return the descriptor or null if this is a default instance
      */
-    //@XmlTransient
     @JsonIgnore
     public VariableDescriptor getDescriptor() {
         if (this.getScope() != null) {
@@ -242,7 +253,9 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * @return
+     * Get instance descriptor's id through its scope
+     *
+     * @return descriptor id of -1 if this is a default instance
      */
     @JsonView(Views.IndexI.class)
     public Long getDescriptorId() {
@@ -254,10 +267,45 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
+     * Dummy so that jaxb doesnt yell
+     *
      * @param l
      */
     public void setDescriptorId(Long l) {
         // Dummy so that jaxb doesnt yell
+    }
+
+    /**
+     * @return player if any
+     */
+    public Player getPlayer() {
+        return player;
+    }
+
+    /**
+     * @return game if any
+     */
+    public Game getGame() {
+        return game;
+    }
+
+    /**
+     * @return team if any
+     */
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
     }
 
     /**
@@ -269,30 +317,24 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * @return
+     * Id of the team owning the instance
+     *
+     * @return team's id or null if instance is not a team instance
+     * @JsonIgnore public Long getTeamScopeKey() { return teamScopeKey; }
      */
-    @JsonIgnore
-    public Long getTeamScopeKey() {
-        return teamScopeKey;
-    }
-
     /**
-     * @param teamScopeKey
+     * @param teamScopeKey public void setTeamScopeKey(Long teamScopeKey) {
+     *                     this.teamScopeKey = teamScopeKey; }
      */
-    public void setTeamScopeKey(Long teamScopeKey) {
-        this.teamScopeKey = teamScopeKey;
-    }
-
     /**
-     * @return
+     * Id of player owning the instance
+     *
+     * @return player's id or null if this is not a player instance
+     * @JsonIgnore public Long getPlayerScopeKey() { return playerScopeKey; }
      */
-    @JsonIgnore
-    public Long getPlayerScopeKey() {
-        return playerScopeKey;
-    }
-
     /**
-     * @return the gameScope
+     *
+     * @return the gameScope or null if this instance doesn't belong to a game
      */
     @JsonIgnore
     public GameScope getGameScope() {
@@ -300,19 +342,13 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * @param playerScopeKey
+     * @param playerScopeKey public void setPlayerScopeKey(Long playerScopeKey)
+     *                       { this.playerScopeKey = playerScopeKey; }
      */
-    public void setPlayerScopeKey(Long playerScopeKey) {
-        this.playerScopeKey = playerScopeKey;
-    }
-
     /**
-     * @param gameScopeKey
+     * @param gameScopeKey public void setGameScopeKey(Long gameScopeKey) {
+     *                     this.gameScopeKey = gameScopeKey; }
      */
-    public void setGameScopeKey(Long gameScopeKey) {
-        this.gameScopeKey = gameScopeKey;
-    }
-
     /**
      * @param gameScope the gameScope to set
      */
@@ -322,7 +358,8 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * @return the teamScope
+     * @return the team or null if this instance doesn't belong to a team
+     *         (belonging to the game for instance)
      */
     @JsonIgnore
     public TeamScope getTeamScope() {
@@ -355,18 +392,14 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
 
     /**
      * @return the gameScopeKey
+     * @JsonIgnore public Long getGameScopeKey() { return gameScopeKey; }
      */
-    @JsonIgnore
-    public Long getGameScopeKey() {
-        return gameScopeKey;
-    }
-
     /**
      * return instance descriptor equals the instance is a default or effective
      * one
      *
+     * @return instance descriptor
      * @deprecated {@link #findDescriptor()}
-     * @return
      */
     @JsonIgnore
     public VariableDescriptor getDescriptorOrDefaultDescriptor() {
@@ -381,7 +414,10 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * @return
+     * return instance descriptor equals the instance is a default or effective
+     * one
+     *
+     * @return instance descriptor
      */
     public VariableDescriptor findDescriptor() {
         if (this.getScope() != null) {
@@ -399,7 +435,8 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * @return the gameModelScope
+     * @return the gameModelScope of instance id gameModel scoped, null
+     *         otherwise
      */
     public GameModelScope getGameModelScope() {
         return gameModelScope;
@@ -413,16 +450,70 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * @return
+     *
+     * @return string representation of the instance (class name, id, default or
+     *         not, ...)
      */
     @Override
     public String toString() {
-        if (this.defaultDescriptor != null) {
-            return "Default " + this.getClass().getSimpleName() + "( " + getId() + ") for " + this.defaultDescriptor.getName();
+        if (this.getDefaultDescriptor() != null) {
+            return "Default " + this.getClass().getSimpleName() + "( " + getId() + ") for " + this.getDefaultDescriptor().getName();
         } else if (this.getDescriptor() != null) {
             return this.getClass().getSimpleName() + "( " + getId() + ") for " + this.getDescriptor().getName();
         } else {
             return this.getClass().getSimpleName() + "( " + getId() + ") NO DESC";
+        }
+    }
+
+    @Override
+    public void updateCacheOnDelete() {
+        // do not update anything for default instances
+        if (this.getDefaultDescriptor() == null) {
+            VariableDescriptor variableDescriptor = VariableDescriptorFacade.lookup().find(this.getScope().getVariableDescriptor().getId());
+
+            // if variable descriptor does not exists, it means it has been removed too
+            if (variableDescriptor != null) {
+
+                // When a player/team/game is removed, its instances are deleted too (JPA Casacding)
+                // Scopes for each deleted variables shall be updated too
+                AbstractScope scope = variableDescriptor.getScope();
+
+                if (scope != null) {
+                    if (scope instanceof PlayerScope) {
+                        scope.getVariableInstances().remove(this.getPlayer());
+                    } else if (scope instanceof TeamScope) {
+                        scope.getVariableInstances().remove(this.getTeam());
+                    } else if (scope instanceof GameScope) {
+                        scope.getVariableInstances().remove(this.getGame());
+                    } else if (this.gameModelScope != null) {
+                    }
+                }
+            }
+
+            AbstractScope scope = this.getScope();
+
+            if (scope != null) {
+                // When a descriptor is deleted, all of its instances are removed too (JPA cascading)
+                // References to those instances shall be remove from owner private instances list
+                if (scope instanceof PlayerScope) {
+                    Player find = PlayerFacade.lookup().find(this.getPlayer().getId());
+                    if (find != null) {
+                        find.getPrivateInstances().remove(this);
+                    }
+                } else if (scope instanceof TeamScope) {
+                    Team find = TeamFacade.lookup().find(this.getTeam().getId());
+                    if (find != null) {
+                        find.getPrivateInstances().remove(this);
+                    }
+                } else if (scope instanceof GameScope) {
+                    Game find = GameFacade.lookup().find(this.getGame().getId());
+                    if (find != null) {
+                        find.getPrivateInstances().remove(this);
+                    }
+                } else if (this.gameModelScope != null) {
+                    // noop
+                }
+            }
         }
     }
 }

@@ -74,9 +74,8 @@ public class GradeDescriptor extends EvaluationDescriptor<GradeInstance> {
     }
 
     @Override
-    public GradeInstance createInstance() {
+    protected GradeInstance newInstance() {
         GradeInstance gi = new GradeInstance();
-        gi.setDescriptor(this);
         if (this.getMinValue() != null && this.getMaxValue() != null) {
             gi.setValue(Math.floor((getMinValue() + getMaxValue()) / 2.0));
         } else if (this.getMinValue() != null) {

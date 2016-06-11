@@ -35,7 +35,7 @@ import javax.persistence.NamedQuery;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 @Table(name = "MCQQuestionDescriptor")
@@ -70,7 +70,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     /**
      *
      */
-    @OneToMany(mappedBy = "question", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @OneToMany(mappedBy = "question", cascade = {CascadeType.ALL}/*, orphanRemoval = true*/)
     //@BatchFetch(BatchFetchType.IN)
     @JoinColumn(referencedColumnName = "variabledescriptor_id")
     @JsonManagedReference
@@ -110,16 +110,16 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      * @param value
      */
     public void setActive(Player p, boolean value) {
-        ((QuestionInstance) this.getInstance(p)).setActive(value);
+        this.getInstance(p).setActive(value);
     }
 
     /**
      *
      * @param p
-     * @return
+     * @return the player instance active status
      */
     public boolean isActive(Player p) {
-        QuestionInstance instance = (QuestionInstance) this.getInstance(p);
+        QuestionInstance instance = this.getInstance(p);
         return instance.getActive();
     }
 
@@ -175,7 +175,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     }
 
     /**
-     * @param cb: if the checkbox mode is set
+     * @param cb if the checkbox mode is set
      */
     public void setCbx(Boolean cb) {
         this.cbx = cb;
@@ -189,7 +189,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     }
 
     /**
-     * @param tab: if the tabular layout mode is set
+     * @param tab if the tabular layout mode is set
      */
     public void setTabular(Boolean tab) {
         this.tabular = tab;
@@ -212,7 +212,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     @Override
     public void setGameModel(GameModel gm) {
         super.setGameModel(gm);
-        for (ChoiceDescriptor cd : this.items) {
+        for (ChoiceDescriptor cd : this.getItems()) {
             cd.setGameModel(gm);
         }
     }
@@ -220,10 +220,10 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     /**
      *
      * @param p
-     * @return
+     * @return true if the player has already answers this question
      */
     public boolean isReplied(Player p) {
-        QuestionInstance instance = (QuestionInstance) this.getInstance(p);
+        QuestionInstance instance = this.getInstance(p);
         if (this.getCbx()) {
             return instance.getValidated();
         } else {
@@ -232,9 +232,10 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     }
 
     /**
+     * {@link #isReplied ...}
      *
      * @param p
-     * @return
+     * @return true if the player has not yet answers this question
      */
     public boolean isNotReplied(Player p) {
         return !this.isReplied(p);
@@ -253,21 +254,21 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      */
     @Override
     public void setItems(List<ChoiceDescriptor> items) {
+        this.items = new ArrayList<>();
         for (ChoiceDescriptor cd : items) {                                     //@todo: due to duplication, fix this
-            cd.setQuestion(this);
-            // cd.setGameModel(this.getGameModel());
+            this.addItem(cd);
         }
-        this.items = items;
     }
 
     /**
      *
      * @param index
-     * @return
+     * @return the iest choiceDescriptor
+     * @throws IndexOutOfBoundsException
      */
     @Override
     public ChoiceDescriptor item(int index) {
-        return this.items.get(index);
+        return this.getItems().get(index);
     }
 
     /**
@@ -276,32 +277,37 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      */
     @Override
     public void addItem(ChoiceDescriptor item) {
-        this.items.add(item);
+        if (this.getGameModel() != null) {
+            this.getGameModel().addToVariableDescriptors(item);
+        }
+        this.getItems().add(item);
         item.setQuestion(this);
-        item.setGameModel(this.getGameModel());
     }
 
     @Override
     public void addItem(int index, ChoiceDescriptor item) {
-        this.items.add(index, item);
+        if (this.getGameModel() != null) {
+            this.getGameModel().addToVariableDescriptors(item);
+        }
+        this.getItems().add(index, item);
         item.setQuestion(this);
-        item.setGameModel(this.getGameModel());
     }
 
     @Override
     public int size() {
-        return this.items.size();
+        return this.getItems().size();
     }
 
     @Override
     public boolean remove(ChoiceDescriptor item) {
-        return this.items.remove(item);
+        this.getGameModel().removeFromVariableDescriptors(item);
+        return this.getItems().remove(item);
     }
 
     @Override
     public Boolean containsAll(List<String> criterias) {
         return Helper.insensitiveContainsAll(this.getDescription(), criterias)
-            || super.containsAll(criterias);
+                || super.containsAll(criterias);
     }
 
     public int getUnreadCount(Player player) {

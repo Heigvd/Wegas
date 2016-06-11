@@ -31,7 +31,7 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Provider
 public class ManagedModeResponseFilter implements ContainerResponseFilter {
@@ -62,7 +62,9 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
         if (managedMode != null && !managedMode.toLowerCase().equals("false")) {
 
             ManagedResponse serverResponse = new ManagedResponse();
-            List entities;
+            List updatedEntities;
+            List deletedEntities;
+
             boolean rollbacked = false;
 
             /*
@@ -74,7 +76,8 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
              */
             if (response.getEntity() instanceof Exception) {
                 // No Entities but register exception as event
-                entities = new ArrayList<>();
+                updatedEntities = new ArrayList<>();
+                deletedEntities = new ArrayList<>();
                 WegasRuntimeException wrex;
 
                 if (response.getEntity() instanceof WegasRuntimeException) {
@@ -95,6 +98,8 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                  * -> Include all modifed entites in the managed response
                  */
 
+                List entities;
+
                 if (response.getEntity() instanceof List) {
                     entities = new ArrayList<>();
                     for (Object o : (List) response.getEntity()) {
@@ -111,31 +116,52 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                     entities = new ArrayList<>();
                 }
 
+                if (request.getMethod().equalsIgnoreCase("DELETE")) {
+                    updatedEntities = new ArrayList<>();
+                    deletedEntities = entities;
+                } else {
+                    updatedEntities = entities;
+                    deletedEntities = new ArrayList<>();
+                }
+
                 response.setStatus(HttpStatus.SC_OK);
             }
 
-            Map<String, List<AbstractEntity>> updatedEntities = rmf.getUpdatedEntities();
-            Map<String, List<AbstractEntity>> destroyedEntities = rmf.getDestroyedEntities();
-            Map<String, List<AbstractEntity>> outdatedEntities = rmf.getOutdatedEntities();
+            Map<String, List<AbstractEntity>> updatedEntitiesMap = rmf.getUpdatedEntities();
+            Map<String, List<AbstractEntity>> destroyedEntitiesMap = rmf.getDestroyedEntities();
+            Map<String, List<AbstractEntity>> outdatedEntitiesMap = rmf.getOutdatedEntities();
 
-            if (!rollbacked && !(updatedEntities.isEmpty() && destroyedEntities.isEmpty() && outdatedEntities.isEmpty())) {
+            if (!rollbacked && !(updatedEntitiesMap.isEmpty() && destroyedEntitiesMap.isEmpty() && outdatedEntitiesMap.isEmpty())) {
                 try {
                     WebsocketFacade websocketFacade = Helper.lookupBy(WebsocketFacade.class, WebsocketFacade.class);
                     /*
                      * Merge updatedInstance within ManagedResponse entities
                      */
-                    for (Entry<String, List<AbstractEntity>> entry : updatedEntities.entrySet()) {
+                    for (Entry<String, List<AbstractEntity>> entry : updatedEntitiesMap.entrySet()) {
                         String audience = entry.getKey();
                         if (websocketFacade.hasPermission(audience, rmf.getPlayer())) {
                             for (AbstractEntity ae : entry.getValue()) {
-                                if (!entities.contains(ae)) {
-                                    entities.add(ae);
+                                if (!updatedEntities.contains(ae)) {
+                                    updatedEntities.add(ae);
+                                }
+                            }
+                        }
+                    }
+                    /*
+                     * Merge updatedInstance within ManagedResponse entities
+                     */
+                    for (Entry<String, List<AbstractEntity>> entry : destroyedEntitiesMap.entrySet()) {
+                        String audience = entry.getKey();
+                        if (websocketFacade.hasPermission(audience, rmf.getPlayer())) {
+                            for (AbstractEntity ae : entry.getValue()) {
+                                if (!deletedEntities.contains(ae)) {
+                                    deletedEntities.add(ae);
                                 }
                             }
                         }
                     }
 
-                    websocketFacade.onRequestCommit(updatedEntities, destroyedEntities, outdatedEntities,
+                    websocketFacade.onRequestCommit(updatedEntitiesMap, destroyedEntitiesMap, outdatedEntitiesMap,
                         (managedMode.matches("^[\\d\\.]+$") ? managedMode : null));
                 } catch (NamingException | NoPlayerException ex) {
                     java.util.logging.Logger.getLogger(ManagedModeResponseFilter.class.getName()).log(Level.SEVERE, null, ex);
@@ -146,7 +172,9 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
             serverResponse.getEvents().addAll(rmf.getRequestManager().getClientEvents());
 
             // Set entities
-            serverResponse.setEntities(entities);
+            serverResponse.setUpdatedEntities(updatedEntities);
+            serverResponse.setDeletedEntities(deletedEntities);
+
             response.setEntity(serverResponse);
         }
     }

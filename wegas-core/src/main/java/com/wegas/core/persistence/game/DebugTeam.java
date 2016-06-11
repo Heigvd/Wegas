@@ -11,7 +11,7 @@ import javax.persistence.*;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 public class DebugTeam extends Team {
@@ -22,7 +22,7 @@ public class DebugTeam extends Team {
      *
      */
     public DebugTeam() {
-        this.setName("Test team");                                              // Name is fixed
+        this.setName("Test team");
         this.addPlayer(new Player("Test player"));
     }
 

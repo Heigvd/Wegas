@@ -815,6 +815,9 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             time: {
                 type: NUMBER
             },
+            startTime: {
+                type: NUMBER
+            },
             completion: {
                 type: NUMBER
             },

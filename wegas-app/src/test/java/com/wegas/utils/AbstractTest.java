@@ -89,17 +89,25 @@ public abstract class AbstractTest {
     }
 
     protected final void createGameModelFromFileWithScript(String path, String... injectScriptsPath) throws IOException {
-        String pmg = TestHelper.readFile(path);
-        GameModel gameModel = JacksonMapperProvider.getMapper().readValue(pmg, GameModel.class);
-        this.createGameModelWithScript(gameModel, injectScriptsPath);
+        try {
+            String pmg = TestHelper.readFile(path);
+            GameModel gameModel = JacksonMapperProvider.getMapper().readValue(pmg, GameModel.class);
+            this.createGameModelWithScript(gameModel, injectScriptsPath);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     /**
-     * Same as createGameModelFromFileWithScript but will concatenate all scripts within a big one.
-     * This ensure scripts will be evaluated in the given order but we'll loose the filename reference...
+     * Same as createGameModelFromFileWithScript but will concatenate all
+     * scripts within a big one.
+     * This ensure scripts will be evaluated in the given order but we'll loose
+     * the filename reference...
+     *
      * @param path
      * @param injectScriptsPath
-     * @throws IOException 
+     * @throws IOException
      */
     protected final void createGameModelFromFileWithConcatenatedScript(String path, String... injectScriptsPath) throws IOException {
         String pmg = TestHelper.readFile(path);
@@ -117,7 +125,12 @@ public abstract class AbstractTest {
     }
 
     protected Object evalScript(String script) {
-        return getScriptController().run(gm.getId(), this.player.getId(), null, new Script(script));
+        try {
+            return getScriptController().run(gm.getId(), this.player.getId(), null, new Script(script));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     protected abstract ScriptController getScriptController();

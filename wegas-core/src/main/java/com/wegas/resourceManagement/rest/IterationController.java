@@ -13,10 +13,7 @@ import java.util.Collection;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -40,7 +37,7 @@ public class IterationController {
      *
      * @param burndownInstanceId id of the burndown instance we look iterations
      *                           for
-     * @return
+     * @return all iterations contained within the given burndown instance
      */
     @GET
     public Collection<Iteration> getIterations(@PathParam("brnDwnId") Long burndownInstanceId) {

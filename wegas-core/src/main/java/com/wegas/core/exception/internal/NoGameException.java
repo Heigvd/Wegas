@@ -9,7 +9,7 @@ package com.wegas.core.exception.internal;
 
 /**
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class NoGameException extends WegasInternalException {
 

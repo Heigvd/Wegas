@@ -13,6 +13,9 @@
 YUI.add('wegas-teams-overview-dashboard', function(Y) {
     "use strict";
 
+    var GUEST = "Guest",
+        CONTENTBOX = "contentBox";
+
     Y.Wegas.TeamsOverviewDashboard = Y.Base.create("wegas-teams-overview-dashboard", Y.Wegas.TeamsDashboard, [], {
         BOUNDING_TEMPLATE: "<div class='dashboard dashboard--teams-overview' />",
         initializer: function() {
@@ -101,7 +104,7 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                 var teamList,
                     game = Y.Wegas.Facade.Game.cache.getCurrentGame(),
                     base = Y.Node.create(this.BASE_TEMPLATE),
-                    title = this.get("host").get("contentBox").one(".card__title").addClass("card__title--detailed"),
+                    title = this.get("host").get(CONTENTBOX).one(".card__title").addClass("card__title--detailed"),
                     titleContent = title.getContent(),
                     detailLink = Y.Node.create(this.LINK_TEMPLATE);
                 title.empty();
@@ -111,7 +114,7 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                 this.get("host").get("boundingBox").append(base);
                 if (!game.get("properties.freeForAll")) {
                     base.addClass("bloc-details--team");
-                    this.get("host").get("contentBox").addClass("card--team");
+                    this.get("host").get(CONTENTBOX).addClass("card--team");
                     teamList = Y.Node.create(this.TEAM_LIST_TEMPLATE);
                     Y.Array.each(this.get("team").get("players"), function(player) {
                         player = Y.Node.create(this.PLAYER_TEMPLATE).append(player.get("name"));
@@ -151,7 +154,7 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                                 }, this)
                             });
                         }
-                        this.get("host").get("contentBox").toggleClass("card__detailed");
+                        this.get("host").get(CONTENTBOX).toggleClass("card__detailed");
                         detailLink.toggleClass("card__title__link--close");
                         detailLink.toggleClass("card__title__link--open");
                         base.toggleClass("bloc-details--open");
@@ -257,9 +260,7 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
             if (game && team) {
 
                 var ctx = this,
-                    emailsPromise = gameLevel ?
-                        Y.Wegas.TeamsOverviewDashboard.superclass.constructor.prototype._getGameEmails() :
-                        this._getTeamEmails();
+                    cb = ctx.get(CONTENTBOX);
 
                 actions = [{
                     "types": ["primary"],
@@ -274,55 +275,77 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                     }
                 }];
                 ctx.set("title", gameLevel ?
-                "Send <u>real</u> E-Mail to all players of game \"" + game.get("name") + "\"" :
+                "Send real E-Mail to all players of game \"" + game.get("name") + "\"" :
                     game.get("properties.freeForAll") ?
-                    "Send <u>real</u> E-Mail to player \"" + team.get("players")[0].get("name") + "\"" :
-                    "Send <u>real</u> E-Mail to players of team \"" + team.get("name") + "\"");
+                    "Send real E-Mail to player \"" + team.get("players")[0].get("name") + "\"" :
+                    "Send real E-Mail to players of team \"" + team.get("name") + "\"");
                 ctx.set("icon", game.get("properties.freeForAll") ? "user" : "group");
-
                 ctx.set("actions", actions);
 
-                emailsPromise.then(function(emailsArray){
-                    var emailsString = Y.Wegas.TeamsOverviewDashboard.superclass.constructor.prototype.formatEmails(emailsArray),
-                        hasGuests = emailsArray.indexOf("Guest")!==-1;
+                cb.append('<div class="wegas-status-bar wegas-status-bar-hidden"><div class="results">Fetching e-mail addresses ...</div><div class="status"></div></div>');
+                cb.one(".wegas-status-bar").removeClass("wegas-status-bar-hidden");
+                cb.one(".status").addClass("status--running");
+
+                this._getEmails(gameLevel ? null : team).then(function(emailsArray){
+                    var modal = cb.get("parentNode");
+
+                    modal.one(".wegas-status-bar").addClass("wegas-status-bar-hidden");
+                    modal.one(".status").removeClass("status--running");
+
+                    var emailsString = ctx.formatEmails(emailsArray),
+                        hasGuests = emailsArray.indexOf(GUEST)!==-1;
 
                     if (emailsString.length===0){
-                        emailsString = '<span style="color:red">No valid e-mail addresses found!</span>';
+                        cb.prepend('<div class="wegas-warning">There are only anonymous players (without e-mail)</div>');
+                        // Hide the "Send" button in the footer of the modal:
+                        modal.one(".modal__footer").one(".button--primary").hide();
+                        return;
                     }
 
                     ctx.add(new Y.Wegas.SendMail({
                         "players": gameLevel ? allPlayers(game) : team.get("players"),
+                        "statusNode": Y.Node.create("<span></span>"),
                         "emails": emailsString
-                        , "statusNode": Y.Node.create("<span></span>")
                     }));
-
-                    if (hasGuests) {
-                        ctx.add(new Y.Wegas.Button({
-                            label: 'NB: Some players are anonymous (no e-mail)',
-                            cssClass: "wegas-warning",
-                        }));
-                    }
-
                     ctx.add(new Y.Wegas.Button({
                         label: '<i class="fa fa-envelope-o" style="font-size:120%">&nbsp;</i> Download e-mail addresses',
                         cssClass: "wegas-emailsbutton",
                         on: {
                             click: Y.bind(function (e) {
-                                Y.Wegas.TeamsOverviewDashboard.superclass.constructor.prototype.displayEmails(gameLevel ?
-                                    Y.Wegas.TeamsOverviewDashboard.superclass.constructor.prototype._getGameEmails() :
-                                    ctx._getTeamEmails());
+                                ctx.displayEmails(emailsArray);
                             }, ctx)
                         }
                     }));
+
+                    if (hasGuests) {
+                        var nbGuests = 0;
+                        emailsArray.forEach(function (email) {
+                            if (email === GUEST) {
+                                nbGuests++;
+                            }
+                        });
+                        var guestsOfPlayers = nbGuests + ' of ' + emailsArray.length,
+                            verb = emailsArray.length===1 ? ' is anonymous ' : ' are anonymous ',
+                            players = nbGuests===1 ? ' player ' : ' players ';
+                        cb.prepend('<div class="wegas-warning">NB: ' + guestsOfPlayers + players + verb + ' (no e-mail)</div>');
+                    }
                 });
             }
         },
-        _getTeamEmails: function () {
+
+        // Returns the promise of an array of emails as strings
+        _getEmails: function (team) {
             var ctx = this;
             return new Y.Promise(function (resolve, reject) {
                 var gameId = Y.Wegas.Facade.Game.cache.getCurrentGame().get("id"),
-                    teamId = ctx.get("team").get("id");
-                Y.io(Y.Wegas.app.get("base") + "rest/Extended/User/Emails/" + gameId + "/" + teamId, {
+                    requestURL;
+                if (team) {
+                    requestURL = Y.Wegas.app.get("base") + "rest/Extended/User/Emails/" + gameId + "/" + team.get("id");
+                } else {
+                    requestURL = Y.Wegas.app.get("base") + "rest/Extended/User/Emails/" + gameId;
+                }
+
+                Y.io(requestURL, {
                     cfg: {
                         method: "GET",
                         headers: {
@@ -339,8 +362,71 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                     }
                 });
             });
-        }
+        },
 
+        // @param emailsArray: emails as an array of strings (with guests denoted by "Guest").
+        displayEmails: function(emailsArray){
+            var newTab = window.open("", "_blank");
+
+            var nbValidEmails = 0,
+                nbGuests = 0,
+                mailtoHref = "mailto:",
+                mailtoText = "";
+
+            emailsArray.forEach(function (email) {
+                if (email===GUEST){
+                    nbGuests++;
+                    return;
+                }
+                if (++nbValidEmails === 1) {
+                    mailtoHref += email;
+                    mailtoText += email;
+                } else {
+                    mailtoHref += ',' + email;
+                    mailtoText += ', ' + email;
+                }
+            });
+
+            newTab.document.write('<html><head><title>E-mail lists</title></head><body style="font-size:13px; font-family:Verdana, Geneva, sans-serif;">');
+            if (nbValidEmails > 0) {
+                if (nbValidEmails > 1) {
+                    newTab.document.write('<b>' + nbValidEmails + ' comma-separated addresses (standard syntax) /<br/>' + nbValidEmails + ' adresses séparées par des virgules (syntaxe standard):</b><br/>');
+                }
+                newTab.document.write('<a href="' + mailtoHref + '?subject=Serious%20Game"><pre>' + mailtoText + "</pre></a>");
+                if (nbValidEmails > 1) {
+                    newTab.document.write('<br/>&nbsp;<br/>');
+                    mailtoHref = mailtoHref.replace(/,/g, ";");
+                    mailtoText = mailtoText.replace(/,/g, ";");
+                    newTab.document.write('<b>' + nbValidEmails + ' semicolon-separated addresses (for Microsoft Outlook) /<br/>' + nbValidEmails + ' adresses séparées par des point-virgules (pour Microsoft Outlook) :</b><br/>');
+                    newTab.document.write('<a href="' + mailtoHref + '?subject=Serious%20Game"><pre>' + mailtoText + "</pre></a>");
+                }
+            } else {
+                newTab.document.write('No registered user / Aucun joueur enregistré<br/>&nbsp;');
+            }
+            if (nbGuests > 0) {
+                var plural = nbGuests>1 ? 's' : '';
+                newTab.document.write('<br/><span style="color:red">Attention:</span> ' + nbGuests + ' anonymous player'+plural+', hence without e-mail / ' + nbGuests + ' joueur'+plural+' anonyme'+plural+', donc sans e-mail.');
+            }
+            newTab.document.close();
+        },
+
+        // @param emailsArray: emails as an array of strings (with guests denoted by "Guest").
+        formatEmails: function(emailsArray){
+            var nbValidEmails = 0,
+                mailtoText = "";
+
+            emailsArray.forEach(function (email) {
+                if (email===GUEST){
+                    return;
+                }
+                if (++nbValidEmails === 1) {
+                    mailtoText += email;
+                } else {
+                    mailtoText += ', ' + email;
+                }
+            });
+            return mailtoText;
+        }
     }, {
         "ATTRS": {
             "team": {}

@@ -13,8 +13,6 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
-import javax.ejb.embeddable.EJBContainer;
-import javax.naming.NamingException;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -22,15 +20,17 @@ import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ejb.embeddable.EJBContainer;
+import javax.naming.NamingException;
+
 /**
- *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class AbstractEJBTest {
 
     // *** Static *** //
     private static final Logger logger = LoggerFactory.getLogger(AbstractEJBTest.class);
-    protected static EJBContainer ejbContainer;
+    private static EJBContainer ejbContainer;
     protected static GameModelFacade gameModelFacade;
     protected static VariableDescriptorFacade descriptorFacade;
     // *** Fields *** //
@@ -55,12 +55,15 @@ public class AbstractEJBTest {
 
     @AfterClass
     public static void tearDown() {
-        if (ejbContainer != null) {
-            ejbContainer.close();
-        }
-        //logger.info("Closing the container");
+        TestHelper.closeContainer();
     }
 
+    /**
+     * Create a GameModel and a game with two teams (test-team and test-team2),
+     * with, respectively, one and two players ("Player", "Player2", and
+     * "Player21").
+     *
+     */
     @Before
     public void createGameModel() {
         gameModel = new GameModel();                                            // Create a game model
@@ -69,6 +72,7 @@ public class AbstractEJBTest {
         game = new Game();                                                      // Create a game
         game.setName(GAMENAME);
         game.setToken(GAMETOKEN);
+        game.setAccess(Game.GameAccess.OPEN);
         gameModel.addGame(game);
 
         team = new Team();                                                      // a team and a player
@@ -90,10 +94,12 @@ public class AbstractEJBTest {
 
     @After
     public void clear() throws NamingException {
-        gameModelFacade.remove(gameModel.getId());
+        TestHelper.wipeEmCache();
         RequestFacade rm = AbstractEJBTest.lookupBy(RequestFacade.class);
         rm.getRequestManager().setPlayer(null);
         rm.getRequestManager().clearUpdatedEntities();
+        gameModelFacade.remove(gameModel.getId());
+        TestHelper.wipeEmCache();
     }
 
     public static <T> T lookupBy(Class<T> type, Class service) throws NamingException {

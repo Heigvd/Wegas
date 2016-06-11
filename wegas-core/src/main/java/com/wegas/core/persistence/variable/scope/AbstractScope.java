@@ -7,25 +7,29 @@
  */
 package com.wegas.core.persistence.variable.scope;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
-import java.util.Map;
-import javax.persistence.*;
-////import javax.xml.bind.annotation.XmlTransient;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.GameModel;
-import com.wegas.core.persistence.game.Team;
+import java.util.HashMap;
 
+import javax.persistence.*;
+import java.util.Map;
+import java.util.Map.Entry;
+
+////import javax.xml.bind.annotation.XmlTransient;
 /**
- *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
+ * @param <T> scope context
  */
 @Entity                                                                         // Database serialization
 @JsonSubTypes(value = {
@@ -37,21 +41,24 @@ import com.wegas.core.persistence.game.Team;
 @Table(indexes = {
     @Index(columnList = "variableinstance_variableinstance_id")
 })
-abstract public class AbstractScope extends AbstractEntity {
+abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
+
     /**
      *
      */
     @Id
     @GeneratedValue
     private Long id;
+
     /**
      *
      */
     @OneToOne
     //@JsonBackReference
     private VariableDescriptor variableDescriptor;
+
     /**
      *
      */
@@ -60,37 +67,56 @@ abstract public class AbstractScope extends AbstractEntity {
     private String broadcastScope = PlayerScope.class.getSimpleName();
 
     /**
-     *
      * @param key
      * @param v
      */
-    abstract public void setVariableInstance(Long key, VariableInstance v);
+    abstract public void setVariableInstance(T key, VariableInstance v);
 
     /**
-     *
      * @param player
      * @return
      */
     abstract public VariableInstance getVariableInstance(Player player);
 
     /**
+     * @return
+     */
+    @JsonIgnore
+    abstract public Map<T, VariableInstance> getVariableInstances();
+
+    private Map<Long, VariableInstance> mapInstances(Map<T, VariableInstance> instances) {
+        Map<Long, VariableInstance> mappedInstances = new HashMap<>();
+        for (Entry<T, VariableInstance> entry : instances.entrySet()) {
+            // GameModelScope Hack (null key means id=0...)
+            mappedInstances.put((entry.getKey() != null ? entry.getKey().getId() : 0l), entry.getValue());
+        }
+        return mappedInstances;
+    }
+
+    /**
      *
      * @return
      */
+    @JsonProperty("variableInstances")
     @JsonView(Views.Editor.class)
-    abstract public Map<Long, VariableInstance> getVariableInstances();
+    public Map<Long, VariableInstance> getVariableInstancesByKeyId() {
+        return mapInstances(this.getVariableInstances());
+    }
 
     /**
-     *
      * @return The variable instance associated to the current player, which is
      *         stored in the RequestManager.
      */
+    @JsonIgnore
+    abstract public Map<T, VariableInstance> getPrivateInstances();
+
     @JsonView(Views.SinglePlayerI.class)
-    //@XmlAttribute(name = "variableInstances")
-    abstract public Map<Long, VariableInstance> getPrivateInstances();
+    @JsonProperty("privateInstances")
+    public Map<Long, VariableInstance> getPrivateInstancesByKeyId() {
+        return mapInstances(this.getPrivateInstances());
+    }
 
     /**
-     *
      * @return
      */
     //@XmlTransient
@@ -146,10 +172,9 @@ abstract public class AbstractScope extends AbstractEntity {
      * @param context instance (GameModel, Game, Team, Player) to propagate
      *                instances to (null means propagate to everybody)
      */
-    abstract public void propagateDefaultInstance(Object context);
+    abstract public void propagateDefaultInstance(AbstractEntity context);
 
     /**
-     *
      * @return
      */
     // @fixme here we cannot use the back-reference on an abstract reference
@@ -161,7 +186,6 @@ abstract public class AbstractScope extends AbstractEntity {
     }
 
     /**
-     *
      * @param varDesc
      */
     //@JsonBackReference
@@ -170,7 +194,6 @@ abstract public class AbstractScope extends AbstractEntity {
     }
 
     /**
-     *
      * @return
      */
     @Override

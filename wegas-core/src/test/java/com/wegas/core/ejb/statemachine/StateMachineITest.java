@@ -14,7 +14,6 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.game.Team;
-import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.scope.GameScope;
@@ -30,7 +29,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class StateMachineITest extends AbstractEJBTest {
 
@@ -203,7 +202,8 @@ public class StateMachineITest extends AbstractEJBTest {
         rf.getRequestManager().setPlayer(null);
 
         scriptFacade.eval(player.getId(), new Script("personalScore.value = 10"), null);
-        rf.getRequestManager().setPlayer(null);                                 //@TODO : THIS SHOULD NOT BE HERE
+        rf.getRequestManager().setPlayer(null);
+        rf.getRequestManager().setPlayer(player);
         rf.commit();
         Assert.assertEquals(10, ((NumberInstance) instanceFacade.find(personalScore.getId(), player.getId())).getValue(), 0);
         Assert.assertEquals(10, ((NumberInstance) instanceFacade.find(highScore.getId(), player.getId())).getValue(), 0);
@@ -263,7 +263,7 @@ public class StateMachineITest extends AbstractEJBTest {
         trigger.setDisableSelf(Boolean.TRUE);
         descriptorFacade.create(gameModel.getId(), trigger);
         gameModelFacade.reset(gameModel.getId());
-        Assert.assertEquals( 5, ((NumberInstance) instanceFacade.find(testNumber.getId(), player.getId())).getValue(), 0.001);
+        Assert.assertEquals(5, ((NumberInstance) instanceFacade.find(testNumber.getId(), player.getId())).getValue(), 0.001);
 
         //Set again
         RequestFacade rf = lookupBy(RequestFacade.class);

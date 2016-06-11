@@ -13,7 +13,7 @@ import org.junit.Test;
 
 /**
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class AlphanumericComparatorTest {
 
@@ -28,7 +28,7 @@ public class AlphanumericComparatorTest {
         }, expected = {
             "", "1", "2", "3", "11", "a1", "a2", "a10", "a10a", "a10b", "a11a", "aa1", "b", "b"
         };
-        Arrays.sort(list, new AlphanumericComparator<String>());
+        Arrays.sort(list, new AlphanumericComparator<>());
         for (i = 0; i < list.length; i += 1) {
             Assert.assertEquals(list[i], expected[i]);
         }

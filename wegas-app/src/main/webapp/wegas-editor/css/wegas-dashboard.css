@@ -172,7 +172,8 @@
 .modal--content-advanced .content-advanced-script-add{
     display:block;
     position:relative;
-    margin:32px auto !important;
+    top: 32px;
+    margin:0 auto !important;
     width:56px;
     height:56px;
     background-color:#41D2FA;

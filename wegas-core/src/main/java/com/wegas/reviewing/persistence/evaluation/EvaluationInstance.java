@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.rest.util.Views;
+import com.wegas.reviewing.ejb.ReviewingFacade;
 import com.wegas.reviewing.persistence.Review;
 import java.util.List;
 import java.util.Map;
@@ -201,5 +202,33 @@ public abstract class EvaluationInstance extends AbstractEntity implements Broad
         } else {
             return null;
         }
+    }
+
+    @Override
+    public void updateCacheOnDelete() {
+        ReviewingFacade rF = ReviewingFacade.lookup();
+        EvaluationDescriptor descriptor = this.getDescriptor();
+        if (descriptor != null) {
+            descriptor = rF.findEvaluationDescriptor(descriptor.getId());
+            if (descriptor != null) {
+                descriptor.removeInstance(this);
+            }
+        }
+        Review theReview = this.getFeedbackReview();
+        if (theReview != null) {
+            theReview = rF.findReview(theReview.getId());
+            if (theReview != null) {
+                theReview.getFeedback().remove(this);
+            }
+        }
+
+        theReview = this.getCommentsReview();
+        if (theReview != null) {
+            theReview = rF.findReview(theReview.getId());
+            if (theReview != null) {
+                theReview.getComments().remove(this);
+            }
+        }
+        super.updateCacheOnDelete();
     }
 }

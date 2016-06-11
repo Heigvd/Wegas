@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class VariableDescriptorFacadeTest extends AbstractEJBTest {
 
@@ -168,21 +168,18 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
 
         // Edit the variable instance
         //vif.update(desc.getId(), player.getId(), new BooleanInstance(true));
-
         // Verify the new value
         //instance = (BooleanInstance) vif.find(desc.getId(), player.getId());
         //Assert.assertEquals(true, instance.getValue());
-
         // Reset the game and test
         // gameModelFacade.reset(gameModel.getId());
         // instance = (BooleanInstance) vif.find(desc.getId(), player);
         // Assert.assertEquals(false, instance.getValue());
-
         vdf.remove(desc.getId());
     }
 
     public <T extends VariableDescriptor> T testVariableDescriptor(T descriptor1, T descriptor2)
-            throws NamingException, WegasNoResultException {
+        throws NamingException, WegasNoResultException {
         final String VARIABLENAME2 = "test-variable2";
         VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
 
@@ -258,15 +255,24 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         final String VALUE1 = "test_value";
 
         VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+        GameModel gm;
 
         // 1st case: move from root to root
         StringDescriptor vd1 = new StringDescriptor(VARIABLENAME);
         vd1.setDefaultInstance(new StringInstance(VALUE1));
         vdf.create(gameModel.getId(), vd1);
 
+        gm = gameModelFacade.find(gameModel.getId());
+        Assert.assertEquals(1, gm.getChildVariableDescriptors().size());
+        Assert.assertEquals(1, gm.getVariableDescriptors().size());
+
+        //gm = gameModelFacade.find(gameModel.getId());
         StringDescriptor vd2 = new StringDescriptor(VARIABLENAME2);
         vd2.setDefaultInstance(new StringInstance(VALUE1));
         vdf.create(gameModel.getId(), vd2);
+        gm = gameModelFacade.find(gameModel.getId());
+        Assert.assertEquals(2, gm.getChildVariableDescriptors().size());
+        Assert.assertEquals(2, gm.getVariableDescriptors().size());
 
         vdf.move(vd1.getId(), 1);                                               // Move first item to second position
         List<VariableDescriptor> findByGameModelId = vdf.findByGameModelId(gameModel.getId());// Refresh
@@ -276,23 +282,47 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         ListDescriptor vd3 = new ListDescriptor(VARIABLENAME3);
         vd3.setDefaultInstance(new ListInstance());
         vdf.create(gameModel.getId(), vd3);
+        gm = gameModelFacade.find(gameModel.getId());
+        Assert.assertEquals(3, gm.getChildVariableDescriptors().size());
+        Assert.assertEquals(3, gm.getVariableDescriptors().size());
 
         StringDescriptor sub1 = new StringDescriptor(SUBNAME1);
         sub1.setDefaultInstance(new StringInstance(VALUE1));
         vdf.createChild(vd3.getId(), sub1);
+        gm = gameModelFacade.find(gameModel.getId());
+        // The last one in not at root level:
+        Assert.assertEquals(3, gm.getChildVariableDescriptors().size());
+        Assert.assertEquals(4, gm.getVariableDescriptors().size());
 
         findByGameModelId = vdf.findByGameModelId(gameModel.getId());           // Refresh
         Assert.assertEquals(SUBNAME1, ((ListDescriptor) findByGameModelId.get(2)).item(0).getName());
 
         vdf.move(sub1.getId(), 0);                                              // Move at first position
+        gm = gameModelFacade.find(gameModel.getId());
+        // now, it is:
+        Assert.assertEquals(4, gm.getChildVariableDescriptors().size());
+        Assert.assertEquals(4, gm.getVariableDescriptors().size());
+
         findByGameModelId = vdf.findByGameModelId(gameModel.getId());           // Refresh
         Assert.assertEquals(SUBNAME1, findByGameModelId.get(0).getName());
         Assert.assertEquals(0, ((ListDescriptor) findByGameModelId.get(3)).size());
 
         vdf.remove(vd1.getId());
+        gm = gameModelFacade.find(gameModel.getId());
+        Assert.assertEquals(3, gm.getVariableDescriptors().size());
+        Assert.assertEquals(3, gm.getChildVariableDescriptors().size());
         vdf.remove(vd2.getId());
+        gm = gameModelFacade.find(gameModel.getId());
+        Assert.assertEquals(2, gm.getVariableDescriptors().size());
+        Assert.assertEquals(2, gm.getChildVariableDescriptors().size());
         vdf.remove(vd3.getId());
+        gm = gameModelFacade.find(gameModel.getId());
+        Assert.assertEquals(1, gm.getVariableDescriptors().size());
+        Assert.assertEquals(1, gm.getChildVariableDescriptors().size());
         vdf.remove(sub1.getId());
+        gm = gameModelFacade.find(gameModel.getId());
+        Assert.assertEquals(0, gm.getVariableDescriptors().size());
+        Assert.assertEquals(0, gm.getChildVariableDescriptors().size());
     }
 
     @Test
@@ -305,21 +335,31 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         final String VALUE1 = "test_value";
 
         VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+        GameModel gm;
 
         // 1st case: move from descriptor to descriptor
         ListDescriptor list1 = new ListDescriptor(LISTNAME1);
         list1.setDefaultInstance(new ListInstance());
         vdf.create(gameModel.getId(), list1);
+        gm = gameModelFacade.find(gameModel.getId());
+        Assert.assertEquals(1, gm.getVariableDescriptors().size());
+        Assert.assertEquals(1, gm.getChildVariableDescriptors().size());
 
         StringDescriptor vd1 = new StringDescriptor(VARIABLENAME1);
         vd1.setDefaultInstance(new StringInstance(VALUE1));
         vdf.createChild(list1.getId(), vd1);
+        gm = gameModelFacade.find(gameModel.getId());
+        Assert.assertEquals(2, gm.getVariableDescriptors().size());
+        Assert.assertEquals(1, gm.getChildVariableDescriptors().size());
 
         StringDescriptor vd2 = new StringDescriptor(VARIABLENAME2);
         vd2.setDefaultInstance(new StringInstance(VALUE1));
         vdf.createChild(list1.getId(), vd2);
         List<VariableDescriptor> childrenDescriptors = vdf.findByGameModelId(gameModel.getId());
         Assert.assertEquals(VARIABLENAME1, ((ListDescriptor) childrenDescriptors.get(0)).item(0).getName());// Check if item was successfully added
+        gm = gameModelFacade.find(gameModel.getId());
+        Assert.assertEquals(3, gm.getVariableDescriptors().size());
+        Assert.assertEquals(1, gm.getChildVariableDescriptors().size());
 
         vdf.move(vd1.getId(), list1.getId(), 1);                                // Move first item to second position
         childrenDescriptors = vdf.findByGameModelId(gameModel.getId());         // Refresh
@@ -377,8 +417,8 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         NumberDescriptor nb = new NumberDescriptor(VARIABLENAME1, new NumberInstance(10));
         vdf.createChild(list4.getId(), nb);
 
-        DescriptorListI duplicate =
-                (DescriptorListI) vdf.duplicate(list1.getId());                 // Duplicate a root variable
+        DescriptorListI duplicate
+            = (DescriptorListI) vdf.duplicate(list1.getId());                 // Duplicate a root variable
         Assert.assertEquals(10.0, ((NumberDescriptor) ((DescriptorListI) ((DescriptorListI) duplicate.item(1)).item(0)).item(0)).getInstance(player).getValue());
 
         duplicate = (DescriptorListI) vdf.duplicate(list3.getId());             // Duplicate a sub child variable
@@ -386,6 +426,6 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
 
         GameModel duplicateGm = gameModelFacade.duplicateWithDebugGame(gameModel.getId());
         DescriptorListI find = (DescriptorListI) vdf.find(duplicateGm, LISTNAME1);
-        Assert.assertEquals(10.0, ((NumberInstance) ((NumberDescriptor) ((DescriptorListI) ((DescriptorListI) find.item(1)).item(0)).item(0)).getScope().getVariableInstances().values().iterator().next()).getValue());
+        Assert.assertEquals(10.0, ((NumberInstance) ((DescriptorListI) ((DescriptorListI) find.item(1)).item(0)).item(0).getScope().getVariableInstances().values().iterator().next()).getValue());
     }
 }

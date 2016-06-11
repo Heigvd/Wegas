@@ -4,55 +4,58 @@
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <jta-data-source>jdbc/wegas_dev</jta-data-source>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
-    <shared-cache-mode>NONE</shared-cache-mode>
+    <shared-cache-mode>DISABLE_SELECTIVE</shared-cache-mode>
     <properties>
       <property name="eclipselink.target-database" value="PostgreSQL"/>
       <property name="eclipselink.persistence-context.reference-mode" value="WEAK"/>
+      <property name="eclipselink.persistence-context.flush-mode" value="COMMIT"/>
       <property name="eclipselink.jdbc.batch-writing" value="JDBC"/>
-      <!--<property name="eclipselink.weaving" value="static" />-->
+      <property name="eclipselink.jdbc.batch-writing.size" value="1000"/>
+      <property name="eclipselink.weaving" value="static"/>
       <!-- Enable logging -->
       <!--<property name="eclipselink.logging.level" value="FINE"/>-->
       <!--<property name="eclipselink.logging.parameters" value="true"/>-->
       <!--
-                  <property name="eclipselink.weaving" value="static" />
-                  <property name="eclipselink.ddl-generation.output-mode" value="database" />
-                  <property name="eclipselink.debug" value="ALL"/>
-                  <property name="eclipselink.logging.level.sql" value="FINEST" />
-                  <property name="eclipselink.logging.level" value="FINEST" />
-                  <property name="eclipselink.logging.level.cache" value="FINEST" />
-                  -->
+                        <property name="eclipselink.weaving" value="static" />
+                        <property name="eclipselink.ddl-generation.output-mode" value="database" />
+                        <property name="eclipselink.debug" value="ALL"/>
+                        <property name="eclipselink.logging.level.sql" value="FINEST" />
+                        <property name="eclipselink.logging.level" value="FINEST" />
+                        <property name="eclipselink.logging.level.cache" value="FINEST" />
+                        -->
       <!-- App scoped ressource -->
       <!--
-                  <jdbc-connection-pool allow-non-component-callers="false" associate-with-thread="false" connection-creation-retry-attempts="0" connection-creation-retry-interval-in-seconds="10" connection-leak-reclaim="false" connection-leak-timeout-in-seconds="0" connection-validation-method="auto-commit" datasource-classname="org.postgresql.ds.PGSimpleDataSource" fail-all-connections="false" idle-timeout-in-seconds="300" is-connection-validation-required="false" is-isolation-level-guaranteed="true" lazy-connection-association="false" lazy-connection-enlistment="false" match-connections="false" max-connection-usage-count="0" max-pool-size="32" max-wait-time-in-millis="60000" name="post-gre-sql_wegas_dev_postgresPool" non-transactional-connections="false" pool-resize-quantity="2" res-type="javax.sql.DataSource" statement-timeout-in-seconds="-1" steady-pool-size="8" validate-atmost-once-period-in-seconds="0" wrap-jdbc-objects="false">
-                      <property name="serverName" value="localhost"/>
-                      <property name="portNumber" value="5432"/>
-                      <property name="databaseName" value="wegas_dev"/>
-                      <property name="User" value="fx"/>
-                      <property name="Password" value="84DTgv"/>
-                      <property name="URL" value="jdbc:postgresql://localhost:5432/wegas_dev"/>
-                      <property name="driverClass" value="org.postgresql.Driver"/>
-                  </jdbc-connection-pool>
-                  -->
+                        <jdbc-connection-pool allow-non-component-callers="false" associate-with-thread="false" connection-creation-retry-attempts="0" connection-creation-retry-interval-in-seconds="10" connection-leak-reclaim="false" connection-leak-timeout-in-seconds="0" connection-validation-method="auto-commit" datasource-classname="org.postgresql.ds.PGSimpleDataSource" fail-all-connections="false" idle-timeout-in-seconds="300" is-connection-validation-required="false" is-isolation-level-guaranteed="true" lazy-connection-association="false" lazy-connection-enlistment="false" match-connections="false" max-connection-usage-count="0" max-pool-size="32" max-wait-time-in-millis="60000" name="post-gre-sql_wegas_dev_postgresPool" non-transactional-connections="false" pool-resize-quantity="2" res-type="javax.sql.DataSource" statement-timeout-in-seconds="-1" steady-pool-size="8" validate-atmost-once-period-in-seconds="0" wrap-jdbc-objects="false">
+                            <property name="serverName" value="localhost"/>
+                            <property name="portNumber" value="5432"/>
+                            <property name="databaseName" value="wegas_dev"/>
+                            <property name="User" value="fx"/>
+                            <property name="Password" value="84DTgv"/>
+                            <property name="URL" value="jdbc:postgresql://localhost:5432/wegas_dev"/>
+                            <property name="driverClass" value="org.postgresql.Driver"/>
+                        </jdbc-connection-pool>
+                        -->
+      <property name="eclipselink.cache.type.default" value="Soft"/>
     </properties>
   </persistence-unit>
   <!--    JPQL TEST NETBEANS
-          Modify wegas-core's POM dependency, build wegas-core and activate this PU once build finished.
-          Check username/password.
-          POM's change: scope is 'compile' instead of 'provided' for next dependency
+            Modify wegas-core's POM dependency, build wegas-core and activate this PU once build finished.
+            Check username/password.
+            POM's change: scope is 'compile' instead of 'provided' for next dependency
 
-              <groupId>org.glassfish.main.extras</groupId>
-              <artifactId>glassfish-embedded-all</artifactId>
-              <scope>compile</scope>
-      -->
+            <groupId>org.glassfish.main.extras</groupId>
+            <artifactId>glassfish-embedded-all</artifactId>
+            <scope>compile</scope>
+    -->
   <!--    <persistence-unit name="RunJPQL" transaction-type="RESOURCE_LOCAL">
-          <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-          <exclude-unlisted-classes>false</exclude-unlisted-classes>
-          <jar-file>../../../target/wegas-core_1.0-SNAPSHOT.jar</jar-file>
-          <properties>
-              <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/wegas_dev"/>
-              <property name="javax.persistence.jdbc.password" value=""/>
-              <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
-              <property name="javax.persistence.jdbc.user" value="postgres"/>
-          </properties>
-      </persistence-unit>-->
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <jar-file>../../../target/wegas-core_1.0-SNAPSHOT.jar</jar-file>
+        <properties>
+            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/wegas_dev"/>
+            <property name="javax.persistence.jdbc.password" value=""/>
+            <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+            <property name="javax.persistence.jdbc.user" value="postgres"/>
+        </properties>
+    </persistence-unit>-->
 </persistence>

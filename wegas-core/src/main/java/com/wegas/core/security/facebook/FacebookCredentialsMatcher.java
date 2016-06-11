@@ -13,7 +13,7 @@ import org.apache.shiro.authc.credential.CredentialsMatcher;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class FacebookCredentialsMatcher implements CredentialsMatcher {
 
@@ -23,9 +23,6 @@ public class FacebookCredentialsMatcher implements CredentialsMatcher {
      */
     @Override
     public boolean doCredentialsMatch(AuthenticationToken token, AuthenticationInfo info) {
-        if (info instanceof FacebookAuthenticationInfo) {
-            return true;
-        }
-        return false;
+        return info instanceof FacebookAuthenticationInfo;
     }
 }

@@ -38,7 +38,7 @@ angular.module('wegas.models.groups', [])
                     }
                 }).success(function(data) {
                     if (data.events !== undefined && data.events.length === 0) {
-                        groups = data.entities;
+                        groups = data.updatedEntities;
                         deferred.resolve(true);
                     } else {
                         if (data.events !== undefined) {
@@ -181,7 +181,7 @@ angular.module('wegas.models.groups', [])
                     }
                 }).success(function(data) {
                     if (data.events !== undefined && data.events.length === 0) {
-                        var newGroup = data.entities[0];
+                        var newGroup = data.updatedEntities[0];
                         cacheGroup(newGroup);
                         $translate('COMMONS-GROUPS-CREATE-FLASH-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, newGroup));
@@ -225,7 +225,7 @@ angular.module('wegas.models.groups', [])
                     groups = uncacheGroup(group);
                     groups = cacheGroup(group);
                     $translate('COMMONS-GROUPS-UPDATE-FLASH-SUCCESS').then(function(message) {
-                        deferred.resolve(Responses.success(message, data.entities));
+                        deferred.resolve(Responses.success(message, data.updatedEntities));
                     });
                 } else {
                     if (data.events !== undefined) {
@@ -259,7 +259,7 @@ angular.module('wegas.models.groups', [])
                 if (data.events !== undefined && data.events.length === 0) {
                     groups = uncacheGroup(group);
                     $translate('COMMONS-GROUPS-DELETE-FLASH-SUCCESS').then(function(message) {
-                        deferred.resolve(Responses.success(message, data.entities));
+                        deferred.resolve(Responses.success(message, data.updatedEntities));
                     });
                 } else {
                     if (data.events !== undefined) {

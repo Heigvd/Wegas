@@ -23,7 +23,7 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 
 /**
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Stateless
 @Path("Download")
@@ -34,7 +34,7 @@ public class DownloadController {
      * @param contentType
      * @param filename
      * @param data
-     * @return
+     * @return requested data
      */
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)

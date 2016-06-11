@@ -26,7 +26,7 @@ import javax.ws.rs.core.Response;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
 @Path("GameModel/{gameModelId : ([1-9][0-9]*)?}{sep: /?}Game/{gameId : ([1-9][0-9]*)?}{sep2: /?}Team/{teamId : [1-9][0-9]*}/Player")
@@ -59,7 +59,7 @@ public class PlayerController {
     /**
      *
      * @param playerId
-     * @return
+     * @return the player matching given id
      */
     @GET
     @Path("{playerId : [1-9][0-9]*}")
@@ -71,52 +71,52 @@ public class PlayerController {
 
     /**
      *
-     * @fixme Returns ALL players in the server ....
+     * Returns ALL players in the server ....
      *
      * @param gameId
-     * @return
+     * @return all players
      */
     @GET
     public Collection<Player> index(@PathParam("gameId") Long gameId) {
+        // @fixme, @todo : seems the security permission is stupid...
         SecurityHelper.checkPermission(gameFacade.find(gameId), "View");
         return playerFacade.findAll();
     }
-    
+
     /**
      *
      * @param teamId
-     * @return
+     * @return HTTP 200 with the team or 4xx if something went wrong
      */
     @POST
     public Response create(@PathParam("teamId") Long teamId) {
         Response r = Response.status(Response.Status.UNAUTHORIZED).build();
         User currentUser = userFacade.getCurrentUser();
-        if(currentUser != null){
+        if (currentUser != null) {
             r = Response.status(Response.Status.BAD_REQUEST).build();
             Team teamToJoin = teamFacade.find(teamId);
-            if(teamToJoin != null){
+            if (teamToJoin != null) {
                 r = Response.status(Response.Status.FORBIDDEN).build();
-                if(
-                    !(teamToJoin instanceof DebugTeam) 
-                    && teamToJoin.getGame().getAccess() == Game.GameAccess.OPEN 
-                    && !teamToJoin.getGame().getProperties().getFreeForAll()
-                ){
+                if (!(teamToJoin instanceof DebugTeam)
+                        && teamToJoin.getGame().getAccess() == Game.GameAccess.OPEN
+                        && !teamToJoin.getGame().getProperties().getFreeForAll()) {
                     Player existingPlayer = playerFacade.checkExistingPlayer(teamToJoin.getGameId(), currentUser.getId());
-                    if(existingPlayer == null){
+                    if (existingPlayer == null) {
                         playerFacade.create(teamToJoin, currentUser);
                         r = Response.status(Response.Status.CREATED).entity(teamToJoin).build();
                     }
                 }
             }
         }
-        return r;        
+        return r;
     }
 
     /**
+     * Update a player
      *
-     * @param playerId
+     * @param playerId id of player to update
      * @param entity
-     * @return
+     * @return up to date player
      */
     @PUT
     @Path("{playerId: [1-9][0-9]*}")
@@ -128,7 +128,7 @@ public class PlayerController {
     /**
      *
      * @param playerId
-     * @return
+     * @return just deleted player
      */
     @DELETE
     @Path("{playerId: [1-9][0-9]*}")
@@ -138,10 +138,10 @@ public class PlayerController {
             SecurityHelper.checkPermission(p.getGame(), "Edit");
         }
         Team team = teamFacade.find(p.getTeamId());
-        if(!(team instanceof DebugTeam)){
-            if(team.getPlayers().size() == 1){
+        if (!(team instanceof DebugTeam)) {
+            if (team.getPlayers().size() == 1) {
                 teamFacade.remove(team);
-            }else{
+            } else {
                 playerFacade.remove(playerId);
             }
         }
@@ -152,7 +152,7 @@ public class PlayerController {
      * Resets all the variables of a given player
      *
      * @param playerId playerId
-     * @return OK
+     * @return HTTP 200 OK
      */
     @GET
     @Path("{playerId : [1-9][0-9]*}/Reset")

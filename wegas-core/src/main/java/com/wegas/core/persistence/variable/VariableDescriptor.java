@@ -45,7 +45,7 @@ import java.util.Map;
 
 /**
  * @param <T>
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -60,7 +60,16 @@ import java.util.Map;
     @Index(columnList = "rootgamemodel_id"),
     @Index(columnList = "dtype")
 })
-@NamedQuery(name = "findVariableDescriptorsByRootGameModelId", query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.gameModel AS gm WHERE gm.id = :gameModelId")
+@NamedQueries({
+    @NamedQuery(
+            name = "VariableDescriptor.findByRootGameModelId",
+            query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.gameModel AS gm WHERE gm.id = :gameModelId"
+    ),
+    @NamedQuery(
+            name = "VariableDescriptor.findByGameModelAndName",
+            query = "SELECT vd FROM VariableDescriptor vd where vd.gameModel = :gameModel AND vd.name LIKE :name"
+    )
+})
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "ListDescriptor", value = ListDescriptor.class),
     @JsonSubTypes.Type(name = "StringDescriptor", value = StringDescriptor.class),
@@ -104,6 +113,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     //@JsonBackReference
     @ManyToOne
     @JoinColumn
+    //@CacheIndex
     private GameModel gameModel;
 
     /**
@@ -157,6 +167,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     //@JsonView(Views.EditorExtendedI.class)
     @NotNull
     @Basic(optional = false)
+    //@CacheIndex
     protected String name;
 
     /**
@@ -199,7 +210,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     /**
-     * @return
+     * @return descriptor comments
      */
     public String getComments() {
         return comments;
@@ -224,10 +235,13 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      */
     public void setDefaultInstance(T defaultInstance) {
         this.defaultInstance = defaultInstance;
+        if (this.defaultInstance != null) {
+            this.defaultInstance.setDefaultDescriptor(this);
+        }
     }
 
     /**
-     * @return
+     * @return the gameMobel this belongs to
      */
     @JsonIgnore
     public GameModel getGameModel() {
@@ -248,6 +262,9 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     public void setRootGameModel(GameModel rootGameModel) {
         this.rootGameModel = rootGameModel;
+        if (this.rootGameModel != null) {
+            this.setParentList(null);
+        }
     }
 
     public ListDescriptor getParentList() {
@@ -256,10 +273,13 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     public void setParentList(ListDescriptor parentList) {
         this.parentList = parentList;
+        if (this.parentList != null) {
+            this.setRootGameModel(null);
+        }
     }
 
     @JsonIgnore
-    public DescriptorListI getParent() {
+    public DescriptorListI<? extends VariableDescriptor> getParent() {
         if (parentList != null) {
             return parentList;
         } else if (rootGameModel != null) {
@@ -271,11 +291,9 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     @JsonView(Views.IndexI.class)
     public Long getParentDescriptorId() {
-        if (parentList != null) {
-            return parentList.getId();
-        } else if (rootGameModel != null) {
-            return rootGameModel.getId();
-        } else {
+        try {
+            return this.getParent().getId();
+        } catch (WegasNotFoundException e) {
             return null;
         }
     }
@@ -285,7 +303,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     /**
-     * @return
+     * @return id of gameModel this belongs to
      */
     @JsonIgnore
     public int getGameModelId() {
@@ -293,7 +311,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     /**
-     * @return
+     * @return descriptor id
      */
     @Override
     public Long getId() {
@@ -301,15 +319,17 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     /**
+     * Fetch variable instance for the given player
+     *
      * @param player
-     * @return
+     * @return variableInstance belonging to the player
      */
     public T getInstance(Player player) {
-        return (T) this.scope.getVariableInstance(player);
+        return (T) this.getScope().getVariableInstance(player);
     }
 
     /**
-     * @return
+     * @return get instance belonging to the current player
      */
     @JsonIgnore
     public T getInstance() {
@@ -317,9 +337,10 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     /**
-     * @param defaultInstance
-     * @param player
-     * @return
+     * @param defaultInstance indicate whether one wants the default instance r
+     * the one belonging to player
+     * @param player the player
+     * @return either the default instance of the one belonging to player
      */
     @JsonIgnore
     public T getInstance(Boolean defaultInstance, Player player) {
@@ -347,7 +368,9 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     /**
-     * @return
+     * Get the descriptor internal name (aka scriptAlias)
+     *
+     * @return the descriptor name
      */
     @Override
     public String getName() {
@@ -409,9 +432,9 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
                 this.setLabel(other.getLabel());
                 this.setTitle(other.getTitle());
                 this.setComments(other.getComments());
-                this.defaultInstance.merge(other.getDefaultInstance());
+                this.getDefaultInstance().merge(other.getDefaultInstance());
                 if (other.getScope() != null) {
-                    this.scope.setBroadcastScope(other.getScope().getBroadcastScope());
+                    this.getScope().setBroadcastScope(other.getScope().getBroadcastScope());
                 }
             } catch (PersistenceException pe) {
                 throw WegasErrorMessage.error("The name is already in use");
@@ -425,19 +448,18 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     /**
      *
      */
-    @PrePersist
+    //@PrePersist
     public void prePersist() {
-        if (this.getScope() == null) {
+        /*if (this.getScope() == null) {
             this.setScope(new TeamScope());
-        }
+        }*/
     }
 
     /**
      * @param context allow to circumscribe the propagation within the given
-     *                context. It may be an instance of GameModel, Game, Team,
-     *                or Player
+     * context. It may be an instance of GameModel, Game, Team, or Player
      */
-    public void propagateDefaultInstance(Object context) {
+    public void propagateDefaultInstance(AbstractEntity context) {
         int sFlag = 0;
         if (scope instanceof GameModelScope) { // gms
             sFlag = 4;
@@ -450,10 +472,10 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         }
 
         if ((context == null) // no-context
-            || (context instanceof GameModel) // gm ctx -> do not skip anything
-            || (context instanceof Game && sFlag < 4) // g ctx -> skip gms
-            || (context instanceof Team && sFlag < 3) // t ctx -> skip gms, gs
-            || (context instanceof Player && sFlag < 2)) { // p ctx -> skip gms, gs, ts
+                || (context instanceof GameModel) // gm ctx -> do not skip anything
+                || (context instanceof Game && sFlag < 4) // g ctx -> skip gms
+                || (context instanceof Team && sFlag < 3) // t ctx -> skip gms, gs
+                || (context instanceof Player && sFlag < 2)) { // p ctx -> skip gms, gs, ts
             scope.propagateDefaultInstance(context);
         }
     }
@@ -469,15 +491,18 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     /**
+     * true if this descriptor or (if applicable) its default instance matches
+     * all the given criterias
+     *
      * @param criterias
-     * @return
+     * @return return true if there is a match
      */
     @Override
     public Boolean containsAll(final List<String> criterias) {
         Boolean found = Helper.insensitiveContainsAll(this.getName(), criterias)
-            || Helper.insensitiveContainsAll(this.getLabel(), criterias)
-            || Helper.insensitiveContainsAll(this.getTitle(), criterias)
-            || Helper.insensitiveContainsAll(this.getComments(), criterias);
+                || Helper.insensitiveContainsAll(this.getLabel(), criterias)
+                || Helper.insensitiveContainsAll(this.getTitle(), criterias)
+                || Helper.insensitiveContainsAll(this.getComments(), criterias);
         if (!found && (this.getDefaultInstance() instanceof Searchable)) {
             return ((Searchable) this.getDefaultInstance()).containsAll(criterias);
         }
@@ -485,7 +510,8 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     /**
-     * @return
+     *
+     * @return Class simple name + id
      */
     @Override
     public String toString() {

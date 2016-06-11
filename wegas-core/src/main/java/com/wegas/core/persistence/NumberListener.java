@@ -17,7 +17,7 @@ import javax.inject.Inject;
 import javax.persistence.PostUpdate;
 
 /**
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class NumberListener {
 

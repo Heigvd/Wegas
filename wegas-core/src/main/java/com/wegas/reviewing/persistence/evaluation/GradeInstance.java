@@ -33,7 +33,7 @@ public class GradeInstance extends EvaluationInstance {
     /**
      * get the given grade or null if not yet given
      *
-     * @return
+     * @return the grade of null if not yet available
      */
     public Double getValue() {
         return value;

@@ -25,7 +25,7 @@ import javax.ejb.Timer;
 import javax.ejb.TimerService;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import javax.script.ScriptEngine;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -183,15 +183,18 @@
     background-color: #A4EBFF;
 }
 
-/* For convenience reasons, warnings are implemented as inactive red buttons: */
-.wegas-email-team-modal-content .wegas-warning,
-.wegas-email-team-modal-content .wegas-warning:hover,
-.wegas-email-team-modal-content .wegas-warning:active {
-    margin: 10px 0px 10px 135px;
+.wegas-email-team-modal-content .wegas-warning {
+    margin: 25px 0px 10px 135px;
     background-color: #ff4040;
     background-image: none;
     box-shadow: none;
     border: none;
     cursor: default;
     font-weight: bold;
+    width: 30em;
+    padding: 5px 0;
+}
+
+.wegas-email-team-modal-content .wegas-warning:before {
+    content: '\a0'; /* \0000a0 is hex for &nbsp; */
 }

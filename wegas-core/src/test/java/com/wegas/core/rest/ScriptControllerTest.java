@@ -26,7 +26,7 @@ import org.junit.Test;
 
 /**
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class ScriptControllerTest extends AbstractEJBTest {
 

@@ -15,7 +15,7 @@
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
 /*global self, Variable, gameModel, Java, javax, com, Infinity, StatisticHelper*/
-var ReviewHelper = (function() {
+var ReviewHelper = (function () {
     "use strict";
     var Long = Java.type("java.lang.Long");
 
@@ -74,7 +74,7 @@ var ReviewHelper = (function() {
      */
     function getCategorizationSummary(values, descriptor, includeData) {
         var cats, i, histogram = {},
-            numberOfValues = values.length;
+                numberOfValues = values.length;
         cats = Java.from(descriptor.getCategories());
 
         for (i = 0; i < cats.length; i += 1) {
@@ -188,33 +188,33 @@ var ReviewHelper = (function() {
 
     function summarize(peerReviewDescriptorName) {
         var prd = Variable.findByName(gameModel, peerReviewDescriptorName),
-            game = self.getGame(), teams = game.getTeams(), t, teamId, team,
-            pris, pri, reviews, review, evs, ev, evK, i, j, k,
-            entry, nbRDone, nbRTot, nbRCom, nbRComClosed, nbRComTotal,
-            evaluationsR, evaluationsC, evaluationsAll, evaluationsValues = {}, evDescriptor,
-            evDescriptors = {}, tmp, key,
-            maxNumberOfValue = 0,
-            instanceFacade = lookupBean("VariableInstanceFacade"),
-            maxNumberOfReview = Math.min(prd.getMaxNumberOfReview(), teams.size() - 2), // Assume team scoped review. !~_~! 
-            aPlayer,
-            monitoring = {
-                structure: {
-                    overview: [{
-                            title: "Overview",
-                            items: [
-                                {id: "status", label: "Status", formatter: null},
-                                {id: "done", label: "Review Done", formatter: null},
-                                {id: "commented", label: "Review Commented", formatter: null}
-                            ]
-                        }
-                    ],
-                    reviews: [],
-                    comments: []
-                },
-                data: {},
-                extra: {},
-                variable: {}
-            };
+                game = self.getGame(), teams = game.getTeams(), t, teamId, team,
+                pris, pri, reviews, review, evs, ev, evK, i, j, k,
+                entry, nbRDone, nbRTot, nbRCom, nbRComClosed, nbRComTotal,
+                evaluationsR, evaluationsC, evaluationsAll, evaluationsValues = {}, evDescriptor,
+                evDescriptors = {}, tmp, key,
+                maxNumberOfValue = 0,
+                instanceFacade = lookupBean("VariableInstanceFacade"),
+                maxNumberOfReview = Math.min(prd.getMaxNumberOfReview(), teams.size() - 2), // Assume team scoped review. !~_~! 
+                aPlayer,
+                monitoring = {
+                    structure: {
+                        overview: [{
+                                title: "Overview",
+                                items: [
+                                    {id: "status", label: "Status", formatter: null},
+                                    {id: "done", label: "Review Done", formatter: null},
+                                    {id: "commented", label: "Review Commented", formatter: null}
+                                ]
+                            }
+                        ],
+                        reviews: [],
+                        comments: []
+                    },
+                    data: {},
+                    extra: {},
+                    variable: {}
+                };
 
         evaluationsR = Java.from(prd.getFeedback().getEvaluations());
         evaluationsC = Java.from(prd.getFbComments().getEvaluations());
@@ -238,7 +238,7 @@ var ReviewHelper = (function() {
         for (t = 0; t < teams.size(); t += 1) {
             team = teams.get(t);
             teamId = new Long(team.getId());
-            pri = pris[teamId];
+            pri = pris[team];
 
             if (team.getPlayers().size() > 0) {
                 aPlayer = instanceFacade.findAPlayer(pri);
@@ -379,8 +379,8 @@ var ReviewHelper = (function() {
         monitoring.extra.maxNumberOfValue = maxNumberOfValue;
 
         for (key in monitoring.structure) {
-            monitoring.structure[key].forEach(function(groupItems) {
-                groupItems.items.forEach(function(item) {
+            monitoring.structure[key].forEach(function (groupItems) {
+                groupItems.items.forEach(function (item) {
                     item.formatter = item.formatter + "";
                 });
             });
@@ -391,7 +391,7 @@ var ReviewHelper = (function() {
 
 
     return {
-        summarize: function(peerReviewDescriptorName) {
+        summarize: function (peerReviewDescriptorName) {
             return summarize(peerReviewDescriptorName);
         }
     };

@@ -8,7 +8,7 @@
         </encoder>
     </appender>
 
-<!--
+    <!--
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
         <file>myApp.log</file>
         <encoder>
@@ -19,6 +19,7 @@
     <logger name="com.wegas.core" level="WARN"/>
     <logger name="com.wegas.core.rest.util" level="INFO"/>
     <logger name="com.wegas.core.rest.ScriptController" level="INFO"/>
+    <logger name="com.wegas.core.security.ejb.UserFacade" level="INFO"/>
     <logger name="net.sf.ehcache" level="WARN"/>
 
     <root level="WARN">

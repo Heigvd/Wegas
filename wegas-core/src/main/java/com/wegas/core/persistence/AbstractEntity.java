@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 //@XmlRootElement
 //@XmlType(name = "")                                                             // This forces to use Class's short name as type
@@ -43,31 +43,45 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(AbstractEntity.class);
 
     /**
+     * Get entity id
      *
-     * @return
+     * @return entity id
      */
     abstract public Long getId();
 
     /**
+     * Merge other into this
      *
-     * @param other
+     * @param other the entity to copy values from
      */
     public abstract void merge(AbstractEntity other);
 
     /**
+     * this hashCode is base on id and class hashcode
      *
-     * @return
+     * @return a hashCode value for this entity
+     *
      */
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash += (getId() != null ? getId().hashCode() : 0);
-        hash += getClass().hashCode();
+        int hash = 17;
+        hash = 31 * hash + (getId() != null ? getId().hashCode() : 0);
+        hash = 31 * hash + getClass().hashCode();
         return hash;
     }
 
+    /**
+     * Determine if the given entity equals this. To be equal, both objects must
+     * have the id and being instances of the same class
+     *
+     * @param object entity to compare to
+     * @return true if object equals this, false otherwise
+     */
     @Override
     public boolean equals(Object object) {
+        if (object == this) {
+            return true;
+        }
 
         if (object == null) {
             return false;
@@ -85,8 +99,9 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
     }
 
     /**
+     * Make a copy of this entity
      *
-     * @return
+     * @return the new copied entity
      */
     @Override
     public AbstractEntity clone() {
@@ -104,7 +119,7 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      * Duplicate an entity by using Jackson Mapper and provided view
      *
      * @param view
-     * @return
+     * @return copy of this
      * @throws IOException
      */
     public AbstractEntity duplicate(Class view) throws IOException {
@@ -119,16 +134,20 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
     }
 
     /**
+     * Same as duplicate(Views.Export)
      *
-     * @return @throws IOException
+     * @return copy of this
+     * @throws IOException
      */
     public AbstractEntity duplicate() throws IOException {
         return this.duplicate(Views.Export.class);
     }
 
     /**
+     * Serialize to JSON
      *
-     * @return @throws IOException
+     * @return JSON String representing this
+     * @throws IOException
      */
     public String toJson() throws IOException {
         ObjectMapper mapper = JacksonMapperProvider.getMapper();
@@ -136,9 +155,10 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
     }
 
     /**
+     * Serialize to JSON with view
      *
-     * @param view
-     * @return
+     * @param view the view to use to export this
+     * @return JSON String representing this
      * @throws IOException
      */
     public String toJson(Class view) throws IOException {
@@ -147,11 +167,22 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
     }
 
     /**
+     * String representation of this
      *
-     * @return
+     * @return a String which contains the class name + id
      */
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + "( " + getId() + " )";
+    }
+
+    /**
+     * Default behaviour is to do nothing
+     *
+     * Overriding this method may helps to maintain cache integrity after
+     * cascaded entity deletion
+     *
+     */
+    public void updateCacheOnDelete() {
     }
 }

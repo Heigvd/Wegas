@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Yannick Lagger <lagger.yannick@gmail.com>
+ * @author Yannick Lagger (lagger.yannick.com)
  */
 @Stateless
 @Path("Pusher/")
@@ -61,7 +61,7 @@ public class WebsocketController {
      * @param channelName
      * @param socketId
      *
-     * @return
+     * @return authentication result to return to client
      */
     @POST
     @Path("auth")
@@ -79,7 +79,7 @@ public class WebsocketController {
      * @param eventType
      * @param entityId
      *
-     * @return
+     * @return result of websocketFacade send
      *
      * @throws java.io.IOException
      */

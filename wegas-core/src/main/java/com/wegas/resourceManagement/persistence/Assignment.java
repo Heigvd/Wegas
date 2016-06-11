@@ -15,6 +15,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.Broadcastable;
 import java.util.List;
@@ -28,8 +30,14 @@ import java.util.Map;
     @Index(columnList = "variableinstance_id"),
     @Index(columnList = "taskdescriptor_id")
 })
+@NamedQueries({
+    @NamedQuery(
+            name = "Assignment.findByResourceInstanceAndTaskDescriptor",
+            query = "SELECT a FROM Assignment a where a.resourceInstance = :resourceInstance AND a.taskDescriptor = :taskDescriptor"
+    )
+})
 @Entity
-public class Assignment extends AbstractAssignement implements Broadcastable {
+public class Assignment extends AbstractAssignement /*implements Broadcastable */ {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -81,19 +89,6 @@ public class Assignment extends AbstractAssignement implements Broadcastable {
         }
     }
 
-    /*
-     @PostPersist
-     @PostUpdate
-     @PostRemove
-     private void onUpdate() {
-     this.getResourceInstance().onInstanceUpdate();
-     }
-     */
-    @Override
-    public Map<String, List<AbstractEntity>> getEntities() {
-        return this.getResourceInstance().getEntities();
-    }
-
     @Override
     public Long getId() {
         return this.id;
@@ -119,7 +114,7 @@ public class Assignment extends AbstractAssignement implements Broadcastable {
 
     /**
      *
-     * @return
+     * @return id of the task descriptor this assignment is linked to
      */
     public Long getTaskDescriptorId() {
         return this.getTaskDescriptor().getId();
@@ -140,5 +135,24 @@ public class Assignment extends AbstractAssignement implements Broadcastable {
     @JsonProperty
     public void setTaskDescriptor(TaskDescriptor taskDescriptor) {
         this.taskDescriptor = taskDescriptor;
+    }
+
+    @Override
+    public void updateCacheOnDelete() {
+        TaskDescriptor theTask = this.getTaskDescriptor();
+        ResourceInstance theResource = this.getResourceInstance();
+
+        if (theTask != null) {
+            theTask = ((TaskDescriptor) VariableDescriptorFacade.lookup().find(theTask.getId()));
+            if (theTask != null) {
+                theTask.getAssignments().remove(this);
+            }
+        }
+        if (theResource != null) {
+            theResource = ((ResourceInstance) VariableInstanceFacade.lookup().find(theResource.getId()));
+            if (theResource != null) {
+                theResource.getAssignments().remove(this);
+            }
+        }
     }
 }

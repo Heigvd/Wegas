@@ -20,7 +20,7 @@ import javax.ws.rs.core.MediaType;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/ProgGame/")
@@ -36,7 +36,7 @@ public class ProgGameController {
      *
      * @param playerId
      * @param script
-     * @return
+     * @return whatever the script returns
      */
     @POST
     @Path("/Run/{playerId : [1-9][0-9]*}")

@@ -27,7 +27,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
 @Path("Role")
@@ -51,8 +51,8 @@ public class RoleController extends AbstractRestController<RoleFacade, Role> {
     /**
      * Retrieve a specific game model
      *
-     * @param entityId
-     * @return OK
+     * @param entityId role id
+     * @return the role matching entityId
      */
     @Override
     @GET
@@ -63,9 +63,10 @@ public class RoleController extends AbstractRestController<RoleFacade, Role> {
     }
 
     /**
+     * Create a new role
      *
-     * @param entity
-     * @return
+     * @param entity role to create
+     * @return the new role or HTTP Forbidden status if user is not an admin
      */
     @Override
     @RequiresPermissions("User:Edit")
@@ -74,10 +75,11 @@ public class RoleController extends AbstractRestController<RoleFacade, Role> {
     }
 
     /**
+     * Update a role
      *
-     * @param entityId
-     * @param entity
-     * @return
+     * @param entityId if of role to update
+     * @param entity   role to read new values from
+     * @return up to date role or HTTP Forbidden status if user is not an admin
      */
     @Override
     @PUT
@@ -88,9 +90,10 @@ public class RoleController extends AbstractRestController<RoleFacade, Role> {
     }
 
     /**
+     * copy a role
      *
      * @param entityId
-     * @return
+     * @return role copy or HTTP Forbidden status if user is not an admin
      * @throws IOException
      */
     @Override
@@ -102,9 +105,11 @@ public class RoleController extends AbstractRestController<RoleFacade, Role> {
     }
 
     /**
+     * Delete a role
      *
      * @param entityId
-     * @return
+     * @return just deleted role or HTTP Forbidden status if user is not an
+     *         admin
      */
     @Override
     @DELETE
@@ -116,7 +121,7 @@ public class RoleController extends AbstractRestController<RoleFacade, Role> {
 
     /**
      *
-     * @return
+     * @return the roleFacade
      */
     @Override
     protected RoleFacade getFacade() {

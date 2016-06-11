@@ -14,6 +14,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Singleton;
+import javax.ejb.Startup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +27,7 @@ import org.slf4j.LoggerFactory;
  */
 @Singleton
 @LocalBean
+@Startup
 public class MutexSingleton {
 
     public class RefCounterLock {

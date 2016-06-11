@@ -28,7 +28,7 @@ import org.apache.shiro.SecurityUtils;
  *
  * Controls player access to games
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @ManagedBean(name = "gameController")
 @RequestScoped

@@ -297,102 +297,11 @@ YUI.add('wegas-dashboard', function (Y) {
                     monitorTitle.hide();
                     var globalTitleWidth = toolbarWidth - actionBloc.get("offsetWidth");
                     if (globalTitleWidth > 245){ // Minimal title width when the monitoring title is hidden ...
-                        globalTitle.set("offsetWidth", globalTitleWidth-56); // Subtract a constant number of pixels for borders and margins???
+                        globalTitle.set("offsetWidth", globalTitleWidth-57); // Subtract a constant number of pixels for borders and margins
                     } else {
                         globalTitle.setStyle("width", "auto");
                     }
                 }
-            },
-            _getGameEmails: function () {
-                return new Y.Promise(function (resolve, reject) {
-                    var gameId = Y.Wegas.Facade.Game.cache.getCurrentGame().get("id");
-                    Y.io(Y.Wegas.app.get("base") + "rest/Extended/User/Emails/" + gameId, {
-                        cfg: {
-                            method: "GET",
-                            headers: {
-                                "Managed-Mode": true
-                            }
-                        },
-                        on: {
-                            success: Y.bind(function (rId, xmlHttpRequest) {
-                                resolve(JSON.parse(xmlHttpRequest.response));
-                            }, this),
-                            failure: Y.bind(function (rId, xmlHttpRequest) {
-                                resolve("PERMISSION-ERROR");
-                            }, this)
-                        }
-                    });
-                });
-            },
-            // @param getEmails: promise for fetching the emails as an array of strings.
-            // NB: this function is also used in sub-subclass Y.Wegas.TeamsOverviewDashboard
-            displayEmails: function(getEmails){
-                var newTab = window.open("", "_blank");
-                newTab.document.write("<html><head><title>E-mail list</title></head><body>");
-                newTab.document.write("<p><b>E-mail list in preparation...</b></p></body></html>");
-
-                getEmails.then(function (emails) {
-                    var nbValidEmails = 0,
-                        nbGuests = 0,
-                        mailtoHref = "mailto:",
-                        mailtoText = "";
-
-                    emails.forEach(function (email) {
-                        if (email==="Guest"){
-                            nbGuests++;
-                            return;
-                        }
-                        if (++nbValidEmails === 1) {
-                            mailtoHref += email;
-                            mailtoText += email;
-                        } else {
-                            mailtoHref += ',' + email;
-                            mailtoText += ', ' + email;
-                        }
-                    });
-
-                    newTab.document.close();
-                    newTab.document.write('<html><head><title>E-mail lists</title></head><body style="font-size:13px; font-family:Verdana, Geneva, sans-serif;">');
-                    if (nbValidEmails > 0) {
-                        if (nbValidEmails > 1) {
-                            newTab.document.write('<b>' + nbValidEmails + ' comma-separated addresses (standard syntax) /<br/>' + nbValidEmails + ' adresses séparées par des virgules (syntaxe standard):</b><br/>');
-                        }
-                        newTab.document.write('<a href="' + mailtoHref + '?subject=Serious%20Game"><pre>' + mailtoText + "</pre></a>");
-                        if (nbValidEmails > 1) {
-                            newTab.document.write('<br/>&nbsp;<br/>');
-                            mailtoHref = mailtoHref.replace(/,/g, ";");
-                            mailtoText = mailtoText.replace(/,/g, ";");
-                            newTab.document.write('<b>' + nbValidEmails + ' semicolon-separated addresses (for Microsoft Outlook) /<br/>' + nbValidEmails + ' adresses séparées par des point-virgules (pour Microsoft Outlook) :</b><br/>');
-                            newTab.document.write('<a href="' + mailtoHref + '?subject=Serious%20Game"><pre>' + mailtoText + "</pre></a>");
-                        }
-                    } else {
-                        newTab.document.write('No registered user / Aucun joueur enregistré<br/>&nbsp;');
-                    }
-                    if (nbGuests > 0) {
-                        var plural = nbGuests>1 ? 's' : '';
-                        newTab.document.write('<br/><span style="color:red">Attention:</span> ' + nbGuests + ' anonymous player'+plural+', hence without e-mail / ' + nbGuests + ' joueur'+plural+' anonyme'+plural+', donc sans e-mail.');
-                    }
-                    newTab.document.close();
-                });
-            },
-
-            // @param emailsArray: emails as an array of strings.
-            // NB: this function is used in sub-subclass Y.Wegas.TeamsOverviewDashboard
-            formatEmails: function(emailsArray){
-                var nbValidEmails = 0,
-                    mailtoText = "";
-
-                emailsArray.forEach(function (email) {
-                    if (email==="Guest"){
-                        return;
-                    }
-                    if (++nbValidEmails === 1) {
-                        mailtoText += email;
-                    } else {
-                        mailtoText += ', ' + email;
-                    }
-                });
-                return mailtoText;
             },
             _checkToolbarResize: function () {
                 var ctx = this,

@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Implementation specific garbageCollector
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Startup
 @Singleton
@@ -97,8 +97,9 @@ public class JackrabbitConnector {
      * @param workspaceName
      */
     private static void deleteWorkspaces(List<String> toDelete) {
+        String dbName = Helper.getWegasProperty("jcr.jdbc.resource-name");
         try {
-            DataSource ds = (DataSource) new InitialContext().lookup("jdbc/jcr");
+            DataSource ds = (DataSource) new InitialContext().lookup(dbName);
             try (Connection con = ds.getConnection()) {
                 for (String workspaceName : toDelete) {
                     logger.warn("Delete " + workspaceName);
@@ -106,10 +107,10 @@ public class JackrabbitConnector {
                         try {
                             /* DROP TABLES */
                             String dropQuery = "DROP table IF EXISTS "
-                                    + workspaceName + "_binval, "
-                                    + workspaceName + "_refs, "
-                                    + workspaceName + "_bundle, "
-                                    + workspaceName + "_names CASCADE";
+                                + workspaceName + "_binval, "
+                                + workspaceName + "_refs, "
+                                + workspaceName + "_bundle, "
+                                + workspaceName + "_names CASCADE";
 
                             statement.execute(dropQuery);
                             con.commit();
@@ -131,7 +132,7 @@ public class JackrabbitConnector {
                 logger.warn("Delete workspace failed: getConnection failed");
             }
         } catch (NamingException ex) {
-            logger.warn("Delete workspace failed: no \"jdbc/jcr\" resource found");
+            logger.warn("Delete workspace failed: no \"" + dbName + "\" resource found");
         }
     }
 

@@ -136,7 +136,7 @@ YUI.add("wegas-loginbutton", function(Y) {
         bindUI: function() {
             this.on("click", function() {
                 var autologin = this.get("autologin");
-                Y.io(Y.Wegas.app.get("base") + "/rest/User/logout", {//logout
+                Y.io(Y.Wegas.app.get("base") + "/rest/User/Logout", {//logout
                     on: {
                         success: function() {
                             if (autologin) {

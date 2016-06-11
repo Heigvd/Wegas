@@ -10,6 +10,7 @@ package com.wegas.mcq.ejb;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.mcq.persistence.*;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 import javax.ejb.TransactionAttribute;
@@ -17,11 +18,10 @@ import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 /**
- *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Singleton
 @LocalBean
@@ -31,28 +31,26 @@ public class QuestionSingleton {
     private EntityManager em;
 
     /**
-     *
      * @param instanceId
-     * @return
+     * @return count the number of reply for the given question
      */
     public int findReplyCount(Long instanceId) {
-        final Query query = em.createQuery("SELECT COUNT(r) FROM Reply r WHERE r.questionInstance.id = :id");
-        query.setParameter("id", instanceId);
+        final TypedQuery<Long> query = em.createNamedQuery("Reply.countForInstance", Long.class);
+        query.setParameter("instanceId", instanceId);
         try {
-            return ((Number) query.getSingleResult()).intValue();
+            return query.getSingleResult().intValue();
         } catch (NoResultException ex) {
             return 0;
         }
     }
 
     /**
-     *
      * @param choiceId
      * @param player
      * @param startTime
      * @return
      */
-    public Reply createReplyUntransactionnal(Long choiceId, Player player, Long startTime) {
+    private Reply createReplyNonTransactional(Long choiceId, Player player, Long startTime) {
         ChoiceDescriptor choice = em.find(ChoiceDescriptor.class, choiceId);
 
         QuestionDescriptor questionDescriptor = choice.getQuestion();
@@ -68,29 +66,30 @@ public class QuestionSingleton {
         }
 
         Reply reply = new Reply();
-        if (isCbx && startTime<0){ // Hack to signal ignoration
+        if (isCbx && startTime < 0) { // Hack to signal ignoration
             reply.setStartTime(0L);
             reply.setIgnored(true);
         } else {
             reply.setStartTime(startTime);
         }
-        reply.setResult(choice.getInstance(player).getResult());
+        Result result = choice.getInstance(player).getResult();
+        reply.setResult(result);
+        result.addReply(reply);
         questionInstance.addReply(reply);
         //em.persist(reply);
-        em.flush();
-        em.refresh(reply);
+//        em.flush();
         return reply;
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)                // Require new transaction
-    public Reply createReply(Long choiceId, Player player, Long startTime) {
-        return createReplyUntransactionnal(choiceId, player, startTime);
+    public Reply createReplyTransactional(Long choiceId, Player player, Long startTime) {
+        return createReplyNonTransactional(choiceId, player, startTime);
     }
 
-    
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)                // cancelReply
-    public Reply cancelReplyTransactionnal(Long playerId, Long replyId) {
+    public Reply cancelReplyTransactional(Long playerId, Long replyId) {
         final Reply reply = em.find(Reply.class, replyId);
+        reply.getQuestionInstance().getReplies().remove(reply);
         em.remove(reply);
         return reply;
     }

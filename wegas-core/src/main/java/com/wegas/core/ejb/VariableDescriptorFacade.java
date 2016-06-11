@@ -17,10 +17,10 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.scope.AbstractScope;
+import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
-import com.wegas.core.security.persistence.User;
-import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +31,8 @@ import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.naming.NamingException;
-import javax.persistence.*;
+import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -42,7 +43,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
 @LocalBean
@@ -77,15 +78,12 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         throw WegasErrorMessage.error("Unable to call create on Variable descriptor. Use create(gameModelId, variableDescriptor) instead.");
     }
 
-    /**
-     * @return
-     */
     @Override
     public VariableDescriptor update(final Long entityId, final VariableDescriptor entity) {
         final VariableDescriptor vd = this.find(entityId);
-        entity.setGameModel(vd.getGameModel());
-        this.revive(entity);
+        //entity.setGameModel(vd.getGameModel());
         vd.merge(entity);
+        this.revive(vd.getGameModel(), vd, false);
         return vd;
     }
 
@@ -93,14 +91,12 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      * @param gameModel
      * @param list
      * @param entity
-     * @return
+     * @return Parent descriptor container which contains the new child
      */
-    public DescriptorListI createChild(final GameModel gameModel, final DescriptorListI list, final VariableDescriptor entity) {
+    public DescriptorListI createChild(final GameModel gameModel, final DescriptorListI<VariableDescriptor> list, final VariableDescriptor entity) {
 
         List<String> usedNames = this.findDistinctNames(gameModel);
         List<String> usedLabels = this.findDistinctLabels(list);
-
-        list.addItem(entity);
 
         boolean hasName = !Helper.isNullOrEmpty(entity.getName());
         boolean hasLabel = !Helper.isNullOrEmpty(entity.getLabel());
@@ -114,28 +110,70 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         Helper.setUniqueName(entity, usedNames);
         Helper.setUniqueLabel(entity, usedLabels);
 
-        this.revive(entity);
+        list.addItem(entity);
+        this.revive(gameModel, entity, true);
         return list;
     }
 
     /**
+     * @param gameModel
      * @param entity
+     * @param propagate indicate whether default instance should be propagated
      */
-    public void revive(VariableDescriptor entity) {
+    public void revive(GameModel gameModel, VariableDescriptor entity, boolean propagate) {
+        /*
+         * This flush is required by several DescriptorRevivedEvent listener, 
+         * which opperate some SQL queries (which didn't return anything before
+         * entites has been flushed to database
+         */
+        this.getEntityManager().flush();
+
+        if (entity.getScope() == null) {
+            entity.setScope(new TeamScope());
+            propagate = true;
+        }
+
+        // @TODO find a smarter way to decide to propagate or not to propatate...
+        if (propagate) {
+            AbstractScope scope = entity.getScope();
+            scope.propagateDefaultInstance(null);
+        }
 
         descriptorRevivedEvent.fire(new DescriptorRevivedEvent(entity));
-
+        gameModel.addToVariableDescriptors(entity);
         if (entity instanceof DescriptorListI) {
-            this.reviveItems((DescriptorListI) entity);
+            this.reviveItems(gameModel, (DescriptorListI) entity, propagate);
         }
     }
 
     /**
+     * @param gameModel
      * @param entity
      */
-    public void reviveItems(DescriptorListI entity) {
-        for (Object vd : ((DescriptorListI) entity).getItems()) {
-            this.revive((VariableDescriptor) vd);
+    public void reviveItems(GameModel gameModel, DescriptorListI entity, boolean propagate) {
+        for (Object vd : entity.getItems()) {
+            this.revive(gameModel, (VariableDescriptor) vd, propagate);
+        }
+    }
+
+    /**
+     * @param gameModel
+     * @param entity
+     */
+    public void preDestroy(GameModel gameModel, VariableDescriptor entity) {
+        gameModel.removeFromVariableDescriptors(entity);
+        if (entity instanceof DescriptorListI) {
+            this.preDestroyItems(gameModel, (DescriptorListI) entity);
+        }
+    }
+
+    /**
+     * @param gameModel
+     * @param entity
+     */
+    public void preDestroyItems(GameModel gameModel, DescriptorListI entity) {
+        for (Object vd : entity.getItems()) {
+            this.preDestroy(gameModel, (VariableDescriptor) vd);
         }
     }
 
@@ -160,7 +198,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
 
     /**
      * @param entityId
-     * @return
+     * @return the new descriptor
      * @throws IOException
      */
     @Override
@@ -170,18 +208,25 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
 
         final ObjectMapper mapper = JacksonMapperProvider.getMapper();          // Retrieve a jackson mapper instance
         final String serialized = mapper.writerWithView(Views.Export.class).
-            writeValueAsString(oldEntity);                                  // Serialize the entity
+                writeValueAsString(oldEntity);                                  // Serialize the entity
         final VariableDescriptor newEntity
-            = mapper.readValue(serialized, oldEntity.getClass());           // and deserialize it
+                = mapper.readValue(serialized, oldEntity.getClass());           // and deserialize it
 
         final DescriptorListI list = oldEntity.getParent();
         this.createChild(oldEntity.getGameModel(), list, newEntity);
         return newEntity;
     }
 
+    @Override
+    public void remove(VariableDescriptor entity) {
+        this.preDestroy(entity.getGameModel(), entity);
+        entity.getParent().remove(entity);
+        getEntityManager().remove(entity);
+    }
+
     /**
      * @param vd
-     * @return
+     * @return descriptor container
      * @deprecated use {@link VariableDescriptor#getParent()}
      */
     public DescriptorListI findParentList(VariableDescriptor vd) throws NoResultException {
@@ -190,8 +235,8 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
 
     /**
      * @param item
-     * @return
-     * @throws com.wegas.core.exception.internal.WegasNoResultException
+     * @return the parent descriptor
+     * @throws WegasNoResultException if the desciptor is at root-level
      * @deprecated use {@link VariableDescriptor#getParentList()}
      */
     public ListDescriptor findParentListDescriptor(final VariableDescriptor item) throws WegasNoResultException {
@@ -205,19 +250,15 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
     /**
      * @param gameModel
      * @param name
-     * @return
-     * @throws com.wegas.core.exception.internal.WegasNoResultException
+     * @return the gameModel descriptor matching the name
+     * @throws WegasNoResultException
      */
     public VariableDescriptor find(final GameModel gameModel, final String name) throws WegasNoResultException {
-        final CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        final CriteriaQuery cq = cb.createQuery();
-        final Root<User> variableDescriptor = cq.from(VariableDescriptor.class);
-        cq.where(cb.and(
-            cb.equal(variableDescriptor.get("gameModel"), gameModel),
-            cb.equal(variableDescriptor.get("name"), name)));
-        final Query q = getEntityManager().createQuery(cq);
         try {
-            return (VariableDescriptor) q.getSingleResult();
+            TypedQuery<VariableDescriptor> query = getEntityManager().createNamedQuery("VariableDescriptor.findByGameModelAndName", VariableDescriptor.class);
+            query.setParameter("gameModel", gameModel);
+            query.setParameter("name", name);
+            return query.getSingleResult();
         } catch (NoResultException ex) {
             throw new WegasNoResultException(ex);
         }
@@ -225,35 +266,36 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
 
     /**
      * @param gameModel
-     * @return
+     * @return all descriptor names already in use within the gameModel
      */
     public List<String> findDistinctNames(final GameModel gameModel) {
-        Query distinctNames = getEntityManager().createQuery("SELECT DISTINCT(var.name) FROM VariableDescriptor var WHERE var.gameModel = :gameModel");
+        TypedQuery<String> distinctNames = getEntityManager().createQuery("SELECT DISTINCT(var.name) FROM VariableDescriptor var WHERE var.gameModel = :gameModel", String.class);
         distinctNames.setParameter("gameModel", gameModel);
         return distinctNames.getResultList();
     }
 
     /**
      * @param container
-     * @return
+     * @return all descriptor labels already in use within the given descriptor
+     *         container
      */
-    public List<String> findDistinctLabels(final DescriptorListI container) {
+    public List<String> findDistinctLabels(final DescriptorListI<? extends VariableDescriptor> container) {
         if (container instanceof GameModel) {
-            Query distinctLabels = getEntityManager().createNamedQuery("GameModel.findDistinctChildrenLabels");
-            distinctLabels.setParameter("container", (GameModel) container);
+            TypedQuery<String> distinctLabels = getEntityManager().createNamedQuery("GameModel.findDistinctChildrenLabels", String.class);
+            distinctLabels.setParameter("container", container);
             return distinctLabels.getResultList();
         } else if (container instanceof ListDescriptor) {
-            Query distinctLabels = getEntityManager().createNamedQuery("ListDescriptor.findDistinctChildrenLabels");
-            distinctLabels.setParameter("container", (ListDescriptor) container);
+            TypedQuery<String> distinctLabels = getEntityManager().createNamedQuery("ListDescriptor.findDistinctChildrenLabels", String.class);
+            distinctLabels.setParameter("container", container);
             return distinctLabels.getResultList();
         } else if (container instanceof QuestionDescriptor) {
-            Query distinctLabels = getEntityManager().createNamedQuery("QuestionDescriptor.findDistinctChildrenLabels");
-            distinctLabels.setParameter("container", (QuestionDescriptor) container);
+            TypedQuery<String> distinctLabels = getEntityManager().createNamedQuery("QuestionDescriptor.findDistinctChildrenLabels", String.class);
+            distinctLabels.setParameter("container", container);
             return distinctLabels.getResultList();
         } else {
             // fallback case
-            List<String> list = new ArrayList();
-            for (VariableDescriptor child : (List<VariableDescriptor>) container.getItems()) {
+            List<String> list = new ArrayList<>();
+            for (VariableDescriptor child : container.getItems()) {
                 list.add(child.getLabel());
             }
             return list;
@@ -266,7 +308,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      *
      * @param gameModel
      * @param name
-     * @return
+     * @return the gameModel descriptor matching the name
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      * @deprecated
      */
@@ -277,19 +319,20 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
     /**
      * @param gameModel
      * @param label
-     * @return
+     * @return the gameModel descriptor matching the label
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
     public VariableDescriptor findByLabel(final GameModel gameModel, final String label) throws WegasNoResultException {
+        // TODO update to handle label duplicata
         final CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        final CriteriaQuery cq = cb.createQuery();
-        final Root<User> variableDescriptor = cq.from(VariableDescriptor.class);
+        final CriteriaQuery<VariableDescriptor> cq = cb.createQuery(VariableDescriptor.class);
+        final Root<VariableDescriptor> variableDescriptor = cq.from(VariableDescriptor.class);
         cq.where(cb.and(
-            cb.equal(variableDescriptor.get("gameModel"), gameModel),
-            cb.equal(variableDescriptor.get("label"), label)));
-        final Query q = getEntityManager().createQuery(cq);
+                cb.equal(variableDescriptor.get("gameModel"), gameModel),
+                cb.equal(variableDescriptor.get("label"), label)));
+        final TypedQuery<VariableDescriptor> q = getEntityManager().createQuery(cq);
         try {
-            return (VariableDescriptor) q.getSingleResult();
+            return q.getSingleResult();
         } catch (NoResultException ex) {
             throw new WegasNoResultException(ex);
         }
@@ -297,33 +340,34 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
 
     /**
      * @param gameModel
-     * @param title
-     * @return
+     * @param title     title we look for
+     * @return all gameModel descriptors with the given title
      */
     public List<VariableDescriptor> findByTitle(final GameModel gameModel, final String title) {
         final CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        final CriteriaQuery cq = cb.createQuery();
-        final Root<User> variableDescriptor = cq.from(VariableDescriptor.class);
+        final CriteriaQuery<VariableDescriptor> cq = cb.createQuery(VariableDescriptor.class);
+        final Root<VariableDescriptor> variableDescriptor = cq.from(VariableDescriptor.class);
         cq.where(cb.and(
-            cb.equal(variableDescriptor.get("gameModel"), gameModel),
-            cb.equal(variableDescriptor.get("title"), title)));
-        final Query q = getEntityManager().createQuery(cq);
+                cb.equal(variableDescriptor.get("gameModel"), gameModel),
+                cb.equal(variableDescriptor.get("title"), title)));
+        final TypedQuery<VariableDescriptor> q = getEntityManager().createQuery(cq);
         return q.getResultList();
     }
 
     /**
      * @param gameModelId
-     * @return
+     * @return all gameModel descriptors
      */
     public List<VariableDescriptor> findAll(final Long gameModelId) {
-        TypedQuery<VariableDescriptor> findByRootGameModelId = getEntityManager().createNamedQuery("findVariableDescriptorsByRootGameModelId", VariableDescriptor.class);
+        // TODO: Shall we use gameModel.getVariableDescriptors() instead ?
+        TypedQuery<VariableDescriptor> findByRootGameModelId = getEntityManager().createNamedQuery("VariableDescriptor.findByRootGameModelId", VariableDescriptor.class);
         findByRootGameModelId.setParameter("gameModelId", gameModelId);
         return findByRootGameModelId.getResultList();
     }
 
     /**
      * @param gameModelId
-     * @return
+     * @return gameModel root-level descriptor
      */
     public List<VariableDescriptor> findByGameModelId(final Long gameModelId) {
         return gameModelFacade.find(gameModelId).getChildVariableDescriptors();
@@ -336,22 +380,21 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      * @return All specified classes and subclasses belonging to the game model.
      */
     public <T extends VariableDescriptor> List<T> findByClass(final GameModel gamemodel, final Class<T> variableDescriptorClass) {
-
+        //Cannot be a namedQuery, find by TYPE() removes subclasses
         final CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        final CriteriaQuery cq = cb.createQuery();
-        final Root<User> variableDescriptor = cq.from(variableDescriptorClass);
+        final CriteriaQuery<T> cq = cb.createQuery(variableDescriptorClass);
+        final Root<T> variableDescriptor = cq.from(variableDescriptorClass);
         cq.where(cb.equal(variableDescriptor.get("gameModel"), gamemodel));
-        final Query q = getEntityManager().createQuery(cq);
+        final TypedQuery<T> q = getEntityManager().createQuery(cq);
         return q.getResultList();
 
         //Query findVariableDescriptorsByClass = getEntityManager().createQuery("SELECT DISTINCT variableDescriptor FROM " + variableDescriptorClass.getSimpleName() + " variableDescriptor LEFT JOIN variableDescriptor.gameModel AS gm WHERE gm.id =" + gameModelId, variableDescriptorClass);
         //return findVariableDescriptorsByClass.getResultList();
     }
 
-    private void move(final Long descriptorId, final DescriptorListI targetListDescriptor, final int index) {
+    private void move(final Long descriptorId, final DescriptorListI<VariableDescriptor> targetListDescriptor, final int index) {
         final VariableDescriptor vd = this.find(descriptorId);                  // Remove from the previous list
         vd.getParent().remove(vd);
-
         targetListDescriptor.addItem(index, vd);                                // Then add to the new one
     }
 
@@ -408,14 +451,15 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
     }
 
     /**
-     * @return
+     * @return Looked-up EJB
      */
     public static VariableDescriptorFacade lookup() {
         try {
             return Helper.lookupBy(VariableDescriptorFacade.class);
         } catch (NamingException ex) {
-            logger.error("Error retrieving requestmanager", ex);
+            logger.error("Error retrieving var desc facade", ex);
             return null;
         }
     }
+
 }

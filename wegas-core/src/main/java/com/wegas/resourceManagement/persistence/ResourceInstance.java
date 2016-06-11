@@ -18,11 +18,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.ListUtils;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 @Access(AccessType.FIELD)
@@ -36,7 +38,7 @@ public class ResourceInstance extends VariableInstance {
     /**
      *
      */
-    @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}/*, orphanRemoval = true*/)
     @JsonManagedReference
     @OrderColumn
     private List<Assignment> assignments = new ArrayList<>();
@@ -86,22 +88,62 @@ public class ResourceInstance extends VariableInstance {
             ResourceInstance other = (ResourceInstance) a;
             this.setActive(other.getActive());
             if (other.getAssignments() != null) {
-                this.setAssignments(other.getAssignments());
+                //ListUtils.mergeLists(this.getAssignments(), other.getAssignments());
+                this.setAssignments(
+                        ListUtils.mergeLists(this.getAssignments(), other.getAssignments(), new ListUtils.Updater() {
+                            @Override
+                            public void addEntity(AbstractEntity entity) {
+                                if (entity instanceof Assignment) {
+                                    Assignment assignment = (Assignment) entity;
+                                    TaskDescriptor parent = (TaskDescriptor) VariableDescriptorFacade.lookup().find(assignment.getTaskDescriptorId());
+                                    if (parent == null) {
+                                        parent = assignment.getTaskDescriptor();
+                                    }
+                                    parent.addAssignment(assignment);
+                                }
+                            }
+
+                            @Override
+                            public void removeEntity(AbstractEntity entity) {
+                                if (entity instanceof Assignment) {
+                                    Assignment assignment = (Assignment) entity;
+                                    TaskDescriptor parent = (TaskDescriptor) VariableDescriptorFacade.lookup().find(assignment.getTaskDescriptorId());
+                                    if (parent != null) {
+                                        parent.removeAssignment(assignment);
+                                    }
+                                }
+                            }
+                        }));
             }
             if (other.getActivities() != null) {
-                this.setActivities(other.getActivities());
+                this.setActivities(ListUtils.mergeLists(this.getActivities(), other.getActivities(), new ListUtils.Updater() {
+                    @Override
+                    public void addEntity(AbstractEntity entity) {
+                        Activity activity = (Activity) entity;
+                        TaskDescriptor tdParent = (TaskDescriptor) VariableDescriptorFacade.lookup().find(activity.getTaskDescriptorId());
+                        if (tdParent != null) {
+                            tdParent.addActivity(activity);
+                        }
+                        activity.getRequirement().addActivity(activity);
+                    }
+
+                    @Override
+                    public void removeEntity(AbstractEntity entity) {
+                        Activity activity = (Activity) entity;
+                        TaskDescriptor tdParent = (TaskDescriptor) VariableDescriptorFacade.lookup().find(activity.getTaskDescriptorId());
+                        if (tdParent != null) {
+                            tdParent.removeActivity(activity);
+                        }
+                        activity.getRequirement().removeActivity(activity);
+                    }
+                }));
             }
             if (other.getOccupations() != null) {
-                this.occupations.clear();
-                for (Occupation occ : other.getOccupations()) {
-                    Occupation o = new Occupation();
-                    o.merge(occ);
-                    o.setResourceInstance(this);
-                    this.occupations.add(o);
-                }
+                this.setOccupations(ListUtils.mergeLists(this.getOccupations(), other.getOccupations()));
             }
-            this.properties.clear();
-            this.properties.putAll(other.getProperties());
+            this.setProperties(new HashMap<>());
+            this.getProperties().putAll(other.getProperties());
+            //this.setProperties(other.getProperties());
             //this.setMoral(other.getMoral());
             this.setConfidence(other.getConfidence());
         } else {
@@ -110,7 +152,7 @@ public class ResourceInstance extends VariableInstance {
     }
 
     /**
-     * @return the assignements
+     * @return the assignments
      */
     public List<Assignment> getAssignments() {
         return assignments;
@@ -127,20 +169,13 @@ public class ResourceInstance extends VariableInstance {
      *
      * @param assignment
      */
-    public void addAssignement(Assignment assignment) {
+    public void addAssignment(Assignment assignment) {
         assignments.add(assignment);
         assignment.setResourceInstance(this);
     }
 
-    /**
-     *
-     * @param task
-     * @return
-     */
-    public Assignment assign(TaskDescriptor task) {
-        final Assignment assignment = new Assignment(task);
-        this.addAssignement(assignment);
-        return assignment;
+    public void removeAssignment(Assignment assignment) {
+        assignments.remove(assignment);
     }
 
     /**
@@ -172,27 +207,26 @@ public class ResourceInstance extends VariableInstance {
      */
     public void removeActivity(Activity activity) {
         if (activity.getId() == null) {
+            // ??
             for (int i = 0; i < this.activities.size(); i++) {
                 if (this.activities.get(i) == activity) {
+                    activity.setResourceInstance(null);
                     this.activities.remove(i);
+
                 }
             }
-        } else {
-            activities.remove(activity);
+        } else if (activities.remove(activity)) {
+            activity.setResourceInstance(null);
         }
     }
 
     /**
      *
      * @param task
-     * @return the activity
+     * @return the activity public Activity createActivity(TaskDescriptor task)
+     *         { final Activity activity = new Activity(task);
+     *         this.addActivity(activity); return activity; }
      */
-    public Activity createActivity(TaskDescriptor task) {
-        final Activity activity = new Activity(task);
-        this.addActivity(activity);
-        return activity;
-    }
-
     /**
      * @return the activities
      */
@@ -231,16 +265,16 @@ public class ResourceInstance extends VariableInstance {
         occupation.setResourceInstance(this);
     }
 
-    /**
-     *
-     * @return
-     */
-    public Occupation addOccupation() {
-        Occupation occupation = new Occupation();
-        this.addOccupation(occupation);
-        return occupation;
+    public void removeOccupation(Occupation occupation) {
+        this.getOccupations().remove(occupation);
     }
 
+    /**
+     *
+     * @return public Occupation addOccupation() { Occupation occupation = new
+     *         Occupation(); this.addOccupation(occupation); return occupation;
+     *         }
+     */
     /**
      * @return the active
      */
@@ -296,16 +330,18 @@ public class ResourceInstance extends VariableInstance {
     /**
      *
      * @param key
-     * @return
+     * @return true is the resourceInstance is active
      */
     public String getProperty(String key) {
         return this.properties.get(key);
     }
 
     /**
+     * get property by key, cast to double
      *
      * @param key
-     * @return
+     * @return the value mapped by key, cast to double
+     * @throws NumberFormatException if the property is not a number
      */
     public double getPropertyD(String key) {
         return Double.valueOf(this.properties.get(key));
@@ -337,7 +373,7 @@ public class ResourceInstance extends VariableInstance {
     }
 
     /**
-     * Set the confidence's value
+     * Set the confidence value
      *
      * @param confidence the confidence to set
      */
@@ -349,7 +385,8 @@ public class ResourceInstance extends VariableInstance {
      *
      * @param currentPosition
      * @param nextPosition
-     * @return
+     * @return assignment list with up to date order
+     * @deprecated
      */
     public List<Assignment> moveAssignemnt(Integer currentPosition, Integer nextPosition) {
         Assignment assignment = this.assignments.remove(currentPosition.intValue());

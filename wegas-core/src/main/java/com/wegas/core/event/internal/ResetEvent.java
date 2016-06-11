@@ -18,7 +18,18 @@ import java.util.List;
 
 /**
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * Reset event can be bound to a specific context:
+ * <ul>
+ * <li>GameModel: reset everything</li>
+ * <li>Game: do not reset gameModel scoped variables and also skip game scoped
+ * instance belonging to others game</li>
+ * <li>Team: do not reset gameModel and game scoped variables and also skip team
+ * scoped instance belonging to others teams</li>
+ * <li>Player: Only reset player scoped variables belonging to the placer</li>
+ * </ul>
+ *
+ * @author Maxence Laurent (maxence.laurent at gmail.com)
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class ResetEvent implements Serializable {
 
@@ -106,7 +117,7 @@ public class ResetEvent implements Serializable {
 
     /**
      *
-     * @return
+     * @return this reset event context
      */
     public AbstractEntity getContext() {
         if (this.player != null) {
@@ -122,7 +133,7 @@ public class ResetEvent implements Serializable {
 
     /**
      *
-     * @return
+     * @return all players touched by this event context
      */
     public List<Player> getConcernedPlayers() {
         if (this.getContext() instanceof Player) {

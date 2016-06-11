@@ -20,7 +20,7 @@ import java.util.*;
 //////import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 @Cacheable(true)
@@ -129,7 +129,7 @@ public class AbstractAccount extends AbstractEntity {
             this.setUsername(a.getUsername());
             if (a.getDeserializedPermissions() != null && !a.getDeserializedPermissions().isEmpty()) {
                 // Pass through setter to update user
-                this.user.setPermissions(ListUtils.mergeLists(this.user.getPermissions(), a.getDeserializedPermissions()));
+                this.getUser().setPermissions(ListUtils.mergeLists(this.getUser().getPermissions(), a.getDeserializedPermissions()));
             }
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");

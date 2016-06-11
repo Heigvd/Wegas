@@ -10,6 +10,7 @@ package com.wegas.core.ejb;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Team;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 import javax.ejb.TransactionAttribute;
@@ -20,7 +21,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 /**
- *
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
 @Singleton
@@ -31,15 +31,14 @@ public class TeamSingleton {
     private EntityManager em;
 
     /**
-     *
-     * @param gameModelId
+     * @param gameId
      * @param name
      * @return
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
-    public Team findByName(Long gameModelId, String name) throws WegasNoResultException {
+    public Team findByName(Long gameId, String name) throws WegasNoResultException {
         final TypedQuery<Team> query = em.createNamedQuery("Team.findByGameIdAndName", Team.class);
-        query.setParameter("gameId", gameModelId);
+        query.setParameter("gameId", gameId);
         query.setParameter("name", name);
         try {
             return query.getSingleResult();
@@ -49,37 +48,33 @@ public class TeamSingleton {
     }
 
     /**
-     * Nest name definition within a brand new transaction with a lock prevent two
-     * team have the same name within the same game
-     * @param g the game
-     * @param t the team the name to be set
+     * Persist given team, rename if needed
+     *
+     * @param team to persist
+     * @return persisted team
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public void addTeamToGame(Game g, Team t) {
-        Game game = em.find(Game.class, g.getId());
-        // First, discard initial name id already used
-        try {
-            findByName(game.getId(), t.getName());
-            t.setName(null);
-        } catch (WegasNoResultException e) {
-            // Gotcha
-        }
-
-        int suffix = game.getTeams().size();
-        String baseName = game.getShortName();
-        // If no name is provided,
-        while (t.getName() == null) {
-            String name = baseName + "-" + suffix; // Generate one
+    public Team persistTeam(Game game, Team team) {
+        game = em.find(Game.class, game.getId());
+        final String baseName =
+                team.getName() == null || team.getName().isEmpty()
+                        ? team.getGame().getShortName()
+                        : team.getName();
+        int suffix = 1;
+        String name = baseName;
+        do {
             try {
                 findByName(game.getId(), name);
-                suffix++;
+                team.setName(null);
+                name = baseName + "-" + suffix; // Generate a new name
             } catch (WegasNoResultException e) {
-                t.setName(name);
+                // this team name is not registered to this game.
+                team.setName(name);
             }
-        }
-        game.addTeam(t);
-        em.flush();
-        em.refresh(game);
-        em.refresh(t);
+        } while (team.getName() == null);
+//        game.addTeam(team);
+        game.addTeam(team);
+        em.flush(); // register name
+        return team;
     }
 }

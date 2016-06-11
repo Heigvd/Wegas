@@ -19,7 +19,7 @@ import javax.persistence.Entity;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 @Access(AccessType.FIELD)
@@ -45,8 +45,8 @@ public class ObjectInstance extends VariableInstance {
         if (a != null) {
             if (a instanceof ObjectInstance) {
                 ObjectInstance other = (ObjectInstance) a;
-                this.properties.clear();
-                this.properties.putAll(other.getProperties());
+                this.setProperties(new HashMap<>());
+                this.getProperties().putAll(other.getProperties());
             } else {
                 throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
             }

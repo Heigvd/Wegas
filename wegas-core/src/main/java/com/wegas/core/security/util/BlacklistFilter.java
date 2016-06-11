@@ -30,9 +30,9 @@ import org.slf4j.LoggerFactory;
 @WebFilter(filterName = "BlacklistFilter", urlPatterns = {"/wegas-private/*"}, dispatcherTypes = {DispatcherType.REQUEST})
 public class BlacklistFilter implements Filter {
 
-    Logger logger = LoggerFactory.getLogger(BlacklistFilter.class);
+    final Logger logger = LoggerFactory.getLogger(BlacklistFilter.class);
 
-    private static List<String> blacklist = new ArrayList<>();
+    private static final List<String> blacklist = new ArrayList<>();
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {

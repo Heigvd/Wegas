@@ -25,7 +25,7 @@ import org.apache.shiro.authz.UnauthorizedException;
 
 /**
  * @deprecated ???
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/Inbox/")
@@ -48,14 +48,14 @@ public class InboxDescriptorController {
     @EJB
     private PlayerFacade playerFacade;
 
-
     @EJB
     private RequestFacade requestFacade;
 
     /**
+     * Get all message from the given inbox instance
      *
-     * @param instanceId
-     * @return
+     * @param instanceId inbox instance identifier
+     * @return given inbox all messages
      */
     @GET
     @Path("{instanceId : [1-9][0-9]*}/Message")
@@ -68,9 +68,10 @@ public class InboxDescriptorController {
     }
 
     /**
+     * Get a message
      *
-     * @param messageId
-     * @return
+     * @param messageId message id
+     * @return the message
      */
     @GET
     @Path("Message/{messageId : [1-9][0-9]*}")
@@ -83,15 +84,16 @@ public class InboxDescriptorController {
     }
 
     /**
+     * Edit a message
      *
-     * @param messageId
-     * @param message
-     * @return
+     * @param messageId if of message to edit
+     * @param message new message version
+     * @return the new message version
      */
     @PUT
     @Path("Message/{messageId : [1-9][0-9]*}")
     public InboxInstance editMessage(@PathParam("messageId") Long messageId,
-        Message message) {
+            Message message) {
 
         Message update = messageFacade.update(messageId, message);
         checkPermissions(update);
@@ -100,9 +102,10 @@ public class InboxDescriptorController {
     }
 
     /**
+     * Mark message as read
      *
-     * @param messageId
-     * @return
+     * @param messageId id of message to mark as read
+     * @return inbox instance which contains the read message
      */
     @PUT
     @Path("Message/Read/{messageId : [1-9][0-9]*}")
@@ -119,9 +122,10 @@ public class InboxDescriptorController {
     }
 
     /**
+     * Delete a message
      *
-     * @param messageId
-     * @return
+     * @param messageId id of message to delete
+     * @return InboxInstance which does not contains the message anymore
      */
     @DELETE
     @Path("Message/{messageId : [1-9][0-9]*}")
@@ -135,8 +139,11 @@ public class InboxDescriptorController {
     }
 
     /**
+     * Assert current user has the permission to access the instance
      *
      * @param instance
+     * @throws UnauthorizedException if currentUser do not have access to the
+     * inbox
      */
     private void checkPermissions(VariableInstance instance) {
         if (!SecurityHelper.isPermitted(variableInstanceFacade.findGame(instance), "Edit")) {
@@ -151,6 +158,7 @@ public class InboxDescriptorController {
     }
 
     /**
+     * Assert currentUser has the permission to read the message
      *
      * @param m
      */

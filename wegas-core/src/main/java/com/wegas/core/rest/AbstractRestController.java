@@ -20,15 +20,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * This is f*cking useless since its only inherited once (by RoleController)
  *
  * @param <T>
  * @param <U>
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public abstract class AbstractRestController<T extends AbstractFacade, U extends AbstractEntity> implements AbstractRestControllerI<T, U> {
+public abstract class AbstractRestController<T extends AbstractFacade<U>, U extends AbstractEntity> implements AbstractRestControllerI<T, U> {
 
+    /**
+     *
+     */
     private static final Logger logger = LoggerFactory.getLogger(AbstractRestController.class);
     /**
      *
@@ -38,14 +42,14 @@ public abstract class AbstractRestController<T extends AbstractFacade, U extends
 
     /**
      *
-     * @return
+     * @return the facade this controller is designed for
      */
     protected abstract T getFacade();
 
     /**
-     * Index : retrieve the game model list
+     * Index: get all entities this controller is designed for
      *
-     * @return
+     * @return all entities this controller is designed for
      */
     @GET
     @Override
@@ -54,21 +58,22 @@ public abstract class AbstractRestController<T extends AbstractFacade, U extends
     }
 
     /**
-     * Retrieve a specific game model
+     * Retrieve a specific entity
      *
      * @param entityId
-     * @return OK
+     * @return entity matching given id
      */
     @GET
     @Path("{entityId : [1-9][0-9]*}")
     public U get(@PathParam("entityId") Long entityId) {
-        return (U) getFacade().find(entityId);
+        return getFacade().find(entityId);
     }
 
     /**
+     * Create a new entity
      *
      * @param entity
-     * @return
+     * @return new entity
      */
     @POST
     @Override
@@ -79,49 +84,52 @@ public abstract class AbstractRestController<T extends AbstractFacade, U extends
     }
 
     /**
+     * Update an entity
      *
      * @param entityId
      * @param entity
-     * @return
+     * @return up to date entity
      */
     @PUT
     @Path("{entityId: [1-9][0-9]*}")
     @Override
     public U update(@PathParam("entityId") Long entityId, U entity) {
-        return (U) getFacade().update(entityId, entity);
+        return getFacade().update(entityId, entity);
     }
 
     /**
+     * Duplicate an entity
      *
      * @param entityId
-     * @return
+     * @return entity copy
      * @throws IOException
      */
     @POST
     @Path("{entityId: [1-9][0-9]*}/Duplicate")
     @Override
     public U duplicate(@PathParam("entityId") Long entityId) throws IOException {
-        return (U) getFacade().duplicate(entityId);
+        return getFacade().duplicate(entityId);
     }
 
     /**
+     * Delete an entity
      *
-     * @param entityId
-     * @return
+     * @param entityId id of entity to delete
+     * @return the just destroyed entity
      */
     @DELETE
     @Path("{entityId: [1-9][0-9]*}")
     @Override
     public U delete(@PathParam("entityId") Long entityId) {
-        AbstractEntity entity = getFacade().find(entityId);
+        U entity = getFacade().find(entityId);
         getFacade().remove(entity);
-        return (U) entity;
+        return entity;
     }
 
     /**
      *
      * @param name
-     * @return
+     * @return this controller path param
      */
     protected String getPathParam(String name) {
         return this.uriInfo.getPathParameters().get(name).get(0);

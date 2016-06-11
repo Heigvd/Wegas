@@ -18,16 +18,16 @@ import javax.persistence.*;
 import java.util.*;
 
 ////import javax.xml.bind.annotation.XmlTransient;
-
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 @Table(name = "users")
 
 @NamedQueries({
-        @NamedQuery(name = "findUserPermissions", query = "SELECT DISTINCT users FROM User users JOIN users.permissions p WHERE p.value LIKE :instance"),
-        @NamedQuery(name = "findUsersWithRole", query = "SELECT DISTINCT users FROM User users JOIN users.roles r WHERE r.id = :role_id")
+    @NamedQuery(name = "User.findUserPermissions", query = "SELECT DISTINCT users FROM User users JOIN users.permissions p WHERE p.value LIKE :instance"),
+    @NamedQuery(name = "User.findUsersWithRole", query = "SELECT DISTINCT users FROM User users JOIN users.roles r WHERE r.id = :role_id"),
+    @NamedQuery(name = "User.findUserWithPermission", query = "SELECT DISTINCT users FROM User users JOIN users.permissions p WHERE p.value LIKE :permission AND p.user.id =:userId")
 })
 public class User extends AbstractEntity implements Comparable<User> {
 
@@ -43,7 +43,7 @@ public class User extends AbstractEntity implements Comparable<User> {
     /**
      *
      */
-    @OneToMany(mappedBy = "user", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH} /*, orphanRemoval = true */)
     @JsonManagedReference(value = "player-user")
     private List<Player> players = new ArrayList<>();
 
@@ -62,9 +62,9 @@ public class User extends AbstractEntity implements Comparable<User> {
     @JsonView(Views.ExtendedI.class)
     @JoinTable(name = "users_roles",
             joinColumns = {
-                    @JoinColumn(name = "users_id", referencedColumnName = "id")},
+                @JoinColumn(name = "users_id", referencedColumnName = "id")},
             inverseJoinColumns = {
-                    @JoinColumn(name = "roles_id", referencedColumnName = "id")})
+                @JoinColumn(name = "roles_id", referencedColumnName = "id")})
     private Set<Role> roles = new HashSet<>();
 
     /**
@@ -80,24 +80,18 @@ public class User extends AbstractEntity implements Comparable<User> {
         this.addAccount(acc);
     }
 
-    /**
-     * @return
-     */
     @Override
     public Long getId() {
         return id;
     }
 
-    /**
-     * @param a
-     */
     @Override
     public void merge(AbstractEntity a) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     /**
-     * @return the players
+     * @return all user's players
      */
     //@XmlTransient
     @JsonIgnore
@@ -137,7 +131,7 @@ public class User extends AbstractEntity implements Comparable<User> {
     }
 
     /**
-     * @return
+     * @return first user account
      */
     //@XmlTransient
     @JsonIgnore
@@ -150,7 +144,9 @@ public class User extends AbstractEntity implements Comparable<User> {
     }
 
     /**
-     * @return
+     * Shortcut for getMainAccount().getName();
+     *
+     * @return main account name or unnamed if user doesn't have any account
      */
     public String getName() {
         if (this.getMainAccount() != null) {
@@ -187,7 +183,7 @@ public class User extends AbstractEntity implements Comparable<User> {
     /**
      * @param permission
      * @param inducedPermission
-     * @return
+     * @return true id the permission has successfully been added
      */
     public boolean addPermission(String permission, String inducedPermission) {
         return this.addPermission(new Permission(permission, inducedPermission));
@@ -195,7 +191,7 @@ public class User extends AbstractEntity implements Comparable<User> {
 
     /**
      * @param permission
-     * @return
+     * @return true id the permission has successfully been added
      */
     public boolean addPermission(String permission) {
         return this.addPermission(new Permission(permission));
@@ -203,7 +199,7 @@ public class User extends AbstractEntity implements Comparable<User> {
 
     /**
      * @param permission
-     * @return
+     * @return true id the permission has successfully been added
      */
     public boolean addPermission(Permission permission) {
         if (!this.permissions.contains(permission)) {

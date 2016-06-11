@@ -22,14 +22,14 @@ import java.util.Map;
 ////import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 @Table(
-    uniqueConstraints = @UniqueConstraint(columnNames = {"name", "parentgame_id"}),
-    indexes = {
-        @Index(columnList = "parentgame_id")
-    }
+        uniqueConstraints = @UniqueConstraint(columnNames = {"name", "parentgame_id"}),
+        indexes = {
+            @Index(columnList = "parentgame_id")
+        }
 )
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonSubTypes(value = {
@@ -77,7 +77,7 @@ public class Team extends AbstractEntity implements Broadcastable {
 
     @JsonIgnore
     @OneToMany(mappedBy = "team", cascade = CascadeType.REMOVE)
-    private List<VariableInstance> privateInstances;
+    private List<VariableInstance> privateInstances = new ArrayList<>();
 
     /**
      * The game model this belongs to
@@ -151,6 +151,7 @@ public class Team extends AbstractEntity implements Broadcastable {
     public void addPlayer(Player p) {
         this.players.add(p);
         p.setTeam(this);
+        p.setTeamId(this.getId());
     }
 
     /**
@@ -161,24 +162,18 @@ public class Team extends AbstractEntity implements Broadcastable {
         this.players = players;
     }
 
-    /**
-     * @return
-     */
     @Override
     public String toString() {
         return this.name;
     }
 
-    /**
-     * @return
-     */
     @Override
     public Long getId() {
         return id;
     }
 
     /**
-     * @return
+     * @return the team name
      */
     public String getName() {
         return name;
@@ -193,7 +188,7 @@ public class Team extends AbstractEntity implements Broadcastable {
 
     /**
      *
-     * @return
+     * @return teacher notes
      */
     public String getNotes() {
         return notes;
@@ -212,6 +207,14 @@ public class Team extends AbstractEntity implements Broadcastable {
      */
     public Long getGameId() {
         return gameId;
+    }
+
+    /**
+     *
+     * @param gameId
+     */
+    public void setGameId(Long gameId) {
+        this.gameId = gameId;
     }
 
     /**

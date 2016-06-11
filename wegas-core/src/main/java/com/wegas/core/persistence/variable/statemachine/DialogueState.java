@@ -16,7 +16,7 @@ import javax.persistence.Lob;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 public class DialogueState extends State {
@@ -53,7 +53,7 @@ public class DialogueState extends State {
     @Override
     public void merge(AbstractEntity other) {
         if (other instanceof DialogueState) {
-            this.text = ((DialogueState) other).text;
+            this.setText(((DialogueState) other).getText());
             super.merge(other);
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");

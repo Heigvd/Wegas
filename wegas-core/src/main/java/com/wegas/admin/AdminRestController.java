@@ -8,7 +8,6 @@
 package com.wegas.admin;
 
 import com.wegas.admin.persistence.GameAdmin;
-import org.apache.shiro.SecurityUtils;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -21,7 +20,7 @@ import java.util.List;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 
 /**
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Stateless
 @Path("Admin/")
@@ -39,10 +38,10 @@ public class AdminRestController {
         if (type == null) {
             return adminFacade.findAll();
         } else {
-            List<GameAdmin.Status> statuses = new ArrayList();
+            List<GameAdmin.Status> statuses = new ArrayList<>();
             for (int i = 0; i < types.length; i++) {
                 try {
-                    statuses.add(GameAdmin.Status.valueOf(types[i].toString().toUpperCase()));
+                    statuses.add(GameAdmin.Status.valueOf(types[i].toUpperCase()));
                 } catch (IllegalArgumentException ex) {
                     //type not found
                 }

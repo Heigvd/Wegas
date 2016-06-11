@@ -11,53 +11,53 @@ import java.util.List;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  * @param <T>
  */
 public interface DescriptorListI<T extends VariableDescriptor> {
 
-    public Long getId();
+    Long getId();
 
     /**
      * @return the variableDescriptors
      */
-    public List<T> getItems();
+    List<T> getItems();
 
     /**
      * @param items
      */
-    public void setItems(List<T> items);
+    void setItems(List<T> items);
 
     /**
      *
      * @param item
      */
-    public void addItem(T item);
+    void addItem(T item);
 
     /**
      *
      * @param index
      * @param item
      */
-    public void addItem(int index, T item);
+    void addItem(int index, T item);
 
     /**
      *
-     * @return
+     * @return number of children
      */
-    public int size();
+    int size();
 
     /**
      *
      * @param index
-     * @return
+     * @return iest child
      */
-    public T item(int index);
+    T item(int index);
 
     /**
      *
      * @param item
-     * @return
+     * @return true if item has successfully been removed
      */
-    public boolean remove(T item);
+    boolean remove(T item);
 }

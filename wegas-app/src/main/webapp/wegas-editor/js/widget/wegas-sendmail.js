@@ -43,6 +43,7 @@ YUI.add('wegas-sendmail', function(Y) {
                                 })
                             },
                             {
+                                // This field must be deleted before sending the request:
                                 name: "dummy",
                                 label: "To",
                                 type: "uneditable",
@@ -67,14 +68,19 @@ YUI.add('wegas-sendmail', function(Y) {
                 cb.append('<div><div class="results wegas-advanced-feature"></div><div class="status"></div></div>');
             },
             setStatus: function(status) {
-                this.get("contentBox").one(".status").set("text", status);
+                this.get("contentBox").one(".status").setHTML(status);
+            },
+            setErrorStatus: function(errorMsg) {
+                this.get("contentBox").one(".status").setHTML('<span style="color:red; font-weight:bold">'+errorMsg+'</span>');
             },
             send: function() {
                 if (!this.validate()) {
-                    this.setStatus("Some fields are invalid");
+                    this.setErrorStatus("Please complete these fields: "+this.invalidFields());
+                    var ctx = this;
+                    setTimeout(function(){ ctx.setStatus("") }, 5000);
                     return;
                 }
-
+                this.setStatus("");
                 Wegas.Panel.confirm("This will send a real mail", Y.bind(function() {
                     this.setStatus("Sending...");
 
@@ -87,7 +93,10 @@ YUI.add('wegas-sendmail', function(Y) {
                         cfg: {
                             method: "POST",
                             updateEvent: false,
-                            data: form
+                            data: form,
+                            headers: {
+                                "Managed-Mode": true
+                            }
                         },
                         on: {
                             success: Y.bind(function() {
@@ -96,8 +105,13 @@ YUI.add('wegas-sendmail', function(Y) {
                                     this.fire("email:sent");
                                 });
                             }, this),
-                            failure: Y.bind(function() {
-                                this.setStatus("Something went wrong");
+                            failure: Y.bind(function(request) {
+                                try {
+                                    var errorMsg = JSON.parse(request.data.response).events[0].exceptions[0].message;
+                                    this.setErrorStatus(errorMsg);
+                                } catch(e) {
+                                    this.setErrorStatus('Something went wrong');
+                                }
                             }, this)
                         }
                     }, this);
@@ -109,6 +123,15 @@ YUI.add('wegas-sendmail', function(Y) {
                     valid = valid && inputs[i].validate();
                 }
                 return valid;
+            },
+            invalidFields: function() {
+                var inputs = this._form.inputs, i, list = "";
+                for (i = 0; i < inputs.length; i += 1) {
+                    if (!inputs[i].validate()){
+                        list += ', '+inputs[i].labelEl.textContent;
+                    }
+                }
+                return list.substr(2);
             },
             destructor: function() {
                 this._form.destroy();

@@ -21,12 +21,12 @@ import com.wegas.core.rest.util.Views;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 //import javax.xml.bind.annotation.XmlRootElement;
 /**
- *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Entity
 @Table(
@@ -43,11 +43,13 @@ import java.util.List;
 public class State extends AbstractEntity implements Searchable, Scripted {
 
     private static final long serialVersionUID = 1L;
+
     /**
      *
      */
     @JsonView(value = Views.EditorExtendedI.class)
     private Coordinate editorPosition;
+
     /**
      *
      */
@@ -56,16 +58,19 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     @GeneratedValue
     @JsonView(Views.IndexI.class)
     private Long id;
+
     /**
      *
      */
     private String label;
+
     /**
      *
      */
     @Embedded
     @JsonView(Views.EditorExtendedI.class)
     private Script onEnterEvent;
+
     /**
      *
      */
@@ -97,7 +102,6 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     }
 
     /**
-     *
      * @return
      */
     public Coordinate getEditorPosition() {
@@ -105,7 +109,6 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     }
 
     /**
-     *
      * @param editorPosition
      */
     public void setEditorPosition(Coordinate editorPosition) {
@@ -118,7 +121,6 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     }
 
     /**
-     *
      * @return
      */
     public String getLabel() {
@@ -126,7 +128,6 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     }
 
     /**
-     *
      * @param label
      */
     public void setLabel(String label) {
@@ -134,7 +135,6 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     }
 
     /**
-     *
      * @return
      */
     public Script getOnEnterEvent() {
@@ -142,7 +142,6 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     }
 
     /**
-     *
      * @param onEnterEvent
      */
     public void setOnEnterEvent(Script onEnterEvent) {
@@ -160,7 +159,6 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     }
 
     /**
-     *
      * @return
      */
     public List<Transition> getTransitions() {
@@ -168,21 +166,24 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     }
 
     /**
-     *
      * @param transitions
      */
     public void setTransitions(List<Transition> transitions) {
+        Collections.sort(transitions, (o1, o2) -> o1.getIndex() - o2.getIndex());
         this.transitions = transitions;
+        for (Transition t : this.transitions) {
+            t.setState(this);
+        }
     }
 
     @Override
     public void merge(AbstractEntity other) {
         if (other instanceof State) {
             State newState = (State) other;
-            this.label = newState.getLabel();
-            this.onEnterEvent = newState.getOnEnterEvent();
-            this.editorPosition = newState.editorPosition;
-            this.transitions = ListUtils.mergeLists(this.transitions, newState.transitions);
+            this.setLabel(newState.getLabel());
+            this.setOnEnterEvent(newState.getOnEnterEvent());
+            this.setEditorPosition(newState.getEditorPosition());
+            this.setTransitions(ListUtils.mergeReplace(this.getTransitions(), newState.getTransitions()));
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
         }

@@ -88,7 +88,8 @@ YUI.add('wegas-console-custom', function(Y) {
                     // Remove buttons for advanced features (view source, etc).
                     Y.one(this.srcField.getEl()).all("div > button").remove();
                     // Correct small scrollbar issue after rendering:
-                    setTimeout(function(){ cb.one('.modal--content-tab').setStyle('overflowY','auto') }, 1000);
+                    if (cb.one('.modal--content-tab'))
+                        setTimeout(function(){ cb.one('.modal--content-tab').setStyle('overflowY','auto') }, 1000);
                 },
                 bindUI: function() {
                     Y.Wegas.Facade.Variable.on("WegasOutOfBoundException", function(e) {

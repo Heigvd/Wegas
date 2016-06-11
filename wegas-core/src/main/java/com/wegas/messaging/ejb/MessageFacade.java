@@ -8,6 +8,7 @@
 package com.wegas.messaging.ejb;
 
 import com.wegas.core.ejb.BaseFacade;
+import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
@@ -15,28 +16,32 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.messaging.persistence.InboxInstance;
 import com.wegas.messaging.persistence.Message;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.List;
 
 /**
- *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
 @LocalBean
 public class MessageFacade extends BaseFacade<Message> {
 
     final static private Logger logger = LoggerFactory.getLogger(MessageFacade.class);
+
     /**
      *
      */
     @EJB
     private VariableDescriptorFacade variableDescriptorFacade;
+
+    @EJB
+    private PlayerFacade playerFacade;
 
     /**
      *
@@ -46,7 +51,6 @@ public class MessageFacade extends BaseFacade<Message> {
     }
 
     /**
-     *
      * @param messageEvent
      */
     public void listener(@Observes MessageEvent messageEvent) {
@@ -55,11 +59,11 @@ public class MessageFacade extends BaseFacade<Message> {
     }
 
     /**
-     *
      * @param p
      * @param msg
      */
     public void send(Player p, Message msg) {
+        p = playerFacade.find(p.getId());
         try {
             VariableDescriptor vd = variableDescriptorFacade.find(p.getGameModel(), "inbox");     // @WTF ???
             InboxInstance inbox = (InboxInstance) vd.getInstance(p);
@@ -70,12 +74,11 @@ public class MessageFacade extends BaseFacade<Message> {
     }
 
     /**
-     *
      * @param p
      * @param subject
      * @param body
      * @param from
-     * @return
+     * @return sent message
      */
     public Message send(Player p, String subject, String body, String from) {
         Message msg = new Message();
@@ -87,13 +90,13 @@ public class MessageFacade extends BaseFacade<Message> {
     }
 
     /**
-     *
      * @param p
      * @param subject
      * @param body
      * @param from
      * @param attachements
-     * @return
+     * @return sent message
+     *
      */
     public Message send(Player p, String subject, String body, String from, List<String> attachements) {
         Message msg = new Message();
@@ -103,5 +106,17 @@ public class MessageFacade extends BaseFacade<Message> {
         msg.setAttachements(attachements);
         this.send(p, msg);
         return msg;
+    }
+
+    @Override
+    public void create(Message entity) {
+        getEntityManager().persist(entity);
+        entity.getInboxInstance().addMessage(entity);
+    }
+
+    @Override
+    public void remove(Message entity) {
+        getEntityManager().remove(entity);
+        entity.getInboxInstance().getMessages().remove(entity);
     }
 }

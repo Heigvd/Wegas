@@ -25,7 +25,7 @@ import org.apache.shiro.authz.UnauthorizedException;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/QuestionDescriptor/")
@@ -74,6 +74,7 @@ public class QuestionController {
 
         return Response.ok().build();
     }
+
     /**
      *
      * @param questionInstanceId
@@ -84,11 +85,10 @@ public class QuestionController {
     @POST
     @Path("/ValidateQuestion/{questionInstanceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
     public Response ValidateQuestion(
-                @PathParam("questionInstanceId") Long questionInstanceId,
-                @PathParam("playerId") Long playerId) throws WegasScriptException {
+            @PathParam("questionInstanceId") Long questionInstanceId,
+            @PathParam("playerId") Long playerId) throws WegasScriptException {
 
         // !!!!!   CHECK TYPE OF RETURN PARAM   !!!!
-        
         checkPermissions(playerFacade.find(playerId).getGame(), playerId);
 
         questionDescriptorFacade.validateQuestion(questionInstanceId, playerId);
@@ -101,7 +101,8 @@ public class QuestionController {
      *
      * @param playerId
      * @param replyId
-     * @return
+     * @return questionInstance with up to date replies list (not containing)
+     * the canceled one anymore)
      */
     @GET
     @Path("/CancelReply/{replyId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
@@ -143,7 +144,7 @@ public class QuestionController {
      *
      * @param replyId
      * @param reply
-     * @return
+     * @return updated reply
      */
     @PUT
     @Path("Reply/{entityId: [1-9][0-9]*}")

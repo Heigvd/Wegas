@@ -24,7 +24,7 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
 
 /**
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class ContentConnector implements AutoCloseable {
 
@@ -34,11 +34,9 @@ public class ContentConnector implements AutoCloseable {
 
     final private Session session;
 
-    private String workspace = null;
-
     /**
      * @param bytes
-     * @return
+     * @return string representation
      */
     public static String bytesToHumanReadable(Long bytes) {
         Integer unit = 1024;
@@ -55,8 +53,8 @@ public class ContentConnector implements AutoCloseable {
      * @throws RepositoryException
      */
     protected ContentConnector(Long gameModelId) throws RepositoryException {
-        this.workspace = "GM_" + gameModelId;
-        this.session = SessionHolder.getSession(this.workspace);
+        String workspace = "GM_" + gameModelId;
+        this.session = SessionHolder.getSession(workspace);
         this.initializeNamespaces();
 
     }
@@ -107,7 +105,7 @@ public class ContentConnector implements AutoCloseable {
      * @throws PathNotFoundException
      * @throws RepositoryException
      */
-    protected NodeIterator listChildren(String path) throws PathNotFoundException, RepositoryException {
+    protected NodeIterator listChildren(String path) throws RepositoryException {
         return session.getNode(path).getNodes(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + "*");
     }
 
@@ -306,7 +304,6 @@ public class ContentConnector implements AutoCloseable {
     /*
      * Return content Bytes size
      */
-
     /**
      * @param absolutePath
      * @return
@@ -458,7 +455,7 @@ public class ContentConnector implements AutoCloseable {
             final Node rootNode = session.getRootNode();
             session.save();
             session.getWorkspace().importXML("/", input, ImportUUIDBehavior.IMPORT_UUID_COLLISION_THROW);
-            final NodeIterator nodes = rootNode.getNode(EXPORT_NODE_NAME).getNodes("wfs:*");
+            final NodeIterator nodes = rootNode.getNode(EXPORT_NODE_NAME).getNodes(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + "*");
             while (nodes.hasNext()) {
                 final Node node = nodes.nextNode();
                 session.getWorkspace().move(node.getPath(), "/" + node.getName());

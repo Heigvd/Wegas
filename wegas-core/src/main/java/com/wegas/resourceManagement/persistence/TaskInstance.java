@@ -9,7 +9,6 @@ package com.wegas.resourceManagement.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.persistence.AbstractEntity;
@@ -23,15 +22,13 @@ import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 
@@ -136,7 +133,7 @@ public class TaskInstance extends VariableInstance {
     /**
      *
      * @param key
-     * @return
+     * @return the instance property mapped by the given key
      */
     public String getProperty(String key) {
         return this.properties.get(key);
@@ -145,7 +142,7 @@ public class TaskInstance extends VariableInstance {
     /**
      *
      * @param key
-     * @return
+     * @return the instance property mapped by the given key, double castes
      */
     public double getPropertyD(String key) {
         return Double.valueOf(this.properties.get(key));
@@ -163,7 +160,7 @@ public class TaskInstance extends VariableInstance {
     /**
      *
      * @param id
-     * @return
+     * @return requirement matching given id
      */
     public WRequirement getRequirementById(Long id) {
         WRequirement requirement = null;
@@ -203,6 +200,21 @@ public class TaskInstance extends VariableInstance {
 
     /**
      *
+     * @param index
+     * @param val
+     */
+    public void setRequirement(Integer index, WRequirement val) {
+        this.getRequirements().set(index, val);
+        val.setTaskInstance(this);
+    }
+
+    public void addRequirement(WRequirement req) {
+        this.getRequirements().add(req);
+        req.setTaskInstance(this);
+    }
+
+    /**
+     *
      * @param a
      */
     @Override
@@ -211,27 +223,27 @@ public class TaskInstance extends VariableInstance {
             TaskInstance other = (TaskInstance) a;
             this.setActive(other.getActive());
             //this.setDuration(other.getDuration());
-            this.properties.clear();
-            this.properties.putAll(other.getProperties());
+            this.setProperties(new HashMap<>());
+            this.getProperties().putAll(other.getProperties());
             ListUtils.ListKeyToMap<String, WRequirement> converter;
             converter = new WRequirementToNameConverter();
             Map<String, WRequirement> reqMap = ListUtils.listAsMap(requirements, converter);
-            this.requirements.clear();
+            this.setRequirements(new ArrayList<>());
             for (WRequirement req : other.getRequirements()) {
                 WRequirement r;
                 if (reqMap.containsKey(req.getName()) && req.getId() != null) {
                     r = reqMap.get(req.getName());
                     r.merge(req);
-                    this.requirements.add(r);
+                    this.getRequirements().add(r);
                 } else {
                     r = new WRequirement();
                     r.merge(req);
                     r.setTaskInstance(this); // @fixme
-                    this.requirements.add(r);
+                    this.getRequirements().add(r);
                 }
             }
-            this.plannification.clear();
-            this.plannification.addAll(other.getPlannification());
+            this.setPlannification(new ArrayList<>());
+            this.getPlannification().addAll(other.getPlannification());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
@@ -244,15 +256,6 @@ public class TaskInstance extends VariableInstance {
      */
     public void setProperty(String key, String val) {
         this.properties.put(key, val);
-    }
-
-    /**
-     *
-     * @param index
-     * @param val
-     */
-    public void setRequirement(Integer index, WRequirement val) {
-        this.requirements.set(index, val);
     }
 
     private static class WRequirementToNameConverter implements ListUtils.ListKeyToMap<String, WRequirement> {

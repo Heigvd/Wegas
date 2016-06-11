@@ -23,7 +23,7 @@ import com.wegas.core.persistence.variable.Scripted;
 
 /**
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Entity
 @Table(name = "FSMDescriptor")
@@ -71,7 +71,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
      *
      * @param states
      */
-    public void setStates(HashMap<Long, State> states) {
+    public void setStates(Map<Long, State> states) {
         this.states = states;
     }
 
@@ -84,7 +84,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     public void merge(AbstractEntity a) {
         if (a instanceof StateMachineDescriptor) {
             StateMachineDescriptor smDescriptor = (StateMachineDescriptor) a;
-            this.mergeStates((HashMap<Long, State>) smDescriptor.getStates());
+            this.mergeStates(smDescriptor.getStates());
             super.merge(smDescriptor);
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
@@ -130,7 +130,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
         return !this.getInstance(p).getEnabled();
     }
 
-    private void mergeStates(HashMap<Long, State> newStates) {
+    private void mergeStates(Map<Long, State> newStates) {
         for (Iterator<Entry<Long, State>> it = this.states.entrySet().iterator(); it.hasNext();) {
             Entry<Long, State> oldState = it.next();
             Long oldKeys = oldState.getKey();
@@ -143,9 +143,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
         for (Iterator<Entry<Long, State>> it = newStates.entrySet().iterator(); it.hasNext();) {
             Entry<Long, State> newState = it.next();
             Long newKey = newState.getKey();
-            if (this.states.get(newKey) == null) {
-                this.states.put(newKey, newState.getValue());
-            }
+            this.getStates().putIfAbsent(newKey, newState.getValue());
         }
     }
 

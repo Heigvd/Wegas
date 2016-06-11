@@ -13,7 +13,6 @@ import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
@@ -26,8 +25,6 @@ import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import com.wegas.reviewing.persistence.PeerReviewInstance;
 import com.wegas.reviewing.persistence.Review;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
@@ -207,7 +204,7 @@ public class PeerReviewController {
      * from NOTIFIED to COMPLETED
      *
      * @param review review to submit
-     * @return
+     * @return peerReviewInstance with up to date reviews
      */
     @POST
     @Path("/SubmitReview")

@@ -15,7 +15,7 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 
 /**
  * @deprecated
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 //@XmlRootElement
 //@XmlType(name = "RestException")

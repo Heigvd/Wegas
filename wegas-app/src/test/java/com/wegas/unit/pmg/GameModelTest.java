@@ -40,7 +40,7 @@ import org.junit.BeforeClass;
 
 /**
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Cyril Junod (cyril.junod at gmail.com)
  * @deprecated
  */
 abstract public class GameModelTest {

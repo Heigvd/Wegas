@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 @EntityListeners(NumberListener.class)
@@ -130,7 +130,8 @@ public class NumberInstance extends VariableInstance {
         if (a instanceof NumberInstance) {
             NumberInstance vi = (NumberInstance) a;
             this.setValue(vi.getValue());
-            this.setHistory(vi.getHistory());
+            this.setHistory(new ArrayList<>());
+            this.getHistory().addAll(vi.getHistory());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }

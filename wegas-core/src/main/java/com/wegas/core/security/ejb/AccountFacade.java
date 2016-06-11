@@ -28,7 +28,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -37,7 +36,7 @@ import javax.persistence.criteria.Root;
 import java.util.*;
 
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
 @LocalBean
@@ -70,9 +69,11 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     }
 
     /**
-     * @param entityId
-     * @param account
-     * @return
+     * Update an account
+     *
+     * @param entityId id of account to update
+     * @param account  account to update from
+     * @return up to date account
      */
     @Override
     public AbstractAccount update(final Long entityId, final AbstractAccount account) {
@@ -106,7 +107,19 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     }
 
     /**
-     * @param entity
+     * Remvoe an account
+     *
+     * @param entity account to remove
+     */
+    @Override
+    public void remove(AbstractAccount entity) {
+        getEntityManager().remove(entity);
+    }
+
+    /**
+     * Create an account
+     *
+     * @param entity account to persist
      */
     @Override
     public void create(AbstractAccount entity) {
@@ -114,7 +127,9 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     }
 
     /**
-     * @return
+     * Get all JPA Accounts
+     *
+     * @return all JPAAccounts
      */
     public List<JpaAccount> findAllRegistered() {
 //        final CriteriaQuery query = getEntityManager().getCriteriaBuilder().createQuery();
@@ -129,8 +144,8 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      * Return a user based on his principal.
      *
      * @param username
-     * @return
-     * @throws com.wegas.core.exception.internal.WegasNoResultException
+     * @return the user who owns an with the given username
+     * @throws WegasNoResultException if no such a user exists
      */
     public AbstractAccount findByUsername(String username) throws WegasNoResultException {
         final TypedQuery<AbstractAccount> query = getEntityManager().createNamedQuery("AbstractAccount.findByUsername", AbstractAccount.class);
@@ -144,8 +159,8 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
 
     /**
      * @param email
-     * @return
-     * @throws WegasNoResultException
+     * @return the user who owns an account with this email address
+     * @throws WegasNoResultException if no such a user exists
      */
     public JpaAccount findByEmail(String email) throws WegasNoResultException {
         try {
@@ -157,11 +172,19 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         }
     }
 
+    /**
+     * Look for jpaAccounts matching given value.
+     *
+     * The value can be part of the first name, last name, email or username.
+     *
+     * @param input search token
+     * @return list of JpaAccount matching the token
+     */
     public List<JpaAccount> findByNameEmailOrUsername(String input) {
         String[] tokens = input.split(" ");
 
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery cq = cb.createQuery();
+        CriteriaQuery<JpaAccount> cq = cb.createQuery(JpaAccount.class);
         Root<JpaAccount> jpaAccount = cq.from(JpaAccount.class);
 
         Predicate[] prs = {};
@@ -182,18 +205,18 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
 
         cq.where(cb.and(andPreds.toArray(prs)));
 
-        Query q = getEntityManager().createQuery(cq);
+        TypedQuery<JpaAccount> q = getEntityManager().createQuery(cq);
         q.setMaxResults(MAXRESULT);
-        return (List<JpaAccount>) q.getResultList();
+        return q.getResultList();
     }
 
     /**
      * @param name
      * @param withEmail
-     * @return
+     * @return all account matching name
      */
     public List<JpaAccount> findByNameOrEmail(String name, boolean withEmail) {
-        ArrayList<JpaAccount> accounts = new ArrayList();
+        ArrayList<JpaAccount> accounts = new ArrayList<>();
         String splidedName[] = name.split(" ");
         for (int i = 0; i < splidedName.length; i++) {
             StringBuilder firstnameBuilder = new StringBuilder();
@@ -267,7 +290,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
 
     /**
      * @param team
-     * @return
+     * @return all user who have a player registered in the given team
      */
     public ArrayList<AbstractAccount> findByTeam(Team team) {
         ArrayList<AbstractAccount> result = new ArrayList<>();
@@ -279,6 +302,14 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         return result;
     }
 
+    /**
+     * Look for jpaAccounts matching given value.
+     *
+     * The value can be part of the first name, last name, email or username.
+     *
+     * @param value search token
+     * @return list of JpaAccount matching the token
+     */
     public List<JpaAccount> getAutoComplete(String value) {
         return findByNameEmailOrUsername(value);
     }
@@ -301,13 +332,23 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         return accounts;
     }
 
-    public List<JpaAccount> getAutoCompleteByRoles(String value, HashMap<String, Object> rolesList) {
+    /**
+     * Same as {@link #getAutoComplete(java.lang.String) getAutoComplete} but
+     * account must be member of (at least) one role in rolesList
+     *
+     * @param value     account search token
+     * @param rolesList list of roles targeted account should be members (only
+     *                  one membership is sufficient)
+     * @return list of JpaAccount matching the token that are member of at least
+     *         one given role
+     */
+    public List<JpaAccount> getAutoCompleteByRoles(String value, HashMap<String, List<String>> rolesList) {
         ArrayList<String> roles = (ArrayList<String>) rolesList.get("rolesList");
 
         List<JpaAccount> returnValue = new ArrayList<>();
         //for (JpaAccount a : accountFacade.findByNameOrEmail("%" + value + "%", true)) {
         for (JpaAccount a : findByNameEmailOrUsername(value)) {
-            boolean hasRole = userFacade.hasRoles(roles, new ArrayList(a.getRoles()));
+            boolean hasRole = userFacade.hasRoles(roles, new ArrayList<>(a.getRoles()));
             if (hasRole) {
                 getEntityManager().detach(a);
                 a.setEmail(a.getEmail().replaceFirst("([^@]{1,4})[^@]*(@.*)", "$1****$2"));
@@ -319,15 +360,15 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
 
     /**
      * @param values
-     * @return
-     * @deprecated
+     * @return bag of scrap
+     * @deprecated 
      */
     public List<Map> findAccountsByEmailValues(List<String> values) {
         List<Map> returnValue = new ArrayList<>();
         List<String> notValidValue = new ArrayList<>();
         for (String value : values) {
             try {
-                Map account = new HashMap<>();
+                Map<String, Object> account = new HashMap<>();
                 JpaAccount a = findByEmail(value.trim());
                 if (a.getFirstname() != null && a.getLastname() != null) {
                     account.put("label", a.getFirstname() + " " + a.getLastname());
@@ -345,7 +386,11 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     }
 
     /**
+     * piece of scrap
+     *
      * @deprecated
+     * @param values
+     * @return jpaAccounts and some strange event...
      */
     public List<JpaAccount> findAccountsByName(List<String> values) {
         List<JpaAccount> returnValue = new ArrayList<>();
