@@ -16,6 +16,8 @@ import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.mcq.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +29,6 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.persistence.NoResultException;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 /**
@@ -62,10 +63,8 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
 
     /**
      *
+     * @EJB QuestionSingleton questionSingleton;
      */
-    @EJB
-    QuestionSingleton questionSingleton;
-
     /**
      *
      */
@@ -159,16 +158,65 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     }
 
     /**
-     * @return @deprecated @param instanceId
+     * @param instanceId
+     * @return count the number of reply for the given question
      */
     public int findReplyCount(Long instanceId) {
-        final Query query = getEntityManager().createQuery("SELECT COUNT(r) FROM Reply r WHERE r.questionInstance.id = :id");
-        query.setParameter("id", instanceId);
+        final TypedQuery<Long> query = this.getEntityManager().createNamedQuery("Reply.countForInstance", Long.class);
+        query.setParameter("instanceId", instanceId);
         try {
-            return ((Number) query.getSingleResult()).intValue();
+            return query.getSingleResult().intValue();
         } catch (NoResultException ex) {
             return 0;
         }
+    }
+
+    private Reply createReply(Long choiceId, Player player, Long startTime) {
+        ChoiceDescriptor choice = (ChoiceDescriptor) VariableDescriptorFacade.lookup().find(choiceId);
+
+        QuestionDescriptor questionDescriptor = choice.getQuestion();
+        QuestionInstance questionInstance = questionDescriptor.getInstance(player);
+
+        Boolean isCbx = questionDescriptor.getCbx();
+        if (!isCbx
+                && !questionDescriptor.getAllowMultipleReplies()
+                && this.findReplyCount(questionInstance.getId()) > 0) {         // @fixme Need to check reply count this way, otherwise in case of double request, both will be added
+            //if (!questionDescriptor.getAllowMultipleReplies()
+            //&& !questionInstance.getReplies().isEmpty()) {                    // Does not work when sending 2 requests at once
+            throw WegasErrorMessage.error("You have already answered this question");
+        }
+
+        Reply reply = new Reply();
+        if (isCbx && startTime < 0) { // Hack to signal ignoration
+            reply.setStartTime(0L);
+            reply.setIgnored(true);
+        } else {
+            reply.setStartTime(startTime);
+        }
+        Result result = choice.getInstance(player).getResult();
+        reply.setResult(result);
+        result.addReply(reply);
+        questionInstance.addReply(reply);
+        //em.persist(reply);
+//        em.flush();
+        return reply;
+    }
+
+    /**
+     * @param playerId id of player who wants to cancel the reply
+     * @param replyId  id of reply to cancel
+     * @return reply being canceled
+     */
+    private Reply internalCancelReply(Long playerId, Long replyId) {
+        final Reply reply = this.getEntityManager().find(Reply.class, replyId);
+        requestFacade.getRequestManager().lock("MCQ-" + reply.getQuestionInstance().getId());
+        return this.internalCancelReply(null, reply);
+    }
+
+    private Reply internalCancelReply(Player player, Reply reply) {
+        reply.getQuestionInstance().getReplies().remove(reply);
+        this.getEntityManager().remove(reply);
+        return reply;
     }
 
     /**
@@ -186,7 +234,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
             logger.error("ignoreChoice() invoked on a Question which is not of checkbox type");
         }
 
-        Reply reply = questionSingleton.createReplyTransactional(choiceId, player, -1L); // Negative startTime: hack to signal ignoration
+        Reply reply = this.createReply(choiceId, player, -1L); // Negative startTime: hack to signal ignoration
         try {
             scriptEvent.fire(player, "replyIgnore", new ReplyValidate(reply));
         } catch (WegasScriptException e) {
@@ -205,20 +253,30 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      * @return the new reply
      */
     public Reply selectChoice(Long choiceId, Player player, Long startTime) {
-
+        requestFacade.getRequestManager().lock("MCQ-");
+        Thread t;
         ChoiceDescriptor choice = getEntityManager().find(ChoiceDescriptor.class, choiceId);
         QuestionDescriptor questionDescriptor = choice.getQuestion();
+
+        //requestFacade.getRequestManager().lock("MCQ-" + questionDescriptor.getInstance(player).getId());
         // Verify if mutually exclusive replies must be cancelled:
         if (questionDescriptor.getCbx() && !questionDescriptor.getAllowMultipleReplies()) {
+            List<Reply> toCancel = new ArrayList<>();
             for (Reply r : questionDescriptor.getInstance(player).getReplies()) {
                 if (!r.getResult().getChoiceDescriptor().equals(choice)
                         && !r.getIgnored()) {
-                    this.cancelReply(player.getId(), r.getId());
+                    toCancel.add(r);
                 }
+            }
+            /*
+             * Two steps deletion avoids concurrent modification exception 
+             */
+            for (Reply r : toCancel) {
+                this.cancelReply(player.getId(), r.getId());
             }
         }
 
-        Reply reply = questionSingleton.createReplyTransactional(choiceId, player, startTime);
+        Reply reply = this.createReply(choiceId, player, startTime);
         try {
             scriptEvent.fire(player, "replySelect", new ReplyValidate(reply));
         } catch (WegasScriptException e) {
@@ -264,10 +322,11 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         Player player = playerFacade.find(playerId);
         Reply reply = this.selectChoice(choiceId, player, (long) 0);
         try {
-            this.validateReply(player, reply.getId());
+            //this.validateReply(player, reply.getId());
+            this.validateReply(player, reply);
         } catch (WegasRuntimeException e) {
             logger.error("CANCEL REPLY", e);
-            this.cancelReplyTransactional(playerId, reply.getId());
+            this.cancelReplyTransactional((Player) null, reply);
             throw e;
         }
         return reply;
@@ -280,9 +339,19 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      * @return reply being canceled
      */
     public Reply cancelReplyTransactional(Long playerId, Long replyId) {
-        Reply reply = questionSingleton.cancelReplyTransactional(playerId, replyId);
+        Reply reply = this.internalCancelReply(playerId, replyId);
         try {
             scriptEvent.fire(playerFacade.find(playerId), "replyCancel", new ReplyValidate(reply));// Throw an event
+        } catch (WegasRuntimeException e) {
+            // GOTCHA no eventManager is instantiated
+        }
+        return reply;
+    }
+
+    public Reply cancelReplyTransactional(Player player, Reply reply) {
+        reply = this.internalCancelReply(player, reply);
+        try {
+            scriptEvent.fire(player, "replyCancel", new ReplyValidate(reply));// Throw an event
         } catch (WegasRuntimeException e) {
             // GOTCHA no eventManager is instantiated
         }
@@ -387,7 +456,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
             }
         }
 
-        getEntityManager().refresh(validateQuestion);
+        //getEntityManager().refresh(validateQuestion);
         validateQuestion.setValidated(true);
         //getEntityManager().flush();
     }
@@ -397,6 +466,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      * @param player
      */
     public void validateQuestion(Long questionInstanceId, Player player) {
+        requestFacade.getRequestManager().lock("MCQ-" + questionInstanceId);
         this.validateQuestion(getEntityManager().find(QuestionInstance.class, questionInstanceId), player);
     }
 
