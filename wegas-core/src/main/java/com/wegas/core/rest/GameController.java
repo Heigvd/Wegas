@@ -84,7 +84,7 @@ public class GameController {
         Game g = gameFacade.find(entityId);
         SecurityHelper.checkAnyPermission(g, Arrays.asList("View", "Token", "TeamToken"));
 
-        return gameFacade.find(entityId);
+        return g; // was: gameFacade.find(entityId);
     }
 
     /**
