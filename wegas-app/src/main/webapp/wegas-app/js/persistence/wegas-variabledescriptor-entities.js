@@ -170,7 +170,6 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
                 label: {
                     type: STRING,
                     value: undefined,
-                    required: true,
                     errored: function (v) {
                         return v ? '' : 'is required';
                     },

@@ -48,7 +48,7 @@ class HashlistView extends React.Component {
                     defaultValue={child.props.editKey}
                     style={halfWidth}
                     onBlur={onKeyChange}
-                    floatingLabelText={this.props.view.keyLabel}
+                    floatingLabelText={this.props.view.keyLabel || 'Name'}
                 />
                 <div
                     style={halfWidth}
@@ -69,7 +69,7 @@ class HashlistView extends React.Component {
                 style={halfWidth}
                 value={this.state.newInputValue}
                 onChange={this.onAdderChange}
-                floatingLabelText={this.props.view.keyLabel}
+                floatingLabelText={this.props.view.keyLabel || 'Name'}
                 ref="newInput"
             />
             <IconButton

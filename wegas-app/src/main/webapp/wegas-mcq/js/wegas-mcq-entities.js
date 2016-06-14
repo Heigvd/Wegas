@@ -558,7 +558,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                                 index: 4,
                                 visible: function (val, formVal) {
                                     var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.parentDescriptorId);
-                                    return parent ? parent.get("cbx") : true;
+                                    return parent ? parent.get("cbx") : false;
                                 },
                                 view: {
                                     type: HTML,
@@ -570,7 +570,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                                 type: OBJECT,
                                 visible: function (val, formVal) {
                                     var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.parentDescriptorId);
-                                    return parent ? parent.get("cbx") : true;
+                                    return parent ? parent.get("cbx") : false;
                                 },
                                 properties: {
                                     "@class": {
@@ -738,7 +738,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     optional: true,
                     visible: function (val, formVal) {
                         var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.choiceDescriptorId);
-                        return parent ? parent.parentDescriptor.get("cbx") : true;
+                        return parent ? parent.parentDescriptor.get("cbx") : false;
                     },
                     view: {
                         type: HTML,
@@ -749,7 +749,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     type: OBJECT,
                     visible: function (val, formVal) {
                         var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.choiceDescriptorId);
-                        return parent ? parent.parentDescriptor.get("cbx") : true;
+                        return parent ? parent.parentDescriptor.get("cbx") : false;
                     },
                     properties: {
                         "@class": {
