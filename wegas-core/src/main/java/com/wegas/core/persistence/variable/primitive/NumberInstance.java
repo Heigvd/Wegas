@@ -128,6 +128,7 @@ public class NumberInstance extends VariableInstance {
     @Override
     public void merge(AbstractEntity a) {
         if (a instanceof NumberInstance) {
+            super.merge(a);
             NumberInstance vi = (NumberInstance) a;
             this.setValue(vi.getValue());
             this.setHistory(new ArrayList<>());

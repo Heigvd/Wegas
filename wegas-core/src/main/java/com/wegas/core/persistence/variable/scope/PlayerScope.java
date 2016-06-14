@@ -94,7 +94,9 @@ public class PlayerScope extends AbstractScope<Player> {
             p.getPrivateInstances().add(clone);
             this.setVariableInstance(p, clone);
         } else {
+            Long version = vi.getVersion();
             vi.merge(vd.getDefaultInstance());
+            vi.setVersion(version);
         }
     }
 

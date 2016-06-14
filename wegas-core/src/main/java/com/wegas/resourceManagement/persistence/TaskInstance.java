@@ -220,6 +220,7 @@ public class TaskInstance extends VariableInstance {
     @Override
     public void merge(AbstractEntity a) {
         if (a instanceof TaskInstance) {
+            super.merge(a);
             TaskInstance other = (TaskInstance) a;
             this.setActive(other.getActive());
             //this.setDuration(other.getDuration());

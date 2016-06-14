@@ -44,6 +44,7 @@ public class ObjectInstance extends VariableInstance {
     public void merge(AbstractEntity a) {
         if (a != null) {
             if (a instanceof ObjectInstance) {
+                super.merge(a);
                 ObjectInstance other = (ObjectInstance) a;
                 this.setProperties(new HashMap<>());
                 this.getProperties().putAll(other.getProperties());

@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.eclipse.persistence.annotations.OptimisticLocking;
 
 ////import javax.xml.bind.annotation.XmlTransient;
 /**
@@ -88,11 +89,23 @@ import java.util.Map;
     @JsonSubTypes.Type(name = "PeerReviewInstance", value = PeerReviewInstance.class),
     @JsonSubTypes.Type(name = "BurndownInstance", value = BurndownInstance.class)
 })
+//@OptimisticLocking(cascade = true)
 abstract public class VariableInstance extends AbstractEntity implements Broadcastable {
 
     private static final long serialVersionUID = 1L;
 
     private static final Logger logger = LoggerFactory.getLogger(VariableInstance.class);
+
+    @Version
+    private Long version;
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
 
     /**
      *
@@ -447,6 +460,14 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      */
     public void setGameModelScope(GameModelScope gameModelScope) {
         this.gameModelScope = gameModelScope;
+    }
+
+    @Override
+    public void merge(AbstractEntity other) {
+        if (other instanceof VariableInstance) {
+            VariableInstance instance = (VariableInstance) other;
+            this.setVersion(instance.getVersion());
+        }
     }
 
     /**

@@ -115,7 +115,9 @@ public class TeamScope extends AbstractScope<Team> {
             this.setVariableInstance(t, newInstance);
 
         } else {
+            Long version = vi.getVersion();
             vi.merge(vd.getDefaultInstance());
+            vi.setVersion(version);
         }
     }
 
