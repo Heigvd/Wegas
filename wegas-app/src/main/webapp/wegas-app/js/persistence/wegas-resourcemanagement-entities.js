@@ -575,13 +575,15 @@ YUI.add('wegas-resourcemanagement-entities', function (Y) {
                     value: [],
                     items: {
                         type: STRING,
-                        required: true
+                        required: true,
+                        view: {
+                            type: "flatvariableselect",
+                            classFilter: "TaskDescriptor"
+                        }
                     },
                     index: -1,
                     view: {
-                        label: "Predecessors",
-                        type: "flatvariableselect",
-                        classFilter: "TaskDescriptor"
+                        label: "Predecessors"
                     }
                 },
                 defaultInstance: {
