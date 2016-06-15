@@ -53,13 +53,6 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                     "do": function() {
                         new Y.Wegas.ImpactsTeamModal({
                             "team": team
-                            /*
-                            , "on": {
-                                "impacted": function() {
-                                    this.syncUI();
-                                }
-                            }
-                            */
                         }).render();
                     }
                 }, {
@@ -390,22 +383,21 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
             newTab.document.write('<html><head><title>E-mail lists</title></head><body style="font-size:13px; font-family:Verdana, Geneva, sans-serif;">');
             if (nbValidEmails > 0) {
                 if (nbValidEmails > 1) {
-                    newTab.document.write('<b>' + nbValidEmails + ' comma-separated addresses (standard syntax) /<br/>' + nbValidEmails + ' adresses séparées par des virgules (syntaxe standard):</b><br/>');
+                    newTab.document.write('<b>Standard syntax:</b><br/>');
                 }
                 newTab.document.write('<a href="' + mailtoHref + '?subject=Serious%20Game"><pre>' + mailtoText + "</pre></a>");
                 if (nbValidEmails > 1) {
                     newTab.document.write('<br/>&nbsp;<br/>');
                     mailtoHref = mailtoHref.replace(/,/g, ";");
                     mailtoText = mailtoText.replace(/,/g, ";");
-                    newTab.document.write('<b>' + nbValidEmails + ' semicolon-separated addresses (for Microsoft Outlook) /<br/>' + nbValidEmails + ' adresses séparées par des point-virgules (pour Microsoft Outlook) :</b><br/>');
+                    newTab.document.write('<b>Microsoft Outlook syntax:</b><br/>');
                     newTab.document.write('<a href="' + mailtoHref + '?subject=Serious%20Game"><pre>' + mailtoText + "</pre></a>");
                 }
             } else {
-                newTab.document.write('No registered user / Aucun joueur enregistré<br/>&nbsp;');
+                newTab.document.write('No registered user<br/>&nbsp;');
             }
             if (nbGuests > 0) {
-                var plural = nbGuests>1 ? 's' : '';
-                newTab.document.write('<br/><span style="color:red">Attention:</span> ' + nbGuests + ' anonymous player'+plural+', hence without e-mail / ' + nbGuests + ' joueur'+plural+' anonyme'+plural+', donc sans e-mail.');
+                newTab.document.write('<br/><span style="color:red">Attention:</span> ' + nbGuests + ' anonymous player'+(nbGuests>1 ? 's' : '')+', i.e. without e-mail.');
             }
             newTab.document.close();
         },

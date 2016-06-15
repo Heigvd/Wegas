@@ -243,6 +243,14 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "last name",
                             'fr': "nom de famille"
                         },
+                        'CREATE-ACCOUNT-INPUT-AGREE': {
+                            'en': 'I agree with',
+                            'fr': "J'accepte"
+                        },
+                        'CREATE-ACCOUNT-INPUT-TERMS': {
+                            'en': 'the terms of use',
+                            'fr': "les conditions générales"
+                        },
                         'CREATE-ACCOUNT-SEND-BTN': {
                             'en': "Let's go!",
                             'fr': "C'est parti !"
@@ -270,6 +278,10 @@ angular.module('wegas.service.wegasTranslations', [])
                         'CREATE-ACCOUNT-FLASH-WRONG-PASS2': {
                             'en': "Passwords must be identical",
                             'fr': "Les mots de passe doivent être identiques"
+                        },
+                        'CREATE-ACCOUNT-FLASH-MUST-AGREE': {
+                            'en': "Please agree with the terms of use",
+                            'fr': "Merci d'accepter les conditions d'utilisation"
                         },
                         'PASSWORD-BTN': {
                             'en': "Forgotten password?",
@@ -1528,6 +1540,10 @@ angular.module('wegas.service.wegasTranslations', [])
                         'ADMIN-USERS-MODALE-EDIT-TITLE': {
                             'en': "Edit profile",
                             'fr': "Modifier le profil"
+                        },
+                        'ADMIN-USERS-MODALE-AGREED': {
+                            'en': "Agreed to terms of use",
+                            'fr': "A accepté les conditions d'utilisation"
                         },
                         'ADMIN-USERS-MODALE-GROUPS-TITLE': {
                             'en': "Manage user's groups",

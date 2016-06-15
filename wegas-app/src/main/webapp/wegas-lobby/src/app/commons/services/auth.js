@@ -79,25 +79,35 @@ angular.module('wegas.service.auth', [
             return deferred.promise;
         };
 
-        service.login = function(login, password) {
+        service.login = function(login, password, agreed) {
             var deferred = $q.defer(),
                 url = "rest/User/Authenticate";
             $http.post(window.ServiceURL + url, {
                 "@class": "AuthenticationInformation",
                 "login": login,
                 "password": password,
-                "remember": true
+                "remember": true,
+                "agreed": agreed===true
             }, {
                 "headers": {
                     "managed-mode": "true"
                 }
             }).success(function(data) {
                 if (data.events !== undefined && !data.events.length) {
-                    authenticatedUser = null;
-                    $translate('COMMONS-AUTH-LOGIN-FLASH-SUCCESS').then(function(message) {
-                        deferred.resolve(Responses.success(message, true));
-                    });
-                    service.getAuthenticatedUser();
+                    if (data.updatedEntities !== undefined &&
+                        data.updatedEntities[0].accounts !== undefined &&
+                        data.updatedEntities[0].accounts[0].agreedTime===null){
+                        console.log("WEGAS LOBBY : User has not agreed to the terms of use");
+                        $translate('CREATE-ACCOUNT-FLASH-MUST-AGREE').then(function(message) {
+                            deferred.resolve(Responses.info(message, false, {agreed: false}));
+                        });
+                    } else {
+                        authenticatedUser = null;
+                        $translate('COMMONS-AUTH-LOGIN-FLASH-SUCCESS').then(function (message) {
+                            deferred.resolve(Responses.success(message, true));
+                        });
+                        service.getAuthenticatedUser();
+                    }
                 } else if (data.events !== undefined) {
                     console.log("WEGAS LOBBY : Error during login");
                     console.log(data.events);

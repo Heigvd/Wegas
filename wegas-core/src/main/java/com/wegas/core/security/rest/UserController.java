@@ -420,6 +420,13 @@ public class UserController {
         token.setRememberMe(authInfo.isRemember());
         try {
             subject.login(token);
+            if (authInfo.getAgreed()){
+                AbstractAccount account = accountFacade.find((Long) subject.getPrincipal());
+                if (account instanceof JpaAccount) {
+                    ((JpaAccount)account).setAgreedTime(new Date());
+                }
+            }
+
             User user = userFacade.getCurrentUser();
 
             if (guest != null) {
