@@ -2,6 +2,25 @@ import React, { PropTypes } from 'react';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 
+function genItems(o, i) {
+    if (typeof o !== 'object') {
+        return (
+            <MenuItem
+                key={i}
+                value={o}
+                primaryText={JSON.stringify(o)}
+            />);
+    }
+    return (
+        <MenuItem
+            key={i}
+            value={o.value}
+            primaryText={o.label}
+            label={o.label}
+            disabled={o.disabled}
+        />);
+}
+
 function SelectView(props) {
     const errorMessage = props.errorMessage.length ?
         props.errorMessage :
@@ -10,21 +29,7 @@ function SelectView(props) {
         props.onChange(value);
     };
     const choices = props.view.choices || [];
-    const menuItems = choices.map((o, i) => {
-        if (typeof o !== 'object') {
-            return (
-                <MenuItem
-                    key={i}
-                    value={o}
-                    primaryText={JSON.stringify(o)}
-                />);
-        }
-        return (<MenuItem
-            key={i}
-            value={o.value}
-            primaryText={o.label}
-        />);
-    });
+    const menuItems = choices.map(genItems);
     return (
         <div className={props.view.className}>
             <SelectField
