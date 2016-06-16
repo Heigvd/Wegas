@@ -9,11 +9,11 @@ package com.wegas.core.security.rest;
 
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameFacade;
+import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
-import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.game.*;
 import com.wegas.core.rest.util.Email;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.RoleFacade;
@@ -23,9 +23,11 @@ import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationInformation;
+import com.wegas.core.security.util.SecurityHelper;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.SimplePrincipalCollection;
@@ -85,9 +87,21 @@ public class UserController {
     private GameFacade gameFacade;
 
     /**
+     *
+     */
+    @EJB
+    private PlayerFacade playerFacade;
+
+    /**
+     *
+     */
+    @EJB
+    private TeamFacade teamFacade;
+
+    /**
      * @return list of all users, sorted by names
-     * @throws AuthorizationException if current doesn't have the permissions to
-     *                                see others users
+     * @throws AuthorizationException if current user doesn't have the permission to
+     *                                see other users
      */
     @GET
     public Collection<User> index() {
@@ -124,6 +138,106 @@ public class UserController {
     }
 
     /**
+     * Returns the given user's e-mail address, with more relaxed security requirements than for getting the whole user profile:
+     * The caller must be trainer for the given game, and the given user must be a player of the same game.
+     * @param entityId
+     * @param gameId
+     * @return
+     */
+/*
+    @GET
+    @Path("{entityId : [1-9][0-9]*}/Email/{gameId : [1-9][0-9]*}")
+    public String getEmail(@PathParam("entityId") Long entityId, @PathParam("gameId") Long gameId) {
+        if (!userFacade.getCurrentUser().getId().equals(entityId)) {
+            // Caller must be trainer for the given game:
+            final Game g = gameFacade.find(gameId);
+            SecurityHelper.checkPermission(g, "Edit");
+            // And user must be a player of the same game:
+            if (playerFacade.checkExistingPlayer(gameId, entityId) == null) {
+                throw new AuthorizationException("Not a player of this game");
+            }
+        }
+
+        AbstractAccount mainAccount = userFacade.find(entityId).getMainAccount();
+
+        if (mainAccount instanceof JpaAccount) {
+            return ((JpaAccount) mainAccount).getEmail();
+        } else {
+            return "";
+        }
+    }
+*/
+
+    /**
+     * Returns the e-mail addresses of all players of the given game,
+     * with more relaxed security requirements than for getting the whole user profile:
+     * The caller must be trainer for the given game.
+     * @param gameId
+     * @return
+     */
+    @GET
+    @Path("Emails/{gameId : [1-9][0-9]*}")
+    public List<String> getEmails(@PathParam("gameId") Long gameId) {
+        // Caller must be trainer for the given game:
+        final Game g = gameFacade.find(gameId);
+        if (g instanceof DebugGame) return null;
+        SecurityHelper.checkPermission(g, "Edit");
+
+        List<String> emails = new ArrayList<String>();
+        for (Team t: g.getTeams()) {
+            emails.addAll(collectEmails(t));
+        }
+        return emails;
+    }
+
+    /**
+     * Returns the e-mail addresses of all players of the given team,
+     * with more relaxed security requirements than for getting the whole user profile:
+     * The caller must be trainer for the given game and the team must belong to the same game.
+     * @param gameId
+     * @return
+     */
+    @GET
+    @Path("Emails/{gameId : [1-9][0-9]*}/{teamId : [1-9][0-9]*}")
+    public List<String> getEmails(@PathParam("gameId") Long gameId, @PathParam("teamId") Long teamId) {
+        final Game g = gameFacade.find(gameId);
+        final Team t = teamFacade.find(teamId);
+        if (!t.getGame().getId().equals(gameId)) {
+            throw new AuthorizationException("Not a team of this game");
+        }
+        if (g instanceof DebugGame) return null;
+        // Caller must be trainer for the given game:
+        SecurityHelper.checkPermission(g, "Edit");
+        return collectEmails(t);
+    }
+
+
+    /**
+     * @param team
+     * @return List<String>
+     */
+    protected List<String> collectEmails(Team team){
+        List<String> emails = new ArrayList<>();
+        if (team instanceof DebugTeam) return emails;
+        List<Player> players = team.getPlayers();
+        if (players.size()==0) return emails;
+        for (Player p: players) {
+            if (p.getName().equals("Guest")){
+                emails.add("Guest");
+            } else {
+                Long userId = p.getUserId();
+                AbstractAccount mainAccount = userFacade.find(userId).getMainAccount();
+                if (mainAccount instanceof JpaAccount) { // Skip guest accounts and other specialties.
+                    emails.add(((JpaAccount) mainAccount).getEmail());
+                }
+            }
+        }
+        return emails;
+    }
+
+    /**
+     * @param value
+     * @return
      * Look for jpaAccounts matching given value.
      *
      * The value can be part of the first name, last name, email or username.
@@ -500,11 +614,7 @@ public class UserController {
 
         email.setFrom(name + " via Wegas <noreply@" + Helper.getWegasProperty("mail.default_domain") + ">");
 
-        try {
-            userFacade.sendEmail(email);
-        } catch (MessagingException ex) {
-            throw WegasErrorMessage.error("Error while sending email");
-        }
+        userFacade.sendEmail(email);
     }
 
     /**

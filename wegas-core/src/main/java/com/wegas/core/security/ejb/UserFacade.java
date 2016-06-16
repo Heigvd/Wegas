@@ -543,19 +543,35 @@ public class UserFacade extends BaseFacade<User> {
         }
     }
 
-    public void sendEmail(Email email) throws MessagingException {
-        StringBuilder to = new StringBuilder();
+    /*
+    ** Sends the given email as one separate message per addressee (as a measure against spam filters)
+    ** and an additional one to the sender to provide him a copy of the message.
+    ** If an address is invalid (but syntactically correct), it should not prevent from sending to the other addressees.
+    */
+    public void sendEmail(Email email) /* throws MessagingException */ {
+        int nbExceptions = 0;
+        EMailFacade emailFacade = new EMailFacade();
         for (Player p : email.getTo()) {
             Player rP = playerFacade.find(p.getId());
             AbstractAccount mainAccount = rP.getUser().getMainAccount();
             if (mainAccount instanceof JpaAccount) {
                 JpaAccount jpaAccount = (JpaAccount) mainAccount;
-                to.append(jpaAccount.getEmail());
-                to.append(",");
+                try {
+                    emailFacade.send(jpaAccount.getEmail(), email.getFrom(), email.getReplyTo(), email.getSubject(), email.getBody(), Message.RecipientType.TO, "text/html", true);
+                } catch (MessagingException e){
+                    nbExceptions++;
+                }
             }
         }
-        EMailFacade emailFacade = new EMailFacade();
-        emailFacade.send(to.toString(), email.getFrom(), email.getReplyTo(), email.getSubject(), email.getBody(), Message.RecipientType.BCC, "text/html", false);
+        try {
+            // Send a last message directly to the sender as a confirmation copy
+            emailFacade.send(email.getReplyTo(), email.getFrom(), email.getReplyTo(), email.getSubject(), email.getBody(), Message.RecipientType.TO, "text/html", true);
+        } catch (MessagingException e){
+            nbExceptions++;
+        }
+        if (nbExceptions>0){
+            throw WegasErrorMessage.error(nbExceptions + " error(s) while sending email");
+        }
     }
 
     /*
