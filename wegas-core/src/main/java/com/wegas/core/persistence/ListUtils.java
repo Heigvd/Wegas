@@ -118,7 +118,7 @@ public class ListUtils {
         List<E> newElements = new ArrayList<>();
         //do NOT modify newList
         newList = clone(newList);
-        for (Iterator<E> it = newList.iterator(); it.hasNext(); ) {                 //remove AbstractEntities without id and store them
+        for (Iterator<E> it = newList.iterator(); it.hasNext();) {                 //remove AbstractEntities without id and store them
             E element = it.next();
             if (element.getId() == null) {
                 newElements.add(element);
@@ -132,7 +132,7 @@ public class ListUtils {
             }
         };
         Map<Long, E> elementMap = ListUtils.listAsMap(newList, converter);      //Create a map with newList based on Ids
-        for (Iterator<E> it = oldList.iterator(); it.hasNext(); ) {
+        for (Iterator<E> it = oldList.iterator(); it.hasNext();) {
             E element = it.next();
             if (elementMap.containsKey(element.getId())) {                      //old element still exists
                 element.merge(elementMap.get(element.getId()));                 //Then merge them
@@ -144,7 +144,7 @@ public class ListUtils {
                 it.remove();                                                    //else remove that old element
             }
         }
-        for (Iterator<E> it = elementMap.values().iterator(); it.hasNext(); ) {  //Process remaining elements
+        for (Iterator<E> it = elementMap.values().iterator(); it.hasNext();) {  //Process remaining elements
             try {
                 E element = it.next();
                 E newElement = (E) element.getClass().newInstance();
@@ -156,9 +156,11 @@ public class ListUtils {
         }
         //Add all new elements
         for (E newEntity : newElements) {
-            oldList.add(newEntity);
+            // cloning newElement avoids mixing elements from different entities (remember the so-called occupations multiplication issue)
+            E clone = (E) newEntity.clone();
+            oldList.add(clone);
             if (callback != null) {
-                callback.addEntity(newEntity);
+                callback.addEntity(clone);
             }
         }
         //oldList.addAll(newElements);

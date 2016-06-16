@@ -139,6 +139,7 @@ public class ResourceInstance extends VariableInstance {
                 }));
             }
             if (other.getOccupations() != null) {
+                //this.setOccupations(ListUtils.mergeLists(this.getOccupations(), other.getOccupations(), new UpdaterImpl(this)));
                 this.setOccupations(ListUtils.mergeLists(this.getOccupations(), other.getOccupations()));
             }
             this.setProperties(new HashMap<>());
@@ -248,6 +249,9 @@ public class ResourceInstance extends VariableInstance {
      */
     public void setOccupations(List<Occupation> occupations) {
         this.occupations = occupations;
+        for (Occupation o : this.occupations){
+            o.setResourceInstance(this);
+        }
     }
 
     /**
@@ -393,4 +397,24 @@ public class ResourceInstance extends VariableInstance {
         this.assignments.add(nextPosition, assignment);
         return this.assignments;
     }
+
+    /*
+    private class UpdaterImpl implements ListUtils.Updater {
+
+        private ResourceInstance parent;
+
+        public UpdaterImpl(ResourceInstance parent) {
+            this.parent = parent;
+        }
+
+        @Override
+        public void addEntity(AbstractEntity entity) {
+            Occupation o = (Occupation) entity;
+            o.setResourceInstance(parent);
+        }
+
+        @Override
+        public void removeEntity(AbstractEntity entity) {
+        } 
+    } */
 }
