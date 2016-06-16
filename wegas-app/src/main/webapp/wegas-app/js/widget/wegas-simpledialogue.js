@@ -24,8 +24,8 @@ YUI.add("wegas-simpledialogue", function(Y) {
             this.handlers.change = this.after("dialogueVariableChange", this.syncUI, this);
 
             this.get(CONTENTBOX).delegate('click', function(e) {
-                var no = parseInt(e.currentTarget.getAttribute("response_no"));
-                if (this.availableActions[no]) {
+                var no = parseInt(e.currentTarget.getData("response_no"));
+                if (this.availableActions[no] && !this.get("disabled")) {
                     e.currentTarget.addClass("loading");
                     this.currentDialogue.doTransition(this.availableActions[no]);
                 }
@@ -33,6 +33,7 @@ YUI.add("wegas-simpledialogue", function(Y) {
         },
         syncUI: function() {
             this.currentDialogue = this.get("dialogueVariable.evaluated");
+            this.set("disabled", !this.currentDialogue.getInstance().get("enabled"));
             this.get(CONTENTBOX).one('.dialogue .response .responseElements').empty();
             if (!this.currentDialogue) {
                 this.get(CONTENTBOX).one('.dialogue .talk').insert("Dialog variable could not be found");
@@ -74,7 +75,7 @@ YUI.add("wegas-simpledialogue", function(Y) {
             }
 
             for (i = 0; i < availableActions.length; i++) {
-                responseNode.insert('<li response_no="' + i + '">' + availableActions[i].get('actionText') + '</li>');
+                responseNode.insert('<li data-response_no="' + i + '">' + availableActions[i].get('actionText') + '</li>');
             }
         }
     }, {
