@@ -294,7 +294,8 @@ public class GameController {
                             Team team = new Team("Individually-" + Helper.genToken(20));
                             teamFacade.create(game.getId(), team); // return managed team
                             playerFacade.create(team, currentUser);
-                            r = Response.status(Response.Status.CREATED).entity(team).build();
+                            Team find = teamFacade.find(team.getId());
+                            r = Response.status(Response.Status.CREATED).entity(find).build();
                         }
                     }
                 }
