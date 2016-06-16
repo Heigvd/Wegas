@@ -18,6 +18,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.mcq.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -253,12 +254,14 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      * @return the new reply
      */
     public Reply selectChoice(Long choiceId, Player player, Long startTime) {
-        requestFacade.getRequestManager().lock("MCQ-");
-        Thread t;
         ChoiceDescriptor choice = getEntityManager().find(ChoiceDescriptor.class, choiceId);
         QuestionDescriptor questionDescriptor = choice.getQuestion();
+        QuestionInstance questionInstance = questionDescriptor.getInstance(player);
 
-        //requestFacade.getRequestManager().lock("MCQ-" + questionDescriptor.getInstance(player).getId());
+        requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId());
+        getEntityManager().refresh(questionInstance);
+
+        //requestFacade.getRequestManager().lock("MCQ-" + reply.getQuestionInstance().getId());
         // Verify if mutually exclusive replies must be cancelled:
         if (questionDescriptor.getCbx() && !questionDescriptor.getAllowMultipleReplies()) {
             List<Reply> toCancel = new ArrayList<>();
