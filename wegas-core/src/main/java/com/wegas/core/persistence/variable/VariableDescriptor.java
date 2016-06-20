@@ -306,8 +306,8 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      * @return id of gameModel this belongs to
      */
     @JsonIgnore
-    public int getGameModelId() {
-        return this.gameModel.getId().intValue();
+    public Long getGameModelId() {
+        return this.gameModel.getId();
     }
 
     /**

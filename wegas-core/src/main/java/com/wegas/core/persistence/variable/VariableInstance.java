@@ -188,7 +188,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
         } else if (this.getGame() != null) {
             return Helper.getAudienceTokenForGame(this.getGame().getId());
         } else if (this.gameModelScope != null) {
-            return Helper.getAudienceTokenForGameModel(this.getGameModelScope().getVariableDescriptor().getId()); //  ???????? 
+            return Helper.getAudienceTokenForGameModel(this.getGameModelScope().getVariableDescriptor().getGameModelId());
         } else {
             // Default instance
             return null;
