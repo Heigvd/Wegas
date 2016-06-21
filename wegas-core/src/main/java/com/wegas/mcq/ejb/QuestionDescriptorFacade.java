@@ -267,11 +267,28 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
             this.validateReply(player, reply.getId());
         } catch (WegasRuntimeException e) {
             logger.error("CANCEL REPLY", e);
-            this.cancelReplyTransactional(playerId, reply.getId());
+            this.cancelReplyTransactional(player, reply.getId());
             throw e;
         }
         return reply;
     }
+
+    /**
+     *
+     * @param player player who wants to cancel the reply
+     * @param replyId  id of reply to cancel
+     * @return reply being canceled
+     */
+    public Reply cancelReplyTransactional(Player player, Long replyId) {
+        Reply reply = questionSingleton.cancelReplyTransactional(replyId);
+        try {
+            scriptEvent.fire(player, "replyCancel", new ReplyValidate(reply));// Throw an event
+        } catch (WegasRuntimeException e) {
+            // GOTCHA no eventManager is instantiated
+        }
+        return reply;
+    }
+
 
     /**
      *
@@ -280,13 +297,8 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      * @return reply being canceled
      */
     public Reply cancelReplyTransactional(Long playerId, Long replyId) {
-        Reply reply = questionSingleton.cancelReplyTransactional(playerId, replyId);
-        try {
-            scriptEvent.fire(playerFacade.find(playerId), "replyCancel", new ReplyValidate(reply));// Throw an event
-        } catch (WegasRuntimeException e) {
-            // GOTCHA no eventManager is instantiated
-        }
-        return reply;
+        Player player = playerFacade.find(playerId);
+        return this.cancelReplyTransactional(player, replyId);
     }
 
     /**
