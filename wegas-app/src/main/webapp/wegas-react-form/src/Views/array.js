@@ -12,7 +12,7 @@ const legendStyle = {
 };
 function ArrayWidget(props) {
     function renderChild(child, index) {
-        return (<div>
+        return (<div style={{ clear: 'both' }}>
             <IconButton
                 style={minusStyle}
                 iconClassName="fa fa-minus"

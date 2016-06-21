@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-form', function(Y) {
+YUI.add('wegas-form', function (Y) {
     "use strict";
 
     var FORM = "form", inputEx = Y.inputEx, Wegas = Y.Wegas, Form;
@@ -34,7 +34,7 @@ YUI.add('wegas-form', function(Y) {
          * @private
          * @description plug a toolbar and publich "submit" event.
          */
-        initializer: function() {
+        initializer: function () {
             this.plug(Y.Plugin.WidgetToolbar);
             this.publish("submit", {
                 emitFacade: true
@@ -48,7 +48,7 @@ YUI.add('wegas-form', function(Y) {
          * @private
          * @description
          */
-        renderUI: function() {
+        renderUI: function () {
             Y.Array.each(this.get("buttons"), this.addButton, this);
             this.get("contentBox").on("key", this.save, "down:83+ctrl", this);  // ctrl-s shortcut
         },
@@ -57,7 +57,7 @@ YUI.add('wegas-form', function(Y) {
          * @private
          * @description call function "renderToolbar".
          */
-        syncUI: function() {
+        syncUI: function () {
             this.set("cfg", this.get("cfg"));
         },
         /**
@@ -65,10 +65,10 @@ YUI.add('wegas-form', function(Y) {
          * @private
          * @returns {undefined}
          */
-        destructor: function() {
+        destructor: function () {
             this.set(FORM, null);
         },
-        addButton: function(b) {
+        addButton: function (b) {
             switch (b.action) {
                 case "submit":
                     b.on = {
@@ -77,7 +77,7 @@ YUI.add('wegas-form', function(Y) {
                     break;
                 default:
                     b.on = {
-                        click: Y.bind(function(action) {
+                        click: Y.bind(function (action) {
                             this.fire(action);
                         }, this, b.action)
                     };
@@ -90,18 +90,18 @@ YUI.add('wegas-form', function(Y) {
          * @private
          * @description set the given form to null
          */
-        destroyForm: function() {
+        destroyForm: function () {
             this.set(FORM, null);
         },
-        setCfg: function(val) {
+        setCfg: function (val) {
             var cfg = Y.clone(val);                                             // Duplicate so val will be untouched while serializing
             Y.mix(cfg, {
                 parentEl: this.get("contentBox"),
                 type: "group"
             });                                                                 // Set up the form parentEl attribute, so it knows where to render
 
-            inputEx.use(val, Y.bind(function(cfg) {                           // Load form dependencies
-                if(this.get("destroyed")){
+            inputEx.use(val, Y.bind(function (cfg) {                           // Load form dependencies
+                if (this.get("destroyed")) {
                     return;
                 }
                 var form = inputEx(cfg);                                      // Initialize and render form
@@ -109,12 +109,12 @@ YUI.add('wegas-form', function(Y) {
                 form.removeClassFromState();                                    // Remove required state
                 this.set(FORM, form);
                 this.fire("formUpdate");
-                form.on("updated", function(e) {
+                form.on("updated", function (e) {
                     this.fire("updated", e);
                 }, this);
             }, this, cfg));
         },
-        save: function(e) {
+        save: function (e) {
             e.halt(true);
 
             var form = this.get(FORM),
@@ -131,91 +131,110 @@ YUI.add('wegas-form', function(Y) {
                 value: val
             });
         },
-        validate: function() {
+        validate: function () {
             return this.get("form").validate();
         }
     }, {
-        /** @lends Y.Wegas.Form */
-        EDITORNAME: "Form",
-        /**
-         * <p><strong>Attributes</strong></p>
-         * <ul>
-         *    <li>values: values of fields of the form</li>
-         *    <li>form: the form to manage (see YUI Form)</li>
-         *    <li>cfg: configuation of the form (see YUI Form)</li>
-         * </ul>
-         *
-         * @field
-         * @static
-         */
-        ATTRS: {
+            /** @lends Y.Wegas.Form */
+            EDITORNAME: "Form",
             /**
-             * Values of fields of the form
+             * <p><strong>Attributes</strong></p>
+             * <ul>
+             *    <li>values: values of fields of the form</li>
+             *    <li>form: the form to manage (see YUI Form)</li>
+             *    <li>cfg: configuation of the form (see YUI Form)</li>
+             * </ul>
+             *
+             * @field
+             * @static
              */
-            values: {
-                "transient": true,
-                value: {},
-                setter: function(val) {
-                    if (this.get(FORM)) {
-                        this.get(FORM).setValue(val, false);
-                    }
-                    return val;
-                }
-            },
-            /**
-             * The form to manage
-             */
-            form: {
-                "transient": true,
-                setter: function(val) {
-                    if (this.get(FORM)) {                                       // If there is alread a form instantiated, destroy it
-                        this.get(FORM).destroy();
-                    }
-                    return val;
-                }
-            },
-            /**
-             * Configuation of the form
-             */
-            cfg: {
-                validator: Y.Lang.isObject,
-                setter: function(val) {
-                    this.setCfg(val);
-                    return val;
-                },
-                items: {
-                    test: {
-                        type: "string"
+            ATTRS: {
+                /**
+                 * Values of fields of the form
+                 */
+                values: {
+                    "transient": true,
+                    value: {},
+                    setter: function (val) {
+                        if (this.get(FORM)) {
+                            this.get(FORM).setValue(val, false);
+                        }
+                        return val;
                     }
                 },
-                _inputex: {
+                /**
+                 * The form to manage
+                 */
+                form: {
+                    "transient": true,
+                    setter: function (val) {
+                        if (this.get(FORM)) {                                       // If there is alread a form instantiated, destroy it
+                            this.get(FORM).destroy();
+                        }
+                        return val;
+                    }
+                },
+                /**
+                 * Configuation of the form
+                 */
+                cfg: {
+                    validator: Y.Lang.isObject,
+                    type: "object",
+                    properties: {
+                        fields: {
+                            type: 'array',
+                            items: {
+                                type: 'object',
+                                required: true,
+                                value: {},
+                                properties: {
+                                    type: {
+                                        type: 'string',
+                                        required: true
+                                    },
+                                    name: {
+                                        type: 'string',
+                                        required: true
+                                    },
+                                    label: {
+                                        type: 'string'
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    setter: function (val) {
+                        this.setCfg(val);
+                        return val;
+                    },
                     index: 8,
-                    _type: "group",
-                    legend: "Fields",
-                    fields: inputEx.Group.groupOptions
-                }
-            },
-            buttons: {
-                value: [{
-                        type: "Button",
-                        action: "submit",
-                        label: "<span class=\"wegas-icon wegas-icon-save\" ></span>Save"
+                    view: {
+                        label: "Fields",
+                        fields: inputEx.Group.groupOptions
                     }
-                ],
-                _inputex: {
-                    _type: "hidden"
+                },
+                buttons: {
+                    type: "array",
+                    valueFn: function () {
+                        return [{
+                            type: "Button",
+                            action: "submit",
+                            label: "<span class=\"wegas-icon wegas-icon-save\" ></span>Save"
+                        }];
+                    },
+                    view: {
+                        type: "hidden"
+                    }
                 }
             }
-        }
-    });
+        });
     Wegas.Form = Form;
 
     /* Add relevant plugin*/
     Wegas.Form.ATTRS.plugins = Y.clone(Wegas.Widget.ATTRS.plugins);
-    Wegas.Form.ATTRS.plugins._inputex.items.push({
-        type: "Button",
+    Wegas.Form.ATTRS.plugins.items.view.choices.push({
         label: "Save to",
-        data: "SaveObjectAction"
+        value: "SaveObjectAction"
     });
 
 });

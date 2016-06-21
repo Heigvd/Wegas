@@ -134,7 +134,7 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
             //     val = val.valueselector;
             // }
             this.fire('submit', {
-                value: val
+                value: JSON.parse(JSON.stringify(val))
             });
         },
         validate() {
@@ -162,9 +162,6 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
                 transient: true,
                 value: {},
                 setter(val) {
-                    if (this.get(FORM)) {
-                        this.get(FORM).setValue(val, false);
-                    }
                     this.renderForm(val, this.get('cfg'));
                     return val;
                 }

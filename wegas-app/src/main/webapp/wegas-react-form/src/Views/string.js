@@ -8,7 +8,7 @@ function StringView(props) {
     return (
         <TextField
             className={props.view.className}
-            value={props.value || ''}
+            defaultValue={props.value}
             floatingLabelText={props.view.label || props.path[props.path.length - 1]}
             errorText={errorMessage}
             onChange={e => props.onChange(e.target.value)}

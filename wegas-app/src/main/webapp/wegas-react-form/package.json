@@ -15,9 +15,9 @@
   "dependencies": {
     "babel-core": "^6.6.4",
     "babel-plugin-transform-object-rest-spread": "^6.6.4",
-    "material-ui": "^0.15.0",
-    "react": "^15.1.0",
     "jsoninput": "x.x.x",
+    "material-ui": "^0.15.1",
+    "react": "^15.1.0",
     "react-dom": "^15.1.0",
     "react-tap-event-plugin": "^1.0.0",
     "react-tinymce": "^0.5.1",

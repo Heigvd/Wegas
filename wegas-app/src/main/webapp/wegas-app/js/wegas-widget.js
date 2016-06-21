@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add("wegas-widget", function(Y) {
+YUI.add("wegas-widget", function (Y) {
     "use strict";
     var Lang = Y.Lang,
         Wegas = Y.Wegas,
@@ -24,10 +24,10 @@ YUI.add("wegas-widget", function(Y) {
     function Widget() {
         this.before("destroy", this.hideAllOverlay);
         /* When a child is going to be removed, hide its overlay */
-        this.on("removeChild", function(e) {
+        this.on("removeChild", function (e) {
             e.child.hideAllOverlay && e.child.hideAllOverlay();
         });
-        this.after("render", function() {
+        this.after("render", function () {
             this.overlayCounter = 0;
             this.get(BOUNDING_BOX)
                 .addClass("wegas-widget")
@@ -48,7 +48,7 @@ YUI.add("wegas-widget", function(Y) {
         });
         this.publish("AttributesChange", {
             bubbles: false,
-            defaultFn: function() {
+            defaultFn: function () {
                 var widget = this.rebuild();
                 if (Y.Plugin.EditEntityAction.currentEntity === this) { // @FIXME @fx wtf?
                     Y.Plugin.EditEntityAction.currentEntity = widget;
@@ -64,7 +64,7 @@ YUI.add("wegas-widget", function(Y) {
          * @private
          * @description show an loading - overlay on all the screen.
          */
-        showOverlay: function(klass) {
+        showOverlay: function (klass) {
             this.fire("wegas:showOverlay", klass);
             this.overlayCounter += 1;
             return this;
@@ -74,21 +74,21 @@ YUI.add("wegas-widget", function(Y) {
          * @private
          * @description hide overlay (see function showOverlay).
          */
-        hideOverlay: function(klass) {
+        hideOverlay: function (klass) {
             this.fire("wegas:hideOverlay", klass);
             this.overlayCounter -= 1;
             return this;
         },
-        hideAllOverlay: function() {
+        hideAllOverlay: function () {
             while (this.overlayCounter > 0) {
                 this.hideOverlay();
             }
             // If this is a Wegas.Parent, hide its children overlay too
             this.hideAllChildrenOverlay();
         },
-        hideAllChildrenOverlay: function() {
+        hideAllChildrenOverlay: function () {
             if (this.each) {
-                this.each(function(child) {
+                this.each(function (child) {
                     child.hideAllOverlay && child.hideAllOverlay();
                 });
             }
@@ -106,7 +106,7 @@ YUI.add("wegas-widget", function(Y) {
          * @description
          *
          */
-        showMessage: function(level, txt, timeout) {
+        showMessage: function (level, txt, timeout) {
             this.fire("wegas:message", {
                 level: level,
                 content: txt,
@@ -114,7 +114,7 @@ YUI.add("wegas-widget", function(Y) {
             });
             return this;
         },
-        rebuild: function() {
+        rebuild: function () {
             var parent, index, cfg;
             if (this.isRoot()) {
                 parent = Y.Widget.getByNode(this.get(BOUNDING_BOX).get("parentNode"));
@@ -128,7 +128,7 @@ YUI.add("wegas-widget", function(Y) {
             this.destroy();
             return parent.add(cfg, index).item(0);
         },
-        isEditable: function() {
+        isEditable: function () {
             return this.get("editable") || !!(this.get(PARENT) && this.get(PARENT).isEditable && this.get(PARENT).isEditable());
         }
     });
@@ -138,23 +138,23 @@ YUI.add("wegas-widget", function(Y) {
          *  Defines edition menu to be used in editor
          */
         EDITMENU: [{
-                type: BUTTON,
-                label: "Edit",
-                plugins: [{
-                        fn: "EditWidgetAction"
-                    }]
-            }, {
+            type: BUTTON,
+            label: "Edit",
+            plugins: [{
+                fn: "EditWidgetAction"
+            }]
+        }, {
                 type: BUTTON,
                 label: "Copy",
                 plugins: [{
-                        fn: "DuplicateWidgetAction"
-                    }]
+                    fn: "DuplicateWidgetAction"
+                }]
             }, {
                 type: BUTTON,
                 label: "Delete",
                 plugins: [{
-                        fn: "DeleteWidgetAction"
-                    }]
+                    fn: "DeleteWidgetAction"
+                }]
             }],
         /**
          * @field
@@ -209,11 +209,10 @@ YUI.add("wegas-widget", function(Y) {
                 type: "string",
                 optional: true,
                 value: undefined,
-                _inputex: {
-                    _type: "hidden",
-                    value: undefined
+                view: {
+                    type: "hidden"
                 },
-                validator: function(s) {
+                validator: function (s) {
                     return (s === undefined || (Y.Lang.isString(s) && s.length > 0) || Y.Lang.isNumber(s));
                 }
             },
@@ -222,8 +221,9 @@ YUI.add("wegas-widget", function(Y) {
              */
             type: {
                 type: "string",
-                _inputex: {
-                    _type: "hidden"
+                required: true,
+                view: {
+                    type: "hidden"
                 }
             },
             /**
@@ -232,10 +232,10 @@ YUI.add("wegas-widget", function(Y) {
             cssClass: {
                 type: "string",
                 optional: true,
-                _inputex: {
+                index: 4,
+                view: {
                     label: "CSS class",
-                    index: 4,
-                    wrapperClassName: "wegas-advanced-feature"
+                    className: "wegas-advanced-feature"
                 },
                 getter: Wegas.Editable.removeNullValue
             },
@@ -252,22 +252,22 @@ YUI.add("wegas-widget", function(Y) {
                 "transient": true
             },
             /**
-             * Id of the widget. Transient
+             * Id of the widget.
              */
             id: {
                 "transient": false,
                 value: undefined,
                 optional: true,
                 type: "string",
-                getter: function(v) {
+                getter: function (v) {
                     if (v === "" || ("" + v).indexOf("yui") === 0) {
                         return undefined;
                     } else {
                         return v;
                     }
                 },
-                _inputex: {
-                    _type: "hidden"
+                view: {
+                    type: "hidden"
                 }
             },
             /**
@@ -316,10 +316,7 @@ YUI.add("wegas-widget", function(Y) {
              * Informe if widget is disable. Transient
              */
             disabled: {
-                "transient": true,
-                _inputex: {
-                    index: 9
-                }
+                "transient": true
             },
             /**
              * Informe if widget is visible. Transient
@@ -397,7 +394,7 @@ YUI.add("wegas-widget", function(Y) {
              * Plugins attached to the widget
              */
             plugins: {//For serialization purpose, get plugin configs
-                getter: function() {
+                getter: function () {
                     var i,
                         p = [], plg;
                     for (i in this._plugins) {
@@ -413,130 +410,94 @@ YUI.add("wegas-widget", function(Y) {
                 },
                 optional: true,
                 type: "array",
+                value: [],
                 "transient": false,
-                _inputex: {
-                    index: 10,
-                    _type: "pluginlist",
-                    legend: "Plugins",
-                    items: [{
-                            type: BUTTON,
-                            label: "On click",
-                            plugins: [{
-                                    fn: "WidgetMenu",
-                                    cfg: {
-                                        menuCfg: {
-                                            points: ["tl", "tr"]
-                                        },
-                                        event: "mouseenter",
-                                        children: [{
-                                                type: BUTTON,
-                                                label: "Open page",
-                                                data: "OpenPageAction"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Open url",
-                                                data: "OpenUrlAction"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Impact variables",
-                                                data: "ExecuteScriptAction"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Open Popup page",
-                                                data: "OpenPanelPageloader"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Play sound",
-                                                data: "PlaySoundAction"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Print Variables",
-                                                data: "PrintActionPlugin"
-                                            }
-                                        ]
+                index: 10,
+                items: {
+                    type: "object",
+                    properties: {
+                        fn: {
+                            type: "string"
+                        },
+                        cfg: {
+                            type: "object"
+                        }
+                    },
+                    view: {
+                        type: "pluginlist",
+                        choices: [
+                            {
+                                label: "On click",
+                                children: [
+                                    {
+                                        label: "Open page",
+                                        value: "OpenPageAction"
+                                    },
+                                    {
+                                        label: "Open url",
+                                        value: "OpenUrlAction"
+                                    }, {
+                                        label: "Impact variables",
+                                        value: "ExecuteScriptAction"
+                                    }, {
+                                        label: "Open Popup page",
+                                        value: "OpenPanelPageloader"
+                                    }, {
+                                        label: "Play sound",
+                                        value: "PlaySoundAction"
+                                    }, {
+                                        label: "Print Variables",
+                                        value: "PrintActionPlugin"
                                     }
-                                }]
-
-                        }, {
-                            type: BUTTON,
-                            label: "Styles",
-                            plugins: [{
-                                    fn: "WidgetMenu",
-                                    cfg: {
-                                        menuCfg: {
-                                            points: ["tl", "tr"]
-                                        },
-                                        event: "mouseenter",
-                                        children: [{
-                                                type: BUTTON,
-                                                label: "Tooltip",
-                                                data: "Tooltip"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Background",
-                                                data: "CSSBackground"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Position",
-                                                data: "CSSPosition"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Size",
-                                                data: "CSSSize"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Text",
-                                                data: "CSSText"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Other styles",
-                                                data: "CSSStyles"
-                                            }]
+                                ]
+                            }, {
+                                label: "Styles",
+                                children: [
+                                    {
+                                        label: "Tooltip",
+                                        value: "Tooltip"
+                                    }, {
+                                        label: "Background",
+                                        value: "CSSBackground"
+                                    }, {
+                                        label: "Position",
+                                        value: "CSSPosition"
+                                    }, {
+                                        label: "Size",
+                                        value: "CSSSize"
+                                    }, {
+                                        label: "Text",
+                                        value: "CSSText"
+                                    }, {
+                                        label: "Other styles",
+                                        value: "CSSStyles"
                                     }
-                                }]
-                        }, {
-                            type: BUTTON,
-                            label: "Animations",
-                            plugins: [{
-                                    fn: "WidgetMenu",
-                                    cfg: {
-                                        menuCfg: {
-                                            points: ["tl", "tr"]
-                                        },
-                                        event: "mouseenter",
-                                        children: [{
-                                                type: BUTTON,
-                                                label: "Show after",
-                                                data: "ShowAfter"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Hide after",
-                                                data: "HideAfter"
-                                            }]
+                                ]
+                            }, {
+                                label: "Animations",
+                                children: [
+                                    {
+                                        label: "Show after",
+                                        value: "ShowAfter"
+                                    }, {
+                                        label: "Hide after",
+                                        value: "HideAfter"
                                     }
-                                }]
-                        }, {
-                            type: BUTTON,
-                            label: "Variables",
-                            plugins: [{
-                                    fn: "WidgetMenu",
-                                    cfg: {
-                                        menuCfg: {
-                                            points: ["tl", "tr"]
-                                        },
-                                        event: "mouseenter",
-                                        children: [{
-                                                type: BUTTON,
-                                                label: "Conditional disable",
-                                                data: "ConditionalDisable"
-                                            }, {
-                                                type: BUTTON,
-                                                label: "Unread count",
-                                                data: "UnreadCount"
-                                            }]
+                                ]
+                            }, {
+                                label: "Variables",
+                                children: [
+                                    {
+                                        label: "Conditional disable",
+                                        value: "ConditionalDisable"
+                                    }, {
+                                        label: "Unread count",
+                                        value: "UnreadCount"
                                     }
-                                }]
-                        }]
+                                ]
+                            }
+                        ]
+                    }
                 }
             }
         },
@@ -548,7 +509,7 @@ YUI.add("wegas-widget", function(Y) {
          * @description function to create and return a widget with the given
          *  configuration. Log an exception if creation isn't possible.
          */
-        create: function(config) {
+        create: function (config) {
             var child, Fn,
                 type = config.childType || config.type;
             if (type) {
@@ -570,7 +531,7 @@ YUI.add("wegas-widget", function(Y) {
          * @param {function} cb
          * @description Load the modules from an Wegas widget definition
          */
-        use: function(cfg, cb) {
+        use: function (cfg, cb) {
             Wegas.Editable.use(cfg, cb);
         },
         /**
@@ -588,7 +549,7 @@ YUI.add("wegas-widget", function(Y) {
          *  that references a VariableDescriptor and has either an name, id
          *  or expr parameter.
          */
-        VARIABLEDESCRIPTORGETTER: function(val, fullName) {
+        VARIABLEDESCRIPTORGETTER: function (val, fullName) {
             var ds = Wegas.Facade.Variable, toEval;
             if (val && fullName.split(".")[1] === "evaluated") { // If evaluated value is required
 
@@ -633,7 +594,7 @@ YUI.add("wegas-widget", function(Y) {
      * @hack We override this function so widget are looked for in Wegas ns.
      */
     Y.WidgetParent.prototype.o_createChild = Y.WidgetParent.prototype._createChild;
-    Y.WidgetParent.prototype._createChild = function(config) {
+    Y.WidgetParent.prototype._createChild = function (config) {
         var altType = config.childType || config.type;
         if (altType) {
             config.childType = Y.Lang.isString(altType) ? Wegas[altType] || Y[altType] : altType;
@@ -644,7 +605,7 @@ YUI.add("wegas-widget", function(Y) {
      *
      */
     Y.WidgetParent.ATTRS.defaultChildType = {
-        setter: function(val) {
+        setter: function (val) {
             var returnVal = Y.Attribute.INVALID_VALUE,
                 FnConstructor = Lang.isString(val) ? Wegas[val] || Y[val] : val;
             if (Lang.isFunction(FnConstructor)) {
@@ -656,8 +617,8 @@ YUI.add("wegas-widget", function(Y) {
     /**
      *
      */
-    Y.WidgetParent.prototype.destroyAll = function() {
-        this.removeAll().each(function() {
+    Y.WidgetParent.prototype.destroyAll = function () {
+        this.removeAll().each(function () {
             this.destroy();
         });
         // Optim delay object destruction
@@ -671,7 +632,7 @@ YUI.add("wegas-widget", function(Y) {
      * @hack
      */
     Y.Widget.prototype.oPlug = Y.Widget.prototype.plug;
-    Y.Widget.prototype.plug = function(Plugin, config) {
+    Y.Widget.prototype.plug = function (Plugin, config) {
         if (!Lang.isArray(Plugin)) {
             if (Plugin && !Lang.isFunction(Plugin)) {
                 config = Plugin.cfg;
@@ -686,7 +647,7 @@ YUI.add("wegas-widget", function(Y) {
     /**
      *
      */
-    Widget.prototype.renderer = function() {
+    Widget.prototype.renderer = function () {
         try {
             Y.Widget.prototype.renderer.call(this, arguments);
         } catch (e) {

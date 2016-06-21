@@ -9,9 +9,10 @@ import ObjectView from './Views/object';
 import ArrayView from './Views/array';
 import HTMLView from './Views/html';
 import HashlistView from './Views/hashlist';
-import FlatVariableSelect from './Views/Interacting/FlatVariableSelect';
 import WegasUrl from './Views/wegas-url';
 import WegasImageUrl from './Views/wegas-image-url';
+import FlatVariableSelect from './Views/Interacting/flatvariableselect';
+import PluginList from './Views/Interacting/pluginlist';
 
 setDefaultWidgets({
     object: ObjectView,
@@ -27,5 +28,6 @@ setDefaultWidgets({
     hashlist: HashlistView,
     wegasurl: WegasUrl,
     wegasimageurl: WegasImageUrl,
-    flatvariableselect: FlatVariableSelect
+    flatvariableselect: FlatVariableSelect,
+    pluginlist: PluginList
 });

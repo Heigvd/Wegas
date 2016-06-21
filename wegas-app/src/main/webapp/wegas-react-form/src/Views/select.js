@@ -8,7 +8,7 @@ function genItems(o, i) {
             <MenuItem
                 key={i}
                 value={o}
-                primaryText={JSON.stringify(o)}
+                primaryText={o}
             />);
     }
     return (
@@ -33,7 +33,6 @@ function SelectView(props) {
     return (
         <div className={props.view.className}>
             <SelectField
-                className={props.view.className}
                 value={props.value}
                 floatingLabelText={props.view.label || props.editKey}
                 errorText={errorMessage}
