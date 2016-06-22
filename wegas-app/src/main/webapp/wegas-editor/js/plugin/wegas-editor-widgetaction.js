@@ -94,7 +94,7 @@ YUI.add('wegas-editor-widgetaction', function (Y) {
                         PAGEDATASOURCE.editMeta(entity.get('@pageId'), val[PAGE_META], function () {
                             PAGEDATASOURCE.fire('pageUpdated');
                         });
-                     //   delete val[PAGE_META];
+                       delete val[PAGE_META];
                     }
                     entity.setAttrs(val);
                     for (i = 0; i < val.plugins.length; i += 1) {

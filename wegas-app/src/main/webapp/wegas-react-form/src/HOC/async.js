@@ -16,7 +16,7 @@ function promised(Comp) {
             }
             componentWillMount() {
                 this.setState({ status: STATUS.RUN });
-                promising(this.props).then((result) => {
+                Promise.resolve(promising(this.props)).then((result) => {
                     this.setState({
                         result,
                         status: STATUS.END
@@ -25,7 +25,7 @@ function promised(Comp) {
             }
             componentWillReceiveProps(nextProps) {
                 this.setState({ status: STATUS.RUN });
-                promising(nextProps).then((result) => {
+                Promise.resolve(promising(nextProps)).then((result) => {
                     this.setState({
                         result,
                         status: STATUS.END

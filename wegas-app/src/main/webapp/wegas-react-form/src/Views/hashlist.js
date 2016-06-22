@@ -8,6 +8,10 @@ const halfWidth = {
     position: 'relative',
     width: '50%'
 };
+const minusStyle = {
+    float: 'left',
+    marginTop: '12px'
+};
 class HashlistView extends React.Component {
     constructor(props) {
         super(props);
@@ -44,22 +48,25 @@ class HashlistView extends React.Component {
             }
 
             return (<div>
-                <TextField
-                    defaultValue={child.props.editKey}
-                    style={halfWidth}
-                    onBlur={onKeyChange}
-                    floatingLabelText={this.props.view.keyLabel || 'Name'}
-                />
-                <div
-                    style={halfWidth}
-                    ref={child.props.editKey}
-                >
-                    {child}
-                </div>
                 <IconButton
                     iconClassName="fa fa-minus"
                     onClick={remove}
+                    style={minusStyle}
                 />
+                <div style={{ marginLeft: '48px', position: 'relative' }}>
+                    <TextField
+                        defaultValue={child.props.editKey}
+                        style={halfWidth}
+                        onBlur={onKeyChange}
+                        floatingLabelText={this.props.view.keyLabel || 'Name'}
+                    />
+                    <div
+                        style={halfWidth}
+                        ref={child.props.editKey}
+                    >
+                        {child}
+                    </div>
+                </div>
             </div>);
         });
 

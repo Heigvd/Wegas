@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
+import async from '../HOC/async';
 
 function genItems(o, i) {
     if (typeof o !== 'object') {
@@ -60,4 +61,10 @@ SelectView.propTypes = {
     multiLine: PropTypes.bool
 };
 
-export default SelectView;
+export default async(SelectView)(({ view }) => {
+    const { choices } = view;
+    if (typeof choices === 'function') {
+        return choices();
+    }
+    return choices;
+});
