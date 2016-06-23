@@ -64,7 +64,7 @@ SelectView.propTypes = {
 export default async(SelectView)(({ view }) => {
     const { choices } = view;
     if (typeof choices === 'function') {
-        return choices();
+        return Promise.resolve(choices()).then(ch => ({ view: { ...view, choices: ch } }));
     }
-    return choices;
+    return {};
 });

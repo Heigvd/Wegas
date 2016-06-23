@@ -1,0 +1,19 @@
+import React from 'react';
+import Select from '../select';
+import { getY } from '../../index';
+
+const choices = () => new Promise(resolve => {
+    getY().Wegas.Facade.Page.cache.getIndex(
+        index => resolve(
+            index.map(page => ({
+                value: page.id,
+                label: page.name || <i>Unnamed ({page.id})</i>
+            }))
+        )
+    );
+});
+
+function PageSelect(props) {
+    return <Select {...props} view={{ ...props.view, choices }} />;
+}
+export default PageSelect;

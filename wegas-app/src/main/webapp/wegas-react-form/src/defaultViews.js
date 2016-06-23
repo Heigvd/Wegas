@@ -14,6 +14,7 @@ import WegasImageUrl from './Views/wegas-image-url';
 import FlatVariableSelect from './Views/Interacting/flatvariableselect';
 import PluginList from './Views/Interacting/pluginlist';
 import EntityArrayFieldSelect from './Views/Interacting/entityarrayfieldselect';
+import PageSelect from './Views/Interacting/pageselect';
 
 setDefaultWidgets({
     object: ObjectView,
@@ -31,5 +32,6 @@ setDefaultWidgets({
     wegasimageurl: WegasImageUrl,
     flatvariableselect: FlatVariableSelect,
     pluginlist: PluginList,
-    entityarrayfieldselect: EntityArrayFieldSelect
+    entityarrayfieldselect: EntityArrayFieldSelect,
+    pageselect: PageSelect
 });
