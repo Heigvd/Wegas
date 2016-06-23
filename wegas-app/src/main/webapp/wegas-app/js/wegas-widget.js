@@ -230,7 +230,7 @@ YUI.add("wegas-widget", function (Y) {
              * Class to add at bounding box
              */
             cssClass: {
-                type: "string",
+                type: ["null", "string"],
                 optional: true,
                 index: 4,
                 view: {

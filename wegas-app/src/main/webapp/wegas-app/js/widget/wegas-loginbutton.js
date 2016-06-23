@@ -109,7 +109,7 @@ YUI.add("wegas-loginbutton", function(Y) {
             forcedLabel: {
                 type: "string",
                 optional: true,
-                _inputex: {
+                view: {
                     label: "Label",
                     description: "Player name is used if blank"
                 }
@@ -121,12 +121,12 @@ YUI.add("wegas-loginbutton", function(Y) {
              * targetPageLoader: Zone to display the page which contains widget userPreferences
              */
             targetPageLoader: {
+                type: "string",
                 value: "maindisplayarea",
-                _inputex: {
+                view: {
                     label: "Target zone",
-                    _type: "string",
                     //_type: "pageloaderselect",//@fixme There a bug with this widget when the target page is not loaded
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                    className: 'wegas-advanced-feature'
                 }
             }
         }

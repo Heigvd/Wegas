@@ -109,8 +109,8 @@ YUI.add("wegas-button", function(Y) {
             },
             disabled: {
                 type: "boolean",
-                _inputex: {
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                view: {
+                    className: 'wegas-advanced-feature'
                 }
             },
             cssClass: {
@@ -316,8 +316,8 @@ YUI.add("wegas-button", function(Y) {
              */
             variable: {
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                _inputex: {
-                    _type: "variableselect",
+                view: {
+                    type: "variableselect",
                     label: "Unread count",
                     classFilter: ["ListDescriptor", "InboxDescriptor"]
                 }
@@ -331,7 +331,7 @@ YUI.add("wegas-button", function(Y) {
                 type: "object",
                 value: {},
                 optional: true,
-                _inputex: {
+                view: {
                     type: "hidden"
                 }
             }

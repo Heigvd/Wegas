@@ -42,14 +42,14 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
                 };
                 render((
                     <MuiThemeProvider
-                        muiTheme={getMuiTheme() }
-                        >
+                        muiTheme={getMuiTheme()}
+                    >
                         <RForm
-                            ref={form => this.set(FORM, form) }
+                            ref={form => this.set(FORM, form)}
                             schema={schema}
                             value={value}
                             onChange={boundFire}
-                            />
+                        />
                     </MuiThemeProvider>
                 ), this.get('contentBox').getDOMNode());
             }
@@ -74,18 +74,18 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
         addButton(b) {
             const btn = b;
             switch (b.action) {
-                case 'submit':
-                    btn.on = {
-                        click: Y.bind(this.save, this)
-                    };
-                    break;
-                default:
-                    btn.on = {
-                        click: Y.bind(function click(action) {
-                            this.fire(action);
-                        }, this, b.action)
-                    };
-                    break;
+            case 'submit':
+                btn.on = {
+                    click: Y.bind(this.save, this)
+                };
+                break;
+            default:
+                btn.on = {
+                    click: Y.bind(function click(action) {
+                        this.fire(action);
+                    }, this, b.action)
+                };
+                break;
             }
             this.toolbar.add(new Wegas.Button(btn));
         },
@@ -224,7 +224,6 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
                 type: 'hidden'
             }
         }
-    }
     });
 
 /* Add relevant plugin*/
