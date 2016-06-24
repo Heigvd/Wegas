@@ -7,10 +7,12 @@
         <div class="form__row">
             <input class="input input--small" type="text" id="scenario-name" ng-model="newSession.name" placeholder="{{'TRAINER-INDEX-ADD-NAME-INPUT' | translate}}" autocomplete="off" style="background:#fff">
         </div>
-        <div class="form__row">
-            <select ng-disabled="loadingScenarios" class="input input--small" id="scenario-template" ng-model="newSession.scenarioId">
-                <option ng-if="!loadingScenarios" value="0" disabled>{{'TRAINER-INDEX-ADD-SCENARIO-INPUT' | translate}}</option>
-                <option ng-if="loadingScenarios" value="0" disabled>{{'TRAINER-INDEX-ADD-SCENARIO-LOADING' | translate}} ...</option>
+        <div ng-if="loadingScenarios" style="width:100%;text-align:center;line-height:59px;">
+            <span content-loading="{{'TRAINER-INDEX-ADD-SCENARIO-LOADING' | translate}} ..."></span>
+        </div>
+        <div ng-if="!loadingScenarios" class="form__row">
+            <select class="input input--small" id="scenario-template" ng-model="newSession.scenarioId">
+                <option value="0" disabled>{{'TRAINER-INDEX-ADD-SCENARIO-INPUT' | translate}}</option>
                 <option ng-repeat="scenario in scenarios | filter: { canInstantiate: true }" value="{{scenario.id}}">{{scenario.name}}</option>
             </select>
         </div>
@@ -18,7 +20,8 @@
             <a class="modal__tools__button button button--small button--default" ng-click="cancelAddSession()">
                 <span class="button__label">{{'PRIVATE-MODALE-SETTINGS-CANCEL-BTN' | translate}}</span>
             </a>
-            <a ng-click="addSession()" class="form__row__btn form__submit button button--success" style="margin-left:8px">
+            <a ng-click="addSession()" id="createSession" class="form__row__btn form__submit button button--success" style="margin-left:8px"
+               ng-class="{true:'button--disable'}[loadingScenarios]">
                 <span class="button__label">{{'TRAINER-INDEX-ADD-BTN' | translate}}</span>
             </a>
         </div>

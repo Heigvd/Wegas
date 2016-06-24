@@ -10,7 +10,7 @@ package com.wegas.core.security.util;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 /**
- * 
+ *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
@@ -19,6 +19,7 @@ public class AuthenticationInformation {
     private String login;
     private String password;
     private boolean remember;
+    private Boolean agreed;
 
     public AuthenticationInformation() {
     }
@@ -45,5 +46,13 @@ public class AuthenticationInformation {
 
     public void setRemember(boolean remember) {
         this.remember = remember;
+    }
+
+    public Boolean getAgreed() {
+        return agreed;
+    }
+
+    public void setAgreed(Boolean agreed) {
+        this.agreed = agreed;
     }
 }

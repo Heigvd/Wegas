@@ -37,10 +37,12 @@
     padding: 24px 24px 8px;
     position: relative;
     height: 50px;
+    width:100%;
 }
 .yui3-skin-sam .dashboard.wegas-hastoolbar>.wegas-toolbar-sibling {
     padding-top: 25px;
     position: relative;
+    height: calc(100% - 65px) !important;
 }
 
 .yui3-skin-sam .dashboard .wegas-toolbar-header {
@@ -48,6 +50,7 @@
     padding: 7px 0 5px 0;
     min-height: 28px;
     box-sizing: content-box;
+    background: #f1f1f1;
 }
 
 .yui3-skin-sam .dashboard .wegas-toolbar .wegas-button.globalImpacts {
@@ -75,15 +78,12 @@
 }
 
 .yui3-skin-sam .dashboard .wegas-toolbar .wegas-button.globalImpacts.monitoredDataTitle {
-    margin: auto;
-    text-align:center;
-    padding: 0 10px;
+    margin-right: 2px;
+    text-align: center;
 }
 
 .yui3-skin-sam .dashboard .wegas-toolbar .wegas-button.globalRefreshTitle {
-    text-align:left;
     margin-right: 0;
-    padding: 0 10px;
 }
 
 .yui3-skin-sam .wegas-statistics{

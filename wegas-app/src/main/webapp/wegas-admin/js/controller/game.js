@@ -94,6 +94,14 @@ define(["ember"], function(Ember) {
         }.property("gameId"),
         chargedId: function() {
             return this.get('model').get('gameId') + 'charged';
-        }.property("gameId")
+        }.property("gameId"),
+        declaredSize: function() {
+            var count=0;
+            var teams = this.get("teams");
+            for (var i=0; i<teams.length; i++){
+                count += teams[i].declaredSize;
+            }
+            return count;
+        }.property("declaredSize")
     });
 });
