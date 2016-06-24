@@ -1,16 +1,16 @@
- /*
- * Wegas
- * http://wegas.albasim.ch
- *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
- * Licensed under the MIT License
- */
+/*
+* Wegas
+* http://wegas.albasim.ch
+*
+* Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+* Licensed under the MIT License
+*/
 
 package com.wegas.core.security.util;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 /**
- *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
@@ -19,7 +19,7 @@ public class AuthenticationInformation {
     private String login;
     private String password;
     private boolean remember;
-    private Boolean agreed;
+    private boolean agreed = false;
 
     public AuthenticationInformation() {
     }
@@ -48,7 +48,7 @@ public class AuthenticationInformation {
         this.remember = remember;
     }
 
-    public Boolean getAgreed() {
+    public boolean isAgreed() {
         return agreed;
     }
 
