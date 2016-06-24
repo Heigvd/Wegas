@@ -401,6 +401,9 @@ YUI.add("wegas-entity", function(Y) {
                     _type: HIDDEN
                 }
             },
+            declaredSize: {
+                "transient": true
+            },
             players: {
                 value: [],
                 _inputex: {

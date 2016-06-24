@@ -4,12 +4,13 @@
 <table class="table table-striped">
     <thead>
     <tr>
-        <th>Creee</th>
+        <th>Created</th>
         <th>Creator</th>
         <th>Name</th>
         <th>Scenario</th>
-        <th>Players</th>
-        <th>Teams</th>
+        <th class="centeredText">Players</th>
+        <th class="centeredText">Declared</th>
+        <th class="centeredText">Teams</th>
         <th>Done</th>
         <th>Charged</th>
         <th>Game Status</th>
@@ -25,8 +26,9 @@
             <td>{{game.creator}}</td>
             <td>{{game.gameName}}</td>
             <td>{{game.gameModelName}}</td>
-            <td class="mouse-pointer" {{action 'openModal' "players" game}}><u>{{game.playerCount}}</u></td>
-            <td>{{game.teamCount}}</td>
+            <td class="mouse-pointer centeredText" {{action 'openModal' "players" game}}><u>{{game.playerCount}}</u></td>
+            <td class="centeredText">{{game.declaredSize}}</td>
+            <td class="mouse-pointer centeredText" {{action 'openModal' "teams" game}}><u>{{game.teamCount}}</u></td>
             <td>{{input type='checkbox' id=game.doneId checked=game.isDone}}<label {{bindAttr for="game.doneId"}} /></td>
             <td>{{input type='checkbox' id=game.chargedId checked=game.isCharged}}<label {{bindAttr for="game.chargedId"}} /></td>
             <td>{{game.gameStatus}}</td>
@@ -35,9 +37,9 @@
             {{else}}
                 <td {{action "editComment" on="click"}}>{{textarea class="form-control" value=game.comments focus-out="acceptComment" rows="1" disabled="true"}}</td>
             {{/if}}
-            <td><a target="_blank" {{bind-attr href="game.gameLink"}}>View</a></td>
-            <td>{{#if game.isDelete}}
-                <a target="_blank" {{action "forceDeletion" on="click"}}>delete</a>
+            <td class="centeredText"><a target="_blank" {{bind-attr href="game.gameLink"}}>View</a></td>
+            <td class="centeredText">{{#if game.isDelete}}
+                <a class="mouse-pointer" target="_blank" {{action "forceDeletion" on="click"}}>Delete</a>
             {{/if}}</td>
         </tr>
     {{/each}}

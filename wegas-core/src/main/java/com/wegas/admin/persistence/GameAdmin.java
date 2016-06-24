@@ -9,6 +9,9 @@ package com.wegas.admin.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
@@ -62,6 +65,9 @@ public class GameAdmin extends AbstractEntity {
 
     @Lob
     private String prevPlayers;
+
+    @Lob
+    private String prevTeams;
 
     private Integer prevTeamCount;
 
@@ -147,6 +153,7 @@ public class GameAdmin extends AbstractEntity {
             this.prevName = this.getGameName();
             this.prevTeamCount = this.getTeamCount();
             this.prevPlayers = this.getPlayers().toString();
+            this.prevTeams = this.getTeams().toString();
         }
     }
 
@@ -189,6 +196,27 @@ public class GameAdmin extends AbstractEntity {
         return this.getPrevTeamCount();
     }
 
+    // Small optimization for getTeams():
+    private static ObjectWriter ow = new ObjectMapper().writer();
+
+    public List<String> getTeams() {
+        if (this.getGame() != null) {
+            final List<String> teams = new ArrayList<>();
+            for (Team t : this.getGame().getTeams()) {
+                if (t.getClass() == Team.class) { // filter debugTeam
+                    GameAdminTeam gaTeam = new GameAdminTeam(t);
+                    try {
+                        teams.add(ow.writeValueAsString(gaTeam));
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            return teams;
+        }
+        return this.getPrevTeams();
+    }
+
     public List<String> getPlayers() {
         if (this.getGame() != null) {
             final List<Player> players = new ArrayList<>();
@@ -228,6 +256,22 @@ public class GameAdmin extends AbstractEntity {
         }
 
         return players;
+    }
+
+    private List<String> getPrevTeams() {
+        final List<String> teams = new ArrayList<>();
+        JSONArray ar;
+        if (this.prevTeams != null) {
+            try {
+                ar = new JSONArray(this.prevTeams);
+                for (int i = 0; i < ar.length(); i++) {
+                    teams.add(ar.get(i).toString());
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return teams;
     }
 
     private String getPrevGameModel() {

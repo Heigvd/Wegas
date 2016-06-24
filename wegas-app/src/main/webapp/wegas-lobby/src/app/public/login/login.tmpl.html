@@ -16,6 +16,12 @@
     <div class="form__row form__row--right" style="margin:-24px 2px -10px 0;">
         <a class="link link--medium link--simple" ui-sref="wegas.public.password">{{ 'PASSWORD-BTN' | translate }}</a>
     </div>
+    <div class="form__row" id="agreeDiv" ng-init="init()" style="display:none;clear:both;font-size:110%">
+        <input class="form__row__entry" ng-model="agreeCbx" type="checkbox" id="agreeCbx" autocomplete="off" style="width:22px;margin-top:5px;">
+        <label for="agreeCbx" style="font-weight:bold; color:white;">{{'CREATE-ACCOUNT-INPUT-AGREE' | translate}}
+            <a href="http://www.albasim.ch/en/terms-of-use/" target="_blank" style="font-weight:bold;color:white;text-decoration:underline;">{{'CREATE-ACCOUNT-INPUT-TERMS' | translate}}</a>
+        </label>
+    </div>
     <div class="form__row form__row--right" style="clear:both">
         <input class="form__row__btn button button--small button--default" type="submit" class="link"
                value="{{ 'LOGIN-BTN' | translate }}"/>
