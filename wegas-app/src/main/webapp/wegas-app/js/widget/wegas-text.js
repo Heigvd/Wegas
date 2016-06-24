@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add("wegas-text", function(Y) {
+YUI.add("wegas-text", function (Y) {
     "use strict";
 
     var CONTENTBOX = "contentBox", Text;
@@ -30,54 +30,52 @@ YUI.add("wegas-text", function(Y) {
          * @private
          * @description set the "content" ATTRS (which set the contentbox)
          */
-        syncUI: function() {
+        syncUI: function () {
             //this.set("content", this.get("content"));
             this.cleanMarkup();
             this.get(CONTENTBOX).setContent(Y.Template.Micro.compile(this.get("content") || "")());
         },
-        cleanMarkup: function() {
-            this.get(CONTENTBOX).all("video").each(function(e) {
+        cleanMarkup: function () {
+            this.get(CONTENTBOX).all("video").each(function (e) {
                 var video = e.getDOMNode();
                 video.pause();
                 video.src = "";
                 video.load();
             });
         },
-        getEditorLabel: function() {
+        getEditorLabel: function () {
             return this.get(CONTENTBOX).get("text");
         },
-        destructor: function() {
+        destructor: function () {
             this.cleanMarkup();
         }
 
     }, {
-        /** @lends Y.Wegas.Text */
-        EDITORNAME: "Text",
-        /**
-         * @field
-         * @static
-         * @description
-         * <p><strong>Attributes</strong></p>
-         * <ul>
-         *    <li>content: the string to display, the content of this widget's
-         *     contentbox. Format html.</li>
-         * </ul>
-         */
-        ATTRS: {
+            /** @lends Y.Wegas.Text */
+            EDITORNAME: "Text",
             /**
-             * The string to display, the content of this widget's contentbox
-             * Format html.
+             * @field
+             * @static
+             * @description
+             * <p><strong>Attributes</strong></p>
+             * <ul>
+             *    <li>content: the string to display, the content of this widget's
+             *     contentbox. Format html.</li>
+             * </ul>
              */
-            content: {
-                type: "string",
-                format: "html"//,
-                    //setter: function(val) {
-                    //this.get(CONTENTBOX).setContent(val);
-                    //    return val;
-                    //}
+            ATTRS: {
+                /**
+                 * The string to display, the content of this widget's contentbox
+                 * Format html.
+                 */
+                content: {
+                    type: "string",
+                    view: {
+                        type: 'html'
+                    }
+                }
             }
-        }
-    });
+        });
     Y.Wegas.Text = Text;
 
 });
