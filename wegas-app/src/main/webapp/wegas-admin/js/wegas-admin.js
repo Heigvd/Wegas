@@ -14,9 +14,11 @@ define(["game",
         "controller/game",
         "controller/games",
         "controller/players",
+        "controller/teams",
         "templates/games",
         "component/modal-dialog",
         "templates/players",
+        "templates/teams",
         "textarea-edit"],
     function(game, DS, Ember) {
         "use strict";
@@ -54,7 +56,7 @@ define(["game",
             actions: {
                 openModal: function(modalName, model) {
                     this.controllerFor(modalName).set("model", model);
-                    return this.render("players", {
+                    return this.render(modalName, {
                         outlet: "modal",
                         into: "games",
                         controller: modalName
@@ -76,9 +78,44 @@ define(["game",
         Admin.GamesController = require("controller/games");
         Admin.GameController = require("controller/game");
         Admin.PlayersController = require("controller/players");
+        Admin.TeamsController = require("controller/teams");
         Admin.GameSerializer = DS.RESTSerializer.extend({
             extractArray: function(store, type, payload) {
-                return payload;
+                var games = [];
+                payload.forEach(function(game){
+                    var newTeams = [],
+                        newPlayers = [],
+                        declaredSize = 0;
+                    if (game.teams) {
+                        game.teams.forEach(function (team) {
+                            var newTeam;
+                            try {
+                                newTeam = JSON.parse(team);
+                                if (newTeam.declaredSize != null) {
+                                    declaredSize += newTeam.declaredSize;
+                                }
+                                if (newTeam.playerNames.length !== 0) {
+                                    newPlayers = newPlayers.concat(newTeam.playerNames);
+                                }
+
+                            } catch (e) {
+                                newTeam = {name: 'Internal JSON error', declaredSize: 0, playerNames: []};
+                            }
+                            newTeam.realMatchesDeclaredSize = (newTeam.playerNames.length === newTeam.declaredSize);
+                            newTeam.hasDeclaredSize = (newTeam.declaredSize>0);
+                            newTeams.push(newTeam);
+                        });
+                        if (!game.teamCount)
+                            game.teamCount = newTeams.length;
+                        if (!game.players)
+                            game.players = newPlayers;
+                    }
+                    game.declaredSize = declaredSize;
+                    delete game.teams;
+                    game.teams = newTeams;
+                    games.push(game);
+                });
+                return games;
             }
         });
 

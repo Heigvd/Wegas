@@ -96,8 +96,6 @@
 .wrapper__bloc-details h3{
     display:block;
     position:relative;
-    width:80px;
-    height:100%;
     font-size:14px;
     font-weight:bold;
     line-height:34px;
@@ -110,12 +108,13 @@
 .bloc-details__players .bloc-details__players__list{
     display:block;
     position:relative;
-    width:calc(100% - 80px);
+    width:calc(100% - 20px);
     height:100%;
     margin:0px;
     padding:0px 12px;
     box-sizing:border-box;
     overflow:auto;
+    float:right;
 }
 
 .bloc-details__players__list .bloc-details__player{

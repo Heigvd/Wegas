@@ -115,6 +115,15 @@ public class Team extends AbstractEntity implements Broadcastable {
     }
 
     /**
+     * @param name
+     * @param declaredSize
+     */
+    public Team(String name, int declaredSize) {
+        this.name = name;
+        this.setDeclaredSize(declaredSize);
+    }
+
+    /**
      * @param a
      */
     @Override
@@ -122,7 +131,6 @@ public class Team extends AbstractEntity implements Broadcastable {
         Team t = (Team) a;
         this.setName(t.getName());
         this.setNotes(t.getNotes());
-        this.setDeclaredSize(t.getDeclaredSize());
     }
 
     /**
@@ -238,7 +246,7 @@ public class Team extends AbstractEntity implements Broadcastable {
     }
 
     public Integer getDeclaredSize(){
-        return declaredSize;
+        return declaredSize == null ? 0 : declaredSize;
     }
 
     /**

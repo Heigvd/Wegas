@@ -86,6 +86,7 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
         LINK_TEMPLATE: "<a href='#' class='card__title__link card__title__link--close'>Details</a>",
         BASE_TEMPLATE: "<div class='wrapper__bloc-details bloc-details--close'>" + "<div class='bloc-details__notes'><textarea class='infos-comments' placeholder='Enter a comment here'></textarea></div>" + "</div>",
         TEAM_LIST_TEMPLATE: "<div class='bloc-details__players'>" + "<h3>Players</h3>" + "<ul class='bloc-details__players__list'></ul>" + "</div>",
+        SIZE_TEMPLATE: "<span></span>",
         PLAYER_TEMPLATE: "<li class='bloc-details__player'></li>",
         _saveNotes: function(context) {
             context.get("team").set("notes", context.get("editor").getContent());
@@ -99,7 +100,10 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                     base = Y.Node.create(this.BASE_TEMPLATE),
                     title = this.get("host").get(CONTENTBOX).one(".card__title").addClass("card__title--detailed"),
                     titleContent = title.getContent(),
-                    detailLink = Y.Node.create(this.LINK_TEMPLATE);
+                    detailLink = Y.Node.create(this.LINK_TEMPLATE),
+                    team = this.get("team"),
+                    realSize = team.get("players").length,
+                    declSize = team.get("declaredSize");
                 title.empty();
                 title.append(Y.Node.create(this.TITLE_TEMPLATE).setContent(titleContent));
                 title.append(detailLink);
@@ -109,6 +113,9 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                     base.addClass("bloc-details--team");
                     this.get("host").get(CONTENTBOX).addClass("card--team");
                     teamList = Y.Node.create(this.TEAM_LIST_TEMPLATE);
+                    if (declSize>0) {
+                        teamList.one("h3").setContent("Players "+realSize+"&nbsp;of&nbsp;"+declSize);
+                    }
                     Y.Array.each(this.get("team").get("players"), function(player) {
                         player = Y.Node.create(this.PLAYER_TEMPLATE).append(player.get("name"));
                         teamList.one(".bloc-details__players__list").append(player);

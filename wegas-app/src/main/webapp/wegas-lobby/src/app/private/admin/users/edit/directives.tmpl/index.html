@@ -36,7 +36,7 @@
                    placeholder="{{'PRIVATE-PROFILE-INPUT-PLACEHOLDER-PASSWORD-AGAIN' | translate}}" autocomplete="off">
         </div>
         <div class="form__row">&nbsp;
-            {{'ADMIN-USERS-MODALE-AGREED' | translate}}: {{ adminUsersEditIndexCtrl.user.account.agreedTime===null ? 'NO' : (adminUsersEditIndexCtrl.user.account.agreedTime | date:"dd.MM.yyyy HH:mm:ss") }}
+            {{'ADMIN-USERS-MODALE-AGREED' | translate}}: {{ adminUsersEditIndexCtrl.user.account.agreedTime===null ? ('ADMIN-USERS-MODALE-AGREED-NOTYET' | translate) : (adminUsersEditIndexCtrl.user.account.agreedTime | date:"dd.MM.yyyy HH:mm:ss") }}
         </div>
         <div class="form__row">
             <hr/>

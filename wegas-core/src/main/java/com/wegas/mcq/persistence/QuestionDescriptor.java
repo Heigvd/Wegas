@@ -313,7 +313,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     public int getUnreadCount(Player player) {
         QuestionInstance instance = this.getInstance(player);
         if (this.getCbx()) {
-            return instance.getValidated() ? 0 : 1;
+            return instance.getActive() && !instance.getValidated() ? 1 : 0;
         } else {
             return instance.getActive() && instance.getReplies().isEmpty() ? 1 : 0;
         }
