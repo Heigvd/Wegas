@@ -203,6 +203,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "password",
                             'fr': "mot de passe"
                         },
+                        'LOGIN-INPUT-AGREE': {
+                            'en': 'The use of this service implies that you agree to',
+                            'fr': "L'utilisation de ce service implique que vous en acceptez"
+                        },
                         'LOGIN-FLASH-EMPTY': {
                             'en': "Username and password cannot be empty",
                             'fr': "Veuillez renseigner l'email et le mot de passe"
