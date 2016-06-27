@@ -91,7 +91,11 @@ angular.module('private.player.directives', [])
         };
         /* Leave the team */
         ctrl.leaveTeam = function(teamId) {
+            $('#leave-'+teamId).removeClass('button--trash').addClass('busy-button');
             TeamsModel.leaveTeam(teamId).then(function(response) {
+                $timeout(function(){
+                    $('#leave-'+teamId).removeClass('busy-button').addClass('button--trash');
+                }, 500);
                 if (!response.isErroneous()) {
                     updateTeams();
                 } else {
