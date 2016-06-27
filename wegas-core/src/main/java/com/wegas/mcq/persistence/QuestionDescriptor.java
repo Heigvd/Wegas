@@ -310,6 +310,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
                 || super.containsAll(criterias);
     }
 
+    // This method seems to be unused:
     public int getUnreadCount(Player player) {
         QuestionInstance instance = this.getInstance(player);
         if (this.getCbx()) {
