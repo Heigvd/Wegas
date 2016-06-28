@@ -1,0 +1,32 @@
+{{#modal-dialog action="close" title="Teams List" }}
+    <ul>
+        {{#each team in teams}}
+            <li style="width:100%; padding-right:15px"><span style="display:inline-block;font-weight:bold">{{team.name}}</span>
+                {{#if team.hasDeclaredSize}}
+                    {{#if team.realMatchesDeclaredSize}}
+                        <span style="display:inline-block; margin-left:10px; color:#999;">
+                            &nbsp;(Size OK: {{team.playerNames.length}})
+                        </span>
+                    {{else}}
+                        <span style="display:inline-block; float:right">
+                            &nbsp;Real size {{team.playerNames.length}} <span style="color:red">&ne;</span> decl. size {{team.declaredSize}}
+                        </span>
+                    {{/if}}
+                {{else}}
+                    <span style="display:inline-block; margin-left:10px;">
+                        &nbsp;(Real size: {{team.playerNames.length}}, no declared size)
+                    </span>
+                {{/if}}
+            <ul style="margin-bottom:20px">
+                {{#each player in team.playerNames}}
+                    <li>{{player}}</li>
+                {{else}}
+                    <i>No players</i>
+                {{/each}}
+            </ul>
+            </li>
+        {{else}}
+            No teams
+        {{/each}}
+    </ul>
+{{/modal-dialog}}

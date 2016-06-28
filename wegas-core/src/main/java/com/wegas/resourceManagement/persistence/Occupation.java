@@ -92,7 +92,7 @@ public class Occupation extends AbstractAssignement /* implements Broadcastable 
             this.setDescription(other.getDescription());
             this.setTime(other.getTime());
             this.setEditable(other.getEditable());
-            this.setResourceInstance(other.getResourceInstance());
+            //this.setResourceInstance(other.getResourceInstance());
             //this.setTaskDescriptor(other.getTaskDescriptor());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");

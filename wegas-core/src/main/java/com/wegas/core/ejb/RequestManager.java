@@ -117,12 +117,12 @@ public class RequestManager {
     public void addEntities(Map<String, List<AbstractEntity>> entities, Map<String, List<AbstractEntity>> container) {
         if (entities != null) {
             for (Map.Entry<String, List<AbstractEntity>> entry : entities.entrySet()) {
-                this.addEntity(entry.getKey(), entry.getValue(), container);
+                this.addEntities(entry.getKey(), entry.getValue(), container);
             }
         }
     }
 
-    public void addEntity(String audience, List<AbstractEntity> updated, Map<String, List<AbstractEntity>> container) {
+    public void addEntities(String audience, List<AbstractEntity> updated, Map<String, List<AbstractEntity>> container) {
         for (AbstractEntity entity : updated) {
             this.addEntity(audience, entity, container);
         }

@@ -9,7 +9,7 @@
     <a ng-if="!team.gameFreeForAll" class="button button--small button--round button--default-reverse button--label-off button--team" title="{{'PLAYER-CARD-TEAM-BTN' | translate}}" ui-sref="wegas.private.player.team({id: team.id})">
       <span class="button__label">{{'PLAYER-CARD-TEAM-BTN' | translate}}</span>
     </a>
-    <a
+    <a id="leave-{{team.id}}"
       class="button button--small button--round button--default-reverse button--label-off button--trash"
       title="{{'PLAYER-CARD-LEAVE-BTN' | translate}}"
       confirmed-click="leave(team.id)"

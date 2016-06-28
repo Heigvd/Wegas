@@ -418,12 +418,16 @@ public class UIHelper {
             text = TEXT_NOT_AVAILABLE;
             style += " " + CSS_CLASS_PROPERTY_VALUE_NA;
         }
+        
+        startDiv(writer, style);
         HtmlOutputText t = new HtmlOutputText();
-        t.setStyleClass(style);
+        //t.setStyleClass(style);
         // Only escape source code
         t.setEscape(code);
         t.setValue(text);
         t.encodeAll(ctx);
+        endDiv(writer);
+        
     }
 
     /**

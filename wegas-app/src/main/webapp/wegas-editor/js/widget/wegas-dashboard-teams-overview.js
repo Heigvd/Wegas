@@ -53,13 +53,6 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                     "do": function() {
                         new Y.Wegas.ImpactsTeamModal({
                             "team": team
-                            /*
-                            , "on": {
-                                "impacted": function() {
-                                    this.syncUI();
-                                }
-                            }
-                            */
                         }).render();
                     }
                 }, {
@@ -93,6 +86,7 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
         LINK_TEMPLATE: "<a href='#' class='card__title__link card__title__link--close'>Details</a>",
         BASE_TEMPLATE: "<div class='wrapper__bloc-details bloc-details--close'>" + "<div class='bloc-details__notes'><textarea class='infos-comments' placeholder='Enter a comment here'></textarea></div>" + "</div>",
         TEAM_LIST_TEMPLATE: "<div class='bloc-details__players'>" + "<h3>Players</h3>" + "<ul class='bloc-details__players__list'></ul>" + "</div>",
+        SIZE_TEMPLATE: "<span></span>",
         PLAYER_TEMPLATE: "<li class='bloc-details__player'></li>",
         _saveNotes: function(context) {
             context.get("team").set("notes", context.get("editor").getContent());
@@ -106,7 +100,10 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                     base = Y.Node.create(this.BASE_TEMPLATE),
                     title = this.get("host").get(CONTENTBOX).one(".card__title").addClass("card__title--detailed"),
                     titleContent = title.getContent(),
-                    detailLink = Y.Node.create(this.LINK_TEMPLATE);
+                    detailLink = Y.Node.create(this.LINK_TEMPLATE),
+                    team = this.get("team"),
+                    realSize = team.get("players").length,
+                    declSize = team.get("declaredSize");
                 title.empty();
                 title.append(Y.Node.create(this.TITLE_TEMPLATE).setContent(titleContent));
                 title.append(detailLink);
@@ -116,6 +113,9 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                     base.addClass("bloc-details--team");
                     this.get("host").get(CONTENTBOX).addClass("card--team");
                     teamList = Y.Node.create(this.TEAM_LIST_TEMPLATE);
+                    if (declSize>0) {
+                        teamList.one("h3").setContent("Players "+realSize+"&nbsp;of&nbsp;"+declSize);
+                    }
                     Y.Array.each(this.get("team").get("players"), function(player) {
                         player = Y.Node.create(this.PLAYER_TEMPLATE).append(player.get("name"));
                         teamList.one(".bloc-details__players__list").append(player);
@@ -390,22 +390,21 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
             newTab.document.write('<html><head><title>E-mail lists</title></head><body style="font-size:13px; font-family:Verdana, Geneva, sans-serif;">');
             if (nbValidEmails > 0) {
                 if (nbValidEmails > 1) {
-                    newTab.document.write('<b>' + nbValidEmails + ' comma-separated addresses (standard syntax) /<br/>' + nbValidEmails + ' adresses séparées par des virgules (syntaxe standard):</b><br/>');
+                    newTab.document.write('<b>Standard syntax:</b><br/>');
                 }
                 newTab.document.write('<a href="' + mailtoHref + '?subject=Serious%20Game"><pre>' + mailtoText + "</pre></a>");
                 if (nbValidEmails > 1) {
                     newTab.document.write('<br/>&nbsp;<br/>');
                     mailtoHref = mailtoHref.replace(/,/g, ";");
                     mailtoText = mailtoText.replace(/,/g, ";");
-                    newTab.document.write('<b>' + nbValidEmails + ' semicolon-separated addresses (for Microsoft Outlook) /<br/>' + nbValidEmails + ' adresses séparées par des point-virgules (pour Microsoft Outlook) :</b><br/>');
+                    newTab.document.write('<b>Microsoft Outlook syntax:</b><br/>');
                     newTab.document.write('<a href="' + mailtoHref + '?subject=Serious%20Game"><pre>' + mailtoText + "</pre></a>");
                 }
             } else {
-                newTab.document.write('No registered user / Aucun joueur enregistré<br/>&nbsp;');
+                newTab.document.write('No registered user<br/>&nbsp;');
             }
             if (nbGuests > 0) {
-                var plural = nbGuests>1 ? 's' : '';
-                newTab.document.write('<br/><span style="color:red">Attention:</span> ' + nbGuests + ' anonymous player'+plural+', hence without e-mail / ' + nbGuests + ' joueur'+plural+' anonyme'+plural+', donc sans e-mail.');
+                newTab.document.write('<br/><span style="color:red">Attention:</span> ' + nbGuests + ' anonymous player'+(nbGuests>1 ? 's' : '')+', i.e. without e-mail.');
             }
             newTab.document.close();
         },

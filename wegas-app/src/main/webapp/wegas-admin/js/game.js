@@ -20,6 +20,8 @@ define(["ember-data", "tool/rawtransform"], function(DS) {
             return this.get("players").length;
         }.property("players"),
         players: attr("raw"),
+        // This is JSON:
+        teams: attr("raw"),
         gameId: attr("number"),
         teamCount: attr("number"),
         status: attr("string"),

@@ -87,7 +87,7 @@ public class QuestionSingleton {
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)                // cancelReply
-    public Reply cancelReplyTransactional(Long playerId, Long replyId) {
+    public Reply cancelReplyTransactional(Long replyId) {
         final Reply reply = em.find(Reply.class, replyId);
         reply.getQuestionInstance().getReplies().remove(reply);
         em.remove(reply);

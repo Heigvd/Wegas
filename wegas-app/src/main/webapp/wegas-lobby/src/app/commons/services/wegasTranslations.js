@@ -203,6 +203,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "password",
                             'fr': "mot de passe"
                         },
+                        'LOGIN-INPUT-AGREE': {
+                            'en': 'The use of this service implies that you agree to',
+                            'fr': "L'utilisation de ce service implique que vous en acceptez"
+                        },
                         'LOGIN-FLASH-EMPTY': {
                             'en': "Username and password cannot be empty",
                             'fr': "Veuillez renseigner l'email et le mot de passe"
@@ -243,6 +247,14 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "last name",
                             'fr': "nom de famille"
                         },
+                        'CREATE-ACCOUNT-INPUT-AGREE': {
+                            'en': 'I agree with',
+                            'fr': "J'accepte"
+                        },
+                        'CREATE-ACCOUNT-INPUT-TERMS': {
+                            'en': 'the terms of use',
+                            'fr': "les conditions générales"
+                        },
                         'CREATE-ACCOUNT-SEND-BTN': {
                             'en': "Let's go!",
                             'fr': "C'est parti !"
@@ -270,6 +282,10 @@ angular.module('wegas.service.wegasTranslations', [])
                         'CREATE-ACCOUNT-FLASH-WRONG-PASS2': {
                             'en': "Passwords must be identical",
                             'fr': "Les mots de passe doivent être identiques"
+                        },
+                        'CREATE-ACCOUNT-FLASH-MUST-AGREE': {
+                            'en': "Please agree with the terms of use",
+                            'fr': "Merci d'accepter les conditions d'utilisation"
                         },
                         'PASSWORD-BTN': {
                             'en': "Forgotten password?",
@@ -1124,6 +1140,14 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': startSentence(keywords.team.singular.en) + " name",
                             'fr': "Nom de l'" + keywords.team.singular.fr
                         },
+                        'PLAYER-MODALE-JOIN-TEAM-CREATE-SIZE': {
+                            'en': "Size",
+                            'fr': "Taille"
+                        },
+                        'PLAYER-MODALE-JOIN-TEAM-CREATE-SIZE-TOOLTIP': {
+                            'en': "Number of members (from 1 to 99)",
+                            'fr': "Nombre de membres (de 1 à 99)"
+                        },
                         'PLAYER-MODALE-JOIN-TEAM-CREATE-BTN': {
                             'en': "Create " + keywords.team.singular.en,
                             'fr': "Créer une " + keywords.team.singular.fr
@@ -1529,6 +1553,14 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Edit profile",
                             'fr': "Modifier le profil"
                         },
+                        'ADMIN-USERS-MODALE-AGREED': {
+                            'en': "Agreed to terms of use",
+                            'fr': "A accepté les conditions d'utilisation"
+                        },
+                        'ADMIN-USERS-MODALE-AGREED-NOTYET': {
+                            'en': "Not yet",
+                            'fr': "Pas encore"
+                        },
                         'ADMIN-USERS-MODALE-GROUPS-TITLE': {
                             'en': "Manage user's groups",
                             'fr': "Gestion des groupes de l'utilisateur"
@@ -1580,6 +1612,10 @@ angular.module('wegas.service.wegasTranslations', [])
                         'ADMIN-GROUPS-MODALE-NAME-INPUT': {
                             'en': "Group name",
                             'fr': "Nom du groupe"
+                        },
+                        'ADMIN-GROUPS-MODALE-SIZE-INPUT': {
+                            'en': "Number of members",
+                            'fr': "Nombre de membres"
                         },
                         'ADMIN-MODALE-PERMISSION-TITLE': {
                             'en': "Edit permissions",
