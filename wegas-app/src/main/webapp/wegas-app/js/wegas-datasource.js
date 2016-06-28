@@ -220,6 +220,10 @@ YUI.add('wegas-datasource', function (Y) {
                     if (this.get("host").fire(val["@class"], val)) {
 
                         switch (val["@class"]) {
+                            case "WegasConflictException":
+                                level = "error";
+                                msg = Y.Wegas.I18n.t('errors.conflict');
+                                break;
                             case "WegasErrorMessage":
                                 level = val.level;
                                 msg = val.message;

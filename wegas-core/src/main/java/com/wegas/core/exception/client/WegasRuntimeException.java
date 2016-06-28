@@ -29,6 +29,8 @@ import javax.ejb.ApplicationException;
 @ApplicationException(rollback = true)
 public abstract class WegasRuntimeException extends RuntimeException {
 
+    private static final long serialVersionUID = 1484932586696706035L;
+
     /**
      *
      */
