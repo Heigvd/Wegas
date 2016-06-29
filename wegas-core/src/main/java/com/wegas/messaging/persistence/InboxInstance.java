@@ -85,6 +85,7 @@ public class InboxInstance extends VariableInstance {
     @Override
     public void merge(AbstractEntity a) {
         if (a instanceof InboxInstance) {
+            super.merge(a);
             InboxInstance other = (InboxInstance) a;
             this.setMessages(ListUtils.mergeLists(this.getMessages(), other.getMessages()));
         } else {
@@ -100,9 +101,9 @@ public class InboxInstance extends VariableInstance {
     }
 
     /**
-     * @param from message sender
+     * @param from    message sender
      * @param subject message subject
-     * @param body message body
+     * @param body    message body
      * @return The sent message
      */
     public Message sendMessage(String from, String subject, String body) {
@@ -112,11 +113,11 @@ public class InboxInstance extends VariableInstance {
     }
 
     /**
-     * @param from message sender
+     * @param from    message sender
      * @param subject message subject
-     * @param body message body
+     * @param body    message body
      * @param token
-     * ({@link InboxDescriptor#sendMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.util.List) here}
+     *                ({@link InboxDescriptor#sendMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.util.List) here}
      * @return The sent message
      */
     public Message sendWithToken(String from, String subject, String body, String token) {
@@ -126,11 +127,11 @@ public class InboxInstance extends VariableInstance {
     }
 
     /**
-     * @param from message sender
+     * @param from    message sender
      * @param subject message subject
-     * @param body message body
+     * @param body    message body
      * @param date
-     * ({@link InboxDescriptor#sendDatedMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String) here}
+     *                ({@link InboxDescriptor#sendDatedMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String) here}
      * @return The sent message
      */
     public Message sendMessage(String from, String subject, String body, String date) {
@@ -140,9 +141,9 @@ public class InboxInstance extends VariableInstance {
     }
 
     /**
-     * @param from message sender
-     * @param subject message subject
-     * @param body message body
+     * @param from         message sender
+     * @param subject      message subject
+     * @param body         message body
      * @param attachements
      * @return The sent message
      */
@@ -153,11 +154,11 @@ public class InboxInstance extends VariableInstance {
     }
 
     /**
-     * @param from message sender
-     * @param subject message subject
-     * @param body message body
+     * @param from         message sender
+     * @param subject      message subject
+     * @param body         message body
      * @param date
-     * ({@link InboxDescriptor#sendDatedMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String) here}
+     *                     ({@link InboxDescriptor#sendDatedMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String) here}
      * @param attachements
      * @return The sent message
      */
@@ -168,13 +169,13 @@ public class InboxInstance extends VariableInstance {
     }
 
     /**
-     * @param from message sender
-     * @param subject message subject
-     * @param body message body
+     * @param from         message sender
+     * @param subject      message subject
+     * @param body         message body
      * @param date
-     * ({@link InboxDescriptor#sendDatedMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String) here}
+     *                     ({@link InboxDescriptor#sendDatedMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String) here}
      * @param token
-     * ({@link InboxDescriptor#sendMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.util.List) here}
+     *                     ({@link InboxDescriptor#sendMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.util.List) here}
      * @param attachements
      * @return The sent message
      */

@@ -393,7 +393,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      */
     public void reset(final GameModel gameModel) {
         // Need to flush so prepersit events will be thrown (for example Game will add default teams)
-        //getEntityManager().flush();
+        ///getEntityManager().flush();
         //gameModel.propagateGameModel();  -> propagation is now done automatically after descriptor creation
         gameModel.propagateDefaultInstance(gameModel);
         //getEntityManager().flush();

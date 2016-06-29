@@ -86,6 +86,7 @@ public class ResourceInstance extends VariableInstance {
     public void merge(AbstractEntity a) {
         if (a instanceof ResourceInstance) {
             ResourceInstance other = (ResourceInstance) a;
+            super.merge(a);
             this.setActive(other.getActive());
             if (other.getAssignments() != null) {
                 //ListUtils.mergeLists(this.getAssignments(), other.getAssignments());

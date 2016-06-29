@@ -7,8 +7,11 @@
  */
 package com.wegas.core.rest.exception;
 
+import com.wegas.core.exception.client.WegasConflictException;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import javax.ejb.EJBException;
 import javax.enterprise.event.ObserverException;
+import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceException;
 import javax.transaction.RollbackException;
 import javax.transaction.TransactionRolledbackException;
@@ -35,9 +38,15 @@ public abstract class AbstractExceptionMapper {
     public static Response processException(Throwable exception) {
         logger.warn("ProcessException: " + exception);
 
-        if (exception instanceof RollbackException) {
-            return Response.status(Response.Status.FORBIDDEN).entity(exception).build();
-        } else if (exception instanceof TransactionRolledbackException
+        if (exception instanceof OptimisticLockException) {
+            OptimisticLockException ex = (OptimisticLockException) exception;
+            logger.error("Try to update outated: " + ex.getEntity());
+
+            return Response.status(Response.Status.CONFLICT).entity(new WegasConflictException(exception)).build();
+        } else if (exception instanceof RollbackException //) {
+                //return Response.status(Response.Status.FORBIDDEN).entity(exception).build();
+                //} else if (
+                || exception instanceof TransactionRolledbackException
                 || exception instanceof ObserverException
                 || exception instanceof PersistenceException
                 //                || exception instanceof javax.persistence.PersistenceException

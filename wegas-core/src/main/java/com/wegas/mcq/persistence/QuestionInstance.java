@@ -60,6 +60,7 @@ public class QuestionInstance extends VariableInstance {
     public void merge(AbstractEntity a) {
         if (a instanceof QuestionInstance) {
             QuestionInstance other = (QuestionInstance) a;
+            super.merge(a);
             this.setActive(other.getActive());
             this.setUnread(other.getUnread());
             Boolean v = other.getValidated();
@@ -137,7 +138,6 @@ public class QuestionInstance extends VariableInstance {
     }
 
     // *** Sugar *** //
-
     /**
      *
      */

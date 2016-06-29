@@ -36,6 +36,26 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
     private static final Logger logger = LoggerFactory.getLogger(VariableDescriptorFacadeTest.class);
 
     @Test
+    public void testDoubleReset() throws NamingException, WegasNoResultException {
+        VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+
+        // Test the descriptor
+        NumberDescriptor desc1 = new NumberDescriptor("x");
+        desc1.setDefaultInstance(new NumberInstance(0));
+
+        vdf.create(gameModel.getId(), desc1);
+
+        gameModelFacade.reset(gameModel.getId());
+
+        vdf.update(desc1.getId(), desc1);
+
+        gameModelFacade.reset(gameModel.getId());
+        gameModelFacade.reset(gameModel.getId());
+
+        vdf.remove(desc1.getId());
+    }
+
+    @Test
     public void testNumberDescriptor() throws NamingException, WegasNoResultException {
         final String VARIABLENAME = "test-variable";
         final String VARIABLENAME2 = "test-variable2";
@@ -179,7 +199,7 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
     }
 
     public <T extends VariableDescriptor> T testVariableDescriptor(T descriptor1, T descriptor2)
-        throws NamingException, WegasNoResultException {
+            throws NamingException, WegasNoResultException {
         final String VARIABLENAME2 = "test-variable2";
         VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
 
@@ -187,8 +207,25 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         logger.info("" + descriptor1 + "*" + descriptor2);
         vdf.create(gameModel.getId(), descriptor1);
 
+        gameModelFacade.reset(gameModel.getId());
+
         // Edit this descriptor
+        descriptor1 = (T) vdf.find(descriptor1.getId());
+        System.out.println("VersionD: " + descriptor1.getVersion());
+        System.out.println("VersionI: " + descriptor1.getDefaultInstance().getVersion());
+
+        /*
+         * update against up-to-date version
+         */
+        descriptor2.setVersion(descriptor1.getVersion());
+        descriptor2.getDefaultInstance().setVersion(descriptor1.getDefaultInstance().getVersion());
+
         vdf.update(descriptor1.getId(), descriptor2);
+
+        // Edit this descriptor
+        descriptor1 = (T) vdf.find(descriptor1.getId());
+        System.out.println("VersionD: " + descriptor1.getVersion());
+        System.out.println("VersionI: " + descriptor1.getDefaultInstance().getVersion());
 
         gameModelFacade.reset(gameModel.getId());
 
@@ -418,7 +455,7 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         vdf.createChild(list4.getId(), nb);
 
         DescriptorListI duplicate
-            = (DescriptorListI) vdf.duplicate(list1.getId());                 // Duplicate a root variable
+                = (DescriptorListI) vdf.duplicate(list1.getId());                 // Duplicate a root variable
         Assert.assertEquals(10.0, ((NumberDescriptor) ((DescriptorListI) ((DescriptorListI) duplicate.item(1)).item(0)).item(0)).getInstance(player).getValue());
 
         duplicate = (DescriptorListI) vdf.duplicate(list3.getId());             // Duplicate a sub child variable
