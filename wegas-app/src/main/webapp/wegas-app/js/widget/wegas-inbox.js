@@ -33,7 +33,7 @@ YUI.add('wegas-inbox', function(Y) {
         readRequestTid: null,
         /**
          * Holds compiled templates. Add templates in scope variable TEMPLATES
-         * 
+         *
          * define tab and content Templates, add new ones :
          * TEMPLATES:{TEMPLATE_NAME:{tab:'template', content:'template'}}
          *
@@ -123,10 +123,12 @@ YUI.add('wegas-inbox', function(Y) {
          */
         bindUI: function() {
             this.tabView.after("selectionChange", this.onTabSelected, this);
-            this.handlers.dataUpdated = this.dataSource.after("update", function(e) {
-                if (e.tId !== this.readRequestTid) {
+            this.handlers.dataUpdated = this.dataSource.after("updatedInstance", function(e) {
+                var inbox = this.get("variable.evaluated");
+                if (inbox && inbox.getInstance().get("id") === e.entity.get("id")) {
                     this.syncUI();
                 }
+                // Previously: if (e.tId !== this.readRequestTid) { this.syncUI(); }
             }, this);
         },
         /**
