@@ -41,6 +41,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.zip.GZIPOutputStream;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import org.apache.shiro.SecurityUtils;
 
 /**
@@ -61,6 +63,9 @@ public class WebsocketFacade {
         READY,
         OUTDATED
     }
+
+    @PersistenceContext(unitName = "wegasPU")
+    private EntityManager em;
 
     /**
      *
@@ -318,8 +323,24 @@ public class WebsocketFacade {
             for (Map.Entry<String, List<AbstractEntity>> entry : container.entrySet()) {
                 String audience = entry.getKey();
                 List<AbstractEntity> toPropagate = entry.getValue();
+
+                /**
+                 * #1222: concurrency issue
+                 * 
+                 * this process is asynchronous, entities (and underlying EntityManager) 
+                 * come from another thread. This is strictly forbidden (EntityManager 
+                 * is not thread-safe) and leads to some very strange and hardly 
+                 * reproducible deadlocks. (involving uninitialized IndirectList...)
+                 * 
+                 * The fix consists to re-find all entities within a new EntityManager 
+                 * before serialization occurs
+                 */
+                List<AbstractEntity> refreshed = new ArrayList<>();
+                for (AbstractEntity ae : toPropagate) {
+                    refreshed.add(em.find(ae.getClass(), ae.getId()));
+                }
                 //logger.error(eventClass.getSimpleName() + " entities: " + audience + ": " + toPropagate.size());
-                ClientEvent event = eventClass.getDeclaredConstructor(List.class).newInstance(toPropagate);
+                ClientEvent event = eventClass.getDeclaredConstructor(List.class).newInstance(refreshed);
                 propagate(event, audience, socketId);
             }
         } catch (NoSuchMethodException | SecurityException |

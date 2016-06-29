@@ -564,3 +564,21 @@ div.inputEx-RadioField-choice input[type="radio"] {
     padding: 2px;
     background: #fafafa;
 }
+
+/* Sendmail widget in the trainer dashboard */
+.wegas-sendmail-content .inputEx-Group {
+    padding-top: 20px;
+}
+
+.wegas-sendmail-content .inputEx-Field {
+    max-width: 30em;
+    padding: 2px 0;
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis !important;
+}
+
+.wegas-sendmail-content .inputEx-Field input {
+    font-size: 13px;
+    font-family: inherit;
+}

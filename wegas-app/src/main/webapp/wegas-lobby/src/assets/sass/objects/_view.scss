@@ -28,9 +28,9 @@
     }
 
     &.view--public-index {
-        height: 100%;
+        height: calc(100% - 30px);
         background-color: $background-default-secondary !important;
-        overflow: hidden;
+        overflow: auto;
 
         @include make-sm-column(12);
         @include make-xs-column(12);
@@ -51,6 +51,17 @@
             text-decoration: none;
         }
 
+    }
+    .public-footer {
+        text-align: center;
+        font-style: italic;
+        overflow: visible;
+        position: static;
+        color: #808080;
+
+        a {
+            color: inherit;
+        }
     }
 
     &.view--public-forms {

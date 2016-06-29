@@ -647,9 +647,13 @@
 }
 
 .yui3-skin-sam.wegas-hostmode .wegas-status-bar .results{
-    display:none;
+    display:block;
+    position:absolute;
+    width:100%;
+    height:35%;
+    top:63%;
+    text-align:center;
 }
-
 
 .yui3-skin-sam.wegas-hostmode .wegas-status-bar .status{
     display:block;

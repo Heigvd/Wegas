@@ -9,11 +9,11 @@ package com.wegas.core.security.rest;
 
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameFacade;
+import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
-import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.game.*;
 import com.wegas.core.rest.util.Email;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.RoleFacade;
@@ -23,9 +23,11 @@ import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationInformation;
+import com.wegas.core.security.util.SecurityHelper;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.SimplePrincipalCollection;
@@ -35,7 +37,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.servlet.ServletException;
@@ -47,7 +48,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.*;
-import org.apache.shiro.authz.AuthorizationException;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -85,9 +85,21 @@ public class UserController {
     private GameFacade gameFacade;
 
     /**
+     *
+     */
+    @EJB
+    private PlayerFacade playerFacade;
+
+    /**
+     *
+     */
+    @EJB
+    private TeamFacade teamFacade;
+
+    /**
      * @return list of all users, sorted by names
-     * @throws AuthorizationException if current doesn't have the permissions to
-     *                                see others users
+     * @throws AuthorizationException if current user doesn't have the permission to
+     *                                see other users
      */
     @GET
     public Collection<User> index() {
@@ -124,11 +136,107 @@ public class UserController {
     }
 
     /**
-     * Look for jpaAccounts matching given value.
+     * Returns the given user's e-mail address, with more relaxed security requirements than for getting the whole user profile:
+     * The caller must be trainer for the given game, and the given user must be a player of the same game.
+     * @param entityId
+     * @param gameId
+     * @return
+     */
+/*
+    @GET
+    @Path("{entityId : [1-9][0-9]*}/Email/{gameId : [1-9][0-9]*}")
+    public String getEmail(@PathParam("entityId") Long entityId, @PathParam("gameId") Long gameId) {
+        if (!userFacade.getCurrentUser().getId().equals(entityId)) {
+            // Caller must be trainer for the given game:
+            final Game g = gameFacade.find(gameId);
+            SecurityHelper.checkPermission(g, "Edit");
+            // And user must be a player of the same game:
+            if (playerFacade.checkExistingPlayer(gameId, entityId) == null) {
+                throw new AuthorizationException("Not a player of this game");
+            }
+        }
+
+        AbstractAccount mainAccount = userFacade.find(entityId).getMainAccount();
+
+        if (mainAccount instanceof JpaAccount) {
+            return ((JpaAccount) mainAccount).getEmail();
+        } else {
+            return "";
+        }
+    }
+*/
+
+    /**
+     * Returns the e-mail addresses of all players of the given game,
+     * with more relaxed security requirements than for getting the whole user profile:
+     * The caller must be trainer for the given game.
      *
-     * The value can be part of the first name, last name, email or username.
-     * Case insensitive.
+     * @param gameId
+     * @return
+     */
+    @GET
+    @Path("Emails/{gameId : [1-9][0-9]*}")
+    public List<String> getEmails(@PathParam("gameId") Long gameId) {
+        // Caller must be trainer for the given game:
+        final Game g = gameFacade.find(gameId);
+        if (g instanceof DebugGame) return null;
+        SecurityHelper.checkPermission(g, "Edit");
+
+        List<String> emails = new ArrayList<String>();
+        for (Team t : g.getTeams()) {
+            emails.addAll(collectEmails(t));
+        }
+        return emails;
+    }
+
+    /**
+     * Returns the e-mail addresses of all players of the given team,
+     * with more relaxed security requirements than for getting the whole user profile:
+     * The caller must be trainer for the given game and the team must belong to the same game.
      *
+     * @param gameId
+     * @return
+     */
+    @GET
+    @Path("Emails/{gameId : [1-9][0-9]*}/{teamId : [1-9][0-9]*}")
+    public List<String> getEmails(@PathParam("gameId") Long gameId, @PathParam("teamId") Long teamId) {
+        final Game g = gameFacade.find(gameId);
+        final Team t = teamFacade.find(teamId);
+        if (!t.getGame().getId().equals(gameId)) {
+            throw new AuthorizationException("Not a team of this game");
+        }
+        if (g instanceof DebugGame) return null;
+        // Caller must be trainer for the given game:
+        SecurityHelper.checkPermission(g, "Edit");
+        return collectEmails(t);
+    }
+
+
+    /**
+     * @param team
+     * @return List<String>
+     */
+    protected List<String> collectEmails(Team team) {
+        List<String> emails = new ArrayList<>();
+        if (team instanceof DebugTeam) return emails;
+        List<Player> players = team.getPlayers();
+        if (players.size() == 0) return emails;
+        for (Player p : players) {
+            if (p.getName().equals("Guest")) {
+                emails.add("Guest");
+            } else {
+                Long userId = p.getUserId();
+                AbstractAccount mainAccount = userFacade.find(userId).getMainAccount();
+                if (mainAccount instanceof JpaAccount) { // Skip guest accounts and other specialties.
+                    emails.add(((JpaAccount) mainAccount).getEmail());
+                }
+            }
+        }
+        return emails;
+    }
+
+    /**
+     * @param value
      * @param value search token
      * @return list of JpaAccount matching the token
      */
@@ -142,16 +250,15 @@ public class UserController {
      * Return accounts that match given "value" (like
      * {@link #getAutoComplete(java.lang.String) getAutoComplete()} but are not
      * yet member of the given game.
-     *
+     * <p>
      * Returned Account will also have their email altered so they can be
      * displayed to anybody (from user@tada.ch to use*****@tada.ch)
      *
      * @param value  token to search
      * @param gameId id of the game targeted account cannot be already
      *               registered in
-     *
      * @return list of account matching given search value which are not yet
-     *         member of the given game
+     * member of the given game
      */
     @GET
     @Path("AutoCompleteFull/{value}/{gameId : [1-9][0-9]*}")
@@ -167,7 +274,7 @@ public class UserController {
      * @param rolesList list of roles targeted account should be members (only
      *                  one membership is sufficient)
      * @return list of JpaAccount matching the token that are member of at least
-     *         one given role
+     * one given role
      */
     @POST
     @Path("AutoComplete/{value}")
@@ -192,8 +299,8 @@ public class UserController {
 
     /**
      * @param values
-     * @deprecated
      * @return dunno
+     * @deprecated
      */
     @GET
     @Deprecated
@@ -286,8 +393,8 @@ public class UserController {
     @POST
     @Path("Authenticate")
     public User login(AuthenticationInformation authInfo,
-            @Context HttpServletRequest request,
-            @Context HttpServletResponse response) throws ServletException, IOException {
+                      @Context HttpServletRequest request,
+                      @Context HttpServletResponse response) throws ServletException, IOException {
 
         Subject subject = SecurityUtils.getSubject();
 
@@ -306,6 +413,13 @@ public class UserController {
         token.setRememberMe(authInfo.isRemember());
         try {
             subject.login(token);
+            if (authInfo.isAgreed()) {
+                AbstractAccount account = accountFacade.find((Long) subject.getPrincipal());
+                if (account instanceof JpaAccount) {
+                    ((JpaAccount) account).setAgreedTime(new Date());
+                }
+            }
+
             User user = userFacade.getCurrentUser();
 
             if (guest != null) {
@@ -401,11 +515,11 @@ public class UserController {
     @Deprecated
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public void signup(@FormParam("username") String username,
-            @FormParam("password") String password,
-            @FormParam("firstname") String firstname,
-            @FormParam("lastname") String lastname,
-            @FormParam("email") String email,
-            @Context HttpServletRequest request) {
+                       @FormParam("password") String password,
+                       @FormParam("firstname") String firstname,
+                       @FormParam("lastname") String lastname,
+                       @FormParam("email") String email,
+                       @Context HttpServletRequest request) {
         JpaAccount account = new JpaAccount();                                   // Convert post params to entity
         account.setUsername(username);
         account.setPassword(password);
@@ -421,12 +535,12 @@ public class UserController {
      * @param account
      * @param request
      * @return Response : Status Not acceptable if email is wrong or username
-     *         already exist. Created otherwise.
+     * already exist. Created otherwise.
      */
     @POST
     @Path("Signup")
     public Response signup(JpaAccount account,
-            @Context HttpServletRequest request) {
+                           @Context HttpServletRequest request) {
         Response r;
         if (this.checkEmailString(account.getEmail())) {
             if (account.getUsername().equals("") || !this.checkExistingUsername(account.getUsername())) {
@@ -470,12 +584,11 @@ public class UserController {
     @POST
     @Path("SendNewPassword")
     public void sendNewPassword(AuthenticationInformation authInfo,
-            @Context HttpServletRequest request) {
+                                @Context HttpServletRequest request) {
         userFacade.sendNewPassword(authInfo.getLogin());
     }
 
     /**
-     *
      * @param email
      */
     @POST
@@ -500,19 +613,15 @@ public class UserController {
 
         email.setFrom(name + " via Wegas <noreply@" + Helper.getWegasProperty("mail.default_domain") + ">");
 
-        try {
-            userFacade.sendEmail(email);
-        } catch (MessagingException ex) {
-            throw WegasErrorMessage.error("Error while sending email");
-        }
+        userFacade.sendEmail(email);
     }
 
     /**
      * Get all roles which have some permissions on the given instance..
-     *
+     * <p>
      * Map is { id : role id, name: role name, permissions: list of permissions
      * related to instance}
-     *
+     * <p>
      * deprecated ?
      *
      * @param instance
@@ -544,7 +653,7 @@ public class UserController {
      * Find all teams for the current user.
      *
      * @return teamsToReturn, the collection of teams where the current user is
-     *         a player.
+     * a player.
      */
     @GET
     @Path("Current/Team")
@@ -651,7 +760,7 @@ public class UserController {
     @POST
     @Path("DeleteAllRolePermissions/{roleId : [1-9][0-9]*}/{gameModelId}")
     public boolean deleteAllRolePermissions(@PathParam("roleId") Long roleId,
-            @PathParam("gameModelId") String id) {
+                                            @PathParam("gameModelId") String id) {
 
         checkGmOrGPermission(id, "GameModel:Edit:", "Game:Edit:");
 
@@ -669,7 +778,7 @@ public class UserController {
     @POST
     @Path("DeleteAllRolePermissions/{roleName}/{gameModelId}")
     public boolean deleteAllRolePermissions(@PathParam("roleName") String roleName,
-            @PathParam("gameModelId") String id) {
+                                            @PathParam("gameModelId") String id) {
         try {
             return this.deleteAllRolePermissions(roleFacade.findByName(roleName).getId(), id);
         } catch (WegasNoResultException ex) {
@@ -680,7 +789,7 @@ public class UserController {
     /**
      * @param entityId
      * @return all users having any permissions related to game or gameModel
-     *         identified by entityId
+     * identified by entityId
      */
     @GET
     @Path("FindUserPermissionByInstance/{entityId}")
@@ -711,7 +820,7 @@ public class UserController {
     @POST
     @Path("addAccountPermission/{permission}/{accountId : [1-9][0-9]*}")
     public void addAccountPermission(@PathParam("permission") String permission,
-            @PathParam("accountId") Long accountId) {
+                                     @PathParam("accountId") Long accountId) {
 
         String splitedPermission[] = permission.split(":");
 
@@ -727,7 +836,7 @@ public class UserController {
     @DELETE
     @Path("DeleteAccountPermissionByInstanceAndAccount/{entityId}/{accountId : [1-9][0-9]*}")
     public void deleteAccountPermissionByInstanceAndAccount(@PathParam("entityId") String entityId,
-            @PathParam("accountId") Long accountId) {
+                                                            @PathParam("accountId") Long accountId) {
 
         checkGmOrGPermission(entityId, "GameModel:Edit:", "Game:Edit:");
         AbstractAccount account = accountFacade.find(accountId);
@@ -742,7 +851,7 @@ public class UserController {
     @DELETE
     @Path("DeleteAccountPermissionByPermissionAndAccount/{permission}/{accountId : [1-9][0-9]*}")
     public void deleteAccountPermissionByPermissionAndAccount(@PathParam("permission") String permission,
-            @PathParam("accountId") Long accountId) {
+                                                              @PathParam("accountId") Long accountId) {
 
         String splitedPermission[] = permission.split(":");
 
@@ -753,7 +862,6 @@ public class UserController {
     }
 
     /**
-     *
      * @param entityId
      * @param gmPermission
      * @param gPermission

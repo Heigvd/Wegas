@@ -112,14 +112,14 @@
 	}
 	&.modal--public-signup{
 		width:400px;
-		height:540px;
-                top:50%;
-                left:50%;
-		margin: -270px 0px 0px -200px;
+		height:570px;
+        top:50%;
+        left:50%;
+		margin: -285px 0px 0px -200px;
 
-                .modal__title{
-                    width:calc(100% - 66px);
-                }
+        .modal__title{
+            width:calc(100% - 66px);
+        }
 		.form{
 			margin-top:8px;
 		}
@@ -377,13 +377,27 @@
 
 		.modal__tools {
 			input{
-                            width:50%;
-                            margin:8px 12px;
-                            float:left;
+                width:58%;
+                margin:8px 12px;
+                float:left;
+                background-color: transparent;
 			}
-                        .button{
-                            margin:8px 0px;
-                        }
+            input::-ms-clear { /* Removes the 'x' in IE for clearing input fields */
+                display: none;
+            }
+            input.size {
+                width: 13%;
+                margin-left: 0;
+            }
+            .button{
+                margin:8px 0px;
+            }
+            .modal__tools__info {
+                position:absolute;
+                right:43%;
+                top:9px;
+                z-index: -1
+            }
 		}
 	}
 	&.modal--archives{

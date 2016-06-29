@@ -241,12 +241,13 @@ angular.module('wegas.models.teams', [])
         };
 
         /* Create a team, the current player passing the name */
-        model.createTeam = function(session, teamName) {
+        model.createTeam = function(session, teamName, teamSize) {
             var deferred = $q.defer(),
                 newTeam = {
                     "@class": "Team",
                     "gameId": session.id,
                     "name": "",
+                    "declaredSize": "",
                     "players": []
                 };
             Auth.getAuthenticatedUser().then(function(user) {
@@ -264,6 +265,7 @@ angular.module('wegas.models.teams', [])
                             });
                         } else {
                             newTeam.name = teamName;
+                            newTeam.declaredSize = +teamSize;
                             $http.post(ServiceURL + "rest/GameModel/Game/" + session.id + "/Team", newTeam).success(
                                 function(team) {
                                     $translate('COMMONS-TEAMS-CREATE-FLASH-SUCCESS').then(function(message) {

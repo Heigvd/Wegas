@@ -163,7 +163,7 @@ YUI.add("wegas-button", function(Y) {
                 },
                 "QuestionDescriptor": function(descriptor, instance, resolve) {
                     if (descriptor.get("cbx")) {
-                        resolve(instance.get("validated") ? 0 : 1);
+                        resolve(instance.get("active") && !instance.get("validated") ? 1 : 0); // only count if it is active
                     } else {
                         if (instance.get("replies")) {
                             resolve(instance.get("replies").length === 0 && instance.get("active") ? 1 : 0); // only count if it is active

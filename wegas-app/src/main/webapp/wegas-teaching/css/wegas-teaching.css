@@ -38,7 +38,7 @@
     font-size: 15px;
     border-bottom: 1px solid lightgray;
     padding: 3px;
-    background: darkgray url(../images/wegas-app-sprite.png) no-repeat 1px -1135px;
+    background: darkgray url('../images/wegas-app-sprite.png') no-repeat 1px -1135px;
     color: white
 }
 .yui3-wegas-teaching-rectangle .description {

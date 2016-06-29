@@ -69,6 +69,11 @@ public class Team extends AbstractEntity implements Broadcastable {
     private String notes;
 
     /**
+     * Team size as declared by its creator.
+     */
+    private Integer declaredSize;
+
+    /**
      *
      */
     @OneToMany(mappedBy = "team", cascade = {CascadeType.ALL}, orphanRemoval = true)
@@ -107,6 +112,15 @@ public class Team extends AbstractEntity implements Broadcastable {
      */
     public Team(String name) {
         this.name = name;
+    }
+
+    /**
+     * @param name
+     * @param declaredSize
+     */
+    public Team(String name, int declaredSize) {
+        this.name = name;
+        this.setDeclaredSize(declaredSize);
     }
 
     /**
@@ -229,6 +243,17 @@ public class Team extends AbstractEntity implements Broadcastable {
      */
     public void setCreatedTime(Date createdTime) {
         this.createdTime = createdTime != null ? new Date(createdTime.getTime()) : null;
+    }
+
+    public Integer getDeclaredSize(){
+        return declaredSize == null ? 0 : declaredSize;
+    }
+
+    /**
+     * @param declaredSize the declaredSize to set
+     */
+    public void setDeclaredSize(Integer declaredSize){
+        this.declaredSize = declaredSize;
     }
 
     /**

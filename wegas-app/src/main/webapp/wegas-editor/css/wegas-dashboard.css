@@ -13,6 +13,79 @@
     margin-right:8px !important;
 }
 
+.yui3-skin-sam .wegas-icon.wegas-icon-impacts {
+    background-position: -5px -4px !important;
+    background-size: auto 100% !important;
+    background-image:url("../../wegas-app/images/icon_impact.png") !important;
+    margin:0;
+    width:48px;
+    height:48px;
+    border:none;
+}
+
+.yui3-skin-sam .wegas-icon.wegas-icon-email {
+    background-position: -5px -4px !important;
+    background-size: auto 100% !important;
+    background-image:url("../../wegas-app/images/icon_mail.png") !important;
+    margin:0;
+    width:48px;
+    height:48px;
+    border:none;
+}
+
+.yui3-skin-sam .dashboard.wegas-hastoolbar>.wegas-toolbar {
+    padding: 24px 24px 8px;
+    position: relative;
+    height: 50px;
+    width:100%;
+}
+.yui3-skin-sam .dashboard.wegas-hastoolbar>.wegas-toolbar-sibling {
+    padding-top: 25px;
+    position: relative;
+    height: calc(100% - 65px) !important;
+}
+
+.yui3-skin-sam .dashboard .wegas-toolbar-header {
+    border-bottom: 1px solid #999;
+    padding: 7px 0 5px 0;
+    min-height: 28px;
+    box-sizing: content-box;
+    background: #f1f1f1;
+}
+
+.yui3-skin-sam .dashboard .wegas-toolbar .wegas-button.globalImpacts {
+    float:right;
+    margin-right: 26px;
+}
+
+.yui3-skin-sam .dashboard .wegas-toolbar .wegas-button.globalImpacts.mailButton {
+    margin-right: 69px;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    margin-top: -7px;
+    padding: 0;
+}
+
+.yui3-skin-sam .dashboard .wegas-toolbar .wegas-button.globalImpacts.impactButton {
+    margin-right: 15px;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    margin-top: -7px;
+    padding: 0;
+    margin-left: 5px;
+}
+
+.yui3-skin-sam .dashboard .wegas-toolbar .wegas-button.globalImpacts.monitoredDataTitle {
+    margin-right: 2px;
+    text-align: center;
+}
+
+.yui3-skin-sam .dashboard .wegas-toolbar .wegas-button.globalRefreshTitle {
+    margin-right: 0;
+}
+
 .yui3-skin-sam .wegas-statistics{
     padding: 40px 32px;
     color:#666;
@@ -82,7 +155,7 @@
     width:100%;
     height:100%;
     overflow-x:hidden;
-    overflow-y:auto;
+    overflow-y:hidden;
 }
 
 .wegas-console-custom .modal--content-tabs .modal--content-tab.modal--content-selected{
@@ -99,7 +172,8 @@
 .modal--content-advanced .content-advanced-script-add{
     display:block;
     position:relative;
-    margin:32px auto !important;
+    top: 32px;
+    margin:0 auto !important;
     width:56px;
     height:56px;
     background-color:#41D2FA;

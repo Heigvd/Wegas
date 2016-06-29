@@ -133,7 +133,7 @@ YUI.add('wegas-cards-resizable', function (Y) {
                         // Is this ever executed?
                         clearTimeout(resizeTimer);
                         resizeTimer = setTimeout(Y.bind(this.resize, this), 250);
-                    }, this);
+                    } /*, this */);
                 });
             });
         },
