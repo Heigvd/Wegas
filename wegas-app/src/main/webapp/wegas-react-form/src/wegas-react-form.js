@@ -25,11 +25,6 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
                 emitFacade: false
             });
         },
-        /**
-         * @function
-         * @private
-         * @description
-         */
         renderUI() {
             Y.Array.each(this.get('buttons'), this.addButton, this);
             // ctrl-s shortcut
@@ -54,19 +49,9 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
                 ), this.get('contentBox').getDOMNode());
             }
         },
-        /**
-         * @function
-         * @private
-         * @description call function 'renderToolbar'.
-         */
         syncUI() {
             this.set('cfg', this.get('cfg'));
         },
-        /**
-         * @function
-         * @private
-         * @returns {undefined}
-         */
         destructor() {
             unmountComponentAtNode(this.get('contentBox').getDOMNode());
             this.set(FORM, null);
@@ -89,35 +74,9 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
             }
             this.toolbar.add(new Wegas.Button(btn));
         },
-        /**
-         * @function
-         * @private
-         * @description set the given form to null
-         */
         destroyForm() {
             this.set(FORM, null);
         },
-        // setCfg(val) {
-        //     var cfg = Y.clone(val); // Duplicate so val will be untouched while serializing
-        //     // Y.mix(cfg, {
-        //     //     parentEl: this.get('contentBox'),
-        //     //     type: 'group'
-        //     // }); // Set up the form parentEl attribute, so it knows where to render
-
-        //     // inputEx.use(val, Y.bind(function(cfg) { // Load form dependencies
-        //     //     if (this.get('destroyed')) {
-        //     //         return;
-        //     //     }
-        //     //     var form = inputEx(cfg); // Initialize and render form
-        //     //     form.setValue(this.get('values'), false); // Sync form with 'values' ATTR
-        //     //     form.removeClassFromState(); // Remove required state
-        //     //     this.set(FORM, form);
-        //     //     this.fire('formUpdate');
-        //     //     form.on('updated', function(e) {
-        //     //         this.fire('updated', e);
-        //     //     }, this);
-        //     // }, this, cfg));
-        // },
         save(e) {
             e.halt(true);
 
