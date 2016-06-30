@@ -148,7 +148,6 @@ public class GameFacade extends BaseFacade<Game> {
         this.addDebugTeam(game);
 
 //        this.flush();
-
         gameModelFacade.reset(gameModel);                                       // Reset the game so the default player will have instances
 
         userFacade.addUserPermission(currentUser,
@@ -272,7 +271,7 @@ public class GameFacade extends BaseFacade<Game> {
      * @param gameModelId
      * @param orderBy     not used...
      * @return all games belonging to the gameModel identified by gameModelId
-     * but DebugGames, ordered by creation time
+     *         but DebugGames, ordered by creation time
      */
     public List<Game> findByGameModelId(final Long gameModelId, final String orderBy) {
         return getEntityManager().createQuery("SELECT game FROM Game game "
@@ -296,7 +295,7 @@ public class GameFacade extends BaseFacade<Game> {
     public List<Game> findRegisteredGames(final Long userId) {
         final Query getByGameId = getEntityManager().createQuery("SELECT game, p FROM Game game "
                 + "LEFT JOIN game.teams t LEFT JOIN  t.players p "
-                + "WHERE t.gameId = game.id AND p.teamId = t.id "
+                + "WHERE t.game.id = game.id AND p.team.id = t.id "
                 + "AND p.user.id = :userId AND "
                 + "(game.status = com.wegas.core.persistence.game.Game.Status.LIVE OR game.status = com.wegas.core.persistence.game.Game.Status.BIN) "
                 + "ORDER BY p.joinTime ASC", Game.class)
@@ -313,7 +312,7 @@ public class GameFacade extends BaseFacade<Game> {
     public List<Game> findRegisteredGames(final Long userId, final Long gameModelId) {
         final Query getByGameId = getEntityManager().createQuery("SELECT game, p FROM Game game "
                 + "LEFT JOIN game.teams t LEFT JOIN  t.players p "
-                + "WHERE t.gameId = game.id AND p.teamId = t.id AND p.user.id = :userId AND game.gameModel.id = :gameModelId "
+                + "WHERE t.game.id = game.id AND p.team.id = t.id AND p.user.id = :userId AND game.gameModel.id = :gameModelId "
                 + "AND game.status = com.wegas.core.persistence.game.Game.Status.LIVE "
                 + "ORDER BY p.joinTime ASC", Game.class)
                 .setParameter("userId", userId)
