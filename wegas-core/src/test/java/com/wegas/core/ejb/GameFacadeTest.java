@@ -77,7 +77,8 @@ public class GameFacadeTest extends AbstractEJBTest {
         VariableDescriptorFacade vdf = VariableDescriptorFacade.lookup();
         Game newGame = new Game("newGame");
         newGame.setAccess(Game.GameAccess.OPEN);
-        newGame.setGameModelId(gameModel.getId());
+        newGame.setGameModel(gameModel);
+        //newGame.setGameModelId(gameModel.getId());
 
         BooleanDescriptor desc = new BooleanDescriptor("Bln");
         desc.setDefaultInstance(new BooleanInstance(true));
@@ -96,7 +97,8 @@ public class GameFacadeTest extends AbstractEJBTest {
     public void testGameCreationThroughController() throws IOException {
         Game newGame = new Game("newGame");
         newGame.setAccess(Game.GameAccess.OPEN);
-        newGame.setGameModelId(gameModel.getId());
+        newGame.setGameModel(gameModel);
+        //newGame.setGameModelId(gameModel.getId());
 
         gameController.create(gameModel.getId(), newGame);
         newGame = gameFacade.find(newGame.getId());

@@ -51,7 +51,7 @@ import java.util.Map;
     //@NamedQuery(name = "findPlayerInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.playerScopeKey = :playerid"),
     @NamedQuery(name = "findInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE EXISTS "
             + "(SELECT player From Player player WHERE player.id = :playerid AND "
-            + "(variableinstance.player.id = player.id OR variableinstance.team.id = player.teamId OR variableinstance.game = player.team.gameId))")
+            + "(variableinstance.player.id = player.id OR variableinstance.team.id = player.team.id OR variableinstance.game = player.team.game.id))")
 })
 
 /*@Indexes(value = { // JPA 2.0 eclipse link extension TO BE REMOVED

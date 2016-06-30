@@ -57,9 +57,9 @@ public class Player extends AbstractEntity implements Broadcastable {
 
     /**
      *
+     * @Column(name = "user_id", nullable = true, insertable = false, updatable
+     * = false) private Long userId;
      */
-    @Column(name = "user_id", nullable = true, insertable = false, updatable = false)
-    private Long userId;
     /**
      *
      */
@@ -77,12 +77,12 @@ public class Player extends AbstractEntity implements Broadcastable {
     @JoinColumn(name = "parentteam_id")
     //@XmlInverseReference(mappedBy = "players")
     private Team team;
+
     /**
      *
+     * @Column(name = "parentteam_id", nullable = false, insertable = false,
+     * updatable = false) private Long teamId;
      */
-    @Column(name = "parentteam_id", nullable = false, insertable = false, updatable = false)
-    private Long teamId;
-
     /**
      *
      */
@@ -105,9 +105,9 @@ public class Player extends AbstractEntity implements Broadcastable {
     public Player(User user, Team team) {
         this.name = user.getName();
         this.user = user;
-        this.userId = user.getId();
+        //this.userId = user.getId();
         this.team = team;
-        this.teamId = team.getId();
+        //this.teamId = team.getId();
     }
 
     /**
@@ -169,28 +169,22 @@ public class Player extends AbstractEntity implements Broadcastable {
      * @return the teamId
      */
     public Long getTeamId() {
-        if (this.teamId == null && this.getTeam() != null) {
-            this.teamId = this.getTeam().getId();
-        }
-        return this.teamId;
+        return (this.team != null ? team.getId() : null);
     }
 
     /**
      *
      * @param teamId
-     */
     public void setTeamId(Long teamId) {
         this.teamId = teamId;
     }
+     */
 
     /**
      * @return the userId
      */
     public Long getUserId() {
-        if (this.userId == null && this.getUser() != null) {
-            this.userId = this.getUser().getId();
-        }
-        return this.userId;
+        return (this.user != null ? user.getId() : null);
     }
 
     // *** Sugar *** //

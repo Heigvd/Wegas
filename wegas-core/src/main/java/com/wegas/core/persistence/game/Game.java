@@ -119,9 +119,9 @@ public class Game extends NamedEntity implements Broadcastable {
 
     /**
      *
-     */
     @Column(name = "gamemodelid", nullable = false, insertable = false, updatable = false)
     private Long gameModelId;
+     */
 
     /**
      *
@@ -235,7 +235,7 @@ public class Game extends NamedEntity implements Broadcastable {
     public void addTeam(Team t) {
         this.getTeams().add(t);
         t.setGame(this);
-        t.setGameId(this.getId());
+        //t.setGameId(this.getId());
     }
 
     /**
@@ -351,16 +351,14 @@ public class Game extends NamedEntity implements Broadcastable {
      * @return the gameModelId
      */
     public Long getGameModelId() {
-        return gameModelId;
+        //return gameModelId;
+        return (this.gameModel != null ? this.gameModel.getId() : null);
     }
 
     /**
-     * @param gameModelId the gameModelId to set
+     * @param gameModelId the gameModelId to set public void setGameModelId(Long
+     *                    gameModelId) { this.gameModelId = gameModelId; }
      */
-    public void setGameModelId(Long gameModelId) {
-        this.gameModelId = gameModelId;
-    }
-
     /**
      * @return the access
      */
