@@ -417,7 +417,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     public void addGame(Game game) {
         this.getGames().add(game);
         game.setGameModel(this);
-        game.setGameModelId(this.getId());
+        //game.setGameModelId(this.getId());
     }
 
     /**

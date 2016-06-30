@@ -36,7 +36,7 @@ import java.util.Map;
     @JsonSubTypes.Type(name = "DebugTeam", value = DebugTeam.class)
 })
 @NamedQueries({
-    @NamedQuery(name = "Team.findByGameIdAndName", query = "SELECT a FROM Team a WHERE a.name = :name AND a.gameId = :gameId")})
+    @NamedQuery(name = "Team.findByGameIdAndName", query = "SELECT a FROM Team a WHERE a.name = :name AND a.game.id = :gameId")})
 public class Team extends AbstractEntity implements Broadcastable {
 
     private static final long serialVersionUID = 1L;
@@ -165,7 +165,7 @@ public class Team extends AbstractEntity implements Broadcastable {
     public void addPlayer(Player p) {
         this.players.add(p);
         p.setTeam(this);
-        p.setTeamId(this.getId());
+        //p.setTeamId(this.getId());
     }
 
     /**
@@ -220,17 +220,14 @@ public class Team extends AbstractEntity implements Broadcastable {
      * @return the gameId
      */
     public Long getGameId() {
-        return gameId;
+        return (game != null ? game.getId() : null);
     }
 
     /**
      *
-     * @param gameId
+     * @param gameId public void setGameId(Long gameId) { this.gameId = gameId;
+     *               }
      */
-    public void setGameId(Long gameId) {
-        this.gameId = gameId;
-    }
-
     /**
      * @return the createdTime
      */
@@ -245,14 +242,14 @@ public class Team extends AbstractEntity implements Broadcastable {
         this.createdTime = createdTime != null ? new Date(createdTime.getTime()) : null;
     }
 
-    public Integer getDeclaredSize(){
+    public Integer getDeclaredSize() {
         return declaredSize == null ? 0 : declaredSize;
     }
 
     /**
      * @param declaredSize the declaredSize to set
      */
-    public void setDeclaredSize(Integer declaredSize){
+    public void setDeclaredSize(Integer declaredSize) {
         this.declaredSize = declaredSize;
     }
 
