@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
-YUI.add("wegas-text-input", function(Y) {
+YUI.add("wegas-text-input", function (Y) {
     "use strict";
     var CONTENTBOX = "contentBox", TextInput, StringInput,
         Wegas = Y.Wegas;
@@ -33,7 +33,7 @@ YUI.add("wegas-text-input", function(Y) {
             "<span class=\"status\"></span>" +
             "</div>" +
             "</div>",
-        initializer: function() {
+        initializer: function () {
             this.handlers = [];
             this.publish("saved", {
                 emitFacade: true
@@ -49,21 +49,21 @@ YUI.add("wegas-text-input", function(Y) {
          * @function
          * @private
          */
-        renderUI: function() {
+        renderUI: function () {
             var CB = this.get("contentBox");
             //CB.addClass("wegas-text-input-" + this.get("variable.evaluated").get("name"));
 //            Y.once("domready", function() {
             if (this.get("label")) {
                 CB.one(".wegas-input-label").setContent(this.get("label"));
             }
-            if (this.get("maxNumberOfCharacters")){
+            if (this.get("maxNumberOfCharacters")) {
                 this.get("contentBox").one(".wegas-text-input-editor").setAttribute("data-maxChars", this.get("maxNumberOfCharacters"));
             }
 
             if (this.get("readonly.evaluated")) {
                 CB.one(".wegas-text-input-editor").setContent("<div class=\"readonly\">" + this.getInitialContent() + "</div>");
             } else {
-                Y.once("domready", function() {
+                Y.once("domready", function () {
                     //this.editor = new tinymce.Editor(this.get("contentBox").one(".wegas-text-input-editor").getDOMNode(),
                     if (this.editor) {
                         return;
@@ -89,10 +89,10 @@ YUI.add("wegas-text-input", function(Y) {
                         relative_urls: false,
                         toolbar_items_size: 'small',
                         hidden_tootlbar: [2, 3],
-                        setup: Y.bind(function(editor) {
+                        setup: Y.bind(function (editor) {
 
                             if (this.get("disablePaste")) {
-                                editor.on('paste', function(e) {
+                                editor.on('paste', function (e) {
                                     e.preventDefault();
                                 });
                             }
@@ -144,8 +144,8 @@ YUI.add("wegas-text-input", function(Y) {
             }
             // }, this);
         },
-        bindUI: function() {
-            this.handlers.push(Y.Wegas.Facade.Variable.after("updatedInstance", function(e) {
+        bindUI: function () {
+            this.handlers.push(Y.Wegas.Facade.Variable.after("updatedInstance", function (e) {
                 var text = this.get("variable.evaluated");
                 if (text && text.getInstance().get("id") === e.entity.get("id")) {
                     this.syncUI();
@@ -153,15 +153,15 @@ YUI.add("wegas-text-input", function(Y) {
             }, this));
             this.on("save", this._save);
         },
-        syncUI: function() {
+        syncUI: function () {
             this.setContent();
         },
-        setContent: function() {
+        setContent: function () {
 
             if (this.get("readonly.evaluated")) {
                 this.get("contentBox").one(".wegas-text-input-editor").setContent("<div class=\"readonly\">" + this.getInitialContent() + "</div>");
             } else {
-                Y.later(500, this, function() {
+                Y.later(500, this, function () {
                     var content = this.getInitialContent();
                     if (this.editor) {
                         if (content != this._initialContent) {
@@ -180,17 +180,17 @@ YUI.add("wegas-text-input", function(Y) {
                 });
             }
         },
-        getInitialContent: function() {
+        getInitialContent: function () {
             return this.get("variable.evaluated").getInstance().get("value");
         },
-        setStatus: function(msg, item, klass) {
+        setStatus: function (msg, item, klass) {
             item = item || "status";
             klass = klass || "";
             if (this.get("showStatus")) {
                 this.get("contentBox").one("." + item).setContent("<p class=\"" + klass + "\">" + msg + "</p>");
             }
         },
-        _onChange: function() {
+        _onChange: function () {
             var content = this.editor.getContent(),
                 desc = this.get("variable.evaluated");
             this.setStatus("Not saved");
@@ -202,7 +202,7 @@ YUI.add("wegas-text-input", function(Y) {
                     this.wait.cancel();
                 }
                 if (this.get("selfSaving")) {
-                    this.wait = Y.later(1000, this, function() {
+                    this.wait = Y.later(1000, this, function () {
                         this.wait = null;
                         this.onSave();
                     });
@@ -211,10 +211,10 @@ YUI.add("wegas-text-input", function(Y) {
                 }
             }
         },
-        valueChanged: function(newValue) {
+        valueChanged: function (newValue) {
             // To Be Overwritten
         },
-        getStats: function() {
+        getStats: function () {
             var body = this.editor.getContent(),
                 countEmpty = this.get("countBlank"),
                 stats = {};
@@ -235,7 +235,7 @@ YUI.add("wegas-text-input", function(Y) {
             }
             return stats;
         },
-        updateCounters: function() {
+        updateCounters: function () {
             var maxW, maxC, stats, valid = true;
             maxW = this.get("maxNumberOfWords");
             maxC = this.get("maxNumberOfCharacters");
@@ -256,7 +256,7 @@ YUI.add("wegas-text-input", function(Y) {
             }
             return valid;
         },
-        onSave: function() {
+        onSave: function () {
             var value = this.editor.getContent(),
                 valid, msg;
             valid = true || this.updateCounters(); // Fixme do something... (prevent saving or not...)
@@ -267,21 +267,21 @@ YUI.add("wegas-text-input", function(Y) {
             }
             this.setStatus(msg);
         },
-        _save: function(e) {
+        _save: function (e) {
             var cb = this.get("contentBox"),
                 value = e.value,
                 theVar = e.descriptor.getInstance();
             this._initialContent = value;
             theVar.set("value", value);
             if (this.get("selfSaving")) {
-                Y.Wegas.Facade.Variable.cache.put(theVar.toObject(), {
+                Wegas.Facade.Variable.script.remoteEval("Variable.find(gameModel, \"" + e.descriptor.get("name") + "\").setValue(self, " + JSON.stringify(value) + ");", {
                     on: {
-                        success: Y.bind(function() {
+                        success: Y.bind(function () {
                             cb.removeClass("loading");
                             this.setStatus("Saved");
                             this._saved(value);
                         }, this),
-                        failure: Y.bind(function() {
+                        failure: Y.bind(function () {
                             cb.removeClass("loading");
                             this.setStatus("Something went wrong");
                             this._saved(value);
@@ -293,14 +293,14 @@ YUI.add("wegas-text-input", function(Y) {
                 this._saved(value);
             }
         },
-        _saved: function(value) {
+        _saved: function (value) {
             var desc = this.get("variable.evaluated");
             this.fire("saved", {
                 descriptor: desc,
                 value: value
             });
         },
-        save: function(value) {
+        save: function (value) {
             var desc = this.get("variable.evaluated"),
                 cb = this.get("contentBox");
 
@@ -313,17 +313,17 @@ YUI.add("wegas-text-input", function(Y) {
             });
             return true;
         },
-        getEditorLabel: function() {
+        getEditorLabel: function () {
             return "TextInput";
         },
-        destructor: function() {
+        destructor: function () {
             try {
                 this.editor && this.editor.remove();
             } catch (e) {
                 console.debug(e);
             }
             this.editor = null;
-            Y.Array.each(this.handlers, function(h) {
+            Y.Array.each(this.handlers, function (h) {
                 h.detach();
             });
             if (this.addButton) {
@@ -427,7 +427,7 @@ YUI.add("wegas-text-input", function(Y) {
             "<div class=\"wegas-input-label\"></div>" +
             "<div class=\"wegas-input-text\"></div>" +
             "</div>",
-        initializer: function() {
+        initializer: function () {
             this.handlers = [];
             this._initialValue = undefined;
             this.publish("save", {
@@ -444,8 +444,8 @@ YUI.add("wegas-text-input", function(Y) {
                 emitFacade: true
             });
         },
-        destructor: function() {
-            Y.Array.each(this.handlers, function(h) {
+        destructor: function () {
+            Y.Array.each(this.handlers, function (h) {
                 h.detach();
             });
         },
@@ -454,7 +454,7 @@ YUI.add("wegas-text-input", function(Y) {
          * @param {type} value the new value to save
          * @returns {Boolean} true is the value has been saved, false otherwise
          */
-        updateValue: function(value) {
+        updateValue: function (value) {
             var desc = this.get("variable.evaluated"),
                 inst = desc.getInstance(),
                 values, iValue,
@@ -462,7 +462,7 @@ YUI.add("wegas-text-input", function(Y) {
                 cb = this.get("contentBox"),
                 allowedValues = desc.get("allowedValues");
             if (allowedValues && allowedValues.length > 0) {
-                if (!(this.get("allowNull") && value === "") && !Y.Array.find(allowedValues, function(item) {
+                if (!(this.get("allowNull") && value === "") && !Y.Array.find(allowedValues, function (item) {
                     return item === value;
                 }, this)) {
                     this.showMessage("error", Y.Wegas.I18n.t('errors.prohibited', {value: value, values: allowedValues}));
@@ -511,20 +511,20 @@ YUI.add("wegas-text-input", function(Y) {
             }
             return true;
         },
-        _save: function(e) {
+        _save: function (e) {
             var inst = e.descriptor.getInstance(),
                 cb = this.get("contentBox"),
                 value = e.value;
             this._initialContent = value;
             inst.set("value", value);
             if (this.get("selfSaving")) {
-                Y.Wegas.Facade.Variable.cache.put(inst.toObject(), {
+                Wegas.Facade.Variable.script.remoteEval("Variable.find(gameModel, \"" + e.descriptor.get("name") + "\").setValue(self, " + JSON.stringify(value) + ");", {
                     on: {
-                        success: Y.bind(function() {
+                        success: Y.bind(function () {
                             cb.removeClass("loading");
                             this._saved(value);
                         }, this),
-                        failure: Y.bind(function() {
+                        failure: Y.bind(function () {
                             cb.removeClass("loading");
                             this._saved(value);
                         }, this)
@@ -535,14 +535,14 @@ YUI.add("wegas-text-input", function(Y) {
                 this.syncUI();
             }
         },
-        _saved: function(value) {
+        _saved: function (value) {
             var desc = this.get("variable.evaluated");
             this.fire("saved", {
                 descriptor: desc,
                 value: value
             });
         },
-        renderUI: function() {
+        renderUI: function () {
             var desc = this.get("variable.evaluated"),
                 inst = desc.getInstance(),
                 allowedValues = desc.get("allowedValues"),
@@ -580,7 +580,7 @@ YUI.add("wegas-text-input", function(Y) {
                             ">" + value + "</li>");
                     }
 
-                    if (this.get("allowNull")){
+                    if (this.get("allowNull")) {
                         content.push("<li data-value=\"\">" + I18n.t("global.dunno") + "</li>");
                     }
                     content.push("</ul>");
@@ -592,7 +592,7 @@ YUI.add("wegas-text-input", function(Y) {
                 input.setContent("<input value=\"" + value + "\" />");
             }
         },
-        syncUI: function() {
+        syncUI: function () {
             var desc = this.get("variable.evaluated"),
                 allowedValues = desc.get("allowedValues"),
                 inst = desc.getInstance(),
@@ -615,7 +615,7 @@ YUI.add("wegas-text-input", function(Y) {
                     if (readonly && this.get("displayChoicesWhenReadonly")) {
                         //CB.one("select").addClass("hidden");
                         input = CB.one(".wegas-input-text");
-                        input.all("ul").each(function(ul) {
+                        input.all("ul").each(function (ul) {
                             ul.remove();
                         });
                         select = ["<ul>"];
@@ -657,7 +657,7 @@ YUI.add("wegas-text-input", function(Y) {
                 }
             }
         },
-        bindUI: function() {
+        bindUI: function () {
             var input, select, ul;
             this.handlers.push(Y.Wegas.Facade.Variable.after("update", this.syncUI, this));
             input = this.get(CONTENTBOX).one("input");
@@ -675,26 +675,26 @@ YUI.add("wegas-text-input", function(Y) {
             }
             this.on("save", this._save);
         },
-        updateFromUl: function(e) {
+        updateFromUl: function (e) {
             var v;
             if (!this.get("readonly.evaluated")) {
                 v = JSON.parse("\"" + e.target.getData().value + "\"");
                 this.updateValue(v);
             }
         },
-        updateFromSelect: function(e) {
+        updateFromSelect: function (e) {
             if (!this.get("readonly.evaluated")) {
                 this.updateValue(e.target.get("value"));
             }
         },
-        keyUp: function(e) {
+        keyUp: function (e) {
             var input = this.get(CONTENTBOX).one("input"),
                 data = input.getData(),
                 value = input.get("value");
             this.fire("editing", {"descriptor": this._descriptor, "value": value});
             this.updateFromInput();
         },
-        updateFromInput: function(e) {
+        updateFromInput: function (e) {
             var input = this.get(CONTENTBOX).one("input"),
                 data = input.getData(),
                 value = input.get("value");
@@ -702,7 +702,7 @@ YUI.add("wegas-text-input", function(Y) {
                 this.wait.cancel();
             }
             if (this.get("selfSaving")) {
-                this.wait = Y.later(1000, this, function() {
+                this.wait = Y.later(1000, this, function () {
                     this.wait = null;
                     this.updateValue(value);
                 });
@@ -747,7 +747,7 @@ YUI.add("wegas-text-input", function(Y) {
                 optional: true
             },
             allowNull: {
-                    type: "boolean",
+                type: "boolean",
                 value: true,
                 optional: true
             },

@@ -79,7 +79,10 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         Assert.assertEquals(VAL2, instance.getValue());
 
         // Edit the variable instance
-        vif.update(desc1.getId(), player.getId(), new NumberInstance(VAL3));
+        NumberInstance newNumberInstance = new NumberInstance(VAL3);
+        newNumberInstance.setVersion(instance.getVersion());
+
+        vif.update(desc1.getId(), player.getId(), newNumberInstance);
 
         // Verify the new value
         instance = (NumberInstance) vif.find(desc1.getId(), player.getId());
@@ -117,7 +120,10 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         Assert.assertEquals(VALUE2, instance.getValue());
 
         // Edit the variable instance
-        vif.update(stringDescriptor.getId(), player.getId(), new StringInstance(VALUE3));
+        StringInstance newStringInstance = new StringInstance(VALUE3);
+        newStringInstance.setVersion(instance.getVersion());
+
+        vif.update(stringDescriptor.getId(), player.getId(), newStringInstance);
 
         // Verify the new value
         instance = (StringInstance) vif.find(stringDescriptor.getId(), player.getId());
@@ -151,7 +157,9 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         Assert.assertEquals(false, instance.getValue());
 
         // Edit the variable instance
-        vif.update(booleanDescriptor.getId(), player.getId(), new BooleanInstance(true));
+        BooleanInstance newInstance = new BooleanInstance(true);
+        newInstance.setVersion(instance.getVersion());
+        vif.update(booleanDescriptor.getId(), player.getId(), newInstance);
 
         // Verify the new value
         instance = (BooleanInstance) vif.find(booleanDescriptor.getId(), player.getId());
@@ -269,7 +277,10 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         Assert.assertEquals(VAL2, instance.getValue());
 
         // Edit the variable instance
-        vif.update(desc1.getId(), player.getId(), new NumberInstance(VAL3));
+        NumberInstance newInstance = new NumberInstance(VAL3);
+        newInstance.setVersion(instance.getVersion());
+
+        vif.update(desc1.getId(), player.getId(), newInstance);
 
         // Verify the new value
         instance = (NumberInstance) vif.find(desc1.getId(), player.getId());

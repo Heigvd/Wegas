@@ -209,7 +209,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      */
     private Reply internalCancelReply(Long replyId) {
         final Reply reply = this.getEntityManager().find(Reply.class, replyId);
-        requestFacade.getRequestManager().lock("MCQ-" + reply.getQuestionInstance().getId());
+        // requestFacade.getRequestManager().lock("MCQ-" + reply.getQuestionInstance().getId());
         return this.internalCancelReply(reply);
     }
 
@@ -257,8 +257,8 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         QuestionDescriptor questionDescriptor = choice.getQuestion();
         QuestionInstance questionInstance = questionDescriptor.getInstance(player);
 
-        requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId());
-        getEntityManager().refresh(questionInstance);
+        // requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId());
+        //getEntityManager().refresh(questionInstance);
 
         //requestFacade.getRequestManager().lock("MCQ-" + reply.getQuestionInstance().getId());
         // Verify if mutually exclusive replies must be cancelled:
@@ -469,7 +469,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      * @param player
      */
     public void validateQuestion(Long questionInstanceId, Player player) {
-        requestFacade.getRequestManager().lock("MCQ-" + questionInstanceId);
+        // requestFacade.getRequestManager().lock("MCQ-" + questionInstanceId);
         this.validateQuestion(getEntityManager().find(QuestionInstance.class, questionInstanceId), player);
     }
 

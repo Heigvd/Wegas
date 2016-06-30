@@ -326,12 +326,12 @@ public class WebsocketFacade {
 
                 /**
                  * #1222: concurrency issue
-                 * 
+                 *
                  * this process is asynchronous, entities (and underlying EntityManager) 
                  * come from another thread. This is strictly forbidden (EntityManager 
                  * is not thread-safe) and leads to some very strange and hardly 
                  * reproducible deadlocks. (involving uninitialized IndirectList...)
-                 * 
+                 *
                  * The fix consists to re-find all entities within a new EntityManager 
                  * before serialization occurs
                  */
