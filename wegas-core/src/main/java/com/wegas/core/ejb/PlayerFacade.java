@@ -141,7 +141,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      * @return List of instances
      */
     public List<VariableInstance> getInstances(final Long playerId) {
-        final TypedQuery<VariableInstance> findPlayerInstance = getEntityManager().createNamedQuery("findInstances", VariableInstance.class);
+        final TypedQuery<VariableInstance> findPlayerInstance = getEntityManager().createNamedQuery("VariableInstance.findInstancesForPlayer", VariableInstance.class);
         return findPlayerInstance.setParameter("playerid", playerId).getResultList();
     }
 
