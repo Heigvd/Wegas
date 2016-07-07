@@ -329,6 +329,11 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
         return id;
     }
 
+    /*public void setId(Long id) {
+        //Thread.dumpStack();
+        this.id = id;
+    }*/
+
     /**
      * Id of the team owning the instance
      *
