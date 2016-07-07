@@ -169,7 +169,7 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
                 type: NUMBER,
                 optional: false,
                 value: 0,
-                writeOnce: "initOnly",
+                //writeOnce: "initOnly",
                 _inputex: {
                     _type: "uneditable",
                     wrapperClassName: "inputEx-fieldWrapper inputEx-uneditableField wegas-advanced-feature",
@@ -439,7 +439,7 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
                 type: NUMBER,
                 optional: false,
                 default: 0,
-                writeOnce: "initOnly",
+                //writeOnce: "initOnly",
                 _inputex: {
                     _type: "uneditable",
                     wrapperClassName: "inputEx-fieldWrapper inputEx-uneditableField wegas-advanced-feature",
