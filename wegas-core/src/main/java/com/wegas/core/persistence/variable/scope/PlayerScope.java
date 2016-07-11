@@ -38,6 +38,7 @@ public class PlayerScope extends AbstractScope<Player> {
      */
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "playerScope")
     @JoinColumn(name = "playerscope_id", referencedColumnName = "id")
+    @MapKeyJoinColumn(name = "variableinstances_key", referencedColumnName = "id")
     //@XmlTransient
     @JsonIgnore
     private Map<Player, VariableInstance> variableInstances = new HashMap<>();

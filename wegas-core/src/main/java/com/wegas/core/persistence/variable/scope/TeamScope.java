@@ -39,6 +39,7 @@ public class TeamScope extends AbstractScope<Team> {
      */
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "teamScope")
     @JoinColumn(name = "teamscope_id", referencedColumnName = "id")
+    @MapKeyJoinColumn(name = "teamvariableinstances_key", referencedColumnName = "id")
     //@XmlTransient
     @JsonIgnore
     private Map<Team, VariableInstance> teamVariableInstances = new HashMap<>();
@@ -85,7 +86,7 @@ public class TeamScope extends AbstractScope<Team> {
 
     /**
      *
-     * @param teamId
+     * @param key
      * @param v
      */
     @Override

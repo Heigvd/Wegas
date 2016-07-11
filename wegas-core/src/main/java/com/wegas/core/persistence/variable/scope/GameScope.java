@@ -15,11 +15,8 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.HashMap;
 import java.util.Map;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.persistence.game.Team;
 import org.slf4j.Logger;
@@ -38,6 +35,7 @@ public class GameScope extends AbstractScope<Game> {
     private static final Logger logger = LoggerFactory.getLogger(GameScope.class);
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "gameScope")
     @JoinColumn(name = "gamescope_id", referencedColumnName = "id")
+    @MapKeyJoinColumn(name = "gamevariableinstances_key", referencedColumnName = "game_id")
     //@XmlTransient
     @JsonIgnore
     private Map<Game, VariableInstance> gameVariableInstances = new HashMap<>();
