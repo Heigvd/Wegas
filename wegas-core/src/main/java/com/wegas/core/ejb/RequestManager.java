@@ -29,6 +29,7 @@ import javax.script.ScriptEngine;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import javax.ejb.DependsOn;
+import javax.ws.rs.core.Response;
 
 //import javax.annotation.PostConstruct;
 /**
@@ -64,6 +65,10 @@ public class RequestManager {
      *
      */
     private Player currentPlayer;
+
+    private String requestId;
+    private Long timestamp;
+    private Response.StatusType status;
 
     /**
      * Contains all updated entities
@@ -305,6 +310,18 @@ public class RequestManager {
         }
     }
 
+    public void setStatus(Response.StatusType statusInfo) {
+        this.status = statusInfo;
+    }
+
+    public void setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public void setRequestId(String uniqueIdentifier) {
+        this.requestId = uniqueIdentifier;
+    }
+
     /**
      * Lifecycle
      */
@@ -314,12 +331,14 @@ public class RequestManager {
     }*/
     @PreDestroy
     public void preDestroy() {
-        //logger.error("Request Manager: PreDestroy: " + this);
         while (!lockedToken.isEmpty()) {
-            logger.info("Remove lock : " + this);
             String remove = lockedToken.remove(0);
             mutexSingleton.unlockFull(remove);
         }
+        long duration = System.currentTimeMillis() - this.timestamp;
+
+        logger.info("Request [" + this.requestId + "] Processed in " + duration
+                + " [ms] => " + this.status);
     }
 
     /**

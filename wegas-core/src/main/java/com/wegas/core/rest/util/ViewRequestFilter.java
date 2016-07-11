@@ -60,11 +60,13 @@ public class ViewRequestFilter implements ContainerRequestFilter {
      */
     @Override
     public void filter(ContainerRequestContext cr) throws IOException {
-        String uniqueIdentifier = idGenerator.getUniqueIdentifier();
-        String date = Long.toString(System.currentTimeMillis(), 10);
+        RequestFacade rmf = RequestFacade.lookup();
 
-        cr.getHeaders().add("INTERNAL-ID", uniqueIdentifier);
-        cr.getHeaders().add("INTERNAL-DATE", date);
+        String uniqueIdentifier = idGenerator.getUniqueIdentifier();
+        Long timestamp = System.currentTimeMillis();
+
+        rmf.getRequestManager().setRequestId(uniqueIdentifier);
+        rmf.getRequestManager().setTimestamp(timestamp);
 
         //String userAgent = cr.getHeaderString("user-agent");
         User currentUser = null;
@@ -73,7 +75,6 @@ public class ViewRequestFilter implements ContainerRequestFilter {
         } catch (WegasNotFoundException e) {
         }
 
-        RequestFacade rmf = RequestFacade.lookup();
         Class<?> view;
 
         // Handle language parameter

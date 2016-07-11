@@ -49,12 +49,10 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
     public void filter(ContainerRequestContext request, ContainerResponseContext response) {
         RequestFacade rmf = RequestFacade.lookup();
         final String managedMode = request.getHeaderString("managed-mode");
-        String id = request.getHeaderString("INTERNAL-ID");
-        long duration = System.currentTimeMillis()
-                - Long.parseLong(request.getHeaderString("INTERNAL-DATE"), 10);
 
-        logger.info("Request [" + id + "] Processed in " + duration
-                + " [ms] => " + response.getStatusInfo());
+        // Todo find a way to access responce from RequestManager.preDestroy (@Context HttpServletResponse?)
+        rmf.getRequestManager().setStatus(response.getStatusInfo());
+       
         if (response.getStatusInfo().getStatusCode() >= 400) {
             logger.warn("Problem : " + response.getEntity());
         }
