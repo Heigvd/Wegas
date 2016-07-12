@@ -376,18 +376,22 @@
 		}
 
 		.modal__tools {
-			input{
+			input, select {
                 width:58%;
                 margin:8px 12px;
                 float:left;
                 background-color: transparent;
 			}
-            input::-ms-clear { /* Removes the 'x' in IE for clearing input fields */
+            input::-ms-clear { /* Remove the 'x' in IE for clearing input fields */
                 display: none;
             }
-            input.size {
+            select.size {
                 width: 13%;
                 margin-left: 0;
+                padding:0 5px;
+                border-radius: 6px 0 0 6px;
+                text-align-last:center;
+                text-align: center;
             }
             .button{
                 margin:8px 0px;

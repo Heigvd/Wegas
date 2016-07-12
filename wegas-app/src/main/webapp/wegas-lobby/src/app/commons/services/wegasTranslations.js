@@ -1145,8 +1145,8 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Taille"
                         },
                         'PLAYER-MODALE-JOIN-TEAM-CREATE-SIZE-TOOLTIP': {
-                            'en': "Number of members (from 1 to 99)",
-                            'fr': "Nombre de membres (de 1 à 99)"
+                            'en': "Number of members",
+                            'fr': "Nombre de membres"
                         },
                         'PLAYER-MODALE-JOIN-TEAM-CREATE-BTN': {
                             'en': "Create " + keywords.team.singular.en,
