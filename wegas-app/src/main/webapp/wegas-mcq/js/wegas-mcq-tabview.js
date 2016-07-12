@@ -66,7 +66,23 @@ YUI.add('wegas-mcq-tabview', function(Y) {
          */
         bindUI: function() {
             this.tabView.after("selectionChange", this.onTabSelected, this);
-            this.handlers.response = this.dataSource.after("update", this.syncUI, this);
+            this.handlers.response = this.dataSource.after("updatedInstance", function(e) {
+                // Quick test before entering the loop:
+                if (e.entity.get("@class") !== "QuestionInstance") return;
+                var questions = this.get("variable.evaluated");
+                // Check for null and undefined:
+                if (questions == null) return;
+                if (!Y.Lang.isArray(questions)) {
+                    questions = [questions];
+                }
+                for (var i=0; i<questions.length; i++) {
+                    var q = questions[i];
+                    if (q.getInstance().get("id") === e.entity.get("id")) {
+                        this.syncUI();
+                        return;
+                    }
+                }
+            }, this);
         },
         /**
          * @function

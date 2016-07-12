@@ -42,37 +42,13 @@ angular.module('private.player.join.directives', [])
         ctrl.sessionToJoin = null;
         ctrl.newTeam = {
             name: "",
-            size: "", // Required for displaying the placeholder
+            size: "0", // Required for displaying the default label
             alreadyUsed: false,
             validSize: false
         };
 
-        // Accepts only digits, suppresses other chars from the string. Initial zeros are forbidden. Max number of digits is MAXLENGTH.
-        // Handles fallback from number input to text input.
         ctrl.checkSize = function() {
-            if (!ctrl.newTeam.size){
-                ctrl.newTeam.validSize = false;
-                return;
-            }
-            var isNumberInput = typeof ctrl.newTeam.size==="number",
-                sizeStr = ctrl.newTeam.size.toString(),   // Transform to String in case the input returns a number
-                newSize = '',
-                MAXLENGTH = 2; // Max number of digits
-            if (sizeStr!==''){
-                for (var i=0; i < sizeStr.length; i++) {
-                    if (i < MAXLENGTH) {
-                        var c = sizeStr.charAt(i);
-                        if (c >= '0' && c <= '9') {
-                            if (!(c == '0' && i == 0)) {
-                                newSize += c;
-                            }
-                        }
-                    }
-                }
-            }
-            ctrl.newTeam.validSize = newSize.length!==0;
-            ctrl.newTeam.size = isNumberInput ? +newSize : newSize;
-            $('[ng-model="newTeam.size"]')[0].value = newSize; // Small hack to sync the display with the actual value
+            ctrl.newTeam.validSize = ctrl.newTeam.size!=="0";
         };
 
         ctrl.checkNameUsability = function() {
