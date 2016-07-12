@@ -39,11 +39,9 @@ YUI.add('wegas-dashboard', function (Y) {
                     this.toolbar.removeAll();
 
                     var game = Y.Wegas.Facade.Game.cache.getCurrentGame(),
-                        teams = game.get("teams"),
-                        emptyGame = (teams.length===0 || teams.length===1 && teams[0].get("@class")==="DebugTeam"),
-                        cb = this.get(CONTENTBOX);
+                        teams = game.get("teams");
 
-                    if (emptyGame){
+                    if (teams.length===0 || teams.length===1 && teams[0].get("@class")==="DebugTeam"){
                         this.toolbar.add(new Y.Wegas.Button({
                             label: '<span class="wegas-icon wegas-icon-refresh"></span>No players have joined yet: click to check for new players',
                             cssClass: 'globalRefreshTitle',
@@ -296,6 +294,7 @@ YUI.add('wegas-dashboard', function (Y) {
                         // Set to minimal width when monitoring and action blocs are misaligned due to lack of horizontal space
                         monitorTitle.setStyle("width", "auto");
                     }
+                    monitorTitle.show();
                 } else {
                     // Hide monitoring title when there is no monitoring bloc
                     monitorTitle.hide();
@@ -310,7 +309,7 @@ YUI.add('wegas-dashboard', function (Y) {
                         ctx._adjustTitles();
                     }, 10);
                 });
-            },
+            }
 
         },
         {
