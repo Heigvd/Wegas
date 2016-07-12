@@ -36,8 +36,8 @@ import org.slf4j.LoggerFactory;
  * This filters takes the first path segment (first line of code) and uses it as
  * the current View in for jackson serialization.
  *
- * @see com.wegas.core.ejb.RequestManager . Available view are "Index",
- * "Public", "Private" and "Export", "Editor" and "PrivatEditor"
+ * @see com.wegas.core.ejb.RequestManager . Available view are
+ * "Public"(default), "Export", "Editor", "Extended", "EditorExtended"
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
@@ -91,16 +91,6 @@ public class ViewRequestFilter implements ContainerRequestFilter {
         String firstPathSeg = cr.getUriInfo().getPathSegments().get(0).getPath();
 
         switch (firstPathSeg) {
-            case "Private":
-            case "EditorPrivate":
-                String id = cr.getUriInfo().getPathSegments().get(1).getPath();
-                //rmf.setView(this.stringToView(firstPathSeg));
-                view = this.stringToView(firstPathSeg);
-                rmf.setPlayer(Long.valueOf(id));
-                newUri = newUri.replace(firstPathSeg + "/" + id + "/", "");
-                break;
-
-            case "Index":
             case "Public":
             case "Extended":
             case "Export":
@@ -154,23 +144,14 @@ public class ViewRequestFilter implements ContainerRequestFilter {
      */
     public Class stringToView(String str) {
         switch (str) {
-            case "Index":
-                return Views.Index.class;
-
             case "Extended":
                 return Views.Extended.class;
-
-            case "Private":
-                return Views.Private.class;
 
             case "Export":
                 return Views.Export.class;
 
             case "Editor":
                 return Views.Editor.class;
-
-            case "EditorPrivate":
-                return Views.EditorPrivate.class;
 
             case "EditorExtended":
                 return Views.EditorExtended.class;

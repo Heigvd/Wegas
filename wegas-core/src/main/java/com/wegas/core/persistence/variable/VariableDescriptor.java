@@ -104,7 +104,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      * correctly
      */
     @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, optional = false)
-    @JsonView(value = Views.EditorExtendedI.class)
+    @JsonView(value = Views.EditorI.class)
     private VariableInstance defaultInstance;
 
     /**
@@ -164,7 +164,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     /**
      *
      */
-    //@JsonView(Views.EditorExtendedI.class)
     @NotNull
     @Basic(optional = false)
     //@CacheIndex

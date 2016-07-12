@@ -20,26 +20,27 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
-import java.util.HashMap;
 
 import javax.persistence.*;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 ////import javax.xml.bind.annotation.XmlTransient;
+
 /**
- * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  * @param <T> scope context
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity                                                                         // Database serialization
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "GameModelScope", value = GameModelScope.class),
-    @JsonSubTypes.Type(name = "GameScope", value = GameScope.class),
-    @JsonSubTypes.Type(name = "TeamScope", value = TeamScope.class),
-    @JsonSubTypes.Type(name = "PlayerScope", value = PlayerScope.class)
+        @JsonSubTypes.Type(name = "GameModelScope", value = GameModelScope.class),
+        @JsonSubTypes.Type(name = "GameScope", value = GameScope.class),
+        @JsonSubTypes.Type(name = "TeamScope", value = TeamScope.class),
+        @JsonSubTypes.Type(name = "PlayerScope", value = PlayerScope.class)
 })
 @Table(indexes = {
-    @Index(columnList = "variableinstance_variableinstance_id")
+        @Index(columnList = "variableinstance_variableinstance_id")
 })
 abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEntity {
 
@@ -63,7 +64,6 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
      *
      */
     //@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-    @JsonView(Views.EditorExtendedI.class)
     private String broadcastScope = PlayerScope.class.getSimpleName();
 
     /**
@@ -94,7 +94,6 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
     }
 
     /**
-     *
      * @return
      */
     @JsonProperty("variableInstances")
@@ -105,12 +104,12 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
 
     /**
      * @return The variable instance associated to the current player, which is
-     *         stored in the RequestManager.
+     * stored in the RequestManager.
      */
     @JsonIgnore
     abstract public Map<T, VariableInstance> getPrivateInstances();
 
-    @JsonView(Views.SinglePlayerI.class)
+    @JsonIgnore
     @JsonProperty("privateInstances")
     public Map<Long, VariableInstance> getPrivateInstancesByKeyId() {
         return mapInstances(this.getPrivateInstances());

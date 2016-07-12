@@ -7,10 +7,7 @@
  */
 package com.wegas.core.rest.util;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 /**
- *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class Views {
@@ -22,100 +19,47 @@ public class Views {
     }
 
     /**
+     * Potential heavy text
      * Extended (w/ blob texts)
      */
     public interface ExtendedI {
     }
 
     /**
-     *
-     * @deprecated
-     */
-    public interface EditorExtendedI extends ExtendedI {
-    }
-
-    /**
-     * Extend view (w/ scripts, impacts)
+     * Relevant only to editors
+     * Editor view (w/ scripts, impacts)
      */
     public interface EditorI {
     }
 
     /**
-     * Player view (w/ all players instances)
+     * Minimal view with IDs
      */
-//    public static interface PlayerI {
-//    }
-    /**
-     * Only display current player's VariableInstance
-     * @deprecated
-     */
-    public interface WithScopeI {
+    public static class Public implements IndexI {
     }
 
     /**
-     *
-     * @deprecated
+     * View with IDs and blobs
      */
-    public interface SinglePlayerI extends WithScopeI {
+    public static class Extended implements ExtendedI, IndexI {
     }
 
     /**
-     * @deprecated
+     * View relevant to Editors
      */
-    public static class Index implements IndexI {
+    public static class Editor implements EditorI, IndexI {
     }
 
     /**
-     *
+     * View relevant to Editors with blobs
      */
-    public static class Public extends Index {
+    public static class EditorExtended implements EditorI, ExtendedI, IndexI {
     }
 
     /**
-     *
+     * Do not include ids, Export usage
      */
-    public static class Extended extends Public implements ExtendedI {
+    public static class Export implements EditorI, ExtendedI {
     }
 
-    /**
-     * Variable Descriptor with a single instance for the current player
-     *
-     * @deprecated
-     */
-    public static class Private extends Public implements SinglePlayerI {
-    }
-
-    /**
-     *
-     */
-    public static class Editor extends Public implements EditorI, WithScopeI {
-    }
-
-    /**
-     * Variable Descriptor with a single instance for the current player
-     *
-     * @deprecated
-     */
-    public static class EditorPrivate extends Public implements SinglePlayerI, EditorI {
-    }
-
-    /**
-     * 
-     */
-    public static class EditorExtended extends Public implements EditorI, ExtendedI, EditorExtendedI, WithScopeI {
-    }
-
-    /**
-     * Do not include ids
-     */
-    public static class Export implements EditorI, EditorExtendedI, WithScopeI {
-    }
-
-    /**
-     *
-     */
-    @JsonIgnoreProperties({"id"})
-    //@JsonPropertyOrder(value = {"title", "id", "version", "price", "summary"})
-    public interface ExportFilter {
-    }
 }

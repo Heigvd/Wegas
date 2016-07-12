@@ -15,7 +15,6 @@ import com.wegas.core.persistence.game.Script;
 import com.wegas.core.rest.util.Views;
 
 import javax.persistence.Entity;
-import javax.persistence.PrePersist;
 import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,25 +37,25 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     /**
      *
      */
-    @JsonView(Views.EditorExtendedI.class)
+    @JsonView(Views.EditorI.class)
     private Boolean oneShot = false;
 
     /**
      *
      */
-    @JsonView(Views.EditorExtendedI.class)
+    @JsonView(Views.EditorI.class)
     private Boolean disableSelf = true;
     /**
      *
      */
     @Transient
-    @JsonView(Views.EditorExtendedI.class)
+    @JsonView(Views.EditorI.class)
     private Script triggerEvent;
     /**
      *
      */
     @Transient
-    @JsonView(Views.EditorExtendedI.class)
+    @JsonView(Views.EditorI.class)
     private Script postTriggerEvent;
 
     /**

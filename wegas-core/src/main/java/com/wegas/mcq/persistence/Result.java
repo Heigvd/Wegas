@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
@@ -36,14 +35,14 @@ import java.util.List;
 @Table(
         name = "MCQResult",
         uniqueConstraints = {
-            @UniqueConstraint(columnNames = {"choicedescriptor_id", "name"}),
-            @UniqueConstraint(columnNames = {"choicedescriptor_id", "label"}),},
+                @UniqueConstraint(columnNames = {"choicedescriptor_id", "name"}),
+                @UniqueConstraint(columnNames = {"choicedescriptor_id", "label"}),},
         indexes = {
-            @Index(columnList = "choicedescriptor_id")
+                @Index(columnList = "choicedescriptor_id")
         }
 )
 @NamedQueries({
-    @NamedQuery(name = "Result.findByName", query = "SELECT DISTINCT res FROM Result res WHERE res.choiceDescriptor=:choicedescriptor AND res.name LIKE :name")
+        @NamedQuery(name = "Result.findByName", query = "SELECT DISTINCT res FROM Result res WHERE res.choiceDescriptor=:choicedescriptor AND res.name LIKE :name")
 })
 public class Result extends NamedEntity implements Searchable, Scripted, LabelledEntity {
 
@@ -89,19 +88,19 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
      *
      */
     @Embedded
-    @JsonView(Views.EditorExtendedI.class)
+    @JsonView(Views.EditorI.class)
     private Script impact;
     /**
      *
      */
     @Embedded
     @AttributeOverrides({
-        @AttributeOverride(name = "content", column
-                = @Column(name = "ignoration_content")),
-        @AttributeOverride(name = "lang", column
-                = @Column(name = "ignoration_language"))
+            @AttributeOverride(name = "content", column
+                    = @Column(name = "ignoration_content")),
+            @AttributeOverride(name = "lang", column
+                    = @Column(name = "ignoration_language"))
     })
-    @JsonView(Views.EditorExtendedI.class)
+    @JsonView(Views.EditorI.class)
     private Script ignorationImpact;
     /**
      *
@@ -132,7 +131,6 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     }
 
     /**
-     *
      * @param name
      */
     public Result(String name) {
@@ -141,7 +139,6 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     }
 
     /**
-     *
      * @param name
      */
     public Result(String name, String label) {
@@ -169,7 +166,6 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     }
 
     /**
-     *
      * @param a
      */
     @Override
@@ -189,7 +185,7 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
         }
     }
 
-//    @PreRemove
+    //    @PreRemove
 //    private void preRemove() {                                                  // When a response is destroyed
 //
 //        for (ChoiceInstance c : this.getChoiceInstances()) {                    // remove it from all the instance it is the current result
@@ -222,7 +218,6 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     }
 
     /**
-     *
      * @return id from the parent choice descriptor
      */
     @JsonView(Views.IndexI.class)

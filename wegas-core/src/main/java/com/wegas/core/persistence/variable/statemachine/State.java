@@ -25,20 +25,21 @@ import java.util.Collections;
 import java.util.List;
 
 //import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Entity
 @Table(
-    name = "fsm_state",
-    indexes = {
-        @Index(columnList = "statemachine_id")
-    }
+        name = "fsm_state",
+        indexes = {
+                @Index(columnList = "statemachine_id")
+        }
 )
 //@XmlRootElement
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "DialogueState", value = DialogueState.class)
+        @JsonSubTypes.Type(name = "DialogueState", value = DialogueState.class)
 })
 public class State extends AbstractEntity implements Searchable, Scripted {
 
@@ -47,7 +48,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     /**
      *
      */
-    @JsonView(value = Views.EditorExtendedI.class)
+    @JsonView(value = Views.EditorI.class)
     private Coordinate editorPosition;
 
     /**
@@ -68,7 +69,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
      *
      */
     @Embedded
-    @JsonView(Views.EditorExtendedI.class)
+    @JsonView(Views.EditorI.class)
     private Script onEnterEvent;
 
     /**
