@@ -38,7 +38,7 @@ abstract public class ClientEvent implements Serializable {
      */
     public final String toJson() throws IOException {
         ObjectMapper mapper = JacksonMapperProvider.getMapper();
-        ObjectWriter writerWithView = mapper.writerWithView(Views.Editor.class);
+        ObjectWriter writerWithView = mapper.writerWithView(Views.EditorExtended.class);
         return writerWithView.writeValueAsString(this);
     }
 }

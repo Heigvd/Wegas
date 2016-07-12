@@ -150,7 +150,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     //@JsonManagedReference
     @OneToOne(cascade = {CascadeType.ALL}, orphanRemoval = true, optional = false)
     @JoinFetch
-    @JsonView(value = Views.WithScopeI.class)
+    //@JsonView(value = Views.WithScopeI.class)
     private AbstractScope scope;
 
     /**

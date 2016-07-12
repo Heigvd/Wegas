@@ -12,6 +12,7 @@ import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -141,8 +142,40 @@ public class PlayerFacade extends BaseFacade<Player> {
      * @return List of instances
      */
     public List<VariableInstance> getInstances(final Long playerId) {
-        final TypedQuery<VariableInstance> findPlayerInstance = getEntityManager().createNamedQuery("VariableInstance.findInstancesForPlayer", VariableInstance.class);
-        return findPlayerInstance.setParameter("playerid", playerId).getResultList();
+        Player player = this.find(playerId);
+        Team team = player.getTeam();
+        Game game = team.getGame();
+        GameModel gameModel = game.getGameModel();
+
+        TypedQuery<VariableInstance> query = getEntityManager().createNamedQuery(
+                "VariableInstance.findPlayerInstancesForPlayer", VariableInstance.class);
+        query.setParameter("player", player);
+        query.setParameter("team", team);
+        query.setParameter("game", game);
+        List<VariableInstance> instances = query.getResultList();
+
+        query = getEntityManager().createNamedQuery(
+                "VariableInstance.findTeamInstancesForPlayer",
+                VariableInstance.class);
+        query.setParameter("team", team);
+        query.setParameter("game", game);
+        instances.addAll(query.getResultList());
+
+        query = getEntityManager().createNamedQuery(
+                "VariableInstance.findGameInstancesForPlayer",
+                VariableInstance.class
+        );
+        query.setParameter("game", game);
+        instances.addAll(query.getResultList());
+
+        query = getEntityManager().createNamedQuery(
+                "VariableInstance.findGlobalInstancesForPlayer",
+                VariableInstance.class
+        );
+        query.setParameter("gameModel", gameModel);
+        instances.addAll(query.getResultList());
+
+        return instances;
     }
 
     @Override

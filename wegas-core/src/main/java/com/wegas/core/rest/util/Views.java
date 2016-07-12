@@ -29,6 +29,7 @@ public class Views {
 
     /**
      *
+     * @deprecated
      */
     public interface EditorExtendedI extends ExtendedI {
     }
@@ -46,18 +47,20 @@ public class Views {
 //    }
     /**
      * Only display current player's VariableInstance
+     * @deprecated
      */
     public interface WithScopeI {
     }
 
     /**
      *
+     * @deprecated
      */
     public interface SinglePlayerI extends WithScopeI {
     }
 
     /**
-     *
+     * @deprecated
      */
     public static class Index implements IndexI {
     }
@@ -76,6 +79,8 @@ public class Views {
 
     /**
      * Variable Descriptor with a single instance for the current player
+     *
+     * @deprecated
      */
     public static class Private extends Public implements SinglePlayerI {
     }
@@ -88,18 +93,20 @@ public class Views {
 
     /**
      * Variable Descriptor with a single instance for the current player
+     *
+     * @deprecated
      */
     public static class EditorPrivate extends Public implements SinglePlayerI, EditorI {
     }
 
     /**
-     * Variable Descriptor with a single instance for the current player
+     * 
      */
     public static class EditorExtended extends Public implements EditorI, ExtendedI, EditorExtendedI, WithScopeI {
     }
 
     /**
-     *
+     * Do not include ids
      */
     public static class Export implements EditorI, EditorExtendedI, WithScopeI {
     }

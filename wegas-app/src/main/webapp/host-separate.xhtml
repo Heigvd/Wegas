@@ -36,9 +36,10 @@
                     var app = new Y.Wegas.App({
                         dataSources: {
                             Variable: {
-                                source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
+                                //source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
                                 //source: "rest/EditorPrivate/#{editorGameController.currentPlayer.id}/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
-                                initialRequest: "",
+                                source: "rest/EditorExtended/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
+                                initialRequest: ["", "/PlayerInstances/#{gameController.currentPlayer.id}"],
                                 plugins: [{
                                         fn: "VariableDescriptorCache"
                                     }, {

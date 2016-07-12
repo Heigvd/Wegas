@@ -49,10 +49,45 @@ import java.util.Map;
 @NamedQueries({
     //@NamedQuery(name = "findTeamInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.teamScopeKey = :teamid"),
     //@NamedQuery(name = "findPlayerInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.playerScopeKey = :playerid"),
-    @NamedQuery(name = "VariableInstance.findInstancesForPlayer",
-        query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE EXISTS "
+
+    @NamedQuery(name = "VariableInstance.findAIOInstancesForPlayer",
+            query = "SELECT vi FROM VariableInstance vi WHERE "
+            + "(vi.player = :player) OR "
+            + "(vi.playerScope.broadcastScope = 'TeamScope' AND vi.player.team = :team) OR "
+            + "(vi.playerScope.broadcastScope = 'GameScope' AND vi.player.team.game = :game) OR "
+            + "(vi.team = :team) OR "
+            + "(vi.teamScope.broadcastScope = 'GameScope' AND vi.team.game = :game) OR"
+            + "(vi.game = :game) OR "
+            + "(vi.gameModelScope.variableDescriptor.gameModel = :gameModel)"
+    ),
+
+    @NamedQuery(name = "VariableInstance.findPlayerInstancesForPlayer",
+            query = "SELECT vi FROM VariableInstance vi WHERE "
+            + "(vi.player = :player) OR "
+            + "(vi.playerScope.broadcastScope = 'TeamScope' AND vi.player.team = :team) OR"
+            + "(vi.playerScope.broadcastScope = 'GameScope' AND vi.player.team.game = :game)"
+    ),
+
+    @NamedQuery(name = "VariableInstance.findTeamInstancesForPlayer",
+            query = "SELECT vi FROM VariableInstance vi WHERE "
+            + "(vi.team = :team) OR "
+            + "(vi.teamScope.broadcastScope = 'GameScope' AND vi.team.game = :game)"
+    ),
+
+    @NamedQuery(name = "VariableInstance.findGameInstancesForPlayer",
+            query = "SELECT vi FROM VariableInstance vi WHERE "
+            + "vi.game = :game"
+    ),
+
+    @NamedQuery(name = "VariableInstance.findGlobalInstancesForPlayer",
+            query = "SELECT vi FROM VariableInstance vi WHERE "
+            + "vi.gameModelScope.variableDescriptor.gameModel = :gameModel"
+    )
+/*@NamedQuery(name = "VariableInstance.findInstancesForPlayer_ORI",
+            query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE EXISTS "
             + "(SELECT player From Player player WHERE player.id = :playerid AND "
             + "(variableinstance.player = player OR variableinstance.team = player.team OR variableinstance.game = player.team.game))")
+ */
 })
 
 /*@Indexes(value = { // JPA 2.0 eclipse link extension TO BE REMOVED
