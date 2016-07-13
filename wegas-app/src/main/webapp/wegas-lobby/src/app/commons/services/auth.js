@@ -22,7 +22,7 @@ angular.module('wegas.service.auth', [
             },
             getCurrentUser = function() {
                 var deferred = $q.defer();
-                $http.get(window.ServiceURL + "rest/User/Current?view=EditorExtended").success(function(data) {
+                $http.get(window.ServiceURL + "rest/User/Current?view=Editor").success(function(data) {
                     authenticatedUser = {
                         id: data.id,
                         jpaId: data.accounts[0].id,

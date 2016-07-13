@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * the current View in for jackson serialization.
  *
  * @see com.wegas.core.ejb.RequestManager . Available view are
- * "Public"(default), "Export", "Editor", "Extended", "EditorExtended"
+ * "Public"(default), "Export", "Editor", "Extended", "Instance"
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
@@ -95,7 +95,7 @@ public class ViewRequestFilter implements ContainerRequestFilter {
             case "Extended":
             case "Export":
             case "Editor":
-            case "EditorExtended":
+            case "Instance":
                 //rmf.setView(this.stringToView(firstPathSeg));
                 view = this.stringToView(firstPathSeg);
                 newUri = newUri.replace(firstPathSeg + "/", "");
@@ -150,11 +150,11 @@ public class ViewRequestFilter implements ContainerRequestFilter {
             case "Export":
                 return Views.Export.class;
 
+            case "Instance":
+                return Views.Instance.class;
+
             case "Editor":
                 return Views.Editor.class;
-
-            case "EditorExtended":
-                return Views.EditorExtended.class;
 
             case "Public":
             default:

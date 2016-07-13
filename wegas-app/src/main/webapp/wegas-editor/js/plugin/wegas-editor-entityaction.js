@@ -141,7 +141,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                     entity instanceof Wegas.persistence.GameModel ||
                     entity instanceof Wegas.persistence.Game) {                  // @fixme we may get extended mode for any entity, just need to check if it causes bugs
                     EditEntityAction.showEditFormOverlay();
-                    dataSource.cache.getWithView(entity, "EditorExtended", {
+                    dataSource.cache.getWithView(entity, "Editor", {
                         on: {
                             success: function(e) {
                                 EditEntityAction.hideEditFormOverlay();
@@ -359,7 +359,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                 this.get("parentEntity"), descriptor;
 
             if (entity instanceof Wegas.persistence.VariableDescriptor) {
-                this.get(DATASOURCE).cache.getWithView(entity, "EditorExtended", {// just need to check if it causes bugs
+                this.get(DATASOURCE).cache.getWithView(entity, "Editor", {// just need to check if it causes bugs
                     on: {
                         success: Y.bind(function(e) {
                             this.doExecute(e.response.entity);
@@ -776,7 +776,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                 tab.set("selected", 2);
                 widget.showOverlay();
                 EditEntityAction.showEditFormOverlay();
-                this.get(DATASOURCE).cache.getWithView(entity, "EditorExtended", {// just need to check if it causes bugs
+                this.get(DATASOURCE).cache.getWithView(entity, "Editor", {// just need to check if it causes bugs
                     on: {
                         success: function(e) {
                             widget.set(ENTITY, e.response.entity);

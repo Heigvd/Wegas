@@ -4,7 +4,7 @@ angular.module('wegas.models.scenarios', [])
         var model = this,
             ServiceURL = window.ServiceURL,
             getPath = function (status) {
-                return ServiceURL + "rest/EditorExtended/GameModel/status/" + status;
+                return ServiceURL + "rest/Editor/GameModel/status/" + status;
             },
             scenarios = {
                 cache: {},
@@ -89,7 +89,7 @@ angular.module('wegas.models.scenarios', [])
             setScenarioStatus = function (scenarioId, status) {
                 var deferred = $q.defer(),
                     scenario;
-                $http.put(ServiceURL + "rest/EditorExtended/GameModel/" + scenarioId + "/status/" + status).success(function (data) {
+                $http.put(ServiceURL + "rest/Editor/GameModel/" + scenarioId + "/status/" + status).success(function (data) {
                     for (var cacheName in scenarios.cache) {
                         scenario = scenarios.findScenario(cacheName, scenarioId);
                         if (scenario) {
@@ -135,7 +135,7 @@ angular.module('wegas.models.scenarios', [])
                 });
 
                 if (scenarioSetted) {
-                    var url = "rest/Public/GameModel/" + scenarioBeforeChange.id + "?view=EditorExtended";
+                    var url = "rest/Public/GameModel/" + scenarioBeforeChange.id + "?view=Editor";
                     $http.put(ServiceURL + url, scenarioBeforeChange, {
                         "headers": {
                             "managed-mode": "true"
@@ -312,7 +312,7 @@ angular.module('wegas.models.scenarios', [])
 
             model.copyScenario = function (scenarioId) {
                 var deferred = $q.defer(),
-                    url = "rest/EditorExtended/GameModel/" + scenarioId + "/Duplicate";
+                    url = "rest/Editor/GameModel/" + scenarioId + "/Duplicate";
                 if (scenarioId) {
                     $http.post(ServiceURL + url, null, {
                         "headers": {
@@ -329,7 +329,7 @@ angular.module('wegas.models.scenarios', [])
 
             model.createFromJSON = function (file) {
                 var deferred = $q.defer(),
-                    url = "rest/EditorExtended/GameModel",
+                    url = "rest/Editor/GameModel",
                     fd = new FormData();
 
                 fd.append('file', file);

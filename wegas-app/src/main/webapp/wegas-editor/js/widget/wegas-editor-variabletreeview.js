@@ -177,7 +177,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     dropEntity instanceof Y.Wegas.persistence.ChoiceDescriptor &&
                     entity instanceof Y.Wegas.persistence.Result) {
                     var oldIndex = Y.Array.indexOf(dropEntity.get("results"), entity);
-                    Wegas.Facade.Variable.cache.getWithView(dropEntity, "EditorExtended", {
+                    Wegas.Facade.Variable.cache.getWithView(dropEntity, "Editor", {
                         on: {
                             success: function(res) {
                                 var results = res.response.entity.get("results");
@@ -603,7 +603,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 node.destroyAll();
                 node.set("loading", true);
                 Wegas.Facade.Variable.sendRequest({
-                    request: "/" + id + "?view=Editor"
+                    request: "/" + id + "?view=Instance"
                 });
             }
         }

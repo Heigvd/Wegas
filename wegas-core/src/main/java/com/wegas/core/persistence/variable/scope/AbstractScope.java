@@ -97,7 +97,7 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
      * @return
      */
     @JsonProperty("variableInstances")
-    @JsonView(Views.Editor.class)
+    @JsonView(Views.InstanceI.class)
     public Map<Long, VariableInstance> getVariableInstancesByKeyId() {
         return mapInstances(this.getVariableInstances());
     }

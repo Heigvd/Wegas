@@ -27,9 +27,15 @@ public class Views {
 
     /**
      * Relevant only to editors
-     * Editor view (w/ scripts, impacts)
+     * EditorI view (w/ scripts, impacts)
      */
     public interface EditorI {
+    }
+
+    /**
+     * Provides VariableDescriptor instances
+     */
+    public interface InstanceI {
     }
 
     /**
@@ -45,19 +51,19 @@ public class Views {
     }
 
     /**
-     * View relevant to Editors
-     */
-    public static class Editor implements EditorI, IndexI {
-    }
-
-    /**
      * View relevant to Editors with blobs
      */
-    public static class EditorExtended implements EditorI, ExtendedI, IndexI {
+    public static class Editor implements EditorI, ExtendedI, IndexI {
     }
 
     /**
-     * Do not include ids, Export usage
+     *  Editor view with VariableInstance embed into VariableDescriptors'Scope
+     */
+    public static class Instance implements InstanceI, EditorI, ExtendedI, IndexI {
+    }
+
+    /**
+     * Do not include ids nor VariableInstances, Export usage
      */
     public static class Export implements EditorI, ExtendedI {
     }
