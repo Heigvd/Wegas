@@ -7,16 +7,21 @@
  */
 package com.wegas.core.rest;
 
+import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.exception.internal.WegasForbiddenException;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.util.SecurityHelper;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
@@ -27,7 +32,7 @@ import org.apache.shiro.authz.UnauthorizedException;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
-@Path("GameModel/{gameModelId: ([1-9][0-9]*)?}{sep: /?}VariableDescriptor/{variableDescriptorId : ([1-9][0-9]*)?}/VariableInstance/")
+@Path("GameModel/{gameModelId: ([1-9][0-9]*)?}{sep: /?}VariableDescriptor/{variableDescriptorId : ([1-9][0-9]*)?}{sep2: /?}VariableInstance/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class VariableInstanceController {
@@ -47,6 +52,12 @@ public class VariableInstanceController {
      */
     @EJB
     private UserFacade userFacade;
+
+    /**
+     *
+     */
+    @Inject
+    private PlayerFacade playerFacade;
 
     /**
      *
@@ -72,6 +83,19 @@ public class VariableInstanceController {
 
     /**
      *
+     * @param gameModelId id of the gameModel
+     * @param playerId    player id
+     * @return all instances from player's game belonging to the player
+     */
+    @GET
+    @Path("AllPlayerInstances/{playerId:[1-9][0-9]*}")
+    public Collection<VariableInstance> getAll(@PathParam("gameModelId") Long gameModelId, @PathParam("playerId") Long playerId) {
+        SecurityHelper.checkPermission(playerFacade.find(playerId).getGame(), "View");
+        return playerFacade.getInstances(playerId);
+    }
+
+    /**
+     *
      * @param variableDescriptorId
      *
      * @return all instances from variableDescriptor (but the default ones)
@@ -84,7 +108,13 @@ public class VariableInstanceController {
 
         SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + vd.getGameModelId());
 
-        return vd.getScope().getVariableInstances().values();
+        List<VariableInstance> instances = new ArrayList<>();
+
+        instances.addAll(
+                vd.getScope().getVariableInstances().values()
+        );
+
+        return instances;
     }
 
     /**

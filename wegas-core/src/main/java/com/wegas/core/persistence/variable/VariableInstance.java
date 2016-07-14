@@ -218,9 +218,19 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     @JsonIgnore
     public String getAudience() {
         if (this.getTeam() != null) {
-            return Helper.getAudienceTokenForTeam(this.getTeam().getId());
+            if (this.getTeamScope().getBroadcastScope().equals("GameScope")) {
+                return Helper.getAudienceTokenForGame(this.getTeam().getGame().getId());
+            } else {
+                return Helper.getAudienceTokenForTeam(this.getTeam().getId());
+            }
         } else if (this.getPlayer() != null) {
-            return Helper.getAudienceTokenForPlayer(this.getPlayer().getId());
+            if (this.getPlayerScope().getBroadcastScope().equals("TeamScope")) {
+                return Helper.getAudienceTokenForTeam(this.getPlayer().getTeam().getId());
+            } else if (this.getPlayerScope().getBroadcastScope().equals("GameScope")) {
+                return Helper.getAudienceTokenForGame(this.getPlayer().getGameId());
+            } else {
+                return Helper.getAudienceTokenForPlayer(this.getPlayer().getId());
+            }
         } else if (this.getGame() != null) {
             return Helper.getAudienceTokenForGame(this.getGame().getId());
         } else if (this.gameModelScope != null) {
@@ -260,6 +270,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      */
     //@XmlTransient
     @JsonIgnore
+    //@JsonView(Views.ExtendedI.class)
     public AbstractScope getScope() {
         if (this.getTeamScope() != null) {
             return this.getTeamScope();
@@ -272,6 +283,29 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
         } else {
             return null;
         }
+    }
+
+    @JsonView(Views.ExtendedI.class)
+    public Long getScopeKey() {
+        if (this.getTeamScope() != null) {
+            return this.getTeam().getId();
+        } else if (this.getPlayerScope() != null) {
+            return this.getPlayer().getId();
+        } else if (this.getGameScope() != null) {
+            return this.getGame().getId();
+        } else if (this.getGameModelScope() != null) {
+            return 0l;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * 
+     * @param key 
+     */
+    public void setScopeKey(Long key){
+        // Just to be ignored
     }
 
     /**

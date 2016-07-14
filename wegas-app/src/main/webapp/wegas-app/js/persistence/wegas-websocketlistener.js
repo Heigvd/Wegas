@@ -8,12 +8,12 @@
 /**
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
-YUI.add('wegas-websocketlistener', function(Y) {
+YUI.add('wegas-websocketlistener', function (Y) {
     "use strict";
 
     var WebSocketListener = Y.Base.create("WebSocketListener", Y.Plugin.Base, [], {
-        initializer: function() {
-            Y.later(50, this, function() { //let ds render.
+        initializer: function () {
+            Y.later(50, this, function () { //let ds render.
                 var dataSource = Y.Wegas.Facade[this.get("dataSource")];
                 if (dataSource) {
                     this._hdl = [];
@@ -25,7 +25,7 @@ YUI.add('wegas-websocketlistener', function(Y) {
                 }
             });
         },
-        onLifeCycleEvent: function(data) {
+        onLifeCycleEvent: function (data) {
             var payload = Y.JSON.parse(data),
                 node = Y.Widget.getByNode(".wegas-login-page") ||
                 Y.Widget.getByNode(".wegas-editview") ||
@@ -46,7 +46,7 @@ YUI.add('wegas-websocketlistener', function(Y) {
                 node.showOverlay("error");
             }
         },
-        onEntityDeletion: function(data) {
+        onEntityDeletion: function (data) {
             var datasource, entities, entity, i;
             entities = Y.JSON.parse(data).deletedEntities;
             for (i = 0; i < entities.length; i += 1) {
@@ -55,10 +55,10 @@ YUI.add('wegas-websocketlistener', function(Y) {
                 datasource.cache.updateCache("DELETE", entity, false);
             }
         },
-        onCustomEvent: function(data) {
+        onCustomEvent: function (data) {
 
         },
-        forceEntityUpdate: function(data) {
+        forceEntityUpdate: function (data) {
             var parsed = Y.JSON.parse(data), i, entity, request = null;
             for (i = 0; i < parsed.updatedEntities.length; i += 1) {
                 entity = Y.Wegas.Editable.revive(parsed.updatedEntities[i]);
@@ -76,7 +76,7 @@ YUI.add('wegas-websocketlistener', function(Y) {
                 }
             }
         },
-        onEntityUpdatedEvent: function(data) {
+        onEntityUpdatedEvent: function (data) {
             var i, event = Y.JSON.parse(data), entity,
                 datasource, dsId, remappedEntities = {};
             Y.log("Websocket event received.", "info", "Wegas.WebsocketListener");
@@ -101,8 +101,10 @@ YUI.add('wegas-websocketlistener', function(Y) {
                 }
             }
         },
-        getDatasourceFromEntity: function(entity) {
-            if (entity instanceof Y.Wegas.persistence.VariableInstance || entity instanceof Y.Wegas.persistence.VariableDescriptor) {
+        getDatasourceFromEntity: function (entity) {
+            if (entity instanceof Y.Wegas.persistence.VariableInstance) {
+                return Y.Wegas.Facade.Instance;
+            } else if (entity instanceof Y.Wegas.persistence.VariableDescriptor) {
                 return Y.Wegas.Facade.Variable;
             } else if (entity instanceof Y.Wegas.persistence.Game) {
                 return Y.Wegas.Facade.Game;
@@ -110,7 +112,7 @@ YUI.add('wegas-websocketlistener', function(Y) {
                 return null;
             }
         },
-        destructor: function() {
+        destructor: function () {
             var i;
             if (this._hdl) {
                 for (i in this._hdl) {

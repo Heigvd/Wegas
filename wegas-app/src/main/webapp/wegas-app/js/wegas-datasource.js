@@ -25,7 +25,9 @@ YUI.add('wegas-datasource', function (Y) {
         Wegas = Y.Wegas,
         DataSource = Y.DataSource,
         Plugin = Y.Plugin,
-        WegasCache, VariableDescriptorCache, GameModelCache, GameCache, PageCache, UserCache;
+        WegasCache, VariableDescriptorCache,
+        VariableInstanceCache,
+        GameModelCache, GameCache, PageCache, UserCache;
 
     /**
      * @name Y.Wegas.DataSource
@@ -492,7 +494,7 @@ YUI.add('wegas-datasource', function (Y) {
             //Y.log("updateCache(" + method + ", " + entity + ")", "log", "Y.Wegas.WegasCache");
             if (method === DELETE) {
                 if (this.find(ID, entity.get("id"), Y.bind(function (entity, needle) {
-                    var parent = this.findParentDescriptor(entity),
+                    var parent = this.findParentDescriptor(entity), // VD only !!!!!!!!!
                         children, index;
                     if (parent) {
                         children = this.getChildren(parent);
@@ -520,7 +522,8 @@ YUI.add('wegas-datasource', function (Y) {
                     // oldAttrs // newAttrs
                     entity.setAttrs(newAttrs);
 
-                    if (this.oldIds) {
+                    if (this.oldIds) { // VD ONLY
+                        // 
                         // NEW ENTITY IN PARENT
 
                         // oldIds is filled by VarDescCache.post when adding a variable as
@@ -545,9 +548,11 @@ YUI.add('wegas-datasource', function (Y) {
                     } else {
                         this.updateIndexes(oldAttrs, newAttrs); // OK
                         // Update Entity (anywhere)
-                        this.get(HOST).fire("updatedDescriptor", {
-                            entity: entity
-                        });
+                        if (entity instanceof Wegas.persistence.VariableDescriptor) {
+                            this.get(HOST).fire("updatedDescriptor", {
+                                entity: entity
+                            });
+                        }
                     }
                     return true;
                 }, this))) {
@@ -862,8 +867,6 @@ YUI.add('wegas-datasource', function (Y) {
                 this._indexes[indexOn] = {};
             }
 
-
-
             this.on("CustomEvent", function (e) { // TODO MOVE SOMEWHERE...
                 this.get(HOST).fire(e.serverEvent.get("val.type"), e.serverEvent.get("val.payload"));
             });
@@ -886,41 +889,7 @@ YUI.add('wegas-datasource', function (Y) {
          */
         updateCache: function (method, entity) {
             if (entity instanceof Wegas.persistence.VariableInstance) {
-                if (method === DELETE) {
-                    // shall never happen...
-                } else {
-                    return this.find(ID, +entity.get("descriptorId"), Y.bind(function (found, needle) {
-                        var i, instances = found.get("scope").get("variableInstances"), update = false;
-
-                        for (i in instances) {
-                            if (instances[i].get(ID) === entity.get(ID)) {
-                                instances[i].setAttrs(entity.getAttrs());
-                                update = true;
-                                this.get(HOST).fire("updatedInstance", {// Variable instance updated
-                                    entity: entity
-                                });
-                                break;
-                            }
-                        }
-                        if (!update) { // New variable instance
-                            switch (found.get("scope").get("@class")) {
-                                case "TeamScope":
-                                    instances[String(Wegas.Facade.Game.get("currentTeamId"))] = entity;
-                                    break;
-                                case "PlayerScope":
-                                    instances[String(Wegas.Facade.Game.get("currentPlayerId"))] = entity;
-                                    break;
-                                case "GameScope":
-                                    instances[String(Wegas.Facade.Game.get("currentGameId"))] = entity;
-                                    break;
-                                case "GameModelScope":
-                                    instances["0"] = entity;
-                                    break;
-                            }
-                        }
-                        return true;
-                    }, this));
-                }
+                Y.Wegas.Facade.Instance.cache.updateCache(method, entity);
             } else if (entity instanceof Wegas.persistence.VariableDescriptor) {
                 return VariableDescriptorCache.superclass.updateCache.apply(this, arguments);
             }
@@ -931,13 +900,7 @@ YUI.add('wegas-datasource', function (Y) {
          */
         put: function (data, cfg) {
             if (data[CLASS].indexOf("Instance") !== -1) {
-                this.sendRequest(Y.mix({
-                    request: '/1/VariableInstance/' + data.id,
-                    cfg: {
-                        method: PUT,
-                        data: data
-                    }
-                }, cfg));
+                Y.Wegas.Facade.Instance.cache.put(data, cfg);
             } else {
                 VariableDescriptorCache.superclass.put.call(this, data, cfg);
             }
@@ -1053,6 +1016,121 @@ YUI.add('wegas-datasource', function (Y) {
         }
     });
     Plugin.VariableDescriptorCache = VariableDescriptorCache;
+
+    /**
+     *  @name Y.Plugin.VariableInstanceCache
+     *  @class adds management of entities of type Y.Wegas.persistence.VariableInstance
+     *  @extends Y.Plugin.WegasCache
+     *  @constructor
+     */
+    VariableInstanceCache = Y.Base.create("VariableInstanceCache", WegasCache, [], {
+        /** @lends Y.Plugin.VariableInstanceCache# */
+        /**
+         * @function
+         * @private
+         */
+        initializer: function () {
+            // Server event, triggered through the managed-mode response events.
+            //this._indexes.name = {};
+            //this._indexes.id = {};
+            var indexes = this.get("indexes"), i, indexOn;
+            for (i in indexes) {
+                indexOn = indexes[i];
+                this._indexes[indexOn] = {};
+            }
+
+            this.on("CustomEvent", function (e) { // TODO MOVE SOMEWHERE...
+                Y.Wegas.Facade.Variable.fire(e.serverEvent.get("val.type"), e.serverEvent.get("val.payload"));
+            });
+        },
+        getChildren: function (entity) {
+            if (entity["@class"] === "Scope") {
+                var k, values = [];
+                for (k in entity.variableInstance) {
+                    if (entity.variableInstances.hasOwnProperty(k)) {
+                        values.push(entity.variableInstances[k]);
+                    }
+                }
+                return values;
+            }
+            return null;
+        },
+        sortList: function (entity, cfg) {
+            Y.log("Sorting VariableInstances is forbidden");
+            debugger;
+        },
+        close: function (id, parentData, callbacks) {
+            Y.log("Cloning VariableInstance is forbidden");
+            debugger;
+        },
+        deleteObject: function (entity, cfg) {
+            Y.log("Deleting VariableInstance is forbidden");
+            debugger;
+        },
+        duplicateObject: function (entity, cfg) {
+            Y.log("duplicating VariableInstance is forbidden");
+            debugger;
+        },
+        post: function () {
+            Y.log("posting VariableInstance is forbidden");
+            debugger;
+        },
+        /*put: function (data, cfg) {
+            VariableInstanceCache.superclass.put.call(this, data, cfg);
+        },*/
+        generateRequest: function (data) {
+            return "/" + data.descriptorId + "/VariableInstance/" + data.id;
+        },
+        /**
+         * @function
+         */
+        updateCache: function (method, entity) {
+            var scope, scopeKey, descriptorId;
+            if (method === DELETE) {
+                // shall never happen...
+                // Check what happen when a broadcasted instances has been removed (e.g. when effective instance owner leaves)
+                debugger;
+                return false;
+            } else {
+                descriptorId = +entity.get("descriptorId");
+                scopeKey = +entity.get("scopeKey");
+
+                scope = this.find("descriptorId", descriptorId);
+                if (!scope) {
+                    scope = {
+                        "@class": "Scope",
+                        id: null,
+                        descriptorId: descriptorId,
+                        variableInstances: {}
+                    };
+                    this.addToCache(scope);
+                }
+
+                if (scope.variableInstances[scopeKey]) {
+                    scope.variableInstances[scopeKey].setAttrs(entity.getAttrs());
+                    Y.Wegas.Facade.Variable.fire("updatedInstance", {// Variable instance updated
+                        entity: entity
+                    });
+                } else {
+                    scope.variableInstances[scopeKey] = entity;
+                }
+                return true;
+            }
+        }
+    }, {
+        NS: "cache",
+        NAME: "VariableInstanceCache",
+        ATTRS: {
+            indexes: {
+                type: "array",
+                value: [],
+                optional: true
+            }
+        }
+    });
+    Plugin.VariableInstanceCache = VariableInstanceCache;
+
+
 
     /**
      *  @name Y.Plugin.GameModelCache

@@ -36,7 +36,7 @@
                                 //source: "rest/Private/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
                                 //source: "rest/Editor/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
                                 source: "rest/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
-                                initialRequest: ["", "/PlayerInstances/#{gameController.currentPlayer.id}"],
+                                initialRequest: "",
                                 plugins: [{
                                         fn: "VariableDescriptorCache",
                                         cfg: {
@@ -50,6 +50,13 @@
                                      dataSource: "Pusher"
                                      }
                                      }*/]
+                            },
+                            Instance: {
+                                source: "rest/Editor/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
+                                initialRequest: "/VariableInstance/AllPlayerInstances/#{gameController.currentPlayer.id}",
+                                plugins: [{
+                                        fn: "VariableInstanceCache"
+                                    }]
                             },
                             Page: {
                                 /*

@@ -87,19 +87,6 @@ public class VariableDescriptorController {
     }
 
     /**
-     *
-     * @param gameModelId id of the gameModel
-     * @param playerId    player id
-     * @return all instances from player's game belonging to the player
-     */
-    @GET
-    @Path("/PlayerInstances/{playerId:[1-9][0-9]*}")
-    public Collection<VariableInstance> get(@PathParam("gameModelId") Long gameModelId, @PathParam("playerId") Long playerId) {
-        SecurityHelper.checkPermission(playerFacade.find(playerId).getGame(), "View");
-        return playerFacade.getInstances(playerId);
-    }
-
-    /**
      * Add new descriptor at GameModel root level
      *
      * @param gameModelId the game model
