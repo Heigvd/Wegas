@@ -66,6 +66,9 @@ YUI.add('wegas-mcq-tabview', function(Y) {
          */
         bindUI: function() {
             this.tabView.after("selectionChange", this.onTabSelected, this);
+            this.handlers.response = this.dataSource.after("update", this.syncUI, this);
+/*
+// This code produces an issue with the loading overlay (show-/hideOverlay()):
             this.handlers.response = this.dataSource.after("updatedInstance", function(e) {
                 // Quick test before entering the loop:
                 if (e.entity.get("@class") !== "QuestionInstance") return;
@@ -83,6 +86,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                     }
                 }
             }, this);
+ */
         },
         /**
          * @function
