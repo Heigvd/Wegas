@@ -192,7 +192,7 @@ public class Game extends NamedEntity implements Broadcastable {
      * @return the teams
      */
     @JsonManagedReference("game-team")
-    @JsonView(Views.Public.class)
+    @JsonView(Views.IndexI.class)
     public List<Team> getTeams() {
         return this.teams;
     }
@@ -241,7 +241,8 @@ public class Game extends NamedEntity implements Broadcastable {
     /**
      * @return the gameModel
      */
-    @JsonView(Views.ExtendedI.class)
+    //@JsonView(Views.ExtendedI.class)
+    @JsonIgnore
     public GameModel getGameModel() {
         return gameModel;
     }
