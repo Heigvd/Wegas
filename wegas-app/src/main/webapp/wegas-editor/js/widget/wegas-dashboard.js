@@ -11,6 +11,8 @@
  */
 YUI.add('wegas-dashboard', function (Y) {
     "use strict";
+    var CONTENTBOX = "contentBox";
+
     Y.Wegas.Dashboard = Y.Base.create("wegas-dashboard",
         Y.Widget,
         [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
@@ -37,11 +39,24 @@ YUI.add('wegas-dashboard', function (Y) {
                     this.toolbar.removeAll();
 
                     var game = Y.Wegas.Facade.Game.cache.getCurrentGame(),
-                        teams = game.get("teams"),
-                        emptyGame = (teams.length===0 || teams.length===1 && teams[0].get("@class")==="DebugTeam");
+                        teams = game.get("teams");
+
+                    if (teams.length===0 || teams.length===1 && teams[0].get("@class")==="DebugTeam"){
+                        this.toolbar.add(new Y.Wegas.Button({
+                            label: '<span class="wegas-icon wegas-icon-refresh"></span>No players have joined yet: click to check for new players',
+                            cssClass: 'globalRefreshTitle',
+                            on: {
+                                click: Y.bind(function (event) {
+                                    location.reload(); // That's stupid, same as {@see phenixize}
+                                }, this)
+                            }
+                        }));
+                        return;
+                    }
+
 
                     this.toolbar.add(new Y.Wegas.Button({
-                        label: '<span class="wegas-icon wegas-icon-refresh"></span>' + (emptyGame ? 'No players have joined yet: click to check for new players' : 'Check for new players'),
+                        label: '<span class="wegas-icon wegas-icon-refresh"></span>Check for new players',
                         cssClass: 'globalRefreshTitle',
                         on: {
                             click: Y.bind(function (event) {
@@ -49,10 +64,6 @@ YUI.add('wegas-dashboard', function (Y) {
                             }, this)
                         }
                     }));
-
-                    if (emptyGame){
-                        return;
-                    }
 
                     this.toolbar.add(new Y.Wegas.Button({
                         label: '<span class="wegas-icon wegas-icon-email"></span>',
@@ -85,6 +96,7 @@ YUI.add('wegas-dashboard', function (Y) {
                         tooltip: 'Impact all players'
                     }));
 
+
                     this.toolbar.add(new Y.Wegas.Button({
                         label: '<span class="wegas-icon wegas-icon-refresh"></span>Monitoring',
                         cssClass: 'globalImpacts monitoredDataTitle',
@@ -103,7 +115,9 @@ YUI.add('wegas-dashboard', function (Y) {
                         }
                     }));
 
+
                     this._checkToolbarResize();
+
                 }
             },
             bindUI: function () {
@@ -264,43 +278,26 @@ YUI.add('wegas-dashboard', function (Y) {
             },
             // Centers button/titles if possible, otherwise hides them or reduces them inside their columns.
             _adjustTitles: function () {
-                var cb = this.get("contentBox"),
+                var cb = this.get(CONTENTBOX),
                     card = cb.one(".card"); // We pick just any card
                 if (!card){
                     return;
                 }
                 var monitoringBloc = card.one(".card__blocs--monitoring"),
-                    actionBloc = card.one(".card__blocs--action"),
-                    toolbar = cb.get("parentNode"),
-                    monitorTitle = toolbar.one(".monitoredDataTitle"),
-                    globalTitle = toolbar.one(".globalRefreshTitle"),
-                    toolbarWidth = toolbar.get("offsetWidth"),
-                    monitorWidth;
-                if (monitoringBloc && (monitorWidth = monitoringBloc.get("offsetWidth"))>10) {
-                    if (monitoringBloc.getY()===actionBloc.getY()) {
+                    toolbar = cb.get("parentNode").one(".wegas-toolbar"),
+                    monitorTitle = toolbar.one(".monitoredDataTitle");
+                if (monitoringBloc) {
+                    if (monitoringBloc.getY() === card.one(".card__blocs--action").getY()) {
                         // Horizontal space is sufficient:
-                        var globalTitleWidth = toolbarWidth - (monitorWidth+actionBloc.get("offsetWidth"));
-                        if (globalTitleWidth > 190) {
-                            globalTitle.set("offsetWidth", globalTitleWidth - 56); // Subtract a constant number of pixels for borders and margins
-                        } else {
-                            globalTitle.setStyle("width", "auto");
-                        }
-                        monitorTitle.set("offsetWidth", monitorWidth);
+                        monitorTitle.set("offsetWidth", monitoringBloc.get("offsetWidth") - 2); // Subtract a few pixels for vertical alignment despite borders etc.
                     } else {
-                        // Set both to minimal width when monitoring and action blocs are misaligned due to lack of horizontal space
-                        globalTitle.setStyle("width", "auto");
+                        // Set to minimal width when monitoring and action blocs are misaligned due to lack of horizontal space
                         monitorTitle.setStyle("width", "auto");
                     }
                     monitorTitle.show();
                 } else {
                     // Hide monitoring title when there is no monitoring bloc
                     monitorTitle.hide();
-                    var globalTitleWidth = toolbarWidth - actionBloc.get("offsetWidth");
-                    if (globalTitleWidth > 245){ // Minimal title width when the monitoring title is hidden ...
-                        globalTitle.set("offsetWidth", globalTitleWidth-57); // Subtract a constant number of pixels for borders and margins
-                    } else {
-                        globalTitle.setStyle("width", "auto");
-                    }
                 }
             },
             _checkToolbarResize: function () {
@@ -310,9 +307,9 @@ YUI.add('wegas-dashboard', function (Y) {
                     clearTimeout(resizeTimer);
                     resizeTimer = setTimeout(function() {
                         ctx._adjustTitles();
-                    }, 250);
+                    }, 10);
                 });
-            },
+            }
 
         },
         {

@@ -145,7 +145,12 @@ YUI.add("wegas-text-input", function(Y) {
             // }, this);
         },
         bindUI: function() {
-            this.handlers.push(Y.Wegas.Facade.Variable.after("update", this.syncUI, this));
+            this.handlers.push(Y.Wegas.Facade.Variable.after("updatedInstance", function(e) {
+                var text = this.get("variable.evaluated");
+                if (text && text.getInstance().get("id") === e.entity.get("id")) {
+                    this.syncUI();
+                }
+            }, this));
             this.on("save", this._save);
         },
         syncUI: function() {

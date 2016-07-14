@@ -26,6 +26,10 @@ import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.Result;
+import com.wegas.resourceManagement.ejb.ResourceFacade;
+import com.wegas.resourceManagement.persistence.Occupation;
+import com.wegas.resourceManagement.persistence.ResourceDescriptor;
+import com.wegas.resourceManagement.persistence.ResourceInstance;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,10 +48,14 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
+import javax.inject.Inject;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -67,6 +75,9 @@ public class UpdateController {
 
     @EJB
     GameModelFacade gameModelFacade;
+
+    @Inject
+    ResourceFacade resourceFacade;
 
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
@@ -426,6 +437,67 @@ public class UpdateController {
 
         Long remaining = this.countOrphans();
         return "OK" + (remaining > 0 ? "(still " + remaining + ")" : "");
+    }
+
+    private EntityManager getEntityManager() {
+        return em;
+    }
+
+    private boolean hasOccupation(ResourceInstance ri, double time) {
+        for (Occupation o : ri.getOccupations()) {
+            if (Math.abs(o.getTime() - time) < 0.000001) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @GET
+    @Path("CleanOccupations")
+    public String cleanOccupations() {
+        String sqlRD = "SELECT rd FROM ResourceDescriptor rd";
+        TypedQuery<ResourceDescriptor> allRd = this.getEntityManager().createQuery(sqlRD, ResourceDescriptor.class);
+        StringBuilder output = new StringBuilder();
+
+        for (ResourceDescriptor rd : allRd.getResultList()) {
+            ResourceInstance defaultInstance = rd.getDefaultInstance();
+            List<Occupation> occupations = defaultInstance.getOccupations();
+
+            HashMap<Long, List<Occupation>> map = new HashMap<>();
+            List<Occupation> cleanList = new ArrayList<>();
+
+            for (Occupation occ : occupations) {
+                Long key = ((Double) occ.getTime()).longValue();
+                if (!map.containsKey(key)) {
+                    map.put(key, new ArrayList<>());
+                    cleanList.add(occ);
+                }
+
+                map.get(key).add(occ);
+            }
+
+            Long created = 0L;
+
+            /**
+             * make sure each occupation exists for each resources
+             */
+            Collection<ResourceInstance> resourceInstances = rd.getScope().getVariableInstances().values();
+            for (ResourceInstance resourceInstance : resourceInstances) {
+                for (Entry<Long, List<Occupation>> entry : map.entrySet()) {
+                    if (!hasOccupation(resourceInstance, entry.getKey().doubleValue())) {
+                        resourceFacade.addOccupation(resourceInstance.getId(), false, entry.getKey());
+                        created++;
+                    }
+                }
+            }
+
+            if (cleanList.size() != occupations.size()) {
+                output.append("CLEAN OCCUPATIONS FOR ").append(rd.getLabel()).append(" (from ").append(occupations.size()).append(" to ").append(cleanList.size()).append("; ").append(created).append(" propagated)").append("<br />");
+                defaultInstance.setOccupations(cleanList);
+            }
+        }
+
+        return output.toString();
     }
 
     private List<Game> findNoDebugTeamGames() {

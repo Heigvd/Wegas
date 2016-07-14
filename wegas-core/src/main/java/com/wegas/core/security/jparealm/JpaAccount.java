@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * Simple class that represents any User domain entity in any application.
@@ -63,12 +64,19 @@ public class JpaAccount extends AbstractAccount {
     @JsonIgnore
     private String salt;
 
+    /**
+     * When the terms of use have been agreed to (usually at signup, except for guests and long time users)
+     */
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date agreedTime = new Date();
+
     @Override
     public void merge(AbstractEntity other) {
         if (other instanceof JpaAccount) {
             super.merge(other);
             JpaAccount a = (JpaAccount) other;
             this.setEmail(a.getEmail());
+            this.setAgreedTime(a.getAgreedTime());
             if (a.getPassword() != null && !a.getPassword().isEmpty()) {                                          // Only update the password if it is set
                 this.setPassword(a.getPassword());
                 this.setPasswordHex(null);                                          // Force jpa update
@@ -170,5 +178,14 @@ public class JpaAccount extends AbstractAccount {
      */
     public void setEmail(String email) {
         this.email = email;
+    }
+
+
+    public Date getAgreedTime() {
+        return agreedTime != null ? new Date(agreedTime.getTime()) : null;
+    }
+
+    public void setAgreedTime(Date agreedTime) {
+        this.agreedTime = agreedTime != null ? new Date(agreedTime.getTime()) : null;
     }
 }

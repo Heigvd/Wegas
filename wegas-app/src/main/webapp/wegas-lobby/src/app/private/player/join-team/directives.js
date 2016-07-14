@@ -42,7 +42,13 @@ angular.module('private.player.join.directives', [])
         ctrl.sessionToJoin = null;
         ctrl.newTeam = {
             name: "",
-            alreadyUsed: false
+            size: "0", // Required for displaying the default label
+            alreadyUsed: false,
+            validSize: false
+        };
+
+        ctrl.checkSize = function() {
+            ctrl.newTeam.validSize = ctrl.newTeam.size!=="0";
         };
 
         ctrl.checkNameUsability = function() {
@@ -63,10 +69,10 @@ angular.module('private.player.join.directives', [])
         ctrl.createTeam = function() {
             var deferred = $q.defer();
             if (!ctrl.newTeam.alreadyUsed) {
-                if (ctrl.newTeam.name !== "") {
+                if (ctrl.newTeam.name !== "" && ctrl.newTeam.size != 0) {
                     if (ctrl.sessionToJoin.access !== "CLOSE") {
                         $interval.cancel(refresher);
-                        TeamsModel.createTeam(ctrl.sessionToJoin, ctrl.newTeam.name).then(function(responseCreate) {
+                        TeamsModel.createTeam(ctrl.sessionToJoin, ctrl.newTeam.name, ctrl.newTeam.size).then(function(responseCreate) {
                             if (!responseCreate.isErroneous()) {
                                 ctrl.newTeam = false;
                                 findSessionToJoin();
@@ -135,7 +141,8 @@ angular.module('private.player.join.directives', [])
             scope: {
                 newTeam: "=",
                 createTeam: "&",
-                checkNameUsability: "&"
+                checkNameUsability: "&",
+                checkSize: "&"
             },
             link: function(scope, elem, attrs) {
                 scope.$watch(function() {
@@ -143,6 +150,12 @@ angular.module('private.player.join.directives', [])
                 }, function(newVal) {
                     scope.checkNameUsability();
                 });
+                scope.$watch(function() {
+                    return scope.newTeam.size;
+                }, function(newVal) {
+                    scope.checkSize();
+                });
+
                 scope.create = function() {
                     var button = $(elem).find(".button--create-team");
                     if (!button.hasClass("button--disable")) {

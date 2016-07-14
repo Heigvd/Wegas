@@ -49,12 +49,10 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
     public void filter(ContainerRequestContext request, ContainerResponseContext response) {
         RequestFacade rmf = RequestFacade.lookup();
         final String managedMode = request.getHeaderString("managed-mode");
-        String id = request.getHeaderString("INTERNAL-ID");
-        long duration = System.currentTimeMillis()
-            - Long.parseLong(request.getHeaderString("INTERNAL-DATE"), 10);
 
-        logger.info("Request [" + id + "] Processed in " + duration
-            + " [ms] => " + response.getStatusInfo());
+        // Todo find a way to access responce from RequestManager.preDestroy (@Context HttpServletResponse?)
+        rmf.getRequestManager().setStatus(response.getStatusInfo());
+       
         if (response.getStatusInfo().getStatusCode() >= 400) {
             logger.warn("Problem : " + response.getEntity());
         }
@@ -63,7 +61,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
 
             ManagedResponse serverResponse = new ManagedResponse();
             List updatedEntities;
-            List deletedEntities;
+            List deletedEntities = new ArrayList<>();
 
             boolean rollbacked = false;
 
@@ -77,7 +75,6 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
             if (response.getEntity() instanceof Exception) {
                 // No Entities but register exception as event
                 updatedEntities = new ArrayList<>();
-                deletedEntities = new ArrayList<>();
                 WegasRuntimeException wrex;
 
                 if (response.getEntity() instanceof WegasRuntimeException) {
@@ -107,7 +104,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                     }
                     //entities = (List<Object>) response.getEntity();
                 } else if (response.getEntity() instanceof ScriptObjectMirror
-                    && ((ScriptObjectMirror) response.getEntity()).isArray()) {
+                        && ((ScriptObjectMirror) response.getEntity()).isArray()) {
                     entities = new ArrayList(((ScriptObjectMirror) response.getEntity()).values());
                 } else if (response.getEntity() != null) {
                     entities = new ArrayList<>();
@@ -116,13 +113,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                     entities = new ArrayList<>();
                 }
 
-                if (request.getMethod().equalsIgnoreCase("DELETE")) {
-                    updatedEntities = new ArrayList<>();
-                    deletedEntities = entities;
-                } else {
-                    updatedEntities = entities;
-                    deletedEntities = new ArrayList<>();
-                }
+                updatedEntities = entities;
 
                 response.setStatus(HttpStatus.SC_OK);
             }
@@ -157,12 +148,20 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                                 if (!deletedEntities.contains(ae)) {
                                     deletedEntities.add(ae);
                                 }
+                                /* 
+                                 * Since each entity which has been returned by the rest method is included
+                                 * within updatedEntities list by default, make sure to not include thoses which
+                                 * where destroyed 
+                                 */
+                                if (updatedEntities.contains(ae)) {
+                                    updatedEntities.remove(ae);
+                                }
                             }
                         }
                     }
 
                     websocketFacade.onRequestCommit(updatedEntitiesMap, destroyedEntitiesMap, outdatedEntitiesMap,
-                        (managedMode.matches("^[\\d\\.]+$") ? managedMode : null));
+                            (managedMode.matches("^[\\d\\.]+$") ? managedMode : null));
                 } catch (NamingException | NoPlayerException ex) {
                     java.util.logging.Logger.getLogger(ManagedModeResponseFilter.class.getName()).log(Level.SEVERE, null, ex);
                 }
