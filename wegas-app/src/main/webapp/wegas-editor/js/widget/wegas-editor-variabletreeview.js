@@ -176,7 +176,9 @@ YUI.add('wegas-editor-variabletreeview', function (Y) {
                 if (Y.Wegas.persistence.ChoiceDescriptor &&
                     dropEntity instanceof Y.Wegas.persistence.ChoiceDescriptor &&
                     entity instanceof Y.Wegas.persistence.Result) {
-                    debugger;
+
+// TODO FIXME WHENE DROPEntity is not original parent
+
                     var oldIndex = Y.Array.indexOf(dropEntity.get("results"), entity),
                         results = dropEntity.get("results");
                     results.splice(e.index, 0, results.splice(oldIndex, 1)[0]);
@@ -205,6 +207,7 @@ YUI.add('wegas-editor-variabletreeview', function (Y) {
 
                 this.handlers.push(ds.after("updatedDescriptor", this.updateDescriptor, this));
                 this.handlers.push(ds.after("updatedInstance", this.updateInstance, this));
+                this.handlers.push(ds.after("addedInstance", this.updateInstance, this));
                 this.handlers.push(ds.after("added", this.addEntity, this));
                 this.handlers.push(ds.after("delete", this.deleteEntity, this));
                 this.handlers.push(Y.after("edit-entity:edit", function (e) {

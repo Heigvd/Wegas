@@ -1076,8 +1076,8 @@ YUI.add('wegas-datasource', function (Y) {
             debugger;
         },
         /*put: function (data, cfg) {
-            VariableInstanceCache.superclass.put.call(this, data, cfg);
-        },*/
+         VariableInstanceCache.superclass.put.call(this, data, cfg);
+         },*/
         generateRequest: function (data) {
             return "/" + data.descriptorId + "/VariableInstance/" + data.id;
         },
@@ -1113,6 +1113,9 @@ YUI.add('wegas-datasource', function (Y) {
                     });
                 } else {
                     scope.variableInstances[scopeKey] = entity;
+                    Y.Wegas.Facade.Variable.fire("addedInstance", {
+                        entity: entity
+                    });
                 }
                 return true;
             }
