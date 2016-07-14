@@ -19,15 +19,19 @@ public class Views {
     }
 
     /**
-     * Potential heavy text
-     * Extended (w/ blob texts)
+     * FUCK
+     */
+    public interface LobbyI {
+    }
+
+    /**
+     * Potential heavy text Extended (w/ blob texts)
      */
     public interface ExtendedI {
     }
 
     /**
-     * Relevant only to editors
-     * EditorI view (w/ scripts, impacts)
+     * Relevant only to editors EditorI view (w/ scripts, impacts)
      */
     public interface EditorI {
     }
@@ -56,8 +60,11 @@ public class Views {
     public static class Editor implements EditorI, ExtendedI, IndexI {
     }
 
+    public static class Lobby implements EditorI, ExtendedI, IndexI, LobbyI {
+    }
+
     /**
-     *  Editor view with VariableInstance embed into VariableDescriptors'Scope
+     * Editor view with VariableInstance embed into VariableDescriptors'Scope
      */
     public static class Instance implements InstanceI, EditorI, ExtendedI, IndexI {
     }

@@ -241,8 +241,7 @@ public class Game extends NamedEntity implements Broadcastable {
     /**
      * @return the gameModel
      */
-    //@JsonView(Views.ExtendedI.class)
-    @JsonIgnore
+    @JsonView(Views.LobbyI.class)
     public GameModel getGameModel() {
         return gameModel;
     }

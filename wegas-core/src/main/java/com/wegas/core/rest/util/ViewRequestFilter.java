@@ -23,6 +23,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Locale;
 import javax.ejb.EJB;
+import javax.swing.text.View;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
@@ -95,6 +96,7 @@ public class ViewRequestFilter implements ContainerRequestFilter {
             case "Extended":
             case "Export":
             case "Editor":
+            case "Lobby":
             case "Instance":
                 //rmf.setView(this.stringToView(firstPathSeg));
                 view = this.stringToView(firstPathSeg);
@@ -152,6 +154,9 @@ public class ViewRequestFilter implements ContainerRequestFilter {
 
             case "Instance":
                 return Views.Instance.class;
+
+            case "Lobby":
+                return Views.Lobby.class;
 
             case "Editor":
                 return Views.Editor.class;

@@ -7,7 +7,7 @@ angular.module('wegas.models.sessions', [])
             sessions = {
                 cache: [],
                 getPath: function(status) {
-                    return ServiceURL + "rest/Editor/GameModel/Game/status/" + status;
+                    return ServiceURL + "rest/Lobby/GameModel/Game/status/" + status;
                 },
                 findSession: function(status, id) {
                     return _.find(sessions.cache[status].data, function(s) {
