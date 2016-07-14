@@ -203,8 +203,8 @@ public class Player extends AbstractEntity implements Broadcastable {
      */
     //@XmlTransient
     @JsonIgnore
-    public int getGameModelId() {
-        return this.getTeam().getGame().getGameModel().getId().intValue();
+    public long getGameModelId() {
+        return this.getTeam().getGame().getGameModel().getId();
     }
 
     /**
@@ -222,8 +222,8 @@ public class Player extends AbstractEntity implements Broadcastable {
      */
     //@XmlTransient
     @JsonIgnore
-    public int getGameId() {
-        return this.getTeam().getGame().getId().intValue();
+    public long getGameId() {
+        return this.getTeam().getGame().getId();
     }
 
     /**
