@@ -50,9 +50,15 @@ YUI.add('wegas-websocketlistener', function (Y) {
             var datasource, entities, entity, i;
             entities = Y.JSON.parse(data).deletedEntities;
             for (i = 0; i < entities.length; i += 1) {
-                entity = Y.Wegas.Editable.revive(entities[i]);
-                datasource = this.getDatasourceFromEntity(entity);
-                datasource.cache.updateCache("DELETE", entity, false);
+                datasource = this.getDatasourceFromClassName(entities[i]["@class"]);
+                entity = datasource.cache.find("id", entities[i].id);
+                if (entity) {
+                    // due to the parent-child descriptors organisation, such a 
+                    // destroyed descriptor may have already been deleted from 
+                    // the cache while updating its parent...
+                    // -> Avoid deleting notfound entities
+                    datasource.cache.updateCache("DELETE", entity, false);
+                }
             }
         },
         onCustomEvent: function (data) {
@@ -64,7 +70,7 @@ YUI.add('wegas-websocketlistener', function (Y) {
                 entity = Y.Wegas.Editable.revive(parsed.updatedEntities[i]);
 
                 if (entity instanceof Y.Wegas.persistence.VariableInstance) {
-                    request = "//VariableInstance/" + entity.get("id");
+                    request = "/VariableInstance/" + entity.get("id");
                 } else if (entity instanceof Y.Wegas.persistence.VariableDescriptor) {
                     request = "/" + entity.get("id");
                 }
@@ -94,6 +100,7 @@ YUI.add('wegas-websocketlistener', function (Y) {
 
             for (dsId in remappedEntities) {
                 if (remappedEntities.hasOwnProperty(dsId)) {
+                    Y.log("Updated Instances : " + JSON.stringify(remappedEntities[dsId].entities));
                     remappedEntities[dsId].datasource.cache.fire("EntityUpdatedEvent", {
                         "@class": "EntityUpdatedEvent",
                         updatedEntities: remappedEntities[dsId].entities
@@ -111,6 +118,9 @@ YUI.add('wegas-websocketlistener', function (Y) {
             } else {
                 return null;
             }
+        },
+        getDatasourceFromClassName: function (className) {
+            return this.getDatasourceFromEntity(new Y.Wegas.persistence[className]());
         },
         destructor: function () {
             var i;

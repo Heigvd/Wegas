@@ -1046,7 +1046,7 @@ YUI.add('wegas-datasource', function (Y) {
         getChildren: function (entity) {
             if (entity["@class"] === "Scope") {
                 var k, values = [];
-                for (k in entity.variableInstance) {
+                for (k in entity.variableInstances) {
                     if (entity.variableInstances.hasOwnProperty(k)) {
                         values.push(entity.variableInstances[k]);
                     }
@@ -1085,17 +1085,29 @@ YUI.add('wegas-datasource', function (Y) {
          * @function
          */
         updateCache: function (method, entity) {
-            var scope, scopeKey, descriptorId;
-            if (method === DELETE) {
-                // shall never happen...
-                // Check what happen when a broadcasted instances has been removed (e.g. when effective instance owner leaves)
-                debugger;
-                return false;
-            } else {
-                descriptorId = +entity.get("descriptorId");
-                scopeKey = +entity.get("scopeKey");
+            var scope, scopeKey, descriptorId, index;
+            descriptorId = +entity.get("descriptorId");
+            scopeKey = +entity.get("scopeKey");
+            scope = this.find("descriptorId", descriptorId);
 
-                scope = this.find("descriptorId", descriptorId);
+
+            if (method === DELETE) {
+                if (scope) {
+                    if (scope.variableInstances[scopeKey]) {
+                        delete scope.variableInstances[scopeKey];
+                    }
+                    if (Object.getOwnPropertyNames(scope.variableInstances).length === 0) {
+                        index = this.getCache().indexOf(scope);
+
+                        if (index >= 0) {
+                            this.getCache().splice(index, 1);
+                            //this.deleteFromIndexes(entity);
+                        }
+
+                    }
+                }
+                return true;
+            } else {
                 if (!scope) {
                     scope = {
                         "@class": "Scope",
@@ -1108,6 +1120,7 @@ YUI.add('wegas-datasource', function (Y) {
 
                 if (scope.variableInstances[scopeKey]) {
                     scope.variableInstances[scopeKey].setAttrs(entity.getAttrs());
+                    //this.insertFromIndexes(entity);
                     Y.Wegas.Facade.Variable.fire("updatedInstance", {// Variable instance updated
                         entity: entity
                     });

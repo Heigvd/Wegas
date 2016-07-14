@@ -12,6 +12,7 @@ import com.pusher.rest.data.PresenceUser;
 import com.pusher.rest.data.Result;
 import com.wegas.core.Helper;
 import com.wegas.core.event.client.ClientEvent;
+import com.wegas.core.event.client.DestroyedEntity;
 import com.wegas.core.event.client.EntityDestroyedEvent;
 import com.wegas.core.event.client.EntityUpdatedEvent;
 import com.wegas.core.exception.internal.NoPlayerException;
@@ -111,10 +112,12 @@ public class WebsocketFacade {
                 // Current logged User is the player itself
                 // the player MUST be a member of the team
                 return playerFacade.checkExistingPlayerInTeam(team.getId(), user.getId()) != null;
-            } else {
-                // Trainer of scenarist (player is not linked to user)
-                return SecurityHelper.isPermitted(team.getGame(), "Edit");
-            }
+            } else // Trainer of scenarist (player is not linked to user)
+             if (team != null) {
+                    return SecurityHelper.isPermitted(team.getGame(), "Edit");
+                } else {
+                    return false;
+                }
         } else if ("Player".equals(type)) {
             User user = userFacade.getCurrentUser();
             Player player = playerFacade.find(id);
@@ -324,20 +327,33 @@ public class WebsocketFacade {
                 String audience = entry.getKey();
                 List<AbstractEntity> toPropagate = entry.getValue();
 
-                /**
-                 * #1222: concurrency issue
-                 * 
-                 * this process is asynchronous, entities (and underlying EntityManager) 
-                 * come from another thread. This is strictly forbidden (EntityManager 
-                 * is not thread-safe) and leads to some very strange and hardly 
-                 * reproducible deadlocks. (involving uninitialized IndirectList...)
-                 * 
-                 * The fix consists to re-find all entities within a new EntityManager 
-                 * before serialization occurs
-                 */
                 List<AbstractEntity> refreshed = new ArrayList<>();
-                for (AbstractEntity ae : toPropagate) {
-                    refreshed.add(em.find(ae.getClass(), ae.getId()));
+
+                if (eventClass == EntityDestroyedEvent.class) {
+                    /*
+                     * Not possible to find an already destroyed entity, so, in 
+                     * this case (and since those informations are sufficient), 
+                     * only id and class name are propagated
+                     */
+                    for (AbstractEntity ae : toPropagate) {
+                        refreshed.add(new DestroyedEntity(ae.getId(), ae.getClass().getSimpleName()));
+                    }
+                } else {
+                    /*
+                     * #1222: concurrency issue
+                     *
+                     * this process is asynchronous, entities (and underlying
+                     * EntityManager) come from another thread. This is strictly
+                     * forbidden (EntityManager is not thread-safe) and leads to
+                     * some very strange and hardly reproducible deadlocks.
+                     * (involving uninitialized IndirectList...)
+                     *
+                     * The fix consists to re-find all entities within a new
+                     * EntityManager before serialization occurs
+                     */
+                    for (AbstractEntity ae : toPropagate) {
+                        refreshed.add(em.find(ae.getClass(), ae.getId()));
+                    }
                 }
                 //logger.error(eventClass.getSimpleName() + " entities: " + audience + ": " + toPropagate.size());
                 ClientEvent event = eventClass.getDeclaredConstructor(List.class).newInstance(refreshed);

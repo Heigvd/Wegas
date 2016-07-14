@@ -111,7 +111,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
          * @returns {Y.Wegas.persistence.VariableInstance}
          */
         getInstance: function (player) {
-            var key;
+            var key, scope;
             player = player || Wegas.Facade.Game.get("currentPlayer");
             switch (this.get("scope").get("@class")) {
                 case "PlayerScope": 
@@ -128,7 +128,9 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                     break;
             }
 
-            return Y.Wegas.Facade.Instance.cache.find("descriptorId", this.get("id")).variableInstances[key];
+            scope = Y.Wegas.Facade.Instance.cache.find("descriptorId", this.get("id"));
+            return (scope ? scope.variableInstances[key] : null);
+
 
             //return this.get("scope").getInstance(player || Wegas.Facade.Game.get("currentPlayer"));
 

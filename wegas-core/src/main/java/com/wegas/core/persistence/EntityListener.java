@@ -74,7 +74,7 @@ public class EntityListener {
             Broadcastable b = (Broadcastable) o;
             Map<String, List<AbstractEntity>> entities = b.getEntities();
             if (entities != null) {
-                if (b instanceof VariableDescriptor || b instanceof Game) {
+                if (b instanceof VariableDescriptor || b instanceof VariableInstance || b instanceof Game) {
                     logger.debug(("#Entities: " + entities.size()));
                     requestManager.addDestroyedEntities(entities);
                 } else if (b instanceof Team || b instanceof Player) {
