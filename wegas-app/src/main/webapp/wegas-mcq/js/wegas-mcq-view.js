@@ -203,6 +203,9 @@ YUI.add('wegas-mcq-view', function(Y) {
             this.dataSource.cache.getWithView(question, "Extended", {// Retrieve the question/choice description from the server
                 on: {
                     success: Y.bind(function(e) {
+                        if (this.get("destroyed"))
+                            return;
+
                         var question = e.response.entity;
 
                         this.genMarkup(question);
@@ -452,7 +455,9 @@ YUI.add('wegas-mcq-view', function(Y) {
             }
             ret.push('</div>'); // end mcq-question
 
-            this.get(CONTENTBOX).setHTML(ret.join(""));
+            if (!this.get("destroyed")) {
+                this.get(CONTENTBOX).setHTML(ret.join(""));
+            }
         },
         /**
          * @function

@@ -66,7 +66,11 @@ YUI.add("wegas-widget", function(Y) {
          */
         showOverlay: function(klass) {
             this.fire("wegas:showOverlay", klass);
-            this.overlayCounter += 1;
+            if (this.overlayCounter === undefined || this.overlayCounter<=0){
+                this.overlayCounter = 1;
+            } else {
+                this.overlayCounter += 1;
+            }
             return this;
         },
         /**
@@ -76,7 +80,11 @@ YUI.add("wegas-widget", function(Y) {
          */
         hideOverlay: function(klass) {
             this.fire("wegas:hideOverlay", klass);
-            this.overlayCounter -= 1;
+            if (this.overlayCounter === undefined || this.overlayCounter<=0){
+                this.overlayCounter = 0;
+            } else {
+                this.overlayCounter -= 1;
+            }
             return this;
         },
         hideAllOverlay: function() {

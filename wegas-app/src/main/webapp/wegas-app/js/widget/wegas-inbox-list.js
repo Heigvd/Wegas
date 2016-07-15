@@ -84,11 +84,11 @@ YUI.add('wegas-inbox-list', function(Y) {
                 },
                 on: {
                     success: Y.bind(function(e) {
-                        try {
-                            this.updateView(e.response.entities);
-                        } finally {
-                            this.hideOverlay();
+                        if (this.get("destroyed")) {
+                            return;
                         }
+                        this.updateView(e.response.entities);
+                        this.hideOverlay();
                     }, this)
                 }
             });

@@ -68,9 +68,9 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             this.tabView.after("selectionChange", this.onTabSelected, this);
             this.handlers.response = this.dataSource.after("update", this.syncUI, this);
 /*
-// This code produces an issue with the loading overlay (show-/hideOverlay()):
+// This code does not refresh the display when a question list is to be replaced by another list:
             this.handlers.response = this.dataSource.after("updatedInstance", function(e) {
-                // Quick test before entering the loop:
+                // Easy test to possibly avoid entering the loop:
                 if (e.entity.get("@class") !== "QuestionInstance") return;
                 var questions = this.get("variable.evaluated");
                 // Check for null and undefined:
@@ -86,7 +86,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                     }
                 }
             }, this);
- */
+*/
         },
         /**
          * @function
