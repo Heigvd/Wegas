@@ -1,4 +1,3 @@
-
 /*
  |--------------------------------------------------------------------------
  | Browser-sync config file
@@ -14,7 +13,7 @@
  */
 /**
  * Works only for YUI based (non-min, non-combo) files as no build is made.
- * Sources are directly served. 
+ * Sources are directly served.
  */
 module.exports = {
     "ui": {
@@ -24,7 +23,9 @@ module.exports = {
         }
     },
     "files": ["src/main/webapp/**/*.js", "src/main/webapp/**/*.css"],
-    "watchOptions": {},
+    "watchOptions": {
+        ignored: "src/**/src/**"
+    },
     "server": false,
     "proxy": "http://localhost:8080/Wegas/",
     "port": 3000,

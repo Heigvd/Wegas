@@ -739,7 +739,9 @@ YUI.add("treeview", function(Y) {
             },
             selected: {
                 setter: function(v) {
-                    this.get(BOUNDING_BOX).toggleClass(SELECTED, v);
+                    if(!this.get("destroyed")) {
+                        this.get(BOUNDING_BOX).toggleClass(SELECTED, v);
+                    }
                     return v;
                 }
             },
