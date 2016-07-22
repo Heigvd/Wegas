@@ -15,6 +15,7 @@ import FlatVariableSelect from './Views/Interacting/flatvariableselect';
 import PluginList from './Views/Interacting/pluginlist';
 import EntityArrayFieldSelect from './Views/Interacting/entityarrayfieldselect';
 import PageSelect from './Views/Interacting/pageselect';
+import { VariableStatement, MultiVariableMethod } from './Script/index';
 
 setDefaultWidgets({
     object: ObjectView,
@@ -33,5 +34,7 @@ setDefaultWidgets({
     flatvariableselect: FlatVariableSelect,
     pluginlist: PluginList,
     entityarrayfieldselect: EntityArrayFieldSelect,
-    pageselect: PageSelect
+    pageselect: PageSelect,
+    variableselect: VariableStatement,
+    script: MultiVariableMethod
 });

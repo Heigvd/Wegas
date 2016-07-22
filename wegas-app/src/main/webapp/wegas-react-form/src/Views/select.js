@@ -32,35 +32,37 @@ function SelectView(props) {
     const choices = props.view.choices || [];
     const menuItems = choices.map(genItems);
     return (
-        <div className={props.view.className}>
-            <SelectField
-                value={props.value}
-                floatingLabelText={props.view.label || props.editKey}
-                errorText={errorMessage}
-                onChange={onChange}
-                disabled={props.disabled}
-                fullWidth
-            >
-                {menuItems}
-            </SelectField>
-        </div>
+        <SelectField
+            className={props.view.className}
+            value={props.value}
+            floatingLabelText={props.view.label || props.editKey}
+            errorText={errorMessage}
+            onChange={onChange}
+            disabled={props.disabled}
+            fullWidth
+        >
+            {menuItems}
+        </SelectField>
     );
 }
+SelectView.defaultProps = {
+    errorMessage: []
+};
 
 SelectView.propTypes = {
-    errorMessage: PropTypes.arrayOf(PropTypes.string),
+    errorMessage: PropTypes.arrayOf(PropTypes.string).isRequired,
     onChange: PropTypes.func.isRequired,
     value: PropTypes.any,
     view: PropTypes.shape({
         label: PropTypes.string,
         className: PropTypes.string,
-        choices: PropTypes.array
+        choices: PropTypes.array,
+        short: PropTypes.bool
     }),
     editKey: PropTypes.string,
     disabled: PropTypes.bool,
     multiLine: PropTypes.bool
 };
-
 export default async(SelectView)(({ view }) => {
     const { choices } = view;
     if (typeof choices === 'function') {

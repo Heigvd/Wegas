@@ -13,7 +13,7 @@ module.exports = {
         root: [path.resolve('./src')]
     },
     plugins: [
-        new webpack.HotModuleReplacementPlugin(),
+     //   new webpack.HotModuleReplacementPlugin(),
         new webpack.NoErrorsPlugin()
     ],
     module: {

@@ -12,13 +12,14 @@ function optionNameToString(result, name) {
 function EntityArrayFieldSelect(props) {
     const Y = getY();
     const { field, returnAttr, scope, entity, name, ...restView } = props.view;
+    const computedEntity = entity ?
+        Y.Wegas.Facade.Variable.cache.find('name', entity) :
+        Y.Plugin.EditEntityAction.currentEntity;
     let results;
     if (scope !== 'instance') {
-        results = entity ? entity.get(field) :
-            Y.Plugin.EditEntityAction.currentEntity.get(field);
+        results = computedEntity.get(field);
     } else {
-        results = entity ? entity.getInstance().get(field) :
-            Y.Plugin.EditEntityAction.currentEntity.getInstance().get(field);
+        results = computedEntity.getInstance().get(field);
     }
     const choices = results.map(r => ({
         value: r.get(returnAttr || 'name'),

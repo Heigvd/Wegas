@@ -9,7 +9,7 @@
  * @fileOverview
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-YUI.add("wegas-template", function(Y) {
+YUI.add("wegas-template", function (Y) {
     "use strict";
 
     var Micro = Y.Template.Micro, Wegas = Y.Wegas, AbstractTemplate;
@@ -26,7 +26,7 @@ YUI.add("wegas-template", function(Y) {
      */
     AbstractTemplate = Y.Base.create("wegas-template", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         /*@lends Y.Wegas.AbstractTemplate#*/
-        syncUI: function() {
+        syncUI: function () {
             Y.log("syncUI()", "log", "Wegas.AbstractTemplate");
             var template = this.getTemplate(),
                 data = this.computeData();
@@ -36,20 +36,20 @@ YUI.add("wegas-template", function(Y) {
                 Y.log("Error rendering template: " + template, "error", "Wegas.AbstractTemplate");
             }
         },
-        bindUI: function() {
+        bindUI: function () {
             this.after(["dataChange", "variableChange"], this.syncUI);
             this.vdUpdateHandler = Wegas.Facade.Variable.after("updatedInstance", this.syncTemplate, this);
         },
-        syncTemplate: function(payload) {
+        syncTemplate: function (payload) {
             var template = this.get("variable.evaluated");
             if (template && template.getInstance().get("id") === payload.entity.get("id")) {
                 this.syncUI();
             }
         },
-        getTemplate: function() {
+        getTemplate: function () {
             return this.TEMPLATE;
         },
-        computeData: function() {
+        computeData: function () {
             var data = {}, initialData = Y.merge(this.get("data")), desc = this.get("variable.evaluated");
 
             if (desc) {
@@ -68,7 +68,7 @@ YUI.add("wegas-template", function(Y) {
                 if (initialData.label) {
                     initialData.label = Y.Template.Micro.compile(initialData.label || "")();
                 }
-                if (data.value === undefined){
+                if (data.value === undefined) {
                     data.value = this.undefinedToEmpty(desc.getInstance().get("value"));
                 }
                 data.maxValue = this.undefinedToEmpty(desc.get("maxValue"));
@@ -79,7 +79,7 @@ YUI.add("wegas-template", function(Y) {
 
             return Y.mix(initialData, data, false, null, 0, true);
         },
-        getEditorLabel: function() {
+        getEditorLabel: function () {
             var variable;
             if (this.get("data.label")) {
                 return this.get("data.label");
@@ -90,39 +90,39 @@ YUI.add("wegas-template", function(Y) {
             }
             return null;
         },
-        destructor: function() {
+        destructor: function () {
             this.vdUpdateHandler.detach();
         },
-        undefinedToEmpty: function(value) {
+        undefinedToEmpty: function (value) {
             return Y.Lang.isUndefined(value) ? "" : "" + value;
         }
     }, {
-        /*@lends Y.Wegas.AbstractTemplate*/
+            /*@lends Y.Wegas.AbstractTemplate*/
         EDITORNAME: "Variable template",
         ATTRS: {
-            /**
-             * The target variable, returned either based on the variableName attribute,
-             * and if absent by evaluating the expr attribute.
-             */
+                /**
+                 * The target variable, returned either based on the variableName attribute,
+                 * and if absent by evaluating the expr attribute.
+                 */
             variable: {
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                _inputex: {
-                    _type: "variableselect",
+                view: {
+                    type: "variableselect",
                     label: "variable"
                         //classFilter: ["NumberDescriptor"]
                 }
             },
             data: {
-                value: {},
-                _inputex: {
+                type: 'object',
+                value: { label: '' },
+                defaultProperties: {
+                    type: 'string'
+                },
+                view: {
+                    type: 'hashlist',
                     label: "Options",
-                    wrapperClassName: 'inputEx-fieldWrapper',
-                    _type: "group",
-                    fields: [{
-                            name: "label",
-                            label: "label"
-                        }],
-                    required: false
+                    required: false,
+                    keyLabel: 'Value'
                 }
             }
         }
@@ -130,7 +130,7 @@ YUI.add("wegas-template", function(Y) {
     Wegas.Template = Y.Base.create("wegas-template", AbstractTemplate, [], {
         /*@lends Y.Wegas.Template#*/
         TEMPLATES: {},
-        getTemplate: function() {
+        getTemplate: function () {
             var template = this.get("custom"),
                 hashCode = "" + Wegas.Helper.hashCode(template);
             if (Y.Lang.isUndefined(this.TEMPLATES[hashCode])) {
@@ -139,7 +139,7 @@ YUI.add("wegas-template", function(Y) {
             return this.TEMPLATES[hashCode];
         }
     }, {
-        /*@lends Y.Wegas.Template*/
+            /*@lends Y.Wegas.Template*/
         EDITORNAME: "Custom template",
         ATTRS: {
             custom: {
@@ -181,14 +181,14 @@ YUI.add("wegas-template", function(Y) {
         TEMPLATE: Micro.compile("<div><%== this.value %></div>")
     }, {
         ATTRS: {
-            /**
-             * The target variable, returned either based on the variableName attribute,
-             * and if absent by evaluating the expr attribute.
-             */
+                /**
+                 * The target variable, returned either based on the variableName attribute,
+                 * and if absent by evaluating the expr attribute.
+                 */
             variable: {
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                _inputex: {
-                    _type: "variableselect",
+                view: {
+                    type: "variableselect",
                     label: "variable",
                     classFilter: ["TextDescriptor", "StringDescriptor"]
                 }

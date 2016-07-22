@@ -26,6 +26,11 @@ YUI.add("wegas-statemachine-entities", function (Y) {
         STATES = "states",
         ID = "id",
         HTML = "html",
+        SELFARG = {
+            type: 'identifier',
+            value: SELF,
+            view: { type: HIDDEN }
+        },
         Wegas = Y.Wegas,
         persistence = Wegas.persistence;
 
@@ -210,65 +215,56 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                     fn: "EditFSMAction"
                 }]
             }, {
-                    type: BUTTON,
-                    label: "Copy",
-                    plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-                }, {
-                    type: "DeleteFSMButton"
-                }, {
-                    type: BUTTON,
-                    label: "Export",
-                    plugins: [{
-                        fn: "WidgetMenu",
-                        cfg: {
-                            children: [{
-                                type: "PrintButton",
-                                label: "Html"
-                            }, {
-                                    type: "PrintButton",
-                                    label: "Html (Players document)",
-                                    mode: "player"
-                                }, {
-                                    type: "PrintButton",
-                                    label: "Pdf",
-                                    outputType: "pdf"
-                                }, {
-                                    type: "PrintButton",
-                                    label: "Pdf (Players document)",
-                                    outputType: "pdf",
-                                    mode: "player"
-                                }, {
-                                    type: "OpenEntityButton",
-                                    label: "Json",
-                                    url: "rest/Export/GameModel/VariableDescriptor/{id}"
-                                }]
-                        }
-                    }]
-                }
+                type: BUTTON,
+                label: "Copy",
+                plugins: [{
+                    fn: "DuplicateEntityAction"
+                }]
+            }, {
+                type: "DeleteFSMButton"
+            }, {
+                type: BUTTON,
+                label: "Export",
+                plugins: [{
+                    fn: "WidgetMenu",
+                    cfg: {
+                        children: [{
+                            type: "PrintButton",
+                            label: "Html"
+                        }, {
+                            type: "PrintButton",
+                            label: "Html (Players document)",
+                            mode: "player"
+                        }, {
+                            type: "PrintButton",
+                            label: "Pdf",
+                            outputType: "pdf"
+                        }, {
+                            type: "PrintButton",
+                            label: "Pdf (Players document)",
+                            outputType: "pdf",
+                            mode: "player"
+                        }, {
+                            type: "OpenEntityButton",
+                            label: "Json",
+                            url: "rest/Export/GameModel/VariableDescriptor/{id}"
+                        }]
+                    }
+                }]
+            }
             ],
             METHODS: {
                 enable: {
                     label: "activate",
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    arguments: [SELFARG]
                 },
                 disable: {
                     label: "desactivate",
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    arguments: [SELFARG]
                 },
                 isEnabled: {
                     label: "is active",
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }],
+                    arguments: [SELFARG],
                     returns: BOOLEAN,
                     localEval: function (self) {
                         return this.getInstance(self).get("enabled");
@@ -276,10 +272,7 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                 },
                 isDisabled: {
                     label: "is inactive",
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }],
+                    arguments: [SELFARG],
                     returns: BOOLEAN,
                     localEval: function (self) {
                         return !this.getInstance(self).get("enabled");
@@ -476,31 +469,29 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                     type: [NULL, OBJECT],
                     index: 3,
                     properties: {
-                        "@class": { type: "string", value: "Script", view: { type: HIDDEN } },
+                        "@class": { type: STRING, value: "Script" },
                         content: {
-                            type: STRING,
-                            view: { type: SCRIPT }
+                            type: STRING
                         }
                     },
                     view: {
+                        type: SCRIPT,
                         label: 'Condition'
                     }
                 },
                 postTriggerEvent: {
                     type: OBJECT,
                     properties: {
-                        "@class": { type: "string", value: "Script", view: { type: HIDDEN } },
+                        "@class": { type: STRING, value: "Script" },
                         content: {
-                            type: STRING,
-                            errored: function (v) {
-                                if (!v) { return 'is required' }
-                            },
-                            view: { type: SCRIPT }
+                            required: true,
+                            type: STRING
                         }
                     },
                     required: true,
                     index: 4,
                     view: {
+                        type: SCRIPT,
                         label: 'Impact'
                     }
                 },
@@ -511,14 +502,14 @@ YUI.add("wegas-statemachine-entities", function (Y) {
             EDITMENU: [{
                 type: "EditEntityButton"
             }, {
-                    type: BUTTON,
-                    label: "Copy",
-                    plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-                }, {
-                    type: "DeleteEntityButton"
+                type: BUTTON,
+                label: "Copy",
+                plugins: [{
+                    fn: "DuplicateEntityAction"
                 }]
+            }, {
+                type: "DeleteEntityButton"
+            }]
         });
     /*
      * TriggerInstance Entity
@@ -614,14 +605,14 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                     }
                 }]
             }, {
-                    type: BUTTON,
-                    label: "Copy",
-                    plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-                }, {
-                    type: "DeleteFSMButton"
+                type: BUTTON,
+                label: "Copy",
+                plugins: [{
+                    fn: "DuplicateEntityAction"
                 }]
+            }, {
+                type: "DeleteFSMButton"
+            }]
         });
 
     /**
