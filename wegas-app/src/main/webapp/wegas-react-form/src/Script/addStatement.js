@@ -12,6 +12,11 @@ export default function addStatement(fn) {
                     code: props.code
                 };
             }
+            componentWillReceiveProps(nextProps) {
+                this.setState({
+                    code: nextProps.code
+                });
+            }
             render() {
                 return (
                     <div>

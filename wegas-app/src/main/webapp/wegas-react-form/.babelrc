@@ -9,6 +9,11 @@
     "env": {
         "development": {
             "presets": []
+        },
+        "production": {
+            "plugins": [
+                "transform-react-remove-prop-types"
+            ]
         }
     }
 }

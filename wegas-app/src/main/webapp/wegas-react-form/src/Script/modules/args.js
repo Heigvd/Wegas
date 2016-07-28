@@ -5,20 +5,20 @@ import Container from 'jsoninput';
 
 const Y = getY();
 const { builders: b } = types;
-export function ArgView({ view, onChange, value, schema }) {
-    const type = value.type;
-    const val = value.name || value.value;
-    console.log(schema);
-    return (
-        <input
-            value={val}
-            onChange={
-                event =>
-                    onChange(b[type.charAt(0).toLowerCase() + type.slice(1)](event.target.value))
-            }
-        />
-    );
-}
+// export function ArgView({ view, onChange, value, schema }) {
+//     const type = value.type;
+//     const val = value.name || value.value;
+//     console.log(schema);
+//     return (
+//         <input
+//             value={val}
+//             onChange={
+//                 event =>
+//                     onChange(b[type.charAt(0).toLowerCase() + type.slice(1)](event.target.value))
+//             }
+//         />
+//     );
+// }
 const argSchema = (schema, variable) => {
     const type = schema.type === 'identifier' ? 'string' : schema.type;
     return Object.assign({}, schema, {
@@ -27,24 +27,28 @@ const argSchema = (schema, variable) => {
     });
 };
 function valueToType(v, schema) {
+    const val = v === undefined ? schema.value : v;
+    if (val === undefined) {
+        return b.identifier('undefined');
+    }
     switch (schema.type) {
     case 'string':
     case 'number':
     case 'boolean':
-        return b.literal(v);
+        return b.literal(val);
     case 'identifier':
-        return b.identifier(v);
+        return b.identifier(val);
     case 'array':
     case 'object': {
-        const x = parse(JSON.stringify(v)).program.body[0].expression;
-        return x;
-    }
+            const x = parse(JSON.stringify(val)).program.body[0].expression;
+            return x;
+        }
     default:
         throw Error(`implement me ${schema.type}`);
     }
 }
 function typeToValue(v, schema) {
-    if (!v) {
+    if (!v || v.name === 'undefined') {
         return undefined;
     }
     switch (schema.type) {
@@ -62,16 +66,17 @@ function typeToValue(v, schema) {
     }
 }
 
-export function handleArgs(variable, method, args, onChange) {
+function handleArgs(variable, method, args, onChange) {
     const methodDescr = Y.Wegas.Facade.Variable.cache.find('name', variable)
         .getMethodCfgs()[method];
     if (!methodDescr) {
         return [];
     }
     const argDescr = methodDescr.arguments;
-    const ret = argDescr.map((v, i) => args[i] || types.builders.identifier('undefined'));
-    if (ret.length < args.length) { // remove "overflow" arguments
-        setImmediate(() => onChange(ret));
+    const ret = argDescr.map((v, i) => args[i] || valueToType(undefined, v));
+
+    if (args.length !== argDescr.length) { // remove/create unknown arguments
+        setTimeout(() => onChange(ret), 0);
         return [];
     }
     return argDescr.map((a, i) => {
@@ -83,9 +88,14 @@ export function handleArgs(variable, method, args, onChange) {
                 value={typeToValue(val, a)}
                 onChange={v => {
                     ret[i] = valueToType(v, a);
-                    onChange(ret);
+                    setTimeout(() => onChange(ret), 0);
                 }}
             />
         );
     });
 }
+export {
+    handleArgs,
+    valueToType,
+    typeToValue
+};

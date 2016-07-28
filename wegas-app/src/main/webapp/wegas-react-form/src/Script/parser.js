@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react';
 import { parse, print, types } from 'recast';
+import IconButton from 'material-ui/IconButton';
 
 class ViewSrc extends React.Component {
     constructor(props) {
@@ -11,6 +12,10 @@ class ViewSrc extends React.Component {
         if (this.state.src) {
             child = (
                 <textarea
+                    style={{
+                        width: '90%',
+                        height: '200px'
+                    }}
                     defaultValue={this.props.value}
                     onChange={event => this.props.onChange(event.target.value)}
                 />
@@ -20,11 +25,12 @@ class ViewSrc extends React.Component {
         }
         return (
             <div>
-                <span
+                <IconButton
+                    iconClassName="fa fa-pencil"
                     onClick={() => this.setState({
                         src: !this.state.src
                     })}
-                >TOGGLE SOURCE</span>
+                />
                 {child}
             </div>
         );
@@ -33,7 +39,7 @@ class ViewSrc extends React.Component {
 ViewSrc.propTypes = {
     value: PropTypes.string,
     onChange: PropTypes.func,
-    children: PropTypes.element
+    children: PropTypes.element.isRequired
 };
 
 function parsed(Comp) {

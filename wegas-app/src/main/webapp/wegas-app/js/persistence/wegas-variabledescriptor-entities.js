@@ -1398,6 +1398,7 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
                         SELFARG,
                         {
                             type: BOOLEAN,
+                            value: true,
                             required: true
                         }]
                 },

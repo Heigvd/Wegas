@@ -475,7 +475,7 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                         }
                     },
                     view: {
-                        type: SCRIPT,
+                        type: 'scriptcondition',
                         label: 'Condition'
                     }
                 },

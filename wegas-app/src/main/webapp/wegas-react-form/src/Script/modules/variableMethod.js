@@ -7,19 +7,26 @@ import { methodSchema } from './method';
 import isMatch from 'lodash/fp/isMatch';
 
 const { builders: b, visit } = types;
-window.r = print;
-const buildMethod = v =>
-    b.callExpression(
+
+const buildMethod = (v, type) => {
+    if (type === 'getter') {
+        return b.expressionStatement(
+            buildMethod(v)
+        );
+    }
+    return b.callExpression(
         b.memberExpression(
             build(v.variable),
             b.identifier(v.method)
         ),
         v.args
     );
+};
+
 const isVarMethod = node =>
     isMatch({ type: 'CallExpression', callee: { type: 'MemberExpression' } }, node) &&
     isVar(node.callee.object);
-const extractMethod = (node) => {
+export const extractMethod = (node) => {
     const ret = {
         variable: undefined,
         method: undefined,
@@ -38,7 +45,9 @@ const extractMethod = (node) => {
     });
     return ret;
 };
-
+/**
+ * handles method call on VariableDescriptor
+ */
 class VariableMethod extends React.Component {
     constructor(props) {
         super(props);
@@ -49,9 +58,21 @@ class VariableMethod extends React.Component {
             args
         };
     }
+    componentWillReceiveProps(nextProps) {
+        if (this.props.node !== nextProps.node) {
+            this.setState(extractMethod(nextProps.node));
+        }
+    }
     check() {
-        if (this.state.variable && this.state.method) {
-            this.props.onChange(buildMethod(this.state));
+        const schema = methodSchema(this.props.view.method, this.state.variable, this.props.type);
+        if (!schema.view.choices.some(c => c.value === this.state.method)) {
+            this.setState({ method: undefined });
+        } else if (this.state.variable && this.state.method) {
+            try {
+                this.props.onChange(buildMethod(this.state, this.props.type));
+            } catch (e) {
+                console.error(e);
+            }
         }
     }
     render() {
@@ -62,16 +83,16 @@ class VariableMethod extends React.Component {
                 schema={variableSchema(view.variable)}
                 value={this.state.variable}
                 onChange={v => this.setState({ variable: v }, this.check)}
-            />
+                />
         )];
         if (this.state.variable) {
             child.push(
                 <Container
                     key="method"
-                    schema={methodSchema(view.method, this.state.variable)}
+                    schema={methodSchema(view.method, this.state.variable, this.props.type)}
                     value={this.state.method}
                     onChange={v => this.setState({ method: v }, this.check)}
-                />
+                    />
             );
         }
         if (this.state.method) {
@@ -88,6 +109,7 @@ class VariableMethod extends React.Component {
 VariableMethod.propTypes = {
     node: PropTypes.object,
     onChange: PropTypes.func.isRequired,
-    view: PropTypes.object
+    view: PropTypes.object,
+    type: PropTypes.oneOf(['getter', 'condition'])
 };
 export default VariableMethod;

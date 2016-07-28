@@ -37,7 +37,7 @@ class HashlistView extends React.Component {
         }, 20);
     }
     render() {
-        const { addKey, removeKey, alterKey, children, ...restProps } = this.props;
+        const { removeKey, alterKey, children, ...restProps } = this.props;
         const newChildren = React.Children.map(children, child => {
             function remove() {
                 removeKey(child.props.editKey);
