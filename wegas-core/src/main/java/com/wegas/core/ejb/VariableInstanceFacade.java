@@ -8,6 +8,7 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.NoGameException;
 import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.exception.internal.NoTeamException;
@@ -22,6 +23,7 @@ import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -263,6 +265,12 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
 
     @Override
     public VariableInstance update(final Long entityId, final VariableInstance entity) {
+        try {
+            this.findAPlayer(entity);
+        } catch (NoPlayerException ex) {
+            java.util.logging.Logger.getLogger(VariableInstanceFacade.class.getName()).log(Level.SEVERE, null, ex);
+            throw WegasErrorMessage.error("Salut");
+        }
         VariableInstance ret = super.update(entityId, entity);
         requestFacade.commit();
         return ret;
