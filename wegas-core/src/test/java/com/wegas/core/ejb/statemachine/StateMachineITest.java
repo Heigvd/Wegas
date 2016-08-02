@@ -161,7 +161,7 @@ public class StateMachineITest extends AbstractEJBTest {
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new TriggerInstance());
         trigger.setTriggerEvent(new Script("1===1"));
-        trigger.setPostTriggerEvent(new Script("numberTest.value = " + FINAL_VALUE));
+        trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, \"numberTest\").setValue(self, " + FINAL_VALUE + ");"));
         trigger.setOneShot(Boolean.FALSE);
         trigger.setDisableSelf(Boolean.FALSE);
         descriptorFacade.create(gameModel.getId(), trigger);
@@ -170,10 +170,15 @@ public class StateMachineITest extends AbstractEJBTest {
         playerFacade.create(team.getId(), testPlayer);
         Assert.assertEquals(FINAL_VALUE, ((NumberInstance) instanceFacade.find(testNumber.getId(), testPlayer)).getValue(), 0.0);
         NumberInstance p0Instance = (NumberInstance) instanceFacade.find(testNumber.getId(), testPlayer);
+        logger.error("Set 50");
         p0Instance.setValue(50);
         RequestFacade rf = lookupBy(RequestFacade.class);
         rf.getRequestManager().setPlayer(null);
-        instanceFacade.update(p0Instance.getId(), p0Instance);
+        instanceFacade.update(p0Instance.getId(), p0Instance); // Triggers rf.commit -> StateMachine check
+
+        logger.error("Player Instance: " + ((NumberInstance) instanceFacade.find(testNumber.getId(), player)).getValue());
+        logger.error("TestPlayer Instance: " + ((NumberInstance) instanceFacade.find(testNumber.getId(), testPlayer)).getValue());
+
         Assert.assertEquals(FINAL_VALUE, ((NumberInstance) instanceFacade.find(testNumber.getId(), testPlayer)).getValue(), 0.0);
     }
 
@@ -281,5 +286,34 @@ public class StateMachineITest extends AbstractEJBTest {
         instanceFacade.update(testInstance.getId(), testInstance);
         Assert.assertEquals(0, ((NumberInstance) instanceFacade.find(testNumber.getId(), player.getId())).getValue(), 0.001);
 
+    }
+
+    public void testChose() throws NamingException, NoSuchMethodException, IOException, WegasNoResultException {
+        this.testEvent();
+
+        this.clear();
+        this.createGameModel();
+
+        this.PlayerJoinTest();
+
+        this.clear();
+        this.createGameModel();
+
+        this.editorUpdate();
+
+        this.clear();
+        this.createGameModel();
+
+        this.highScore();
+
+        this.clear();
+        this.createGameModel();
+
+        this.duplicate();
+
+        this.clear();
+        this.createGameModel();
+
+        this.disable();
     }
 }
