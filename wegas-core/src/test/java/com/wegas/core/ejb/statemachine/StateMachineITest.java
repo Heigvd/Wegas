@@ -164,24 +164,14 @@ public class StateMachineITest extends AbstractEJBTest {
         trigger.setDisableSelf(Boolean.FALSE);
         descriptorFacade.create(gameModel.getId(), trigger);
 
-        logger.error("Player Instance: " + ((NumberInstance) instanceFacade.find(testNumber.getId(), player)).getValue());
-        logger.error("Player2 Instance: " + ((NumberInstance) instanceFacade.find(testNumber.getId(), player2)).getValue());
-        logger.error("Player21 Instance: " + ((NumberInstance) instanceFacade.find(testNumber.getId(), player21)).getValue());
-        
         Player testPlayer = new Player("TestPlayer20");
         playerFacade.create(team.getId(), testPlayer);
         Assert.assertEquals(FINAL_VALUE, ((NumberInstance) instanceFacade.find(testNumber.getId(), testPlayer)).getValue(), 0.0);
         NumberInstance p0Instance = (NumberInstance) instanceFacade.find(testNumber.getId(), testPlayer);
-        logger.error("Set 50");
         p0Instance.setValue(50);
         RequestFacade rf = lookupBy(RequestFacade.class);
         rf.getRequestManager().setPlayer(null);
         instanceFacade.update(p0Instance.getId(), p0Instance); // Triggers rf.commit -> StateMachine check
-
-        logger.error("Player Instance: " + ((NumberInstance) instanceFacade.find(testNumber.getId(), player)).getValue());
-        logger.error("TestPlayer Instance: " + ((NumberInstance) instanceFacade.find(testNumber.getId(), testPlayer)).getValue());
-        logger.error("Player2 Instance: " + ((NumberInstance) instanceFacade.find(testNumber.getId(), player2)).getValue());
-        logger.error("Player21 Instance: " + ((NumberInstance) instanceFacade.find(testNumber.getId(), player21)).getValue());
 
         Assert.assertEquals(FINAL_VALUE, ((NumberInstance) instanceFacade.find(testNumber.getId(), testPlayer)).getValue(), 0.0);
     }
