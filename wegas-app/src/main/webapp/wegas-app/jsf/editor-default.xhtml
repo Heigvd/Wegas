@@ -34,7 +34,7 @@
             </ui:repeat>-->
 
             <script type="text/javascript">
-                YUI().use("wegas-app", "wegas-scripteval", "wegas-websocketlistener", function (Y) {
+                YUI().use("wegas-app", "wegas-scripteval", "wegas-websocketlistener", function(Y) {
                     Y.namespace("Wegas.Config").ExtraTabs = [/*Tab(s) cfg {label:"label", children:[]}*/]
 
                     var app = new Y.Wegas.App({
@@ -61,7 +61,10 @@
                                 source: "rest/Editor/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
                                 initialRequest: "/VariableInstance/AllPlayerInstances/#{gameController.currentPlayer.id}",
                                 plugins: [{
-                                        fn: "VariableInstanceCache"
+                                        fn: "VariableInstanceCache",
+                                        cfg: {
+                                            indexes: ["descriptorId"]
+                                        }
                                     }]
                             },
                             Page: {
@@ -158,12 +161,12 @@
                      * END THIS IS NOT A COMMENT !!!
                      */
 
-                    app.once("render", function () {                               // When the page is rendered
+                    app.once("render", function() {                               // When the page is rendered
                         var gm = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel(),
                             loadedPlayers = [Y.Wegas.Facade.Game.cache.getCurrentPlayer().get("id")];
                         Y.all(".wegas-title").setContent(gm.get("name"));       // Update the title
                         // Handle player change event
-                        Y.Wegas.Facade.Game.cache.after('currentPlayerIdChange', function (e) {// Whenever the current player id changes
+                        Y.Wegas.Facade.Game.cache.after('currentPlayerIdChange', function(e) {// Whenever the current player id changes
                             var player = Y.Wegas.Facade.Game.cache.getCurrentPlayer(),
                                 preview = Y.Widget.getByNode(".editor-preview");
 
@@ -171,7 +174,7 @@
 
                             preview.showOverlay();                                  // Show a loading overlay in the Preview tab during the request
                             if (Y.Array.indexOf(loadedPlayers, e.newVal) > -1) {
-                                Y.later(10, this, function () {                          // Version 1: All data are loaded, only need to change trigger udate
+                                Y.later(10, this, function() {                          // Version 1: All data are loaded, only need to change trigger udate
                                     Y.Wegas.Facade.Variable.fire("update");
                                     preview.hideOverlay();
                                 });
@@ -181,7 +184,7 @@
                                     Y.Wegas.app.get("base") + "rest/Private/" + player.get("id")
                                     + "/GameModel/" + Y.Wegas.Facade.GameModel.get("currentGameModelId")
                                     + "/VariableDescriptor");                         // Retrieve variable instances for the new player
-                                Y.Wegas.Facade.Variable.once("response", function () {
+                                Y.Wegas.Facade.Variable.once("response", function() {
                                     loadedPlayers.push(e.newVal);
                                     this.hideOverlay();
                                 }, preview);

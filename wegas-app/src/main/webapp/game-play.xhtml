@@ -55,7 +55,10 @@
                                 source: "rest/Editor/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
                                 initialRequest: "/VariableInstance/AllPlayerInstances/#{gameController.currentPlayer.id}",
                                 plugins: [{
-                                        fn: "VariableInstanceCache"
+                                        fn: "VariableInstanceCache",
+                                        cfg: {
+                                            indexes: ["descriptorId"]
+                                        }
                                     }]
                             },
                             Page: {
