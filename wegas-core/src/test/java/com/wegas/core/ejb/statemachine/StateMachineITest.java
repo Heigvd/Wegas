@@ -57,7 +57,6 @@ public class StateMachineITest extends AbstractEJBTest {
 
     @Test
     public void PlayerJoinTest() {
-        logger.error("PlayerJoinTest");
         NumberDescriptor testNumber;
         testNumber = new NumberDescriptor("number");
         testNumber.setDefaultInstance(new NumberInstance(0));
@@ -153,7 +152,6 @@ public class StateMachineITest extends AbstractEJBTest {
 
     @Test
     public void editorUpdate() throws NamingException {
-        logger.error("EditorUpdate");
         NumberDescriptor testNumber;
         testNumber = new NumberDescriptor("numberTest");
         testNumber.setDefaultInstance(new NumberInstance(0));
@@ -166,6 +164,10 @@ public class StateMachineITest extends AbstractEJBTest {
         trigger.setDisableSelf(Boolean.FALSE);
         descriptorFacade.create(gameModel.getId(), trigger);
 
+        logger.error("Player Instance: " + ((NumberInstance) instanceFacade.find(testNumber.getId(), player)).getValue());
+        logger.error("Player2 Instance: " + ((NumberInstance) instanceFacade.find(testNumber.getId(), player2)).getValue());
+        logger.error("Player21 Instance: " + ((NumberInstance) instanceFacade.find(testNumber.getId(), player21)).getValue());
+        
         Player testPlayer = new Player("TestPlayer20");
         playerFacade.create(team.getId(), testPlayer);
         Assert.assertEquals(FINAL_VALUE, ((NumberInstance) instanceFacade.find(testNumber.getId(), testPlayer)).getValue(), 0.0);
@@ -173,7 +175,7 @@ public class StateMachineITest extends AbstractEJBTest {
         logger.error("Set 50");
         p0Instance.setValue(50);
         RequestFacade rf = lookupBy(RequestFacade.class);
-        rf.getRequestManager().setPlayer(testPlayer);
+        rf.getRequestManager().setPlayer(null);
         instanceFacade.update(p0Instance.getId(), p0Instance); // Triggers rf.commit -> StateMachine check
 
         logger.error("Player Instance: " + ((NumberInstance) instanceFacade.find(testNumber.getId(), player)).getValue());
@@ -186,7 +188,6 @@ public class StateMachineITest extends AbstractEJBTest {
 
     @Test
     public void highScore() throws NamingException, WegasScriptException {
-        logger.error("HighScore");
 
         ScriptFacade scriptFacade = lookupBy(ScriptFacade.class);
         NumberDescriptor highScore = new NumberDescriptor("highScore");
@@ -223,7 +224,6 @@ public class StateMachineITest extends AbstractEJBTest {
 
     @Test
     public void testEvent() throws NamingException, NoSuchMethodException, WegasScriptException {
-        logger.error("testEvent");
         final ScriptFacade sf = lookupBy(ScriptFacade.class);
         final Integer ENDVAL = 5;
 
@@ -247,7 +247,6 @@ public class StateMachineITest extends AbstractEJBTest {
 
     @Test
     public void duplicate() throws NamingException, IOException, WegasNoResultException {
-        logger.error("duplicate");
         VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setName("trigger");
@@ -262,7 +261,6 @@ public class StateMachineITest extends AbstractEJBTest {
 
     @Test
     public void disable() throws NamingException, IOException, WegasNoResultException {
-        logger.error("disable");
         NumberDescriptor testNumber;
         testNumber = new NumberDescriptor("number");
         testNumber.setDefaultInstance(new NumberInstance(0));

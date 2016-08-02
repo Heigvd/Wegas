@@ -265,12 +265,21 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
 
     @Override
     public VariableInstance update(final Long entityId, final VariableInstance entity) {
-        try {
-            this.findAPlayer(entity);
-        } catch (NoPlayerException ex) {
-            java.util.logging.Logger.getLogger(VariableInstanceFacade.class.getName()).log(Level.SEVERE, null, ex);
-            throw WegasErrorMessage.error("Salut");
+        if (requestFacade.getRequestManager().getPlayer() == null) {
+            /*
+             * When there is no player in the current requestFacade context and 
+             * since requestFacade will blindly selects any player in such a case.
+             * A player who match the given variableInstance scope must be 
+             * manually selected !
+             */
+            try {
+                Player findAPlayer = this.findAPlayer(entity);
+                requestFacade.getRequestManager().setPlayer(findAPlayer);
+            } catch (NoPlayerException ex) {
+                throw WegasErrorMessage.error("Unable to find a player for instance " + entity);
+            }
         }
+        
         VariableInstance ret = super.update(entityId, entity);
         requestFacade.commit();
         return ret;
