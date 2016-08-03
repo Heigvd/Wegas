@@ -62,8 +62,8 @@ public class TaskInstance extends VariableInstance {
     /**
      *
      */
-    @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @JoinColumn(referencedColumnName = "variableinstance_id")
+    @OneToMany(mappedBy = "taskInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    //@JoinColumn(referencedColumnName = "variableinstance_id")
     private List<WRequirement> requirements = new ArrayList<>();
 
     /**
@@ -196,6 +196,9 @@ public class TaskInstance extends VariableInstance {
      */
     public void setRequirements(List<WRequirement> requirements) {
         this.requirements = requirements;
+        for (WRequirement req : requirements) {
+            req.setTaskInstance(this);
+        }
     }
 
     /**
@@ -226,8 +229,12 @@ public class TaskInstance extends VariableInstance {
             //this.setDuration(other.getDuration());
             this.setProperties(new HashMap<>());
             this.getProperties().putAll(other.getProperties());
-            ListUtils.ListKeyToMap<String, WRequirement> converter;
+            ListUtils.ListKeyToMap<Object, WRequirement> converter;
             converter = new WRequirementToNameConverter();
+
+            this.setRequirements(ListUtils.mergeLists(this.getRequirements(), other.getRequirements(), converter));
+
+            /*
             Map<String, WRequirement> reqMap = ListUtils.listAsMap(requirements, converter);
             this.setRequirements(new ArrayList<>());
             for (WRequirement req : other.getRequirements()) {
@@ -239,10 +246,10 @@ public class TaskInstance extends VariableInstance {
                 } else {
                     r = new WRequirement();
                     r.merge(req);
-                    r.setTaskInstance(this); // @fixme
+                    r.setTaskInstance(this);
                     this.getRequirements().add(r);
                 }
-            }
+            }*/
             this.setPlannification(new ArrayList<>());
             this.getPlannification().addAll(other.getPlannification());
         } else {
@@ -259,7 +266,7 @@ public class TaskInstance extends VariableInstance {
         this.properties.put(key, val);
     }
 
-    private static class WRequirementToNameConverter implements ListUtils.ListKeyToMap<String, WRequirement> {
+    private static class WRequirementToNameConverter implements ListUtils.ListKeyToMap<Object, WRequirement> {
 
         @Override
         public String getKey(WRequirement item) {

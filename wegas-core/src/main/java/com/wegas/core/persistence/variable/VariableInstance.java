@@ -125,7 +125,7 @@ import org.eclipse.persistence.annotations.OptimisticLocking;
     @JsonSubTypes.Type(name = "PeerReviewInstance", value = PeerReviewInstance.class),
     @JsonSubTypes.Type(name = "BurndownInstance", value = BurndownInstance.class)
 })
-//@OptimisticLocking(cascade = true)
+@OptimisticLocking(cascade = true)
 abstract public class VariableInstance extends AbstractEntity implements Broadcastable {
 
     private static final long serialVersionUID = 1L;
@@ -398,6 +398,11 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     public Long getId() {
         return id;
     }
+
+    /*public void setId(Long id) {
+        //Thread.dumpStack();
+        this.id = id;
+    }*/
 
     /**
      * Id of the team owning the instance
