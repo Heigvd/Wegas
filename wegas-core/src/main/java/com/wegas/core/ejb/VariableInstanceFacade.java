@@ -189,6 +189,8 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
             throws NoPlayerException {
         Player p;
         try {
+            // make sure to have a managed instance to have the scope !
+            instance = this.find(instance.getId());
             if (instance.getScope() instanceof PlayerScope) {
                 p = playerFacade.find(instance.getPlayer().getId());
                 if (p == null) {
