@@ -397,7 +397,7 @@ angular.module('wegas.models.sessions', [])
                         "access": "OPEN",
                         "name": sessionName
                     };
-                    $http.post(ServiceURL + "rest/GameModel/" + newSession.gameModelId + "/Game?view=Editor", newSession).success(function(data) {
+                    $http.post(ServiceURL + "rest/GameModel/" + newSession.gameModelId + "/Game?view=Lobby", newSession).success(function(data) {
                         cacheSession("LIVE", data)
                         $translate('COMMONS-SESSIONS-CREATE-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, data));
