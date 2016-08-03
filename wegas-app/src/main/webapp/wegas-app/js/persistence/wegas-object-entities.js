@@ -9,21 +9,40 @@
  * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
-YUI.add('wegas-object-entities', function(Y) {
+YUI.add('wegas-object-entities', function (Y) {
     "use strict";
 
     var STRING = "string", HIDDEN = "hidden", NAME = "name", HTML = "html",
         VALUE = "value", HASHLIST = "hashlist", COMBINE = "combine",
-        persistence = Y.Wegas.persistence;
+        persistence = Y.Wegas.persistence,
+        VERSION_ATTR_DEF,
+        IDATTRDEF;
+
+    VERSION_ATTR_DEF = {
+        type: "number",
+        optional: true,
+        _inputex: {
+            _type: HIDDEN
+        }
+    };
+
+    IDATTRDEF = {
+        type: STRING,
+        optional: true, // The id is optional for entites that have not been persisted
+        _inputex: {
+            _type: HIDDEN
+        }
+    };
+
 
     /**
      * ObjectDescriptor mapper
      */
     persistence.ObjectDescriptor = Y.Base.create("ObjectDescriptor", persistence.VariableDescriptor, [], {
-        getProperty: function(player, key) {
+        getProperty: function (player, key) {
             return this.getInstance(player).get("properties." + key);
         },
-        getIconCss: function() {
+        getIconCss: function () {
             return "fa fa-database";
         }
     }, {
@@ -62,6 +81,8 @@ YUI.add('wegas-object-entities', function(Y) {
                             value: 'ObjectInstance'
                         }
                     },
+                    id: IDATTRDEF,
+                    version: VERSION_ATTR_DEF,
                     properties: {
                         optional: false,
                         _inputex: {

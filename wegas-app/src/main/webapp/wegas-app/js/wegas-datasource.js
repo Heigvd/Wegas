@@ -250,6 +250,10 @@ YUI.add('wegas-datasource', function(Y) {
                     if (this.get("host").fire(val["@class"], val)) {
 
                         switch (val["@class"]) {
+                            case "WegasConflictException":
+                                level = "error";
+                                msg = Y.Wegas.I18n.t('errors.conflict');
+                                break;
                             case "WegasErrorMessage":
                                 level = val.level;
                                 msg = val.message;
@@ -546,12 +550,15 @@ YUI.add('wegas-datasource', function(Y) {
                         });
                         this.oldIds = null;
                     } else {
-                        this.updateIndexes(oldAttrs, newAttrs); // OK
-                        // Update Entity (anywhere)
-                        if (entity instanceof Wegas.persistence.VariableDescriptor) {
-                            this.get(HOST).fire("updatedDescriptor", {
-                                entity: entity
-                            });
+                        // Due to pusher asynchronoussness, make sure not overwritting up-to-date descriptor 
+                        if (newAttrs.version >= oldAttrs.version) {
+                            this.updateIndexes(oldAttrs, newAttrs); // OK
+                            // Update Entity (anywhere)
+                            if (entity instanceof Wegas.persistence.VariableDescriptor) {
+                                this.get(HOST).fire("updatedDescriptor", {
+                                    entity: entity
+                                });
+                            }
                         }
                     }
                     return true;
@@ -756,7 +763,7 @@ YUI.add('wegas-datasource', function(Y) {
             this.sendRequest(this.generateRequest(data), cfg);
         },
         getWithView: function(entity, view, cfg) {
-            cfg.request = this.generateRequest(entity.toObject()) + "?view=" + (view || "Extended");
+            cfg.request = this.generateRequest(entity.toObject()) + "?view=" + (view || "Editor");
             cfg.cfg = {
                 updateCache: false
             };

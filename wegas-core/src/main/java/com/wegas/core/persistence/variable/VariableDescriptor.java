@@ -169,6 +169,17 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     //@CacheIndex
     protected String name;
 
+    @Version
+    private Long version;
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+
     /**
      *
      */
@@ -337,8 +348,8 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     /**
      * @param defaultInstance indicate whether one wants the default instance r
-     * the one belonging to player
-     * @param player the player
+     *                        the one belonging to player
+     * @param player          the player
      * @return either the default instance of the one belonging to player
      */
     @JsonIgnore
@@ -427,6 +438,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
             try {
                 super.merge(a);
                 VariableDescriptor other = (VariableDescriptor) a;
+                this.setVersion(other.getVersion());
                 this.setName(other.getName());
                 this.setLabel(other.getLabel());
                 this.setTitle(other.getTitle());
@@ -456,7 +468,8 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     /**
      * @param context allow to circumscribe the propagation within the given
-     * context. It may be an instance of GameModel, Game, Team, or Player
+     *                context. It may be an instance of GameModel, Game, Team,
+     *                or Player
      */
     public void propagateDefaultInstance(AbstractEntity context) {
         int sFlag = 0;

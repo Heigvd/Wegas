@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add("wegas-variabledescriptor-entities", function(Y) {
+YUI.add("wegas-variabledescriptor-entities", function (Y) {
     "use strict";
 
     var STRING = "string",
@@ -27,14 +27,27 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
         Wegas = Y.Wegas,
         persistence = Wegas.persistence,
         Base = Y.Base,
-        IDATTRDEF = {
-            type: STRING,
-            optional: true, //                                                  // The id is optional for entites that
-            // have not been persisted
-            _inputex: {
-                _type: HIDDEN
-            }
-        };
+        VERSION_ATTR_DEF,
+        IDATTRDEF;
+
+    VERSION_ATTR_DEF = {
+        type: NUMBER,
+        optional: true,
+        _inputex: {
+            _type: "uneditable",
+            wrapperClassName: "inputEx-fieldWrapper inputEx-uneditableField wegas-advanced-feature"
+                //_type: HIDDEN
+        }
+    };
+
+    IDATTRDEF = {
+        type: STRING,
+        optional: true, //                                                  // The id is optional for entites that
+        // have not been persisted
+        _inputex: {
+            _type: HIDDEN
+        }
+    };
 
     AVAILABLE_TYPES = [
         {
@@ -173,6 +186,17 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
         }
     }, {
         ATTRS: {
+            version: {
+                type: NUMBER,
+                optional: false,
+                value: 0,
+                writeOnce: "initOnly",
+                _inputex: {
+                    _type: "uneditable",
+                    wrapperClassName: "inputEx-fieldWrapper inputEx-uneditableField wegas-advanced-feature",
+                    index: -1
+                }
+            },
             parentDescriptorId: {
                 type: NUMBER,
                 optional: true,
@@ -432,6 +456,17 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
      */
     persistence.VariableInstance = Base.create("VariableInstance", persistence.Entity, [], {}, {
         ATTRS: {
+            version: {
+                type: NUMBER,
+                optional: false,
+                default: 0,
+                writeOnce: "initOnly",
+                _inputex: {
+                    _type: "uneditable",
+                    wrapperClassName: "inputEx-fieldWrapper inputEx-uneditableField wegas-advanced-feature",
+                    index: -1
+                }
+            },
             descriptorId: {
                 type: NUMBER,
                 _inputex: {
@@ -483,6 +518,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                             }
                         },
                         id: IDATTRDEF,
+                        version: VERSION_ATTR_DEF,
                         value: {
                             type: STRING,
                             optional: true,
@@ -574,6 +610,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                         }
                     },
                     id: IDATTRDEF,
+                    version: VERSION_ATTR_DEF,
                     value: {
                         type: HTML,
                         optional: true,
@@ -687,6 +724,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                             }
                         },
                         id: IDATTRDEF,
+                        version: VERSION_ATTR_DEF,
                         value: {
                             type: NUMBER,
                             _inputex: {
@@ -887,7 +925,8 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                             _type: HIDDEN
                         }
                     },
-                    id: IDATTRDEF
+                    id: IDATTRDEF,
+                    version: VERSION_ATTR_DEF
                 }
             },
             allowedTypes: {
@@ -1101,7 +1140,8 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                             value: "InboxInstance"
                         }
                     },
-                    id: IDATTRDEF
+                    id: IDATTRDEF,
+                    version: VERSION_ATTR_DEF
                 }
             }
         },
@@ -1405,6 +1445,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                             }
                         },
                         id: IDATTRDEF,
+                        version: VERSION_ATTR_DEF,
                         value: {
                             type: BOOLEAN,
                             _inputex: {
