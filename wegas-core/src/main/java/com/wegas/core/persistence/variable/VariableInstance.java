@@ -285,7 +285,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
         }
     }
 
-    @JsonView(Views.ExtendedI.class)
+    //@JsonView(Views.ExtendedI.class)
     public Long getScopeKey() {
         if (this.getTeamScope() != null) {
             return this.getTeam().getId();
