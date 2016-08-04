@@ -112,14 +112,14 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
          */
         getInstance: function(player) {
             return this.get("scope").getInstance(player || Wegas.Facade.Game.get("currentPlayer"));
-            
+
             /*player = player || Wegas.Facade.Game.get("currentPlayer");
-            var instance = this.get("scope").getInstance(player);
-            if (!instance) {
-                this._loadInstance(player);
-                instance = this.get("scope").getInstance(player);
-            }
-            return instance;*/
+             var instance = this.get("scope").getInstance(player);
+             if (!instance) {
+             this._loadInstance(player);
+             instance = this.get("scope").getInstance(player);
+             }
+             return instance;*/
 
         },
         /**
@@ -766,18 +766,25 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
      * ListDescriptor mapper
      */
     persistence.ListDescriptor = Base.create("ListDescriptor", persistence.VariableDescriptor, [persistence.VariableContainer], {
-        flatten: function() {
+        flatten: function(filters) {
             var acc = [],
+                push = function(item) {
+                    if (filters === undefined || filters.length === 0 || filters === item.name || (Y.Lang.isArray(filters) && Y.Array.find(filters, function(filter) {
+                        return filter === item.name;
+                    }))) {
+                        acc.push(item);
+                    }
+                },
                 doFlatten = function(items) {
                     var i, it;
                     for (i = 0; i < items.length; i += 1) {
                         it = items[i];
                         if (persistence.QuestionDescriptor && it instanceof persistence.QuestionDescriptor) {
-                            acc.push(it);
+                            push(it);
                         } else if (it instanceof persistence.ListDescriptor) {
                             doFlatten(it.get(ITEMS));
                         } else {
-                            acc.push(it);
+                            push(it);
                         }
                     }
                 };
