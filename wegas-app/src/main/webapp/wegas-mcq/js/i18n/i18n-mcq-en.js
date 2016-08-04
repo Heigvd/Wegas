@@ -20,7 +20,8 @@ YUI.add("wegas-i18n-mcq-en", function(Y) {
             submit: "submit",
             unanswered : "",    // Customizable per scenario
             notDone: "",        // Customizable per scenario
-            noReply: "Please select an answer first."
+            noReply: "Please select an answer first.",
+            conflict: "Your request has been cancelled because one of your team mate has operate the same request at the same time."
         }
     });
 });
