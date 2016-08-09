@@ -360,38 +360,44 @@ YUI.add("wegas-editor-entityaction", function(Y) {
         execute: function() {
             var entity = (this.get("method").toLowerCase() === "post") ? this.get(ENTITY) :
                 this.get("parentEntity"), descriptor;
+            this.doExecute(entity);
+        },
+        associateDescriptor: function(container) {
+            var desc, cont;
 
-            if (entity instanceof Wegas.persistence.VariableDescriptor) {
-                this.doExecute(entity);
-
-                /*this.get(DATASOURCE).cache.getWithView(entity, "Editor", {// just need to check if it causes bugs
-                 on: {
-                 success: Y.bind(function (e) {
-                 this.doExecute(e.response.entity);
-                 }, this)
-                 }
-                 });*/
-            } else if (Wegas.persistence.EvaluationDescriptorContainer && entity instanceof Wegas.persistence.EvaluationDescriptorContainer) {
-                descriptor = Y.Array.find(Y.Wegas.Facade.Variable.cache.findAll("@class", "PeerReviewDescriptor"),
+            if (container instanceof Wegas.persistence.VariableDescriptor) {
+                return {
+                    descriptor: container,
+                    container: container
+                };
+            } else if (Wegas.persistence.EvaluationDescriptorContainer && container instanceof Wegas.persistence.EvaluationDescriptorContainer) {
+                desc = Y.Array.find(Y.Wegas.Facade.Variable.cache.findAll("@class", "PeerReviewDescriptor"),
                     function(item) {
-                        return item.get("feedback").get("id") === entity.get("id") ||
-                            item.get("fbComments").get("id") === entity.get("id");
+                        if (item.get("feedback").get("id") === container.get("id")) {
+                            cont = item.get("feedback");
+                            return true;
+                        } else if (item.get("fbComments").get("id") === container.get("id")) {
+                            cont = item.get("fbComments");
+                            return true;
+                        }
+                        return false;
                     });
-
-                this.doExecute(entity, descriptor);
+                return {
+                    descriptor: desc,
+                    container: cont
+                };
             } else {
-                this.doExecute(entity); // ????
+                return {
+                    descriptor: null,
+                    container: null
+                };
             }
         },
-        doExecute: function(container, descriptor) {
-            var entity = this.get(ENTITY),
+        doExecute: function(container) {
+            var entity = this.get(ENTITY), assoc,
                 key = this.get("attributeKey"),
                 dataSource = this.get(DATASOURCE),
                 newEntity, targetArray, child, menuItems, form;
-
-            if (!descriptor) {
-                descriptor = container;
-            }
 
             switch (this.get("method").toString().toLowerCase()) {
                 case "put":
@@ -404,18 +410,19 @@ YUI.add("wegas-editor-entityaction", function(Y) {
 
                     EditEntityAction.hideRightTabs();                           // Hide all active tabs
                     form = EditEntityAction.showEditForm(child, Y.bind(function(newVal) {
-                        var oldVal;
-                        child = Y.Array.find(container.get(key), function(i) {
+                        var assoc = this.associateDescriptor(container),
+                            oldVal;
+
+                        child = Y.Array.find(assoc.container.get(key), function(i) {
                             return i.get(ID) === entity.get(ID);
                         });
                         oldVal = child.getAttrs();
                         child.setAttrs(newVal);
-                        dataSource.cache.put(descriptor.toObject(), {
+                        dataSource.cache.put(assoc.descriptor.toObject(), {
                             on: {
                                 success: Y.bind(function() {
                                     EditEntityAction.hideEditFormOverlay();
                                     EditEntityAction.showFormMessage("success", "Item has been updated");
-                                    //EditEntityArrayFieldAction.doExecute(container, descriptor);
                                     this.execute();
                                 }, this),
                                 failure: Y.bind(function() {
@@ -423,7 +430,6 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                                     EditEntityAction.showFormMessage("error", "Conflit !");
                                     // Revert changes ????
                                     child.setAttrs(oldVal);
-                                    //EditEntityArrayFieldAction.doExecute(container, descriptor);
                                 }, this)
                             }
                         });
@@ -439,9 +445,10 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                     });
                     EditEntityAction.hideRightTabs();                           // Hide all active tabs
                     EditEntityAction.showEditForm(newEntity, Y.bind(function(newVal) {
+                        var assoc = this.associateDescriptor(container);
                         newEntity.setAttrs(newVal);
-                        container.get(this.get("attributeKey")).push(newEntity);
-                        dataSource.cache.put(descriptor.toObject(), {
+                        assoc.container.get(this.get("attributeKey")).push(newEntity);
+                        dataSource.cache.put(assoc.descriptor.toObject(), {
                             on: {
                                 success: Y.bind(function(e) {
                                     EditEntityAction.hideRightTabs();
@@ -462,7 +469,8 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                     break;
                 case "delete":
                     Wegas.Panel.confirm("Are you sure you want to delete this item?", Y.bind(function() {
-                        targetArray = container.get(this.get("attributeKey"));
+                        var assoc = this.associateDescriptor(container);
+                        targetArray = assoc.container.get(this.get("attributeKey"));
                         Y.Array.find(targetArray, function(e, i, a) {
                             if (e.get(ID) === entity.get(ID)) {
                                 a.splice(i, 1);
@@ -472,7 +480,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                         });
                         this.showOverlay();
 
-                        dataSource.cache.put(descriptor.toObject(), {
+                        dataSource.cache.put(assoc.descriptor.toObject(), {
                             on: {
                                 success: Y.bind(function() {
                                     this.hideOverlay();
@@ -484,6 +492,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                     }, this));
                     break;
                 case "copy":
+                    assoc = this.associateDescriptor(container);
                     targetArray = container.get(this.get("attributeKey"));
                     Y.Array.find(targetArray, function(e, i, a) {
                         if (e.get(ID) === entity.get(ID)) {
@@ -495,7 +504,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                     });
                     this.showOverlay();
 
-                    dataSource.cache.put(descriptor.toObject(), {
+                    dataSource.cache.put(assoc.descriptor.toObject(), {
                         on: {
                             success: EditEntityAction.hideRightTabs,
                             failure: Y.bind(this.hideOverlay, this)
