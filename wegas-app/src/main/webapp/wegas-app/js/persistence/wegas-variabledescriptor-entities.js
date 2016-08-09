@@ -142,7 +142,7 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
             }
 
             scope = Y.Wegas.Facade.Instance.cache.find("descriptorId", this.get("id"));
-            return (scope ? scope.variableInstances[key] : null);
+            return (scope ? scope.variableInstances[key] : undefined);
 
 
             //return this.get("scope").getInstance(player || Wegas.Facade.Game.get("currentPlayer"));
