@@ -35,18 +35,30 @@ import java.util.List;
 @Table(
         name = "MCQResult",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"choicedescriptor_id", "name"}),
-                @UniqueConstraint(columnNames = {"choicedescriptor_id", "label"}),},
+            @UniqueConstraint(columnNames = {"choicedescriptor_id", "name"}),
+            @UniqueConstraint(columnNames = {"choicedescriptor_id", "label"}),},
         indexes = {
-                @Index(columnList = "choicedescriptor_id")
+            @Index(columnList = "choicedescriptor_id")
         }
 )
 @NamedQueries({
-        @NamedQuery(name = "Result.findByName", query = "SELECT DISTINCT res FROM Result res WHERE res.choiceDescriptor=:choicedescriptor AND res.name LIKE :name")
+    @NamedQuery(name = "Result.findByName", query = "SELECT DISTINCT res FROM Result res WHERE res.choiceDescriptor=:choicedescriptor AND res.name LIKE :name")
 })
 public class Result extends NamedEntity implements Searchable, Scripted, LabelledEntity {
 
     private static final long serialVersionUID = 1L;
+
+    @Version
+    private Long version;
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+
     /**
      *
      */
@@ -95,10 +107,10 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
      */
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name = "content", column
-                    = @Column(name = "ignoration_content")),
-            @AttributeOverride(name = "lang", column
-                    = @Column(name = "ignoration_language"))
+        @AttributeOverride(name = "content", column
+                = @Column(name = "ignoration_content")),
+        @AttributeOverride(name = "lang", column
+                = @Column(name = "ignoration_language"))
     })
     @JsonView(Views.EditorI.class)
     private Script ignorationImpact;
@@ -172,6 +184,7 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     public void merge(AbstractEntity a) {
         if (a instanceof Result) {
             Result other = (Result) a;
+            this.setVersion(other.getVersion());
             this.setName(other.getName());
             this.setLabel(other.getLabel());
             this.setAnswer(other.getAnswer());

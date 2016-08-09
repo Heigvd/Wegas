@@ -8,7 +8,7 @@
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-mcq-entities', function (Y) {
+YUI.add('wegas-mcq-entities', function(Y) {
     "use strict";
 
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array",
@@ -39,7 +39,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
      * QuestionDescriptor mapper
      */
     persistence.QuestionDescriptor = Y.Base.create("QuestionDescriptor", persistence.VariableDescriptor, [persistence.VariableContainer], {
-        getRepliesByStartTime: function (startTime) {
+        getRepliesByStartTime: function(startTime) {
             return this.getInstance().getRepliesByStartTime(startTime);
         }
     }, {
@@ -55,7 +55,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 _inputex: {
                     _type: HIDDEN
                 },
-                setter: function (val) {
+                setter: function(val) {
                     for (var i = 0; i < val.length; i = i + 1) {                // We set up a back reference to the parent
                         val[i].parentDescriptor = this;
                     }
@@ -229,7 +229,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
      * QuestionInstance mapper
      */
     Wegas.persistence.QuestionInstance = Y.Base.create("QuestionInstance", Wegas.persistence.VariableInstance, [], {
-        getRepliesByStartTime: function (startTime) {
+        getRepliesByStartTime: function(startTime) {
             var i, ret = [], replies = this.get("replies");
             for (i = 0; i < replies.length; i = i + 1) {
                 if (replies[i].get("startTime") === startTime) {
@@ -270,7 +270,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
     Wegas.persistence.ChoiceDescriptor = Y.Base.create("ChoiceDescriptor",
         Wegas.persistence.VariableDescriptor,
         [], {
-        getIconCss: function () {
+        getIconCss: function() {
             return "fa fa-check-square-o";
         }
     },
@@ -451,7 +451,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
         Wegas.persistence.ChoiceDescriptor,
         [],
         {
-            getIconCss: function () {
+            getIconCss: function() {
                 return "fa fa-check-square-o";
             }
         },
@@ -501,6 +501,16 @@ YUI.add('wegas-mcq-entities', function (Y) {
                                 type: STRING,
                                 _inputex: {
                                     _type: HIDDEN
+                                }
+                            },
+                            version: {
+                                type: NUMBER,
+                                optional: false,
+                                value: 0,
+                                _inputex: {
+                                    _type: "uneditable",
+                                    wrapperClassName: "inputEx-fieldWrapper inputEx-uneditableField wegas-advanced-feature",
+                                    index: -1
                                 }
                             },
                             name: {
@@ -650,16 +660,16 @@ YUI.add('wegas-mcq-entities', function (Y) {
      * MCQ Result mapper
      */
     persistence.Result = Y.Base.create("Result", persistence.Entity, [], {
-        getChoiceDescriptor: function () {
+        getChoiceDescriptor: function() {
             return Wegas.Facade.Variable.cache.findById(this.get("choiceDescriptorId"));
         },
-        getLabel: function () {
+        getLabel: function() {
             return this.get("label");
         },
-        getEditorLabel: function () {
+        getEditorLabel: function() {
             return this.get("label");
         },
-        getIconCss: function () {
+        getIconCss: function() {
             return "fa fa-cog";
         }
     }, {
@@ -667,10 +677,20 @@ YUI.add('wegas-mcq-entities', function (Y) {
             "@class": {
                 value: "Result"
             },
+            version: {
+                type: NUMBER,
+                optional: false,
+                value: 0,
+                _inputex: {
+                    _type: "uneditable",
+                    wrapperClassName: "inputEx-fieldWrapper inputEx-uneditableField wegas-advanced-feature",
+                    index: -1
+                }
+            },
             label: {
                 type: STRING,
                 "transient": false,
-                getter: function (val) {
+                getter: function(val) {
                     return val || this.get("name");
                 },
                 _inputex: {
@@ -689,7 +709,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     //regexp: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/,
                     description: "Alphanumeric characters,'_','$'. Without a digit as first character.<br/>Changing this may break your scripts."
                 },
-                validator: function (s) {
+                validator: function(s) {
                     return s === null || Y.Lang.isString(s);
                 }
             },
@@ -806,7 +826,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
      * MCQ Reply mapper
      */
     persistence.Reply = Y.Base.create("Reply", persistence.Entity, [], {
-        getChoiceDescriptor: function () {
+        getChoiceDescriptor: function() {
             if (this.get("result")) {
                 return this.get("result").getChoiceDescriptor();
             }
@@ -814,7 +834,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
         /**
          *  @return 0 if is finished, 1 if ongoing and 2 if planified
          */
-        getStatus: function (time) {
+        getStatus: function(time) {
             var choiceDescriptor = this.getChoiceDescriptor();
             if ((this.get("startTime") + choiceDescriptor.get("duration")) <= time) {
                 return 0;
@@ -845,7 +865,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
             },
             startTime: {
                 type: STRING,
-                setter: function (val) {
+                setter: function(val) {
                     return val * 1;
                 }
             },
