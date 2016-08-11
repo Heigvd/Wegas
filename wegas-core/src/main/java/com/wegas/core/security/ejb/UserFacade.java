@@ -184,7 +184,7 @@ public class UserFacade extends BaseFacade<User> {
             accountFacade.remove(aa);
         }
 
-        for (Player player : entity.getPlayers()){
+        for (Player player : entity.getPlayers()) {
             player.setUser(null);
         }
 
@@ -425,6 +425,23 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
+     * @param instance
+     * @return all user which have a permission related to the given instance
+     */
+    public List<User> findEditors(String instance) {
+        String permission;
+        if (instance.substring(0, 2).equals("gm")) {
+            permission = "GameModel:%Edit:";
+        } else {
+            permission = "Game:%Edit:";
+        }
+
+        final TypedQuery<User> findByToken = getEntityManager().createNamedQuery("User.findUserPermissions", User.class);
+        findByToken.setParameter("instance", permission + instance);
+        return findByToken.getResultList();
+    }
+
+    /**
      * Get all users is
      *
      * @param role_id
@@ -547,7 +564,7 @@ public class UserFacade extends BaseFacade<User> {
     ** Sends the given email as one separate message per addressee (as a measure against spam filters)
     ** and an additional one to the sender to provide him a copy of the message.
     ** If an address is invalid (but syntactically correct), it should not prevent from sending to the other addressees.
-    */
+     */
     public void sendEmail(Email email) /* throws MessagingException */ {
         int nbExceptions = 0;
         EMailFacade emailFacade = new EMailFacade();
@@ -558,7 +575,7 @@ public class UserFacade extends BaseFacade<User> {
                 JpaAccount jpaAccount = (JpaAccount) mainAccount;
                 try {
                     emailFacade.send(jpaAccount.getEmail(), email.getFrom(), email.getReplyTo(), email.getSubject(), email.getBody(), Message.RecipientType.TO, "text/html", true);
-                } catch (MessagingException e){
+                } catch (MessagingException e) {
                     nbExceptions++;
                 }
             }
@@ -566,10 +583,10 @@ public class UserFacade extends BaseFacade<User> {
         try {
             // Send a last message directly to the sender as a confirmation copy
             emailFacade.send(email.getReplyTo(), email.getFrom(), email.getReplyTo(), email.getSubject(), email.getBody(), Message.RecipientType.TO, "text/html", true);
-        } catch (MessagingException e){
+        } catch (MessagingException e) {
             nbExceptions++;
         }
-        if (nbExceptions>0){
+        if (nbExceptions > 0) {
             throw WegasErrorMessage.error(nbExceptions + " error(s) while sending email");
         }
     }
