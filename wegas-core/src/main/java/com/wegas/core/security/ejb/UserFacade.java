@@ -431,9 +431,9 @@ public class UserFacade extends BaseFacade<User> {
     public List<User> findEditors(String instance) {
         String permission;
         if (instance.substring(0, 2).equals("gm")) {
-            permission = "GameModel:%Edit:";
+            permission = "GameModel:%Edit%:";
         } else {
-            permission = "Game:%Edit:";
+            permission = "Game:%Edit%:";
         }
 
         final TypedQuery<User> findByToken = getEntityManager().createNamedQuery("User.findUserPermissions", User.class);
