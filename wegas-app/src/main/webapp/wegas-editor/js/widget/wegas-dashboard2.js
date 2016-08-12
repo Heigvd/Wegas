@@ -147,7 +147,7 @@ YUI.add('wegas-dashboard2', function(Y) {
         },
         bindUI: function() {
             //this.handlers.push(Y.Wegas.Facade.Game.after("update", this.phenixize, this));
-            this.get("contentBox").delegate("click", this.actionClick, ".dashboard-action", this);
+            this.get("contentBox").delegate("click", this.actionClick, ".dashboard-action.enabled", this);
             this.get("contentBox").delegate("click", this.detailsClick, ".details__link", this);
         },
         syncUI: function() {
@@ -225,20 +225,34 @@ YUI.add('wegas-dashboard2', function(Y) {
                         label: def.label,
                         formatter: eval("(" + def.formatter + ")"),
                         nodeFormatter: eval("(" + def.nodeFormatter + ")"),
-                        sortable: true
+                        sortable: true,
+                        // Try to use column user defined tooltip or use defaut one otherwise
+                        disabledTooltip: def.disabledTooltip || "This action is not yet active"
                     };
                     formatter = eval("(" + def.nodeFormatter + ")");
                     if (formatter) {
-                        item.nodeFormatter = formatter
+                        item.nodeFormatter = formatter;
                     } else {
                         formatter = eval("(" + def.formatter + ")");
                         if (formatter) {
-                            item.formatter = formatter
+                            item.formatter = formatter;
                         }
                     }
                     if (def.itemType === "action") {
                         item.label = " ";
-                        item.formatter = "<span class=\"dashboard-action " + def.icon + "\" title=\"" + def.label + "\"></span>";
+                        item.nodeFormatter = function(o) {
+                            o.cell.setHTML("<span class=\"dashboard-action " +
+                                o.column.icon + " " +
+                                (o.value && o.value.disabled ? "disabled" : "enabled") +
+                                "\" title=\"" + o.column.label + "\"></span>");
+
+                            if (o.value && o.value.disabled) {
+                                o.cell.plug(Y.Plugin.Tooltip, {
+                                    // Try to use value specific tooltip, or use the fallback one otherwise
+                                    content: o.value.disabledTooltip || o.column.disabledTooltip
+                                });
+                            }
+                        };
                         item.icon = def.icon;
                         item.do = eval("(" + def.do + ")");
                         item.sortable = false;
