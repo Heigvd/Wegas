@@ -128,6 +128,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
             } else if (defaultInstance.getCurrentResultIndex() != null
                     && defaultInstance.getCurrentResultIndex() >= 0
                     && defaultInstance.getCurrentResultIndex() < choice.getResults().size()) {
+                // Backward compat
 
                 Result cr = choice.getResults().get(defaultInstance.getCurrentResultIndex());
                 //defaultInstance.setCurrentResult(cr);
@@ -275,8 +276,8 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
 
     /**
      *
-     * @param player player who wants to cancel the reply
-     * @param replyId  id of reply to cancel
+     * @param player  player who wants to cancel the reply
+     * @param replyId id of reply to cancel
      * @return reply being canceled
      */
     public Reply cancelReplyTransactional(Player player, Long replyId) {
@@ -288,7 +289,6 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         }
         return reply;
     }
-
 
     /**
      *

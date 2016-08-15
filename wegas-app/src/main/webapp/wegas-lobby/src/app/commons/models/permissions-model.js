@@ -5,36 +5,54 @@ angular.module('wegas.models.permissions', [])
         model.getSessionPermissions = function(session) {
             var deferred = $q.defer(),
                 permissionsToReturn;
-            $http.get(ServiceURL + "rest/Extended/User/FindUserPermissionByInstance/g" +
-                      session.id).success(function(data) {
-                permissionsToReturn = [];
-                _(data)
+            $http.get(ServiceURL + "rest/Extended/User/FindEditorsByInstance/g" +
+                session.id).success(function(data) {
+                deferred.resolve(_(data)
                     .map(function(user) {
                         return user.accounts;
                     })
-                    .flatten()
-                    .each(function(account, i) {
-                        var permissions = [],
-                            pattern = new RegExp("^Game:(.*):g" + session.id + "$");
-
-                        // For each permission of each account...
-                        _(account.permissions).each(function(permission, j) {
-                            // Is permission linked with current game ?
-                            if (pattern.test(permission.value)) {
-                                var localPermission = permission.value.match(pattern)[1].split(",");
-                                permissions = permissions.merge(localPermission)
-                            }
-                        }).value();
-                        if (permissions.indexOf("View") >= 0 && permissions.indexOf("Edit") >= 0) {
-                            permissionsToReturn.push(account);
-                        }
-                    }).value();
-                deferred.resolve(permissionsToReturn);
+                    .flatten().value());
             }).error(function(data) {
                 deferred.resolve(false);
             });
             return deferred.promise;
         };
+
+
+        /*
+         model.getSessionPermissions = function(session) {
+         var deferred = $q.defer(),
+         permissionsToReturn;
+         $http.get(ServiceURL + "rest/Extended/User/FindUserPermissionByInstance/g" +
+         session.id).success(function(data) {
+         permissionsToReturn = [];
+         _(data)
+         .map(function(user) {
+         return user.accounts;
+         })
+         .flatten()
+         .each(function(account, i) {
+         var permissions = [],
+         pattern = new RegExp("^Game:(.*):g" + session.id + "$");
+         
+         // For each permission of each account...
+         _(account.permissions).each(function(permission, j) {
+         // Is permission linked with current game ?
+         if (pattern.test(permission.value)) {
+         var localPermission = permission.value.match(pattern)[1].split(",");
+         permissions = permissions.merge(localPermission)
+         }
+         }).value();
+         if (permissions.indexOf("View") >= 0 && permissions.indexOf("Edit") >= 0) {
+         permissionsToReturn.push(account);
+         }
+         }).value();
+         deferred.resolve(permissionsToReturn);
+         }).error(function(data) {
+         deferred.resolve(false);
+         });
+         return deferred.promise;
+         };*/
 
         /* Add a new trainer to the session */
         model.addSessionPermission = function(session, trainers, trainer) {
@@ -48,7 +66,7 @@ angular.module('wegas.models.permissions', [])
                 });
                 if (!alreadyIn) {
                     $http.post(ServiceURL + "rest/Extended/User/addAccountPermission/Game:View,Edit:g" + session.id +
-                               "/" + trainer.id).success(function(data) {
+                        "/" + trainer.id).success(function(data) {
                         $translate('COMMONS-PERMISSIONS-SESSIONS-CREATE-FLASH-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, trainer));
                         });
@@ -75,7 +93,7 @@ angular.module('wegas.models.permissions', [])
             var deferred = $q.defer();
             if (session) {
                 $http.delete(ServiceURL + "rest/Extended/User/DeleteAccountPermissionByInstanceAndAccount/g" +
-                             session.id + "/" + trainer.id).success(function(data) {
+                    session.id + "/" + trainer.id).success(function(data) {
                     $translate('COMMONS-PERMISSIONS-SESSIONS-DELETE-FLASH-SUCCESS').then(function(message) {
                         deferred.resolve(Responses.success(message, trainer));
                     });
@@ -111,24 +129,24 @@ angular.module('wegas.models.permissions', [])
                     .flatten()
                     .each(function(account) {
 
-                    /* Search for permissions linked with current scenario */
-                    var userPermissions = [];
-                    _.each(account.permissions, function(element, index, list) {
-                        if (gameRegex.test(element.value)) {
-                            var items = itemsRegex.exec(element.value);
-                            userPermissions = userPermissions.concat(items[1].split(","));
-                        }
-                    });
+                        /* Search for permissions linked with current scenario */
+                        var userPermissions = [];
+                        _.each(account.permissions, function(element, index, list) {
+                            if (gameRegex.test(element.value)) {
+                                var items = itemsRegex.exec(element.value);
+                                userPermissions = userPermissions.concat(items[1].split(","));
+                            }
+                        });
 
-                    userPermissions = _.uniq(userPermissions);
-                    /* Remove duplicates */
+                        userPermissions = _.uniq(userPermissions);
+                        /* Remove duplicates */
 
-                    permissions.push({
-                        user: account,
-                        permissions: userPermissions
-                    });
+                        permissions.push({
+                            user: account,
+                            permissions: userPermissions
+                        });
 
-                }).value();
+                    }).value();
                 return permissions;
             }
 
@@ -189,7 +207,7 @@ angular.module('wegas.models.permissions', [])
                     }
 
                     var url = "rest/Extended/User/addAccountPermission/" +
-                              "GameModel:" + permissions + ":gm" + scenarioId + "/" + userId;
+                        "GameModel:" + permissions + ":gm" + scenarioId + "/" + userId;
                     // Updating permissions
                     $http.post(ServiceURL + url, null, {
                         "headers": {

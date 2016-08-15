@@ -27,7 +27,7 @@ YUI.add('wegas-inbox-list', function(Y) {
         // ** Private fields ** //
         /**
          * Holds compiled templates. Add templates in scope variable TEMPLATES
-         * 
+         *
          * define tab and content Templates, add new ones :
          * TEMPLATES:{TEMPLATE_NAME:{tab:'template', content:'template'}}
          *
@@ -84,6 +84,9 @@ YUI.add('wegas-inbox-list', function(Y) {
                 },
                 on: {
                     success: Y.bind(function(e) {
+                        if (this.get("destroyed")) {
+                            return;
+                        }
                         this.updateView(e.response.entities);
                         this.hideOverlay();
                     }, this)

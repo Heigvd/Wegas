@@ -59,7 +59,7 @@ public class ResourceInstance extends VariableInstance {
      */
     private boolean active = true;
     /**
-     *
+     * @deprecated
      */
     @Transient
     private Map<String, Long> skillsets;
@@ -69,7 +69,7 @@ public class ResourceInstance extends VariableInstance {
     @ElementCollection
     private Map<String, String> properties = new HashMap<>();
     /**
-     *
+     * @deprecated
      */
     @Transient
     private Integer moral;
@@ -249,7 +249,7 @@ public class ResourceInstance extends VariableInstance {
      */
     public void setOccupations(List<Occupation> occupations) {
         this.occupations = occupations;
-        for (Occupation o : this.occupations){
+        for (Occupation o : this.occupations) {
             o.setResourceInstance(this);
         }
     }
