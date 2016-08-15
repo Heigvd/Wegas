@@ -305,12 +305,12 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                     properties: {
                         "@class": { type: "string", value: "Script", view: { type: HIDDEN } },
                         content: {
-                            type: STRING,
-                            view: { type: SCRIPT }
+                            type: STRING
                         }
                     },
                     view: {
-                        label: "On enter impact"
+                        label: "On enter impact",
+                        type: SCRIPT 
                     }
                 },
                 transitions: {
@@ -351,12 +351,12 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                 properties: {
                     "@class": { type: "string", value: "Script", view: { type: HIDDEN } },
                     content: {
-                        type: STRING,
-                        view: { type: SCRIPT }
+                        type: STRING
                     }
                 },
                 view: {
-                    label: 'Condition'
+                    label: 'Condition',
+                    type: "scriptcondition"
                 }
             },
             preStateImpact: {
@@ -364,12 +364,12 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                 properties: {
                     "@class": { type: "string", value: "Script", view: { type: HIDDEN } },
                     content: {
-                        type: STRING,
-                        view: { type: SCRIPT }
+                        type: STRING
                     }
                 },
                 view: {
-                    label: 'Impact'
+                    label: 'Impact',
+                    type: SCRIPT
                 }
             },
             nextStateId: {
@@ -480,11 +480,10 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                     }
                 },
                 postTriggerEvent: {
-                    type: OBJECT,
+                    type: ["null", OBJECT],
                     properties: {
-                        "@class": { type: STRING, value: "Script" },
+                        "@class": { type: "string", value: "Script", view: { type: HIDDEN } },
                         content: {
-                            required: true,
                             type: STRING
                         }
                     },

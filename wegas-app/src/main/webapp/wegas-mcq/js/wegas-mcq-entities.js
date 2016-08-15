@@ -150,41 +150,41 @@ YUI.add('wegas-mcq-entities', function (Y) {
             EDITMENU: [{
                 type: "EditEntityButton"
             }, {
-                    type: BUTTON,
-                    label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add choice",
-                    plugins: [{
-                        fn: "WidgetMenu",
-                        cfg: {
-                            children: [{
-                                type: BUTTON,
-                                label: "Standard",
-                                plugins: [{
-                                    fn: "AddEntityChildAction",
-                                    cfg: {
-                                        targetClass: "SingleResultChoiceDescriptor"
-                                    }
-                                }]
-                            }, {
-                                    type: BUTTON,
-                                    label: "Conditional results",
-                                    plugins: [{
-                                        fn: "AddEntityChildAction",
-                                        cfg: {
-                                            targetClass: "ChoiceDescriptor"
-                                        }
-                                    }]
-                                }]
-                        }
-                    }]
-                }, {
-                    type: BUTTON,
-                    label: "Copy",
-                    plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-                }, {
-                    type: "DeleteEntityButton"
-                }],
+                type: BUTTON,
+                label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add choice",
+                plugins: [{
+                    fn: "WidgetMenu",
+                    cfg: {
+                        children: [{
+                            type: BUTTON,
+                            label: "Standard",
+                            plugins: [{
+                                fn: "AddEntityChildAction",
+                                cfg: {
+                                    targetClass: "SingleResultChoiceDescriptor"
+                                }
+                            }]
+                        }, {
+                            type: BUTTON,
+                            label: "Conditional results",
+                            plugins: [{
+                                fn: "AddEntityChildAction",
+                                cfg: {
+                                    targetClass: "ChoiceDescriptor"
+                                }
+                            }]
+                        }]
+                    }
+                }]
+            }, {
+                type: BUTTON,
+                label: "Copy",
+                plugins: [{
+                    fn: "DuplicateEntityAction"
+                }]
+            }, {
+                type: "DeleteEntityButton"
+            }],
             /**
              * Defines methods available in wysiwyge script editor
              */
@@ -370,26 +370,26 @@ YUI.add('wegas-mcq-entities', function (Y) {
             EDITMENU: [{
                 type: "EditEntityButton"
             }, {
-                    type: BUTTON,
-                    label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add result",
-                    plugins: [{
-                        fn: "EditEntityArrayFieldAction",
-                        cfg: {
-                            targetClass: "Result",
-                            method: "POST",
-                            attributeKey: "results",
-                            showEditionAfterRequest: true
-                        }
-                    }]
-                }, {
-                    type: BUTTON,
-                    label: "Copy",
-                    plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-                }, {
-                    type: "DeleteEntityButton"
-                }],
+                type: BUTTON,
+                label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add result",
+                plugins: [{
+                    fn: "EditEntityArrayFieldAction",
+                    cfg: {
+                        targetClass: "Result",
+                        method: "POST",
+                        attributeKey: "results",
+                        showEditionAfterRequest: true
+                    }
+                }]
+            }, {
+                type: BUTTON,
+                label: "Copy",
+                plugins: [{
+                    fn: "DuplicateEntityAction"
+                }]
+            }, {
+                type: "DeleteEntityButton"
+            }],
             METHODS: {
                 activate: {
                     arguments: [{
@@ -417,11 +417,11 @@ YUI.add('wegas-mcq-entities', function (Y) {
                         type: HIDDEN,
                         value: SELF
                     }, {
-                            type: "entityarrayfieldselect",
-                            returnAttr: "name",
-                            field: "results",
-                            scriptType: STRING
-                        }]
+                        type: "entityarrayfieldselect",
+                        returnAttr: "name",
+                        field: "results",
+                        scriptType: STRING
+                    }]
                 },
                 hasBeenSelected: {
                     label: "has been selected",
@@ -438,11 +438,11 @@ YUI.add('wegas-mcq-entities', function (Y) {
                         type: HIDDEN,
                         value: SELF
                     }, {
-                            type: "entityarrayfieldselect",
-                            returnAttr: "name",
-                            field: "results",
-                            scriptType: STRING
-                        }
+                        type: "entityarrayfieldselect",
+                        returnAttr: "name",
+                        field: "results",
+                        scriptType: STRING
+                    }
                     ]
                 }
             }
@@ -537,20 +537,16 @@ YUI.add('wegas-mcq-entities', function (Y) {
                             impact: {
                                 optional: true,
                                 index: 2,
-                                type: OBJECT,
+                                type: ["null", OBJECT],
                                 properties: {
-                                    "@class": {
-                                        type: STRING,
-                                        value: "Script",
-                                        view: { type: HIDDEN }
-                                    },
+                                    "@class": { type: "string", value: "Script", view: { type: HIDDEN } },
                                     content: {
-                                        type: STRING,
-                                        view: {
-                                            type: SCRIPT,
-                                            label: "Impact on variables",
-                                        }
+                                        type: STRING
                                     }
+                                },
+                                view: {
+                                    label: "Impact on variables",
+                                    type: SCRIPT
                                 }
                             },
                             ignorationAnswer: {
@@ -567,24 +563,20 @@ YUI.add('wegas-mcq-entities', function (Y) {
                                 }
                             },
                             ignorationImpact: {
-                                type: OBJECT,
+                                type: ["null", OBJECT],
+                                properties: {
+                                    "@class": { type: "string", value: "Script", view: { type: HIDDEN } },
+                                    content: {
+                                        type: STRING
+                                    }
+                                },
                                 visible: function (val, formVal) {
                                     var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.parentDescriptorId);
                                     return parent ? parent.get("cbx") : false;
                                 },
-                                properties: {
-                                    "@class": {
-                                        type: STRING,
-                                        value: "Script",
-                                        view: { type: HIDDEN }
-                                    },
-                                    content: {
-                                        type: STRING,
-                                        view: {
-                                            type: SCRIPT,
-                                            label: "Impact on variables when ignored",
-                                        }
-                                    }
+                                view: {
+                                    label: "Impact on variables when ignored",
+                                    type: SCRIPT
                                 },
                                 index: 5,
 
@@ -622,14 +614,14 @@ YUI.add('wegas-mcq-entities', function (Y) {
             EDITMENU: [{
                 type: "EditEntityButton"
             }, {
-                    type: BUTTON,
-                    label: "Copy",
-                    plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-                }, {
-                    type: "DeleteEntityButton"
-                }],
+                type: BUTTON,
+                label: "Copy",
+                plugins: [{
+                    fn: "DuplicateEntityAction"
+                }]
+            }, {
+                type: "DeleteEntityButton"
+            }],
             METHODS: {
                 activate: {
                     arguments: [{
@@ -717,20 +709,16 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     }
                 },
                 impact: {
-                    type: OBJECT,
+                    type: ["null", OBJECT],
                     properties: {
-                        "@class": {
-                            type: STRING,
-                            value: "Script",
-                            view: { type: HIDDEN }
-                        },
+                        "@class": { type: "string", value: "Script", view: { type: HIDDEN } },
                         content: {
-                            type: STRING,
-                            view: {
-                                type: SCRIPT,
-                                label: "Impact when selected"
-                            }
+                            type: STRING
                         }
+                    },
+                    view: {
+                        label: "Impact when selected",
+                        type: SCRIPT
                     }
                 },
                 ignorationAnswer: {
@@ -746,24 +734,20 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     }
                 },
                 ignorationImpact: {
-                    type: OBJECT,
+                    type: ["null", OBJECT],
+                    properties: {
+                        "@class": { type: "string", value: "Script", view: { type: HIDDEN } },
+                        content: {
+                            type: STRING
+                        }
+                    },
                     visible: function (val, formVal) {
                         var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.choiceDescriptorId);
                         return parent ? parent.parentDescriptor.get("cbx") : false;
                     },
-                    properties: {
-                        "@class": {
-                            type: STRING,
-                            value: "Script",
-                            view: { type: HIDDEN }
-                        },
-                        content: {
-                            type: STRING,
-                            view: {
-                                type: SCRIPT,
-                                label: "Impact on variables when ignored"
-                            }
-                        }
+                    view: {
+                        label: "Impact on variables when ignored",
+                        type: SCRIPT
                     }
                 },
                 choiceDescriptorId: {
@@ -800,26 +784,26 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     }
                 }]
             }, {
-                    type: BUTTON,
-                    label: "Copy",
-                    plugins: [{
-                        fn: "EditEntityArrayFieldAction",
-                        cfg: {
-                            method: "copy",
-                            attributeKey: "results"
-                        }
-                    }]
-                }, {
-                    type: BUTTON,
-                    label: "Delete",
-                    plugins: [{
-                        fn: "EditEntityArrayFieldAction",
-                        cfg: {
-                            method: "delete",
-                            attributeKey: "results"
-                        }
-                    }]
+                type: BUTTON,
+                label: "Copy",
+                plugins: [{
+                    fn: "EditEntityArrayFieldAction",
+                    cfg: {
+                        method: "copy",
+                        attributeKey: "results"
+                    }
                 }]
+            }, {
+                type: BUTTON,
+                label: "Delete",
+                plugins: [{
+                    fn: "EditEntityArrayFieldAction",
+                    cfg: {
+                        method: "delete",
+                        attributeKey: "results"
+                    }
+                }]
+            }]
         });
     /**
      * MCQ ChoiceInstance mapper
