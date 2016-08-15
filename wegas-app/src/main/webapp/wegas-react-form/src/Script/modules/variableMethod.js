@@ -1,10 +1,10 @@
 import React, { PropTypes } from 'react';
-import { types, print, parse } from 'recast';
+import { types } from 'recast';
+import isMatch from 'lodash/fp/isMatch';
 import Container from 'jsoninput';
 import { build, extractVar, schema as variableSchema, isVar } from './variable';
 import { handleArgs } from './args';
 import { methodSchema } from './method';
-import isMatch from 'lodash/fp/isMatch';
 
 const { builders: b, visit } = types;
 
@@ -83,7 +83,7 @@ class VariableMethod extends React.Component {
                 schema={variableSchema(view.variable)}
                 value={this.state.variable}
                 onChange={v => this.setState({ variable: v }, this.check)}
-                />
+            />
         )];
         if (this.state.variable) {
             child.push(
@@ -92,7 +92,7 @@ class VariableMethod extends React.Component {
                     schema={methodSchema(view.method, this.state.variable, this.props.type)}
                     value={this.state.method}
                     onChange={v => this.setState({ method: v }, this.check)}
-                    />
+                />
             );
         }
         if (this.state.method) {

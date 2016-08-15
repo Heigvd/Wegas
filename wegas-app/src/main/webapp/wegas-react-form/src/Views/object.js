@@ -35,6 +35,8 @@ ObjectView.propTypes = {
     view: PropTypes.shape({
         className: PropTypes.string,
         label: PropTypes.string
-    })
+    }),
+    errorMessage: PropTypes.array,
+    editKey: PropTypes.string
 };
 export default ObjectView;

@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
 import Select from '../select';
 import { getY } from '../../index';
+
 function genSpaces(nb) {
     let i;
     let ret = '';

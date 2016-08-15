@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton/IconButton';
@@ -30,4 +30,8 @@ function Menu({ menu, onChange }) {
         </IconMenu>
     );
 }
+Menu.propTypes = {
+    menu: PropTypes.array.isRequired,
+    onChange: PropTypes.func.isRequired
+};
 export default Menu;

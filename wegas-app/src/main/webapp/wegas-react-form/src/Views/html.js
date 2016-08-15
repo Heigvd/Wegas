@@ -1,4 +1,5 @@
-import React from 'react';
+/* eslint-disable jsx-a11y/label-has-for */
+import React, { PropTypes } from 'react';
 import TinyMCE from 'react-tinymce';
 import './../../../wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar.js';
 import { getY } from './../index.js';
@@ -102,6 +103,10 @@ function HTMLView(props) {
         </div>
     );
 }
-
+HTMLView.propTypes = {
+    onChange: PropTypes.func.isRequired,
+    view: PropTypes.object,
+    value: PropTypes.string
+};
 
 export default HTMLView;

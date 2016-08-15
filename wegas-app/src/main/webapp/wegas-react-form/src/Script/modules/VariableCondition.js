@@ -1,10 +1,10 @@
 import React, { PropTypes } from 'react';
-import VariableMethod, { extractMethod } from './VariableMethod';
+import { types } from 'recast';
 import Container from 'jsoninput';
+import VariableMethod, { extractMethod } from './VariableMethod';
 import { methodDescriptor } from './method';
 import ConditionOperator from './ConditionOperator';
 import { typeToValue, valueToType } from './args';
-import { types } from 'recast';
 
 const b = types.builders;
 /**

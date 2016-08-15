@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
-import { visit, types } from 'recast';
+import { visit } from 'recast';
 import addStatement from './addStatement';
+
 const TYPE = {
     GETTER: 'getter',
     CONDITION: 'condition'

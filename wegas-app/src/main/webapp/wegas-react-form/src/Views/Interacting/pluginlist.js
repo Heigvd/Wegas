@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+import Form from 'jsoninput';
 import async from '../../HOC/async';
 import Menu from '../../Components/Menu';
-import Form from 'jsoninput';
 import { getY } from '../../index';
 
 const asyncForm = async(Form);
@@ -50,7 +50,11 @@ function PluginElement({ value, onChange, view }) {
             <AsyncForm value={value} onChange={onChange} />
         );
     }
-    return <Menu menu={view.choices} onChange={o => onChange({ fn: o }) } />;
+    return <Menu menu={view.choices} onChange={o => onChange({ fn: o })} />;
 }
-
+PluginElement.propTypes = {
+    value: PropTypes.any,
+    onChange: PropTypes.func.isRequired,
+    view: PropTypes.object
+};
 export default PluginElement;

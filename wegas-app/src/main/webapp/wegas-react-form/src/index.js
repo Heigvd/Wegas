@@ -10,8 +10,9 @@ let Z;
 /* global YUI */
 YUI.add('wegas-react-form', Y => {
     Z = Y;
-    require('./wegas-react-form');
+    require('./wegas-react-form'); // eslint-disable-line
 });
-export function getY() {
+
+export function getY() { // eslint-disable-line
     return Z;
 }

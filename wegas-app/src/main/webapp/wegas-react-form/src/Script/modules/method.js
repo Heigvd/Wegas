@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import SelectView from '../../Views/select';
 import { getY } from '../../index';
 
@@ -18,13 +18,14 @@ function genChoices(variable, type) {
     const descr = Y.Wegas.Facade.Variable.cache.find('name', variable);
     const methods = descr.getMethodCfgs();
     return Object.keys(methods)
-        .filter(k => (methods[k].hasOwnProperty('returns') && type === 'condition') ||
-            (!methods[k].hasOwnProperty('returns') && type === 'getter'))
+        .filter(k => ('returns' in methods[k] && type === 'condition') ||
+            (!('returns' in methods[k]) && type === 'getter'))
         .map(v => ({
             value: v,
             label: methods[v].label || v
         }));
 }
+// Replace with select with if it stays in this shape
 function MethodView({ value, onChange, view }) {
     return (
         <SelectView
@@ -34,7 +35,11 @@ function MethodView({ value, onChange, view }) {
         />
     );
 }
-
+MethodView.propTypes = {
+    value: PropTypes.string,
+    view: PropTypes.object,
+    onChange: PropTypes.func
+};
 const methodSchema = (view, variable, type) => {
     const choices = genChoices(variable, type);
     return {

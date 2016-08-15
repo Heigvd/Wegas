@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import WegasUrl from './wegas-url';
+
 function WegasImageUrl(props) {
     const updatedProps = Object.assign({}, props,
         {
@@ -15,5 +16,7 @@ function WegasImageUrl(props) {
     );
     return <WegasUrl {...updatedProps} />;
 }
-
+WegasImageUrl.propTypes = {
+    view: PropTypes.object
+};
 export default WegasImageUrl;

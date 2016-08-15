@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import Container from 'jsoninput';
 
 const BINARYOPERATORS = [{
@@ -39,4 +39,9 @@ function ConditionOperator({ type, operator, onChange }) {
         />
     );
 }
+ConditionOperator.propTypes = {
+    type: PropTypes.oneOf(['number', 'boolean', 'string']).isRequired,
+    operator: PropTypes.string,
+    onChange: PropTypes.func.isRequired
+};
 export default ConditionOperator;

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { visit, types } from 'recast';
 import isMatch from 'lodash/fp/isMatch';
+
 const AND = '&&';
 function condition(Comp) {
     function Condition(props) {
@@ -40,7 +41,10 @@ function condition(Comp) {
             <Comp {...props} code={expr} onChange={join} type="condition" />
         );
     }
-
+    Condition.propTypes = {
+        code: PropTypes.array.isRequired,
+        onChange: PropTypes.func.isRequired
+    };
     return Condition;
 }
 export default condition;

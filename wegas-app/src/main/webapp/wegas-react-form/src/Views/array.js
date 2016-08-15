@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react';
 import IconButton from 'material-ui/IconButton';
+
 const minusStyle = {
     float: 'left',
     marginTop: '12px'
@@ -46,6 +47,8 @@ function ArrayWidget(props) {
 ArrayWidget.propTypes = {
     children: PropTypes.arrayOf(PropTypes.element),
     onChildRemove: PropTypes.func.isRequired,
-    onChildAdd: PropTypes.func.isRequired
+    onChildAdd: PropTypes.func.isRequired,
+    view: PropTypes.object,
+    editKey: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
 };
 export default ArrayWidget;

@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
-import ObjectView from './object';
 import IconButton from 'material-ui/IconButton';
 import TextField from 'material-ui/TextField';
+import ObjectView from './object';
 
 const halfWidth = {
     display: 'inline-block',
@@ -18,6 +18,7 @@ class HashlistView extends React.Component {
         this.state = {
             newInputValue: ''
         };
+        this.child = [];
         this.addChild = this.addChild.bind(this);
         this.onAdderChange = this.onAdderChange.bind(this);
     }
@@ -27,13 +28,13 @@ class HashlistView extends React.Component {
         });
     }
     addChild() {
-        const newInputValue = this.refs.newInput.getValue();
+        const newInputValue = this.newInput.getValue();
         this.setState({
             newInputValue: ''
         });
         this.props.addKey(newInputValue);
         setTimeout(() => {
-            this.refs[newInputValue].querySelector('input').focus();
+            this.child[newInputValue].querySelector('input').focus();
         }, 20);
     }
     render() {
@@ -62,7 +63,7 @@ class HashlistView extends React.Component {
                     />
                     <div
                         style={halfWidth}
-                        ref={child.props.editKey}
+                        ref={node => { this.child[child.props.editKey] = node; }}
                     >
                         {child}
                     </div>
@@ -77,7 +78,7 @@ class HashlistView extends React.Component {
                 value={this.state.newInputValue}
                 onChange={this.onAdderChange}
                 floatingLabelText={this.props.view.keyLabel || 'Name'}
-                ref="newInput"
+                ref={node => { this.newInput = node; }}
             />
             <IconButton
                 iconClassName="fa fa-plus"

@@ -1,7 +1,8 @@
-import React from 'react';
-import StringView from './string';
+import React, { PropTypes } from 'react';
 import IconButton from 'material-ui/IconButton';
+import StringView from './string';
 import { getY } from '..';
+
 function openPanel(onChange, filter) {
     return function onClick() {
         const Y = getY();
@@ -27,5 +28,8 @@ function WegasUrl(props) {
             />
         </div>);
 }
-
+WegasUrl.propTypes = {
+    onChange: PropTypes.func.isRequired,
+    view: PropTypes.object
+};
 export default WegasUrl;

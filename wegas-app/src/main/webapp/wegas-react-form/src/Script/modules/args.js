@@ -1,7 +1,7 @@
 import React from 'react';
 import { types, print, parse } from 'recast';
-import { getY } from '../../index';
 import Container from 'jsoninput';
+import { getY } from '../../index';
 
 const Y = getY();
 const { builders: b } = types;
@@ -40,9 +40,9 @@ function valueToType(v, schema) {
         return b.identifier(val);
     case 'array':
     case 'object': {
-            const x = parse(JSON.stringify(val)).program.body[0].expression;
-            return x;
-        }
+        const x = parse(JSON.stringify(val)).program.body[0].expression;
+        return x;
+    }
     default:
         throw Error(`implement me ${schema.type}`);
     }
