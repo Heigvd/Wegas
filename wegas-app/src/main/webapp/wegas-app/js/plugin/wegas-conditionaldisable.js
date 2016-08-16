@@ -9,27 +9,27 @@
  * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
-YUI.add('wegas-conditionaldisable', function(Y) {
+YUI.add('wegas-conditionaldisable', function (Y) {
     "use strict";
     var Wegas = Y.Wegas, Plugin = Y.Plugin, ConditionalDisable;
 
     ConditionalDisable = Y.Base.create("wegas-conditionaldisable", Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         handlers: null,
-        initializer: function() {
+        initializer: function () {
             this.handlers = [];
-            this.onceAfterHostEvent("render", function() {
+            this.onceAfterHostEvent("render", function () {
                 this.conditionEval();
                 this.handlers.push(Wegas.Facade.Variable.after("update", this.conditionEval, this));
             });
         },
-        destructor: function() {
+        destructor: function () {
             for (var i = 0; i < this.handlers.length; i += 1) {
                 this.handlers[i].detach();
             }
         },
-        conditionEval: function() {
+        conditionEval: function () {
             if (Wegas.Facade.Variable.script) {
-                Wegas.Facade.Variable.script.eval(this.get("condition"), Y.bind(function(e) {
+                Wegas.Facade.Variable.script.eval(this.get("condition"), Y.bind(function (e) {
                     var attr = this.get("attribute"),
                         result = e.response.entity;
                     if (attr === "cssClass") {
@@ -41,32 +41,32 @@ YUI.add('wegas-conditionaldisable', function(Y) {
             }
         }
     }, {
-        ATTRS: {
-            condition: {
-                _inputex: {
-                    _type: 'script',
-                    label: 'Disable if',
-                    expects: "condition"
+            ATTRS: {
+                condition: {
+                    type: ['null', 'object'],
+                    view: {
+                        type: 'scriptcondition',
+                        label: 'Disable if'
+                    }
+                },
+                attribute: {
+                    type: "string",
+                    value: "disabled",
+                    _inputex: {
+                        wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                    }
+                },
+                value: {
+                    type: "string",
+                    value: "",
+                    optional: true,
+                    _inputex: {
+                        wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                    }
                 }
             },
-            attribute: {
-                type: "string",
-                value: "disabled",
-                _inputex: {
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
-                }
-            },
-            value: {
-                type: "string",
-                value: "",
-                optional: true,
-                _inputex: {
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
-                }
-            }
-        },
-        NS: "ConditionalDisable"
-    });
+            NS: "ConditionalDisable"
+        });
     Plugin.ConditionalDisable = ConditionalDisable;
 
     Plugin.ConditionalDisable2 = Y.Base.create("wegas-conditionaldisable2", ConditionalDisable, [], {}, {

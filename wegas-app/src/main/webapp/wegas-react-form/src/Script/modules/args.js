@@ -51,11 +51,13 @@ function typeToValue(v, schema) {
     if (!v || v.name === 'undefined') {
         return undefined;
     }
+    // return print(v).code;
     switch (schema.type) {
     case 'string':
     case 'number':
     case 'boolean':
-        return v.value;
+        // return v.value;
+        return print(v).code; // handle negative values.
     case 'identifier':
         return v.name;
     case 'array':

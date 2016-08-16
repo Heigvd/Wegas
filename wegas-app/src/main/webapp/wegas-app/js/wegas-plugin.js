@@ -428,8 +428,10 @@ YUI.add("wegas-plugin", function(Y) {
         NS: "ExecuteScriptAction",
         ATTRS: {
             onClick: {
-                _inputex: {
-                    _type: "script",
+                type:'object',
+                value:{},
+                view: {
+                    type: "script",
                     label: "On click"
                 }
             }
