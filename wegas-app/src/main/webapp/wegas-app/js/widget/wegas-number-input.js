@@ -158,12 +158,11 @@ YUI.add("wegas-number-input", function(Y) {
             },
             readonly: {
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                type: "boolean",
+                type: "object",
                 value: false,
                 optional: true,
-                _inputex: {
-                    _type: "script",
-                    expects: "condition"
+                view: {
+                    type: "scriptcondition"
                 }
             },
             selfSaving: {

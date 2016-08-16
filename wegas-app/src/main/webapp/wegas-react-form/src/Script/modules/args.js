@@ -1,5 +1,5 @@
 import React from 'react';
-import { types, print, parse } from 'recast';
+import { types, print, parse, visit } from 'recast';
 import Container from 'jsoninput';
 import { getY } from '../../index';
 
@@ -48,16 +48,28 @@ function valueToType(v, schema) {
     }
 }
 function typeToValue(v, schema) {
+    const tmp = [];
     if (!v || v.name === 'undefined') {
         return undefined;
     }
     // return print(v).code;
     switch (schema.type) {
     case 'string':
-    case 'number':
     case 'boolean':
-        // return v.value;
-        return print(v).code; // handle negative values.
+        return v.value;
+    case 'number':
+            // handle negative values.
+        visit(v, {
+            visitUnaryExpression: function visitUnaryExpression(path) {
+                tmp.push(path.node.operator);
+                this.traverse(path);
+            },
+            visitLiteral: function visitLiteral(path) {
+                tmp.push(path.node.value);
+                return false;
+            }
+        });
+        return tmp.join('');
     case 'identifier':
         return v.name;
     case 'array':

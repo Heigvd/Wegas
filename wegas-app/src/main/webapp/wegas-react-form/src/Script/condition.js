@@ -15,10 +15,10 @@ function condition(Comp) {
                     expr.splice(0, 0, path.value.left);
                 }
             },
-            // visitExpressionStatement(path) {
-            //     expr.splice(0, 0, path.value.expression);
-            //     return false;
-            // }
+            visitExpressionStatement(path) {
+                expr.splice(0, 0, path.value.expression);
+                return false;
+            }
         });
         function join(ast) {
             let st;
