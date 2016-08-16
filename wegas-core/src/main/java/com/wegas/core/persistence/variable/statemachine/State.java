@@ -23,9 +23,9 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.eclipse.persistence.annotations.OptimisticLocking;
 
 //import javax.xml.bind.annotation.XmlRootElement;
-
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
@@ -33,17 +33,30 @@ import java.util.List;
 @Table(
         name = "fsm_state",
         indexes = {
-                @Index(columnList = "statemachine_id")
+            @Index(columnList = "statemachine_id")
         }
 )
 //@XmlRootElement
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @JsonSubTypes(value = {
-        @JsonSubTypes.Type(name = "DialogueState", value = DialogueState.class)
+    @JsonSubTypes.Type(name = "DialogueState", value = DialogueState.class)
 })
+
+@OptimisticLocking(cascade = true)
 public class State extends AbstractEntity implements Searchable, Scripted {
 
     private static final long serialVersionUID = 1L;
+
+    @Version
+    private Long version;
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
 
     /**
      *
@@ -182,6 +195,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
         if (other instanceof State) {
             State newState = (State) other;
             this.setLabel(newState.getLabel());
+            this.setVersion(((State) other).getVersion());
             this.setOnEnterEvent(newState.getOnEnterEvent());
             this.setEditorPosition(newState.getEditorPosition());
             this.setTransitions(ListUtils.mergeReplace(this.getTransitions(), newState.getTransitions()));
