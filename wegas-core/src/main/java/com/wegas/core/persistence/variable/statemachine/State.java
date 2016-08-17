@@ -42,7 +42,7 @@ import org.eclipse.persistence.annotations.OptimisticLocking;
     @JsonSubTypes.Type(name = "DialogueState", value = DialogueState.class)
 })
 
-@OptimisticLocking(cascade = true)
+//@OptimisticLocking(cascade = true)
 public class State extends AbstractEntity implements Searchable, Scripted {
 
     private static final long serialVersionUID = 1L;

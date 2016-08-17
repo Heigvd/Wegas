@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 //import javax.xml.bind.annotation.XmlRootElement;
-
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
@@ -32,11 +31,11 @@ import java.util.List;
 //@XmlRootElement
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @JsonSubTypes(value = {
-        @JsonSubTypes.Type(name = "DialogueTransition", value = DialogueTransition.class)
+    @JsonSubTypes.Type(name = "DialogueTransition", value = DialogueTransition.class)
 })
 @Table(
         indexes = {
-                @Index(columnList = "state_id")
+            @Index(columnList = "state_id")
         }
 )
 public class Transition extends AbstractEntity implements Searchable, Scripted {
@@ -50,6 +49,17 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
     @GeneratedValue
     @JsonView(Views.IndexI.class)
     private Long id;
+
+    @Version
+    private Long version;
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
 
     /**
      *
@@ -72,10 +82,10 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
      */
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name = "content", column
-                    = @Column(name = "onTransition_content")),
-            @AttributeOverride(name = "lang", column
-                    = @Column(name = "onTransition_language"))
+        @AttributeOverride(name = "content", column
+                = @Column(name = "onTransition_content")),
+        @AttributeOverride(name = "lang", column
+                = @Column(name = "onTransition_language"))
     })
     @JsonView(Views.EditorI.class)
     private Script preStateImpact;
@@ -175,6 +185,7 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
     public void merge(AbstractEntity other) {
         if (other instanceof Transition) {
             Transition newTranstion = (Transition) other;
+            this.setVersion(newTranstion.getVersion());
             this.setNextStateId(newTranstion.getNextStateId());
             this.setPreStateImpact(newTranstion.getPreStateImpact());
             this.setTriggerCondition(newTranstion.getTriggerCondition());

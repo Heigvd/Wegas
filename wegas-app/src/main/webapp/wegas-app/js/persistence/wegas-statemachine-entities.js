@@ -339,6 +339,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                     _type: HIDDEN
                 }
             },
+            version: VERSION_ATTR_DEF,
             triggerCondition: {
                 optional: true,
                 _inputex: {
