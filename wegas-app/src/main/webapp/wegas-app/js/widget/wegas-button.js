@@ -135,7 +135,7 @@ YUI.add("wegas-button", function(Y) {
      * @extends Y.Plugin.Base
      * @borrows Y.Wegas.Plugin, Y.Wegas.Editable
      */
-    var UnreadCount = Y.Base.create("wegas-unreadCount", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
+    var UnreadCount = Y.Base.create("UnreadCount", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         /** @lends Y.Plugin.UnreadCount# */
 
         // *** Private fields *** //

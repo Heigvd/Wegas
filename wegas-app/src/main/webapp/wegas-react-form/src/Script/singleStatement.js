@@ -4,12 +4,12 @@ import { types } from 'recast';
 function singleStatement(Comp) {
     function SingleStatement(props) {
         const { code, onChange } = props;
-        const fst = code[0] || types.builders.emptyStatement();
+        const stmt = code[0] || types.builders.emptyStatement();
         return (
             <Comp
                 {...props}
-                node={fst}
-                onChange={(v) => onChange([v])}
+                node={stmt}
+                onChange={(v) => onChange([types.builders.expressionStatement(v)])}
             />
         );
     }

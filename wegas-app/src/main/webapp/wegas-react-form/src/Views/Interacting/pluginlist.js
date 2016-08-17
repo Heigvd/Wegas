@@ -36,7 +36,6 @@ const AsyncForm = asyncForm(({ value }) => {
                 w.plug(targetPlg);
                 const cfg = w[targetPlg.NS].getFormCfg();
                 cfg.name = targetPlg.NAME;
-                console.log(cfg);
                 resolve(updateCfg(cfg));
             });
         } else {

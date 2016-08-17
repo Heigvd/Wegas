@@ -522,8 +522,8 @@ YUI.add('wegas-mcq-view', function(Y) {
                  */
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 optional: true,
-                _inputex: {
-                    _type: "variableselect",
+                view: {
+                    type: "variableselect",
                     label: "Question",
                     classFilter: ["QuestionDescriptor"]
                 }
@@ -533,9 +533,8 @@ YUI.add('wegas-mcq-view', function(Y) {
                 type: "boolean",
                 value: false,
                 optional: true,
-                _inputex: {
-                    _type: "script",
-                    expects: "condition"
+                view: {
+                    type: "scriptcondition"
                 }
             }
         }

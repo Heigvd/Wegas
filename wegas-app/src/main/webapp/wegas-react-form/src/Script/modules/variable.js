@@ -35,16 +35,16 @@ export const extractVar = (node) => {
     return ret;
 };
 export const build = (v) => (
-    b.callExpression(
-        b.memberExpression(
-            b.identifier('Variable'),
-            b.identifier('find')
-        ),
-        [
-            b.identifier('gameModel'),
-            b.literal(v)
-        ]
-    )
+        b.callExpression(
+            b.memberExpression(
+                b.identifier('Variable'),
+                b.identifier('find')
+            ),
+            [
+                b.identifier('gameModel'),
+                b.literal(v)
+            ]
+        )
 );
 export const schema = (optView) => ({
     type: 'string',
