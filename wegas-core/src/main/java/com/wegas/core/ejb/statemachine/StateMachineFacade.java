@@ -135,7 +135,6 @@ public class StateMachineFacade {
     }
 
     private void runForPlayer(Player player) throws WegasScriptException {
-        logger.error("RUN FOR PLAYER: " + player);
         List<StateMachineDescriptor> statemachines = this.getAllStateMachines(player.getGameModel());
         List<Transition> passed = new ArrayList<>();
         stateMachineEventsCounter = new InternalStateMachineEventCounter();

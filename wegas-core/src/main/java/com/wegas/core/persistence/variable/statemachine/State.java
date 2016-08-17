@@ -195,7 +195,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
         if (other instanceof State) {
             State newState = (State) other;
             this.setLabel(newState.getLabel());
-            this.setVersion(((State) other).getVersion());
+            this.setVersion(newState.getVersion());
             this.setOnEnterEvent(newState.getOnEnterEvent());
             this.setEditorPosition(newState.getEditorPosition());
             this.setTransitions(ListUtils.mergeReplace(this.getTransitions(), newState.getTransitions()));
@@ -206,6 +206,6 @@ public class State extends AbstractEntity implements Searchable, Scripted {
 
     @Override
     public String toString() {
-        return "State{" + "id=" + id + ", label=" + label + ", onEnterEvent=" + onEnterEvent + ", transitions=" + transitions + '}';
+        return "State{" + "id=" + id + ", v=" + version + ", label=" + label + ", onEnterEvent=" + onEnterEvent + ", transitions=" + transitions + '}';
     }
 }

@@ -17,14 +17,12 @@ import com.wegas.core.rest.util.Views;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 ////import javax.xml.bind.annotation.XmlRootElement;
 ////import javax.xml.bind.annotation.XmlTransient;
 //import javax.xml.bind.annotation.XmlType;
-
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
@@ -94,9 +92,10 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      */
     public Script getPostTriggerEvent() {
         try {
-            if (this.oneShot) {
+            if (this.getStates().size() == 2) {
                 this.postTriggerEvent = this.getStates().get(2L).getOnEnterEvent();
             } else {
+                // Backward !!!
                 this.postTriggerEvent = this.getStates().get(1L).getOnEnterEvent();
             }
         } catch (NullPointerException e) {
@@ -116,10 +115,11 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     }
 
     /**
+     * Trigger condition
+     *
      * @return
      */
     public Script getTriggerEvent() {
-
         try {
             this.triggerEvent = this.getStates().get(1L).getTransitions().get(0).getTriggerCondition();
         } catch (NullPointerException e) {
@@ -155,12 +155,21 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     public void merge(AbstractEntity a) {
         if (a instanceof TriggerDescriptor) {
             TriggerDescriptor entity = (TriggerDescriptor) a;
+
             entity.buildStateMachine();
-            this.oneShot = entity.isOneShot();
-            this.disableSelf = entity.isDisableSelf();
-            this.postTriggerEvent = entity.getPostTriggerEvent();
-            this.triggerEvent = entity.getTriggerEvent();
+            this.setOneShot(entity.oneShot);
+            this.setDisableSelf(entity.disableSelf);
+            this.setPostTriggerEvent(entity.postTriggerEvent);
+            this.setTriggerEvent(entity.triggerEvent);
+
+            // HACK Restore Version Number
+            Long initialStateVersion = this.getStates().get(1L).getVersion();
+            Long finalStateVersion = this.getStates().get(2L).getVersion();
+
             super.merge(entity);
+
+            this.getStates().get(1L).setVersion(initialStateVersion);
+            this.getStates().get(2L).setVersion(finalStateVersion);
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
@@ -169,27 +178,63 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     /**
      *
      */
-//    @PrePersist
     public void buildStateMachine() {
-        State initialState = new State();
-        Transition transition = new Transition();
-        transition.setTriggerCondition(this.triggerEvent);
-        List<Transition> transitions = new ArrayList<>(1);
-        transitions.add(transition);
-        initialState.setTransitions(transitions);
-        HashMap<Long, State> states = new HashMap<>();
-        states.put(1L, initialState);
-        if (this.oneShot != null && this.oneShot) {
+        if (this.getStates().size() < 2 || this.getStates().get(2L).getTransitions().isEmpty()) {
+
+            // make sure both initial and final states exists
+            State initial;
+            State finalState;
+            if (this.getStates().isEmpty()) {
+                initial = new State();
+                initial.setVersion(1L);
+                this.getStates().put(1L, initial);
+            } else {
+                initial = this.getStates().get(1L);
+                System.out.println("INITIAL STATE VERSION: " + initial.getVersion());
+            }
+
+            if (this.getStates().size() < 2) {
+                // Create the second one
+                finalState = new State();
+                finalState.setVersion(1L);
+                this.getStates().put(2L, finalState);
+
+                // Move impact
+                finalState.setOnEnterEvent(initial.getOnEnterEvent());
+                initial.setOnEnterEvent(null);
+            } else {
+                finalState = this.getStates().get(2L);
+            }
+
+            // Make sure transition exists
+            Transition transition;
+            if (initial.getTransitions().isEmpty()) {
+                transition = new Transition();
+                initial.getTransitions().add(transition);
+            } else {
+                transition = initial.getTransitions().get(0);
+            }
+            // Make sure transition go to state 2
             transition.setNextStateId(2L);
-            State finalState = new State();
-            finalState.setOnEnterEvent(this.postTriggerEvent);
-            states.put(2L, finalState);
-        } else {
-            initialState.setOnEnterEvent(this.postTriggerEvent);
-            transition.setNextStateId(1L);
+
+            // Make sure reset transition exists
+            if (finalState.getTransitions().isEmpty()) {
+                Transition reset = new Transition();
+                reset.setNextStateId(1L);
+                List<Transition> transitions = new ArrayList<>(1);
+                transitions.add(reset);
+                finalState.setTransitions(transitions);
+            }
         }
-        this.getDefaultInstance().setCurrentStateId(1L);
-        this.setStates(states);
+
+        // Condition
+        this.getStates().get(1L).getTransitions().get(0).setTriggerCondition(this.triggerEvent);
+
+        // Impact
+        this.getStates().get(2L).setOnEnterEvent(this.postTriggerEvent);
+
+        // Reset transition
+        this.getStates().get(2L).getTransitions().get(0).setTriggerCondition(new Script("javascript", (this.oneShot ? "false" : "true")));
     }
 
     @Override
