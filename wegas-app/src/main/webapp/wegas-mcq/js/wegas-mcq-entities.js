@@ -22,6 +22,11 @@ YUI.add('wegas-mcq-entities', function (Y) {
             view: {
                 type: HIDDEN
             }
+        },
+        SELFARG = {
+            type: 'identifier',
+            value: 'self',
+            view: { type: HIDDEN }
         };
 
     /**
@@ -190,40 +195,25 @@ YUI.add('wegas-mcq-entities', function (Y) {
              */
             METHODS: {
                 activate: {
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    arguments: [SELFARG]
                 },
                 desactivate: {
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    arguments: [SELFARG]
                 },
                 isReplied: {
                     label: "has been replied",
                     returns: BOOLEAN,
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    arguments: [SELFARG]
                 },
                 isNotReplied: {
                     label: "has not been replied",
                     returns: BOOLEAN,
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    arguments: [SELFARG]
                 },
                 isActive: {
                     label: "is active",
                     returns: BOOLEAN,
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    arguments: [SELFARG]
                 }
             }
         });
@@ -392,57 +382,45 @@ YUI.add('wegas-mcq-entities', function (Y) {
             }],
             METHODS: {
                 activate: {
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    arguments: [SELFARG]
                 },
                 desactivate: {
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    arguments: [SELFARG]
                 },
                 isActive: {
                     label: "is active",
                     returns: BOOLEAN,
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    arguments: [SELFARG]
                 },
                 setCurrentResult: {
                     label: "set current result",
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: "entityarrayfieldselect",
-                        returnAttr: "name",
-                        field: "results",
-                        scriptType: STRING
-                    }]
+                    arguments: [
+                        SELFARG, {
+                            type: STRING,
+                            view: {
+                                type: "entityarrayfieldselect",
+                                returnAttr: "name",
+                                field: "results",
+                            }
+                        }]
                 },
                 hasBeenSelected: {
                     label: "has been selected",
                     returns: BOOLEAN,
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    arguments: [SELFARG]
                 },
                 hasResultBeenApplied: {
                     label: "has result been applied",
                     returns: BOOLEAN,
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: "entityarrayfieldselect",
-                        returnAttr: "name",
-                        field: "results",
-                        scriptType: STRING
-                    }
+                    arguments: [
+                        SELFARG, {
+                            type: STRING,
+                            view: {
+                                type: "entityarrayfieldselect",
+                                returnAttr: "name",
+                                field: "results",
+                            }
+                        }
                     ]
                 }
             }
@@ -624,32 +602,20 @@ YUI.add('wegas-mcq-entities', function (Y) {
             }],
             METHODS: {
                 activate: {
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    arguments: [SELFARG]
                 },
                 desactivate: {
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    arguments: [SELFARG]
                 },
                 hasBeenSelected: {
                     label: "has been selected",
                     returns: BOOLEAN,
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    arguments: [SELFARG]
                 },
                 isActive: {
                     label: "is active",
                     returns: BOOLEAN,
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    arguments: [SELFARG]
                 }
             }
         });

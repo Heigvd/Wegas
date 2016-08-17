@@ -26,6 +26,11 @@ const argSchema = (schema, variable) => {
         view: Object.assign({}, schema.view, { entity: variable })
     });
 };
+/**
+ * Convert a value to an AST node base on a type
+ * @param v the value
+ * @param {Object} schema the schema containing the type
+ */
 function valueToType(v, schema) {
     const val = v === undefined ? schema.value : v;
     if (val === undefined) {
@@ -47,6 +52,11 @@ function valueToType(v, schema) {
         throw Error(`implement me ${schema.type}`);
     }
 }
+/**
+ * Convert AST to value based on a type
+ * @param v the ast value
+ * @param {Object} schema value's jsonschema
+ */
 function typeToValue(v, schema) {
     const tmp = [];
     if (!v || v.name === 'undefined') {
@@ -76,7 +86,7 @@ function typeToValue(v, schema) {
     case 'object':
         return Function(`return ${print(v).code};`)(); // eslint-disable-line no-new-func
     default:
-        throw Error(`implement me '${schema.type}'`);
+        throw Error(`implement me ${schema.type}`);
     }
 }
 

@@ -28,6 +28,11 @@ YUI.add('wegas-object-entities', function (Y) {
             view: {
                 type: HIDDEN
             }
+        },
+        SELFARG = {
+            type: 'identifier',
+            value: 'self',
+            view: { type: HIDDEN }
         };
 
     /**
@@ -41,98 +46,89 @@ YUI.add('wegas-object-entities', function (Y) {
             return "fa fa-database";
         }
     }, {
-        ATTRS: {
-            "@class": {
-                value: "ObjectDescriptor"
-            },
-            properties: {
-                type: "object",
-                defaultProperties: {
-                    type: STRING,
-                    required: true,
-                    view: {
-                        label: VALUE
-                    }
+            ATTRS: {
+                "@class": {
+                    value: "ObjectDescriptor"
                 },
-                view: {
-                    label: "Descriptor properties",
-                    type: HASHLIST,
-                    keyLabel: NAME
-                }
-            },
-            defaultInstance: {
-                type: "object",
                 properties: {
-                    '@class': {
+                    type: "object",
+                    defaultProperties: {
                         type: STRING,
-                        value: 'ObjectInstance',
+                        required: true,
                         view: {
-                            type: HIDDEN
+                            label: VALUE
                         }
                     },
-                    id: IDATTRDEF,
-                    descriptorId: IDATTRDEF,
+                    view: {
+                        label: "Descriptor properties",
+                        type: HASHLIST,
+                        keyLabel: NAME
+                    }
+                },
+                defaultInstance: {
+                    type: "object",
                     properties: {
-                        type: "object",
-                        defaultProperties: {
+                        '@class': {
                             type: STRING,
-                            required: true,
+                            value: 'ObjectInstance',
                             view: {
-                                label: VALUE
+                                type: HIDDEN
                             }
                         },
-                        view: {
-                            label: "Default properties",
-                            type: HASHLIST,
-                            keyLabel: NAME
+                        id: IDATTRDEF,
+                        descriptorId: IDATTRDEF,
+                        properties: {
+                            type: "object",
+                            defaultProperties: {
+                                type: STRING,
+                                required: true,
+                                view: {
+                                    label: VALUE
+                                }
+                            },
+                            view: {
+                                label: "Default properties",
+                                type: HASHLIST,
+                                keyLabel: NAME
+                            }
                         }
+                    }
+                },
+                description: {
+                    type: ["null", STRING],
+                    view: {
+                        type: HTML,
+                        label: "Description",
+                        className: 'wegas-advanced-feature'
                     }
                 }
             },
-            description: {
-                type: ["null", STRING],
-                view: {
-                    type: HTML,
-                    label: "Description",
-                    className: 'wegas-advanced-feature'
+            METHODS: {
+                size: {
+                    label: "size",
+                    returns: "number",
+                    arguments: [SELFARG]
+                },
+                getProperty: {
+                    label: "property equals",
+                    returns: STRING,
+                    arguments: [SELFARG, {
+                        view: { label: NAME },
+                        type: STRING
+                    }]
+                },
+                setProperty: {
+                    label: "set property",
+                    arguments: [SELFARG, {
+                        view: { label: NAME },
+                        type: STRING
+                    }, {
+                            view: { label: NAME },
+                            type: STRING
+                        }]
                 }
             }
-        },
-        METHODS: {
-            size: {
-                label: "size",
-                returns: "number",
-                arguments: [{
-                    type: HIDDEN,
-                    value: "self"
-                }]
-            },
-            getProperty: {
-                label: "property equals",
-                returns: STRING,
-                arguments: [{
-                    type: HIDDEN,
-                    value: "self"
-                }, {
-                    typeInvite: NAME,
-                    scriptType: STRING
-                }]
-            },
-            setProperty: {
-                label: "set property",
-                arguments: [{
-                    type: HIDDEN,
-                    value: "self"
-                }, {
-                    typeInvite: NAME,
-                    scriptType: STRING
-                }, {
-                    typeInvite: VALUE,
-                    scriptType: STRING
-                }]
-            }
-        }
-    });
+        });
 
     /**
      * ObjectInstance mapper

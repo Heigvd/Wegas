@@ -15,6 +15,11 @@ YUI.add('wegas-resourcemanagement-entities', function (Y) {
         SELF = "self", BOOLEAN = "boolean", NUMBER = "number", OBJECT = "object",
         HTML = "html", VALUE = "value", HASHLIST = "hashlist", COMBINE = "combine",
         GROUP = "group", LIST = "list", SELECT = "select", KEY = "key", NULLSTRING = ["null", STRING],
+        SELFARG = {
+            type: 'identifier',
+            value: 'self',
+            view: { type: HIDDEN }
+        },
         Wegas = Y.Wegas, persistence = Wegas.persistence,
         PROPERTIESELEMENTTYPE = {
             type: COMBINE,
@@ -23,10 +28,10 @@ YUI.add('wegas-resourcemanagement-entities', function (Y) {
                 typeInvite: NAME,
                 size: 16
             }, {
-                    name: VALUE,
-                    typeInvite: VALUE,
-                    size: 16
-                }]
+                name: VALUE,
+                typeInvite: VALUE,
+                size: 16
+            }]
         },
         IDATTRDEF = {
             type: NUMBER,
@@ -239,24 +244,15 @@ YUI.add('wegas-resourcemanagement-entities', function (Y) {
                 getActive: {
                     label: "Is active",
                     returns: BOOLEAN,
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    arguments: [SELFARG]
                 },
                 activate: {
                     label: "Activate",
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    arguments: [SELFARG]
                 },
                 desactivate: {
                     label: "Desactivate",
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    arguments: [SELFARG]
                 },
                 separator1: {
                     label: "\u2501\u2501\u2501\u2501"
@@ -264,27 +260,20 @@ YUI.add('wegas-resourcemanagement-entities', function (Y) {
                 getConfidence: {
                     label: "Get confidence",
                     returns: NUMBER,
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    arguments: [SELFARG]
                 },
                 addAtConfidence: {
                     label: "Add to confidence",
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
+                    arguments: [
+                        SELFARG, {
                             type: STRING,
                             value: 1
                         }]
                 },
                 setConfidence: {
                     label: "Set confidence",
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
+                    arguments: [
+                        SELFARG, {
                             type: STRING,
                             value: 1
                         }]
@@ -292,55 +281,49 @@ YUI.add('wegas-resourcemanagement-entities', function (Y) {
                 getNumberInstanceProperty: {
                     label: "Get number property",
                     returns: NUMBER,
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
+                    arguments: [
+                        SELFARG, {
                             type: STRING,
-                            typeInvite: KEY,
-                            scriptType: STRING
+                            view: {
+                                label: KEY
+                            }
                         }]
                 },
                 getStringInstanceProperty: {
                     label: "Get text property",
                     returns: STRING,
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
+                    arguments: [
+                        SELFARG, {
                             type: STRING,
-                            typeInvite: KEY,
-                            scriptType: STRING
+                            view: {
+                                label: KEY
+                            }
                         }]
                 },
                 addNumberAtInstanceProperty: {
                     label: "Add to property",
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
+                    arguments: [
+                        SELFARG, {
                             type: STRING,
-                            typeInvite: KEY,
-                            scriptType: STRING
+                            view: {
+                                label: KEY
+                            }
                         }, {
                             type: STRING,
-                            typeInvite: VALUE,
-                            scriptType: STRING
+                            view: { label: VALUE }
                         }]
                 },
                 setInstanceProperty: {
                     label: "Set property",
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
+                    arguments: [SELFARG,
+                        {
                             type: STRING,
-                            typeInvite: KEY,
-                            scriptType: STRING
+                            view: {
+                                label: KEY
+                            }
                         }, {
                             type: STRING,
-                            typeInvite: VALUE,
-                            scriptType: STRING
+                            view: { label: VALUE }
                         }]
                 },
                 separator2: {
@@ -348,117 +331,94 @@ YUI.add('wegas-resourcemanagement-entities', function (Y) {
                 },
                 addOccupation: {
                     label: "Add occupation",
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
+                    arguments: [
+                        SELFARG, {
                             type: NUMBER,
-                            typeInvite: "Period",
-                            scriptType: NUMBER
+                            view: { label: "Period" }
                         }, {
-                            type: HIDDEN,
-                            label: "Editable",
+                            type: BOOLEAN,
                             value: false,
-                            scriptType: BOOLEAN
+                            view: {
+                                label: "Editable",
+                                type: HIDDEN
+                            }
                         }, {
-                            type: HIDDEN,
-                            label: "Description",
-                            scriptType: STRING
+                            type: STRING,
+                            view: {
+                                label: "Description",
+                                type: HIDDEN
+                            }
                         }
                     ]
                 },
                 removeOccupationsAtTime: {
                     label: "Remove occupation",
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                            type: NUMBER,
-                            typeInvite: "Time"
-                        }]
+                    arguments: [SELFARG, {
+                        type: NUMBER,
+                        view: { label: "Time" }
+                    }]
                 },
                 getSalary: {
                     label: "Get salary",
                     returns: NUMBER,
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    arguments: [SELFARG]
                 },
                 addAtSalary: {
                     label: "Add to salary",
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
+                    arguments: [SELFARG,
+                        {
                             type: STRING,
-                            value: 1
+                            value: "1"
                         }]
                 },
                 setSalary: {
                     label: "Set salary",
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
+                    arguments: [
+                        SELFARG, {
                             type: STRING,
-                            value: 1
+                            value: "1"
                         }]
                 },
                 getExperience: {
                     label: "Get experience",
                     returns: NUMBER,
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    arguments: [SELFARG]
                 },
                 addAtExperience: {
                     label: "Add to experience",
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
+                    arguments: [
+                        SELFARG, {
                             type: STRING,
-                            value: 1
+                            value: "1"
                         }]
                 },
                 setExperience: {
                     label: "Set experience",
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
+                    arguments: [
+                        SELFARG, {
                             type: STRING,
-                            value: 1
+                            value: "1"
                         }]
                 },
                 getLeadershipLevel: {
                     label: "Get leadership level",
                     returns: NUMBER,
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    arguments: [SELFARG]
                 },
                 addAtLeadershipLevel: {
                     label: "Add to leadership level",
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
+                    arguments: [
+                        SELFARG, {
                             type: STRING,
-                            value: 1
+                            value: "1"
                         }]
                 },
                 setLeadershipLevel: {
                     label: "Set leadership level",
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
+                    arguments: [
+                        SELFARG, {
                             type: STRING,
-                            value: 1
+                            value: "1"
                         }]
                 }
             }
@@ -697,17 +657,11 @@ YUI.add('wegas-resourcemanagement-entities', function (Y) {
             METHODS: {
                 activate: {
                     label: "Activate",
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    arguments: [SELFARG]
                 },
                 desactivate: {
                     label: "Desactivate",
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    arguments: [SELFARG]
                 },
                 separator1: {
                     label: "\u2501\u2501\u2501\u2501"
@@ -715,63 +669,46 @@ YUI.add('wegas-resourcemanagement-entities', function (Y) {
                 getActive: {
                     label: "Is active",
                     returns: BOOLEAN,
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    arguments: [SELFARG]
                 },
                 getNumberInstanceProperty: {
                     label: "Get number property",
                     returns: NUMBER,
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
+                    arguments: [
+                        SELFARG, {
                             type: STRING,
-                            typeInvite: KEY,
-                            scriptType: STRING
+                            view: { label: KEY }
                         }]
                 },
                 getStringInstanceProperty: {
                     label: "Get text property",
                     returns: STRING,
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
+                    arguments: [
+                        SELFARG, {
                             type: STRING,
-                            typeInvite: KEY,
-                            scriptType: STRING
+                            view: { label: KEY }
                         }]
                 },
                 addNumberAtInstanceProperty: {
                     label: "Add to property",
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
+                    arguments: [
+                        SELFARG, {
                             type: STRING,
-                            typeInvite: KEY,
-                            scriptType: STRING
+                            view: { label: KEY }
                         }, {
                             type: STRING,
-                            typeInvite: VALUE,
-                            scriptType: STRING
+                            view: { label: VALUE }
                         }]
                 },
                 setInstanceProperty: {
                     label: "Set property",
-                    arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
+                    arguments: [
+                        SELFARG, {
                             type: STRING,
-                            typeInvite: KEY,
-                            scriptType: STRING
+                            view: { label: KEY }
                         }, {
                             type: STRING,
-                            typeInvite: VALUE,
-                            scriptType: STRING
+                            view: { label: VALUE }
                         }]
                 }
             }

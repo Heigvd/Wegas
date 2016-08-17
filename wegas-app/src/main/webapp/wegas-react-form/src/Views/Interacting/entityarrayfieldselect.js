@@ -35,7 +35,7 @@ EntityArrayFieldSelect.propTypes = {
         field: PropTypes.string.isRequired,
         returnAttr: PropTypes.string.isRequired,
         scope: PropTypes.oneOf(['instance']),
-        entity: PropTypes.object,
+        entity: PropTypes.string,
         name: PropTypes.shape({
             values: PropTypes.arrayOf(PropTypes.string),
             separator: PropTypes.string

@@ -37,6 +37,7 @@ function onFileBrowserClick(fieldName, url, type, win) {
 }
 
 const TINYCONFIG = {
+    // inline: true,
     plugins: [
         'autolink link image lists code media table contextmenu',
         'paste advlist textcolor dynamic_toolbar'
@@ -85,7 +86,17 @@ const TINYCONFIG = {
             title: 'Code',
             // icon: 'code',
             block: 'code'
-        }]
+        }],
+    // setup: function setup(editor) {
+    //     let tbs;
+    //     editor.on('init', () => {
+    //         tbs = editor.contentAreaContainer.parentElement
+    //             .querySelectorAll('div.mce-toolbar-grp');
+    //         tbs.forEach(e => { e.style.display = 'none'; });
+    //     });
+    //     editor.on('focus', () => tbs.forEach(e => { e.style.display = ''; }));
+    //     editor.on('blur', () => tbs.forEach(e => { e.style.display = 'none'; }));
+    // }
 };
 function HTMLView(props) {
     const { onChange } = props;

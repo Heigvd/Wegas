@@ -12,13 +12,14 @@ function genItems(o, i) {
                 primaryText={o}
             />);
     }
+    const { label = o.value, value, disabled } = o;
     return (
         <MenuItem
             key={i}
-            value={o.value}
-            primaryText={o.label}
-            label={o.label}
-            disabled={o.disabled}
+            value={value}
+            primaryText={label}
+            label={label}
+            disabled={disabled}
         />);
 }
 
