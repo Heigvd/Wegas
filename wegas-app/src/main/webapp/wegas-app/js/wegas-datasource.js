@@ -466,7 +466,7 @@ YUI.add('wegas-datasource', function(Y) {
             for (indexedKey in this._indexes) {
                 if (this._indexes.hasOwnProperty(indexedKey)) {
                     index = this._indexes[indexedKey];
-                    key = entity.get(indexedKey);
+                    key = (entity.get ? entity.get(indexedKey) : entity[indexedKey]);
                     if (key) {
                         delete index[key];
                     }
