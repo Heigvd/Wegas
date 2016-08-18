@@ -594,6 +594,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 bb = this.get(BOUNDING_BOX);
             jp.draggable(bb.getDOMNode(), {
                 containment: stateMachine.get(BOUNDING_BOX).one(".sm-zoom").getDOMNode(),
+                start: Y.bind(this.dragStart, this),
                 stop: Y.bind(this.dragEnd, this)
             });
             jp.makeTarget(bb.getDOMNode(), {
@@ -610,7 +611,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             //    e.halt(true);
             //    this.setAsInitial();
             //}, ".state-initial", this);
-            bb.on(CLICK, this.showForm, this);
+            bb.on(CLICK, this.onClick, this);
 
             if (stateMachine.get("availableTransitions").length > 1) {          // Add transition selection menu
                 this.menuNode = new Y.Node.create("<div></div>");
@@ -652,6 +653,19 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                  this.get(PARENT).save();*/
                 this.source = null;
             }
+        },
+        onClick: function(e) {
+            /*
+             * Do not click on the state when event is thrown by dragEnd
+             */
+            if (this._dragging) {
+                this._dragging = false;
+            } else {
+                this.showForm();
+            }
+        },
+        dragStart: function(e) {
+            this._dragging = true;
         },
         dragEnd: function(e) {
             this.get(ENTITY).get("editorPosition").setAttrs({
