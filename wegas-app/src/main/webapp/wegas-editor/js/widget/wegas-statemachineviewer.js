@@ -906,8 +906,25 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             var entity = this.get(ENTITY),
                 condition = Y.inputEx.WysiwygScript.formatScript(entity.get("triggerCondition")),
                 impact = Y.inputEx.WysiwygScript.formatScript(entity.get("preStateImpact")),
-                label = entity instanceof Wegas.persistence.DialogueTransition ? entity.get("actionText") :
-                condition;
+                label;
+
+            if (entity instanceof Wegas.persistence.DialogueTransition) {
+                label = entity.get("actionText");
+                if (condition) {
+                    if (label) {
+                        label = "<div class=\"transition-label-title\">Text: </div><div class=\"transition-label-content\" >" + label + "</div>";
+                    }
+                    label += "<div class=\"transition-label-title\">Condition: </div><div class=\"transition-label-content\" >" + condition + "</div>";
+                } else {
+                    if (label) {
+                        label = "<div class=\"transition-label-content\" >" + label + "</div>";
+                    }
+                }
+            } else {
+                if (condition) {
+                    label = "<div class=\"transition-label-content\">" + condition + "</div>";
+                }
+            }
 
             this.connection.setLabel({
                 label: label || "<em>Empty</empty>",
