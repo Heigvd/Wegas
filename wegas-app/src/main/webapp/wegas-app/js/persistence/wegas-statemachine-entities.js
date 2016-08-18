@@ -546,7 +546,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                         1: new persistence.DialogueState({})
                     };
                 },
-                writeOnce: "initOnly",
+                /*writeOnce: "initOnly",*/
                 _inputex: {
                     _type: HIDDEN
                 }
