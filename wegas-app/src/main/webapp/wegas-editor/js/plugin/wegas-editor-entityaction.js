@@ -795,7 +795,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
          */
         execute: function() {
             var tab = Wegas.TabView.findTabAndLoadWidget("State machine", // Load and display the editor in a new tab
-                "#centerTabView", {}, Y.mix(this.get("viewerCfg"), {
+                "#centerTabView", {label: this.get(ENTITY).getType()}, Y.mix(this.get("viewerCfg"), {
                 type: "StateMachineViewer",
                 plugins: [{
                         fn: "WidgetToolbar"
