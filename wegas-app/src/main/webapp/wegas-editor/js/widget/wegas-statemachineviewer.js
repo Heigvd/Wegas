@@ -524,7 +524,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 "sm-dialoguestate" : "sm-state");
         },
         syncUI: function() {
-            var label, entity = this.get(ENTITY),
+            var label, entity = this.get(ENTITY), x, y,
                 impact = Y.inputEx.WysiwygScript.formatScript(entity.get("onEnterEvent"));
 
             if (entity instanceof Wegas.persistence.DialogueState) {
@@ -536,9 +536,18 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             }
             this.get(BOUNDING_BOX).toggleClass("initial-state",
                 this.get(PARENT).get(ENTITY).getInitialStateId() === this.get(SID));
+            x = this.get(ENTITY).get("editorPosition").get("x");
+            y = this.get(ENTITY).get("editorPosition").get("y");
+            if (x < 0) {
+                x = 0;
+            }
+            if (y < 0) {
+                y = 0;
+            }
+
             this.get(BOUNDING_BOX).setStyles({
-                left: this.get(ENTITY).get("editorPosition").get("x") + "px",
-                top: this.get(ENTITY).get("editorPosition").get("y") + "px"
+                left: x + "px",
+                top: y + "px"
             });
             this.get(BOUNDING_BOX).one(".wegas-state-text").setHTML(label ||
                 "<div style='text-align: center;'><em><br />Empty</em></div>")
