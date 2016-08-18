@@ -127,6 +127,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
             } else if (defaultInstance.getCurrentResultIndex() != null
                     && defaultInstance.getCurrentResultIndex() >= 0
                     && defaultInstance.getCurrentResultIndex() < choice.getResults().size()) {
+                // Backward compat
 
                 Result cr = choice.getResults().get(defaultInstance.getCurrentResultIndex());
                 //defaultInstance.setCurrentResult(cr);
