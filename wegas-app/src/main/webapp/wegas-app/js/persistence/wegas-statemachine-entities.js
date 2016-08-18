@@ -30,13 +30,11 @@ YUI.add("wegas-statemachine-entities", function(Y) {
 
     VERSION_ATTR_DEF = {
         type: NUMBER,
-        optional: false,
-        value: 0,
-        //writeOnce: "initOnly",
+        optional: true,
         _inputex: {
             _type: "uneditable",
-            wrapperClassName: "inputEx-fieldWrapper inputEx-uneditableField wegas-advanced-feature",
-            index: -1
+            wrapperClassName: "inputEx-fieldWrapper inputEx-uneditableField wegas-advanced-feature"
+                //_type: HIDDEN
         }
     };
 
@@ -399,6 +397,8 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                     },
                     id: IDATTRDEF,
                     version: VERSION_ATTR_DEF,
+
+
                     currentStateId: {
                         type: NUMBER,
                         optional: true,
