@@ -190,7 +190,6 @@ public class TriggerDescriptor extends StateMachineDescriptor {
                 this.getStates().put(1L, initial);
             } else {
                 initial = this.getStates().get(1L);
-                System.out.println("INITIAL STATE VERSION: " + initial.getVersion());
             }
 
             if (this.getStates().size() < 2) {
