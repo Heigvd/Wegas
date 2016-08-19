@@ -817,7 +817,9 @@ YUI.add("wegas-review-widgets", function(Y) {
         bindUI: function() {
             this.tabView.after("selectionChange", this.onTabSelected, this);
             //this.handlers.push(this.dataSource.after("update", this.syncUI, this));
-            this.handlers.push(this.dataSource.after("updatedInstance", this.syncEntity, this));
+            this.handlers.push(Y.Wegas.Facade.Instance.after("updatedInstance", this.syncEntity, this));
+
+
         },
         syncEntity: function(payload) {
             var prd = this.get("variable.evaluated"),

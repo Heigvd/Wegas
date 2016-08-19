@@ -145,7 +145,7 @@ YUI.add("wegas-text-input", function (Y) {
             // }, this);
         },
         bindUI: function () {
-            this.handlers.push(Y.Wegas.Facade.Variable.after("updatedInstance", function (e) {
+            this.handlers.push(Y.Wegas.Facade.Instance.after("updatedInstance", function (e) {
                 var text = this.get("variable.evaluated");
                 if (text && text.getInstance().get("id") === e.entity.get("id")) {
                     this.syncUI();

@@ -83,6 +83,8 @@ YUI.add('wegas-mcq-view', function(Y) {
          */
         bindUI: function() {
             this.handlers.push(this.dataSource.after("updatedInstance", function(e) {
+
+
                 var question = this.get("variable.evaluated");
                 if (question && question.getInstance().get("id") === e.entity.get("id")) {
                     this.syncUI();

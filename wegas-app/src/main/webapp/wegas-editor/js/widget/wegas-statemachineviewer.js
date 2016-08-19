@@ -74,7 +74,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             bindUI: function() {
                 var key, cb = this.get(CONTENT_BOX),
                     availableStates = this.get("availableStates");
-                this.events.push(Wegas.Facade.Variable.after("update", this.syncUI, this));
+                this.events.push(Wegas.Facade.Instance.after("updatedInstance", this.refreshAfterInstanceUpdate, this));
                 this.events.push(Wegas.Facade.Variable.after("updatedDescriptor", this.rebuildAfterUpdate, this));
 
                 cb.on("mousedown", function() {
@@ -213,13 +213,19 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 this.setZoom(1, true);
                 this.fire("jsPlumbLoaded");
             },
+            refreshAfterInstanceUpdate: function(e) {
+                var sm = this.get(ENTITY);
+                if (sm && sm.getInstance().get("id") === e.entity.get("id")) {
+                    this.syncUI();
+                }
+            },
             rebuildAfterUpdate: function(e) {
                 var sm = this.get(ENTITY);
                 if (sm && sm.get("id") === e.entity.get("id")) {
-                    this.refresh();
+                    this._rebuild();
                 }
             },
-            refresh: function() {
+            _rebuild: function() {
                 var sm = this.get(ENTITY);
                 jp.setSuspendDrawing(true);
                 if (sm) {

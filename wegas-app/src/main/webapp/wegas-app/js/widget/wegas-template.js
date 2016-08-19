@@ -38,7 +38,7 @@ YUI.add("wegas-template", function(Y) {
         },
         bindUI: function() {
             this.after(["dataChange", "variableChange"], this.syncUI);
-            this.vdUpdateHandler = Wegas.Facade.Variable.after("updatedInstance", this.syncTemplate, this);
+            this.vdUpdateHandler = Wegas.Facade.Instance.after("updatedInstance", this.syncTemplate, this);
         },
         syncTemplate: function(payload) {
             var template = this.get("variable.evaluated");

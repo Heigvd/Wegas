@@ -124,6 +124,8 @@ YUI.add('wegas-inbox', function(Y) {
         bindUI: function() {
             this.tabView.after("selectionChange", this.onTabSelected, this);
             this.handlers.dataUpdated = this.dataSource.after("updatedInstance", function(e) {
+
+
                 var inbox = this.get("variable.evaluated");
                 if (inbox && inbox.getInstance().get("id") === e.entity.get("id")) {
                     this.syncUI();

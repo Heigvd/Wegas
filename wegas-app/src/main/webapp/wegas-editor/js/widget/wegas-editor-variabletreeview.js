@@ -201,13 +201,14 @@ YUI.add('wegas-editor-variabletreeview', function (Y) {
         },
         bindUI: function () {
             var ds = this.get(DATASOURCE),
+                instanceDs = Y.Wegas.Facade.Instance,
                 request = this.get("request");
             if (ds) {
                 this.handlers.push(ds.after("failure", this.defaultFailureHandler, this)); // GLOBAL error message
 
                 this.handlers.push(ds.after("updatedDescriptor", this.updateDescriptor, this));
-                this.handlers.push(ds.after("updatedInstance", this.updateInstance, this));
-                this.handlers.push(ds.after("addedInstance", this.updateInstance, this));
+                this.handlers.push(instanceDs.after("updatedInstance", this.updateInstance, this));
+                this.handlers.push(instanceDs.after("addedInstance", this.updateInstance, this));
                 this.handlers.push(ds.after("added", this.addEntity, this));
                 this.handlers.push(ds.after("delete", this.deleteEntity, this));
                 this.handlers.push(Y.after("edit-entity:edit", function (e) {

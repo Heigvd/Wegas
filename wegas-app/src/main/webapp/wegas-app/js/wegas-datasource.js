@@ -1160,12 +1160,12 @@ YUI.add('wegas-datasource', function(Y) {
 
                 if (scope.variableInstances[scopeKey]) {
                     scope.variableInstances[scopeKey].setAttrs(entity.getAttrs());
-                    Y.Wegas.Facade.Variable.fire("updatedInstance", {// Variable instance updated
+                    Y.Wegas.Facade.Instance.fire("updatedInstance", {// Variable instance updated
                         entity: entity
                     });
                 } else {
                     scope.variableInstances[scopeKey] = entity;
-                    Y.Wegas.Facade.Variable.fire("addedInstance", {
+                    Y.Wegas.Facade.Instance.fire("addedInstance", {
                         entity: entity
                     });
                 }
