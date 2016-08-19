@@ -113,11 +113,13 @@ public class WebsocketFacade {
                 // the player MUST be a member of the team
                 return playerFacade.checkExistingPlayerInTeam(team.getId(), user.getId()) != null;
             } else // Trainer of scenarist (player is not linked to user)
-             if (team != null) {
+            {
+                if (team != null) {
                     return SecurityHelper.isPermitted(team.getGame(), "Edit");
                 } else {
                     return false;
                 }
+            }
         } else if ("Player".equals(type)) {
             User user = userFacade.getCurrentUser();
             Player player = playerFacade.find(id);
@@ -330,13 +332,14 @@ public class WebsocketFacade {
                 /**
                  * #1222: concurrency issue
                  *
-                 * this process is asynchronous, entities (and underlying EntityManager) 
-                 * come from another thread. This is strictly forbidden (EntityManager 
-                 * is not thread-safe) and leads to some very strange and hardly 
-                 * reproducible deadlocks. (involving uninitialized IndirectList...)
+                 * this process is asynchronous, entities (and underlying
+                 * EntityManager) come from another thread. This is strictly
+                 * forbidden (EntityManager is not thread-safe) and leads to
+                 * some very strange and hardly reproducible deadlocks.
+                 * (involving uninitialized IndirectList...)
                  *
-                 * The fix consists to re-find all entities within a new EntityManager 
-                 * before serialization occurs
+                 * The fix consists to re-find all entities within a new
+                 * EntityManager before serialization occurs
                  */
                 List<AbstractEntity> refreshed = new ArrayList<>();
 
@@ -347,7 +350,7 @@ public class WebsocketFacade {
                      * only id and class name are propagated
                      */
                     for (AbstractEntity ae : toPropagate) {
-                        refreshed.add(new DestroyedEntity(ae.getId(), ae.getClass().getSimpleName()));
+                        refreshed.add(new DestroyedEntity(ae.getId(), ae.getJSONClassName()));
                     }
                 } else {
                     /*
