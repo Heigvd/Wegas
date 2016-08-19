@@ -9,7 +9,9 @@ package com.wegas.core.rest.util;
 
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.RequestFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.WebsocketFacade;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasWrappedException;
 import com.wegas.core.exception.internal.NoPlayerException;
@@ -29,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
+import javax.transaction.Status;
+import javax.transaction.TransactionManager;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -51,8 +55,9 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
         final String managedMode = request.getHeaderString("managed-mode");
 
         // Todo find a way to access responce from RequestManager.preDestroy (@Context HttpServletResponse?)
-        rmf.getRequestManager().setStatus(response.getStatusInfo());
-       
+        RequestManager requestManager = rmf.getRequestManager();
+        requestManager.setStatus(response.getStatusInfo());
+
         if (response.getStatusInfo().getStatusCode() >= 400) {
             logger.warn("Problem : " + response.getEntity());
         }
@@ -72,17 +77,19 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
              * Behaviour is to return a managed response with an empty entity list
              * and to register the exception as a request exception event
              */
-            if (response.getEntity() instanceof Exception) {
+            if (response.getEntity() instanceof Exception || requestManager.getExceptionCounter() > 0) {
+
                 // No Entities but register exception as event
                 updatedEntities = new ArrayList<>();
                 WegasRuntimeException wrex;
 
                 if (response.getEntity() instanceof WegasRuntimeException) {
                     wrex = (WegasRuntimeException) response.getEntity();
-                } else {
+                } else if (response.getEntity() instanceof Exception) {
                     wrex = new WegasWrappedException((Exception) response.getEntity());
+                } else {
+                    wrex = WegasErrorMessage.error("Something went wrong");
                 }
-
                 rmf.getRequestManager().addException(wrex);
 
                 // Set response http status code to 400
