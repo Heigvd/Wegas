@@ -8,12 +8,12 @@
 /**
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
-YUI.add('wegas-websocketlistener', function (Y) {
+YUI.add('wegas-websocketlistener', function(Y) {
     "use strict";
 
     var WebSocketListener = Y.Base.create("WebSocketListener", Y.Plugin.Base, [], {
-        initializer: function () {
-            Y.later(50, this, function () { //let ds render.
+        initializer: function() {
+            Y.later(50, this, function() { //let ds render.
                 var dataSource = Y.Wegas.Facade[this.get("dataSource")];
                 if (dataSource) {
                     this._hdl = [];
@@ -25,7 +25,7 @@ YUI.add('wegas-websocketlistener', function (Y) {
                 }
             });
         },
-        onLifeCycleEvent: function (data) {
+        onLifeCycleEvent: function(data) {
             var payload = Y.JSON.parse(data),
                 node = Y.Widget.getByNode(".wegas-login-page") ||
                 Y.Widget.getByNode(".wegas-editview") ||
@@ -46,7 +46,7 @@ YUI.add('wegas-websocketlistener', function (Y) {
                 node.showOverlay("error");
             }
         },
-        onEntityDeletion: function (data) {
+        onEntityDeletion: function(data) {
             var datasource, entities, entity, i;
             entities = Y.JSON.parse(data).deletedEntities;
             for (i = 0; i < entities.length; i += 1) {
@@ -61,10 +61,10 @@ YUI.add('wegas-websocketlistener', function (Y) {
                 }
             }
         },
-        onCustomEvent: function (data) {
+        onCustomEvent: function(data) {
 
         },
-        forceEntityUpdate: function (data) {
+        forceEntityUpdate: function(data) {
             var parsed = Y.JSON.parse(data), i, entity, request = null;
             for (i = 0; i < parsed.updatedEntities.length; i += 1) {
                 entity = Y.Wegas.Editable.revive(parsed.updatedEntities[i]);
@@ -82,8 +82,9 @@ YUI.add('wegas-websocketlistener', function (Y) {
                 }
             }
         },
-        onEntityUpdatedEvent: function (data) {
+        onEntityUpdatedEvent: function(data) {
             var i, event = Y.JSON.parse(data), entity,
+                allDs = [],
                 datasource, dsId, remappedEntities = {};
             Y.log("Websocket event received.", "info", "Wegas.WebsocketListener");
 
@@ -98,9 +99,18 @@ YUI.add('wegas-websocketlistener', function (Y) {
                 }
             }
 
-            for (dsId in remappedEntities) {
+            /*
+             * Do not update instance cache before descriptor one (when adding new entities !)
+             * Not a pretty solution....
+             */
+            allDs.push(Y.Wegas.Facade.Game._yuid);
+            allDs.push(Y.Wegas.Facade.Variable._yuid);
+            allDs.push(Y.Wegas.Facade.Instance._yuid);
+
+            for (i in allDs) {
+                dsId = allDs[i];
                 if (remappedEntities.hasOwnProperty(dsId)) {
-                    Y.log("Updated Instances : " + JSON.stringify(remappedEntities[dsId].entities));
+                    Y.log("Update [" + dsId + "] : " + JSON.stringify(remappedEntities[dsId].entities));
                     remappedEntities[dsId].datasource.cache.fire("EntityUpdatedEvent", {
                         "@class": "EntityUpdatedEvent",
                         updatedEntities: remappedEntities[dsId].entities
@@ -108,7 +118,7 @@ YUI.add('wegas-websocketlistener', function (Y) {
                 }
             }
         },
-        getDatasourceFromEntity: function (entity) {
+        getDatasourceFromEntity: function(entity) {
             if (entity instanceof Y.Wegas.persistence.VariableInstance) {
                 return Y.Wegas.Facade.Instance;
             } else if (entity instanceof Y.Wegas.persistence.VariableDescriptor) {
@@ -119,10 +129,10 @@ YUI.add('wegas-websocketlistener', function (Y) {
                 return null;
             }
         },
-        getDatasourceFromClassName: function (className) {
+        getDatasourceFromClassName: function(className) {
             return this.getDatasourceFromEntity(new Y.Wegas.persistence[className]());
         },
-        destructor: function () {
+        destructor: function() {
             var i;
             if (this._hdl) {
                 for (i in this._hdl) {
