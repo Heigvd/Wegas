@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { visit } from 'recast';
-import addStatement from './addStatement';
+import addStatement, { removeStatement } from './addStatement';
 
 const TYPE = {
     GETTER: 'getter',
@@ -13,6 +13,7 @@ function collector(coll) {
     };
 }
 function multipleStatement(Comp) {
+    const RemovableComp = removeStatement(Comp);
     function MultipleStatement(props) {
         const { code, onChange, type } = props;
         const rootExpression = [];
@@ -29,14 +30,18 @@ function multipleStatement(Comp) {
             });
         }
         const children = rootExpression.map((path, i) => (
-            <Comp
+            <RemovableComp
+                key={JSON.stringify(path.node)}
                 {...props}
-                key={i}
                 node={path.value}
                 onChange={(v) => {
                     const comments = path.get('comments');
                     path.replace(v);
                     path.get('comments').replace(comments.value);
+                    onChange(code);
+                }}
+                onRemove={() => {
+                    code.splice(i, 1);
                     onChange(code);
                 }}
             />
@@ -56,7 +61,7 @@ function multipleStatement(Comp) {
         onChange: PropTypes.func,
         type: PropTypes.oneOf([TYPE.CONDITION, TYPE.GETTER])
     };
-    return MultipleStatement;
+    return addStatement(MultipleStatement);
 }
 
-export default addStatement(multipleStatement);
+export default multipleStatement;

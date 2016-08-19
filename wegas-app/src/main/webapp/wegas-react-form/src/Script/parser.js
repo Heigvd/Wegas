@@ -9,9 +9,10 @@ class ViewSrc extends React.Component {
     }
     render() {
         let child;
-        if (this.state.src) {
-            child = (
+        if (this.state.src || this.props.error) {
+            child = [(
                 <textarea
+                    key="code"
                     style={{
                         width: '90%',
                         height: '200px'
@@ -19,13 +20,14 @@ class ViewSrc extends React.Component {
                     defaultValue={this.props.value}
                     onChange={event => this.props.onChange(event.target.value)}
                 />
-            );
+            ), (<div key="error">{this.props.error || <br />}</div>)];
         } else {
             child = this.props.children;
         }
         return (
             <div>
                 <IconButton
+                    disabled={!!this.props.error}
                     iconClassName="fa fa-pencil"
                     onClick={() => this.setState({
                         src: !this.state.src
@@ -39,21 +41,24 @@ class ViewSrc extends React.Component {
 ViewSrc.propTypes = {
     value: PropTypes.string,
     onChange: PropTypes.func,
-    children: PropTypes.element.isRequired
+    children: PropTypes.element.isRequired,
+    error: PropTypes.string
 };
 
 function parsed(Comp) {
     function Parsed(props) {
         const { value, onChange, ...restProps } = props;
+        let error = '';
         let ast;
         try {
             ast = parse(value);
         } catch (e) {
+            error = e.description;
             // should show code string instead of falling back to an empty program
             ast = types.builders.file(types.builders.program([]));
         }
         return (
-            <ViewSrc value={value} onChange={onChange}>
+            <ViewSrc value={value} onChange={onChange} error={error}>
                 <Comp
                     {...restProps}
                     code={ast.program.body}
@@ -66,9 +71,11 @@ function parsed(Comp) {
         );
     }
     Parsed.propTypes = {
-        value: PropTypes.string,
-        onChange: PropTypes.func,
-        children: PropTypes.node
+        value: PropTypes.string.isRequired,
+        onChange: PropTypes.func
+    };
+    Parsed.defaultProps = {
+        value: ''
     };
     return Parsed;
 }
