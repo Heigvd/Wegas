@@ -36,6 +36,13 @@ class VariableCondition extends React.Component {
         const descr = methodDescriptor(variable, method);
         this.returns = descr && descr.returns; // store current returns
     }
+    componentWillReceiveProps(props) {
+        this.setState({
+            left: props.node.left,
+            right: props.node.right,
+            operator: props.node.operator || '==='
+        });
+    }
     check() {
         const { method, variable } = extractMethod(this.state.left);
         const descr = methodDescriptor(variable, method);

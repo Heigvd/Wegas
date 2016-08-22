@@ -28,7 +28,7 @@ function SelectView(props) {
         props.errorMessage :
         undefined;
     const onChange = function onChange(event, index, value) {
-        props.onChange(value);
+        setTimeout(props.onChange(value));
     };
     const choices = props.view.choices || [];
     const menuItems = choices.map(genItems);

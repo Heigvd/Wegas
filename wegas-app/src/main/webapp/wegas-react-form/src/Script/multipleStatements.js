@@ -31,7 +31,7 @@ function multipleStatement(Comp) {
         }
         const children = rootExpression.map((path, i) => (
             <RemovableComp
-                key={JSON.stringify(path.node)}
+                key={i}
                 {...props}
                 node={path.value}
                 onChange={(v) => {
