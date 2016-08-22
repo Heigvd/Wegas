@@ -67,6 +67,12 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
         return states;
     }
 
+    public State addState(Long index, State state){
+        this.getStates().put(index, state);
+        state.setStateMachine(this);
+        return state;
+    }
+
     /**
      *
      * @param states

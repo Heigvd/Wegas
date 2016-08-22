@@ -199,6 +199,13 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     public List<Transition> getTransitions() {
         return transitions;
     }
+    
+    public Transition addTransition(Transition t){
+        List<Transition> ts = this.getTransitions();
+        ts.add(t);
+        this.setTransitions(ts);
+        return t;
+    }
 
     /**
      * @param transitions

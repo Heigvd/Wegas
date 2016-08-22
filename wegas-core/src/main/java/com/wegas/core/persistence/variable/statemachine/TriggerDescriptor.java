@@ -187,7 +187,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
             if (this.getStates().isEmpty()) {
                 initial = new State();
                 initial.setVersion(1L);
-                this.getStates().put(1L, initial);
+                this.addState(1L, initial);
             } else {
                 initial = this.getStates().get(1L);
             }
@@ -196,7 +196,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
                 // Create the second one
                 finalState = new State();
                 finalState.setVersion(1L);
-                this.getStates().put(2L, finalState);
+                this.addState(2L, finalState);
 
                 // Move impact
                 finalState.setOnEnterEvent(initial.getOnEnterEvent());
@@ -209,7 +209,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
             Transition transition;
             if (initial.getTransitions().isEmpty()) {
                 transition = new Transition();
-                initial.getTransitions().add(transition);
+                initial.addTransition(transition);
             } else {
                 transition = initial.getTransitions().get(0);
             }
