@@ -311,8 +311,8 @@ public class WebsocketFacade {
             return;
         }
 
-        propagate(dispatchedEntities, socketId, EntityUpdatedEvent.class);
         propagate(destroyedEntities, socketId, EntityDestroyedEvent.class);
+        propagate(dispatchedEntities, socketId, EntityUpdatedEvent.class);
         propagate(outdatedEntities, socketId, OutdatedEntitiesEvent.class);
     }
 

@@ -53,8 +53,8 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     @Override
     public List<Script> getScripts() {
         List<Script> ret = new ArrayList<>();
-        for (State state: this.getStates().values()){
-             ret.addAll(state.getScripts());
+        for (State state : this.getStates().values()) {
+            ret.addAll(state.getScripts());
         }
         return ret;
     }
@@ -73,6 +73,9 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
      */
     public void setStates(Map<Long, State> states) {
         this.states = states;
+        for (State state : states.values()) {
+            state.setStateMachine(this);
+        }
     }
 
     @Override

@@ -131,6 +131,20 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
         this.state = state;
     }
 
+    public Long getStateId() {
+        return this.getState().getId();
+    }
+
+    public void setStateId(Long id) {
+    }
+
+    public Long getStateMachineId() {
+        return this.getState().getStateMachineId();
+    }
+
+    public void setStateMachineId(Long id) {
+    }
+
     /**
      * @return
      */

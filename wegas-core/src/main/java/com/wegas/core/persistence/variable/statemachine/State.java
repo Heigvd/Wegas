@@ -7,6 +7,7 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -23,7 +24,6 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.eclipse.persistence.annotations.OptimisticLocking;
 
 //import javax.xml.bind.annotation.XmlRootElement;
 /**
@@ -46,6 +46,11 @@ import org.eclipse.persistence.annotations.OptimisticLocking;
 public class State extends AbstractEntity implements Searchable, Scripted {
 
     private static final long serialVersionUID = 1L;
+
+    @ManyToOne
+    @JoinColumn(name = "statemachine_id")
+    @JsonIgnore
+    private StateMachineDescriptor stateMachine;
 
     @Version
     private Long version;
@@ -97,6 +102,22 @@ public class State extends AbstractEntity implements Searchable, Scripted {
      *
      */
     public State() {
+    }
+
+    public StateMachineDescriptor getStateMachine() {
+        return stateMachine;
+    }
+
+    public void setStateMachine(StateMachineDescriptor stateMachine) {
+        this.stateMachine = stateMachine;
+    }
+
+    public Long getStateMachineId() {
+        return getStateMachine().getId();
+    }
+
+    public void setStateMachineId(Long stateMachineId) {
+        //this.stateMachine = stateMachine;
     }
 
     @Override
