@@ -24,7 +24,7 @@ module.exports = {
     },
     "files": ["src/main/webapp/**/*.js", "src/main/webapp/**/*.css"],
     "watchOptions": {
-        ignored: "src/**/src/**"
+        ignored: ["src/**/src/**", "**/node_modules/**"]
     },
     "server": false,
     "proxy": "http://localhost:8080/Wegas/",
