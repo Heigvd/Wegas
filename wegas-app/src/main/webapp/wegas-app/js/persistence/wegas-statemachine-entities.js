@@ -213,7 +213,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                         fn: "DuplicateEntityAction"
                     }]
             }, {
-                type: "DeleteFSMButton"
+                type: "DeleteEntityButton"
             }, {
                 type: BUTTON,
                 label: "Export",
@@ -297,6 +297,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             "@class": {
                 value: "State"
             },
+            stateMachineId: VERSION_ATTR_DEF,
             version: VERSION_ATTR_DEF,
             label: {
                 type: STRING,
@@ -346,6 +347,8 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                     expects: "condition"
                 }
             },
+            stateId: VERSION_ATTR_DEF,
+            stateMachineId: VERSION_ATTR_DEF,
             preStateImpact: {
                 optional: true,
                 _inputex: {
@@ -397,8 +400,6 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                     },
                     id: IDATTRDEF,
                     version: VERSION_ATTR_DEF,
-
-
                     currentStateId: {
                         type: NUMBER,
                         optional: true,
@@ -571,7 +572,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                         fn: "DuplicateEntityAction"
                     }]
             }, {
-                type: "DeleteFSMButton"
+                type: "DeleteEntityButton"
             }]
     });
 

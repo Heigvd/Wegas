@@ -391,17 +391,6 @@ YUI.add('wegas-datasource', function(Y) {
                 }
             } else if (response instanceof Y.Wegas.persistence.ManagedResponse) { // Managed-Mode ManagedResponse
                 if (toUpdate) { // No Update ? No-update...
-                    if (response.get("updatedEntities")) {
-                        for (i = 0; i < response.get("updatedEntities").length; i += 1) { // Update the cache with the Entities in the reply body
-                            entity = response.get("updatedEntities")[i];
-                            if (Lang.isObject(entity)) {
-                                ds = this.updateCache(POST, entity, !e.cfg || !e.cfg.initialRequest);
-                                if (ds) {
-                                    updatedDs.push(ds);
-                                }
-                            }
-                        }
-                    }
 
                     if (response.get("deletedEntities")) {
                         for (i = 0; i < response.get("deletedEntities").length; i += 1) { // Update the cache with the Entities in the reply body
@@ -409,6 +398,18 @@ YUI.add('wegas-datasource', function(Y) {
                             if (Lang.isObject(entity)) {
                                 //method = e.cfg && e.cfg.method ? e.cfg.method : "POST";
                                 ds = this.updateCache(DELETE, entity, !e.cfg || !e.cfg.initialRequest);
+                                if (ds) {
+                                    updatedDs.push(ds);
+                                }
+                            }
+                        }
+                    }
+
+                    if (response.get("updatedEntities")) {
+                        for (i = 0; i < response.get("updatedEntities").length; i += 1) { // Update the cache with the Entities in the reply body
+                            entity = response.get("updatedEntities")[i];
+                            if (Lang.isObject(entity)) {
+                                ds = this.updateCache(POST, entity, !e.cfg || !e.cfg.initialRequest);
                                 if (ds) {
                                     updatedDs.push(ds);
                                 }

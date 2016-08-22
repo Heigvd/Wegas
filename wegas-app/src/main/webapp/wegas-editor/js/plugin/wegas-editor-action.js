@@ -13,7 +13,7 @@ YUI.add('wegas-editor-action', function(Y) {
     "use strict";
 
     var Linkwidget, Plugin = Y.Plugin, Action = Plugin.Action, Wegas = Y.Wegas,
-        CONTENTBOX = "contentBox", OpenTabAction, OpenTabActionSec;
+        CONTENTBOX = "contentBox", OpenTabAction, OpenTabActionSec, OnDeleteListener;
 
     /**
      *  @name Y.Plugin.ResetAction
@@ -526,4 +526,84 @@ YUI.add('wegas-editor-action', function(Y) {
             entity: {}
         }
     });
+
+    OnDeleteListener = Y.Base.create("wegas-ondeletelistener", Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
+        /** @lends Y.Plugin.Action */
+        /**
+         * @function
+         * @private
+         */
+        initializer: function() {
+            this.handlers = {
+                onDelete: Y.Wegas.Facade.Variable.after("delete", Y.bind(this.onDescriptorDelete, this))
+            };
+        },
+        _removeStateMachinePanel: function(entity) {
+            var tab = Wegas.TabView.findTab("State machine");
+            if (tab && tab.item(0).get("entity").get("id") === entity.get("id")) {
+                tab.remove().destroy();
+            }
+        },
+        _removeEditTab: function(entity) {
+            var inFormEntity = Y.Plugin.EditEntityAction.currentEntity,
+                removeTab = false;
+            if (inFormEntity) {
+
+                if (inFormEntity.get("id") === entity.get("id")) {
+                    // Same Entity
+                    removeTab = true;
+                } else {
+                    if (inFormEntity instanceof Y.Wegas.persistence.VariableInstance) {
+                        // Care about the descriptor
+                        inFormEntity = Y.Wegas.Facade.Variable.cache.find("id", inFormEntity.get("descriptorId"));
+                    }
+
+                    if (entity instanceof Y.Wegas.persistence.FSMDescriptor) {
+                        if (inFormEntity.get("@class") === "Transition" || inFormEntity.get("@class") === "State") {
+                            removeTab = inFormEntity.get("stateMachineId") === entity.get("id");
+                        }
+                    } else if (entity.get("@class") === "ChoiceDescriptor") {
+                        if (inFormEntity.get("@class") === "Result") {
+                            removeTab = inFormEntity.get("choiceDescriptorId") === entity.get("id");
+                        }
+                    }
+                }
+            }
+            if (removeTab) {
+                Y.Plugin.EditEntityAction.hideRightTabs();
+            }
+        },
+        onDescriptorDelete: function(e) {
+            if (e.entity instanceof Y.Wegas.persistence.VariableDescriptor) {
+                if (e.entity instanceof Y.Wegas.persistence.FSMDescriptor) {
+                    this._removeStateMachinePanel(e.entity);
+                }
+                this._removeEditTab(e.entity);
+            }
+        },
+        /**
+         * @function
+         * @private
+         * @description Detach all functions created by this widget.
+         */
+        destructor: function() {
+            var event, handler;
+            for (event in this.handlers) {
+                if (this.handlers.hasOwnProperty(event)) {
+                    handler = this.handlers[event];
+                    if (handler.detach) { // EventHandle
+                        handler.detach();
+                    } else if (handler.cancel) { //Timer
+                        handler.cancel();
+                    }
+                }
+            }
+        }
+    }, {
+        NS: "OnDeleteListener",
+        ATTRS: {
+        }
+    });
+    Plugin.OnDeleteListener = OnDeleteListener;
+
 });

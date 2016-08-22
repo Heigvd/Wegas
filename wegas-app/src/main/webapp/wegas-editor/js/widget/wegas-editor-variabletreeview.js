@@ -288,7 +288,8 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
         },
         deleteEntity: function(e) {
             var node = this.findNode(e.entity);
-            node.remove();
+            // due to pusher asynchronousness, entity may have been deleted by parent update
+            node && node.remove();
             //parent = node.get("parent");
             //parent.remove(parent.indexOf(node));
         },

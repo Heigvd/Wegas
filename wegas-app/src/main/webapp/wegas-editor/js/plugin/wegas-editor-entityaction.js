@@ -19,7 +19,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
         Wegas = Y.Wegas, persistence = Wegas.persistence,
         EntityAction, EditFSMAction, EditEntityAction, NewEntityAction,
         EditEntityArrayFieldAction, AddEntityChildAction, DuplicateEntityAction, SortEntityAction,
-        DeleteEntityAction, DeleteFSMAction, ToolbarMenu;
+        DeleteEntityAction, ToolbarMenu;
 
     /**
      * @class
@@ -657,26 +657,26 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                         on: {
                             success: Y.bind(function() {
                                 this.hideOverlay();
-                                if (EditEntityAction.currentEntity) {
-                                    if (EditEntityAction.currentEntity.get(ID) === entity.get(ID)) {
-                                        EditEntityAction.hideRightTabs();
-
-                                    } else if (entity.get("@class") === "ListDescriptor") {
-                                        for (i = 0; i < entity.get("items").length; i += 1) {
-                                            // Who cares about deeper levels ? TODO...
-                                            if (EditEntityAction.currentEntity.get(ID) ===
-                                                entity.get("items")[i].get(ID)) {
-                                                EditEntityAction.hideRightTabs();
-                                            }
-                                        }
-                                    } else if (entity.get("@class") === "FSMDescriptor") {
-                                        // Before closing the tabs, be sure the Transition/State belongs to the destroyed FSM
-                                        if (EditEntityAction.currentEntity.get("@class") === "Transition" ||
-                                            EditEntityAction.currentEntity.get("@class") === "State") {
-                                            EditEntityAction.hideRightTabs();
-                                        }
-                                    }
-                                }
+                                /*if (EditEntityAction.currentEntity) {
+                                 if (EditEntityAction.currentEntity.get(ID) === entity.get(ID)) {
+                                 EditEntityAction.hideRightTabs();
+                                 
+                                 } else if (entity.get("@class") === "ListDescriptor") {
+                                 for (i = 0; i < entity.get("items").length; i += 1) {
+                                 // Who cares about deeper levels ? TODO...
+                                 if (EditEntityAction.currentEntity.get(ID) ===
+                                 entity.get("items")[i].get(ID)) {
+                                 EditEntityAction.hideRightTabs();
+                                 }
+                                 }
+                                 } else if (entity.get("@class") === "FSMDescriptor") {
+                                 // Before closing the tabs, be sure the Transition/State belongs to the destroyed FSM
+                                 if (EditEntityAction.currentEntity.get("@class") === "Transition" ||
+                                 EditEntityAction.currentEntity.get("@class") === "State") {
+                                 EditEntityAction.hideRightTabs();
+                                 }
+                                 }
+                                 }*/
                             }, this),
                             failure: Y.bind(this.hideOverlay, this)
                         }
@@ -749,35 +749,6 @@ YUI.add("wegas-editor-entityaction", function(Y) {
             label: {
                 value: "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete"
             }
-        }
-    });
-
-    /**
-     * @class
-     * @name Y.Plugin.DeleteSMAction
-     * @extends Y.Plugin.DeleteEntityAction
-     * @constructor
-     */
-    DeleteFSMAction = Y.Base.create("DeleteFSMAction", DeleteEntityAction, [], {
-        execute: function() {
-            var entity = this.get(ENTITY),
-                tab = Wegas.TabView.findTab("State machine");
-            if (this.get(HOST).DeleteEntityAction.confirmDelete &&
-                tab && tab.item(0).get(ENTITY).get(ID) === entity.get(ID)) {
-                tab.remove().destroy();
-            }
-        }
-    }, {
-        NS: "DeleteSMAction"
-    });
-    Plugin.DeleteFSMAction = DeleteFSMAction;
-
-    /**
-     * Shortcut to create a Button with an DeleteEntityAction plugin
-     */
-    Wegas.DeleteFSMButton = Y.Base.create(BUTTON, Wegas.DeleteEntityButton, [], {
-        initializer: function(cfg) {
-            this.plug(DeleteFSMAction, cfg);
         }
     });
 

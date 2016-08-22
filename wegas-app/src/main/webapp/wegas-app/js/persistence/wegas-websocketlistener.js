@@ -58,6 +58,10 @@ YUI.add('wegas-websocketlistener', function(Y) {
                     // the cache while updating its parent...
                     // -> Avoid deleting notfound entities
                     datasource.cache.updateCache("DELETE", entity, false);
+                } else {
+                    // Send the corresponding delete "event"
+                    entity = Y.Wegas.Editable.revive(entities[i]);
+                    datasource.fire("delete", {"entity": entity});
                 }
             }
         },

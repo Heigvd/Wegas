@@ -12,7 +12,7 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 /*global YUI_config:true*/
-YUI().use(function (Y) {
+YUI().use(function(Y) {
     "use strict";
     var CSS = "css";
     if (!YUI_config) {
@@ -32,7 +32,7 @@ YUI().use(function (Y) {
     /**
      *
      */
-    YUI.addGroup = function (name, group) {
+    YUI.addGroup = function(name, group) {
         YUI_config.groups[name] = group;
         group.combine = !YUI_config.debug;
         group.filter = YUI_config.debug ? "raw" : "min"; // Select raw files
@@ -634,7 +634,7 @@ YUI().use(function (Y) {
             "wegas-editor-action": {
                 path: "js/plugin/wegas-editor-action-min.js",
                 requires: ["wegas-button", "wegas-plugin", "event-key", "inputex-string"],
-                ws_provides: ["OpenTabAction", "OpenTabButton", "Linkwidget"]
+                ws_provides: ["OpenTabAction", "OpenTabButton", "Linkwidget", "OnDeleteListener"]
             },
             "wegas-editor-entityaction": {
                 path: "js/plugin/wegas-editor-entityaction-min.js",
