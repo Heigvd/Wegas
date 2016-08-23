@@ -239,10 +239,10 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         sm.setName("testSM");
         State state0 = new State();
         State state1 = new State();
-        state1.setOnEnterEvent(new Script("VariableDescriptorFacade.findByName(gameModel, 'testnumber').setValue(self, VariableDescriptorFacade.findByName(gameModel, 'testnumber').getValue(self) + param)"));
+        state1.setOnEnterEvent(new Script("VariableDescriptorFacade.findByName(gameModel, 'testnumber').setValue(self, VariableDescriptorFacade.findByName(gameModel, 'testnumber').getValue(self) + 5)"));
         State state2 = new State();
         //Second state will read an object parameter
-        state2.setOnEnterEvent(new Script("VariableDescriptorFacade.findByName(gameModel, 'testnumber').setValue(self, VariableDescriptorFacade.findByName(gameModel, 'testnumber').getValue(self) + param.increment)"));
+        state2.setOnEnterEvent(new Script("VariableDescriptorFacade.findByName(gameModel, 'testnumber').setValue(self, VariableDescriptorFacade.findByName(gameModel, 'testnumber').getValue(self) + 10)"));
         sm.setStates(toMap(toList(1L, 2L, 3L), toList(state0, state1, state2)));
 
         Transition t1 = new Transition();
@@ -270,14 +270,14 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         }
 
         /* player fire event twice */
-        sf.eval(player, new Script("JavaScript", "Event.fire('event', 5);Event.fire('event', {increment:10})"), null);
+        sf.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event')"), null);
         lookupBy(RequestFacade.class).commit();
         assertEquals(INITIALVALUE + 5 + 10, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
 
         /* player21 fire event only once */
-        sf.eval(player21, new Script("JavaScript", "Event.fire('event', 3);"), null);
+        sf.eval(player21, new Script("JavaScript", "Event.fire('event');"), null);
         lookupBy(RequestFacade.class).commit();
-        assertEquals(INITIALVALUE + 3, ((NumberInstance) vif.find(number.getId(), player21)).getValue(), .1);
+        assertEquals(INITIALVALUE + 5, ((NumberInstance) vif.find(number.getId(), player21)).getValue(), .1);
         // Clean up
         vdf.remove(number.getId());
         vdf.remove(sm.getId());
