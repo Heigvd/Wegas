@@ -1,6 +1,6 @@
 import React from 'react';
 import { types, print, parse, visit } from 'recast';
-import Container from 'jsoninput';
+import Form from 'jsoninput';
 import { getY } from '../../index';
 
 const Y = getY();
@@ -28,8 +28,11 @@ const argSchema = (schema, variable) => {
 };
 /**
  * Convert a value to an AST node base on a type
- * @param v the value
- * @param {Object} schema the schema containing the type
+ * @template T
+ * @param {T=} v the optional value, may pass 'undefined'
+ * @param {{type: string, value: T=}} schema the schema containing the type
+ * and an optional default value
+ * @returns {Object} AST node
  */
 function valueToType(v, schema) {
     const val = v === undefined ? schema.value : v;
@@ -54,7 +57,7 @@ function valueToType(v, schema) {
 }
 /**
  * Convert AST to value based on a type
- * @param v the ast value
+ * @param {Object} v the AST node value
  * @param {Object} schema value's jsonschema
  */
 function typeToValue(v, schema) {
@@ -62,7 +65,6 @@ function typeToValue(v, schema) {
     if (!v || v.name === 'undefined') {
         return undefined;
     }
-    // return print(v).code;
     switch (schema.type) {
     case 'string':
     case 'boolean':
@@ -99,20 +101,21 @@ function handleArgs(variable, method, args, onChange) {
     const argDescr = methodDescr.arguments;
     const ret = argDescr.map((v, i) => args[i] || valueToType(undefined, v));
 
-    if (args.length !== argDescr.length) { // remove/create unknown arguments
-        setTimeout(() => onChange(ret), 0);
-        return [];
-    }
+    // if (args.length !== argDescr.length) { // remove/create unknown arguments
+    //     setTimeout(() => onChange(ret), 0);
+    //     return [];
+    // }
     return argDescr.map((a, i) => {
         const val = ret[i];
         return (
-            <Container
+            <Form
                 key={`arg${i}`}
                 schema={argSchema(a, variable)}
                 value={typeToValue(val, a)}
                 onChange={v => {
                     ret[i] = valueToType(v, a);
-                    setTimeout(() => onChange(ret), 0);
+                    onChange(ret);
+                    // setTimeout(() => onChange(ret), 0);
                 }}
             />
         );

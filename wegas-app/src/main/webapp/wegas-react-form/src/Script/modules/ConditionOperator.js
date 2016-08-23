@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import Container from 'jsoninput';
+import Form from 'jsoninput';
 
 const BINARYOPERATORS = [{
     value: '===',
@@ -32,7 +32,7 @@ function ConditionOperator({ type, operator, onChange }) {
         }
     };
     return (
-        <Container
+        <Form
             schema={schema}
             value={operator}
             onChange={onChange}

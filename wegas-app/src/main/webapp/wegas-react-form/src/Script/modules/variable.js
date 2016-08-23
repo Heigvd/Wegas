@@ -1,6 +1,6 @@
 import { types } from 'recast';
 import React, { PropTypes } from 'react';
-import Container from 'jsoninput';
+import Form from 'jsoninput';
 import isMatch from 'lodash/fp/isMatch';
 
 const { builders: b, visit } = types;
@@ -59,7 +59,7 @@ export const schema = (optView) => ({
 function Variable({ node, onChange, view }) {
     const value = extractVar(node);
     return (
-        <Container
+        <Form
             schema={schema(view)}
             value={value}
             onChange={(v) => onChange(build(v))}

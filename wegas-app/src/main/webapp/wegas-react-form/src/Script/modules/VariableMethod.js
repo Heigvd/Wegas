@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { types } from 'recast';
 import isMatch from 'lodash/fp/isMatch';
-import Container from 'jsoninput';
+import Form from 'jsoninput';
 import { build, extractVar, schema as variableSchema, isVar } from './variable';
 import { handleArgs } from './args';
 import { methodSchema } from './method';
@@ -78,7 +78,7 @@ class VariableMethod extends React.Component {
     render() {
         const { view } = this.props;
         let child = [(
-            <Container
+            <Form
                 key="variable"
                 schema={variableSchema(view.variable)}
                 value={this.state.variable}
@@ -87,7 +87,7 @@ class VariableMethod extends React.Component {
         )];
         if (this.state.variable) {
             child.push(
-                <Container
+                <Form
                     key="method"
                     schema={methodSchema(view.method, this.state.variable, this.props.type)}
                     value={this.state.method}

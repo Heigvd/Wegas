@@ -10,7 +10,8 @@ module.exports = {
         publicPath: '/static/'
     },
     resolve: {
-        root: [path.resolve('./src')]
+        root: [path.resolve('./src')],
+        mainFields: ['module', 'jsnext:main', 'browser', 'main']
     },
     plugins: [
      //   new webpack.HotModuleReplacementPlugin(),

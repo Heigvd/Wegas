@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { types } from 'recast';
-import Container from 'jsoninput';
+import Form from 'jsoninput';
 import VariableMethod, { extractMethod } from './VariableMethod';
 import { methodDescriptor } from './method';
 import ConditionOperator from './ConditionOperator';
@@ -21,7 +21,7 @@ function defaultValue(type) {
     case 'boolean':
         return true;
     default:
-        throw new Error(`Implement me ${type}`);
+        throw new Error(`Default value for 'returns' property '${type}' is not implemented`);
     }
 }
 class VariableCondition extends React.Component {
@@ -34,13 +34,13 @@ class VariableCondition extends React.Component {
         };
         const { method, variable } = extractMethod(this.state.left);
         const descr = methodDescriptor(variable, method);
-        this.returns = descr && descr.returns; // store current returns
+        this.returns = descr && descr.returns; // store current method's returns
     }
-    componentWillReceiveProps(props) {
+    componentWillReceiveProps(nextProps) {
         this.setState({
-            left: props.node.left,
-            right: props.node.right,
-            operator: props.node.operator || '==='
+            left: nextProps.node.left,
+            right: nextProps.node.right,
+            operator: nextProps.node.operator || '==='
         });
     }
     check() {
@@ -60,7 +60,7 @@ class VariableCondition extends React.Component {
     render() {
         const { method, variable } = extractMethod(this.state.left);
         const descr = methodDescriptor(variable, method);
-        let container = null;
+        let container;
         if (descr) {
             const schema = {
                 type: descr.returns,
@@ -75,7 +75,7 @@ class VariableCondition extends React.Component {
                     type={descr.returns}
                 />
             ), (
-                <Container
+                <Form
                     key="right"
                     schema={schema}
                     value={typeToValue(this.state.right, schema)}
