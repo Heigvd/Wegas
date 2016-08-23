@@ -180,9 +180,7 @@ public class StateMachineFacade {
                     } else {
                         try {
                             if (this.eventTransition(player, transition, sm, smi)) {
-                                passedTransitions.add(transition);
-                                transitionPassed = true;
-                                smi.transitionHistoryAdd(transition.getId());
+                                validTransition = true;
                             }
                         } catch (WegasScriptException ex) {
                             ex.setScript("Variable " + sm.getLabel());
@@ -287,13 +285,6 @@ public class StateMachineFacade {
         if (firedParams.length > instanceEventCount) {
             smi.setCurrentStateId(transition.getNextStateId());
             stateMachineEventsCounter.increase(smi, event);
-            if (!this.isNotDefined(transition.getPreStateImpact())) {
-                this.evalEventImpact(player, transition.getPreStateImpact(), firedParams[instanceEventCount], sm);
-            }
-            if (!this.isNotDefined(smi.getCurrentState().getOnEnterEvent())) {
-                this.evalEventImpact(player, smi.getCurrentState().getOnEnterEvent(), firedParams[instanceEventCount], sm);
-            }
-
             return true;
         } else {
             return false;
