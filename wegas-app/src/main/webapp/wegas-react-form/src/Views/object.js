@@ -1,30 +1,20 @@
 import React, { PropTypes } from 'react';
-
+import classNames from 'classnames';
+import styles from './object.css';
 
 function ObjectView(props) {
-    const style = {
-        backgroundColor: 'rgba(0,0,0,0.05)',
-        paddingLeft: '30px',
-        borderTop: props.view.label ? '1px solid lightgrey' : 'none'
-    };
-    const legendStyle = {
-        textAlign: 'center'
-    };
     return (
         <fieldset
-            className={props.view.className}
-            style={style}
+            className={classNames(styles.root,
+                { [styles.borderTop]: props.view.label },
+                props.view.className)}
         >
-            <legend style={legendStyle}>
-                {props.view.label || props.editKey}
+            <legend>
+                {props.view.label}
             </legend>
             {props.children}
             {props.errorMessage.map((message) => <div
-                style={{
-                    color: 'red',
-                    fontSize: '12px',
-                    lineHeight: '12px'
-                }}
+                className={styles.error}
             >{message}</div>)}
         </fieldset>
     );

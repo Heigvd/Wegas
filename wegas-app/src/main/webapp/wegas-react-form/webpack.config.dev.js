@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+const cssnext = require('postcss-cssnext');
 
 module.exports = {
     devtool: 'cheap-module-eval-source-map',
@@ -14,7 +15,7 @@ module.exports = {
         mainFields: ['module', 'jsnext:main', 'browser', 'main']
     },
     plugins: [
-     //   new webpack.HotModuleReplacementPlugin(),
+        //   new webpack.HotModuleReplacementPlugin(),
         new webpack.NoErrorsPlugin()
     ],
     module: {
@@ -29,13 +30,11 @@ module.exports = {
             },
             {
                 test: /\.css$/,
-                loader: 'style!css',
-                include: [
-                    path.join(__dirname, 'css')
-                ],
+                loader: 'style!css?modules&importLoaders=1!postcss'
             }
         ]
     },
+    postcss: () => [cssnext],
     devServer: {
         reload: false,
         inline: true

@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+const cssnext = require('postcss-cssnext');
 
 module.exports = {
     devtool: 'source-map',
@@ -32,6 +33,10 @@ module.exports = {
             // include: [
             //     path.join(__dirname, 'src')
             // ]
+        }, {
+            test: /\.css$/,
+            loader: 'style!css?modules&importLoaders=1!postcss'
         }]
-    }
+    },
+    postcss: () => [cssnext],
 };

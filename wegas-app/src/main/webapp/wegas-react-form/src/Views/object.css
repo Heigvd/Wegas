@@ -1,0 +1,17 @@
+.root {
+  padding-left: 30px;
+  background-color: rgba(0, 0, 0, 0.05);
+
+  & > legend {
+    text-align: center;
+  }
+}
+
+.borderTop {
+  border-top: 1px solid lightgrey;
+}
+
+.error {
+  color: red;
+  font-size: 80%;
+}
