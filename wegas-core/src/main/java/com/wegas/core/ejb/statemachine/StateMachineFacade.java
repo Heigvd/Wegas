@@ -145,7 +145,7 @@ public class StateMachineFacade {
     private void tryToDisableTrigger(StateMachineDescriptor sm, StateMachineInstance smi) {
         if (sm instanceof TriggerDescriptor) {
             TriggerDescriptor td = (TriggerDescriptor) sm;
-            if (td.isDisableSelf()) {
+            if (td.isDisableSelf() && smi.getCurrentStateId() == 2L) {
                 smi.setEnabled(false);
             }
         }
