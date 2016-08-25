@@ -54,7 +54,7 @@ import javax.persistence.Table;
     @Index(columnList = "author_variableinstance_id"),
     @Index(columnList = "reviewer_variableinstance_id")
 })
-public class Review extends AbstractEntity implements Broadcastable {
+public class Review extends AbstractEntity /* implements Broadcastable */ {
 
     private static final long serialVersionUID = 1L;
 
@@ -199,13 +199,13 @@ public class Review extends AbstractEntity implements Broadcastable {
         this.comments = comments;
     }
 
-    @Override
+    /*@Override
     public Map<String, List<AbstractEntity>> getEntities() {
         Map<String, List<AbstractEntity>> entities = new HashMap<>();
         Helper.merge(entities, this.getAuthor().getEntities());
         Helper.merge(entities, this.getReviewer().getEntities());
         return entities;
-    }
+    }*/
 
     @Override
     public void merge(AbstractEntity other) {
