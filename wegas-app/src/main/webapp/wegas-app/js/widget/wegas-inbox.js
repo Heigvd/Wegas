@@ -26,11 +26,6 @@ YUI.add('wegas-inbox', function(Y) {
         /**
          * @lends Y.Wegas.InboxDisplay#
          */
-        // ** Private fields ** //
-        /**
-         *
-         */
-        readRequestTid: null,
         /**
          * Holds compiled templates. Add templates in scope variable TEMPLATES
          *
@@ -123,14 +118,13 @@ YUI.add('wegas-inbox', function(Y) {
          */
         bindUI: function() {
             this.tabView.after("selectionChange", this.onTabSelected, this);
-            this.handlers.dataUpdated = this.dataSource.after("updatedInstance", function(e) {
+            this.handlers.dataUpdated = Y.Wegas.Facade.Instance.after("updatedInstance", function(e) {
 
 
                 var inbox = this.get("variable.evaluated");
                 if (inbox && inbox.getInstance().get("id") === e.entity.get("id")) {
                     this.syncUI();
                 }
-                // Previously: if (e.tId !== this.readRequestTid) { this.syncUI(); }
             }, this);
         },
         /**
@@ -261,8 +255,8 @@ YUI.add('wegas-inbox', function(Y) {
                             Y.log("Sending message read update", "info", "InboxDisplay");
                             node = tab.get(CONTENTBOX).one(".unread");
                             node && node.removeClass("unread").addClass("read"); // Immediately update view (before request)
-                            tab.msg.set("unread", false);                   // Update the message (since there wont be no sync?)
-                            this.readRequestTid = this.dataSource.sendRequest({// Send reqest to mark as read
+                            //tab.msg.set("unread", false);                   // Update the message (since there wont be no sync?)
+                            this.dataSource.sendRequest({// Send reqest to mark as read
                                 request: "/Inbox/Message/Read/" + tab.msg.get("id"),
                                 cfg: {
                                     method: "PUT"
