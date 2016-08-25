@@ -427,7 +427,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                                 }, this),
                                 failure: Y.bind(function() {
                                     EditEntityAction.hideEditFormOverlay();
-                                    EditEntityAction.showFormMessage("error", "Conflit !");
+                                    //EditEntityAction.showFormMessage("error", "Conflit !");
                                     // Revert changes ????
                                     child.setAttrs(oldVal);
                                 }, this)
