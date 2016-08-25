@@ -142,15 +142,6 @@ public class StateMachineFacade {
         logger.info("#steps[" + steps + "] - Player {} triggered transition(s):{}", player.getName(), passed);
     }
 
-    private void tryToDisableTrigger(StateMachineDescriptor sm, StateMachineInstance smi) {
-        if (sm instanceof TriggerDescriptor) {
-            TriggerDescriptor td = (TriggerDescriptor) sm;
-            if (td.isDisableSelf() && smi.getCurrentStateId() == 2L) {
-                smi.setEnabled(false);
-            }
-        }
-    }
-
     private Integer doSteps(Player player, List<Transition> passedTransitions, List<StateMachineDescriptor> stateMachineDescriptors, Integer steps) throws WegasScriptException {
 
         //List<Script> impacts = new ArrayList<>();
@@ -174,8 +165,8 @@ public class StateMachineFacade {
                     break; // already have a valid transition
                 }
                 if (transition instanceof DialogueTransition
-                        && ((DialogueTransition) transition).getActionText() != null
-                        && !((DialogueTransition) transition).getActionText().isEmpty()) {                 // Dialogue, don't eval if not null or empty
+                    && ((DialogueTransition) transition).getActionText() != null
+                    && !((DialogueTransition) transition).getActionText().isEmpty()) {                 // Dialogue, don't eval if not null or empty
                     continue;
                 } else if (this.isNotDefined(transition.getTriggerCondition())) {
                     validTransition = true;
@@ -189,9 +180,7 @@ public class StateMachineFacade {
                     } else {
                         try {
                             if (this.eventTransition(player, transition, sm, smi)) {
-                                passedTransitions.add(transition);
-                                transitionPassed = true;
-                                smi.transitionHistoryAdd(transition.getId());
+                                validTransition = true;
                             }
                         } catch (WegasScriptException ex) {
                             ex.setScript("Variable " + sm.getLabel());
@@ -214,7 +203,7 @@ public class StateMachineFacade {
                 }
                 if (validTransition == null) {
                     throw WegasErrorMessage.error("Please review condition [" + sm.getLabel() + "]:\n"
-                            + transition.getTriggerCondition().getContent());
+                        + transition.getTriggerCondition().getContent());
                 } else if (validTransition) {
                     if (passedTransitions.contains(transition)) {
                         /*
@@ -229,18 +218,22 @@ public class StateMachineFacade {
                         selectedTransitions.put(smi, transition);
                         smi.transitionHistoryAdd(transition.getId());
                         transitionPassed = true;
-
-                        this.tryToDisableTrigger(sm, smi);
+                        if (sm instanceof TriggerDescriptor) {
+                            TriggerDescriptor td = (TriggerDescriptor) sm;
+                            if (td.isDisableSelf()) {
+                                smi.setEnabled(false);
+                            }
+                        }
                     }
                 }
             }
         }
         if (transitionPassed) {
             /* WHAT ? */
- /*@DIRTY, @TODO : find something else : Running scripts overrides previous state change Only for first Player (resetEvent). */
- /* Fixed by lib, currently commenting it  @removeme */
+            /*@DIRTY, @TODO : find something else : Running scripts overrides previous state change Only for first Player (resetEvent). */
+            /* Fixed by lib, currently commenting it  @removeme */
 //            this.getAllStateMachines(player.getGameModel());
-
+            
             for (Map.Entry<StateMachineInstance, Transition> entry : selectedTransitions.entrySet()) {
 
                 StateMachineInstance fsmi = entry.getKey();
@@ -292,14 +285,6 @@ public class StateMachineFacade {
         if (firedParams.length > instanceEventCount) {
             smi.setCurrentStateId(transition.getNextStateId());
             stateMachineEventsCounter.increase(smi, event);
-            if (!this.isNotDefined(transition.getPreStateImpact())) {
-                this.evalEventImpact(player, transition.getPreStateImpact(), firedParams[instanceEventCount], sm);
-            }
-            if (!this.isNotDefined(smi.getCurrentState().getOnEnterEvent())) {
-                this.evalEventImpact(player, smi.getCurrentState().getOnEnterEvent(), firedParams[instanceEventCount], sm);
-            }
-            this.tryToDisableTrigger(sm, smi);
-
             return true;
         } else {
             return false;
@@ -319,7 +304,7 @@ public class StateMachineFacade {
         final Object impactFunc;
         if (script.getLanguage().toLowerCase().equals("javascript")) {
             impactFunc = scriptManager.eval(player, new Script(script.getLanguage(),
-                    String.format("function(%s){%s}", EVENT_PARAMETER_NAME, script.getContent()) // A JavaScript Function. should check for engine type
+                String.format("function(%s){%s}", EVENT_PARAMETER_NAME, script.getContent()) // A JavaScript Function. should check for engine type
             ), context);
         } else {
             return; // define other language here
@@ -349,7 +334,7 @@ public class StateMachineFacade {
      */
     private Boolean isNotDefined(Script script) {
         return script == null || script.getContent() == null
-                || script.getContent().equals("");
+            || script.getContent().equals("");
     }
 
     public StateMachineInstance doTransition(Long gameModelId, Long playerId, Long stateMachineDescriptorId, Long transitionId) {
@@ -389,7 +374,6 @@ public class StateMachineFacade {
         }
         return stateMachineInstance;
     }
-
     public static class TransitionTraveled {
 
         final public StateMachineDescriptor descriptor;
