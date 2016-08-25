@@ -74,7 +74,7 @@ public class VariableInstanceController {
          */
         VariableInstance target = variableInstanceFacade.find(entityId);
 
-        if (SecurityHelper.isPermitted(variableInstanceFacade.findGame(entityId), "Edit") || target == target.getDescriptor().getInstance()) {
+        if (SecurityHelper.isPermitted(variableInstanceFacade.findGame(entityId), "Edit") /*|| target == target.getDescriptor().getInstance() */) {
             return variableInstanceFacade.update(entityId, entity);
         } else {
             throw new UnauthorizedException();
