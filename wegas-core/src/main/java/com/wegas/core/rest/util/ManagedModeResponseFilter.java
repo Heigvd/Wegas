@@ -137,7 +137,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                      */
                     for (Entry<String, List<AbstractEntity>> entry : updatedEntitiesMap.entrySet()) {
                         String audience = entry.getKey();
-                        if (websocketFacade.hasPermission(audience, rmf.getPlayer())) {
+                        if (websocketFacade.hasPermission(audience)) {
                             for (AbstractEntity ae : entry.getValue()) {
                                 if (!updatedEntities.contains(ae)) {
                                     updatedEntities.add(ae);
@@ -150,7 +150,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                      */
                     for (Entry<String, List<AbstractEntity>> entry : destroyedEntitiesMap.entrySet()) {
                         String audience = entry.getKey();
-                        if (websocketFacade.hasPermission(audience, rmf.getPlayer())) {
+                        if (websocketFacade.hasPermission(audience)) {
                             for (AbstractEntity ae : entry.getValue()) {
                                 if (!deletedEntities.contains(ae)) {
                                     deletedEntities.add(ae);

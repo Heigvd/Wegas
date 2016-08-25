@@ -97,44 +97,24 @@ public class WebsocketFacade {
      * @param currentPlayer
      * @return true if current user has access to
      */
-    private boolean hasPermission(String type, Long id, Player currentPlayer) {
+    private boolean hasPermission(String type, Long id) {
         if ("GameModel".equals(type)) {
             return SecurityUtils.getSubject().isPermitted("GameModel:View:gm" + id);
         } else if ("Game".equals(type)) {
             Game game = gameFacade.find(id);
             return game != null && SecurityHelper.isPermitted(game, "View");
         } else if ("Team".equals(type)) {
+
             Team team = teamFacade.find(id);
             User user = userFacade.getCurrentUser();
 
-            if (currentPlayer != null && currentPlayer.getUser() != null
-                    && currentPlayer.getUser().equals(user)) {
-                // Current logged User is the player itself
-                // the player MUST be a member of the team
-                return playerFacade.checkExistingPlayerInTeam(team.getId(), user.getId()) != null;
-            } else // Trainer of scenarist (player is not linked to user)
-            {
-                if (team != null) {
-                    return SecurityHelper.isPermitted(team.getGame(), "Edit");
-                } else {
-                    return false;
-                }
-            }
+            // Current logged User is linked to a player who's member of the team or current user has edit right one the game
+            return team != null && (playerFacade.checkExistingPlayerInTeam(team.getId(), user.getId()) != null || SecurityHelper.isPermitted(team.getGame(), "Edit"));
         } else if ("Player".equals(type)) {
             User user = userFacade.getCurrentUser();
             Player player = playerFacade.find(id);
 
-            if (player != null) {
-                if (currentPlayer != null && currentPlayer.getUser() != null
-                        && currentPlayer.getUser().equals(user)) {
-                    return player.equals(currentPlayer);
-                } else {
-                    // Trainer and scenarist 
-                    return SecurityHelper.isPermitted(player.getGame(), "Edit");
-                }
-            } else {
-                return false;
-            }
+            return player != null && (player.getUser().equals(user) || SecurityHelper.isPermitted(player.getGame(), "Edit"));
         }
         return false;
     }
@@ -146,12 +126,12 @@ public class WebsocketFacade {
      * @param currentPlayer
      * @return true if access granted
      */
-    public boolean hasPermission(String channel, Player currentPlayer) {
+    public boolean hasPermission(String channel) {
         String[] split = channel.split("-");
         if (split.length != 2) {
             return false;
         } else {
-            return hasPermission(split[0], Long.parseLong(split[1]), currentPlayer);
+            return hasPermission(split[0], Long.parseLong(split[1]));
         }
     }
 

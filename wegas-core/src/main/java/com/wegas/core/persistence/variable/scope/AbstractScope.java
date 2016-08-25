@@ -27,20 +27,19 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 ////import javax.xml.bind.annotation.XmlTransient;
-
 /**
  * @param <T> scope context
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity                                                                         // Database serialization
 @JsonSubTypes(value = {
-        @JsonSubTypes.Type(name = "GameModelScope", value = GameModelScope.class),
-        @JsonSubTypes.Type(name = "GameScope", value = GameScope.class),
-        @JsonSubTypes.Type(name = "TeamScope", value = TeamScope.class),
-        @JsonSubTypes.Type(name = "PlayerScope", value = PlayerScope.class)
+    @JsonSubTypes.Type(name = "GameModelScope", value = GameModelScope.class),
+    @JsonSubTypes.Type(name = "GameScope", value = GameScope.class),
+    @JsonSubTypes.Type(name = "TeamScope", value = TeamScope.class),
+    @JsonSubTypes.Type(name = "PlayerScope", value = PlayerScope.class)
 })
 @Table(indexes = {
-        @Index(columnList = "variableinstance_variableinstance_id")
+    @Index(columnList = "variableinstance_variableinstance_id")
 })
 abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEntity {
 
@@ -104,13 +103,15 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
 
     /**
      * @return The variable instance associated to the current player, which is
-     * stored in the RequestManager.
+     *         stored in the RequestManager.
      */
     @JsonIgnore
+    @Deprecated
     abstract public Map<T, VariableInstance> getPrivateInstances();
 
     @JsonIgnore
     @JsonProperty("privateInstances")
+    @Deprecated
     public Map<Long, VariableInstance> getPrivateInstancesByKeyId() {
         return mapInstances(this.getPrivateInstances());
     }
