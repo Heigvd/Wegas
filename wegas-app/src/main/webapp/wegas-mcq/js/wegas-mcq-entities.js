@@ -718,14 +718,16 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 optional: true,
                 format: HTML,
                 _inputex: {
-                    label: "Feedback when selected"
+                    label: "Feedback when selected",
+                    index: 3
                 }
             },
             impact: {
                 optional: true,
                 _inputex: {
                     _type: SCRIPT,
-                    label: "Impact when selected"
+                    label: "Impact when selected",
+                    index: 4
                 }
             },
             ignorationAnswer: {
@@ -733,14 +735,16 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 optional: true,
                 format: HTML,
                 _inputex: {
-                    label: "Feedback when ignored"
+                    label: "Feedback when ignored",
+                    index: 6
                 }
             },
             ignorationImpact: {
                 optional: true,
                 _inputex: {
                     _type: SCRIPT,
-                    label: "Impact on variables when ignored"
+                    label: "Impact on variables when ignored",
+                    index: 7
                 }
             },
             choiceDescriptorId: {
