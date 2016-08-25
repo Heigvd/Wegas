@@ -1078,7 +1078,8 @@ YUI.add("wegas-review-widgets", function(Y) {
             var content = this.get(CONTENTBOX).one(".toReview").one(".content");
             this.showOverlay();
             Y.Wegas.Facade.Variable.sendRequest({
-                request: "/PeerReviewController/" + desc.get("id") + "/ToReview/" + review.get("id"),
+                request: "/PeerReviewController/" + desc.get("id") + "/ToReview/" + review.get("id")
+                    + "/" + Y.Wegas.Facade.Game.cache.get("currentPlayerId"),
                 cfg: {
                     updateCache: false,
                     method: "get"
@@ -1184,7 +1185,8 @@ YUI.add("wegas-review-widgets", function(Y) {
         _sendRequest: function(action, updateCache) {
             this.showOverlay();
             Y.Wegas.Facade.Variable.sendRequest({
-                request: "/PeerReviewController/" + action,
+                request: "/PeerReviewController/" + action
+                    + "/" + Y.Wegas.Facade.Game.cache.get("currentPlayerId"),
                 cfg: {
                     updateCache: updateCache,
                     method: "post",
