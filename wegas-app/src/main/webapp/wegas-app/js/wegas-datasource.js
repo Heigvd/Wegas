@@ -793,6 +793,7 @@ YUI.add('wegas-datasource', function(Y) {
          * @returns {undefined}
          */
         put: function(data, cfg) {
+            cfg = cfg || {};
             this.sendRequest(Y.mix({
                 request: this.generateRequest(data),
                 cfg: Y.mix({
