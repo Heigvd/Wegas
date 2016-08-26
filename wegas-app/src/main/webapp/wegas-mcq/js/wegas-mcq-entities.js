@@ -505,7 +505,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                             },
                             version: {
                                 type: NUMBER,
-                                optional: false,
+                                optional: true,
                                 value: 0,
                                 _inputex: {
                                     _type: "uneditable",
