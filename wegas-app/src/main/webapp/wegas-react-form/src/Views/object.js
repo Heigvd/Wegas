@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import classNames from 'classnames';
-import styles from './object.css';
+import styles from '../css/object.css';
 
 function ObjectView(props) {
     return (
