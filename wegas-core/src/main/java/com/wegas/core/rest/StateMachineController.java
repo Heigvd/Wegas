@@ -36,28 +36,30 @@ public class StateMachineController {
 
     private static final Logger logger = LoggerFactory.getLogger(StateMachineController.class);
 
-    /*
+    /**
      *
      */
     @EJB
-    private VariableDescriptorFacade variableDescriptorFacade;
-    @EJB
     private GameFacade gameFacade;
-    @EJB
-    private VariableInstanceFacade variableInstanceFacade;
-    @EJB
-    private ScriptFacade scriptManager;
-    @EJB
-    private PlayerFacade playerFacade;
+    /**
+     *
+     */
     @EJB
     private UserFacade userFacade;
-    @Inject
-    private RequestManager requestManager;
-
-    @Inject
-    private ScriptEventFacade scriptEvent;
-
-    @Inject
+    /**
+     *
+     */
+    @EJB
+    private PlayerFacade playerFacade;
+    /**
+     *
+     */
+    @EJB
+    private RequestFacade requestFacade;
+    /**
+     *
+     */
+    @EJB
     private StateMachineFacade stateMachineFacade;
 
     /**
@@ -82,7 +84,9 @@ public class StateMachineController {
         Player player = playerFacade.find(playerId);
 
         checkPermissions(player.getGame().getId(), playerId);
-        return stateMachineFacade.doTransition(gameModelId, playerId, stateMachineDescriptorId, transitionId);
+        final StateMachineInstance stateMachineInstance = stateMachineFacade.doTransition(gameModelId, playerId, stateMachineDescriptorId, transitionId);
+        requestFacade.commit(player);
+        return stateMachineInstance;
     }
 
     private void checkPermissions(Long gameId, Long playerId) throws UnauthorizedException {
