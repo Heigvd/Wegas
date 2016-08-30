@@ -83,8 +83,8 @@ YUI.add("wegas-simpledialogue", function(Y) {
         ATTRS: {
             dialogueVariable: {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                _inputex: {
-                    _type: "variableselect",
+                view: {
+                    type: "variableselect",
                     label: "Dialogue",
                     classFilter: ["DialogueDescriptor"]
                 }

@@ -101,10 +101,10 @@ function handleArgs(variable, method, args, onChange) {
     const argDescr = methodDescr.arguments;
     const ret = argDescr.map((v, i) => args[i] || valueToType(undefined, v));
 
-    // if (args.length !== argDescr.length) { // remove/create unknown arguments
-    //     setTimeout(() => onChange(ret), 0);
-    //     return [];
-    // }
+    if (args.length !== argDescr.length) { // remove/create unknown arguments
+        setTimeout(() => onChange(ret), 0);
+        return [];
+    }
     return argDescr.map((a, i) => {
         const val = ret[i];
         return (
