@@ -67,16 +67,16 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     /**
      *
      */
-    @Column(length = 4096)
-    //@Basic(fetch = FetchType.LAZY) // CARE, lazy fetch on Basics has some trouble.
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
     //@JsonView(Views.ExtendedI.class)
     private String answer;
 
     /**
      *
      */
-    @Column(length = 4096)
-    //@Basic(fetch = FetchType.LAZY) // CARE, lazy fetch on Basics has some trouble.
+    @Lob
+    @Basic(fetch = FetchType.LAZY) // CARE, lazy fetch on Basics has some trouble.
     //@JsonView(Views.ExtendedI.class)
     private String ignorationAnswer;
 
