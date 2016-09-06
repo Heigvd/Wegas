@@ -68,7 +68,7 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
      *
      */
     @Lob
-    @Basic(fetch = FetchType.LAZY)
+    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
     //@JsonView(Views.ExtendedI.class)
     private String answer;
 
@@ -76,7 +76,7 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
      *
      */
     @Lob
-    @Basic(fetch = FetchType.LAZY) // CARE, lazy fetch on Basics has some trouble.
+    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
     //@JsonView(Views.ExtendedI.class)
     private String ignorationAnswer;
 
