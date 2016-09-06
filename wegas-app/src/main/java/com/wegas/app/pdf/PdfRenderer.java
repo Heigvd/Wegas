@@ -34,6 +34,7 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.POST;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -65,7 +66,7 @@ public class PdfRenderer implements Filter {
 
     // The filter configuration object we are associated with.  If
     // this value is null, this filter instance is not currently
-    // configured. 
+    // configured.
     private FilterConfig filterConfig = null;
     private DocumentBuilder documentBuilder;
 
@@ -84,14 +85,16 @@ public class PdfRenderer implements Filter {
     }
 
     /**
-     *
      * @param request  The servlet request we are processing
      * @param response The servlet response we are creating
      * @param chain    The filter chain we are processing
      *
+     * When HTTP method is POST, input comes exclusively from POST data.
+     *
      * @exception IOException      if an input/output error occurs
      * @exception ServletException if a servlet error occurs
      */
+    @POST
     @Override
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain)
@@ -107,17 +110,29 @@ public class PdfRenderer implements Filter {
                 HttpServletRequest req = (HttpServletRequest) request;
                 HttpServletResponse resp = (HttpServletResponse) response;
 
-                String renderType = req.getParameter("outputType");
+                String renderType, content;
+                String title = req.getParameter("title");
 
-                if (renderType != null && renderType.equals("pdf")) {
-                    // specific type ? capture response 
+                if (req.getMethod().equalsIgnoreCase("POST")){
+                    // NB: in a POST'ed filter method, all parameters must be in the post data.
+                    renderType = "pdf";
+                    String body = req.getParameter("body");
+                    content = createHtmlDoc("Wegas - " + title, "<h2>" + title + "</h2><hr />" + body);
+                } else {
+                    renderType = req.getParameter("outputType");
+                    if (renderType == null) return; // Hack to exit when content was initially POST'ed
+
+                    // specific type ? capture response
                     ContentCaptureServletResponse capContent = new ContentCaptureServletResponse(resp);
 
                     chain.doFilter(req, capContent);
                     /*
-                     * convert xhtml from String to XML Document 
+                     * convert xhtml from String to XML Document
                      */
-                    String content = capContent.getContent();
+                    content = capContent.getContent();
+                }
+
+                if (renderType != null && renderType.equals("pdf")) {
                     Tidy tidy = new Tidy();
                     tidy.setXmlOut(true);
 
@@ -133,7 +148,8 @@ public class PdfRenderer implements Filter {
                     if (debug) {
                         Helper.logEnv();
                         Element utf8Test = xhtmlDocument.getElementById("testUTF8");
-                        log("UTF-8 P test" + utf8Test.getTextContent());
+                        if (utf8Test != null)
+                            log("UTF-8 P test" + utf8Test.getTextContent());
                         log("Default charset: " + Charset.defaultCharset());
                     }
 
@@ -149,6 +165,10 @@ public class PdfRenderer implements Filter {
                     renderer.layout();
 
                     resp.setContentType("application/pdf; charset=UTF-8");
+                    // Make sure the filename is valid (space characters are sometimes used as delimiters):
+                    String fileName = title.replaceAll("[^\\sa-zA-Z0-9_.-]", "-").replaceAll("[\\s]", "_") + ".pdf";
+                    // Display the PDF in the browser AND provide a nice filename for saving it to disk:
+                    resp.setHeader("Content-disposition", "inline; filename="+ fileName);
                     OutputStream browserStream = resp.getOutputStream();
 
                     renderer.createPDF(browserStream);
@@ -175,6 +195,19 @@ public class PdfRenderer implements Filter {
             }
             sendProcessingError(problem, response);
         }
+    }
+
+    /*
+    ** For POST'ed contents: adds basic tags to make it a valid HTML document.
+    */
+    private String createHtmlDoc(String title, String body) {
+        return "" //"<?xml version=\"1.0\" encoding=\"UTF-8\" ?> "
+             + "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://wegas.albasim.ch/wegas-app/DTD/xhtml1-transitional.dtd\"> "
+             + "<html><head><meta charset=\"UTF-8\" /><meta http-equiv=\"Content-Type\" content=\"text/html\" /><title>"
+             + title
+             + "</title></head><body style=\"font-family:Helvetica, Arial; font-size:12px\">"
+             + body
+             + "</body></html>";
     }
 
     /**

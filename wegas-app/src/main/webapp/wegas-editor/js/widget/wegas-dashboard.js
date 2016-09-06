@@ -27,6 +27,16 @@ YUI.add('wegas-dashboard', function (Y) {
                     }
                 });
                 this.handlers = [];
+
+                this.detailsOverlay = new Y.Overlay({
+                    zIndex: 100,
+                    width: this.get("width"),
+                    constrain: true,
+                    visible: false
+                }).render();
+
+                this.detailsOverlay.get("contentBox").addClass("wegas-dashboard-monitor--popup-overlay");
+                this.detailsTarget = null;
             },
             destructor: function () {
                 var i;
@@ -122,6 +132,12 @@ YUI.add('wegas-dashboard', function (Y) {
             },
             bindUI: function () {
                 this.handlers.push(Y.Wegas.Facade.Game.after("update", this.phenixize, this));
+                this.handlers.push(Y.one("body").on("click", Y.bind(function (event) {
+                    this.detailsOverlay.hide();
+                    this.detailsTarget = null;
+                }, this),
+                    this.detailsOverlay
+                ));
             },
             /**
              * BEURK... Dirty Solution
@@ -216,7 +232,7 @@ YUI.add('wegas-dashboard', function (Y) {
                 }
             },
             _combineBlocs: function (data, monitoredBlocs) {
-                var blocs, newBlocs, newBloc;
+                var blocs, newBlocs, newBloc, ctx = this;
                 this._resetToInitialBlocs(data);
                 blocs = data.blocs;
                 if (monitoredBlocs !== null && monitoredBlocs.data && monitoredBlocs.data[data.id]) {
@@ -233,12 +249,27 @@ YUI.add('wegas-dashboard', function (Y) {
                             newBlocs.cardBlocType = blocsToAdd.cardBlocType;
                         }
                         blocsToAdd.items.forEach(function (bloc) {
+                            var value = monitoredBlocs.data[data.id][bloc.id];
+                            if (bloc.kind){
+                                var empty = value.empty;
+                                if (bloc.kind==="inbox"){
+                                    bloc.do = Y.Wegas.Dashboard.prototype.onInboxClick;
+                                    bloc.icon = '<i class=' + (empty ? '"icon fa fa-comment-o"' : '"icon fa fa-commenting"') +  ' title="Click to view"></i>';
+                                } else if (bloc.kind==="text"){
+                                    bloc.do = Y.Wegas.Dashboard.prototype.onTextClick;
+                                    bloc.icon = '<i class=' + (empty ? '"icon fa fa-file-o"' : '"icon fa fa-file-text"') +  ' title="Click to view"></i>';
+                                } else {
+                                    bloc.value = "Error: unknown kind";
+                                }
+                            }
                             newBloc = {
                                 label: bloc.label,
                                 icon: bloc.icon,
-                                value: monitoredBlocs.data[data.id][bloc.id],
+                                value: value,
                                 formatter: eval("(" + bloc.formatter + ")"),
-                                do: eval("(" + bloc.do + ")")
+                                do: bloc.do, //eval("(" + bloc.do + ")"),
+                                kind: bloc.kind,
+                                ctx: ctx // context of onclick callback, i.e. the wegas-dashboard-teams-overview singleton
                             };
                             newBlocs.items.push(newBloc);
                         });
@@ -309,8 +340,64 @@ YUI.add('wegas-dashboard', function (Y) {
                         ctx._adjustTitles();
                     }, 10);
                 });
-            }
+            },
+            onTextClick: function(event, text) {
+                // In this callback, 'this' is undefined, therefore we get it through event.ctx
+                var ctx = event.ctx;
+                if (ctx.detailsOverlay.get("visible")) {
+                    ctx.detailsOverlay.hide();
+                }
+                if (event.currentTarget != ctx.detailsTarget) {
+                    ctx._display(text.title, text.body);
+                    ctx.detailsTarget = event.currentTarget;
+                } else {
+                    ctx.detailsTarget = null;
+                }
+            },
+            onInboxClick: function(event, inbox) {
+                event.ctx.onTextClick(event, inbox);
+            },
+            _display: function(title, body) {
+                var pdfLink = Y.Wegas.app.get("base") + "print.html",
+                    titleBar = '<div class="title">' + title + '</div><div class="saveIcon wegas-icon-pdf" title="Download PDF"></div>';
+                this.detailsOverlay.set("headerContent", titleBar);
+                this.detailsOverlay.get("contentBox").one(".saveIcon").on("click", function (event) {
+                    event.halt(true);
+                    this.post(pdfLink, { "title": this.toEntities(title), "body": this.toEntities(body) });
+                }, this);
+                this.detailsOverlay.setStdModContent('body', body);
+                this.detailsOverlay.set("centered", true);
+                this.detailsOverlay.show();
+            },
+            /*
+            ** Opens a new tab where the given data is posted:
+            */
+            post: function(url, postData) {
+                var tabWindowId = window.open('about:blank', '_blank');
+                tabWindowId.document.title = postData.title;
+                var form = tabWindowId.document.createElement("form");
+                form.setAttribute("method", "post");
+                form.setAttribute("action", url);
 
+                for (var key in postData) {
+                    if (postData.hasOwnProperty(key)) {
+                        var hiddenField = tabWindowId.document.createElement("input");
+                        hiddenField.setAttribute("type", "hidden");
+                        hiddenField.setAttribute("name", key);
+                        hiddenField.setAttribute("value", postData[key]);
+                        form.appendChild(hiddenField);
+                    }
+                }
+                // var btn = tabWindowId.document.createElement("button"); btn.appendChild(tabWindowId.document.createTextNode("SUBMIT")); form.appendChild(btn);
+                tabWindowId.document.body.appendChild(form);
+                form.submit();
+            },
+            // Convert characters to HTML entities to protect against encoding issues:
+            toEntities: function(text) {
+                return text.replace(/[\u00A0-\u2666]/g, function (c) {
+                    return '&#' + c.charCodeAt(0) + ';';
+                });
+            }
         },
         {
             "ATTRS": {
@@ -332,5 +419,5 @@ YUI.add('wegas-dashboard', function (Y) {
             }
         });
 }, 'V1.0', {
-    requires: ['event','event-resize']
+    requires: ['node', 'event','event-resize']
 });
