@@ -235,7 +235,7 @@ YUI.add("wegas-number-input", function(Y) {
                     if (this._initialValue !== undefined && snapshot !== value
                         // But do the syncUI anyway if the variable was updated by another means than this input field:
                         && this._initialValue != snapshot){
-                        Y.log("*** Different syncUI(" + value + ") vs. " + snapshot);
+                        //Y.log("*** Number input: different syncUI(" + value + ") vs. " + snapshot);
                         return;
                     }
 
@@ -294,7 +294,7 @@ YUI.add("wegas-number-input", function(Y) {
             if (this.get("selfSaving")) {
                 this.wait = Y.later(750, this, function() {
                     this.wait = null;
-                    this.updateValue(input.get("value")); // Make sure we catch the very latest state of user input
+                    this.updateValue(input.get("value")); // Make sure to grab the very latest state of user input
                 });
             } else {
                 this.updateValue(input.get("value"));
