@@ -43,10 +43,10 @@ YUI.add("wegas-number-input", function(Y) {
         },
         /**
          * Try to save value.
-         * The value must, indeed, be a number and must valisates against 
-         * the descriptor bounds (if provided...). 
+         * The value must, indeed, be a number and must validate against
+         * the descriptor bounds (if provided...).
          * An error message is displayed whether the value could not been saved
-         * 
+         *
          * @param {type} value the new numeric value to save
          * @returns {Boolean} true is the value has been saved, false otherwise
          */
@@ -120,7 +120,6 @@ YUI.add("wegas-number-input", function(Y) {
             var cb = this.get("contentBox"),
                 value = e.value,
                 theVar = e.descriptor.getInstance();
-
             this._initialContent = value;
             theVar.set("value", value);
             if (this.get("selfSaving")) {
@@ -181,7 +180,7 @@ YUI.add("wegas-number-input", function(Y) {
 
     /**
      * Simple Number input
-     *  -> input 
+     *  -> input
      *  -> slider if number has lower and upper bounds
      */
     NumberInput = Y.Base.create("wegas-number-input", Y.Wegas.AbstractNumberInput, [], {
@@ -230,6 +229,16 @@ YUI.add("wegas-number-input", function(Y) {
 
             if (!this.get("readonly.evaluated")) {
                 if (this._initialValue !== value) {
+
+                    // Skip this syncUI if the user has continued typing during the save:
+                    var snapshot = +CB.one(".wegas-input").get("value");
+                    if (this._initialValue !== undefined && snapshot !== value
+                        // But do the syncUI anyway if the variable was updated by another means than this input field:
+                        && this._initialValue != snapshot){
+                        Y.log("*** Different syncUI(" + value + ") vs. " + snapshot);
+                        return;
+                    }
+
                     this._initialValue = value;
                     CB.one(".wegas-input").set("value", value);
                     if (this.xSlider && this.xSlider.get("value") !== inst.get("value")) {
@@ -277,8 +286,7 @@ YUI.add("wegas-number-input", function(Y) {
             this.updateFromInput();
         },
         updateFromInput: function() {
-            var input = this.get(CONTENTBOX).one(".wegas-input"),
-                value = input.get("value");
+            var input = this.get(CONTENTBOX).one(".wegas-input");
 
             if (this.wait) {
                 this.wait.cancel();
@@ -286,10 +294,10 @@ YUI.add("wegas-number-input", function(Y) {
             if (this.get("selfSaving")) {
                 this.wait = Y.later(750, this, function() {
                     this.wait = null;
-                    this.updateValue(value);
+                    this.updateValue(input.get("value")); // Make sure we catch the very latest state of user input
                 });
             } else {
-                this.updateValue(value);
+                this.updateValue(input.get("value"));
             }
         }
     }, {
@@ -328,7 +336,7 @@ YUI.add("wegas-number-input", function(Y) {
                         boxes.append("<div class=\"box\" data-value=\"" + i + "\" data-position=\"\"><div class=\"value\">" + i + "</div></div>");
                     }
                 } else {
-                    boxes.setContent("<p class=\"error\">Variable in not bounded !</p>");
+                    boxes.setContent("<p class=\"error\">Variable is not bounded !</p>");
                 }
             }
         },
@@ -343,13 +351,13 @@ YUI.add("wegas-number-input", function(Y) {
             this._readonly = this.get("readonly.evaluated");
 
             /*
-             * Let set clickable class according to _readonly status: 
+             * Let set clickable class according to _readonly status:
              * ro | hasCl | will Have class
              *  0 | 0     | 1   (== !hasClass)
              *  0 | 1     | 1   (== hasClass)
              *  1 | 0     | 0   (== hasClass)
              *  1 | 1     | 0   (== !hasClass)
-             *  
+             *
              *  if ro !== hasCl -> toogle
              */
             if (boxes.hasClass("clickable") !== !this._readonly) {
