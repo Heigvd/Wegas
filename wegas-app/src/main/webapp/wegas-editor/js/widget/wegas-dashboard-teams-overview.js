@@ -431,4 +431,6 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
             "team": {}
         }
     });
+}, 'V1.0', {
+    requires: ['node', 'event']
 });

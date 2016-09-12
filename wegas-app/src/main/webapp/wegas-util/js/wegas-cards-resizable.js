@@ -127,14 +127,12 @@ YUI.add('wegas-cards-resizable', function (Y) {
         initializer: function () {
             var resizeTimer = null;
             this.afterHostEvent("render", function () {
-                YUI.use("event-resize", function(Y) {
-                    this._initValues();
-                    this.resizeHandle = Y.on("windowresize", function () { // "windowresize" instead of just "resize"
-                        // Is this ever executed?
-                        clearTimeout(resizeTimer);
-                        resizeTimer = setTimeout(Y.bind(this.resize, this), 250);
-                    } /*, this */);
-                });
+                this._initValues();
+                this.resizeHandle = Y.on("windowresize", function () { // "windowresize" instead of just "resize"
+                    // Is this ever executed?
+                    clearTimeout(resizeTimer);
+                    resizeTimer = setTimeout(Y.bind(this.resize, this), 250);
+                } /*, this */);
             });
         },
         destructor: function () {
