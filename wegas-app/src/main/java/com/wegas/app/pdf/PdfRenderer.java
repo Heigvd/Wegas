@@ -22,7 +22,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
+import javax.ejb.EJB;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -38,6 +42,14 @@ import javax.ws.rs.POST;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
+import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.security.ejb.RoleFacade;
+import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.persistence.Permission;
+import com.wegas.core.security.persistence.Role;
+import com.wegas.core.security.persistence.User;
+import org.apache.shiro.authz.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMException;
@@ -69,6 +81,12 @@ public class PdfRenderer implements Filter {
     // configured.
     private FilterConfig filterConfig = null;
     private DocumentBuilder documentBuilder;
+
+    @EJB
+    private UserFacade userFacade;
+
+    @EJB
+    private RoleFacade roleFacade;
 
     @Override
     public void init(FilterConfig config) throws ServletException {
@@ -110,16 +128,29 @@ public class PdfRenderer implements Filter {
                 HttpServletRequest req = (HttpServletRequest) request;
                 HttpServletResponse resp = (HttpServletResponse) response;
 
-                String renderType, content;
+                String renderType = req.getParameter("outputType");
                 String title = req.getParameter("title");
+                String content;
 
                 if (req.getMethod().equalsIgnoreCase("POST")){
-                    // NB: in a POST'ed filter method, all parameters must be in the post data.
-                    renderType = "pdf";
+                    // To prevent abuse, check that the user is logged in and has at least trainer credentials:
+                    User user = userFacade.getCurrentUser();
+                    boolean isTrainer = false;
+                    for (Role r : user.getRoles()) {
+                        String role = r.getName();
+                        if (role.equals("Trainer") || role.equals("PMG-trainer") || role.equals("Scenarist")){
+                            isTrainer = true;
+                            break;
+                        }
+                    }
+                    if (!isTrainer){
+                        throw new UnauthorizedException("User is not a trainer");
+                    }
+
+                    // In a POST'ed filter method, all parameters must be in the post data.
                     String body = req.getParameter("body");
                     content = createHtmlDoc("Wegas - " + title, "<h2>" + title + "</h2><hr />" + body);
                 } else {
-                    renderType = req.getParameter("outputType");
                     if (renderType == null) return; // Hack to exit when content was initially POST'ed
 
                     // specific type ? capture response

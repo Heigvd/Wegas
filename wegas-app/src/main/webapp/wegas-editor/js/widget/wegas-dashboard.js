@@ -363,7 +363,7 @@ YUI.add('wegas-dashboard', function (Y) {
                 this.detailsOverlay.set("headerContent", titleBar);
                 this.detailsOverlay.get("contentBox").one(".saveIcon").on("click", function (event) {
                     event.halt(true);
-                    this.post(pdfLink, { "title": this.toEntities(title), "body": this.toEntities(body) });
+                    this.post(pdfLink, { "title": this.toEntities(title), "body": this.toEntities(body), "outputType": "pdf" });
                 }, this);
                 this.detailsOverlay.setStdModContent('body', body);
                 this.detailsOverlay.set("centered", true);
