@@ -86,6 +86,23 @@
     margin-right: 0;
 }
 
+.yui3-skin-sam .dashboard .card__blocs.card__blocs--monitoring .bloc {
+    min-width: 80px;
+    width: auto;
+}
+
+@media screen and (max-width: 600px) {
+    .yui3-skin-sam .dashboard .card__blocs.card__blocs--monitoring .bloc {
+        min-width: 0;
+        max-width: 80px;
+    }
+}
+
+.yui3-skin-sam .dashboard .card__blocs.card__blocs--monitoring .bloc .bloc__label {
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
 .yui3-skin-sam .wegas-statistics{
     padding: 40px 32px;
     color:#666;

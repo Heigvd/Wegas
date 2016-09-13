@@ -83,7 +83,11 @@ YUI.add('wegas-cards-resizable', function (Y) {
                     break;
             }
             if (sizeCharged) {
-                this.get(HOST).get(CONTENT_BOX).all(".card__title").setStyle("width", "calc(100% - " + sizeCharged + "px)");
+                if (size!=="BIG") {
+                    this.get(HOST).get(CONTENT_BOX).all(".card__title").setStyle("width", "calc(100% - " + sizeCharged + "px)");
+                } else {
+                    this.get(HOST).get(CONTENT_BOX).all(".card__title").setStyle("width", "auto");
+                }
             }
         },
         _checkResize: function (cardsWidth, limitIndex) {
