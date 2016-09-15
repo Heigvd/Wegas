@@ -56,19 +56,26 @@ YUI.add('wegas-mcq-entities', function (Y) {
                         return val;
                     }
                 },
+                description: {
+                    type: NULLSTRING,
+                    format: HTML,
+                    index: -1,
+                    view: { type: HTML, label: "Description" }
+                },
                 title: {
                     type: NULLSTRING,
                     optional: true,
                     index: -1,
                     view: {
                         label: "Label",
-                        description: "Displayed to players"
+                        className: "label",
+                        description: " Displayed to players"
                     }
                 },
                 allowMultipleReplies: {
                     value: false,
                     type: BOOLEAN,
-                    index: 8,
+                    index: 9,
                     view: {
                         label: 'Allow multiple replies'
                     }
@@ -80,7 +87,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                         label: "Checkbox selection",
                         description: "Pour QCM standard",
                     },
-                    index: 9
+                    index: 10
                 },
                 tabular: {
                     type: BOOLEAN,
@@ -90,13 +97,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                         description: "Replies are presented horizontally",
                         className: 'wegas-advanced-feature'
                     },
-                    index: 10
-                },
-                description: {
-                    type: NULLSTRING,
-                    format: HTML,
-                    index: 11,
-                    view: { type: HTML, label: "Description" }
+                    index: 11
                 },
                 defaultInstance: {
                     type: "object",

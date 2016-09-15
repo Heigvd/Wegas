@@ -161,15 +161,18 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
                 parentDescriptorId: {
                     type: NUMBER,
                     view: {
-                        type: HIDDEN
+                        type: HIDDEN,
+                        lengthType:"short"
                     }
                 },
                 comments: {
                     type: ["null", STRING],
                     index: 100,
                     view: {
-                        type: "textarea",
-                        className: "wegas-comments"
+                        label: "comments",
+                        type: "string",
+                        className: "wegas-comments",
+                        rows : 8
                     }
                 },
                 label: {
@@ -184,7 +187,8 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
                         return val || this.get(NAME);
                     },
                     view: {
-                        label: "Name"
+                        label: "Name",
+                        lengthType:"short"
                     }
                 },
                 name: {
@@ -193,6 +197,7 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
                     view: {
                         className: "wegas-advanced-feature",
                         label: "Script alias",
+                        lengthType:"short",
                         //regexp: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/,
                         description: "Alphanumeric characters,'_','$'. Without a digit as first character.<br/>Changing this may break your scripts."
                     },
@@ -209,7 +214,8 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
                         return o instanceof persistence.Scope;
                     },
                     view: {
-                        className: "wegas-advanced-feature"
+                        className: "wegas-advanced-feature",
+                        lengthType:"short"
                     },
                     properties: {
                         "@class": {
@@ -483,7 +489,8 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
                         className: "wegas-advanced-feature",
                         elementType: {
                             required: true,
-                            type: "string"
+                            type: "string",
+                            lengthType:"short"
                         }
                     }
                 },
@@ -626,15 +633,35 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
                 minValue: {
                     type: ["null", NUMBER],
                     optional: true,
+                    errored:function(value,formvalue){
+                        var ret = [];
+                        if(value>formvalue.maxValue){
+                            ret.push("Minimum can not be greater than maximum");
+                        }if(value>formvalue.defaultInstance.value){
+                            ret.push("Minimum can not be greater than default value");
+                        }
+                        return ret.join(" and ");
+                    },
                     view: {
-                        label: "Minimum"
+                        label: "Minimum",
+                        length:6
                     }
                 },
                 maxValue: {
                     type: ["null", NUMBER],
                     optional: true,
+                    errored:function(value,formvalue){
+                        var ret = [];
+                        if(value<formvalue.minValue){
+                            ret.push("Maximum can not be less than minimum");
+                        }if(value<formvalue.defaultInstance.value){
+                            ret.push("Maximum can not be less than default value");
+                        }
+                        return ret.join(" and ");
+                    },
                     view: {
-                        label: "Maximum"
+                        label: "Maximum",
+                        length:6
                     }
                 },
                 value: {
@@ -664,8 +691,18 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
                         descriptorId: IDATTRDEF,
                         value: {
                             type: NUMBER,
+                            errored:function(value,formvalue){
+                            var ret = [];
+                            if(value<formvalue.minValue){
+                                ret.push("Default value can not be less than minimum");
+                            }if(value>formvalue.maxValue){
+                                ret.push("Default value can not be greater than maximum");
+                            }
+                            return ret.join(" and ");
+                            },
                             view: {
-                                label: "Default value"
+                                label: "Default value",
+                                length:6
                             }
                         },
                         history: {
@@ -859,8 +896,11 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
                         }
                     }
                 },
-                defaultInstance: {
+                defaultInstance: { 
+                    type: "object",
                     view: { type: HIDDEN },
+                    value: {
+                    },
                     properties: {
                         "@class": {
                             type: STRING,

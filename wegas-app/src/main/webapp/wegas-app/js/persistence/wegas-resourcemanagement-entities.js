@@ -130,6 +130,7 @@ YUI.add('wegas-resourcemanagement-entities', function (Y) {
                     view: {
                         label: "Label",
                         description: "Displayed to players",
+                        lengthType:"short"
                     },
                     index: -1
                 },
