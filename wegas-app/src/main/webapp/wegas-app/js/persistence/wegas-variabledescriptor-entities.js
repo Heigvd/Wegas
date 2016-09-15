@@ -896,11 +896,10 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
                         }
                     }
                 },
-                defaultInstance: { 
-                    type: "object",
+                defaultInstance: {
                     view: { type: HIDDEN },
-                    value: {
-                    },
+                    type: "object",
+                    value: { '@class': 'ListInstance' },
                     properties: {
                         "@class": {
                             type: STRING,
