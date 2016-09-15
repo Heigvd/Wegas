@@ -1,0 +1,48 @@
+.half {
+  display: inline-block;
+  margin-right: 5%;
+  width: 45%;
+  margin-top: 8px;
+
+}
+
+.short{
+    width:45%;
+    margin-top: 8px;
+}
+
+.infos{
+  color:lightslategrey;
+  font-size: 10px; 
+  margin-left: 5px;
+}
+
+.errs{
+  color:darkorange;
+  font-size: 10px; 
+  margin-left: 5px;
+}
+
+.label {
+
+    font-family: Rockwell;
+    color:dimgrey;
+    font-size: 12px;
+    margin-top:7px;
+    
+}
+
+input{
+
+    border-radius: 3px;
+    border:lightgrey solid 1px;
+    margin-top:5px;
+    width:100px;
+}
+
+textarea{
+    background: #F4F4F4;
+    border-radius: 3px;
+    border:lightgrey solid 1px;
+    width:300px;
+}
