@@ -1,0 +1,37 @@
+.half {
+  display: inline-block;
+  margin-right: 5%;
+  width: 45%;
+  margin-top: 8px;
+
+}
+
+.short{
+    width:45%;
+    margin-top: 8px;
+}
+
+.infos{
+  color:dodgerblue;
+  font-size: 10px; 
+  margin-left: 5px;
+}
+
+input{
+
+    border-radius: 3px;
+    border:lightgrey solid 1px;
+    margin-top:5px;
+    width:300px;
+    font-size: 14px;
+}
+
+input.numb{
+    width:55px;
+}
+
+textarea{
+    background: #F4F4F4;
+    border-radius: 3px;
+    width:300px;
+}
