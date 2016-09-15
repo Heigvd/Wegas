@@ -1,6 +1,5 @@
 .root {
-  padding-left: 30px;
-  background-color: rgba(0, 0, 0, 0.05);
+ /*background-color: rgba(0, 0, 0, 0.05);*/
 
   & > legend {
     text-align: center;
@@ -14,4 +13,9 @@
 .error {
   color: red;
   font-size: 80%;
+}
+
+
+.legend {
+  color:#282;
 }
