@@ -49,15 +49,17 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 .wegas-comments {
     font-style: italic;
     margin-top: 8px;
+    font-size: 14px;
     
 }
 
 .wegas-comments textarea {
     background: #F4F4F4;
-    width:300px;
-    max-width:300px;
+    width:33em;
+    max-width:33em;
     font-style: italic;
     margin-top: 8px;
+    font-size: 14px;
 }
 
 /** Hide all advanced feature while in std mode */
