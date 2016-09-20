@@ -1,0 +1,18 @@
+.shape{
+    width:15px;
+	height:15px;
+	border-radius:50%;
+	color:#fff;
+	line-height: 2em;
+	font-size:7.6px;
+	margin-left:5px;
+	text-align: center;
+}
+
+.disabled{
+    width:20px;
+	height:20px;
+	border-radius:50%;
+	color:black;
+    background-color:darkslategrey;
+}
