@@ -23,6 +23,7 @@ input{
     border:lightgrey solid 1px;
     margin-top:5px;
     width:300px;
+    max-width:300px;
     font-size: 14px;
 }
 
@@ -33,5 +34,7 @@ input.numb{
 textarea{
     background: #F4F4F4;
     border-radius: 3px;
-    width:300px;
+    width:33em;
+    max-width:332em;
+    font-size: 14px;
 }
