@@ -3,7 +3,7 @@ const webpack = require('webpack');
 const cssnext = require('postcss-cssnext');
 
 module.exports = {
-    devtool: 'cheap-module-eval-source-map',
+    devtool: 'inline-source-map',
     entry: ['babel-polyfill', './src/index.js'],
     output: {
         path: path.join(__dirname, 'dist'),
