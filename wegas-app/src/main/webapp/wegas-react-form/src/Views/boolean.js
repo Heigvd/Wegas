@@ -1,6 +1,4 @@
 import React, { PropTypes } from 'react';
-import Toggle from 'material-ui/Toggle';
-import Checkbox from 'material-ui/Checkbox';
 import styles from '../css/boolean.css';
 
 function BooleanView(props) {
@@ -10,12 +8,15 @@ function BooleanView(props) {
 
     return (
         <div className={styles.short}>
-            <Checkbox
-                label={props.view.label || props.path[props.path.length - 1]}
-                style={styles.checkbox}
-                labelPosition={'right'}
-                onChange={ev => props.onChange(ev.target.checked)}
-            />
+            <label
+                className={styles.label}
+            >
+                <input
+                    type="checkbox"
+                    onChange={ev => props.onChange(ev.target.checked)}
+                />
+                {props.view.label || props.path[props.path.length - 1]}
+            </label>
         </div>
     );
 }

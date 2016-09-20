@@ -1,16 +1,16 @@
-.position {
-
-    position: fixed;
-    left:0;
-    margin-left: 5%;
-    margin-top:15px;
-}
 
 .short{
     width:80%;
-    margin-top:15px;
-
+    left:0;
+    margin-left: 5px;
 }
 
+.label {
+    font-family: Rockwell;
+    color:dimgrey;
+    font-size: 12px;
+    left:0;
+    margin-left: 5px;
+}
 
 
