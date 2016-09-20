@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react';
-import IconButton from 'material-ui/IconButton';
+import styles from '../css/array.css';
+import IconButton from '../Components/IconButton.js';
 
 const minusStyle = {
     float: 'left',
@@ -15,8 +16,9 @@ function ArrayWidget(props) {
     function renderChild(child, index) {
         return (<div style={{ clear: 'both' }}>
             <IconButton
-                style={minusStyle}
-                iconClassName="fa fa-minus"
+                iconColor="darkred"
+                icon="fa fa-minus"
+                tooltip="remove"
                 onClick={props.onChildRemove(index)}
             />
             <div style={childStyle}>{child}</div>
@@ -29,19 +31,22 @@ function ArrayWidget(props) {
         borderTop: props.view.label ? '1px solid lightgrey' : 'none'
     };
     const children = React.Children.map(props.children, renderChild);
-    return (<fieldset
-        className={props.view.className}
-        style={style}
-    >
-        <legend style={legendStyle}>
-            {props.view.label || props.editKey}
-        </legend>
-        {children}
-        <IconButton
-            iconClassName="fa fa-plus"
-            onClick={props.onChildAdd}
-        />
-    </fieldset>);
+    return (
+
+        <div
+            className={styles.label}
+        >
+            <span>
+                {props.view.label || props.editKey}
+            </span>
+            <IconButton
+                iconColor="#9DC06F"
+                icon="fa fa-plus"
+                onClick={props.onChildAdd}
+                tooltip="add"
+            />
+        </div>
+        );
 }
 
 ArrayWidget.propTypes = {
