@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
-import IconButton from 'material-ui/IconButton';
 import TextField from 'material-ui/TextField';
 import ObjectView from './object';
+import IconButton from '../Components/iconButton.js';
 
 const halfWidth = {
     display: 'inline-block',
@@ -50,9 +50,10 @@ class HashlistView extends React.Component {
 
             return (<div>
                 <IconButton
-                    iconClassName="fa fa-minus"
+                    iconColor="red"
+                    icon="fa fa-minus"
+                    tooltip="remove"
                     onClick={remove}
-                    style={minusStyle}
                 />
                 <div style={{ marginLeft: '48px', position: 'relative' }}>
                     <TextField
@@ -81,7 +82,9 @@ class HashlistView extends React.Component {
                 ref={node => { this.newInput = node; }}
             />
             <IconButton
-                iconClassName="fa fa-plus"
+                iconColor="green"
+                icon="fa fa-plus"
+                tooltip="add"
                 onClick={this.addChild}
             />
         </ObjectView>);
