@@ -44,5 +44,6 @@ textarea{
     background: #F4F4F4;
     border-radius: 3px;
     border:lightgrey solid 1px;
-    width:300px;
+    max-width:33em;
+    font-size: 14px;
 }

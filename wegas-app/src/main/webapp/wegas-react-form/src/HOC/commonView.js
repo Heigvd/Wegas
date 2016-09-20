@@ -16,12 +16,12 @@ export default function comonView(Comp) {
                     />
                         {v}
                 </span>
-                    
+
                 ));
 
         return (
             <div className={props.view.className}>
-                <div 
+                <div
                     className={styles.label}
                 >
                     {props.view.label}
