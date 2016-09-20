@@ -1,8 +1,11 @@
 /* eslint-disable jsx-a11y/label-has-for */
 import React, { PropTypes } from 'react';
 import TinyMCE from 'react-tinymce';
+import classNames from 'classnames';
+import commonView from '../HOC/commonView';
 import './../../../wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar.js';
 import { getY } from './../index.js';
+import styles from '../css/html.css';
 
 const Wegas = getY().Wegas;
 
@@ -37,7 +40,7 @@ function onFileBrowserClick(fieldName, url, type, win) {
 }
 
 const TINYCONFIG = {
-    // inline: true,
+    inline: true,
     plugins: [
         'autolink link image lists code media table contextmenu',
         'paste advlist textcolor dynamic_toolbar'
@@ -92,20 +95,19 @@ const TINYCONFIG = {
     //     editor.on('init', () => {
     //         tbs = editor.contentAreaContainer.parentElement
     //             .querySelectorAll('div.mce-toolbar-grp');
-    //         tbs.forEach(e => { e.style.display = 'none'; });
+    //         tbs.forEach(e => { e.style.maxHeight = 0; e.style.overflow = 'hidden'; });
     //     });
-    //     editor.on('focus', () => tbs.forEach(e => { e.style.display = ''; }));
-    //     editor.on('blur', () => tbs.forEach(e => { e.style.display = 'none'; }));
+    //     editor.on('focus', () => tbs.forEach(e => { e.style.maxHeight = '90px'; }));
+    //     editor.on('blur', () => tbs.forEach(e => { e.style.maxHeight = 0; }));
     // }
 };
 function HTMLView(props) {
     const { onChange } = props;
     const onValueChange = event => onChange(event.target.getContent());
     return (
-        <div>
-            <label>
-                {props.view.label}
-            </label>
+        <div
+            className={classNames(styles.margin, styles.border)}
+        >
             <TinyMCE
                 content={props.value}
                 config={TINYCONFIG}
@@ -120,4 +122,4 @@ HTMLView.propTypes = {
     value: PropTypes.string
 };
 
-export default HTMLView;
+export default commonView(HTMLView);
