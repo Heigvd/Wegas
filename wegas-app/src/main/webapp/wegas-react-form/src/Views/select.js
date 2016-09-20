@@ -1,6 +1,5 @@
 import React, { PropTypes } from 'react';
 import classNames from 'classnames';
-import MenuItem from 'material-ui/MenuItem';
 import async from '../HOC/async';
 import commonView from '../HOC/commonView';
 import styles from '../css/select.css';
@@ -12,12 +11,12 @@ function genItems(o, i) {
                 key={i}
                 value={o}
                 primaryText={o}
-            >
-            </option>);
+            />);
     }
     const { label = o.value, value, disabled } = o;
     return (
         <option
+            key={i}
             value={value}
             disabled={disabled}
         >
@@ -27,9 +26,6 @@ function genItems(o, i) {
 }
 
 function SelectView(props) {
-    const errorMessage = props.errorMessage.length ?
-        props.errorMessage :
-        undefined;
     const onChange = function onChange(event, index, value) {
         setTimeout(props.onChange(value));
     };
