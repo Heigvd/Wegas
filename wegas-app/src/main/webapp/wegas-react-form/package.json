@@ -15,8 +15,6 @@
   "license": "MIT",
   "dependencies": {
     "classnames": "^2.2.5",
-    "element": "^0.1.4",
-    "elemental": "^0.6.1",
     "jsoninput": "github:cigit/JSONInput",
     "lodash": "^4.15.0",
     "material-ui": "^0.15.4",
