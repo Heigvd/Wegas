@@ -43,7 +43,7 @@ import java.util.List;
         }
 )
 @NamedQueries({
-    @NamedQuery(name = "Result.findByName", query = "SELECT DISTINCT res FROM Result res WHERE res.choiceDescriptor=:choicedescriptor AND res.name LIKE :name")
+    @NamedQuery(name = "Result.findByName", query = "SELECT DISTINCT res FROM Result res WHERE res.choiceDescriptor.id=:choicedescriptorId AND res.name LIKE :name")
 })
 public class Result extends NamedEntity implements Searchable, Scripted, LabelledEntity {
 

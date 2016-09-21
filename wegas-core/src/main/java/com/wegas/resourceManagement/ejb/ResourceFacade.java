@@ -34,6 +34,8 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,12 +124,10 @@ public class ResourceFacade {
      */
     public Assignment findAssignment(Long resourceId, Long taskDescriptorId) {
         EntityManager em = getEntityManager();
-        TaskDescriptor taskDescriptor = em.find(TaskDescriptor.class, taskDescriptorId);
-        ResourceInstance resourceInstance = em.find(ResourceInstance.class, resourceId);
-        Query query = em.createNamedQuery("Assignment.findByResourceInstanceAndTaskDescriptor").
-                setParameter("resourceInstance", resourceInstance).
-                setParameter("taskDescriptor", taskDescriptor);
-        return (Assignment) query.getSingleResult();
+        TypedQuery<Assignment> query = em.createNamedQuery("Assignment.findByResourceInstanceIdAndTaskDescriptorId", Assignment.class).
+                setParameter("resourceInstanceId", resourceId).
+                setParameter("taskDescriptorId", taskDescriptorId);
+        return query.getSingleResult();
     }
 
     /**
