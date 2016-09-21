@@ -834,7 +834,7 @@
 .wegas-dashboard-monitor--popup-overlay .yui3-widget-hd .title {
     float: left;
     text-overflow: ellipsis;
-    max-width: 90%;
+    max-width: 85%;
     overflow: hidden;
     white-space: nowrap;
 }
@@ -843,7 +843,29 @@
     float: right;
     cursor: pointer;
     position: relative;
-    top: -8px;
+    top: -15px;
+    padding-right: 10px;
+    margin-right: 15px;
+    width: 22px;
+    height: 35px;
+    background-position: 0px 2px !important;
+}
+
+.wegas-dashboard-monitor--popup-overlay .yui3-widget-hd .saveIcon:hover {
+    background-color: #e7e7e7 !important;
+    transition: 0.2s;
+}
+
+.wegas-dashboard-monitor--popup-overlay .yui3-widget-hd .closeIcon {
+    float: right;
+    cursor: pointer;
+    position: relative;
+    top: -3px;
+    font-size: 24px;
+}
+
+.wegas-dashboard-monitor--popup-overlay .yui3-widget-hd .closeIcon:hover {
+    color: #000;
 }
 
 .wegas-dashboard-monitor--popup-overlay .yui3-widget-bd {

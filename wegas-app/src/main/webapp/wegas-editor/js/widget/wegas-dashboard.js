@@ -359,7 +359,7 @@ YUI.add('wegas-dashboard', function (Y) {
             },
             _display: function(title, body) {
                 var pdfLink = Y.Wegas.app.get("base") + "print.html",
-                    titleBar = '<div class="title">' + title + '</div><div class="saveIcon wegas-icon-pdf" title="Download PDF"></div>';
+                    titleBar = '<div class="title">' + title + '</div><div class="fa fa-close closeIcon" title="Close window"></div><div class="saveIcon wegas-icon-pdf" title="Download PDF"></div>';
                 this.detailsOverlay.set("headerContent", titleBar);
                 this.detailsOverlay.get("contentBox").one(".saveIcon").on("click", function (event) {
                     event.halt(true);
