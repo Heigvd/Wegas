@@ -43,7 +43,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.Permission;
@@ -87,6 +89,9 @@ public class PdfRenderer implements Filter {
 
     @EJB
     private RoleFacade roleFacade;
+
+    @EJB
+    private GameModelFacade gameModelFacade;
 
     @Override
     public void init(FilterConfig config) throws ServletException {
@@ -196,8 +201,21 @@ public class PdfRenderer implements Filter {
                     renderer.layout();
 
                     resp.setContentType("application/pdf; charset=UTF-8");
-                    // Make sure the filename is valid (space characters are sometimes used as delimiters):
-                    String fileName = title.replaceAll("[^\\sa-zA-Z0-9_.-]", "-").replaceAll("[\\s]", "_") + ".pdf";
+                    String fileName;
+                    try {
+                        if (title == null) {
+                            String gmId = req.getParameter("gameModelId");
+                            if (gmId != null) {
+                                GameModel gm = gameModelFacade.find(Long.parseLong(gmId));
+                                title = gm.getName() + "-Wegas";
+                            }
+                        }
+                        // Make sure the filename is valid (space characters are used as delimiters by certain browsers):
+                        fileName = title.replaceAll("[^\\sa-zA-Z0-9_.-]", "-").replaceAll("[\\s]", "_") + ".pdf";
+                    } catch (Exception e) {
+                        // Default document title:
+                        fileName = "Wegas.pdf";
+                    }
                     // Display the PDF in the browser AND provide a nice filename for saving it to disk:
                     resp.setHeader("Content-disposition", "inline; filename="+ fileName);
                     OutputStream browserStream = resp.getOutputStream();
