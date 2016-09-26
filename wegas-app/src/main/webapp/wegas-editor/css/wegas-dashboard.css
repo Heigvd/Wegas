@@ -833,8 +833,9 @@
 
 .wegas-dashboard-monitor--popup-overlay .yui3-widget-hd .title {
     float: left;
-    text-overflow: ellipsis;
+    width: auto;
     max-width: 85%;
+    text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
 }
