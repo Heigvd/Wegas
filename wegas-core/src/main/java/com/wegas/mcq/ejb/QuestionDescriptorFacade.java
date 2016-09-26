@@ -94,7 +94,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
 
     public Result findResultTQ(final ChoiceDescriptor choiceDescriptor, final String name) throws WegasNoResultException {
         final TypedQuery<Result> query = getEntityManager().createNamedQuery("Result.findByName", Result.class);
-        query.setParameter("choicedescriptor", choiceDescriptor);
+        query.setParameter("choicedescriptorId", choiceDescriptor.getId());
         query.setParameter("name", name);
         try {
             return query.getSingleResult();

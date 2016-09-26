@@ -473,7 +473,7 @@ YUI().use(function(Y) {
                 type: CSS
             },
             "wegas-cards-resizable": {
-                requires: ["base", "plugin", "wegas-cards-resizablecss", "wegas-plugin", "wegas-editable"],
+                requires: ["base", "event-resize", "plugin", "wegas-cards-resizablecss", "wegas-plugin", "wegas-editable"],
                 ws_provides: "CardsResizable"
             },
             "wegas-cardcss": {
@@ -776,6 +776,8 @@ YUI().use(function(Y) {
                 requires: [
                     "promise",
                     "font-awesome",
+                    "overlay",
+                    "widget-stdmod",
                     "wegas-card",
                     'wegas-cards-resizable',
                     "wegas-modal",
@@ -1027,7 +1029,7 @@ YUI().use(function(Y) {
             },
             "font-awesome": {
                 type: CSS,
-                fullpath: "//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"
+                fullpath: "//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"
             },
             "chart-js": {
                 async: false,

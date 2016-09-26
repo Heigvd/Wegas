@@ -82,15 +82,34 @@ YUI.add('wegas-card-bloc', function(Y) {
                 this.get("formatter")(this.get("boundingBox"), this.get("value"));
             }
         },
+        bindUI: function() {
+            if (this.get("do")) {
+                var ctx = this;
+                this.get("boundingBox").on("click", function (event) {
+                    event.halt(true);
+                    event.ctx = ctx.get("ctx");
+                    ctx.get("do")(event, ctx.get("value"));
+                }, this.get("ctx"));
+            }
+        },
         syncUI: function() {
-            this.get("contentBox").setContent(this.get("value"));
+            if (this.get("icon")){
+                this.get("contentBox").setContent(this.get("icon"));
+            } else {
+                this.get("contentBox").setContent(this.get("value"));
+            }
             this.get("boundingBox").one(".bloc__label").setContent(this.get("label"));
         }
     }, {
         "ATTRS": {
             "label": {},
             "value": {},
-            "formatter": {}
+            "formatter": {},
+            "do": {},
+            "ctx": {},
+            "icon": {}
         }
     });
+}, 'V1.0', {
+    requires: ['node','event']
 });

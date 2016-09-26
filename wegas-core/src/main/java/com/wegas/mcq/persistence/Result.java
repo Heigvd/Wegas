@@ -42,7 +42,7 @@ import java.util.List;
         }
 )
 @NamedQueries({
-    @NamedQuery(name = "Result.findByName", query = "SELECT DISTINCT res FROM Result res WHERE res.choiceDescriptor=:choicedescriptor AND res.name LIKE :name")
+    @NamedQuery(name = "Result.findByName", query = "SELECT DISTINCT res FROM Result res WHERE res.choiceDescriptor.id=:choicedescriptorId AND res.name LIKE :name")
 })
 public class Result extends NamedEntity implements Searchable, Scripted, LabelledEntity {
 
@@ -78,16 +78,16 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     /**
      *
      */
-    @Column(length = 4096)
-    //@Basic(fetch = FetchType.LAZY) // CARE, lazy fetch on Basics has some trouble.
+    @Lob
+    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
     //@JsonView(Views.ExtendedI.class)
     private String answer;
 
     /**
      *
      */
-    @Column(length = 4096)
-    //@Basic(fetch = FetchType.LAZY) // CARE, lazy fetch on Basics has some trouble.
+    @Lob
+    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
     //@JsonView(Views.ExtendedI.class)
     private String ignorationAnswer;
 

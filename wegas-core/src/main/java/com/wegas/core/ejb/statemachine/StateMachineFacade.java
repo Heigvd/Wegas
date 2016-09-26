@@ -28,6 +28,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.persistence.TypedQuery;
 import javax.script.Invocable;
 import javax.script.ScriptException;
 import java.util.ArrayList;
@@ -131,7 +132,8 @@ public class StateMachineFacade {
     }
 
     private List<StateMachineDescriptor> getAllStateMachines(GameModel gameModel) {
-        return variableDescriptorFacade.findByClass(gameModel, StateMachineDescriptor.class);
+        final TypedQuery<StateMachineDescriptor> q = em.createNamedQuery("StateMachineDescriptor.findAllForGameModelId", StateMachineDescriptor.class);
+        return q.setParameter("gameModelId", gameModel.getId()).getResultList();
     }
 
     private void runForPlayer(Player player) throws WegasScriptException {

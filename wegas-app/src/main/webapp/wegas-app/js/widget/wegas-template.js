@@ -21,7 +21,7 @@ YUI.add("wegas-template", function(Y) {
      * @class
      * @constructor
      * @description  Display  Wegas variables instance (or/and descriptor) under
-     * specifique templates : text, title, box, fraction and valuebox.
+     * specific templates : text, title, box, fraction and valuebox.
      * It is also possible to create a custom template.
      */
     AbstractTemplate = Y.Base.create("wegas-template", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
@@ -42,7 +42,13 @@ YUI.add("wegas-template", function(Y) {
         },
         syncTemplate: function(payload) {
             var template = this.get("variable.evaluated");
-            if (template && template.getInstance().get("id") === payload.entity.get("id")) {
+            /*
+            ** Call syncUI() anyway if this is a custom template, i.e. a script with potentially undetectable
+            ** dependencies on the variable being updated.
+            ** Otherwise simply call syncUI() if the IDs of the variables match.
+            */
+            if (this.get("custom")
+                || (template && template.getInstance().get("id") === payload.entity.get("id"))) {
                 this.syncUI();
             }
         },
@@ -166,7 +172,7 @@ YUI.add("wegas-template", function(Y) {
             + ")</span></div>")
     });
     Wegas.NumberTemplate = Y.Base.create("wegas-template", AbstractTemplate, [], {
-        TEMPLATE: Micro.compile("<div class='wegas-template-text'><% if(this.label){ %><span><%= this.label %></  span><br/><% } %><span><%= this.value || '{value}' %></span></div>")
+        TEMPLATE: Micro.compile("<div class='wegas-template-text'><% if(this.label){ %><span><%= this.label %></span><br/><% } %><span><%= this.value || '{value}' %></span></div>")
     });
     Wegas.TitleTemplate = Y.Base.create("wegas-template", AbstractTemplate, [], {
         TEMPLATE: Micro.compile("<div class='wegas-template-title'><%= this.label || '{label}'%></div>")
