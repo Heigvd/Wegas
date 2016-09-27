@@ -112,7 +112,7 @@
 
 .wegas-review-widget .subtitle {
     font-size: 1.1em;
-    margin-top: 10px;
+    margin-top: 30px;
     font-weight: 600;
 }
 
@@ -236,8 +236,13 @@
     cursor: pointer;
 }
 
+.wegas-review-tabview .yui3-tab.unread {
+    font-weight: bold;
+}
+
+
 .wegas-review-orchestrator td.yui3-datatable-cell i:before {
-color: #6262A7;    
+    color: #6262A7;    
 }
 
 

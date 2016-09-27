@@ -863,7 +863,16 @@ YUI.add("wegas-review-widgets", function(Y) {
                 tab.loaded = false;
                 tab.review = review;
                 tab.reviewer = (i === 0);
+                this.updateUnreadStatus(tab);
                 this.tabView.add(tab);
+            }
+        },
+        updateUnreadStatus: function(tab) {
+            if ((tab.reviewer && tab.review.get("reviewState") === "DISPATCHED") ||
+                (!tab.reviewer && tab.review.get("reviewState") === "NOTIFIED")) {
+                tab.get("boundingBox").addClass("unread");
+            } else {
+                tab.get("boundingBox").removeClass("unread");
             }
         },
         updateReviews: function(pri) {
@@ -886,6 +895,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                     if (tab) {
                         if (tab.reviewWidget) {
                             tab.review = reviews[j];
+                            this.updateUnreadStatus(tab);
                             if (review.get("reviewState") !== tab.reviewWidget._status) {
                                 // Build new
                                 this.renderTab(tab);

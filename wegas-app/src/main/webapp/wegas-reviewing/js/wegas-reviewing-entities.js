@@ -88,6 +88,16 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                     index: 1
                 }
             },
+            includeEvicted: {
+                type: BOOLEAN,
+                value: false,
+                _inputex: {
+                    label: "Despatch to evicted",
+                    description: "Despatch reviews to users who didn't submit anything",
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
+                    index: 2
+                }
+            },
             defaultInstance: {
                 properties: {
                     "@class": {
