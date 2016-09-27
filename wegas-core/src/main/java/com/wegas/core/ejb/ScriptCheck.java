@@ -54,7 +54,7 @@ public class ScriptCheck {
      * @return Exception the exception found in script or null if none occured
      */
     public WegasScriptException validate(Script script, Player player, VariableDescriptor context) {
-        ScriptEngine engine = scriptFacade.instanciateEngine(player, script.getLanguage());
+        ScriptEngine engine = scriptFacade.instantiateEngine(player, script.getLanguage());
 
         return this.rollbackEval(engine, script, player.getId(), context);
 
