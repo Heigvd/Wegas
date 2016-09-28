@@ -260,7 +260,6 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
 
         // requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId());
         //getEntityManager().refresh(questionInstance);
-
         //requestFacade.getRequestManager().lock("MCQ-" + reply.getQuestionInstance().getId());
         // Verify if mutually exclusive replies must be cancelled:
         if (questionDescriptor.getCbx() && !questionDescriptor.getAllowMultipleReplies()) {
@@ -329,8 +328,25 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
             this.validateReply(player, reply);
         } catch (WegasRuntimeException e) {
             logger.error("CANCEL REPLY", e);
-            this.cancelReplyTransactional(player, reply.getId());
+            //this.cancelReplyTransactional(player, reply.getId());
+            this.cancelReplyTransactional(player, reply);
             throw e;
+        }
+        return reply;
+    }
+
+    /**
+     *
+     * @param player player who wants to cancel the reply
+     * @param reply  the reply to cancel
+     * @return reply being canceled
+     */
+    public Reply cancelReplyTransactional(Player player, Reply reply) {
+        Reply r = this.internalCancelReply(reply);
+        try {
+            scriptEvent.fire(player, "replyCancel", new ReplyValidate(r));// Throw an event
+        } catch (WegasRuntimeException e) {
+            // GOTCHA no eventManager is instantiated
         }
         return reply;
     }
