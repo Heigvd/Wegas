@@ -90,52 +90,6 @@ public class WebsocketFacade {
     private PlayerFacade playerFacade;
 
     /**
-     * Check if current user has access to type/id entity
-     *
-     * @param type
-     * @param id
-     * @param currentPlayer
-     * @return true if current user has access to
-     */
-    private boolean hasPermission(String type, Long id) {
-        if ("GameModel".equals(type)) {
-            return SecurityUtils.getSubject().isPermitted("GameModel:View:gm" + id);
-        } else if ("Game".equals(type)) {
-            Game game = gameFacade.find(id);
-            return game != null && SecurityHelper.isPermitted(game, "View");
-        } else if ("Team".equals(type)) {
-
-            Team team = teamFacade.find(id);
-            User user = userFacade.getCurrentUser();
-
-            // Current logged User is linked to a player who's member of the team or current user has edit right one the game
-            return team != null && (playerFacade.checkExistingPlayerInTeam(team.getId(), user.getId()) != null || SecurityHelper.isPermitted(team.getGame(), "Edit"));
-        } else if ("Player".equals(type)) {
-            User user = userFacade.getCurrentUser();
-            Player player = playerFacade.find(id);
-
-            return player != null && (player.getUser().equals(user) || SecurityHelper.isPermitted(player.getGame(), "Edit"));
-        }
-        return false;
-    }
-
-    /**
-     * can current user subscribe to given channel ?
-     *
-     * @param channel
-     * @param currentPlayer
-     * @return true if access granted
-     */
-    public boolean hasPermission(String channel) {
-        String[] split = channel.split("-");
-        if (split.length != 2) {
-            return false;
-        } else {
-            return hasPermission(split[0], Long.parseLong(split[1]));
-        }
-    }
-
-    /**
      * Get all channels based on entites
      *
      * @param entities

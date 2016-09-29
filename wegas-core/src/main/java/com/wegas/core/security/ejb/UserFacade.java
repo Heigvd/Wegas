@@ -11,11 +11,13 @@ import com.wegas.core.Helper;
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.Email;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.guest.GuestToken;
@@ -24,6 +26,7 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.util.SecurityHelper;
 import com.wegas.messaging.ejb.EMailFacade;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.crypto.RandomNumberGenerator;
@@ -69,6 +72,12 @@ public class UserFacade extends BaseFacade<User> {
      */
     @EJB
     private PlayerFacade playerFacade;
+
+    /**
+     *
+     */
+    @EJB
+    private TeamFacade teamFacade;
 
     /**
      *
@@ -722,6 +731,52 @@ public class UserFacade extends BaseFacade<User> {
         User u = this.find(uId);
         Role r = roleFacade.find(rId);
         this.addRole(u, r);
+    }
+
+    /**
+     * Check if current user has access to type/id entity
+     *
+     * @param type
+     * @param id
+     * @param currentPlayer
+     * @return true if current user has access to
+     */
+    private boolean hasPermission(String type, Long id) {
+        if ("GameModel".equals(type)) {
+            return SecurityUtils.getSubject().isPermitted("GameModel:View:gm" + id);
+        } else if ("Game".equals(type)) {
+            Game game = gameFacade.find(id);
+            return game != null && SecurityHelper.isPermitted(game, "View");
+        } else if ("Team".equals(type)) {
+
+            Team team = teamFacade.find(id);
+            User user = this.getCurrentUser();
+
+            // Current logged User is linked to a player who's member of the team or current user has edit right one the game
+            return team != null && (playerFacade.checkExistingPlayerInTeam(team.getId(), user.getId()) != null || SecurityHelper.isPermitted(team.getGame(), "Edit"));
+        } else if ("Player".equals(type)) {
+            User user = this.getCurrentUser();
+            Player player = playerFacade.find(id);
+
+            return player != null && (player.getUser().equals(user) || SecurityHelper.isPermitted(player.getGame(), "Edit"));
+        }
+        return false;
+    }
+
+    /**
+     * can current user subscribe to given channel ?
+     *
+     * @param channel
+     * @param currentPlayer
+     * @return true if access granted
+     */
+    public boolean hasPermission(String channel) {
+        String[] split = channel.split("-");
+        if (split.length != 2) {
+            return false;
+        } else {
+            return hasPermission(split[0], Long.parseLong(split[1]));
+        }
     }
 
     /**

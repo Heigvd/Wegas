@@ -26,6 +26,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.UnauthorizedException;
+import org.eclipse.persistence.internal.helper.Helper;
 
 /**
  *
@@ -92,6 +93,20 @@ public class VariableInstanceController {
     public Collection<VariableInstance> getAll(@PathParam("gameModelId") Long gameModelId, @PathParam("playerId") Long playerId) {
         SecurityHelper.checkPermission(playerFacade.find(playerId).getGame(), "View");
         return playerFacade.getInstances(playerId);
+    }
+
+    @POST
+    @Path("ByIds")
+    public Collection<VariableInstance> getByIds(@PathParam("gameModelId") Long gameModelId, List<Long> ids) {
+        Collection<VariableInstance> instances = new ArrayList<>();
+        for (Long id : ids) {
+            VariableInstance instance = variableInstanceFacade.find(id);
+
+            if (userFacade.hasPermission(instance.getAudience())) {
+                instances.add(instance);
+            }
+        }
+        return instances;
     }
 
     /**

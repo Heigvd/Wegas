@@ -7,7 +7,6 @@
  */
 package com.wegas.core.rest.util;
 
-import com.wegas.core.Helper;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.WebsocketFacade;
@@ -16,12 +15,12 @@ import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasWrappedException;
 import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.security.ejb.UserFacade;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.naming.NamingException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
@@ -31,16 +30,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
-import javax.transaction.Status;
-import javax.transaction.TransactionManager;
+import javax.ejb.EJB;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Provider
+//@Stateless
 public class ManagedModeResponseFilter implements ContainerResponseFilter {
 
     private final static Logger logger = LoggerFactory.getLogger(ManagedModeResponseFilter.class);
+
+    @EJB
+    private WebsocketFacade websocketFacade;
+
+    @EJB
+    private UserFacade userFacade;
 
     /**
      * This method encapsulates a Jersey response's entities in a ServerResponse
@@ -131,13 +136,12 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
 
             if (!rollbacked && !(updatedEntitiesMap.isEmpty() && destroyedEntitiesMap.isEmpty() && outdatedEntitiesMap.isEmpty())) {
                 try {
-                    WebsocketFacade websocketFacade = Helper.lookupBy(WebsocketFacade.class, WebsocketFacade.class);
                     /*
                      * Merge updatedInstance within ManagedResponse entities
                      */
                     for (Entry<String, List<AbstractEntity>> entry : updatedEntitiesMap.entrySet()) {
                         String audience = entry.getKey();
-                        if (websocketFacade.hasPermission(audience)) {
+                        if (userFacade.hasPermission(audience)) {
                             for (AbstractEntity ae : entry.getValue()) {
                                 if (!updatedEntities.contains(ae)) {
                                     updatedEntities.add(ae);
@@ -150,7 +154,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                      */
                     for (Entry<String, List<AbstractEntity>> entry : destroyedEntitiesMap.entrySet()) {
                         String audience = entry.getKey();
-                        if (websocketFacade.hasPermission(audience)) {
+                        if (userFacade.hasPermission(audience)) {
                             for (AbstractEntity ae : entry.getValue()) {
                                 if (!deletedEntities.contains(ae)) {
                                     deletedEntities.add(ae);
@@ -169,7 +173,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
 
                     websocketFacade.onRequestCommit(updatedEntitiesMap, destroyedEntitiesMap, outdatedEntitiesMap,
                             (managedMode.matches("^[\\d\\.]+$") ? managedMode : null));
-                } catch (NamingException | NoPlayerException ex) {
+                } catch (NoPlayerException ex) {
                     java.util.logging.Logger.getLogger(ManagedModeResponseFilter.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }

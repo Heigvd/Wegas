@@ -241,6 +241,25 @@ font {
     font-size: 1.3em;
 }
 
+
+.wegas-advancedmode .wegas-loading.pusher-update .wegas-loading-overlay {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.wegas-advancedmode .wegas-loading.pusher-update .wegas-loading-overlay:before {
+    content: "Data update through websocket";
+    margin-left: -7.5em;
+    font-weight: 900;
+    font-size: 1.5em;
+}
+
+.wegas-advancedmode .wegas-loading.pusher-update .wegas-loading-overlay:before, 
+.wegas-advancedmode .wegas-loading.pusher-update .wegas-loading-overlay:after {
+    color: #4d6673;
+    text-shadow: 0 0 1px #2c3236;
+    opacity: 1;
+}
+
 .wegas-loading-overlay.wegas-loading-long:after {
     opacity: 1;
 }
