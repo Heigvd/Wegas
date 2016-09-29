@@ -38,17 +38,20 @@ YUI.add("wegas-template", function(Y) {
         },
         bindUI: function() {
             this.after(["dataChange", "variableChange"], this.syncUI);
-            this.vdUpdateHandler = Wegas.Facade.Instance.after("updatedInstance", this.syncTemplate, this);
+            if (this.get("custom")) {
+                this.vdUpdateHandler = Wegas.Facade.Instance.after("update", this.syncUI, this);
+            } else {
+                this.vdUpdateHandler = Wegas.Facade.Instance.after("updatedInstance", this.syncTemplate, this);
+            }
         },
         syncTemplate: function(payload) {
             var template = this.get("variable.evaluated");
             /*
-            ** Call syncUI() anyway if this is a custom template, i.e. a script with potentially undetectable
-            ** dependencies on the variable being updated.
-            ** Otherwise simply call syncUI() if the IDs of the variables match.
-            */
-            if (this.get("custom")
-                || (template && template.getInstance().get("id") === payload.entity.get("id"))) {
+             ** Call syncUI() anyway if this is a custom template, i.e. a script with potentially undetectable
+             ** dependencies on the variable being updated.
+             ** Otherwise simply call syncUI() if the IDs of the variables match.
+             */
+            if (template && template.getInstance().get("id") === payload.entity.get("id")) {
                 this.syncUI();
             }
         },
@@ -74,7 +77,7 @@ YUI.add("wegas-template", function(Y) {
                 if (initialData.label) {
                     initialData.label = Y.Template.Micro.compile(initialData.label || "")();
                 }
-                if (data.value === undefined){
+                if (data.value === undefined) {
                     data.value = this.undefinedToEmpty(desc.getInstance().get("value"));
                 }
                 data.maxValue = this.undefinedToEmpty(desc.get("maxValue"));
