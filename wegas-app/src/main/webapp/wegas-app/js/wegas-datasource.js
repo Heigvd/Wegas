@@ -300,7 +300,7 @@ YUI.add('wegas-datasource', function(Y) {
                 for (i = 0; i < entities.length; i += 1) { // Update the cache with the entities contained in the reply
                     //this.updated = this.updateCache(POST, entities[i]) || this.updated;
                     ds = this.updateCache(POST, entities[i]);
-                    if (ds) {
+                    if (updatedDs.indexOf(ds) < 0) {
                         updatedDs.push(ds);
                     }
                 }
@@ -398,7 +398,7 @@ YUI.add('wegas-datasource', function(Y) {
                             if (Lang.isObject(entity)) {
                                 //method = e.cfg && e.cfg.method ? e.cfg.method : "POST";
                                 ds = this.updateCache(DELETE, entity, !e.cfg || !e.cfg.initialRequest);
-                                if (ds) {
+                                if (updatedDs.indexOf(ds) < 0) {
                                     updatedDs.push(ds);
                                 }
                             }
@@ -410,7 +410,7 @@ YUI.add('wegas-datasource', function(Y) {
                             entity = response.get("updatedEntities")[i];
                             if (Lang.isObject(entity)) {
                                 ds = this.updateCache(POST, entity, !e.cfg || !e.cfg.initialRequest);
-                                if (ds) {
+                                if (updatedDs.indexOf(ds) < 0) {
                                     updatedDs.push(ds);
                                 }
                             }
