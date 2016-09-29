@@ -12,7 +12,7 @@ import javax.ws.rs.core.MediaType;
 /**
  * Created by jarle.hulaas@heig-vd.ch on 27.09.2016.
  *
- * No access control is implemented! Requests should be limited to the set of hosts used for monitoring.
+ * No access control is implemented! Requests should be limited to a set of hosts allowed to monitor.
  */
 
 @Stateless
@@ -22,7 +22,7 @@ public class JvmStats {
 
     private static final long serialVersionUID = 1627669174708657566L;
 
-    public static String
+    public static final String
         HEAP_USED_INIT = "HEAP_USED_INIT_BYTES",
         HEAP_USED_MAX = "HEAP_USED_MAX_BYTES",
         HEAP_USED_COMMITTED = "HEAP_USED_COMMITTED_BYTES",
@@ -58,12 +58,11 @@ public class JvmStats {
     ** @return JSON structure with heterogeneous values.
     */
     @GET
-    @Path("oldGenHeapState")
-    public Map oldGenHeapState() {
-        //long startTime = System.nanoTime();
+    @Path("oldGenHeap")
+    public Map oldGenHeap() {
+        long startTime = System.nanoTime();
         Map map = new HashMap<String,Object>();
         MemoryUsage heapUsed = findOldGenPool().getUsage();
-        map.putAll(gcState());
         map.put(OLDGEN_USAGE_THRESHOLD, oldGenPool.getUsageThreshold());
         map.put(OLDGEN_USAGE_THRESHOLD_CNT, oldGenPool.getUsageThresholdCount());
         map.put(OLDGEN_USAGE_THRESHOLD_EXCEEDED, oldGenPool.isUsageThresholdExceeded());
@@ -71,7 +70,8 @@ public class JvmStats {
         map.put(OLDGEN_USED_COMMITTED, heapUsed.getCommitted());
         map.put(OLDGEN_USED_INIT, heapUsed.getInit());
         map.put(OLDGEN_USED_MAX, heapUsed.getMax());
-        //map.put(STATS_EXEC_TIME_NANO, System.nanoTime() - startTime); // 1 millisecond = 1E6 nanoseconds
+        map.putAll(gc());
+        map.put(STATS_EXEC_TIME_NANO, System.nanoTime() - startTime); // 1 millisecond = 1E6 nanoseconds
         return map;
     }
 
@@ -80,15 +80,13 @@ public class JvmStats {
     ** @param threshold the new collection usage threshold value in bytes.
     **        Must be non-negative and less than (or equal to) current max pool size.
     **        The usage threshold crossing checking is disabled if set to zero.
-    ** @return resulting JSON structure from method {@link #oldGenHeapState oldGenHeapState}.
+    ** @return resulting JSON structure from method {@link #oldGenHeap oldGenHeap}.
     */
     @GET
     @Path("setUsageThreshold/{threshold : [0-9]*}")
     public Map setUsageThreshold (@PathParam("threshold") Long threshold) {
-        if (threshold>=0) {
-            findOldGenPool().setUsageThreshold(threshold);
-        }
-        return oldGenHeapState();
+        findOldGenPool().setUsageThreshold(threshold);
+        return oldGenHeap();
     }
 
     /*
@@ -97,8 +95,8 @@ public class JvmStats {
     ** @return JSON structure with heterogeneous values.
     */
     @GET
-    @Path("globalHeapState")
-    public Map globalHeapState() {
+    @Path("globalHeap")
+    public Map globalHeap() {
         Map map = new HashMap<String,Object>();
         MemoryMXBean memory = ManagementFactory.getMemoryMXBean();
         MemoryUsage heapUsed = memory.getHeapMemoryUsage();
@@ -106,7 +104,7 @@ public class JvmStats {
         map.put(HEAP_USED_MAX, heapUsed.getMax());
         map.put(HEAP_USED_COMMITTED, heapUsed.getCommitted());
         map.put(HEAP_USED, heapUsed.getUsed());
-        map.putAll(gcState());
+        map.putAll(gc());
         return map;
     }
 
@@ -116,8 +114,8 @@ public class JvmStats {
     ** @return JSON structure with heterogeneous values.
     */
     @GET
-    @Path("gcState")
-    public Map gcState() {
+    @Path("gc")
+    public Map gc() {
         Map map = new HashMap<String,Object>();
         long gcCount = 0;
         long gcTime = 0;
@@ -138,8 +136,8 @@ public class JvmStats {
     ** @return JSON structure with heterogeneous values.
     */
     @GET
-    @Path("nonHeapState")
-    public Map nonHeapState() {
+    @Path("nonHeap")
+    public Map nonHeap() {
         Map map = new HashMap<String,Object>();
         MemoryMXBean memory = ManagementFactory.getMemoryMXBean();
         MemoryUsage nonheapUsed = memory.getNonHeapMemoryUsage();
@@ -156,8 +154,8 @@ public class JvmStats {
     ** @return JSON structure with heterogeneous values.
     */
     @GET
-    @Path("threadState")
-    public Map threadState() {
+    @Path("threads")
+    public Map threads() {
         ThreadMXBean threads = ManagementFactory.getThreadMXBean();
         Map map = new HashMap<String,Object>();
         map.put(THREAD_CNT, threads.getThreadCount());
@@ -173,8 +171,8 @@ public class JvmStats {
     ** @return JSON structure with heterogeneous values.
     */
     @GET
-    @Path("classLoaderState")
-    public Map classLoaderState() {
+    @Path("classLoader")
+    public Map classLoader() {
         ClassLoadingMXBean classes = ManagementFactory.getClassLoadingMXBean();
         Map map = new HashMap<String,Object>();
         map.put(LOADED_CLASS_CNT, classes.getLoadedClassCount());
