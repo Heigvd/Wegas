@@ -9,7 +9,7 @@ angular
                 close: "&"
             },
             templateUrl: 'app/private/profile/directives.tmpl/index.html',
-            controller: function($scope, $stateParams, $sce, $translate, $rootScope, Auth, Flash) {
+            controller: function($scope, $stateParams, $sce, $translate, $rootScope, Auth, Flash, $timeout) {
                 var ctrl = this;
                 $scope.user = {};
                 $scope.originalUser = false;
@@ -20,6 +20,7 @@ angular
                                 response.flash();
                             } else {
                                 $scope.user = response.data;
+                                $scope.oldUsername = $scope.user.account.username;
                                 if ($scope.originalUser === false) {
                                     $scope.originalUsername = $scope.user.account.firstname + ' ' + $scope.user.account.lastname;
                                 }
@@ -39,7 +40,15 @@ angular
                         $scope.user.password2 = '';
 
                         if (!response || !response.isErroneous()) {
-                            $scope.close();
+                            if ($scope.oldUsername !== $scope.user.account.username){
+                                // Make sure the username is updated everywhere on the screen:
+                                $scope.close();
+                                $timeout(function() {
+                                    location.reload();
+                                },500);
+                            } else {
+                                $scope.close();
+                            }
                         }
                     });
                 };
