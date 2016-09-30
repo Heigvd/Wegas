@@ -198,6 +198,7 @@ public class ReviewingFacade {
         Collection<VariableInstance> values = scope.getVariableInstances().values();
         List<PeerReviewInstance> pris = new ArrayList(values);
         List<PeerReviewInstance> touched = new ArrayList<>();
+        List<PeerReviewInstance> evicted = new ArrayList<>();
 
         if (scope instanceof GameModelScope || scope instanceof GameScope) {
             throw WegasErrorMessage.error("Invalid Scope for PeerReview descriptor. GameScope or GameModelScope does not make any sense for this kind of data");
@@ -262,6 +263,7 @@ public class ReviewingFacade {
                         pri.setReviewState(PeerReviewDescriptor.ReviewingState.EVICTED);
                         variableInstanceFacade.merge(pri);
                         touched.add(pri);
+                        evicted.add(pri);
                         it.remove();
                     }
                 } catch (NoPlayerException ex) {
@@ -293,6 +295,18 @@ public class ReviewingFacade {
                 touched.add(author);
             }
         }
+
+        if (prd.getIncludeEvicted()) {
+            // Give some work even to users who didn't do their job
+            for (PeerReviewInstance reviewer : evicted) {
+                for (j = 0; j < numberOfReview; j++) {
+                    // NOTE : such an author will have some extra feedback !
+                    PeerReviewInstance author = pris.get(j % pris.size());
+                    Review r = createReview(prd, author, reviewer);
+                }
+            }
+        }
+
         /*for (PeerReviewInstance pri : pris) {
             variableInstanceFacade.merge(pri);
             em.flush();
@@ -431,7 +445,9 @@ public class ReviewingFacade {
                 }
             }
             touched.add(pri);
-            pri.setReviewState(PeerReviewDescriptor.ReviewingState.NOTIFIED);
+            if (pri.getReviewState() != PeerReviewDescriptor.ReviewingState.EVICTED) {
+                pri.setReviewState(PeerReviewDescriptor.ReviewingState.NOTIFIED);
+            }
             //variableInstanceFacade.merge(pri);
             //requestManager.addUpdatedInstance(pri);
         }
@@ -468,7 +484,9 @@ public class ReviewingFacade {
                     review.setReviewState(Review.ReviewState.CLOSED);
                 }
             }
-            pri.setReviewState(PeerReviewDescriptor.ReviewingState.COMPLETED);
+            if (pri.getReviewState() != PeerReviewDescriptor.ReviewingState.EVICTED) {
+                pri.setReviewState(PeerReviewDescriptor.ReviewingState.COMPLETED);
+            }
             touched.add(pri);
             //variableInstanceFacade.merge(pri);
             //requestManager.addUpdatedInstance(pri);

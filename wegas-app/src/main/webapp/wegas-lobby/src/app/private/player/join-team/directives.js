@@ -134,7 +134,7 @@ angular.module('private.player.join.directives', [])
             }
         };
     })
-    .directive('playerSessionAddTeam', function() {
+    .directive('playerSessionAddTeam', function($translate, Flash) {
         "use strict";
         return {
             templateUrl: 'app/private/player/join-team/directives.tmpl/add-team.html',
@@ -163,6 +163,16 @@ angular.module('private.player.join.directives', [])
                         scope.createTeam().then(function() {
                             button.removeClass("button--disable button--spinner button--rotate");
                         });
+                    } else {
+                        // The name or the size have not been specified by the user:
+                        if (scope.newTeam.name === "" || scope.newTeam.alreadyUsed)
+                            $translate('PLAYER-MODALE-JOIN-TEAM-CREATE-INPUT-MESSAGE').then(function(message) {
+                                Flash.danger(message);
+                            });
+                        else if (!scope.newTeam.validSize)
+                            $translate('PLAYER-MODALE-JOIN-TEAM-CREATE-SIZE-MESSAGE').then(function(message) {
+                                Flash.danger(message);
+                            });
                     }
                 };
             }

@@ -8,7 +8,7 @@
 package com.wegas.core.rest.exception;
 
 import com.wegas.core.exception.client.WegasConflictException;
-import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.exception.client.WegasUniqueConstraintException;
 import javax.ejb.EJBException;
 import javax.enterprise.event.ObserverException;
 import javax.persistence.OptimisticLockException;
@@ -18,12 +18,15 @@ import javax.transaction.TransactionRolledbackException;
 import javax.ws.rs.core.Response;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
+import org.postgresql.util.PSQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
+
+
 public abstract class AbstractExceptionMapper {
 
     final static private Logger logger = LoggerFactory.getLogger(AbstractExceptionMapper.class);
@@ -43,9 +46,7 @@ public abstract class AbstractExceptionMapper {
             logger.error("Try to update outated: " + ex.getEntity());
 
             return Response.status(Response.Status.CONFLICT).entity(new WegasConflictException(exception)).build();
-        } else if (exception instanceof RollbackException //) {
-                //return Response.status(Response.Status.FORBIDDEN).entity(exception).build();
-                //} else if (
+        } else if (exception instanceof RollbackException
                 || exception instanceof TransactionRolledbackException
                 || exception instanceof ObserverException
                 || exception instanceof PersistenceException
@@ -56,6 +57,13 @@ public abstract class AbstractExceptionMapper {
         } else if (exception instanceof EJBException) {
             return processException(((EJBException) exception).getCausedByException());
 
+        } else if (exception instanceof PSQLException) {
+            PSQLException pex = (PSQLException) exception;
+            if (pex.getSQLState().equals("23505")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(new WegasUniqueConstraintException(pex)).build();
+            } else {
+                return Response.status(Response.Status.BAD_REQUEST).entity(pex).build();
+            }
         } else if (exception instanceof DatabaseException) {
             DatabaseException dbe = (DatabaseException) exception;
             return processException(dbe.getInternalException());

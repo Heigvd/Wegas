@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.resourceManagement.ejb.ResourceFacade;
 
 /**
  *
@@ -49,7 +50,6 @@ public class Activity extends AbstractAssignement /*implements Broadcastable */ 
      */
     @Column(name = "stime")
     private double sTime;
-
 
     /**
      *
@@ -101,8 +101,9 @@ public class Activity extends AbstractAssignement /*implements Broadcastable */ 
     /**
      *
      * @param taskDescriptor public Activity(TaskDescriptor taskDescriptor) {
-     * this.taskDescriptor = taskDescriptor; this.time = 0D; this.completion =
-     * 0.0D; this.description = ""; this.requirement = null; }
+     *                       this.taskDescriptor = taskDescriptor; this.time =
+     *                       0D; this.completion = 0.0D; this.description = "";
+     *                       this.requirement = null; }
      */
     /**
      *
@@ -158,7 +159,7 @@ public class Activity extends AbstractAssignement /*implements Broadcastable */ 
     }
 
     /**
-     * @return the time 
+     * @return the time
      */
     public double getTime() {
         return time;
@@ -172,7 +173,7 @@ public class Activity extends AbstractAssignement /*implements Broadcastable */ 
     }
 
     /**
-     * 
+     *
      * @return the start time (Period.Step)
      */
     public double getStartTime() {
@@ -181,7 +182,8 @@ public class Activity extends AbstractAssignement /*implements Broadcastable */ 
 
     /**
      * Set startTime
-     * @param sTime 
+     *
+     * @param sTime
      */
     public void setStartTime(double sTime) {
         this.sTime = sTime;
@@ -277,7 +279,10 @@ public class Activity extends AbstractAssignement /*implements Broadcastable */ 
             if (taskInstance != null) {
                 taskInstance = ((TaskInstance) VariableInstanceFacade.lookup().find(taskInstance.getId()));
                 if (taskInstance != null) {
-                    theReq = taskInstance.getRequirementById(theReq.getId());
+
+                    theReq = ResourceFacade.lookup().findRequirement(theReq.getId());
+
+                    //theReq = taskInstance.getRequirementById(theReq.getId());
                     if (theReq != null) {
                         theReq.removeActivity(this);
                     }

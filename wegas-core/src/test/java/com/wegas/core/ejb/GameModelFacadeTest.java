@@ -22,6 +22,7 @@ import java.util.function.Function;
 public class GameModelFacadeTest extends AbstractEJBTest {
 
     private static final Logger logger = LoggerFactory.getLogger(GameModelFacadeTest.class);
+    private int nbFail = 0;
 
     @Test
     public void createGameModels() throws NamingException {
@@ -96,7 +97,14 @@ public class GameModelFacadeTest extends AbstractEJBTest {
     }
 
     @Test
-    public void createMultipleTeam() throws NamingException, InterruptedException {
+    public void createMultipleTeam_threaded() throws NamingException, InterruptedException {
+
+        nbFail = 0;
+
+        Thread.UncaughtExceptionHandler handler = (Thread t, Throwable e) -> {
+            nbFail++;
+        };
+
         GameFacade gf = lookupBy(GameFacade.class);
         final TeamFacade teamFacade = lookupBy(TeamFacade.class);
 
@@ -112,11 +120,44 @@ public class GameModelFacadeTest extends AbstractEJBTest {
         t1.setName("test-team");
         t2.setName("test-team");
         final Function<Team, Runnable> runCreateTeam = (Team team) -> () -> teamFacade.create(g.getId(), team);
-        final Thread thread1 = TestHelper.start(runCreateTeam.apply(t1));
-        final Thread thread2 = TestHelper.start(runCreateTeam.apply(t2));
+
+        final Thread thread1 = TestHelper.start(runCreateTeam.apply(t1), handler);
+        final Thread thread2 = TestHelper.start(runCreateTeam.apply(t2), handler);
         thread1.join();
         thread2.join();
-        Assert.assertFalse(t1.getName().equals(t2.getName()));
+        Assert.assertEquals(1, nbFail);
+        //Assert.assertFalse(t1.getName().equals(t2.getName()));
+        Assert.assertEquals(size + 1, gameModelFacade.findAll().size());
+
+        gameModelFacade.remove(gameModel.getId());
+        Assert.assertEquals(size, gameModelFacade.findAll().size());
+    }
+
+    @Test
+    public void createMultipleTeam_seq() throws NamingException, InterruptedException {
+        GameFacade gf = lookupBy(GameFacade.class);
+        final TeamFacade teamFacade = lookupBy(TeamFacade.class);
+
+        final int size = gameModelFacade.findAll().size();
+
+        GameModel gameModel = new GameModel("TESTGM");
+        gameModelFacade.create(gameModel);
+
+        Game g = new Game("TESTGAME", "xxx");
+        gf.create(gameModel.getId(), g);
+        Team t1 = new Team();
+        Team t2 = new Team();
+        t1.setName("test-team");
+        t2.setName("test-team");
+
+        try {
+            teamFacade.create(g.getId(), t1);
+
+            teamFacade.create(g.getId(), t1);
+        } catch (Exception e) {
+            System.out.println("ERROR: " + e);
+        }
+
         Assert.assertEquals(size + 1, gameModelFacade.findAll().size());
 
         gameModelFacade.remove(gameModel.getId());

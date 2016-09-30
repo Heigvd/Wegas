@@ -90,7 +90,7 @@ public class ScriptFacade {
     @Inject
     Event<EngineInvocationEvent> engineInvocationEvent;
 
-    public ScriptEngine instanciateEngine(Player player, String language) {
+    public ScriptEngine instantiateEngine(Player player, String language) {
         ScriptEngine engine = requestManager.getCurrentEngine();
         if (engine == null) {
             ScriptEngineManager mgr = new ScriptEngineManager();                // Instantiate the corresponding script engine
@@ -126,7 +126,7 @@ public class ScriptFacade {
         if (script == null) {
             return null;
         }
-        ScriptEngine engine = instanciateEngine(requestManager.getPlayer(), script.getLanguage());
+        ScriptEngine engine = instantiateEngine(requestManager.getPlayer(), script.getLanguage());
 
         for (Entry<String, AbstractEntity> arg : arguments.entrySet()) {        // Inject the arguments
             engine.put(arg.getKey(), arg.getValue());
