@@ -10,27 +10,20 @@ package com.wegas.core.ejb;
 import com.wegas.core.event.internal.DelayedEventPayload;
 import com.wegas.core.event.internal.PlayerAction;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.Resource;
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Singleton;
-import javax.ejb.Timeout;
-import javax.ejb.Timer;
-import javax.ejb.TimerService;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Resource;
+import javax.ejb.*;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
 /**
- *
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
 @Singleton
@@ -75,11 +68,7 @@ public class DelayedScriptEventFacade {
             Map<String, List<AbstractEntity>> outdatedEntities = requestFacade.getOutdatedEntities();
 
             if (!(updatedEntities.isEmpty() && destroyedEntities.isEmpty() && outdatedEntities.isEmpty())) {
-                try {
-                    websocketFacade.onRequestCommit(updatedEntities, destroyedEntities, outdatedEntities, null);
-                } catch (NoPlayerException ex) {
-                    logger.error("This shall never happen");
-                }
+                websocketFacade.onRequestCommit(updatedEntities, destroyedEntities, outdatedEntities, null);
             }
         } else {
             logger.error("UNREADABLE INFO");
@@ -87,7 +76,6 @@ public class DelayedScriptEventFacade {
     }
 
     /**
-     *
      * @param minutes
      * @param seconds   [s]
      * @param eventName event to fire
