@@ -7,6 +7,7 @@
  */
 package com.wegas.resourceManagement.ejb;
 
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.ScriptEventFacade;
@@ -31,6 +32,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -112,6 +114,10 @@ public class ResourceFacade {
      */
     public Assignment findAssignment(Long id) {
         return getEntityManager().find(Assignment.class, id);
+    }
+
+    public WRequirement findRequirement(Long id) {
+        return getEntityManager().find(WRequirement.class, id);
     }
 
     /**
@@ -406,6 +412,18 @@ public class ResourceFacade {
                 Long level = (Long) skills.values().toArray()[0];
                 ri.setProperty("level", level.toString());
             }
+        }
+    }
+
+    /**
+     * @return Looked-up EJB
+     */
+    public static ResourceFacade lookup() {
+        try {
+            return Helper.lookupBy(ResourceFacade.class);
+        } catch (NamingException ex) {
+            logger.error("Error retrieving var inst f", ex);
+            return null;
         }
     }
 }
