@@ -7,6 +7,8 @@
  */
 package com.wegas.core.rest.exception;
 
+import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.exception.client.WegasUniqueConstraintException;
 import javax.ejb.EJBException;
 import javax.enterprise.event.ObserverException;
 import javax.persistence.PersistenceException;
@@ -15,6 +17,7 @@ import javax.transaction.TransactionRolledbackException;
 import javax.ws.rs.core.Response;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
+import org.postgresql.util.PSQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,9 +38,8 @@ public abstract class AbstractExceptionMapper {
     public static Response processException(Throwable exception) {
         logger.warn("ProcessException: " + exception);
 
-        if (exception instanceof RollbackException) {
-            return Response.status(Response.Status.FORBIDDEN).entity(exception).build();
-        } else if (exception instanceof TransactionRolledbackException
+        if (exception instanceof RollbackException
+                || exception instanceof TransactionRolledbackException
                 || exception instanceof ObserverException
                 || exception instanceof PersistenceException
                 //                || exception instanceof javax.persistence.PersistenceException
@@ -47,6 +49,13 @@ public abstract class AbstractExceptionMapper {
         } else if (exception instanceof EJBException) {
             return processException(((EJBException) exception).getCausedByException());
 
+        } else if (exception instanceof PSQLException) {
+            PSQLException pex = (PSQLException) exception;
+            if (pex.getSQLState().equals("23505")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(new WegasUniqueConstraintException(pex)).build();
+            } else {
+                return Response.status(Response.Status.BAD_REQUEST).entity(pex).build();
+            }
         } else if (exception instanceof DatabaseException) {
             DatabaseException dbe = (DatabaseException) exception;
             return processException(dbe.getInternalException());

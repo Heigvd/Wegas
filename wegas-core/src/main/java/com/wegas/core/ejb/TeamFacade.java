@@ -46,10 +46,8 @@ public class TeamFacade extends BaseFacade<Team> {
 
     /**
      *
+     * @EJB private TeamSingleton teamSingleton;
      */
-    @EJB
-    private TeamSingleton teamSingleton;
-
     /**
      *
      */
@@ -104,10 +102,8 @@ public class TeamFacade extends BaseFacade<Team> {
             //&& t.getName() == null ) {
             t.setName(((GameAccount) userFacade.getCurrentUser().getMainAccount()).getEmail());
         }
-//        g.addTeam(t);
-        teamSingleton.persistTeam(g, t);
+        g.addTeam(t);
         g = gameFacade.find(gameId);
-        t = this.find(t.getId());
         gameFacade.addRights(userFacade.getCurrentUser(), g);  // @fixme Should only be done for a player, but is done here since it will be needed in later requests to add a player
         g.getGameModel().propagateDefaultInstance(t);
 

@@ -68,7 +68,8 @@ public class PlayerFacade extends BaseFacade<Player> {
      * @param user
      */
     public void create(final Team team, final User user) {
-        gameFacade.joinTeam(getEntityManager().find(Team.class, team.getId()), user);
+        //gameFacade.joinTeam(getEntityManager().find(Team.class, team.getId()), user);
+        gameFacade.joinTeam(team, user);
     }
 
     /**

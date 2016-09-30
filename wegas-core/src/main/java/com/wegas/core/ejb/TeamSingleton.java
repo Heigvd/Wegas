@@ -23,8 +23,9 @@ import javax.persistence.TypedQuery;
 /**
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
-@Singleton
-@LocalBean
+//@Singleton
+//@LocalBean
+@Deprecated
 public class TeamSingleton {
 
     @PersistenceContext(unitName = "wegasPU")
@@ -56,8 +57,8 @@ public class TeamSingleton {
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public Team persistTeam(Game game, Team team) {
         game = em.find(Game.class, game.getId());
-        final String baseName =
-                team.getName() == null || team.getName().isEmpty()
+        final String baseName
+                = team.getName() == null || team.getName().isEmpty()
                         ? team.getGame().getShortName()
                         : team.getName();
         int suffix = 1;

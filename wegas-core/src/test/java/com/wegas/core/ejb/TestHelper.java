@@ -37,13 +37,11 @@ public class TestHelper {
 
     private final static Logger logger = LoggerFactory.getLogger(TestHelper.class);
 
-
     private static EJBContainer container = null;
 
     private static final String DB_CON = "jdbc:postgresql://localhost:5432/wegas_test";
 
     private static final String USER = "user";
-
 
     private static final String PASSWORD = "1234";
 
@@ -70,20 +68,20 @@ public class TestHelper {
     private static void emptyDBTables() {
 
         try (Connection connection = DriverManager.getConnection(DB_CON, USER, PASSWORD);
-             Statement st = connection.createStatement()) {
-            st.execute("DO\n" +
-                    "$func$\n" +
-                    "BEGIN \n" +
-                    "   EXECUTE\n" +
-                    "  (SELECT 'TRUNCATE TABLE '\n" +
-                    "       || string_agg(quote_ident(schemaname) || '.' || quote_ident(tablename), ', ')\n" +
-                    "       || ' CASCADE'\n" +
-                    "   FROM   pg_tables\n" +
-                    "   WHERE  (schemaname = 'public'\n" +
-                    "       AND tablename <> 'sequence')\n" +
-                    "   );\n" +
-                    "END\n" +
-                    "$func$;");
+                Statement st = connection.createStatement()) {
+            st.execute("DO\n"
+                    + "$func$\n"
+                    + "BEGIN \n"
+                    + "   EXECUTE\n"
+                    + "  (SELECT 'TRUNCATE TABLE '\n"
+                    + "       || string_agg(quote_ident(schemaname) || '.' || quote_ident(tablename), ', ')\n"
+                    + "       || ' CASCADE'\n"
+                    + "   FROM   pg_tables\n"
+                    + "   WHERE  (schemaname = 'public'\n"
+                    + "       AND tablename <> 'sequence')\n"
+                    + "   );\n"
+                    + "END\n"
+                    + "$func$;");
 
         } catch (SQLException ex) {
             logger.error("Table reset", ex);
@@ -107,7 +105,21 @@ public class TestHelper {
      * @return the started thread
      */
     public static Thread start(Runnable r) {
+        return TestHelper.start(r, null);
+    }
+
+    /**
+     * Start a thread from a runnable
+     *
+     * @param r Runnable to start
+     * @param handler
+     * @return the started thread
+     */
+    public static Thread start(Runnable r, Thread.UncaughtExceptionHandler handler) {
         final Thread thread = new Thread(r);
+        if (handler != null) {
+            thread.setUncaughtExceptionHandler(handler);
+        }
         thread.start();
         return thread;
     }
@@ -125,8 +137,7 @@ public class TestHelper {
     }
 
     /**
-     * Shortcut: Transform 2 lists into a map
-     * !Both list must have same length!
+     * Shortcut: Transform 2 lists into a map !Both list must have same length!
      * to inline everything see: {@link #toList}
      *
      * @param keys   keys of the map
