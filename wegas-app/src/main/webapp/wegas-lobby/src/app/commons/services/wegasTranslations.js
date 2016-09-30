@@ -1140,6 +1140,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': startSentence(keywords.team.singular.en) + " name",
                             'fr': "Nom de l'" + keywords.team.singular.fr
                         },
+                        'PLAYER-MODALE-JOIN-TEAM-CREATE-INPUT-MESSAGE': {
+                            'en': "Please enter a valid " + keywords.team.singular.en + " name",
+                            'fr': "Veuillez entrer un nom d'" + keywords.team.singular.fr + " valide"
+                        },
                         'PLAYER-MODALE-JOIN-TEAM-CREATE-SIZE': {
                             'en': "Size",
                             'fr': "Taille"
@@ -1147,6 +1151,10 @@ angular.module('wegas.service.wegasTranslations', [])
                         'PLAYER-MODALE-JOIN-TEAM-CREATE-SIZE-TOOLTIP': {
                             'en': "Number of members",
                             'fr': "Nombre de membres"
+                        },
+                        'PLAYER-MODALE-JOIN-TEAM-CREATE-SIZE-MESSAGE': {
+                            'en': "Please specify the size of your " + keywords.team.singular.en,
+                            'fr': "Veuillez indiquer la taille de l'" + keywords.team.singular.fr
                         },
                         'PLAYER-MODALE-JOIN-TEAM-CREATE-BTN': {
                             'en': "Create " + keywords.team.singular.en,
