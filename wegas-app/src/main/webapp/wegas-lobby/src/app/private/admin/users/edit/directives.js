@@ -30,8 +30,8 @@ angular.module('private.admin.users.edit.directives', ['wegas.directive.permissi
         };
 
         ctrl.save = function () {
-            UsersModel.updateUser(ctrl.user.account).then(function (response) {
-                if (response && !response.isErroneous()) {
+            UsersModel.updateUser(ctrl.user.account, /* relaxed checking: */ true).then(function (response) {
+                if (response && response.isErroneous()) {
                     response.flash();
                 }
                 if (!response || !response.isErroneous()) {

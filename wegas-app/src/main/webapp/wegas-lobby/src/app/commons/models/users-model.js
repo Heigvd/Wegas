@@ -221,8 +221,8 @@ angular.module('wegas.models.users', [])
             });
             return deferred.promise;
         };
-        model.updateUser = function(user) {
-
+        model.updateUser = function(user, relaxed) {
+            relaxed = !!relaxed || false;
             var deferred = $q.defer();
 
             // Returns true if either (1) username does not look like an e-mail address or (2) username is an e-mail and is identical to the e-mail address field.
@@ -239,10 +239,10 @@ angular.module('wegas.models.users', [])
 
             if (user.username && user.username.length > 0) {
                 if (user.email && user.email.length > 0) {
-                    if (checkEmailInUsername()) {
+                    if (relaxed || checkEmailInUsername()) {
                         if (!user.password || user.password.length >= 3) {
                             if (!user.password || user.password === user.password2) {
-                                if (user.firstname && user.firstname.length > 0 && user.lastname &&
+                                if (relaxed || user.firstname && user.firstname.length > 0 && user.lastname &&
                                     user.lastname.length > 0) {
 
                                     delete user.hash;
@@ -279,6 +279,12 @@ angular.module('wegas.models.users', [])
                                             if (data.events !== undefined) {
                                                 console.log("WEGAS LOBBY : Error while updating profile");
                                                 console.log(data.events);
+                                                try {
+                                                    deferred.resolve(Responses.danger(data.events[0].exceptions[0].localizedMessage, false));
+                                                    return;
+                                                } catch(e) {
+                                                    // Fall through to generic error message
+                                                }
                                             }
                                             $translate('COMMONS-USERS-UPDATE-FLASH-ERROR').then(function (message) {
                                                 deferred.resolve(Responses.danger(message, false));
