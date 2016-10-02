@@ -222,12 +222,12 @@ angular.module('wegas.models.users', [])
             return deferred.promise;
         };
         model.updateUser = function(user, relaxed) {
-            relaxed = !!relaxed || false;
+            relaxed = relaxed || false;
             var deferred = $q.defer();
 
             // Returns true if either (1) username does not look like an e-mail address or (2) username is an e-mail and is identical to the e-mail address field.
             // Returns false otherwise.
-            var checkEmailInUsername = function() {
+            var checkEmailInUsername = function(user) {
                 var username = user.username.trim();
                 if (username.indexOf('@') != -1) {
                     return (username==user.email.trim());
@@ -239,7 +239,7 @@ angular.module('wegas.models.users', [])
 
             if (user.username && user.username.length > 0) {
                 if (user.email && user.email.length > 0) {
-                    if (relaxed || checkEmailInUsername()) {
+                    if (relaxed || checkEmailInUsername(user)) {
                         if (!user.password || user.password.length >= 3) {
                             if (!user.password || user.password === user.password2) {
                                 if (relaxed || user.firstname && user.firstname.length > 0 && user.lastname &&
