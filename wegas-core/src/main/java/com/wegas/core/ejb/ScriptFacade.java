@@ -10,7 +10,6 @@ package com.wegas.core.ejb;
 import com.wegas.core.Helper;
 import com.wegas.core.event.internal.EngineInvocationEvent;
 import com.wegas.core.exception.WegasErrorMessageManager;
-import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.AbstractEntity;
@@ -19,7 +18,7 @@ import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.core.persistence.variable.VariableInstance;
+import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,8 +26,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
-import javax.enterprise.event.ObserverException;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.script.*;
 import java.io.File;
@@ -52,7 +49,40 @@ public class ScriptFacade {
     /**
      * name
      */
-    public static final String CONTEXT = "currentDescriptor";
+    static final String CONTEXT = "currentDescriptor";
+    /**
+     * A single, thread safe, javascript engine (only language currently supported)
+     */
+    private static final ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
+    /**
+     * Pre-compiled script.
+     * nashorn specific __noSuchProperty__ hijacking : find a variableDescriptor's scriptAlias.
+     * Must be included in each Bindings.
+     */
+    private static final CompiledScript noSuchProperty;
+    /*
+    Initialize noSuchProperty
+     */
+    static {
+        CompiledScript compile = null;
+        try {
+            compile = ((Compilable) engine).compile("(function(global){" +
+                    "var defaultNoSuchProperty = global.__noSuchProperty__;" + // Store nashorn's implementation
+                    "Object.defineProperty(global, '__noSuchProperty__', {" +
+                    "value: function(prop){" +
+                    "try{" +
+                    "print('SCRIPT_ALIAS_CALL: [GM]' + gameModel.getId() + ' [alias]' + prop);" + // log usage
+                    "return Variable.find(gameModel, prop).getInstance(self);" + // Try to find a VariableDescriptor's instance for that given prop
+                    "}catch(e){" +
+                    "return defaultNoSuchProperty.call(global, prop);" + // Use default implementation if no VariableDescriptor
+                    "}}" +
+                    "})" +
+                    "})(this);"); // Run on Bindings
+        } catch (ScriptException e) {
+            logger.error("noSuchProperty script compilation failed", e);
+        }
+        noSuchProperty = compile;
+    }
 
     /**
      *
@@ -90,175 +120,59 @@ public class ScriptFacade {
     @Inject
     Event<EngineInvocationEvent> engineInvocationEvent;
 
-    public ScriptEngine instantiateEngine(Player player, String language) {
-        ScriptEngine engine = requestManager.getCurrentEngine();
-        if (engine == null) {
-            ScriptEngineManager mgr = new ScriptEngineManager();                // Instantiate the corresponding script engine
-
-            try {
-                engine = mgr.getEngineByName(language);
-                // Invocable invocableEngine = (Invocable) engine;
-            } catch (NullPointerException ex) {
-                logger.error("Could not find language", ex.getMessage(), ex.getStackTrace());
-                throw WegasErrorMessage.error("Could not instantiate script engine for script" + language);
-            }
-            try {
-                engineInvocationEvent.fire(
-                        new EngineInvocationEvent(player, engine));// Fires the engine invocation event, to allow extensions
-
-            } catch (ObserverException ex) {
-                throw (WegasRuntimeException) ex.getCause();
-            }
-            requestManager.setCurrentEngine(engine);
+    public ScriptContext instantiateScriptContext(Player player, String language) {
+        final ScriptContext currentContext = requestManager.getCurrentScriptContext();
+        if (currentContext == null) {
+            final ScriptContext scriptContext = this.populate(player);
+            requestManager.setCurrentScriptContext(scriptContext);
+            return scriptContext;
         }
-        return engine;
+        return currentContext;
+
     }
 
-    /**
-     * Fires an engineInvocationEvent, which should be intercepted to customize
-     * engine scope.
-     *
-     * @param script
-     * @param arguments
-     * @return
-     */
-    private Object eval(Script script, Map<String, AbstractEntity> arguments) throws WegasScriptException {
-        if (script == null) {
-            return null;
-        }
-        ScriptEngine engine = instantiateEngine(requestManager.getPlayer(), script.getLanguage());
-
-        for (Entry<String, AbstractEntity> arg : arguments.entrySet()) {        // Inject the arguments
-            engine.put(arg.getKey(), arg.getValue());
-        }
-
-        try {
-            engine.getContext().setAttribute(ScriptEngine.FILENAME, script.getContent(), ScriptContext.ENGINE_SCOPE);
-            return engine.eval(script.getContent());
-        } catch (ScriptException ex) {
-            throw new WegasScriptException(script.getContent(), ex.getLineNumber(), ex.getMessage());
-        } catch (WegasRuntimeException ex) { // throw our exception as-is
-            throw ex;
-        } catch (RuntimeException ex) { // Java exception (Java -> JS -> Java -> throw)
-            throw new WegasScriptException(script.getContent(), ex.getMessage(), ex);
-        }
-    }
-
-    /**
-     * Default customization of our engine: inject the script library, the root
-     * variable instances and some libraries.
-     *
-     * @param evt
-     */
-    public void onEngineInstantiation(@Observes EngineInvocationEvent evt) throws WegasScriptException {
-        evt.getEngine().put("self", evt.getPlayer());                           // Inject current player
-        evt.getEngine().put("gameModel", evt.getPlayer().getGameModel());       // Inject current gameModel
-        evt.getEngine().put("Variable", variableDescriptorFacade);              // Inject the variabledescriptor facade
-        evt.getEngine().put("VariableDescriptorFacade", variableDescriptorFacade);// @backwardcompatibility
-        evt.getEngine().put("RequestManager", requestManager);                  // Inject the request manager
-        evt.getEngine().put("Event", event);                                    // Inject the Event manager
-        evt.getEngine().put("DelayedEvent", delayedEvent);
-        evt.getEngine().put("ErrorManager", new WegasErrorMessageManager());    // Inject the MessageErrorManager
+    private ScriptContext populate(Player player) {
+        final Bindings bindings = engine.createBindings();
+        bindings.put("self", player);                           // Inject current player
+        bindings.put("gameModel", player.getGameModel());       // Inject current gameModel
+        bindings.put("Variable", variableDescriptorFacade);              // Inject the variabledescriptor facade
+        bindings.put("VariableDescriptorFacade", variableDescriptorFacade);// @backwardcompatibility
+        bindings.put("RequestManager", requestManager);                  // Inject the request manager
+        bindings.put("Event", event);                                    // Inject the Event manager
+        bindings.put("DelayedEvent", delayedEvent);
+        bindings.put("ErrorManager", new WegasErrorMessageManager());    // Inject the MessageErrorManager
         event.detachAll();
-        this.injectStaticScript(evt);
+        ScriptContext ctx = new SimpleScriptContext();
+        ctx.setBindings(bindings, ScriptContext.ENGINE_SCOPE);
+        try {
+            noSuchProperty.eval(bindings);
+        } catch (ScriptException e) {
+            logger.error("noSuchProperty injection", e);
+        }
+        this.injectStaticScript(ctx, player.getGameModel());
+
         for (Entry<String, GameModelContent> arg
-                : evt.getPlayer().getGameModel().getScriptLibrary().entrySet()) { // Inject the script library
-            evt.getEngine().getContext().setAttribute(ScriptEngine.FILENAME, "Server script " + arg.getKey(), ScriptContext.ENGINE_SCOPE);
+                : player.getGameModel().getScriptLibrary().entrySet()) { // Inject the script library
+            ctx.setAttribute(ScriptEngine.FILENAME, "Server script " + arg.getKey(), ScriptContext.ENGINE_SCOPE);
             try {
-                evt.getEngine().eval(arg.getValue().getContent());
+                engine.eval(arg.getValue().getContent(), ctx);
             } catch (ScriptException ex) { // script exception (Java -> JS -> throw)
                 throw new WegasScriptException("Server script " + arg.getKey(), ex.getLineNumber(), ex.getMessage());
             } catch (Exception ex) { // Java exception (Java -> JS -> Java -> throw)
                 throw new WegasScriptException("Server script " + arg.getKey(), ex.getMessage());
             }
         }
-//        injectNamedInstances(evt.getEngine(), evt.getPlayer().getGameModel());
-        injectRootNamedInstances(evt.getEngine(), evt.getPlayer());
-    }
-
-    /**
-     * Inject GameModel's named instance into engine's global scope.
-     * instance are available on their script alias
-     *
-     * @param engine    engine to populate
-     * @param gameModel GameModel containing variables to inject
-     * @throws WegasScriptException
-     */
-    private void injectNamedInstances(ScriptEngine engine, GameModel gameModel) throws WegasScriptException {
-        /**
-         * Fastest function I've found out to have every variables available on their name.
-         * Still needs some test
-         */
-        /*
-        (function(global){
-            function configFor(name) {
-                return {
-                    set:function(v){
-                        this.val = v;
-                        this.set = true;
-                    },
-                    get:function(){
-                        return this.set ? this.val : Variable.find(gameModel, name).getInstance(self);
-                    }
-                }
-            }
-            for(var i in _distinctNames){
-                Object.defineProperty(global, _distinctNames[i], configFor(_distinctNames[i]))
-            }
-        })(this)
-        */
-
-        final List<String> distinctNames = variableDescriptorFacade.findDistinctNames(gameModel);
-        final ScriptContext ctx = new SimpleScriptContext();
-        ctx.setBindings(engine.getBindings(ScriptContext.ENGINE_SCOPE), ScriptContext.ENGINE_SCOPE);
-        final Bindings bindings = new SimpleBindings();
-        bindings.put("_distinctNames", distinctNames);
-        ctx.setBindings(bindings, ScriptContext.GLOBAL_SCOPE);
-        try {
-
-            engine.eval("(function(global){\n" +
-                    "    function configFor(name) {\n" +
-                    "        return {\n" +
-                    "            set:function(v){\n" +
-                    "                this.val = v;\n" +
-                    "                this.set = true;\n" +
-                    "            },\n" +
-                    "            get:function(){\n" +
-                    "                return this.set ? this.val : Variable.find(gameModel, name).getInstance(self);\n" +
-                    "            }\n" +
-                    "        }\n" +
-                    "    }\n" +
-                    "    for(var i in _distinctNames){\n" +
-                    "        Object.defineProperty(global, _distinctNames[i], configFor(_distinctNames[i]))\n" +
-                    "    }\n" +
-                    "})(this)", ctx);
-        } catch (ScriptException e) {
-            throw new WegasScriptException("Variables injection script failed", e.getMessage());
-        }
-    }
-
-    /**
-     * Inject GameModel's named root instance into engine's global scope.
-     * instance are available on their script alias
-     *
-     * @param engine engine to populate
-     * @param player Player to find instance from
-     */
-    private void injectRootNamedInstances(ScriptEngine engine, Player player) {
-        for (VariableDescriptor vd
-                : player.getGameModel().getChildVariableDescriptors()) { // Inject the variable instances in the script
-            VariableInstance vi = vd.getInstance(player);
-            engine.put(vd.getName(), vi);
-        }
+        return ctx;
     }
 
     /**
      * Inject script files specified in GameModel's property scriptFiles into
      * engine
      *
-     * @param evt EngineInvocationEvent
+     * @param ctx ScriptContext to populate
+     * @param gm  GameModel from which scripts are taken
      */
-    private void injectStaticScript(EngineInvocationEvent evt) throws WegasScriptException {
+    private void injectStaticScript(ScriptContext ctx, GameModel gm) {
         String currentPath = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
         Integer index = currentPath.indexOf("WEB-INF");
         String root;
@@ -274,20 +188,20 @@ public class ScriptFacade {
             root = currentPath.substring(0, index);
         }
 
-        String[] files = new String[0];
-        String scriptURI = evt.getPlayer().getGameModel().getProperties().getScriptUri();
+        String[] files = ArrayUtils.EMPTY_STRING_ARRAY;
+        String scriptURI = gm.getProperties().getScriptUri();
         if (scriptURI != null && !scriptURI.equals("")) {
-            files = evt.getPlayer().getGameModel().getProperties().getScriptUri().split(";");
+            files = gm.getProperties().getScriptUri().split(";");
         }
 
         for (String f : getJavaScriptsRecursively(root, files)) {
-            evt.getEngine().getContext().setAttribute(ScriptEngine.FILENAME, "Script file " + f, ScriptContext.ENGINE_SCOPE);
+            ctx.setAttribute(ScriptEngine.FILENAME, "Script file " + f, ScriptContext.ENGINE_SCOPE);
             try {
 
                 java.io.FileInputStream fis = new FileInputStream(f);
                 java.io.InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
 
-                evt.getEngine().eval(isr);
+                engine.eval(isr, ctx);
                 logger.info("File " + f + " successfully injected");
             } catch (FileNotFoundException ex) {
                 logger.warn("File " + f + " was not found");
@@ -296,6 +210,36 @@ public class ScriptFacade {
             } catch (RuntimeException ex) { // Unwrapped Java exception (Java -> JS -> Java -> throw)
                 throw new WegasScriptException(f, ex.getMessage());
             }
+        }
+    }
+
+    /**
+     * Fires an engineInvocationEvent, which should be intercepted to customize
+     * engine scope.
+     *
+     * @param script
+     * @param arguments
+     * @return
+     */
+    private Object eval(Script script, Map<String, AbstractEntity> arguments) throws WegasScriptException {
+        if (script == null) {
+            return null;
+        }
+        ScriptContext ctx = instantiateScriptContext(requestManager.getPlayer(), script.getLanguage());
+
+        for (Entry<String, AbstractEntity> arg : arguments.entrySet()) {        // Inject the arguments
+            ctx.getBindings(ScriptContext.ENGINE_SCOPE).put(arg.getKey(), arg.getValue());
+        }
+
+        try {
+            ctx.setAttribute(ScriptEngine.FILENAME, script.getContent(), ScriptContext.ENGINE_SCOPE);
+            return engine.eval(script.getContent(), ctx);
+        } catch (ScriptException ex) {
+            throw new WegasScriptException(script.getContent(), ex.getLineNumber(), ex.getMessage());
+        } catch (WegasRuntimeException ex) { // throw our exception as-is
+            throw ex;
+        } catch (RuntimeException ex) { // Java exception (Java -> JS -> Java -> throw)
+            throw new WegasScriptException(script.getContent(), ex.getMessage(), ex);
         }
     }
 
