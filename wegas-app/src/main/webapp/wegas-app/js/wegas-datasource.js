@@ -538,35 +538,39 @@ YUI.add('wegas-datasource', function(Y) {
                     var oldAttrs, newAttrs, newEntity;
                     oldAttrs = entity.getAttrs();
                     newAttrs = needle.getAttrs();
-                    // oldAttrs // newAttrs
-                    entity.setAttrs(newAttrs);
 
-                    if (this.oldIds) { // VD ONLY
-                        // 
-                        // NEW ENTITY IN PARENT
+                    /*
+                     * Due to pusher asynchronoussness, make sure not overwritting up-to-date descriptor 
+                     * if newAttrs.version attrs is missing, it means entity is not versioned -> update in all case
+                     * otherwise, only update if newAttrs is not older
+                     */
+                    if (!newAttrs.version || newAttrs.version >= oldAttrs.version) {
+                        entity.setAttrs(newAttrs);
 
-                        // oldIds is filled by VarDescCache.post when adding a variable as
-                        // a child. oldIds contains new variable siblings ids
+                        if (this.oldIds) { // VD ONLY
+                            // 
+                            // NEW ENTITY IN PARENT
 
-                        // Since return entity is not the new one but its parent,
-                        // this statement search an entity with an unknown id (ie not in oldIds) within
-                        // the parent items (ie children).
-                        newEntity = Y.Array.find(entity.get("items"), function(i) {
-                            return Y.Array.indexOf(this.oldIds, i.get("id")) < 0;
-                        }, this);
+                            // oldIds is filled by VarDescCache.post when adding a variable as
+                            // a child. oldIds contains new variable siblings ids
+
+                            // Since return entity is not the new one but its parent,
+                            // this statement search an entity with an unknown id (ie not in oldIds) within
+                            // the parent items (ie children).
+                            newEntity = Y.Array.find(entity.get("items"), function(i) {
+                                return Y.Array.indexOf(this.oldIds, i.get("id")) < 0;
+                            }, this);
 
 
-                        // Index the new Entity and its children
-                        this.insertIntoIndexes(newEntity);
+                            // Index the new Entity and its children
+                            this.insertIntoIndexes(newEntity);
 
-                        this.get(HOST).fire("added", {// New entity as children
-                            entity: newEntity,
-                            parent: entity
-                        });
-                        this.oldIds = null;
-                    } else {
-                        // Due to pusher asynchronoussness, make sure not overwritting up-to-date descriptor 
-                        if (!newAttrs.version || newAttrs.version >= oldAttrs.version) {
+                            this.get(HOST).fire("added", {// New entity as children
+                                entity: newEntity,
+                                parent: entity
+                            });
+                            this.oldIds = null;
+                        } else {
                             this.updateIndexes(oldAttrs, newAttrs); // OK
                             // Update Entity (anywhere)
                             if (entity instanceof Wegas.persistence.VariableDescriptor) {
@@ -1133,6 +1137,7 @@ YUI.add('wegas-datasource', function(Y) {
 
 
             if (method === DELETE) {
+                //Delete is DELETE, no need to check versions
                 if (scope) {
                     if (scope.variableInstances[scopeKey]) {
                         delete scope.variableInstances[scopeKey];
@@ -1161,11 +1166,19 @@ YUI.add('wegas-datasource', function(Y) {
                 }
 
                 if (scope.variableInstances[scopeKey]) {
-                    scope.variableInstances[scopeKey].setAttrs(entity.getAttrs());
-                    Y.Wegas.Facade.Instance.fire("updatedInstance", {// Variable instance updated
-                        entity: entity
-                    });
+
+                    /*
+                     * Updated instance already exists in the cache, due to pusher 
+                     * asynchronoussness, make sure not overwritting up-to-date instance
+                     */
+                    if (entity.get("version") >= scope.variableInstances[scopeKey].get("version")) {
+                        scope.variableInstances[scopeKey].setAttrs(entity.getAttrs());
+                        Y.Wegas.Facade.Instance.fire("updatedInstance", {// Variable instance updated
+                            entity: entity
+                        });
+                    }
                 } else {
+                    // Entity not yet known, no version to compare
                     scope.variableInstances[scopeKey] = entity;
                     Y.Wegas.Facade.Instance.fire("addedInstance", {
                         entity: entity
