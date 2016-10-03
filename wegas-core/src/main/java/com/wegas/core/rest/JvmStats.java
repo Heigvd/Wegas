@@ -20,8 +20,6 @@ import javax.ws.rs.core.MediaType;
 @Produces(MediaType.APPLICATION_JSON)
 public class JvmStats {
 
-    private static final long serialVersionUID = 1627669174708657566L;
-
     public static final String
         HEAP_USED_INIT = "HEAP_USED_INIT_BYTES",
         HEAP_USED_MAX = "HEAP_USED_MAX_BYTES",
