@@ -94,7 +94,7 @@ public class JackrabbitConnector {
     /**
      * Project specific, remove database's table and jcr filesystem workspace
      *
-     * @param workspaceName
+     * @param toDelete
      */
     private static void deleteWorkspaces(List<String> toDelete) {
         String dbName = Helper.getWegasProperty("jcr.jdbc.resource-name");

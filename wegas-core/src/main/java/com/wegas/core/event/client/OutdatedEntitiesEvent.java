@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class OutdatedEntitiesEvent extends ClientEvent {
 
-    public class OutdatedEntity {
+    public static class OutdatedEntity {
 
         private String type;
         private Long id;

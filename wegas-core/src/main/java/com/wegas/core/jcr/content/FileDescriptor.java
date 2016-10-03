@@ -10,6 +10,7 @@ package com.wegas.core.jcr.content;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.exception.client.WegasErrorMessage;
+import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.LoggerFactory;
 
 import javax.jcr.PathNotFoundException;
@@ -204,6 +205,6 @@ public class FileDescriptor extends AbstractContentDescriptor {
         } catch (RepositoryException ex) {
             logger.error("Something bad append, Roger!", ex);
         }
-        return new byte[0];
+        return ArrayUtils.EMPTY_BYTE_ARRAY;
     }
 }
