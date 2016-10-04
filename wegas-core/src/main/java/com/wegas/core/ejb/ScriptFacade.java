@@ -71,8 +71,9 @@ public class ScriptFacade {
                     "Object.defineProperty(global, '__noSuchProperty__', {" +
                     "value: function(prop){" +
                     "try{" +
-                    "print('SCRIPT_ALIAS_CALL: [GM]' + gameModel.getId() + ' [alias]' + prop);" + // log usage
-                    "return Variable.find(gameModel, prop).getInstance(self);" + // Try to find a VariableDescriptor's instance for that given prop
+                    "var ret = Variable.find(gameModel, prop).getInstance(self);" +
+                    "print('SCRIPT_ALIAS_CALL: [GM]' + gameModel.getId() + ' [alias]' + prop);" + // log usage if var exists
+                    "return ret;" + // Try to find a VariableDescriptor's instance for that given prop
                     "}catch(e){" +
                     "return defaultNoSuchProperty.call(global, prop);" + // Use default implementation if no VariableDescriptor
                     "}}" +
