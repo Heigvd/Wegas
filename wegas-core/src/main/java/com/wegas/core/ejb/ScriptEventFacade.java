@@ -119,7 +119,7 @@ public class ScriptEventFacade {
             scriptFacace.eval(player, new Script(""), null);
         }
         /*
-         * Make sure to set eventFired after engine initiation because events 
+         * Make sure to set eventFired after context initiation because events 
          * are detached by instantiation process
          */
         this.eventFired = true;
