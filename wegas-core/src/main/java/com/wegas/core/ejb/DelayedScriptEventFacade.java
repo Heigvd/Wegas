@@ -22,6 +22,7 @@ import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import javax.script.ScriptEngine;
 
 /**
  * @author Maxence Laurent (maxence.laurent gmail.com)
@@ -60,9 +61,13 @@ public class DelayedScriptEventFacade {
 
             // fire Script (ie base mechanism and static server script eval)
             scriptEventFacade.fire(p, payload.getEventName());
-            // force FSM evaluation
-            playerActionEvent.fire(new PlayerAction(p));
+            // force FSM evaluation and make sur EntityManager has flush
+            requestFacade.commit(p);
 
+            /*
+             * ManagedModeResponseFilter mock-up.
+             * To propagate instances through websockets
+             */
             Map<String, List<AbstractEntity>> updatedEntities = requestFacade.getUpdatedEntities();
             Map<String, List<AbstractEntity>> destroyedEntities = requestFacade.getDestroyedEntities();
             Map<String, List<AbstractEntity>> outdatedEntities = requestFacade.getOutdatedEntities();
