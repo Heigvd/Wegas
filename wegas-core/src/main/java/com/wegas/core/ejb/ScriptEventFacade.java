@@ -111,7 +111,6 @@ public class ScriptEventFacade {
     }
 
     private void doFire(Player player, String eventName, Object params) throws WegasScriptException {
-        this.eventFired = true;
         if (player == null && requestManager.getPlayer() == null) {
             throw WegasErrorMessage.error("An event '" + eventName + "' has been fired without a player defined. A player has to be defined.");
         }
@@ -119,6 +118,11 @@ public class ScriptEventFacade {
             /* init script context, declared eventListeners are not yet in memory */
             scriptFacace.eval(player, new Script(""), null);
         }
+        /*
+         * Make sure to set eventFired after engine initiation because events 
+         * are detached by instantiation process
+         */
+        this.eventFired = true;
         this.eventsFired.put(eventName, params);
 
         if (this.registeredEvents.containsKey(eventName)) {
