@@ -20,8 +20,7 @@ import org.slf4j.LoggerFactory;
 import javax.naming.NamingException;
 import java.util.ArrayList;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author Benjamin
@@ -289,11 +288,11 @@ public class MessageFacadeTest extends AbstractEJBTest {
 
         TriggerDescriptor trig = new TriggerDescriptor();
         trig.setDefaultInstance(new TriggerInstance());
-        trig.setTriggerEvent(new Script("false"));
+        trig.setTriggerEvent(new Script("Variable.find(gameModel,'testnumber').getValue(self) > 0"));
         trig.setOneShot(false);
         trig.setDisableSelf(false);
         trig.setPostTriggerEvent(
-                new Script(""));
+                new Script("Variable.find(gameModel, 'inbox').sendDatedMessage(self, \"test\", \"now\" ,\"test\", \"msg2\", []);\n"));
         vdf.create(gameModel.getId(), trig);
 
         gameModelFacade.reset(gameModel.getId());
@@ -305,8 +304,8 @@ public class MessageFacadeTest extends AbstractEJBTest {
         // This NEVER fails
 //        scriptFacade.eval(player.getId(), new Script("Variable.find(gameModel,'testnumber').setValue(self,2)"), null);
 //        lookupBy(RequestFacade.class).commit();
-        assertEquals(1, ((InboxInstance) vif.find(inbox.getId(), player)).getMessages().size());
-        assertEquals("msg1", ((InboxInstance) vif.find(inbox.getId(), player)).getMessages().get(0).getBody());
+        assertEquals(2, ((InboxInstance) vif.find(inbox.getId(), player)).getMessages().size());
+        assertNotSame(((InboxInstance) vif.find(inbox.getId(), player)).getMessages().get(0).getBody(), ((InboxInstance) vif.find(inbox.getId(), player)).getMessages().get(1).getBody());
     }
 
     @Test

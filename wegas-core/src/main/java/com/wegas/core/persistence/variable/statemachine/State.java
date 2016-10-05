@@ -23,6 +23,7 @@ import com.wegas.core.rest.util.Views;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 //import javax.xml.bind.annotation.XmlRootElement;
@@ -95,7 +96,6 @@ public class State extends AbstractEntity implements Searchable, Scripted {
      */
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "state_id", referencedColumnName = "state_id")
-    @OrderBy("index")
     private List<Transition> transitions = new ArrayList<>();
 
     /**
@@ -197,10 +197,16 @@ public class State extends AbstractEntity implements Searchable, Scripted {
      * @return
      */
     public List<Transition> getTransitions() {
-        return transitions;
+        Collections.sort(this.transitions, new Comparator<Transition>() {
+            @Override
+            public int compare(Transition t1, Transition t2) {
+                return t1.getIndex() - t2.getIndex();
+            }
+        });
+        return this.transitions;
     }
-    
-    public Transition addTransition(Transition t){
+
+    public Transition addTransition(Transition t) {
         List<Transition> ts = this.getTransitions();
         ts.add(t);
         this.setTransitions(ts);
@@ -211,11 +217,10 @@ public class State extends AbstractEntity implements Searchable, Scripted {
      * @param transitions
      */
     public void setTransitions(List<Transition> transitions) {
-        Collections.sort(transitions, (o1, o2) -> o1.getIndex() - o2.getIndex());
-        this.transitions = transitions;
-        for (Transition t : this.transitions) {
+        for (Transition t : transitions) {
             t.setState(this);
         }
+        this.transitions = transitions;
     }
 
     @Override

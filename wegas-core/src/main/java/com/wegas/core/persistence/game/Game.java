@@ -31,16 +31,16 @@ import java.util.*;
 @Entity
 @Table(
         uniqueConstraints = {
-            //    @UniqueConstraint(columnNames = {"name"}), 
-            @UniqueConstraint(columnNames = {"token"})},
+                //    @UniqueConstraint(columnNames = {"name"}),
+                @UniqueConstraint(columnNames = {"token"})},
         indexes = {
-            @Index(columnList = "gamemodelid")
+                @Index(columnList = "gamemodelid")
         }
 )
 @NamedQueries({
-    @NamedQuery(name = "Game.findByStatus", query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status = :status ORDER BY g.createdTime ASC"),
-    @NamedQuery(name = "Game.findByToken", query = "SELECT DISTINCT g FROM Game g WHERE  g.status = :status AND g.token = :token"),
-    @NamedQuery(name = "Game.findByNameLike", query = "SELECT DISTINCT g FROM Game g WHERE  g.name LIKE :name")
+        @NamedQuery(name = "Game.findByStatus", query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status = :status ORDER BY g.createdTime ASC"),
+        @NamedQuery(name = "Game.findByToken", query = "SELECT DISTINCT g FROM Game g WHERE  g.status = :status AND g.token = :token"),
+        @NamedQuery(name = "Game.findByNameLike", query = "SELECT DISTINCT g FROM Game g WHERE  g.name LIKE :name")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Game extends NamedEntity implements Broadcastable {
@@ -103,7 +103,6 @@ public class Game extends NamedEntity implements Broadcastable {
      */
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("game-team")
-    @OrderBy("createdTime")
     private List<Team> teams = new ArrayList<>();
 
     @JsonIgnore
@@ -119,8 +118,8 @@ public class Game extends NamedEntity implements Broadcastable {
 
     /**
      *
-    @Column(name = "gamemodelid", nullable = false, insertable = false, updatable = false)
-    private Long gameModelId;
+     @Column(name = "gamemodelid", nullable = false, insertable = false, updatable = false)
+     private Long gameModelId;
      */
 
     /**
@@ -194,6 +193,12 @@ public class Game extends NamedEntity implements Broadcastable {
     @JsonManagedReference("game-team")
     @JsonView(Views.IndexI.class)
     public List<Team> getTeams() {
+        Collections.sort(this.teams, new Comparator<Team>() {
+            @Override
+            public int compare(Team a, Team b) {
+                return a.getCreatedTime().compareTo(b.getCreatedTime());
+            }
+        });
         return this.teams;
     }
 
@@ -412,7 +417,6 @@ public class Game extends NamedEntity implements Broadcastable {
     }
 
     /**
-     *
      * @param privateInstances
      */
     public void setPrivateInstances(List<VariableInstance> privateInstances) {

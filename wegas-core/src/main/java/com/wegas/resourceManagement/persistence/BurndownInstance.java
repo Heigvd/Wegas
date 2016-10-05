@@ -9,17 +9,19 @@ package com.wegas.resourceManagement.persistence;
 
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.EntityIdComparator;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.VariableInstance;
-import java.util.ArrayList;
-import java.util.List;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
- *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
 @Entity
@@ -32,7 +34,6 @@ public class BurndownInstance extends VariableInstance {
     private static final long serialVersionUID = 1L;
 
     @OneToMany(mappedBy = "burndownInstance", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("id ASC")
     private List<Iteration> iterations = new ArrayList<>();
 
     /**
@@ -41,6 +42,7 @@ public class BurndownInstance extends VariableInstance {
      * @return get all iterations
      */
     public List<Iteration> getIterations() {
+        Collections.sort(this.iterations, new EntityIdComparator<>());
         return iterations;
     }
 

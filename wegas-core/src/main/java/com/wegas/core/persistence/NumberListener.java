@@ -37,7 +37,7 @@ public class NumberListener {
         }
     }
 
-    public class NumberUpdate {
+    public static class NumberUpdate {
 
         final public Player player;
 

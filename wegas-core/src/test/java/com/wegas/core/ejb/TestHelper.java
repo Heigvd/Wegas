@@ -8,6 +8,7 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.config.IniSecurityManagerFactory;
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ import javax.naming.NamingException;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
@@ -29,6 +31,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import static java.util.logging.Logger.getLogger;
+import javax.ejb.EJBException;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -47,44 +50,51 @@ public class TestHelper {
 
     public static synchronized EJBContainer getEJBContainer() throws NamingException {
         if (container == null) {
-            Map<String, Object> properties = new HashMap<>();                       // Init Ejb container
-            properties.put(EJBContainer.MODULES, new File[]{new File("target/embed-classes")});
-            properties.put("org.glassfish.ejb.embedded.glassfish.installation.root", "./src/test/glassfish");
-            //properties.put(EJBContainer.APP_NAME,"class");
-            //ejbContainer.getContext().rebind("inject", this);
+            try {
+                Map<String, Object> properties = new HashMap<>();                       // Init Ejb container
+                properties.put(EJBContainer.MODULES, new File[]{new File("target/embed-classes")});
+                properties.put("org.glassfish.ejb.embedded.glassfish.installation.root", "./src/test/glassfish");
+                //properties.put(EJBContainer.APP_NAME,"class");
+                //ejbContainer.getContext().rebind("inject", this);
 
-            // Init shiro
-            SecurityUtils.setSecurityManager(new IniSecurityManagerFactory("classpath:shiro.ini").getInstance());
-            getLogger("javax.enterprise.system.tools.deployment").setLevel(Level.SEVERE);
-            getLogger("javax.enterprise.system").setLevel(Level.SEVERE);
-            org.glassfish.ejb.LogFacade.getLogger().setLevel(Level.SEVERE);
-            container = EJBContainer.createEJBContainer(properties);
-
+                // Init shiro
+                SecurityUtils.setSecurityManager(new IniSecurityManagerFactory("classpath:shiro.ini").getInstance());
+                getLogger("javax.enterprise.system.tools.deployment").setLevel(Level.SEVERE);
+                getLogger("javax.enterprise.system").setLevel(Level.SEVERE);
+                org.glassfish.ejb.LogFacade.getLogger().setLevel(Level.SEVERE);
+                container = EJBContainer.createEJBContainer(properties);
+                if (container == null) {
+                    throw WegasErrorMessage.error("FATAL ERROR WHILE SETTING EJB_CONTAINER UP");
+                }
+            } catch (EJBException ex) {
+                logger.error("Fatal EjbException : " + ex);
+                throw ex;
+            }
         }
         emptyDBTables();
         return container;
     }
 
     private static void emptyDBTables() {
+        String sql = "DO\n"
+                + "$func$\n"
+                + "BEGIN \n"
+                + "   EXECUTE\n"
+                + "  (SELECT 'TRUNCATE TABLE '\n"
+                + "       || string_agg(quote_ident(schemaname) || '.' || quote_ident(tablename), ', ')\n"
+                + "       || ' CASCADE'\n"
+                + "   FROM   pg_tables\n"
+                + "   WHERE  (schemaname = 'public'\n"
+                + "       AND tablename <> 'sequence')\n"
+                + "   );\n"
+                + "END\n"
+                + "$func$;";
 
         try (Connection connection = DriverManager.getConnection(DB_CON, USER, PASSWORD);
                 Statement st = connection.createStatement()) {
-            st.execute("DO\n"
-                    + "$func$\n"
-                    + "BEGIN \n"
-                    + "   EXECUTE\n"
-                    + "  (SELECT 'TRUNCATE TABLE '\n"
-                    + "       || string_agg(quote_ident(schemaname) || '.' || quote_ident(tablename), ', ')\n"
-                    + "       || ' CASCADE'\n"
-                    + "   FROM   pg_tables\n"
-                    + "   WHERE  (schemaname = 'public'\n"
-                    + "       AND tablename <> 'sequence')\n"
-                    + "   );\n"
-                    + "END\n"
-                    + "$func$;");
-
+            st.execute(sql);
         } catch (SQLException ex) {
-            logger.error("Table reset", ex);
+            logger.error("Table reset (SQL: " + sql + ")", ex);
         }
         wipeEmCache();
     }
@@ -111,7 +121,7 @@ public class TestHelper {
     /**
      * Start a thread from a runnable
      *
-     * @param r Runnable to start
+     * @param r       Runnable to start
      * @param handler
      * @return the started thread
      */

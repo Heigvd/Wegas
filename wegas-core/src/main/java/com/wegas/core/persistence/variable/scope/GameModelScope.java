@@ -114,7 +114,7 @@ public class GameModelScope extends AbstractScope<GameModel> {
 
     /**
      *
-     * @param userId
+     * @param key
      * @param v
      */
     @Override

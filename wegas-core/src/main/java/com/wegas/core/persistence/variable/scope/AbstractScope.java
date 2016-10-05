@@ -87,7 +87,7 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
         Map<Long, VariableInstance> mappedInstances = new HashMap<>();
         for (Entry<T, VariableInstance> entry : instances.entrySet()) {
             // GameModelScope Hack (null key means id=0...)
-            mappedInstances.put((entry.getKey() != null ? entry.getKey().getId() : 0l), entry.getValue());
+            mappedInstances.put((entry.getKey() != null ? entry.getKey().getId() : 0L), entry.getValue());
         }
         return mappedInstances;
     }
