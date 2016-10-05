@@ -66,25 +66,24 @@ public class TestHelper {
     }
 
     private static void emptyDBTables() {
-
+        String sql = "DO\n"
+                + "$func$\n"
+                + "BEGIN \n"
+                + "   EXECUTE\n"
+                + "  (SELECT 'TRUNCATE TABLE '\n"
+                + "       || string_agg(quote_ident(schemaname) || '.' || quote_ident(tablename), ', ')\n"
+                + "       || ' CASCADE'\n"
+                + "   FROM   pg_tables\n"
+                + "   WHERE  (schemaname = 'public'\n"
+                + "       AND tablename <> 'sequence')\n"
+                + "   );\n"
+                + "END\n"
+                + "$func$;";
         try (Connection connection = DriverManager.getConnection(DB_CON, USER, PASSWORD);
                 Statement st = connection.createStatement()) {
-            st.execute("DO\n"
-                    + "$func$\n"
-                    + "BEGIN \n"
-                    + "   EXECUTE\n"
-                    + "  (SELECT 'TRUNCATE TABLE '\n"
-                    + "       || string_agg(quote_ident(schemaname) || '.' || quote_ident(tablename), ', ')\n"
-                    + "       || ' CASCADE'\n"
-                    + "   FROM   pg_tables\n"
-                    + "   WHERE  (schemaname = 'public'\n"
-                    + "       AND tablename <> 'sequence')\n"
-                    + "   );\n"
-                    + "END\n"
-                    + "$func$;");
-
+            st.execute(sql);
         } catch (SQLException ex) {
-            logger.error("Table reset", ex);
+            logger.error("Table reset (SQL: " + sql + ")", ex);
         }
         wipeEmCache();
     }
@@ -111,7 +110,7 @@ public class TestHelper {
     /**
      * Start a thread from a runnable
      *
-     * @param r Runnable to start
+     * @param r       Runnable to start
      * @param handler
      * @return the started thread
      */
