@@ -40,7 +40,7 @@ public class BurndownInstance extends VariableInstance {
      * @return get all iterations
      */
     public List<Iteration> getIterations() {
-        Collections.sort(this.iterations, (i1, i2) -> i1.getId().compareTo(i2.getId()));
+//        Collections.sort(this.iterations, (i1, i2) -> i1.getId().compareTo(i2.getId()));
         return iterations;
     }
 
