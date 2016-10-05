@@ -17,6 +17,7 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -40,7 +41,12 @@ public class BurndownInstance extends VariableInstance {
      * @return get all iterations
      */
     public List<Iteration> getIterations() {
-//        Collections.sort(this.iterations, (i1, i2) -> i1.getId().compareTo(i2.getId()));
+        Collections.sort(this.iterations, new Comparator<Iteration>() {
+            @Override
+            public int compare(Iteration o1, Iteration o2) {
+                return o1.getId().compareTo(o2.getId());
+            }
+        });
         return iterations;
     }
 
