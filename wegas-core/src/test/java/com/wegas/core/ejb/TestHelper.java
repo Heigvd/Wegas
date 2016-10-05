@@ -70,7 +70,6 @@ public class TestHelper {
     }
 
     private static void emptyDBTables() {
-        String query = "SELECT 'TRUNCATE TABLE ' || string_agg(quote_ident(schemaname) || '.' || quote_ident(tablename), ', ') || ' CASCADE' FROM   pg_tables WHERE  (schemaname = 'public' AND tablename <> 'sequence');";
         String sql = "DO\n"
                 + "$func$\n"
                 + "BEGIN \n"
@@ -84,15 +83,6 @@ public class TestHelper {
                 + "   );\n"
                 + "END\n"
                 + "$func$;";
-
-        try (Connection connection = DriverManager.getConnection(DB_CON, USER, PASSWORD);
-                Statement st = connection.createStatement()) {
-            ResultSet executeQuery = st.executeQuery(query);
-            executeQuery.next();
-            logger.error("OUTPUT: " + executeQuery.getString(1));
-        } catch (SQLException ex2) {
-            logger.error("Table reset bis (SQL: " + query + ")", ex2);
-        }
 
         try (Connection connection = DriverManager.getConnection(DB_CON, USER, PASSWORD);
                 Statement st = connection.createStatement()) {
