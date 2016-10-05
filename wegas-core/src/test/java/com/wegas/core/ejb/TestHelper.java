@@ -31,6 +31,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import static java.util.logging.Logger.getLogger;
+import javax.ejb.EJBException;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -49,20 +50,25 @@ public class TestHelper {
 
     public static synchronized EJBContainer getEJBContainer() throws NamingException {
         if (container == null) {
-            Map<String, Object> properties = new HashMap<>();                       // Init Ejb container
-            properties.put(EJBContainer.MODULES, new File[]{new File("target/embed-classes")});
-            properties.put("org.glassfish.ejb.embedded.glassfish.installation.root", "./src/test/glassfish");
-            //properties.put(EJBContainer.APP_NAME,"class");
-            //ejbContainer.getContext().rebind("inject", this);
+            try {
+                Map<String, Object> properties = new HashMap<>();                       // Init Ejb container
+                properties.put(EJBContainer.MODULES, new File[]{new File("target/embed-classes")});
+                properties.put("org.glassfish.ejb.embedded.glassfish.installation.root", "./src/test/glassfish");
+                //properties.put(EJBContainer.APP_NAME,"class");
+                //ejbContainer.getContext().rebind("inject", this);
 
-            // Init shiro
-            SecurityUtils.setSecurityManager(new IniSecurityManagerFactory("classpath:shiro.ini").getInstance());
-            getLogger("javax.enterprise.system.tools.deployment").setLevel(Level.SEVERE);
-            getLogger("javax.enterprise.system").setLevel(Level.SEVERE);
-            org.glassfish.ejb.LogFacade.getLogger().setLevel(Level.SEVERE);
-            container = EJBContainer.createEJBContainer(properties);
-            if (container == null) {
-                throw WegasErrorMessage.error("FATAL ERROR WHILE SETTING EJB_CONTAINER UP");
+                // Init shiro
+                SecurityUtils.setSecurityManager(new IniSecurityManagerFactory("classpath:shiro.ini").getInstance());
+                getLogger("javax.enterprise.system.tools.deployment").setLevel(Level.SEVERE);
+                getLogger("javax.enterprise.system").setLevel(Level.SEVERE);
+                org.glassfish.ejb.LogFacade.getLogger().setLevel(Level.SEVERE);
+                container = EJBContainer.createEJBContainer(properties);
+                if (container == null) {
+                    throw WegasErrorMessage.error("FATAL ERROR WHILE SETTING EJB_CONTAINER UP");
+                }
+            } catch (EJBException ex) {
+                logger.error("Fatal EjbException : " + ex);
+                throw ex;
             }
         }
         emptyDBTables();
