@@ -76,8 +76,8 @@ public class PeerReviewInstance extends VariableInstance {
      * @return the list of feedback
      */
     public List<Review> getToReview() {
-//        Collections.sort(toReview, (o1, o2) -> o1.getId().compareTo(o2.getId()));
-        return toReview;
+        Collections.sort(this.toReview, (o1, o2) -> o1.getId().compareTo(o2.getId()));
+        return this.toReview;
     }
 
     /**
@@ -103,8 +103,8 @@ public class PeerReviewInstance extends VariableInstance {
      * @return all feedbacks from others
      */
     public List<Review> getReviewed() {
-//        Collections.sort(reviewed, (r1, r2) -> r1.getId().compareTo(r2.getId()));
-        return reviewed;
+        Collections.sort(this.reviewed, (r1, r2) -> r1.getId().compareTo(r2.getId()));
+        return this.reviewed;
     }
 
     /**
