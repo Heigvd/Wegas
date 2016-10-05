@@ -12,6 +12,7 @@ import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
+import com.wegas.core.persistence.EntityIdComparator;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.reviewing.persistence.evaluation.EvaluationInstance;
 
@@ -21,11 +22,8 @@ import java.util.*;
 /**
  * A review is linked to two PeerReviewInstnace : the one who reviews and the
  * original reviewed 'author'
- * <p>
  * A review is composed of the feedback (written by reviewers) and the feedback
  * comments (written by author). Both are a list of evaluation instances
- * <p>
- * <p>
  * <ol>
  * <li> dispatched: initial state, reviewer can edit feedback
  * <li> reviewed: reviewer can't edit feedback anymore, author can't read
@@ -82,7 +80,6 @@ public class Review extends AbstractEntity implements Broadcastable {
      * 'reviewer' only)
      */
     @OneToMany(mappedBy = "feedbackReview", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @OrderBy("id ASC")
     private List<EvaluationInstance> feedback = new ArrayList<>();
 
     /**
@@ -90,7 +87,6 @@ public class Review extends AbstractEntity implements Broadcastable {
      * (writable by 'author' only)
      */
     @OneToMany(mappedBy = "commentsReview", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @OrderBy("id ASC")
     private List<EvaluationInstance> comments = new ArrayList<>();
 
     @Override
@@ -158,8 +154,8 @@ public class Review extends AbstractEntity implements Broadcastable {
      * @return the list of evaluation instance composing the feedback
      */
     public List<EvaluationInstance> getFeedback() {
-        Collections.sort(feedback, (f1, f2) -> f1.getId().compareTo(f2.getId()));
-        return feedback;
+        Collections.sort(this.feedback, new EntityIdComparator<>());
+        return this.feedback;
     }
 
     /**
@@ -177,8 +173,8 @@ public class Review extends AbstractEntity implements Broadcastable {
      * @return the list of evaluation instances composing the feedback comments
      */
     public List<EvaluationInstance> getComments() {
-        Collections.sort(comments, (c1, c2) -> c1.getId().compareTo(c2.getId()));
-        return comments;
+        Collections.sort(this.comments, new EntityIdComparator<>());
+        return this.comments;
     }
 
     /**

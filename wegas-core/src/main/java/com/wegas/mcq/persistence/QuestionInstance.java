@@ -10,6 +10,7 @@ package com.wegas.mcq.persistence;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.EntityIdComparator;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.VariableInstance;
 import org.eclipse.persistence.annotations.BatchFetch;
@@ -41,7 +42,6 @@ public class QuestionInstance extends VariableInstance {
     @BatchFetch(BatchFetchType.JOIN)
     @JsonManagedReference
     //@JoinFetch
-//    @OrderBy("id ASC")
     private List<Reply> replies = new ArrayList<>();
     /**
      *
@@ -94,7 +94,7 @@ public class QuestionInstance extends VariableInstance {
      */
     @JsonManagedReference
     public List<Reply> getReplies() {
-        Collections.sort(replies, (r1, r2) -> r1.getId().compareTo(r2.getId()));
+        Collections.sort(this.replies, new EntityIdComparator<>());
         return replies;
     }
 
