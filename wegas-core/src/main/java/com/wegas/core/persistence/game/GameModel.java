@@ -128,7 +128,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      */
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.LAZY)
-//    @OrderBy("createdTime")
     @JsonManagedReference
     @JsonIgnore
     //@JsonView(Views.ExportI.class)
@@ -398,8 +397,13 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     @JsonIgnore
     public List<Game> getGames() {
-        Collections.sort(games, (g1, g2) -> g1.getCreatedTime().compareTo(g2.getCreatedTime()));
-        return games;
+        Collections.sort(this.games, new Comparator<Game>() {
+            @Override
+            public int compare(Game g1, Game g2) {
+                return g1.getCreatedTime().compareTo(g2.getCreatedTime());
+            }
+        });
+        return this.games;
     }
 
     /**

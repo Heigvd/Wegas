@@ -9,6 +9,7 @@ package com.wegas.reviewing.persistence;
 
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.EntityIdComparator;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.VariableInstance;
 
@@ -21,12 +22,10 @@ import java.util.List;
 
 /**
  * Instance of the PeerReviewDescriptor variable
- * <p>
  * Author:<br />
  * - has to review several other authors: <code>toReview</code> Review
  * list<br />
  * - is reviewed by several other authors: <code>reviewed</code> Review list
- * <p>
  * The review is in a specific state, see PeerReviewDescriptor
  *
  * @author Maxence Laurent (maxence.laurent gmail.com)
@@ -46,14 +45,12 @@ public class PeerReviewInstance extends VariableInstance {
      * List of review that contains feedback written by player owning this
      */
     @OneToMany(mappedBy = "reviewer", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @OrderBy("id ASC")
     private List<Review> toReview = new ArrayList<>();
 
     /**
      * List of review that contains others feedback
      */
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @OrderBy("id ASC")
     private List<Review> reviewed = new ArrayList<>();
 
     /**
@@ -80,8 +77,8 @@ public class PeerReviewInstance extends VariableInstance {
      * @return the list of feedback
      */
     public List<Review> getToReview() {
-        Collections.sort(toReview, (o1, o2) -> o1.getId().compareTo(o2.getId()));
-        return toReview;
+        Collections.sort(this.toReview, new EntityIdComparator<>());
+        return this.toReview;
     }
 
     /**
@@ -107,8 +104,8 @@ public class PeerReviewInstance extends VariableInstance {
      * @return all feedbacks from others
      */
     public List<Review> getReviewed() {
-        Collections.sort(reviewed, (r1, r2) -> r1.getId().compareTo(r2.getId()));
-        return reviewed;
+        Collections.sort(this.reviewed, new EntityIdComparator<>());
+        return this.reviewed;
     }
 
     /**
