@@ -9,6 +9,7 @@ package com.wegas.resourceManagement.persistence;
 
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.EntityIdComparator;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.VariableInstance;
 
@@ -41,12 +42,7 @@ public class BurndownInstance extends VariableInstance {
      * @return get all iterations
      */
     public List<Iteration> getIterations() {
-        Collections.sort(this.iterations, new Comparator<Iteration>() {
-            @Override
-            public int compare(Iteration o1, Iteration o2) {
-                return o1.getId().compareTo(o2.getId());
-            }
-        });
+        Collections.sort(this.iterations, new EntityIdComparator<>());
         return iterations;
     }
 

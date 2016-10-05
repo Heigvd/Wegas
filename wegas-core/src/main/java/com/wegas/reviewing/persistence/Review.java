@@ -12,6 +12,7 @@ import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
+import com.wegas.core.persistence.EntityIdComparator;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.reviewing.persistence.evaluation.EvaluationInstance;
 
@@ -153,7 +154,7 @@ public class Review extends AbstractEntity implements Broadcastable {
      * @return the list of evaluation instance composing the feedback
      */
     public List<EvaluationInstance> getFeedback() {
-        Collections.sort(this.feedback, (f1, f2) -> f1.getId().compareTo(f2.getId()));
+        Collections.sort(this.feedback, new EntityIdComparator<>());
         return this.feedback;
     }
 
@@ -172,7 +173,7 @@ public class Review extends AbstractEntity implements Broadcastable {
      * @return the list of evaluation instances composing the feedback comments
      */
     public List<EvaluationInstance> getComments() {
-        Collections.sort(this.comments, (c1, c2) -> c1.getId().compareTo(c2.getId()));
+        Collections.sort(this.comments, new EntityIdComparator<>());
         return this.comments;
     }
 

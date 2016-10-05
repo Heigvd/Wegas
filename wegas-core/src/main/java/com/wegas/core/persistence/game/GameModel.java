@@ -397,7 +397,12 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     @JsonIgnore
     public List<Game> getGames() {
-        Collections.sort(this.games, (g1, g2) -> g1.getCreatedTime().compareTo(g2.getCreatedTime()));
+        Collections.sort(this.games, new Comparator<Game>() {
+            @Override
+            public int compare(Game g1, Game g2) {
+                return g1.getCreatedTime().compareTo(g2.getCreatedTime());
+            }
+        });
         return this.games;
     }
 
