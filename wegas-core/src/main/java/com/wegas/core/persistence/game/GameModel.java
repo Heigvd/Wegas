@@ -128,7 +128,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      */
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.LAZY)
-//    @OrderBy("createdTime")
     @JsonManagedReference
     @JsonIgnore
     //@JsonView(Views.ExportI.class)

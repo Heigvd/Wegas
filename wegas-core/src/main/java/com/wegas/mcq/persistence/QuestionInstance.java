@@ -41,7 +41,6 @@ public class QuestionInstance extends VariableInstance {
     @BatchFetch(BatchFetchType.JOIN)
     @JsonManagedReference
     //@JoinFetch
-//    @OrderBy("id ASC")
     private List<Reply> replies = new ArrayList<>();
     /**
      *

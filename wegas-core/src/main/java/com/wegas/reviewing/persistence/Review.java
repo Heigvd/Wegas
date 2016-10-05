@@ -21,11 +21,8 @@ import java.util.*;
 /**
  * A review is linked to two PeerReviewInstnace : the one who reviews and the
  * original reviewed 'author'
- * <p>
  * A review is composed of the feedback (written by reviewers) and the feedback
  * comments (written by author). Both are a list of evaluation instances
- * <p>
- * <p>
  * <ol>
  * <li> dispatched: initial state, reviewer can edit feedback
  * <li> reviewed: reviewer can't edit feedback anymore, author can't read
@@ -82,7 +79,6 @@ public class Review extends AbstractEntity implements Broadcastable {
      * 'reviewer' only)
      */
     @OneToMany(mappedBy = "feedbackReview", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @OrderBy("id ASC")
     private List<EvaluationInstance> feedback = new ArrayList<>();
 
     /**
@@ -90,7 +86,6 @@ public class Review extends AbstractEntity implements Broadcastable {
      * (writable by 'author' only)
      */
     @OneToMany(mappedBy = "commentsReview", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @OrderBy("id ASC")
     private List<EvaluationInstance> comments = new ArrayList<>();
 
     @Override

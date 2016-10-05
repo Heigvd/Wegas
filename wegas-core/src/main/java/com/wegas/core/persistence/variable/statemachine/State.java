@@ -77,7 +77,6 @@ public class State extends AbstractEntity implements Searchable, Scripted {
      */
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "state_id", referencedColumnName = "state_id")
-//    @OrderBy("index")
     private List<Transition> transitions = new ArrayList<>();
 
     /**

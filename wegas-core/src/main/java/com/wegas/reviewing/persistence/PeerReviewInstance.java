@@ -21,12 +21,10 @@ import java.util.List;
 
 /**
  * Instance of the PeerReviewDescriptor variable
- * <p>
  * Author:<br />
  * - has to review several other authors: <code>toReview</code> Review
  * list<br />
  * - is reviewed by several other authors: <code>reviewed</code> Review list
- * <p>
  * The review is in a specific state, see PeerReviewDescriptor
  *
  * @author Maxence Laurent (maxence.laurent gmail.com)
@@ -46,14 +44,12 @@ public class PeerReviewInstance extends VariableInstance {
      * List of review that contains feedback written by player owning this
      */
     @OneToMany(mappedBy = "reviewer", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @OrderBy("id ASC")
     private List<Review> toReview = new ArrayList<>();
 
     /**
      * List of review that contains others feedback
      */
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @OrderBy("id ASC")
     private List<Review> reviewed = new ArrayList<>();
 
     /**
