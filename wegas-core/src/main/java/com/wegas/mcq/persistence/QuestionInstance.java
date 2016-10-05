@@ -15,8 +15,12 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import org.eclipse.persistence.annotations.BatchFetch;
 import org.eclipse.persistence.annotations.BatchFetchType;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static java.lang.Boolean.FALSE;
@@ -37,7 +41,7 @@ public class QuestionInstance extends VariableInstance {
     @BatchFetch(BatchFetchType.JOIN)
     @JsonManagedReference
     //@JoinFetch
-    @OrderBy("id ASC")
+//    @OrderBy("id ASC")
     private List<Reply> replies = new ArrayList<>();
     /**
      *
@@ -90,6 +94,7 @@ public class QuestionInstance extends VariableInstance {
      */
     @JsonManagedReference
     public List<Reply> getReplies() {
+        Collections.sort(replies, (r1, r2) -> r1.getId().compareTo(r2.getId()));
         return replies;
     }
 
