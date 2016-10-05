@@ -162,7 +162,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
      * @return
      */
     public List<Transition> getTransitions() {
-        Collections.sort(transitions, (t1, t2) -> t1.getIndex() - t2.getIndex());
+//        Collections.sort(transitions, (t1, t2) -> t1.getIndex() - t2.getIndex());
         return transitions;
     }
 

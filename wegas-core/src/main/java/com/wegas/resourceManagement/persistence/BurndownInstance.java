@@ -32,7 +32,6 @@ public class BurndownInstance extends VariableInstance {
     private static final long serialVersionUID = 1L;
 
     @OneToMany(mappedBy = "burndownInstance", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @OrderBy("id ASC")
     private List<Iteration> iterations = new ArrayList<>();
 
     /**
@@ -41,7 +40,7 @@ public class BurndownInstance extends VariableInstance {
      * @return get all iterations
      */
     public List<Iteration> getIterations() {
-        Collections.sort(iterations, (i1, i2) -> i1.getId().compareTo(i2.getId()));
+//        Collections.sort(iterations, (i1, i2) -> i1.getId().compareTo(i2.getId()));
         return iterations;
     }
 

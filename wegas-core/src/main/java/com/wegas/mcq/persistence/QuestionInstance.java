@@ -93,7 +93,7 @@ public class QuestionInstance extends VariableInstance {
      */
     @JsonManagedReference
     public List<Reply> getReplies() {
-        Collections.sort(replies, (r1, r2) -> r1.getId().compareTo(r2.getId()));
+//        Collections.sort(replies, (r1, r2) -> r1.getId().compareTo(r2.getId()));
         return replies;
     }
 

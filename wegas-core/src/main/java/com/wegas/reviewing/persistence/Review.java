@@ -153,7 +153,7 @@ public class Review extends AbstractEntity implements Broadcastable {
      * @return the list of evaluation instance composing the feedback
      */
     public List<EvaluationInstance> getFeedback() {
-        Collections.sort(feedback, (f1, f2) -> f1.getId().compareTo(f2.getId()));
+//        Collections.sort(feedback, (f1, f2) -> f1.getId().compareTo(f2.getId()));
         return feedback;
     }
 
@@ -172,7 +172,7 @@ public class Review extends AbstractEntity implements Broadcastable {
      * @return the list of evaluation instances composing the feedback comments
      */
     public List<EvaluationInstance> getComments() {
-        Collections.sort(comments, (c1, c2) -> c1.getId().compareTo(c2.getId()));
+//        Collections.sort(comments, (c1, c2) -> c1.getId().compareTo(c2.getId()));
         return comments;
     }
 
