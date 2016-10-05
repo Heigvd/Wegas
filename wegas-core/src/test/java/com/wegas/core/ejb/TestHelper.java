@@ -8,6 +8,7 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.config.IniSecurityManagerFactory;
 import org.slf4j.Logger;
@@ -60,7 +61,9 @@ public class TestHelper {
             getLogger("javax.enterprise.system").setLevel(Level.SEVERE);
             org.glassfish.ejb.LogFacade.getLogger().setLevel(Level.SEVERE);
             container = EJBContainer.createEJBContainer(properties);
-
+            if (container == null) {
+                throw WegasErrorMessage.error("FATAL ERROR WHILE SETTING EJB_CONTAINER UP");
+            }
         }
         emptyDBTables();
         return container;
