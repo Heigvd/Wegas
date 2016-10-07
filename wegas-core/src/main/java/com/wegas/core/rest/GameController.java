@@ -291,7 +291,7 @@ public class GameController {
                     Player player = playerFacade.checkExistingPlayer(game.getId(), currentUser.getId());
                     if (player == null) {
                         if (game.getGameModel().getProperties().getFreeForAll()) {
-                            Team team = new Team("Individually-" + Helper.genToken(20), 1);
+                            Team team = new Team("Ind-" + Helper.genToken(12), 1);
                             teamFacade.create(game.getId(), team); // return managed team
                             playerFacade.create(team, currentUser);
                             //Team find = teamFacade.find(team.getId());
