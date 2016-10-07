@@ -229,7 +229,9 @@ public class ScriptFacade {
         ScriptContext ctx = instantiateScriptContext(requestManager.getPlayer(), script.getLanguage());
 
         for (Entry<String, AbstractEntity> arg : arguments.entrySet()) {        // Inject the arguments
-            ctx.getBindings(ScriptContext.ENGINE_SCOPE).put(arg.getKey(), arg.getValue());
+            if (arg.getValue() != null) {
+                ctx.getBindings(ScriptContext.ENGINE_SCOPE).put(arg.getKey(), arg.getValue());
+            }
         }
 
         try {
