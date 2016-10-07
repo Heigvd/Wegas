@@ -15,9 +15,16 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.scope.GameModelScope;
+import com.wegas.core.persistence.variable.scope.GameScope;
+import com.wegas.core.persistence.variable.scope.PlayerScope;
+import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
+import java.util.AbstractList;
+import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -136,6 +143,87 @@ public class PlayerFacade extends BaseFacade<Player> {
         //return findPlayerInstance.setParameter("playerid", player.getId()).getResultList();
     }
 
+    private List<VariableInstance> getPlayerInstances(Player player) {
+        List<VariableInstance> result = new ArrayList<>();
+
+        TypedQuery<VariableInstance> query = getEntityManager().createNamedQuery(
+                "VariableInstance.findPlayerInstance", VariableInstance.class);
+
+        for (VariableInstance instance : player.getPrivateInstances()) {
+            PlayerScope scope = instance.getPlayerScope();
+            query.setParameter("scopeId", scope.getId());
+            if (scope.getBroadcastScope().equals(PlayerScope.class.getSimpleName())) {
+                // Only owners has access to their variable
+                result.add(instance);
+            } else if (scope.getBroadcastScope().equals(GameScope.class.getSimpleName())) {
+                // Current player has access to all instances in the game
+                for (Team t : player.getGame().getTeams()) {
+                    for (Player p : t.getPlayers()) {
+                        query.setParameter("playerId", p.getId());
+                        VariableInstance vi = query.getSingleResult();
+                        result.add(vi);
+                    }
+                }
+            } else if (scope.getBroadcastScope().equals(TeamScope.class.getSimpleName())) {
+                //Player has access to all instances within their game
+                for (Player p : player.getTeam().getPlayers()) {
+                    query.setParameter("playerId", p.getId());
+                    VariableInstance vi = query.getSingleResult();
+                    result.add(vi);
+                }
+            }
+        }
+        return result;
+    }
+
+    private List<VariableInstance> getTeamInstances(Team team) {
+        List<VariableInstance> result = new ArrayList<>();
+
+        TypedQuery<VariableInstance> query = getEntityManager().createNamedQuery(
+                "VariableInstance.findTeamInstance", VariableInstance.class);
+
+        for (VariableInstance instance : team.getPrivateInstances()) {
+            TeamScope scope = instance.getTeamScope();
+            query.setParameter("scopeId", scope.getId());
+            if (scope.getBroadcastScope().equals("GameScope")) {
+                //current player has access to all instance in the game
+                for (Team t : team.getGame().getTeams()) {
+                    query.setParameter("teamId", t.getId());
+                    VariableInstance vi = query.getSingleResult();
+                    result.add(vi);
+                }
+            } else {
+                //TeamScope and PlayerScope -> only current team instance !
+                result.add(instance);
+
+            }
+        }
+        return result;
+    }
+
+    private List<VariableInstance> getGameInstances(Game game) {
+        List<VariableInstance> result = new ArrayList<>();
+
+        for (VariableInstance instance : game.getPrivateInstances()) {
+            result.add(instance);
+        }
+        return result;
+    }
+
+    private List<VariableInstance> getGameModelInstances(GameModel gameModel) {
+        List<VariableInstance> result = new ArrayList<>();
+        /**
+         * Define a more straightforward way to fetch those instances !!!
+         */
+        for (VariableDescriptor vd : gameModel.getVariableDescriptors()) {
+            if (vd.getScope() instanceof GameModelScope) {
+                result.add(vd.getScope().getInstance());
+            }
+        }
+
+        return result;
+    }
+
     /**
      * Get all instances a player as access to
      *
@@ -148,33 +236,10 @@ public class PlayerFacade extends BaseFacade<Player> {
         Game game = team.getGame();
         GameModel gameModel = game.getGameModel();
 
-        TypedQuery<VariableInstance> query = getEntityManager().createNamedQuery(
-                "VariableInstance.findPlayerInstancesForPlayer", VariableInstance.class);
-        query.setParameter("player", player);
-        query.setParameter("team", team);
-        query.setParameter("game", game);
-        List<VariableInstance> instances = query.getResultList();
-
-        query = getEntityManager().createNamedQuery(
-                "VariableInstance.findTeamInstancesForPlayer",
-                VariableInstance.class);
-        query.setParameter("team", team);
-        query.setParameter("game", game);
-        instances.addAll(query.getResultList());
-
-        query = getEntityManager().createNamedQuery(
-                "VariableInstance.findGameInstancesForPlayer",
-                VariableInstance.class
-        );
-        query.setParameter("game", game);
-        instances.addAll(query.getResultList());
-
-        query = getEntityManager().createNamedQuery(
-                "VariableInstance.findGlobalInstancesForPlayer",
-                VariableInstance.class
-        );
-        query.setParameter("gameModel", gameModel);
-        instances.addAll(query.getResultList());
+        List<VariableInstance> instances = this.getPlayerInstances(player);
+        instances.addAll(this.getTeamInstances(team));
+        instances.addAll(this.getGameInstances(game));
+        instances.addAll(this.getGameModelInstances(gameModel));
 
         return instances;
     }

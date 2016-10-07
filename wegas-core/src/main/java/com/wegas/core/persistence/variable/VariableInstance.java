@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.eclipse.persistence.annotations.CacheIndex;
 import org.eclipse.persistence.annotations.OptimisticLocking;
 
 ////import javax.xml.bind.annotation.XmlTransient;
@@ -51,38 +52,37 @@ import org.eclipse.persistence.annotations.OptimisticLocking;
     //@NamedQuery(name = "findTeamInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.teamScopeKey = :teamid"),
     //@NamedQuery(name = "findPlayerInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.playerScopeKey = :playerid"),
 
-    @NamedQuery(name = "VariableInstance.findAIOInstancesForPlayer",
-            query = "SELECT vi FROM VariableInstance vi WHERE "
-            + "(vi.player = :player) OR "
-            + "(vi.playerScope.broadcastScope = 'TeamScope' AND vi.player.team = :team) OR "
-            + "(vi.playerScope.broadcastScope = 'GameScope' AND vi.player.team.game = :game) OR "
-            + "(vi.team = :team) OR "
-            + "(vi.teamScope.broadcastScope = 'GameScope' AND vi.team.game = :game) OR"
-            + "(vi.game = :game) OR "
-            + "(vi.gameModelScope.variableDescriptor.gameModel = :gameModel)"
-    ),
 
+    @NamedQuery(name = "VariableInstance.findPlayerInstance",
+            query = "SELECT vi FROM VariableInstance vi WHERE "
+            + "(vi.player.id = :playerId AND vi.playerScope.id = :scopeId)"
+    ),
+    @NamedQuery(name = "VariableInstance.findTeamInstance",
+            query = "SELECT vi FROM VariableInstance vi WHERE "
+            + "(vi.team.id = :teamId AND vi.teamScope.id = :scopeId)"
+    ),
+ 
     @NamedQuery(name = "VariableInstance.findPlayerInstancesForPlayer",
             query = "SELECT vi FROM VariableInstance vi WHERE "
-            + "(vi.player = :player) OR "
-            + "(vi.playerScope.broadcastScope = 'TeamScope' AND vi.player.team = :team) OR"
-            + "(vi.playerScope.broadcastScope = 'GameScope' AND vi.player.team.game = :game)"
+            + "(vi.player.id = :playerId) OR "
+            + "(vi.playerScope.broadcastScope = 'TeamScope' AND vi.player.team.id = :teamId) OR"
+            + "(vi.playerScope.broadcastScope = 'GameScope' AND vi.player.team.game.id = :gameId)"
     ),
 
     @NamedQuery(name = "VariableInstance.findTeamInstancesForPlayer",
             query = "SELECT vi FROM VariableInstance vi WHERE "
-            + "(vi.team = :team) OR "
-            + "(vi.teamScope.broadcastScope = 'GameScope' AND vi.team.game = :game)"
+            + "(vi.team.id = :teamId) OR "
+            + "(vi.teamScope.broadcastScope = 'GameScope' AND vi.team.game.id = :gameId)"
     ),
 
     @NamedQuery(name = "VariableInstance.findGameInstancesForPlayer",
             query = "SELECT vi FROM VariableInstance vi WHERE "
-            + "vi.game = :game"
+            + "vi.game.id = :gameId"
     ),
 
     @NamedQuery(name = "VariableInstance.findGlobalInstancesForPlayer",
             query = "SELECT vi FROM VariableInstance vi WHERE "
-            + "vi.gameModelScope.variableDescriptor.gameModel = :gameModel"
+            + "vi.gameModelScope.variableDescriptor.gameModel.id = :gameModelId"
     )
 /*@NamedQuery(name = "VariableInstance.findInstancesForPlayer_ORI",
             query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE EXISTS "
@@ -197,6 +197,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     @JoinColumn(name = "variableinstances_key", insertable = false, updatable = false)
     @ManyToOne
     @JsonIgnore
+    @CacheIndex
     private Player player;
     /**
      *
@@ -209,6 +210,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     @JoinColumn(name = "gamevariableinstances_key", insertable = false, updatable = false)
     @ManyToOne
     @JsonIgnore
+    @CacheIndex
     private Game game;
     /**
      *
@@ -221,6 +223,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     @JoinColumn(name = "teamvariableinstances_key", insertable = false, updatable = false)
     @ManyToOne
     @JsonIgnore
+    @CacheIndex
     private Team team;
 
     @Override
@@ -314,10 +317,10 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * 
-     * @param key 
+     *
+     * @param key
      */
-    public void setScopeKey(Long key){
+    public void setScopeKey(Long key) {
         // Just to be ignored
     }
 
@@ -403,7 +406,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
         //Thread.dumpStack();
         this.id = id;
     }*/
-
     /**
      * Id of the team owning the instance
      *
