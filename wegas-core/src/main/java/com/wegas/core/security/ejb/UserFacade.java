@@ -758,7 +758,8 @@ public class UserFacade extends BaseFacade<User> {
             User user = this.getCurrentUser();
             Player player = playerFacade.find(id);
 
-            return player != null && (player.getUser().equals(user) || SecurityHelper.isPermitted(player.getGame(), "Edit"));
+            // Current player belongs to current user || current user is the teacher or scenarist (test user)
+            return player != null && ((user != null && user.equals(player.getUser())) || SecurityHelper.isPermitted(player.getGame(), "Edit"));
         }
         return false;
     }
