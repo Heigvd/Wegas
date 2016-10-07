@@ -575,7 +575,7 @@ YUI.add('wegas-editor-action', function(Y) {
         },
         onDescriptorDelete: function(e) {
             if (e.entity instanceof Y.Wegas.persistence.VariableDescriptor) {
-                if (e.entity instanceof Y.Wegas.persistence.FSMDescriptor) {
+                if (Y.Wegas.persistence.FSMDescriptor && e.entity instanceof Y.Wegas.persistence.FSMDescriptor) {
                     this._removeStateMachinePanel(e.entity);
                 }
                 this._removeEditTab(e.entity);
