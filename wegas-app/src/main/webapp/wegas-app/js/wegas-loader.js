@@ -98,23 +98,52 @@ YUI().use(function(Y) {
             "wegas-variabledescriptor-entities": {
                 path: "js/persistence/wegas-variabledescriptor-entities-min.js",
                 requires: ["wegas-entity", "promise"],
-                ws_provides: ["NumberDescriptor", "TextDescriptor"]
+                ws_provides: [
+                    "BooleanDescriptor",
+                    "BooleantInstance",
+                    "InboxDescriptor",
+                    "InboxInstance",
+                    "ListDescriptor",
+                    "ListInstance",
+                    "NumberDescriptor",
+                    "NumberInstance",
+                    "StringDescriptor",
+                    "StringInstance",
+                    "TextDescriptor",
+                    "TextInstance"
+                ]
             },
             "wegas-statemachine-entities": {
                 path: "js/persistence/wegas-statemachine-entities-min.js",
-                ws_provides: ["DialogueDescriptor", "TriggerDescriptor", "FSMDescriptor"]
+                ws_provides: [
+                    "DialogueDescriptor",
+                    "TriggerDescriptor",
+                    "TriggerInstance",
+                    "FSMDescriptor",
+                    "FSMInstance"
+                ]
             },
             "wegas-content-entities": {
                 path: "js/persistence/wegas-content-entities-min.js"
             },
             "wegas-object-entities": {
                 path: "js/persistence/wegas-object-entities-min.js",
-                ws_provides: "ObjectDescriptor"
+                ws_provides: [
+                    "ObjectDescriptor",
+                    "ObjectInstance"
+                ]
             },
             "wegas-resourcemanagement-entities": {
                 path: "js/persistence/wegas-resourcemanagement-entities-min.js",
                 requires: "arraysort",
-                ws_provides: ["ResourceDescriptor", "TaskDescriptor", "BurndownDescriptor"]
+                ws_provides: [
+                    "ResourceDescriptor",
+                    "ResourceInstance",
+                    "TaskDescriptor",
+                    "TaskInstance",
+                    "BurndownDescriptor",
+                    "BurndownInstance"
+                ]
             },
             /**
              * Widgets
@@ -205,7 +234,7 @@ YUI().use(function(Y) {
             "wegas-text-input": {
                 path: "js/widget/wegas-text-input-min.js",
                 ws_provides: ["TextInput", "StringInput"],
-                requires: ["wegas-text-inputcss", "wegas-widget", "tinymce", "wegas-panel-fileselect", "wegas-button",  "event-valuechange" ]
+                requires: ["wegas-text-inputcss", "wegas-widget", "tinymce", "wegas-panel-fileselect", "wegas-button", "event-valuechange"]
             },
             "wegas-number-inputcss": {
                 type: CSS
@@ -605,7 +634,7 @@ YUI().use(function(Y) {
             "wegas-editor-action": {
                 path: "js/plugin/wegas-editor-action-min.js",
                 requires: ["wegas-button", "wegas-plugin", "event-key", "inputex-string"],
-                ws_provides: ["OpenTabAction", "OpenTabButton", "Linkwidget"]
+                ws_provides: ["OpenTabAction", "OpenTabButton", "Linkwidget", "OnDeleteListener"]
             },
             "wegas-editor-entityaction": {
                 path: "js/plugin/wegas-editor-entityaction-min.js",
@@ -801,7 +830,7 @@ YUI().use(function(Y) {
         root: "/wegas-mcq/",
         modules: {
             "wegas-mcq-entities": {
-                ws_provides: "QuestionDescriptor"
+                ws_provides: ["QuestionDescriptor", "QuestionInstance"]
             },
             "wegas-mcq-tabview": {
                 requires: ["wegas-tabview", "wegas-gallery",
@@ -865,7 +894,7 @@ YUI().use(function(Y) {
             },
             "wegas-reviewing-entities": {
                 requires: "wegas-entity",
-                ws_provides: "PeerReviewDescriptor"
+                ws_provides: ["PeerReviewDescriptor", "PeerReviewInstance"]
             },
             "wegas-review-widgets": {
                 requires: ["wegas-review-css",

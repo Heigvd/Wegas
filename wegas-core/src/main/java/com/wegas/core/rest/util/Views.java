@@ -7,10 +7,7 @@
  */
 package com.wegas.core.rest.util;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 /**
- *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class Views {
@@ -22,93 +19,60 @@ public class Views {
     }
 
     /**
-     * Extended (w/ blob texts)
+     * FUCK
+     */
+    public interface LobbyI {
+    }
+
+    /**
+     * Potential heavy text Extended (w/ blob texts)
      */
     public interface ExtendedI {
     }
 
     /**
-     *
-     */
-    public interface EditorExtendedI extends ExtendedI {
-    }
-
-    /**
-     * Extend view (w/ scripts, impacts)
+     * Relevant only to editors EditorI view (w/ scripts, impacts)
      */
     public interface EditorI {
     }
 
     /**
-     * Player view (w/ all players instances)
+     * Provides VariableDescriptor instances
      */
-//    public static interface PlayerI {
-//    }
-    /**
-     * Only display current player's VariableInstance
-     */
-    public interface WithScopeI {
+    public interface InstanceI {
     }
 
     /**
-     *
+     * Minimal view with IDs
      */
-    public interface SinglePlayerI extends WithScopeI {
+    public static class Public implements IndexI {
     }
 
     /**
-     *
+     * View with IDs and blobs
      */
-    public static class Index implements IndexI {
+    public static class Extended implements ExtendedI, IndexI {
     }
 
     /**
-     *
+     * View relevant to Editors with blobs
      */
-    public static class Public extends Index {
+    public static class Editor implements EditorI, ExtendedI, IndexI {
+    }
+
+    public static class Lobby implements EditorI, ExtendedI, IndexI, LobbyI {
     }
 
     /**
-     *
+     * Editor view with VariableInstance embed into VariableDescriptors'Scope
      */
-    public static class Extended extends Public implements ExtendedI {
+    public static class Instance implements InstanceI, EditorI, ExtendedI, IndexI {
     }
 
     /**
-     * Variable Descriptor with a single instance for the current player
+     * Do not include ids nor VariableInstances, Export usage
      */
-    public static class Private extends Public implements SinglePlayerI {
+    public static class Export implements EditorI, ExtendedI {
     }
 
-    /**
-     *
-     */
-    public static class Editor extends Public implements EditorI, WithScopeI {
-    }
-
-    /**
-     * Variable Descriptor with a single instance for the current player
-     */
-    public static class EditorPrivate extends Public implements SinglePlayerI, EditorI {
-    }
-
-    /**
-     * Variable Descriptor with a single instance for the current player
-     */
-    public static class EditorExtended extends Public implements EditorI, ExtendedI, EditorExtendedI, WithScopeI {
-    }
-
-    /**
-     *
-     */
-    public static class Export implements EditorI, EditorExtendedI, WithScopeI {
-    }
-
-    /**
-     *
-     */
-    @JsonIgnoreProperties({"id"})
-    //@JsonPropertyOrder(value = {"title", "id", "version", "price", "summary"})
-    public interface ExportFilter {
-    }
 }

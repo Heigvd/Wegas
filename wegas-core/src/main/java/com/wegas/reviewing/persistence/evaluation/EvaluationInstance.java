@@ -39,7 +39,7 @@ import javax.persistence.*;
     @JsonSubTypes.Type(value = CategorizedEvaluationInstance.class),
     @JsonSubTypes.Type(value = GradeInstance.class)
 })
-public abstract class EvaluationInstance extends AbstractEntity implements Broadcastable {
+public abstract class EvaluationInstance extends AbstractEntity /*implements Broadcastable */ {
 
     private static final long serialVersionUID = 1L;
 
@@ -193,7 +193,7 @@ public abstract class EvaluationInstance extends AbstractEntity implements Broad
         this.feedbackReview = rd;
     }
 
-    @Override
+    /*@Override
     public Map<String, List<AbstractEntity>> getEntities() {
         if (feedbackReview != null) {
             return feedbackReview.getEntities();
@@ -202,8 +202,7 @@ public abstract class EvaluationInstance extends AbstractEntity implements Broad
         } else {
             return null;
         }
-    }
-
+    }*/
     @Override
     public void updateCacheOnDelete() {
         ReviewingFacade rF = ReviewingFacade.lookup();

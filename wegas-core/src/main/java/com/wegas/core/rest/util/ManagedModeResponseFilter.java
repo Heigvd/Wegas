@@ -8,10 +8,13 @@
 package com.wegas.core.rest.util;
 
 import com.wegas.core.ejb.RequestFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.WebsocketFacade;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasWrappedException;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.security.ejb.UserFacade;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
@@ -31,6 +34,7 @@ import java.util.Map.Entry;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Provider
+//@Stateless
 public class ManagedModeResponseFilter implements ContainerResponseFilter {
 
     private final static Logger logger = LoggerFactory.getLogger(ManagedModeResponseFilter.class);
@@ -44,6 +48,9 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
      */
     @EJB
     private RequestFacade rmf;
+
+    @EJB
+    private UserFacade userFacade;
 
     /**
      * This method encapsulates a Jersey response's entities in a ServerResponse
@@ -78,17 +85,19 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
              * Behaviour is to return a managed response with an empty entity list
              * and to register the exception as a request exception event
              */
-            if (response.getEntity() instanceof Exception) {
+            if (response.getEntity() instanceof Exception || rmf.getRequestManager().getExceptionCounter() > 0) {
+
                 // No Entities but register exception as event
                 updatedEntities = new ArrayList<>();
                 WegasRuntimeException wrex;
 
                 if (response.getEntity() instanceof WegasRuntimeException) {
                     wrex = (WegasRuntimeException) response.getEntity();
-                } else {
+                } else if (response.getEntity() instanceof Exception) {
                     wrex = new WegasWrappedException((Exception) response.getEntity());
+                } else {
+                    wrex = WegasErrorMessage.error("Something went wrong");
                 }
-
                 rmf.getRequestManager().addException(wrex);
 
                 // Set response http status code to 400
@@ -134,7 +143,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                  */
                 for (Entry<String, List<AbstractEntity>> entry : updatedEntitiesMap.entrySet()) {
                     String audience = entry.getKey();
-                    if (websocketFacade.hasPermission(audience, rmf.getPlayer())) {
+                    if (userFacade.hasPermission(audience)) {
                         for (AbstractEntity ae : entry.getValue()) {
                             if (!updatedEntities.contains(ae)) {
                                 updatedEntities.add(ae);
@@ -147,7 +156,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                  */
                 for (Entry<String, List<AbstractEntity>> entry : destroyedEntitiesMap.entrySet()) {
                     String audience = entry.getKey();
-                    if (websocketFacade.hasPermission(audience, rmf.getPlayer())) {
+                    if (userFacade.hasPermission(audience)) {
                         for (AbstractEntity ae : entry.getValue()) {
                             if (!deletedEntities.contains(ae)) {
                                 deletedEntities.add(ae);

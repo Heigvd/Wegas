@@ -64,7 +64,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      */
     @Lob
-    @Basic(fetch = FetchType.LAZY)
+    //@Basic(fetch = FetchType.LAZY)
     @JsonView(Views.ExtendedI.class)
     private String description;
 
@@ -79,7 +79,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      */
     @Lob
-    @Basic(fetch = FetchType.LAZY)
+    //@Basic(fetch = FetchType.LAZY)
     @JsonView(Views.ExtendedI.class)
     private String comments;
 

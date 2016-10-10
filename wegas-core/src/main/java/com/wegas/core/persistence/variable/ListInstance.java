@@ -25,6 +25,7 @@ public class ListInstance extends VariableInstance {
     @Override
     public void merge(AbstractEntity a) {
         // @fixme make this abstract if there really is nothing to do
+        super.merge(a);
     }
 
     /**

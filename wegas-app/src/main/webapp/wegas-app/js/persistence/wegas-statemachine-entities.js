@@ -24,7 +24,28 @@ YUI.add("wegas-statemachine-entities", function(Y) {
         ID = "id",
         HTML = "html",
         Wegas = Y.Wegas,
-        persistence = Wegas.persistence;
+        persistence = Wegas.persistence,
+        VERSION_ATTR_DEF,
+        IDATTRDEF;
+
+    VERSION_ATTR_DEF = {
+        type: NUMBER,
+        optional: true,
+        _inputex: {
+            _type: "uneditable",
+            wrapperClassName: "inputEx-fieldWrapper inputEx-uneditableField wegas-advanced-feature"
+                //_type: HIDDEN
+        }
+    };
+
+    IDATTRDEF = {
+        type: STRING,
+        optional: true, // The id is optional for entites that have not been persisted
+        _inputex: {
+            _type: HIDDEN
+        }
+    };
+
 
     /*
      * FSMInstance Entity
@@ -57,11 +78,11 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 type: "uneditable",
                 _inputex: {
                     label: "Transition History"
-                //,
-                //elementType:{
-                //    type:NUMBER,
-                //    readonly:true
-                //}
+                        //,
+                        //elementType:{
+                        //    type:NUMBER,
+                        //    readonly:true
+                        //}
                 }
             }
         },
@@ -148,13 +169,8 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                             value: 'FSMInstance'
                         }
                     },
-                    id: {
-                        type: NUMBER,
-                        optional: true, // The id is optional for entities that have not been persisted
-                        _inputex: {
-                            _type: HIDDEN
-                        }
-                    },
+                    id: IDATTRDEF,
+                    version: VERSION_ATTR_DEF,
                     currentStateId: {
                         type: NUMBER,
                         _inputex: {
@@ -178,7 +194,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                         1: new persistence.State({})
                     };
                 },
-                writeOnce: "initOnly",
+                //writeOnce: "initOnly",
                 _inputex: {
                     _type: HIDDEN
                 }
@@ -186,70 +202,70 @@ YUI.add("wegas-statemachine-entities", function(Y) {
         },
         EDITORNAME: "State Machine",
         EDITMENU: [{
-            type: "EditEntityButton",
-            plugins: [{
-                fn: "EditFSMAction"
-            }]
-        }, {
-            type: BUTTON,
-            label: "Copy",
-            plugins: [{
-                fn: "DuplicateEntityAction"
-            }]
-        }, {
-            type: "DeleteFSMButton"
-        }, {
-            type: BUTTON,
-            label: "Export",
-            plugins: [{
-                fn: "WidgetMenu",
-                cfg: {
-                    children: [{
-                        type: "PrintButton",
-                        label: "Html"
-                    }, {
-                        type: "PrintButton",
-                        label: "Html (Players document)",
-                        mode: "player"
-                    }, {
-                        type: "PrintButton",
-                        label: "Pdf",
-                        outputType: "pdf"
-                    }, {
-                        type: "PrintButton",
-                        label: "Pdf (Players document)",
-                        outputType: "pdf",
-                        mode: "player"
-                    }, {
-                        type: "OpenEntityButton",
-                        label: "Json",
-                        url: "rest/Export/GameModel/VariableDescriptor/{id}"
+                type: "EditEntityButton",
+                plugins: [{
+                        fn: "EditFSMAction"
                     }]
-                }
-            }]
-        }
+            }, {
+                type: BUTTON,
+                label: "Copy",
+                plugins: [{
+                        fn: "DuplicateEntityAction"
+                    }]
+            }, {
+                type: "DeleteEntityButton"
+            }, {
+                type: BUTTON,
+                label: "Export",
+                plugins: [{
+                        fn: "WidgetMenu",
+                        cfg: {
+                            children: [{
+                                    type: "PrintButton",
+                                    label: "Html"
+                                }, {
+                                    type: "PrintButton",
+                                    label: "Html (Players document)",
+                                    mode: "player"
+                                }, {
+                                    type: "PrintButton",
+                                    label: "Pdf",
+                                    outputType: "pdf"
+                                }, {
+                                    type: "PrintButton",
+                                    label: "Pdf (Players document)",
+                                    outputType: "pdf",
+                                    mode: "player"
+                                }, {
+                                    type: "OpenEntityButton",
+                                    label: "Json",
+                                    url: "rest/Export/GameModel/VariableDescriptor/{id}"
+                                }]
+                        }
+                    }]
+            }
         ],
         METHODS: {
             enable: {
                 label: "activate",
                 arguments: [{
-                    type: HIDDEN,
-                    value: SELF
-                }]
+                        type: HIDDEN,
+                        value: SELF
+                    }]
             },
             disable: {
                 label: "desactivate",
                 arguments: [{
-                    type: HIDDEN,
-                    value: SELF
-                }]
+                        type: HIDDEN,
+                        value: SELF
+                    }]
             },
             isEnabled: {
                 label: "is active",
                 arguments: [{
-                    type: HIDDEN,
-                    value: SELF
-                }],
+                        type: HIDDEN,
+                        value: SELF
+                    }],
                 returns: BOOLEAN,
                 localEval: function(self) {
                     return this.getInstance(self).get("enabled");
@@ -258,9 +274,9 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             isDisabled: {
                 label: "is inactive",
                 arguments: [{
-                    type: HIDDEN,
-                    value: SELF
-                }],
+                        type: HIDDEN,
+                        value: SELF
+                    }],
                 returns: BOOLEAN,
                 localEval: function(self) {
                     return !this.getInstance(self).get("enabled");
@@ -275,12 +291,14 @@ YUI.add("wegas-statemachine-entities", function(Y) {
         // *** Lifecycle methods *** //
         initializer: function() {}
 
-    // *** Private methods *** //
+        // *** Private methods *** //
     }, {
         ATTRS: {
             "@class": {
                 value: "State"
             },
+            stateMachineId: VERSION_ATTR_DEF,
+            version: VERSION_ATTR_DEF,
             label: {
                 type: STRING,
                 "transient": false,
@@ -320,6 +338,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                     _type: HIDDEN
                 }
             },
+            version: VERSION_ATTR_DEF,
             triggerCondition: {
                 optional: true,
                 _inputex: {
@@ -328,6 +347,8 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                     expects: "condition"
                 }
             },
+            stateId: VERSION_ATTR_DEF,
+            stateMachineId: VERSION_ATTR_DEF,
             preStateImpact: {
                 optional: true,
                 _inputex: {
@@ -377,6 +398,8 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                             value: 'TriggerInstance'
                         }
                     },
+                    id: IDATTRDEF,
+                    version: VERSION_ATTR_DEF,
                     currentStateId: {
                         type: NUMBER,
                         optional: true,
@@ -432,16 +455,16 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             }
         },
         EDITMENU: [{
-            type: "EditEntityButton"
-        }, {
-            type: BUTTON,
-            label: "Copy",
-            plugins: [{
-                fn: "DuplicateEntityAction"
+                type: "EditEntityButton"
+            }, {
+                type: BUTTON,
+                label: "Copy",
+                plugins: [{
+                        fn: "DuplicateEntityAction"
+                    }]
+            }, {
+                type: "DeleteEntityButton"
             }]
-        }, {
-            type: "DeleteEntityButton"
-        }]
     });
     /*
      * TriggerInstance Entity
@@ -524,7 +547,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                         1: new persistence.DialogueState({})
                     };
                 },
-                writeOnce: "initOnly",
+                /*writeOnce: "initOnly",*/
                 _inputex: {
                     _type: HIDDEN
                 }
@@ -532,25 +555,25 @@ YUI.add("wegas-statemachine-entities", function(Y) {
         },
         EDITORNAME: "Dialog",
         EDITMENU: [{
-            type: "EditEntityButton",
-            plugins: [{
-                fn: "EditFSMAction",
-                cfg: {
-                    viewerCfg: {
-                        availableStates: [ /*"State",*/ "DialogueState"],
-                        availableTransitions: [ /*"Transition",*/ "DialogueTransition"]
-                    }
-                }
+                type: "EditEntityButton",
+                plugins: [{
+                        fn: "EditFSMAction",
+                        cfg: {
+                            viewerCfg: {
+                                availableStates: [/*"State",*/ "DialogueState"],
+                                availableTransitions: [/*"Transition",*/ "DialogueTransition"]
+                            }
+                        }
+                    }]
+            }, {
+                type: BUTTON,
+                label: "Copy",
+                plugins: [{
+                        fn: "DuplicateEntityAction"
+                    }]
+            }, {
+                type: "DeleteEntityButton"
             }]
-        }, {
-            type: BUTTON,
-            label: "Copy",
-            plugins: [{
-                fn: "DuplicateEntityAction"
-            }]
-        }, {
-            type: "DeleteFSMButton"
-        }]
     });
 
     /**
@@ -602,12 +625,12 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                     } else {
                         availableActions.push(
                             transitions[i].get("triggerCondition").localEval()
-                                .then(Y.bind(function(transition, res) {
-                                    if (res) {
-                                        return transition;
-                                    }
-                                    return false;
-                                }, null, transitions[i])));
+                            .then(Y.bind(function(transition, res) {
+                                if (res) {
+                                    return transition;
+                                }
+                                return false;
+                            }, null, transitions[i])));
                     }
                 }
             }
@@ -639,6 +662,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             "@class": {
                 value: "DialogueState"
             },
+            version: VERSION_ATTR_DEF,
             text: {
                 type: STRING,
                 format: HTML,

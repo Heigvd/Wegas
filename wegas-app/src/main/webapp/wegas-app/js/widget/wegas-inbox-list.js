@@ -58,11 +58,16 @@ YUI.add('wegas-inbox-list', function(Y) {
          * When dataSource is updated, do syncUI
          */
         bindUI: function() {
-            this.dataUpdatedHandler = Wegas.Facade.Variable.after("update", this.syncUI, this);// Sync view on cache update
+            this.dataUpdatedHandler = Wegas.Facade.Instance.after("updatedInstance", this.onUpdatedInstance, this);// Sync view on cache update
 
             this.get(CONTENTBOX).delegate("click", function(e) {                // Whenever a collapsed message is clicked,
                 e.currentTarget.toggleClass("msg-toggled");                      // open it
             }, ".msg-toggled");
+        },
+        onUpdatedInstance: function(e) {
+            if (e.entity.get("id") === this.get("variable.evaluated").getInstance().get("id")) {
+                this.syncUI();
+            }
         },
         /**
          * @function
@@ -70,7 +75,8 @@ YUI.add('wegas-inbox-list', function(Y) {
          * Re-select the current selected msg;
          */
         syncUI: function() {
-            var inboxDescriptor = this.get('variable.evaluated');
+            var inboxDescriptor = this.get('variable.evaluated'),
+                inboxInstanceId = inboxDescriptor.getInstance().get("id");
 
             if (!inboxDescriptor) {
                 this.get(CONTENTBOX).setHTML("<center><em>Unable to find inbox variable</em></center>");
@@ -78,7 +84,7 @@ YUI.add('wegas-inbox-list', function(Y) {
             }
             this.showOverlay();
             Wegas.Facade.Variable.sendRequest({//                               // Retrieve the messages from the server
-                request: "/Inbox/" + inboxDescriptor.getInstance().get("id") + "/Message/?view=Extended",
+                request: "/Inbox/" + inboxInstanceId + "/Message/?view=Extended",
                 cfg: {
                     updateCache: false
                 },
@@ -87,7 +93,7 @@ YUI.add('wegas-inbox-list', function(Y) {
                         if (this.get("destroyed")) {
                             return;
                         }
-                        this.updateView(e.response.entities);
+                        this._updateView(inboxInstanceId, e.response.entities);
                         this.hideOverlay();
                     }, this)
                 }
@@ -107,9 +113,8 @@ YUI.add('wegas-inbox-list', function(Y) {
          * @param {Array of entity} entities
          * @returns {undefined}
          */
-        updateView: function(entities) {
-            var cb = this.get(CONTENTBOX),
-                promises = [];
+        _updateView: function(inboxInstanceId, entities) {
+            var cb = this.get(CONTENTBOX), readMessages = false;
 
             cb.setContent("");
 
@@ -120,15 +125,19 @@ YUI.add('wegas-inbox-list', function(Y) {
                 cb.append(this.TEMPLATES[this.get("template")](entity));
 
                 if (entity.get("unread")) {
-                    promises.push(this._read(entity));
+                    readMessages = true;
                 }
             }, this);
 
-            if (promises.length > 0) {
-                Y.Promise.all(promises).then(function() {
-                    Y.Wegas.Facade.Variable.forceUpdateEvent();
+            if (readMessages) {
+                Y.Wegas.Facade.Variable.sendRequest({// Send reqest to mark as read
+                    request: "/Inbox/" + inboxInstanceId + "/ReadAll",
+                    cfg: {
+                        method: "PUT"
+                    }
                 });
             }
+
             cb.all(".msg").each(function(m) {
                 /*
                  * If the content is bigger than the available height (max-height style)
@@ -139,27 +148,6 @@ YUI.add('wegas-inbox-list', function(Y) {
                     m.removeClass("msg-toggled");
                 }
             });
-        },
-        _read: function(message) {
-            var ctx = this, promise = new Y.Promise(function(resolve, reject) {
-                message.set("unread", false);
-                Y.Wegas.Facade.Variable.sendRequest({// Send reqest to mark as read
-                    request: "/Inbox/Message/Read/" + message.get("id"),
-                    cfg: {
-                        method: "PUT",
-                        updateEvent: true
-                    },
-                    on: {
-                        success: Y.bind(function(e) {
-                            resolve(e.response.entity);
-                        }, ctx),
-                        failure: Y.bind(function(e) {
-                            reject();
-                        }, ctx)
-                    }
-                });
-            });
-            return promise;
         },
         getEditorLabel: function() {
             var variable = this.get("variable.evaluated");

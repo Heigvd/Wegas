@@ -104,7 +104,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      * correctly
      */
     @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, optional = false)
-    @JsonView(value = Views.EditorExtendedI.class)
+    @JsonView(value = Views.EditorI.class)
     private VariableInstance defaultInstance;
 
     /**
@@ -150,7 +150,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     //@JsonManagedReference
     @OneToOne(cascade = {CascadeType.ALL}, orphanRemoval = true, optional = false)
     @JoinFetch
-    @JsonView(value = Views.WithScopeI.class)
+    //@JsonView(value = Views.WithScopeI.class)
     private AbstractScope scope;
 
     /**
@@ -164,11 +164,21 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     /**
      *
      */
-    //@JsonView(Views.EditorExtendedI.class)
     @NotNull
     @Basic(optional = false)
     //@CacheIndex
     protected String name;
+
+    @Version
+    private Long version;
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
 
     /**
      *
@@ -429,6 +439,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
             try {
                 super.merge(a);
                 VariableDescriptor other = (VariableDescriptor) a;
+                this.setVersion(other.getVersion());
                 this.setName(other.getName());
                 this.setLabel(other.getLabel());
                 this.setTitle(other.getTitle());

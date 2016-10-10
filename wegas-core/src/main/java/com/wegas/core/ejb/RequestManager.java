@@ -47,6 +47,10 @@ public class RequestManager {
         INTERNAL // Internal Process (timer, etc)
     }
 
+    /*
+    @Resource
+    private TransactionSynchronizationRegistry txReg;
+     */
     @Inject
     MutexSingleton mutexSingleton;
 
@@ -70,6 +74,7 @@ public class RequestManager {
     private String requestId;
     private Long timestamp;
     private Response.StatusType status;
+    private Long exceptionCounter = 0L;
 
     /**
      * Contains all updated entities
@@ -236,6 +241,7 @@ public class RequestManager {
     public void addException(WegasRuntimeException e) {
         ArrayList<WegasRuntimeException> exceptions = new ArrayList<>();
         exceptions.add(e);
+        this.exceptionCounter++;
         this.addEvent(new ExceptionEvent(exceptions));
     }
 
@@ -252,6 +258,14 @@ public class RequestManager {
         } else {
             this.addEvent(new CustomEvent(type, payload));
         }
+    }
+
+    public Long getExceptionCounter() {
+        return exceptionCounter;
+    }
+
+    public void setExceptionCounter(Long exceptionCounter) {
+        this.exceptionCounter = exceptionCounter;
     }
 
     /**

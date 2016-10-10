@@ -195,10 +195,10 @@ YUI.add("wegas-editor-treeview", function(Y) {
             this.plug(Plugin.RememberExpandedTreeView);
             this.plug(Plugin.WidgetToolbar);
 
-        //this.plug(Plugin.EditorTVToggleClick);
-        //if (this.isFreeForAll()) {                                        // @hack Change the display if the gamemodel is freeforall
-        //    this.get("parent").set("label", "Players");
-        //}
+            //this.plug(Plugin.EditorTVToggleClick);
+            //if (this.isFreeForAll()) {                                        // @hack Change the display if the gamemodel is freeforall
+            //    this.get("parent").set("label", "Players");
+            //}
         },
         getNodes: function() {
             var entity = this.get("entity"),
@@ -216,14 +216,14 @@ YUI.add("wegas-editor-treeview", function(Y) {
         genTreeViewElement: function(entity) {
             var elClass = entity.get(CLASS),
                 collapsed = !this.isNodeExpanded(entity);
-                //selected = (this.currentSelection === entity.get(ID)) ? 2 : 0;
+            //selected = (this.currentSelection === entity.get(ID)) ? 2 : 0;
 
             switch (elClass) {
                 case "Team":
                     var children = this.genTreeViewElements(entity.get("players")),
                         expanded = Y.Array.find(children, function(p) {
-                                return p.selected;
-                            }) || !collapsed;
+                            return p.selected;
+                        }) || !collapsed;
 
                     expanded = !collapsed;
 
@@ -334,8 +334,8 @@ YUI.add("wegas-editor-treeview", function(Y) {
                         if (addChildrenMenu) {
                             Y.Array.each(addChildrenMenu.plugins[0].cfg.children, function(i) {
                                 if (!Y.Array.find(allowedChildren, function(j) {
-                                        return i.targetClass === j;
-                                    })) {
+                                    return i.targetClass === j;
+                                })) {
                                     i.cssClass = EXCLUDED_CLASS;
                                 }
                             }, this);
@@ -394,7 +394,7 @@ YUI.add("wegas-editor-treeview", function(Y) {
         initializer: function() {
             this.handlers = [
                 this.onHostEvent("treenode:extraClick", this.onAddChildrenShortcutClick, this)
-            //this.get("host").get("contentBox").delegate("click", this.onAddChildrenShortcutClick, ".add-child-shortcut", this)
+                    //this.get("host").get("contentBox").delegate("click", this.onAddChildrenShortcutClick, ".add-child-shortcut", this)
             ];
             this.menu = new Wegas.Menu();
         },
@@ -408,26 +408,26 @@ YUI.add("wegas-editor-treeview", function(Y) {
             if (addShortcut) {
                 if (addShortcut.match(/Descriptor$/)) {
                     cfg = [{
-                        type: "AddEntityChildButton",
-                        targetClass: addShortcut,
-                        dataSource: Y.Wegas.Facade.VariableDescriptor,
-                        entity: entity
-                    }];
+                            type: "AddEntityChildButton",
+                            targetClass: addShortcut,
+                            dataSource: Y.Wegas.Facade.VariableDescriptor,
+                            entity: entity
+                        }];
                 } else if (addShortcut === "Result") {
                     cfg = [{
-                        type: "Button",
-                        plugins: [{
-                            fn: "EditEntityArrayFieldAction",
-                            cfg: {
-                                targetClass: "Result",
-                                method: "POST",
-                                attributeKey: "results",
-                                showEditionAfterRequest: true,
-                                dataSource: Y.Wegas.Facade.VariableDescriptor,
-                                entity: entity
-                            }
-                        }]
-                    }];
+                            type: "Button",
+                            plugins: [{
+                                    fn: "EditEntityArrayFieldAction",
+                                    cfg: {
+                                        targetClass: "Result",
+                                        method: "POST",
+                                        attributeKey: "results",
+                                        showEditionAfterRequest: true,
+                                        dataSource: Y.Wegas.Facade.VariableDescriptor,
+                                        entity: entity
+                                    }
+                                }]
+                        }];
                 }
             } else {
                 cfg = this.getAddMenuItems(widget.get("data"));

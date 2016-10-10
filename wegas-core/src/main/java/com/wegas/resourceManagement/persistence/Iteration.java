@@ -33,7 +33,7 @@ import java.util.Map;
 @Table(indexes = {
     @Index(columnList = "burndowninstance_variableinstance_id")
 })
-public class Iteration extends AbstractEntity implements Broadcastable {
+public class Iteration extends AbstractEntity /*implements Broadcastable */ {
 
     private static final long serialVersionUID = 1L;
 
@@ -317,11 +317,11 @@ public class Iteration extends AbstractEntity implements Broadcastable {
     /**
      * tie lifecycle events with burdownInstnace ones
      */
+    /*
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
         return this.getBurndownInstance().getEntities();
-    }
-
+    }*/
     @Override
     public void updateCacheOnDelete() {
         VariableDescriptorFacade lookup = VariableDescriptorFacade.lookup();

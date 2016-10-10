@@ -190,7 +190,7 @@ angular.module('wegas.models.users', [])
                 return;
             }
 
-            var url = "rest/Extended/User/" + id + "?view=EditorExtended";
+            var url = "rest/Extended/User/" + id + "?view=Editor";
             $http.get(ServiceURL + url, {
                 "headers": {
                     "managed-mode": "true"

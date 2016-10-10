@@ -14,6 +14,8 @@ package com.wegas.core.exception.client;
  */
 public class WegasErrorMessage extends WegasRuntimeException {
 
+    private static final long serialVersionUID = 5424978937540148253L;
+
     private final String level;
 
     public static final String INFO = "info";

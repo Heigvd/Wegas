@@ -37,7 +37,7 @@ import java.util.Map;
     @Index(columnList = "inboxinstance_variableinstance_id")
 })
 
-public class Message extends NamedEntity implements Broadcastable {
+public class Message extends NamedEntity /*implements Broadcastable*/ {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -202,10 +202,10 @@ public class Message extends NamedEntity implements Broadcastable {
     }
 
 
-    @Override
+    /*@Override
     public Map<String, List<AbstractEntity>> getEntities() {
         return this.getInboxInstance().getEntities();
-    }
+    }*/
 
     @Override
     public boolean equals(Object o) {

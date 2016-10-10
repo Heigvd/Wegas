@@ -53,6 +53,7 @@ public class StringInstance extends VariableInstance implements Searchable {
     @Override
     public void merge(AbstractEntity a) {
         StringInstance vi = (StringInstance) a;
+        super.merge(a);
         this.setValue(vi.getValue());
     }
 

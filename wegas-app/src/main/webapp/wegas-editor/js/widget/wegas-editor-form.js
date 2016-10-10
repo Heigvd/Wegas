@@ -203,7 +203,7 @@ YUI.add('wegas-editor-form', function(Y) {
                 || entity instanceof Wegas.persistence.GameModel
                 || entity instanceof Wegas.persistence.Game) {                  // @fixme we may get extended mode for any entities, just need to check if it causes bugs
                 this.showOverlay();
-                this.get("dataSource").cache.getWithView(entity, "EditorExtended", {// Retrieve the entity from the source
+                this.get("dataSource").cache.getWithView(entity, "Editor", {// Retrieve the entity from the source
                     on: {
                         success: Y.bind(function(e) {
                             this.showUpdateForm(e.response.entity);             // and show the form

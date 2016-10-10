@@ -138,6 +138,7 @@ public class StateMachineInstance extends VariableInstance {
     public void merge(AbstractEntity a) {
         if (a instanceof StateMachineInstance) {
             StateMachineInstance other = (StateMachineInstance) a;
+            super.merge(a);
             this.setCurrentStateId(other.getCurrentStateId());
             this.setEnabled(other.getEnabled());
             this.setTransitionHistory(new ArrayList<>());

@@ -356,16 +356,11 @@ public class ReviewingFacade {
      * @param review
      * @return peer review instance that belong to the current player
      */
-    public PeerReviewInstance getPeerReviewInstanceFromReview(Review review) {
+    public PeerReviewInstance getPeerReviewInstanceFromReview(Review review, Player player) {
         PeerReviewInstance author = review.getAuthor();
-        Player currentPlayer = requestManager.getPlayer();
-        if (currentPlayer == null) {
-            // No current player => debug team -> test player
-            currentPlayer = author.getDescriptor().getGameModel().getGames().get(0).getPlayers().get(0);
-        }
 
         //PeerReviewDescriptor desc = (PeerReviewDescriptor) descriptorFacade.find(author.getDescriptor().getId());
-        PeerReviewInstance instance = (PeerReviewInstance) author.getDescriptor().getInstance(currentPlayer);
+        PeerReviewInstance instance = (PeerReviewInstance) author.getDescriptor().getInstance(player);
         return instance;
     }
 
@@ -410,9 +405,9 @@ public class ReviewingFacade {
      * @param review the review to submit
      * @return review
      */
-    public Review submitReview(Review review) {
+    public Review submitReview(Review review, Player player) {
         Review r = this.findReview(review.getId());
-        PeerReviewInstance pri = this.getPeerReviewInstanceFromReview(r);
+        PeerReviewInstance pri = this.getPeerReviewInstanceFromReview(r, player);
         r = this.saveReview(pri, review);
         if (r.getReviewState() == Review.ReviewState.DISPATCHED) {
             r.setReviewState(Review.ReviewState.REVIEWED);
@@ -431,8 +426,8 @@ public class ReviewingFacade {
      * @param reviewId
      * @return the submitted review
      */
-    public Review submitReview(Long reviewId) {
-        return this.submitReview(em.find(Review.class, reviewId));
+    public Review submitReview(Long reviewId, Player player) {
+        return this.submitReview(em.find(Review.class, reviewId), player);
     }
 
     /**
