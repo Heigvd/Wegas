@@ -54,6 +54,15 @@ public class PlayerFacade extends BaseFacade<Player> {
     @EJB
     private GameFacade gameFacade;
 
+    @EJB
+    private TeamFacade teamFacade;
+
+    /**
+     *
+     */
+    @EJB
+    private GameModelFacade gameModelFacade;
+
     /**
      *
      */
@@ -89,13 +98,11 @@ public class PlayerFacade extends BaseFacade<Player> {
      * @throws WegasNoResultException if not player was found
      */
     public Player findByGameIdAndUserId(final Long gameId, final Long userId) throws WegasNoResultException {
-        try {
-            final TypedQuery<Player> findByGameIdAndUserId = getEntityManager().createNamedQuery("Player.findPlayerByGameIdAndUserId", Player.class);
-            findByGameIdAndUserId.setParameter("gameId", gameId);
-            findByGameIdAndUserId.setParameter("userId", userId);
-            return findByGameIdAndUserId.getSingleResult();
-        } catch (NoResultException ex) {
-            throw new WegasNoResultException(ex);
+        Player p = this.checkExistingPlayer(gameId, userId);
+        if (p != null) {
+            return p;
+        } else {
+            throw new WegasNoResultException("No player found");
         }
     }
 
@@ -105,15 +112,16 @@ public class PlayerFacade extends BaseFacade<Player> {
      * @return the player owned by user linked to the game or null if not found
      */
     public Player checkExistingPlayer(final Long gameId, final Long userId) {
-        // TODO REPLACE EACH USAGE with findByGameIdAndUserId
-        try {
-            final TypedQuery<Player> findByGameIdAndUserId = getEntityManager().createNamedQuery("Player.findPlayerByGameIdAndUserId", Player.class);
-            findByGameIdAndUserId.setParameter("gameId", gameId);
-            findByGameIdAndUserId.setParameter("userId", userId);
-            return findByGameIdAndUserId.getSingleResult();
-        } catch (NoResultException e) {
-            return null;
+        if (userId != null) {
+            for (Team t : gameFacade.find(gameId).getTeams()) {
+                for (Player p : t.getPlayers()) {
+                    if (userId.equals(p.getUserId())) {
+                        return p;
+                    }
+                }
+            }
         }
+        return null;
     }
 
     /**
@@ -122,14 +130,15 @@ public class PlayerFacade extends BaseFacade<Player> {
      * @return the player owned by user who is member of the game
      */
     public Player checkExistingPlayerInTeam(final Long teamId, final Long userId) {
-        try {
-            final TypedQuery<Player> find = getEntityManager().createNamedQuery("Player.findPlayerByTeamIdAndUserId", Player.class);
-            find.setParameter("teamId", teamId);
-            find.setParameter("userId", userId);
-            return find.getSingleResult();
-        } catch (NoResultException e) {
-            return null;
+        if (userId != null) {
+            Team t = teamFacade.find(teamId);
+            for (Player p : t.getPlayers()) {
+                if (userId.equals(p.getUserId())) {
+                    return p;
+                }
+            }
         }
+        return null;
     }
 
     /**
@@ -276,9 +285,15 @@ public class PlayerFacade extends BaseFacade<Player> {
      * @return all players in the game
      */
     public List<Player> getByGameId(Long gameId) {
-        TypedQuery<Player> findByGameId = getEntityManager().createNamedQuery("Player.findPlayerByGameId", Player.class);
+        List<Player> players = new ArrayList<>();
+        Game game = gameFacade.find(gameId);
+        for (Team t : game.getTeams()) {
+            players.addAll(t.getPlayers());
+        }
+        return players;
+        /*TypedQuery<Player> findByGameId = getEntityManager().createNamedQuery("Player.findPlayerByGameId", Player.class);
         findByGameId.setParameter("gameId", gameId);
-        return findByGameId.getResultList();
+        return findByGameId.getResultList();*/
     }
 
     /**
@@ -289,14 +304,13 @@ public class PlayerFacade extends BaseFacade<Player> {
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
     public Player findByGameId(Long gameId) throws WegasNoResultException {
-        Query getByGameId = getEntityManager().createQuery("SELECT player FROM Player player WHERE player.team.game.id = :gameId "
-                + "ORDER BY type(player.team) desc"); // Debug player comes last
-        getByGameId.setParameter("gameId", gameId);
-        try {
-            return (Player) getByGameId.setMaxResults(1).getSingleResult();
-        } catch (NoResultException ex) {
-            throw new WegasNoResultException(ex);
+        Game game = gameFacade.find(gameId);
+        for (Team t : game.getTeams()) {
+            if (t.getPlayers().size() > 0) {
+                return t.getPlayers().get(0);
+            }
         }
+        throw new WegasNoResultException("No player");
     }
 
     /**
@@ -304,9 +318,14 @@ public class PlayerFacade extends BaseFacade<Player> {
      * @return all players from all teams and all games from gameModel
      */
     public List<Player> getByGameModelId(Long gameModelId) {
-        TypedQuery<Player> findByGameId = getEntityManager().createQuery("SELECT player FROM Player player WHERE player.team.game.gameModel.id = :gameModelId", Player.class);
-        findByGameId.setParameter("gameModelId", gameModelId);
-        return findByGameId.getResultList();
+        List<Player> players = new ArrayList<>();
+        GameModel gm = gameModelFacade.find(gameModelId);
+        for (Game g : gm.getGames()) {
+            for (Team t : g.getTeams()) {
+                players.addAll(t.getPlayers());
+            }
+        }
+        return players;
     }
 
     /**

@@ -39,7 +39,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.eclipse.persistence.annotations.CacheIndex;
 import org.eclipse.persistence.annotations.OptimisticLocking;
 
 ////import javax.xml.bind.annotation.XmlTransient;
@@ -49,10 +48,6 @@ import org.eclipse.persistence.annotations.OptimisticLocking;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @NamedQueries({
-    //@NamedQuery(name = "findTeamInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.teamScopeKey = :teamid"),
-    //@NamedQuery(name = "findPlayerInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.playerScopeKey = :playerid"),
-
-
     @NamedQuery(name = "VariableInstance.findPlayerInstance",
             query = "SELECT vi FROM VariableInstance vi WHERE "
             + "(vi.player.id = :playerId AND vi.playerScope.id = :scopeId)"
@@ -60,35 +55,7 @@ import org.eclipse.persistence.annotations.OptimisticLocking;
     @NamedQuery(name = "VariableInstance.findTeamInstance",
             query = "SELECT vi FROM VariableInstance vi WHERE "
             + "(vi.team.id = :teamId AND vi.teamScope.id = :scopeId)"
-    ),
- 
-    @NamedQuery(name = "VariableInstance.findPlayerInstancesForPlayer",
-            query = "SELECT vi FROM VariableInstance vi WHERE "
-            + "(vi.player.id = :playerId) OR "
-            + "(vi.playerScope.broadcastScope = 'TeamScope' AND vi.player.team.id = :teamId) OR"
-            + "(vi.playerScope.broadcastScope = 'GameScope' AND vi.player.team.game.id = :gameId)"
-    ),
-
-    @NamedQuery(name = "VariableInstance.findTeamInstancesForPlayer",
-            query = "SELECT vi FROM VariableInstance vi WHERE "
-            + "(vi.team.id = :teamId) OR "
-            + "(vi.teamScope.broadcastScope = 'GameScope' AND vi.team.game.id = :gameId)"
-    ),
-
-    @NamedQuery(name = "VariableInstance.findGameInstancesForPlayer",
-            query = "SELECT vi FROM VariableInstance vi WHERE "
-            + "vi.game.id = :gameId"
-    ),
-
-    @NamedQuery(name = "VariableInstance.findGlobalInstancesForPlayer",
-            query = "SELECT vi FROM VariableInstance vi WHERE "
-            + "vi.gameModelScope.variableDescriptor.gameModel.id = :gameModelId"
     )
-/*@NamedQuery(name = "VariableInstance.findInstancesForPlayer_ORI",
-            query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE EXISTS "
-            + "(SELECT player From Player player WHERE player.id = :playerid AND "
-            + "(variableinstance.player = player OR variableinstance.team = player.team OR variableinstance.game = player.team.game))")
- */
 })
 
 /*@Indexes(value = { // JPA 2.0 eclipse link extension TO BE REMOVED
@@ -197,7 +164,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     @JoinColumn(name = "variableinstances_key", insertable = false, updatable = false)
     @ManyToOne
     @JsonIgnore
-    @CacheIndex
     private Player player;
     /**
      *
@@ -210,7 +176,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     @JoinColumn(name = "gamevariableinstances_key", insertable = false, updatable = false)
     @ManyToOne
     @JsonIgnore
-    @CacheIndex
     private Game game;
     /**
      *
@@ -223,7 +188,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     @JoinColumn(name = "teamvariableinstances_key", insertable = false, updatable = false)
     @ManyToOne
     @JsonIgnore
-    @CacheIndex
     private Team team;
 
     @Override
