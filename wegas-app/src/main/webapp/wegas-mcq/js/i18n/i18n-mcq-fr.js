@@ -19,7 +19,8 @@ YUI.add("wegas-i18n-mcq-fr", function(Y) {
             submit: "valider",
             unanswered : "",    // Customizable per scenario
             notDone: "",        // Customizable per scenario
-            noReply: "Merci de d'abord sélectionner une réponse&thinsp;!"
+            noReply: "Merci de d'abord sélectionner une réponse&thinsp;!",
+            conflict: "Votre requête n'a pas été prise en compte car un de vos coéquipier a tenté la même opération en même temps.<br />"
         }
     });
 });

@@ -12,6 +12,7 @@ import com.pusher.rest.data.PresenceUser;
 import com.pusher.rest.data.Result;
 import com.wegas.core.Helper;
 import com.wegas.core.event.client.ClientEvent;
+import com.wegas.core.event.client.DestroyedEntity;
 import com.wegas.core.event.client.EntityDestroyedEvent;
 import com.wegas.core.event.client.EntityUpdatedEvent;
 import com.wegas.core.event.client.OutdatedEntitiesEvent;
@@ -81,68 +82,6 @@ public class WebsocketFacade {
 
     @EJB
     private PlayerFacade playerFacade;
-
-    /**
-     * Check if current user has access to type/id entity
-     *
-     * @param type
-     * @param id
-     * @param currentPlayer
-     * @return true if current user has access to
-     */
-    private boolean hasPermission(String type, Long id, Player currentPlayer) {
-        if ("GameModel".equals(type)) {
-            return SecurityUtils.getSubject().isPermitted("GameModel:View:gm" + id);
-        } else if ("Game".equals(type)) {
-            Game game = gameFacade.find(id);
-            return game != null && SecurityHelper.isPermitted(game, "View");
-        } else if ("Team".equals(type)) {
-            Team team = teamFacade.find(id);
-            User user = userFacade.getCurrentUser();
-
-            if (currentPlayer != null && currentPlayer.getUser() != null
-                    && currentPlayer.getUser().equals(user)) {
-                // Current logged User is the player itself
-                // the player MUST be a member of the team
-                return playerFacade.checkExistingPlayerInTeam(team.getId(), user.getId()) != null;
-            } else {
-                // Trainer of scenarist (player is not linked to user)
-                return SecurityHelper.isPermitted(team.getGame(), "Edit");
-            }
-        } else if ("Player".equals(type)) {
-            User user = userFacade.getCurrentUser();
-            Player player = playerFacade.find(id);
-
-            if (player != null) {
-                if (currentPlayer != null && currentPlayer.getUser() != null
-                        && currentPlayer.getUser().equals(user)) {
-                    return player.equals(currentPlayer);
-                } else {
-                    // Trainer and scenarist 
-                    return SecurityHelper.isPermitted(player.getGame(), "Edit");
-                }
-            } else {
-                return false;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * can current user subscribe to given channel ?
-     *
-     * @param channel
-     * @param currentPlayer
-     * @return true if access granted
-     */
-    public boolean hasPermission(String channel, Player currentPlayer) {
-        String[] split = channel.split("-");
-        if (split.length != 2) {
-            return false;
-        } else {
-            return hasPermission(split[0], Long.parseLong(split[1]), currentPlayer);
-        }
-    }
 
     /**
      * Get all channels based on entites
@@ -272,8 +211,8 @@ public class WebsocketFacade {
      * @param outdatedEntities
      */
     public void onRequestCommit(final Map<String, List<AbstractEntity>> dispatchedEntities,
-                                final Map<String, List<AbstractEntity>> destroyedEntities,
-                                final Map<String, List<AbstractEntity>> outdatedEntities) {
+            final Map<String, List<AbstractEntity>> destroyedEntities,
+            final Map<String, List<AbstractEntity>> outdatedEntities) {
         this.onRequestCommit(dispatchedEntities, destroyedEntities, outdatedEntities, null);
     }
 
@@ -287,15 +226,15 @@ public class WebsocketFacade {
      *                           client to receive this particular message
      */
     public void onRequestCommit(final Map<String, List<AbstractEntity>> dispatchedEntities,
-                                final Map<String, List<AbstractEntity>> destroyedEntities,
-                                final Map<String, List<AbstractEntity>> outdatedEntities,
-                                final String socketId) {
+            final Map<String, List<AbstractEntity>> destroyedEntities,
+            final Map<String, List<AbstractEntity>> outdatedEntities,
+            final String socketId) {
         if (this.pusher == null) {
             return;
         }
 
-        propagate(dispatchedEntities, socketId, EntityUpdatedEvent.class);
         propagate(destroyedEntities, socketId, EntityDestroyedEvent.class);
+        propagate(dispatchedEntities, socketId, EntityUpdatedEvent.class);
         propagate(outdatedEntities, socketId, OutdatedEntitiesEvent.class);
     }
 
@@ -310,7 +249,22 @@ public class WebsocketFacade {
             for (Map.Entry<String, List<AbstractEntity>> entry : container.entrySet()) {
                 String audience = entry.getKey();
                 List<AbstractEntity> toPropagate = entry.getValue();
-                ClientEvent event = eventClass.getDeclaredConstructor(List.class).newInstance(toPropagate);
+                ClientEvent event;
+
+                if (eventClass == EntityDestroyedEvent.class) {
+                    List<AbstractEntity> refreshed = new ArrayList<>();
+                    /*
+                     * Not possible to find an already destroyed entity, so, in 
+                     * this case (and since those informations are sufficient), 
+                     * only id and class name are propagated
+                     */
+                    for (AbstractEntity ae : toPropagate) {
+                        refreshed.add(new DestroyedEntity(ae.getId(), ae.getJSONClassName()));
+                    }
+                    event = eventClass.getDeclaredConstructor(List.class).newInstance(refreshed);
+                } else {
+                    event = eventClass.getDeclaredConstructor(List.class).newInstance(toPropagate);
+                }
                 propagate(event, audience, socketId);
             }
         } catch (NoSuchMethodException | SecurityException |

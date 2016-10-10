@@ -13,6 +13,8 @@ package com.wegas.core.exception.client;
  */
 public class WegasOutOfBoundException extends WegasRuntimeException {
 
+    private static final long serialVersionUID = 6812085119211277213L;
+
     private final Long min;
     private final Long max;
     private final Double value;

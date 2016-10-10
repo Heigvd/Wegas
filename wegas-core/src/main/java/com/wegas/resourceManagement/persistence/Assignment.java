@@ -82,10 +82,11 @@ public class Assignment extends AbstractAssignement /*implements Broadcastable *
     public void merge(AbstractEntity a) {
         if (a instanceof Assignment) {
             Assignment other = (Assignment) a;
+            // TODO TGSS: Avoid setting/updating relations within merge method !
             this.setResourceInstance(other.getResourceInstance());
             this.setTaskDescriptor(other.getTaskDescriptor());
         } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + (a != null ? a.getClass().getSimpleName() : "NULL") + ") is not possible");
         }
     }
 

@@ -88,30 +88,30 @@ YUI.add('wegas-tabview', function(Y) {
             }
         },
         EDITMENU: [{
-            type: "Button",
-            label: "Edit",
-            plugins: [{
-                fn: "EditWidgetAction"
-            }
-            ]
-        }, {
-            type: "Button",
-            label: "Add tab",
-            plugins: [{
-                fn: "AddChildWidgetAction",
-                cfg: {
-                    childType: "Tab"
-                }
-            }
-            ]
-        }, {
-            type: "Button",
-            label: "Delete",
-            plugins: [{
-                fn: "DeleteLayoutWidgetAction"
-            }
-            ]
-        }],
+                type: "Button",
+                label: "Edit",
+                plugins: [{
+                        fn: "EditWidgetAction"
+                    }
+                ]
+            }, {
+                type: "Button",
+                label: "Add tab",
+                plugins: [{
+                        fn: "AddChildWidgetAction",
+                        cfg: {
+                            childType: "Tab"
+                        }
+                    }
+                ]
+            }, {
+                type: "Button",
+                label: "Delete",
+                plugins: [{
+                        fn: "DeleteLayoutWidgetAction"
+                    }
+                ]
+            }],
         /**
          * References to tab
          */
@@ -142,13 +142,13 @@ YUI.add('wegas-tabview', function(Y) {
                 var tabs, tabView = Y.Widget.getByNode(tabViewSelector);        // Look for the parent
                 tabCfg = tabCfg || {};
                 Y.mix(tabCfg, {
-                    label: id,
+                    label: tabCfg.label || id,
                     id: id
                 });
                 tabs = tabView.add(tabCfg, tabIndex);                           // Instantiate a new tab
                 return tabs.item(0);
             } else {                                                            // Otherwise,
-                //TabView.tabs[id].setAttrs(tabCfg);                            // update the tab config
+                TabView.tabs[id].setAttrs(tabCfg);                            // update the tab config
             }
             return TabView.tabs[id];
         },
@@ -393,7 +393,7 @@ YUI.add('wegas-tabview', function(Y) {
          */
         initializer: function() {
             var tab = this.get('host'),
-            //cb = tab.get("parent").get(CONTENTBOX),
+                //cb = tab.get("parent").get(CONTENTBOX),
                 bb = tab.get(BOUNDINGBOX);
             if (!tab instanceof Tab) {
                 return Y.log("error", "Plugin Removable expects a Tab host", "Y.Plugin.Removable");
@@ -416,7 +416,6 @@ YUI.add('wegas-tabview', function(Y) {
         afterTabRender: function(e) {
             this.get("host").get(BOUNDINGBOX).append(this.REMOVE_TEMPLATE);         // boundingBox is the Tab's LI
         },
-
         /**
          * @function
          * @private

@@ -127,6 +127,7 @@ public class PeerReviewInstance extends VariableInstance {
         if (a != null) {
             if (a instanceof PeerReviewInstance) {
                 PeerReviewInstance o = (PeerReviewInstance) a;
+                super.merge(a);
                 this.setReviewState(o.getReviewState());
                 this.setReviewed(ListUtils.mergeLists(this.getReviewed(), o.getReviewed()));
                 this.setToReview(ListUtils.mergeLists(this.getToReview(), o.getToReview()));

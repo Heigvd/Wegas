@@ -4,6 +4,9 @@
     "plugins": [
         {
             "fn": "PopupListener"
+        },
+        {
+            "fn": "OnDeleteListener"
         }
     ],
     "top": {

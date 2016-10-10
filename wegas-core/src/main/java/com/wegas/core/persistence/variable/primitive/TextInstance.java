@@ -67,6 +67,7 @@ public class TextInstance extends VariableInstance implements Searchable {
         if (a != null) {
             if (a instanceof TextInstance) {
                 TextInstance vi = (TextInstance) a;
+                super.merge(a);
                 this.setValue(vi.getValue());
             } else {
                 throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");

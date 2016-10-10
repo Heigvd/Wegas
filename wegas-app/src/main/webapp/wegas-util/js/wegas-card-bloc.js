@@ -30,7 +30,7 @@ YUI.add('wegas-card-bloc', function(Y) {
                 this.get("boundingBox").one(".title").setContent(this.get("title"));
             }
             this.get("items").forEach(function(item) {
-                context.add(new Y.Wegas["CardBloc" + context.get("cardBlocType").charAt(0).toUpperCase() + context.get("cardBlocType").slice(1)](item));
+                context.add(new (Y.Wegas["CardBloc" + context.get("cardBlocType").charAt(0).toUpperCase() + context.get("cardBlocType").slice(1)])(item));
             });
         },
         _hasTitle: function() {

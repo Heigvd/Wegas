@@ -98,6 +98,7 @@ public class InboxInstance extends VariableInstance {
     @Override
     public void merge(AbstractEntity a) {
         if (a instanceof InboxInstance) {
+            super.merge(a);
             InboxInstance other = (InboxInstance) a;
             this.setMessages(ListUtils.mergeLists(this.getMessages(), other.getMessages()));
         } else {

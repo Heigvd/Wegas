@@ -24,13 +24,14 @@ YUI.add("wegas-i18n-global-en", function(Y) {
             logout: "logout"
         },
         errors: {
-            notAPositiveInteger : "\"{{value}}\" is not a positive integer",
-            nan : "\"{{value}}\" is not a number",
-            outOfBounds: "{{value}} not in [{{min}},{{max}}]",
-            lessThan: "{{value}} is less than {{min}}",
+            conflict: "Your request could not be completed due to a conflict. This usually means you tried to update an outdated element.",
             greaterThan: "{{value}} is greater greater than {{max}}",
+            lessThan: "{{value}} is less than {{min}}",
+			limitReached: "You cannot select more than {{num}} values",
 			prohibited: "\"{{value}}\" not allowed. It must be one of these: {{values}}",
-			limitReached: "You cannot select more than {{num}} values"
+            nan : "\"{{value}}\" is not a number",
+            notAPositiveInteger : "\"{{value}}\" is not a positive integer",
+            outOfBounds: "{{value}} not in [{{min}},{{max}}]"
         },
         inbox: {
             deleteEmailConfirmation: "The e-mail {{subject}} will be permanently deleted. Continue?",

@@ -7,10 +7,11 @@
  */
 package com.wegas.core.rest.exception;
 
-import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasUniqueConstraintException;
 import javax.ejb.EJBException;
 import javax.enterprise.event.ObserverException;
+import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceException;
 import javax.transaction.RollbackException;
 import javax.transaction.TransactionRolledbackException;
@@ -24,6 +25,8 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
+
+
 public abstract class AbstractExceptionMapper {
 
     final static private Logger logger = LoggerFactory.getLogger(AbstractExceptionMapper.class);
@@ -38,7 +41,12 @@ public abstract class AbstractExceptionMapper {
     public static Response processException(Throwable exception) {
         logger.warn("ProcessException: " + exception);
 
-        if (exception instanceof RollbackException
+        if (exception instanceof OptimisticLockException) {
+            OptimisticLockException ex = (OptimisticLockException) exception;
+            logger.error("Try to update outated: " + ex.getEntity());
+
+            return Response.status(Response.Status.CONFLICT).entity(new WegasConflictException(exception)).build();
+        } else if (exception instanceof RollbackException
                 || exception instanceof TransactionRolledbackException
                 || exception instanceof ObserverException
                 || exception instanceof PersistenceException

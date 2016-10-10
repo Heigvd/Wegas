@@ -817,7 +817,9 @@ YUI.add("wegas-review-widgets", function(Y) {
         bindUI: function() {
             this.tabView.after("selectionChange", this.onTabSelected, this);
             //this.handlers.push(this.dataSource.after("update", this.syncUI, this));
-            this.handlers.push(this.dataSource.after("updatedInstance", this.syncEntity, this));
+            this.handlers.push(Y.Wegas.Facade.Instance.after("updatedInstance", this.syncEntity, this));
+
+
         },
         syncEntity: function(payload) {
             var prd = this.get("variable.evaluated"),
@@ -1086,7 +1088,8 @@ YUI.add("wegas-review-widgets", function(Y) {
             var content = this.get(CONTENTBOX).one(".toReview").one(".content");
             this.showOverlay();
             Y.Wegas.Facade.Variable.sendRequest({
-                request: "/PeerReviewController/" + desc.get("id") + "/ToReview/" + review.get("id"),
+                request: "/PeerReviewController/" + desc.get("id") + "/ToReview/" + review.get("id")
+                    + "/" + Y.Wegas.Facade.Game.cache.get("currentPlayerId"),
                 cfg: {
                     updateCache: false,
                     method: "get"
@@ -1192,7 +1195,8 @@ YUI.add("wegas-review-widgets", function(Y) {
         _sendRequest: function(action, updateCache) {
             this.showOverlay();
             Y.Wegas.Facade.Variable.sendRequest({
-                request: "/PeerReviewController/" + action,
+                request: "/PeerReviewController/" + action
+                    + "/" + Y.Wegas.Facade.Game.cache.get("currentPlayerId"),
                 cfg: {
                     updateCache: updateCache,
                     method: "post",

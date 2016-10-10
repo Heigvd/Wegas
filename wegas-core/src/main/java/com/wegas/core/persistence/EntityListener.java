@@ -13,6 +13,7 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.VariableInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +40,7 @@ public class EntityListener {
         if (o instanceof Broadcastable) {
             Broadcastable b = (Broadcastable) o;
             Map<String, List<AbstractEntity>> entities = b.getEntities();
-            if (b instanceof Team || b instanceof Player) {
+            if (b instanceof Team || b instanceof Player || b instanceof VariableInstance) {
                 requestManager.addUpdatedEntities(entities);
             } else {
                 logger.debug("Unhandled new broadcastable entity: " + b);
@@ -73,7 +74,7 @@ public class EntityListener {
             Broadcastable b = (Broadcastable) o;
             Map<String, List<AbstractEntity>> entities = b.getEntities();
             if (entities != null) {
-                if (b instanceof VariableDescriptor || b instanceof Game) {
+                if (b instanceof VariableDescriptor || b instanceof VariableInstance || b instanceof Game) {
                     logger.debug(("#Entities: " + entities.size()));
                     requestManager.addDestroyedEntities(entities);
                 } else if (b instanceof Team || b instanceof Player) {

@@ -20,16 +20,16 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
-import java.util.HashMap;
 
 import javax.persistence.*;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 ////import javax.xml.bind.annotation.XmlTransient;
 /**
- * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  * @param <T> scope context
+ * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity                                                                         // Database serialization
 @JsonSubTypes(value = {
@@ -63,7 +63,6 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
      *
      */
     //@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-    @JsonView(Views.EditorExtendedI.class)
     private String broadcastScope = PlayerScope.class.getSimpleName();
 
     /**
@@ -94,11 +93,10 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
     }
 
     /**
-     *
      * @return
      */
     @JsonProperty("variableInstances")
-    @JsonView(Views.Editor.class)
+    @JsonView(Views.InstanceI.class)
     public Map<Long, VariableInstance> getVariableInstancesByKeyId() {
         return mapInstances(this.getVariableInstances());
     }
@@ -108,10 +106,12 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
      *         stored in the RequestManager.
      */
     @JsonIgnore
+    @Deprecated
     abstract public Map<T, VariableInstance> getPrivateInstances();
 
-    @JsonView(Views.SinglePlayerI.class)
+    @JsonIgnore
     @JsonProperty("privateInstances")
+    @Deprecated
     public Map<Long, VariableInstance> getPrivateInstancesByKeyId() {
         return mapInstances(this.getPrivateInstances());
     }
