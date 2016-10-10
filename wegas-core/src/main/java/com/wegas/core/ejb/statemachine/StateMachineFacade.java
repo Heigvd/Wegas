@@ -97,7 +97,7 @@ public class StateMachineFacade {
      */
     public void playerActionListener(@Observes PlayerAction playerAction) throws NoPlayerException, WegasScriptException {
         logger.debug("Received PlayerAction event");
-        Player player = playerAction.getPlayer();
+        Player player = playerFacade.find(playerAction.getPlayerId());
         if (player == null) {
             for (Entry<String, List<AbstractEntity>> entry : requestManager.getUpdatedEntities().entrySet()) {
                 for (AbstractEntity entity : entry.getValue()) {
@@ -122,13 +122,17 @@ public class StateMachineFacade {
      */
     public void resetEventListener(@Observes ResetEvent resetEvent) throws WegasScriptException {
         logger.debug("Received Reset event");
-        //System.out.println("ResetEvent");
         for (Player player : resetEvent.getConcernedPlayers()) {
             this.runForPlayer(player);
         }
     }
 
     private List<StateMachineDescriptor> getAllStateMachines(GameModel gameModel) {
+        /*
+        flush / clear before request to avoid memory growing too much. BTW I don't know why ...
+         */
+        em.flush();
+        em.clear();
         final TypedQuery<StateMachineDescriptor> q = em.createNamedQuery("StateMachineDescriptor.findAllForGameModelId", StateMachineDescriptor.class);
         return q.setParameter("gameModelId", gameModel.getId()).getResultList();
     }
@@ -139,6 +143,7 @@ public class StateMachineFacade {
         stateMachineEventsCounter = new InternalStateMachineEventCounter();
         Integer steps = this.doSteps(player, passed, statemachines, 0);
         logger.info("#steps[" + steps + "] - Player {} triggered transition(s):{}", player.getName(), passed);
+        stateMachineEventsCounter = null;
     }
 
     private Integer doSteps(Player player, List<Transition> passedTransitions, List<StateMachineDescriptor> stateMachineDescriptors, Integer steps) throws WegasScriptException {
