@@ -10,11 +10,16 @@ package com.wegas.core.ejb;
 import com.wegas.core.event.client.ClientEvent;
 import com.wegas.core.event.client.CustomEvent;
 import com.wegas.core.event.client.ExceptionEvent;
+import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
+import com.wegas.core.rest.util.RequestIdentifierGenerator;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.persistence.User;
 import jdk.nashorn.api.scripting.ScriptUtils;
 import jdk.nashorn.internal.runtime.ScriptObject;
 import org.slf4j.Logger;
@@ -56,6 +61,9 @@ public class RequestManager {
     @EJB
     private PlayerFacade playerFacade;
 
+    @EJB
+    private UserFacade userFacade;
+
     private static Logger logger = LoggerFactory.getLogger(RequestManager.class);
 
     private RequestEnvironment env = RequestEnvironment.STD;
@@ -69,9 +77,17 @@ public class RequestManager {
      *
      */
     private Player currentPlayer;
+    private User currentUser;
 
     private String requestId;
-    private Long timestamp;
+    private String method;
+    private String path;
+    private Long startTimestamp;
+    private Long managementStartTime;
+    private Long serialisationStartTime;
+    private Long propagationStartTime;
+    private Long propagationEndTime;
+
     private Response.StatusType status;
     private Long exceptionCounter = 0L;
 
@@ -154,6 +170,14 @@ public class RequestManager {
      */
     public Player getPlayer() {
         return currentPlayer;
+    }
+
+    public User getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(User currentUser) {
+        this.currentUser = currentUser;
     }
 
     /**
@@ -328,12 +352,88 @@ public class RequestManager {
         this.status = statusInfo;
     }
 
-    public void setTimestamp(Long timestamp) {
-        this.timestamp = timestamp;
+    public void markProcessingStartTime() {
+        this.startTimestamp = System.currentTimeMillis();
+    }
+
+    /**
+     * before ManagedModeResponseFilter
+     */
+    public void markManagermentStartTime() {
+        this.managementStartTime = System.currentTimeMillis();
+    }
+
+    /**
+     * after ManagedModeResponseFilter
+     */
+    public void markSerialisationStartTime() {
+        this.serialisationStartTime = System.currentTimeMillis();
+    }
+
+    /**
+     * after ManagedModeResponseFilter
+     */
+    public void markPropagationStartTime() {
+        this.propagationStartTime = System.currentTimeMillis();
+    }
+
+    /**
+     * after Propagation
+     */
+    public void markPropagationEndTime() {
+        this.propagationEndTime = System.currentTimeMillis();
     }
 
     public void setRequestId(String uniqueIdentifier) {
         this.requestId = uniqueIdentifier;
+    }
+
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public void logRequest() {
+        long endTime = System.currentTimeMillis();
+
+        long totalDuration = endTime - this.startTimestamp;
+        long processingDuration = this.managementStartTime - this.startTimestamp;
+        long managementDuration = this.serialisationStartTime - this.managementStartTime;
+        Long propagationTime = this.propagationEndTime != null ? this.propagationEndTime - this.propagationStartTime : null;
+        long serialisationDuration = endTime - this.serialisationStartTime;
+
+        Team currentTeam = null;
+        if (currentPlayer != null) {
+            currentTeam = currentPlayer.getTeam();
+        }
+
+        String info = "[" + (currentUser != null ? currentUser.getId() : "anonymous") + "::"
+                + (currentPlayer != null ? currentPlayer.getId() : "n/a") + "::"
+                + (currentTeam != null ? currentTeam.getId() : "n/a") + "]";
+
+        RequestManager.logger.info("Request [" + this.requestId + "] \""
+                + this.getMethod() + " " + this.getPath() + "\"" + " for " + info
+                + " processed in " + totalDuration + " ms ("
+                + " processing: " + processingDuration + "; "
+                + " management: " + managementDuration + "; "
+                + (propagationTime != null ? "propagation: " + propagationTime + "; " : "")
+                + " serialisation: " + serialisationDuration
+                + ") => " + this.status);
     }
 
     /**
@@ -349,10 +449,8 @@ public class RequestManager {
             String remove = lockedToken.remove(0);
             mutexSingleton.unlockFull(remove);
         }
-        long duration = System.currentTimeMillis() - this.timestamp;
 
-        logger.info("Request [" + this.requestId + "] Processed in " + duration
-                + " [ms] => " + this.status);
+        this.logRequest();
     }
 
     /**
