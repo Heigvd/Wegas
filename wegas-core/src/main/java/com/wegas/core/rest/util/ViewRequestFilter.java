@@ -14,8 +14,6 @@ import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterInjector;
 import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterModifier;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.exception.client.WegasNotFoundException;
-import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import java.io.IOException;
@@ -62,11 +60,10 @@ public class ViewRequestFilter implements ContainerRequestFilter {
     public void filter(ContainerRequestContext cr) throws IOException {
         RequestFacade rmf = RequestFacade.lookup();
 
-        String uniqueIdentifier = idGenerator.getUniqueIdentifier();
-        Long timestamp = System.currentTimeMillis();
-
-        rmf.getRequestManager().setRequestId(uniqueIdentifier);
-        rmf.getRequestManager().setTimestamp(timestamp);
+        rmf.getRequestManager().setRequestId(idGenerator.getUniqueIdentifier());
+        rmf.getRequestManager().markProcessingStartTime();
+        rmf.getRequestManager().setMethod(cr.getMethod());
+        rmf.getRequestManager().setPath(cr.getUriInfo().getPath());
 
         //String userAgent = cr.getHeaderString("user-agent");
         User currentUser = null;
@@ -74,6 +71,7 @@ public class ViewRequestFilter implements ContainerRequestFilter {
             currentUser = userFacade.getCurrentUser();
         } catch (WegasNotFoundException e) {
         }
+        rmf.getRequestManager().setCurrentUser(currentUser);
 
         Class<?> view;
 
@@ -108,19 +106,8 @@ public class ViewRequestFilter implements ContainerRequestFilter {
                 break;
         }
 
-        Player currentPlayer = rmf.getPlayer();
-        Team currentTeam = null;
-        if (currentPlayer != null) {
-            currentTeam = currentPlayer.getTeam();
-        }
-
-        logger.info("Start Request Processing [" + uniqueIdentifier
-                + "] for user::player::team("
-                + (currentUser != null ? userFacade.getCurrentUser().getId() : "anonymous") + "::"
-                + (currentPlayer != null ? currentPlayer.getId() : "n/a") + "::"
-                + (currentTeam != null ? currentTeam.getId() : "n/a") + "::"
-                + "): " /* + userAgent */ + " " + cr.getMethod() + ": "
-                + cr.getUriInfo().getPath());
+        logger.info("Start Request [" + rmf.getRequestManager().getRequestId()
+                + "] " + cr.getMethod() + " " + cr.getUriInfo().getPath());
 
         try {
             cr.setRequestUri(new URI(newUri));
