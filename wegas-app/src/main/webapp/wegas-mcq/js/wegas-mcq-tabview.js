@@ -115,7 +115,8 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             label = '<div class="'
                 + (highlightUnanswered ? "unread" : "")
                 + '"><div class="index-label">'
-                + (question.get("title") || question.get("label") || "undefined")
+                + (question.get("title") || question.get("label") || "undefined") + "</div>"
+                + '<div class="index-status">' + label + "</div>"
                 + '</div>';
 
             tab.set("label", label);

@@ -22,9 +22,9 @@ import com.wegas.core.exception.client.WegasIncompatibleType;
 @Entity
 //@XmlType(name = "ChoiceInstance")
 @Table(name = "MCQChoiceInstance",
-    indexes = {
-        @Index(columnList = "result_id")
-    }
+        indexes = {
+            @Index(columnList = "result_id")
+        }
 )
 public class ChoiceInstance extends VariableInstance {
 
@@ -61,9 +61,9 @@ public class ChoiceInstance extends VariableInstance {
     }
 
     /**
-     * get the result to apply if the choice is selected.
-     * Either the currentResult if defined, the first otherwise
-     * 
+     * get the result to apply if the choice is selected. Either the
+     * currentResult if defined, the first otherwise
+     *
      * @return the currentResult or the first one
      * @throws WegasErrorMessage if not result are defined
      */
@@ -129,6 +129,7 @@ public class ChoiceInstance extends VariableInstance {
     public void merge(AbstractEntity a) {
         if (a instanceof ChoiceInstance) {
             //super.merge(a);
+            super.merge(a);
             ChoiceInstance other = (ChoiceInstance) a;
             this.setActive(other.getActive());
             this.setUnread(other.getUnread());

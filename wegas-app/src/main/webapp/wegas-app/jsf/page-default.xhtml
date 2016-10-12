@@ -8,7 +8,7 @@
     <f:event type="preRenderView" listener="#{facesContext.externalContext.response.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate')}" />
     <f:event type="preRenderView" listener="#{facesContext.externalContext.response.setHeader('Pragma', 'no-cache')}" />
     <f:event type="preRenderView" listener="#{facesContext.externalContext.response.setHeader('Expires', '0')}" />
-    
+
     <h:head>
         <meta charset="UTF-8" />
         <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
@@ -44,7 +44,14 @@
         <!-- Styles -->
         <!--<link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-app/css/wegas-app.css" />
         <link rel="stylesheet" type="text/css" media="print" href="#{request.contextPath}/wegas-app/css/wegas-app-print-min.css" />-->
-        <link rel="stylesheet" type="text/css" href="#{request.contextPath}/rest/combo/?/wegas-app/css/wegas-app-min.css&amp;/wegas-app/css/wegas-app-print-min.css" />
+        <!-- Wegas & inputEx Loader -->
+        <ui:fragment rendered="#{requestController.debugMode()}">
+            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-app/css/wegas-app.css" />
+            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-app/css/wegas-app-print.css" />
+        </ui:fragment>
+        <ui:fragment rendered="#{!requestController.debugMode()}">
+            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/rest/combo/?/wegas-app/css/wegas-app-min.css&amp;/wegas-app/css/wegas-app-print-min.css" />
+        </ui:fragment>
 
         <ui:insert name="head"/>
 

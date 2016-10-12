@@ -9,7 +9,9 @@ package com.wegas.mcq.ejb;
 
 import com.wegas.core.ejb.AbstractEJBTest;
 import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
+import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.mcq.persistence.*;
 import java.util.logging.Level;
@@ -19,6 +21,9 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
+import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
+import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
 
 /**
  *
@@ -42,6 +47,7 @@ public class MultipleResultTest extends AbstractEJBTest {
         public void run() {
             try {
                 qdf.selectAndValidateChoice(choice.getId(), player.getId());            // Do reply
+                RequestFacade.lookup().getRequestManager().unlock("MCQ-" + choice.getQuestion().getInstance(player).getId());
             } catch (WegasScriptException ex) {
                 java.util.logging.Logger.getLogger(MultipleResultTest.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -52,7 +58,9 @@ public class MultipleResultTest extends AbstractEJBTest {
     public void testSelectAndValidateChoice() throws Exception {
 
         final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
-        final QuestionSingleton qSingleton = lookupBy(QuestionSingleton.class);
+        final VariableInstanceFacade vif = VariableInstanceFacade.lookup();
+        //final QuestionSingleton qSingleton = lookupBy(QuestionSingleton.class);
+        final QuestionDescriptorFacade qdf = QuestionDescriptorFacade.lookup();
 
         // Create a 1reply-question
         QuestionDescriptor question = new QuestionDescriptor();
@@ -93,9 +101,9 @@ public class MultipleResultTest extends AbstractEJBTest {
         s1.join();
         s2.join();
 
-        int findReplyCount = qSingleton.findReplyCount(question.getInstance(player).getId());
+        QuestionInstance find = (QuestionInstance) vif.find(question.getInstance().getId());
 
         // Make sure the number of reply is 1
-        Assert.assertEquals(1, findReplyCount);
+        Assert.assertEquals(1, find.getReplies().size());
     }
 }

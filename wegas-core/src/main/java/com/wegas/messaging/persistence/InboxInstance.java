@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.EntityIdComparator;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
@@ -23,6 +22,7 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 //import javax.xml.bind.annotation.XmlType;
@@ -69,7 +69,12 @@ public class InboxInstance extends VariableInstance {
      * @return the replies
      */
     public List<Message> getMessages() {
-        Collections.sort(this.messages, new EntityIdComparator<>());
+        Collections.sort(this.messages, new Comparator<Message>() {
+            @Override
+            public int compare(Message o1, Message o2) {
+                return o2.getTime().compareTo(o1.getTime()); // newer first
+            }
+        });
         return this.messages;
     }
 
@@ -98,6 +103,7 @@ public class InboxInstance extends VariableInstance {
     @Override
     public void merge(AbstractEntity a) {
         if (a instanceof InboxInstance) {
+            super.merge(a);
             InboxInstance other = (InboxInstance) a;
             this.setMessages(ListUtils.mergeLists(this.getMessages(), other.getMessages()));
         } else {

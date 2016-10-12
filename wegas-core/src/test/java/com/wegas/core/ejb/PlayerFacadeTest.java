@@ -10,8 +10,10 @@ package com.wegas.core.ejb;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
+import java.util.List;
 import javax.naming.NamingException;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -79,4 +81,10 @@ public class PlayerFacadeTest extends AbstractEJBTest {
 
         gameFacade.remove(g.getId());                                           // Clean up
     }
+
+    @Test
+    public void getInstances() {
+        List<VariableInstance> instances = playerFacade.getInstances(player.getId());
+    }
+
 }

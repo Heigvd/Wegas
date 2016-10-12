@@ -41,7 +41,6 @@ public class TriggerTest {
         this.scriptEntity.setContent("var x=10; x+=2;");
         this.triggerDescriptor.setTriggerEvent(scriptEntity);
         this.triggerDescriptor.setPostTriggerEvent(scriptEntity);
-        this.triggerDescriptor.buildStateMachine();
     }
 
     /**
@@ -52,7 +51,7 @@ public class TriggerTest {
         System.out.println("OneShotTrigger");
         this.triggerDescriptor.setOneShot(true);
         assertTrue(this.triggerDescriptor.getStates().get(1L).getTransitions().get(0).getNextStateId() == 2L);
-        assertTrue(this.triggerDescriptor.getStates().get(2L).getTransitions().isEmpty());
+        assertTrue(this.triggerDescriptor.getStates().get(2L).getTransitions().size() == 1);
         assertTrue(this.triggerDescriptor.getDefaultInstance().getCurrentStateId() == 1L);
         assertTrue(triggerDescriptor.getStates().get(2L).getOnEnterEvent().equals(this.triggerDescriptor.getPostTriggerEvent()));
         //testing onLoad method
@@ -70,11 +69,10 @@ public class TriggerTest {
     public void testGenerateLoopTrigger() {
         System.out.println("LoopTrigger");
         this.triggerDescriptor.setOneShot(false);
-        this.triggerDescriptor.buildStateMachine();
-        assertTrue(this.triggerDescriptor.getStates().get(1L).getTransitions().get(0).getNextStateId() == 1L);
-        assertTrue(this.triggerDescriptor.getStates().size() == 1);
+        assertTrue(this.triggerDescriptor.getStates().get(1L).getTransitions().get(0).getNextStateId() == 2L);
+        assertTrue(this.triggerDescriptor.getStates().size() == 2);
         assertTrue(this.triggerDescriptor.getDefaultInstance().getCurrentStateId() == 1L);
-        assertTrue(triggerDescriptor.getStates().get(1L).getOnEnterEvent().equals(scriptEntity));
+        assertTrue(triggerDescriptor.getStates().get(2L).getOnEnterEvent().equals(scriptEntity));
         //testing onLoad method
         this.triggerDescriptor.setTriggerEvent(null);
         this.triggerDescriptor.setPostTriggerEvent(null);
@@ -88,7 +86,6 @@ public class TriggerTest {
         this.triggerDescriptor.setOneShot(false);
         this.triggerDescriptor.setPostTriggerEvent(null);
         this.triggerDescriptor.setTriggerEvent(null);
-        this.triggerDescriptor.buildStateMachine();
         this.triggerDescriptor.setPostTriggerEvent(this.scriptEntity);
         this.triggerDescriptor.setTriggerEvent(this.scriptEntity);
         assertTrue(this.triggerDescriptor.getPostTriggerEvent().equals(scriptEntity));
@@ -103,7 +100,6 @@ public class TriggerTest {
         instanceEntity.setCurrentStateId(2L);
         this.triggerDescriptor.setOneShot(false);
         //  this.triggerDescriptor.setId(4L);
-        this.triggerDescriptor.buildStateMachine();
         this.triggerDescriptor.setScope(new TeamScope());
         TriggerDescriptor newTrigger = new TriggerDescriptor();
         newTrigger.setDefaultInstance(this.trigger);
@@ -115,6 +111,7 @@ public class TriggerTest {
         newTrigger.setPostTriggerEvent(newTestScript);
         newTrigger.setDefaultInstance(instanceEntity);
         newTrigger.setTriggerEvent(newTestScript);
+
         this.triggerDescriptor.merge(newTrigger);
         // assertTrue(this.triggerDescriptor.getId() == 4L);
         assertTrue(this.triggerDescriptor.getPostTriggerEvent().equals(newTestScript));

@@ -32,12 +32,13 @@
             </ui:repeat>
 
             <script type="text/javascript">
-                YUI().use("wegas-app", "wegas-scripteval", "wegas-websocketlistener", function(Y) {
+                YUI().use("wegas-app", "wegas-scripteval", "wegas-websocketlistener", function (Y) {
                     var app = new Y.Wegas.App({
                         dataSources: {
                             Variable: {
-                                source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
+                                //source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
                                 //source: "rest/EditorPrivate/#{editorGameController.currentPlayer.id}/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
+                                source: "rest/Editor/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
                                 initialRequest: "",
                                 plugins: [{
                                         fn: "VariableDescriptorCache"
@@ -50,6 +51,13 @@
                                         }
                                     }, {
                                         fn: "ServerLog"
+                                    }]
+                            },
+                            Instance: {
+                                source: "rest/Editor/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
+                                initialRequest: "/VariableInstance/AllPlayerInstances/#{gameController.currentPlayer.id}",
+                                plugins: [{
+                                        fn: "VariableInstanceCache"
                                     }]
                             },
                             Page: {
@@ -135,7 +143,7 @@
 
                     app.render();                                               // Render app
 
-                    app.after("render", function() {                            // When the page is rendered
+                    app.after("render", function () {                            // When the page is rendered
                         var g = Y.Wegas.Facade.Game.cache.getCurrentGame();
                         Y.one(".wegas-title").setContent("&lt;div>" + g.get("name") + "&lt;/div>"
                             + "&lt;div class='subtitle'>" + g.get("gameModelName") + "&lt;/div>");// Update the title
@@ -146,7 +154,7 @@
                             playersTree.treeView.plug(Y.Plugin.TeamSelection);
                         }
 
-                        playersTree.on(["treeleaf:click", "treenode:click"], function(e) {// Listen to click events on the first child (treeview)
+                        playersTree.on(["treeleaf:click", "treenode:click"], function (e) {// Listen to click events on the first child (treeview)
                             var entity = e.target.get("data.entity"),
                                 player = (entity instanceof Y.Wegas.persistence.Team) ? entity.get("players")[0] : entity;
 
@@ -159,14 +167,14 @@
 
                         // Run game model specific scripts
                         try {
-                            #{editorGameController.getClientScripts()}
+                #{editorGameController.getClientScripts()}
                         } catch (e) {
                             Y.log("Error running client scripts.", "error");
                         }
                     });
 
                     // Add button to switch to editor/host mode
-                    app.once("render", function() {                             // When the page is rendered
+                    app.once("render", function () {                             // When the page is rendered
                         var body = Y.one("body"),
                             button = new Y.Wegas.ToggleButton({
                                 label: "Enable edition",
@@ -176,7 +184,7 @@
                         body.addClass("wegas-hostmode");
 
                         button.get("boundingBox").addClass("host-switchmode");
-                        button.after("pressedChange", function(e) {
+                        button.after("pressedChange", function (e) {
                             body.addClass("wegas-loading-after");
 
                             Y.Wegas.Facade.Page.cache.clear();
@@ -184,9 +192,9 @@
                                 e.newVal ? "wegas-app/db/wegas-editor-layout.json" : "wegas-app/db/wegas-host-layout.json");
 
                             app.widget.destroy();                               // Destroy the current view
-                            Y.Wegas.Facade.Page.once("response", function(e) {  // When page data source response arrives,
+                            Y.Wegas.Facade.Page.once("response", function (e) {  // When page data source response arrives,
                                 var widgetCfg = e.response.results;
-                                Y.Wegas.use(widgetCfg, Y.bind(function() {
+                                Y.Wegas.use(widgetCfg, Y.bind(function () {
                                     app.widget = Y.Wegas.Widget.create(Y.clone(widgetCfg)).render();// Instantiate the root widget and render it
                                     this.fire("render");                        // Fire a render event for some eventual post processing
 
@@ -200,7 +208,7 @@
                     });
 
                     // Handle player change event
-                    Y.Wegas.Facade.Game.cache.after('currentPlayerIdChange', function() {// Whenever the current player id changes
+                    Y.Wegas.Facade.Game.cache.after('currentPlayerIdChange', function () {// Whenever the current player id changes
                         var player = Y.Wegas.Facade.Game.cache.getCurrentPlayer(),
                             preview = Y.Widget.getByNode(".editor-preview");
 
@@ -208,7 +216,7 @@
 
                         preview.showOverlay();                                  // Show a loading overlay in the Preview tab during the request
 
-                        Y.later(10, this, function() {                          // Version 1: All data are loaded, only need to change trigger udate
+                        Y.later(10, this, function () {                          // Version 1: All data are loaded, only need to change trigger udate
                             Y.Wegas.Facade.Variable.fire("update");
                             preview.hideOverlay();
                         });

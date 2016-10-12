@@ -254,6 +254,13 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      * @throws WegasNoResultException
      */
     public VariableDescriptor find(final GameModel gameModel, final String name) throws WegasNoResultException {
+        /*for (VariableDescriptor vd : gameModel.getVariableDescriptors()) {
+            if (name.equals(vd.getName())) {
+                return vd;
+            }
+        }
+        throw new WegasNoResultException();*/
+        
         try {
             TypedQuery<VariableDescriptor> query = getEntityManager().createNamedQuery("VariableDescriptor.findByGameModelIdAndName", VariableDescriptor.class);
             query.setParameter("gameModelId", gameModel.getId());
@@ -344,14 +351,16 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      * @return all gameModel descriptors with the given title
      */
     public List<VariableDescriptor> findByTitle(final GameModel gameModel, final String title) {
-        final CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        final CriteriaQuery<VariableDescriptor> cq = cb.createQuery(VariableDescriptor.class);
-        final Root<VariableDescriptor> variableDescriptor = cq.from(VariableDescriptor.class);
-        cq.where(cb.and(
-                cb.equal(variableDescriptor.get("gameModel").get("id"), gameModel.getId()),
-                cb.equal(variableDescriptor.get("title"), title)));
-        final TypedQuery<VariableDescriptor> q = getEntityManager().createQuery(cq);
-        return q.getResultList();
+
+        List<VariableDescriptor> result = new ArrayList<>();
+        if (title != null) {
+            for (VariableDescriptor vd : gameModel.getVariableDescriptors()) {
+                if (title.equals(vd.getTitle())) {
+                    result.add(vd);
+                }
+            }
+        }
+        return result;
     }
 
     /**
@@ -359,10 +368,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      * @return all gameModel descriptors
      */
     public List<VariableDescriptor> findAll(final Long gameModelId) {
-        // TODO: Shall we use gameModel.getVariableDescriptors() instead ?
-        TypedQuery<VariableDescriptor> findByRootGameModelId = getEntityManager().createNamedQuery("VariableDescriptor.findByRootGameModelId", VariableDescriptor.class);
-        findByRootGameModelId.setParameter("gameModelId", gameModelId);
-        return findByRootGameModelId.getResultList();
+        return gameModelFacade.find(gameModelId).getVariableDescriptors();
     }
 
     /**

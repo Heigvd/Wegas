@@ -7,7 +7,7 @@ angular.module('wegas.models.sessions', [])
             sessions = {
                 cache: [],
                 getPath: function(status) {
-                    return ServiceURL + "rest/EditorExtended/GameModel/Game/status/" + status;
+                    return ServiceURL + "rest/Lobby/GameModel/Game/status/" + status;
                 },
                 findSession: function(status, id) {
                     return _.find(sessions.cache[status].data, function(s) {
@@ -359,7 +359,7 @@ angular.module('wegas.models.sessions', [])
         /* Call the backend for new session values */
         model.refreshSession = function(status, sessionToRefresh) {
             var deferred = $q.defer(),
-                url = "rest/GameModel/Game/" + sessionToRefresh.id + "?view=EditorExtended",
+                url = "rest/GameModel/Game/" + sessionToRefresh.id + "?view=Editor",
                 cachedSession = null;
             $http
                 .get(ServiceURL + url)
@@ -397,7 +397,7 @@ angular.module('wegas.models.sessions', [])
                         "access": "OPEN",
                         "name": sessionName
                     };
-                    $http.post(ServiceURL + "rest/GameModel/" + newSession.gameModelId + "/Game?view=EditorExtended", newSession).success(function(data) {
+                    $http.post(ServiceURL + "rest/GameModel/" + newSession.gameModelId + "/Game?view=Lobby", newSession).success(function(data) {
                         cacheSession("LIVE", data)
                         $translate('COMMONS-SESSIONS-CREATE-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, data));

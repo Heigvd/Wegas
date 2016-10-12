@@ -9,33 +9,63 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-resourcemanagement-entities', function(Y) {
+YUI.add('wegas-resourcemanagement-entities', function (Y) {
     "use strict";
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array", NAME = "name",
         SELF = "self", BOOLEAN = "boolean", NUMBER = "number", OBJECT = "object",
         HTML = "html", VALUE = "value", HASHLIST = "hashlist", COMBINE = "combine",
         GROUP = "group", LIST = "list", SELECT = "select", KEY = "key",
         Wegas = Y.Wegas, persistence = Wegas.persistence,
-        PROPERTIESELEMENTTYPE = {
-            type: COMBINE,
-            fields: [{
-                    name: NAME,
-                    typeInvite: NAME,
-                    size: 16
-                }, {
-                    name: VALUE,
-                    typeInvite: VALUE,
-                    size: 16
-                }]
-        },
+        VERSION_ATTR_DEF,
+        PROPERTIESELEMENTTYPE,
+        IDATTRDEF, lvl;
+
+    VERSION_ATTR_DEF = {
+        type: "number",
+        optional: true,
+        _inputex: {
+            _type: HIDDEN
+        }
+    };
+
+
+    VERSION_ATTR_DEF = {
+        type: "number",
+        optional: true,
+        _inputex: {
+            _type: HIDDEN
+        }
+    };
+
     IDATTRDEF = {
         type: STRING,
         optional: true, // The id is optional for entites that have not been persisted
         _inputex: {
             _type: HIDDEN
         }
+    };
+
+
+
+    PROPERTIESELEMENTTYPE = {
+        type: COMBINE,
+        fields: [{
+                name: NAME,
+                typeInvite: NAME,
+                size: 16
+            }, {
+                name: VALUE,
+                typeInvite: VALUE,
+                size: 16
+            }]
     },
-    lvl;
+    IDATTRDEF = {
+        type: STRING,
+        optional: true, // The id is optional for entites that have not been persisted
+        _inputex: {
+            _type: HIDDEN
+        }
+    };
     Y.namespace("Wegas.persistence.Resources"); // Create namespace
 
     /**
@@ -108,10 +138,10 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
      * ResourceDescriptor mapper
      */
     persistence.ResourceDescriptor = Y.Base.create("ResourceDescriptor", persistence.VariableDescriptor, [], {
-        getConfidence: function() {
+        getConfidence: function () {
             return this.getInstance().get("confidence");
         },
-        getIconCss: function() {
+        getIconCss: function () {
             return "fa fa-user";
         }
     }, {
@@ -154,6 +184,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         }
                     },
                     id: IDATTRDEF,
+                    version: VERSION_ATTR_DEF,
                     active: {
                         type: BOOLEAN,
                         _inputex: {
@@ -475,10 +506,10 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
      * TaskDescriptor mapper
      */
     persistence.TaskDescriptor = Y.Base.create("TaskDescriptor", persistence.VariableDescriptor, [], {
-        findAssociatedRessources: function(abstractAssignments) {
+        findAssociatedRessources: function (abstractAssignments) {
             var ressources, i, data = [], assignments, dict;
             ressources = Wegas.Facade.Variable.cache.findAll("@class", "ResourceDescriptor");
-            Y.Array.each(ressources, function(employee) {
+            Y.Array.each(ressources, function (employee) {
                 assignments = employee.getInstance().get(abstractAssignments);
                 for (i = 0; i < assignments.length; i++) {
                     dict = {};
@@ -492,7 +523,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             }, this);
             return data;
         },
-        getIconCss: function() {
+        getIconCss: function () {
             return "fa fa-list";
         }
     }, {
@@ -527,8 +558,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             predecessors: {
                 type: ARRAY,
                 "transient": true,
-                getter: function() {
-                    return Y.Array.map(this.get("predecessorNames"), function(name) {
+                getter: function () {
+                    return Y.Array.map(this.get("predecessorNames"), function (name) {
                         return Wegas.Facade.Variable.cache.find("name", name);
                     });
                 }
@@ -556,6 +587,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         }
                     },
                     id: IDATTRDEF,
+                    version: VERSION_ATTR_DEF,
                     requirements: {
                         type: ARRAY,
                         _inputex: {
@@ -738,8 +770,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             requirements: {
                 type: ARRAY,
-                setter: function(v) {
-                    v.sort(function(a, b) {
+                setter: function (v) {
+                    v.sort(function (a, b) {
                         if (a.get("work") === b.get("work")) {
                             return a.get("level") < b.get("level") ?
                                 -1 : a.get("level") > b.get("level") ?
@@ -864,7 +896,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
      * BURNDOWN
      */
     persistence.BurndownDescriptor = Y.Base.create("BurndownDescriptor", persistence.VariableDescriptor, [], {
-        getIconCss: function() {
+        getIconCss: function () {
             return "fa fa-area-chart";
         }
     }, {
@@ -899,6 +931,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         }
                     },
                     id: IDATTRDEF,
+                    version: VERSION_ATTR_DEF,
                     iterations: {
                         type: ARRAY,
                         _inputex: {
@@ -928,27 +961,27 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
     });
 
     persistence.Iteration = Y.Base.create("Iteration", persistence.Entity, [], {
-        getTaskDescriptors: function() {
+        getTaskDescriptors: function () {
             var ids = this.get("taskDescriptorsId"), i, taskDs = [];
             for (i = 0; i < ids.length; i += 1) {
                 taskDs.push(Y.Wegas.Facade.Variable.cache.find("id", ids[i]));
             }
             return taskDs;
         },
-        getRemainingWorkload: function() {
+        getRemainingWorkload: function () {
             var taskI, taskDs, i, workload = 0;
             taskDs = this.getTaskDescriptors();
             for (i = 0; i < taskDs.length; i += 1) {
                 taskI = taskDs[i].getInstance();
                 if (taskI.get("properties.completeness") < 100) {
-                    workload += taskI.get("properties.duration") * Y.Array.reduce(taskI.get("requirements"), 0, function(previous, current) {
+                    workload += taskI.get("properties.duration") * Y.Array.reduce(taskI.get("requirements"), 0, function (previous, current) {
                         return previous + current.get("quantity") * (100 - current.get("completeness")) / 100;
                     });
                 }
             }
             return workload;
         },
-        getTotalWorkload: function() {
+        getTotalWorkload: function () {
             var taskI, taskDs, i, workload = 0;
             if (this.hasBegun()) {
                 return this.get("totalWorkload");
@@ -956,14 +989,14 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 taskDs = this.getTaskDescriptors();
                 for (i = 0; i < taskDs.length; i += 1) {
                     taskI = taskDs[i].getInstance();
-                    workload += taskI.get("properties.duration") * Y.Array.reduce(taskI.get("requirements"), 0, function(previous, current) {
+                    workload += taskI.get("properties.duration") * Y.Array.reduce(taskI.get("requirements"), 0, function (previous, current) {
                         return previous + current.get("quantity");
                     });
                 }
                 return workload;
             }
         },
-        getStatus: function() {
+        getStatus: function () {
             var tasks = this.getTaskDescriptors(),
                 i, taskI, started, completed = tasks.length > 0,
                 completeness;
@@ -988,7 +1021,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 return "NOT_STARTED";
             }
         },
-        hasBegun: function() {
+        hasBegun: function () {
             return this.getStatus() !== "NOT_STARTED";
         }
     }, {

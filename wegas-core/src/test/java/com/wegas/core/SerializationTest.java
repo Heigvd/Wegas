@@ -112,18 +112,18 @@ public class SerializationTest {
         coord1.setY(100);
         s1.setEditorPosition(coord1);
         s1.setLabel("label");
-        smD.getStates().put(1L, s1);
+        smD.addState(1L, s1);
 
         State s2 = new State();
         Coordinate coord2 = new Coordinate();
         coord2.setX(500);
         coord2.setY(500);
         s2.setEditorPosition(coord2);
-        smD.getStates().put(2L, s2);
+        smD.addState(2L, s2);
 
         Transition trans1 = new Transition();
         trans1.setNextStateId(2L);
-        s1.getTransitions().add(trans1);
+        s1.addTransition(trans1);
 
         assertPropertyEquals(mapper.writeValueAsString(smD), "@class", "FSMDescriptor");
         assertPropertyEquals(mapper.writeValueAsString(smI), "@class", "FSMInstance");

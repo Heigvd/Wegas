@@ -15,13 +15,25 @@ YUI.add('wegas-mcq-entities', function(Y) {
         SELF = "self", BOOLEAN = "boolean", BUTTON = "Button", OBJECT = "object",
         HTML = "html", SCRIPT = "script", NUMBER = "number",
         Wegas = Y.Wegas, persistence = Wegas.persistence,
-        IDATTRDEF = {
-            type: STRING,
-            optional: true, // The id is optional for entites that have not been persisted
-            _inputex: {
-                _type: HIDDEN
-            }
-        };
+        VERSION_ATTR_DEF,
+        IDATTRDEF;
+
+    VERSION_ATTR_DEF = {
+        type: NUMBER,
+        optional: true,
+        _inputex: {
+            _type: HIDDEN
+        }
+    };
+
+
+    IDATTRDEF = {
+        type: STRING,
+        optional: true, // The id is optional for entites that have not been persisted
+        _inputex: {
+            _type: HIDDEN
+        }
+    };
 
     /**
      * QuestionDescriptor mapper
@@ -67,7 +79,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     index: 8
                 }
             },
-            cbx : {
+            cbx: {
                 type: BOOLEAN,
                 value: false,
                 _inputex: {
@@ -76,7 +88,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     index: 9
                 }
             },
-            tabular : {
+            tabular: {
                 type: BOOLEAN,
                 value: false,
                 _inputex: {
@@ -104,6 +116,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                         }
                     },
                     id: IDATTRDEF,
+                    version: VERSION_ATTR_DEF,
                     active: {
                         type: BOOLEAN,
                         _inputex: {
@@ -261,176 +274,176 @@ YUI.add('wegas-mcq-entities', function(Y) {
             return "fa fa-check-square-o";
         }
     },
-    {
-        ATTRS: {
-            "@class": {
-                value: "ChoiceDescriptor"
-            },
-            title: {
-                type: STRING,
-                optional: true,
-                _inputex: {
-                    label: "Label",
-                    description: "Displayed to players",
-                    index: -1
-                }
-            },
-            description: {
-                type: STRING,
-                format: HTML,
-                optional: true,
-                _inputex: {
-                    opts: {
-                        height: '50px'
+        {
+            ATTRS: {
+                "@class": {
+                    value: "ChoiceDescriptor"
+                },
+                title: {
+                    type: STRING,
+                    optional: true,
+                    _inputex: {
+                        label: "Label",
+                        description: "Displayed to players",
+                        index: -1
                     }
-                }
-            },
-
-            defaultInstance: {
-                properties: {
-                    '@class': {
-                        type: STRING,
-                        _inputex: {
-                            _type: HIDDEN,
-                            value: 'ChoiceInstance'
-                        }
-                    },
-                    id: IDATTRDEF,
-                    active: {
-                        type: BOOLEAN,
-                        _inputex: {
-                            label: 'Active from start',
-                            value: true
-                        }
-                    },
-                    currentResultName: {
-                        type: NUMBER,
-                        optional: true,
-                        _inputex: {
-                            _type: "entityarrayfieldselect",
-                            label: "Default result",
-                            returnAttr: "name",
-                            field: "results"
+                },
+                description: {
+                    type: STRING,
+                    format: HTML,
+                    optional: true,
+                    _inputex: {
+                        opts: {
+                            height: '50px'
                         }
                     }
                 },
-                _inputex: {
-                    index: 2
-                }
-            },
-            duration: {
-                value: 1,
-                type: STRING,
-                optional: true,
-                _inputex: {
-                    _type: HIDDEN
-                }
-            },
-            cost: {
-                type: STRING,
-                optional: true,
-                value: 0,
-                _inputex: {
-                    _type: HIDDEN
-                }
-            },
-            results: {
-                type: ARRAY,
-                value: [],
-                _inputex: {
-                    _type: HIDDEN,
-                    index: 3
-                }
-            },
-            addShortcut: {
-                type: STRING,
-                "transient": true,
-                value: "Result",
-                _inputex: {
-                    _type: HIDDEN
-                }
-            }
-        },
-        EDITMENU: [{
-                type: "EditEntityButton"
-            }, {
-                type: BUTTON,
-                label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add result",
-                plugins: [{
-                        fn: "EditEntityArrayFieldAction",
-                        cfg: {
-                            targetClass: "Result",
-                            method: "POST",
-                            attributeKey: "results",
-                            showEditionAfterRequest: true
+                defaultInstance: {
+                    properties: {
+                        '@class': {
+                            type: STRING,
+                            _inputex: {
+                                _type: HIDDEN,
+                                value: 'ChoiceInstance'
+                            }
+                        },
+                        id: IDATTRDEF,
+                        version: VERSION_ATTR_DEF,
+                        active: {
+                            type: BOOLEAN,
+                            _inputex: {
+                                label: 'Active from start',
+                                value: true
+                            }
+                        },
+                        currentResultName: {
+                            type: NUMBER,
+                            optional: true,
+                            _inputex: {
+                                _type: "entityarrayfieldselect",
+                                label: "Default result",
+                                returnAttr: "name",
+                                field: "results"
+                            }
                         }
-                    }]
-            }, {
-                type: BUTTON,
-                label: "Copy",
-                plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-            }, {
-                type: "DeleteEntityButton"
-            }],
-        METHODS: {
-            activate: {
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
-            },
-            desactivate: {
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
-            },
-            isActive: {
-                label: "is active",
-                returns: BOOLEAN,
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
-            },
-            setCurrentResult: {
-                label: "set current result",
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: "entityarrayfieldselect",
-                        returnAttr: "name",
-                        field: "results",
-                        scriptType: STRING
-                    }]
-            },
-            hasBeenSelected: {
-                label: "has been selected",
-                returns: BOOLEAN,
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
-            },
-            hasResultBeenApplied: {
-                label: "has result been applied",
-                returns: BOOLEAN,
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: "entityarrayfieldselect",
-                        returnAttr: "name",
-                        field: "results",
-                        scriptType: STRING
+                    },
+                    _inputex: {
+                        index: 2
                     }
-                ]
+                },
+                duration: {
+                    value: 1,
+                    type: STRING,
+                    optional: true,
+                    _inputex: {
+                        _type: HIDDEN
+                    }
+                },
+                cost: {
+                    type: STRING,
+                    optional: true,
+                    value: 0,
+                    _inputex: {
+                        _type: HIDDEN
+                    }
+                },
+                results: {
+                    type: ARRAY,
+                    value: [],
+                    _inputex: {
+                        _type: HIDDEN,
+                        index: 3
+                    }
+                },
+                addShortcut: {
+                    type: STRING,
+                    "transient": true,
+                    value: "Result",
+                    _inputex: {
+                        _type: HIDDEN
+                    }
+                }
+            },
+            EDITMENU: [{
+                    type: "EditEntityButton"
+                }, {
+                    type: BUTTON,
+                    label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add result",
+                    plugins: [{
+                            fn: "EditEntityArrayFieldAction",
+                            cfg: {
+                                targetClass: "Result",
+                                method: "POST",
+                                attributeKey: "results",
+                                showEditionAfterRequest: true
+                            }
+                        }]
+                }, {
+                    type: BUTTON,
+                    label: "Copy",
+                    plugins: [{
+                            fn: "DuplicateEntityAction"
+                        }]
+                }, {
+                    type: "DeleteEntityButton"
+                }],
+            METHODS: {
+                activate: {
+                    arguments: [{
+                            type: HIDDEN,
+                            value: SELF
+                        }]
+                },
+                desactivate: {
+                    arguments: [{
+                            type: HIDDEN,
+                            value: SELF
+                        }]
+                },
+                isActive: {
+                    label: "is active",
+                    returns: BOOLEAN,
+                    arguments: [{
+                            type: HIDDEN,
+                            value: SELF
+                        }]
+                },
+                setCurrentResult: {
+                    label: "set current result",
+                    arguments: [{
+                            type: HIDDEN,
+                            value: SELF
+                        }, {
+                            type: "entityarrayfieldselect",
+                            returnAttr: "name",
+                            field: "results",
+                            scriptType: STRING
+                        }]
+                },
+                hasBeenSelected: {
+                    label: "has been selected",
+                    returns: BOOLEAN,
+                    arguments: [{
+                            type: HIDDEN,
+                            value: SELF
+                        }]
+                },
+                hasResultBeenApplied: {
+                    label: "has result been applied",
+                    returns: BOOLEAN,
+                    arguments: [{
+                            type: HIDDEN,
+                            value: SELF
+                        }, {
+                            type: "entityarrayfieldselect",
+                            returnAttr: "name",
+                            field: "results",
+                            scriptType: STRING
+                        }
+                    ]
+                }
             }
-        }
-    });
+        });
     /**
      * ChoiceDescriptor mapper
      */
@@ -442,196 +455,207 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 return "fa fa-check-square-o";
             }
         },
-    {
-        ATTRS: {
-            "@class": {
-                value: "SingleResultChoiceDescriptor"
-            },
-            defaultInstance: {
-                properties: {
-                    '@class': {
-                        type: STRING,
-                        _inputex: {
-                            _type: HIDDEN,
-                            value: 'ChoiceInstance'
-                        }
-                    },
-                    id: IDATTRDEF,
-                    active: {
-                        type: BOOLEAN,
-                        _inputex: {
-                            label: 'Active from start',
-                            value: true
-                        }
-                    },
-                    currentResultName: {
-                        type: STRING,
-                        optional: true,
-                        _inputex: {
-                            _type: HIDDEN
-                        }
-                    }
-                }
-            },
-            results: {
-                type: ARRAY,
-                value: [{
-                        "@class": "Result"
-                    }],
-                items: {
-                    type: OBJECT,
-                    optional: true,
+        {
+            ATTRS: {
+                "@class": {
+                    value: "SingleResultChoiceDescriptor"
+                },
+                defaultInstance: {
                     properties: {
-                        id: IDATTRDEF,
-                        "@class": {
+                        '@class': {
                             type: STRING,
-                            _inputex: {
-                                _type: HIDDEN
-                            }
-                        },
-                        name: {
-                            type: STRING,
-                            optional: true,
-                            _inputex: {
-                                _type: HIDDEN
-                            }
-                        },
-                        label: {
-                            type: STRING,
-                            optional: true,
-                            _inputex: {
-                                _type: HIDDEN
-                            }
-                        },
-                        answer: {
-                            type: STRING,
-                            optional: true,
-                            format: HTML,
-                            _inputex: {
-                                label: "Feedback",
-                                index: 1
-                            }
-                        },
-                        impact: {
-                            optional: true,
-                            _inputex: {
-                                _type: SCRIPT,
-                                label: "Impact on variables",
-                                index: 2
-                            }
-                        },
-                        "": {
-                            optional: true,
-                            type: "uneditable",
-                            transient: true,
-                            _inputex: {
-                                label: "<div style=\"height:60px\"><div style=\"position:absolute;margin-top:30px;\"><b>ONLY&nbsp;FOR&nbsp;CHECKBOX&nbsp;REPLIES:</b></div></div>",
-                                index: 3
-                            }
-                        },
-                        ignorationAnswer: {
-                            type: STRING,
-                            optional: true,
-                            format: HTML,
-                            _inputex: {
-                                label: "Feedback<br/>when ignored",
-                                index: 4
-                            }
-                        },
-                        ignorationImpact: {
-                            optional: true,
-                            _inputex: {
-                                _type: SCRIPT,
-                                label: "Impact on variables<br/>when ignored",
-                                index: 5
-                            }
-                        },
-                        choiceDescriptorId: {
-                            type: STRING,
-                            optional: true,
-                            _inputex: {
-                                _type: HIDDEN
-                            }
-                        },
-                        files: {
-                            optional: true,
-                            type: ARRAY,
-                            items: {
-                                type: STRING,
-                                optional: false,
-                                _inputex: {
-                                    _type: "wegasurl",
-                                    label: ""
-                                }
-                            },
                             _inputex: {
                                 _type: HIDDEN,
-                                value: []
+                                value: 'ChoiceInstance'
+                            }
+                        },
+                        id: IDATTRDEF,
+                        version: VERSION_ATTR_DEF,
+                        active: {
+                            type: BOOLEAN,
+                            _inputex: {
+                                label: 'Active from start',
+                                value: true
+                            }
+                        },
+                        currentResultName: {
+                            type: STRING,
+                            optional: true,
+                            _inputex: {
+                                _type: HIDDEN
                             }
                         }
                     }
                 },
-                _inputex: {
-                    label: null,
-                    index: 4,
-                    useButtons: false,
-                    listAddLabel: " ",
-                    listRemoveLabel: " ",
-                    wrapperClassName: "inputEx-fieldWrapper-nomargin"
+                results: {
+                    type: ARRAY,
+                    value: [{
+                            "@class": "Result"
+                        }],
+                    items: {
+                        type: OBJECT,
+                        optional: true,
+                        properties: {
+                            id: IDATTRDEF,
+                            "@class": {
+                                type: STRING,
+                                _inputex: {
+                                    _type: HIDDEN
+                                }
+                            },
+                            version: {
+                                type: NUMBER,
+                                optional: true,
+                                value: 0,
+                                _inputex: {
+                                    _type: "uneditable",
+                                    wrapperClassName: "inputEx-fieldWrapper inputEx-uneditableField wegas-advanced-feature",
+                                    index: -1
+                                }
+                            },
+                            name: {
+                                type: STRING,
+                                optional: true,
+                                _inputex: {
+                                    _type: HIDDEN
+                                }
+                            },
+                            label: {
+                                type: STRING,
+                                optional: true,
+                                _inputex: {
+                                    _type: HIDDEN
+                                }
+                            },
+                            answer: {
+                                type: STRING,
+                                optional: true,
+                                format: HTML,
+                                _inputex: {
+                                    label: "Feedback",
+                                    index: 1
+                                }
+                            },
+                            impact: {
+                                optional: true,
+                                _inputex: {
+                                    _type: SCRIPT,
+                                    label: "Impact on variables",
+                                    index: 2
+                                }
+                            },
+                            "": {
+                                optional: true,
+                                type: "uneditable",
+                                transient: true,
+                                _inputex: {
+                                    label: "<div style=\"height:60px\"><div style=\"position:absolute;margin-top:30px;\"><b>ONLY&nbsp;FOR&nbsp;CHECKBOX&nbsp;REPLIES:</b></div></div>",
+                                    index: 3
+                                }
+                            },
+                            ignorationAnswer: {
+                                type: STRING,
+                                optional: true,
+                                format: HTML,
+                                _inputex: {
+                                    label: "Feedback<br/>when ignored",
+                                    index: 4
+                                }
+                            },
+                            ignorationImpact: {
+                                optional: true,
+                                _inputex: {
+                                    _type: SCRIPT,
+                                    label: "Impact on variables<br/>when ignored",
+                                    index: 5
+                                }
+                            },
+                            choiceDescriptorId: {
+                                type: STRING,
+                                optional: true,
+                                _inputex: {
+                                    _type: HIDDEN
+                                }
+                            },
+                            files: {
+                                optional: true,
+                                type: ARRAY,
+                                items: {
+                                    type: STRING,
+                                    optional: false,
+                                    _inputex: {
+                                        _type: "wegasurl",
+                                        label: ""
+                                    }
+                                },
+                                _inputex: {
+                                    _type: HIDDEN,
+                                    value: []
+                                }
+                            }
+                        }
+                    },
+                    _inputex: {
+                        label: null,
+                        index: 4,
+                        useButtons: false,
+                        listAddLabel: " ",
+                        listRemoveLabel: " ",
+                        wrapperClassName: "inputEx-fieldWrapper-nomargin"
+                    }
+                },
+                addShortcut: {
+                    type: STRING,
+                    "transient": true,
+                    value: "",
+                    _inputex: {
+                        _type: HIDDEN
+                    }
                 }
             },
-            addShortcut: {
-                type: STRING,
-                "transient": true,
-                value: "",
-                _inputex: {
-                    _type: HIDDEN
+            EDITORNAME: "Choice",
+            EDITMENU: [{
+                    type: "EditEntityButton"
+                }, {
+                    type: BUTTON,
+                    label: "Copy",
+                    plugins: [{
+                            fn: "DuplicateEntityAction"
+                        }]
+                }, {
+                    type: "DeleteEntityButton"
+                }],
+            METHODS: {
+                activate: {
+                    arguments: [{
+                            type: HIDDEN,
+                            value: SELF
+                        }]
+                },
+                desactivate: {
+                    arguments: [{
+                            type: HIDDEN,
+                            value: SELF
+                        }]
+                },
+                hasBeenSelected: {
+                    label: "has been selected",
+                    returns: BOOLEAN,
+                    arguments: [{
+                            type: HIDDEN,
+                            value: SELF
+                        }]
+                },
+                isActive: {
+                    label: "is active",
+                    returns: BOOLEAN,
+                    arguments: [{
+                            type: HIDDEN,
+                            value: SELF
+                        }]
                 }
             }
-        },
-        EDITORNAME: "Choice",
-        EDITMENU: [{
-                type: "EditEntityButton"
-            }, {
-                type: BUTTON,
-                label: "Copy",
-                plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-            }, {
-                type: "DeleteEntityButton"
-            }],
-        METHODS: {
-            activate: {
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
-            },
-            desactivate: {
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
-            },
-            hasBeenSelected: {
-                label: "has been selected",
-                returns: BOOLEAN,
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
-            },
-            isActive: {
-                label: "is active",
-                returns: BOOLEAN,
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
-            }
-        }
-    });
+        });
     /**
      * MCQ Result mapper
      */
@@ -652,6 +676,16 @@ YUI.add('wegas-mcq-entities', function(Y) {
         ATTRS: {
             "@class": {
                 value: "Result"
+            },
+            version: {
+                type: NUMBER,
+                optional: false,
+                value: 0,
+                _inputex: {
+                    _type: "uneditable",
+                    wrapperClassName: "inputEx-fieldWrapper inputEx-uneditableField wegas-advanced-feature",
+                    index: -1
+                }
             },
             label: {
                 type: STRING,
@@ -684,14 +718,16 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 optional: true,
                 format: HTML,
                 _inputex: {
-                    label: "Feedback when selected"
+                    label: "Feedback when selected",
+                    index: 3
                 }
             },
             impact: {
                 optional: true,
                 _inputex: {
                     _type: SCRIPT,
-                    label: "Impact when selected"
+                    label: "Impact when selected",
+                    index: 4
                 }
             },
             ignorationAnswer: {
@@ -699,14 +735,16 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 optional: true,
                 format: HTML,
                 _inputex: {
-                    label: "Feedback when ignored"
+                    label: "Feedback when ignored",
+                    index: 6
                 }
             },
             ignorationImpact: {
                 optional: true,
                 _inputex: {
                     _type: SCRIPT,
-                    label: "Impact on variables when ignored"
+                    label: "Impact on variables when ignored",
+                    index: 7
                 }
             },
             choiceDescriptorId: {

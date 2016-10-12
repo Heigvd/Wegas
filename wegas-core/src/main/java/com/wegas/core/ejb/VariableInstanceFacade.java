@@ -8,6 +8,7 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.NoGameException;
 import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.exception.internal.NoTeamException;
@@ -22,6 +23,7 @@ import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -187,6 +189,8 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
             throws NoPlayerException {
         Player p;
         try {
+            // make sure to have a managed instance to have the scope !
+            instance = this.find(instance.getId());
             if (instance.getScope() instanceof PlayerScope) {
                 p = playerFacade.find(instance.getPlayer().getId());
                 if (p == null) {
@@ -263,6 +267,21 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
 
     @Override
     public VariableInstance update(final Long entityId, final VariableInstance entity) {
+        if (requestFacade.getRequestManager().getPlayer() == null) {
+            /*
+             * When there is no player in the current requestFacade context and 
+             * since requestFacade will blindly selects any player in such a case.
+             * A player who match the given variableInstance scope must be 
+             * manually selected !
+             */
+            try {
+                Player findAPlayer = this.findAPlayer(entity);
+                requestFacade.getRequestManager().setPlayer(findAPlayer);
+            } catch (NoPlayerException ex) {
+                throw WegasErrorMessage.error("Unable to find a player for instance " + entity);
+            }
+        }
+        
         VariableInstance ret = super.update(entityId, entity);
         requestFacade.commit();
         return ret;
