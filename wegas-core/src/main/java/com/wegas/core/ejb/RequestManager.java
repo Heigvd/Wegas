@@ -37,7 +37,6 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 //import javax.annotation.PostConstruct;
-
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
