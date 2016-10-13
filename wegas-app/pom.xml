@@ -291,8 +291,8 @@
                     <useCache>true</useCache>
                     <!--<packagingExcludes>%regex[(?!.*min).*\.js]</packagingExcludes>-->
                     <packagingExcludes>
-                        wegas-leaderway/images/employees sources/**,
-                        wegas-leaderway/images/employees/**,
+                        wegas-private/wegas-leaderway/images/employees sources/**,
+                        wegas-private/wegas-leaderway/images/employees/**,
                         haproxy/**,
                         **/node_modules/
                     </packagingExcludes>
