@@ -34,7 +34,12 @@ import com.wegas.resourceManagement.persistence.BurndownDescriptor;
 import com.wegas.resourceManagement.persistence.ResourceDescriptor;
 import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
+import org.eclipse.persistence.annotations.CacheIndex;
+import org.eclipse.persistence.annotations.CacheIndexes;
 import org.eclipse.persistence.annotations.JoinFetch;
+import org.eclipse.persistence.config.CacheUsage;
+import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.config.QueryType;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -67,8 +72,12 @@ import java.util.Map;
         ),
         @NamedQuery(
                 name = "VariableDescriptor.findByGameModelIdAndName",
-                query = "SELECT vd FROM VariableDescriptor vd where vd.gameModel.id = :gameModelId AND vd.name LIKE :name"
+                query = "SELECT vd FROM VariableDescriptor vd where vd.gameModel.id = :gameModelId AND vd.name LIKE :name",
+                hints = {@QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject), @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)}
         )
+})
+@CacheIndexes(value = {
+        @CacheIndex(columnNames = {"GAMEMODEL_GAMEMODELID", "NAME"}) // bug uppercase: https://bugs.eclipse.org/bugs/show_bug.cgi?id=407834
 })
 @JsonSubTypes(value = {
         @JsonSubTypes.Type(name = "ListDescriptor", value = ListDescriptor.class),
@@ -87,6 +96,7 @@ import java.util.Map;
         @JsonSubTypes.Type(name = "PeerReviewDescriptor", value = PeerReviewDescriptor.class),
         @JsonSubTypes.Type(name = "BurndownDescriptor", value = BurndownDescriptor.class)
 })
+@MappedSuperclass
 abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity implements Searchable, LabelledEntity, Broadcastable {
 
     private static final long serialVersionUID = 1L;
@@ -112,8 +122,8 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      */
     //@JsonBackReference
     @ManyToOne
-    @JoinColumn
-    //@CacheIndex
+    @JoinColumn(name = "gamemodel_gamemodelid")
+    @CacheIndex
     private GameModel gameModel;
 
     /**

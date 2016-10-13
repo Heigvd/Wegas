@@ -18,6 +18,7 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.statemachine.*;
 import org.slf4j.LoggerFactory;
@@ -28,8 +29,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +45,7 @@ import java.util.regex.Pattern;
  */
 @Stateless
 @LocalBean
-public class StateMachineFacade {
+public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(StateMachineFacade.class);
 
@@ -55,9 +54,6 @@ public class StateMachineFacade {
      * {@value #EVENT_PARAMETER_NAME}
      */
     static final private String EVENT_PARAMETER_NAME = "param";
-
-    @PersistenceContext(unitName = "wegasPU")
-    private EntityManager em;
 
     @EJB
     private VariableDescriptorFacade variableDescriptorFacade;
@@ -85,10 +81,11 @@ public class StateMachineFacade {
      *
      */
     public StateMachineFacade() {
+        super(StateMachineDescriptor.class);
     }
 
     public Transition findTransition(Long transitionId) {
-        return em.find(Transition.class, transitionId);
+        return getEntityManager().find(Transition.class, transitionId);
     }
 
     /**
@@ -97,7 +94,7 @@ public class StateMachineFacade {
      */
     public void playerActionListener(@Observes PlayerAction playerAction) throws NoPlayerException, WegasScriptException {
         logger.debug("Received PlayerAction event");
-        Player player = playerFacade.find(playerAction.getPlayerId());
+        Player player = playerAction.getPlayer();
         if (player == null) {
             for (Entry<String, List<AbstractEntity>> entry : requestManager.getUpdatedEntities().entrySet()) {
                 for (AbstractEntity entity : entry.getValue()) {
@@ -115,6 +112,11 @@ public class StateMachineFacade {
             }
         }
         this.runForPlayer(player);
+        /*
+        Force resources release
+         */
+        getEntityManager().flush();
+        getEntityManager().clear();
     }
 
     /**
@@ -125,16 +127,23 @@ public class StateMachineFacade {
         for (Player player : resetEvent.getConcernedPlayers()) {
             this.runForPlayer(player);
         }
+
+        /*
+        Force resources release
+         */
+        getEntityManager().flush();
+        getEntityManager().clear();
     }
 
-    private List<StateMachineDescriptor> getAllStateMachines(GameModel gameModel) {
-        /*
-        flush / clear before request to avoid memory growing too much. BTW I don't know why ...
-         */
-        em.flush();
-        em.clear();
-        final TypedQuery<StateMachineDescriptor> q = em.createNamedQuery("StateMachineDescriptor.findAllForGameModelId", StateMachineDescriptor.class);
-        return q.setParameter("gameModelId", gameModel.getId()).getResultList();
+    private List<StateMachineDescriptor> getAllStateMachines(final GameModel gameModel) {
+        final List<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
+        final List<StateMachineDescriptor> stateMachineDescriptors = new ArrayList<>();
+        for (VariableDescriptor vd : variableDescriptors) {
+            if (vd instanceof StateMachineDescriptor) {
+                stateMachineDescriptors.add((StateMachineDescriptor) vd);
+            }
+        }
+        return stateMachineDescriptors;
     }
 
     private void runForPlayer(Player player) throws WegasScriptException {
@@ -342,6 +351,16 @@ public class StateMachineFacade {
             }
         }
         return stateMachineInstance;
+    }
+
+    @Override
+    public void create(StateMachineDescriptor entity) {
+        variableDescriptorFacade.create(entity);
+    }
+
+    @Override
+    public void remove(StateMachineDescriptor entity) {
+        variableDescriptorFacade.remove(entity);
     }
 
     private static class TransitionTraveled {

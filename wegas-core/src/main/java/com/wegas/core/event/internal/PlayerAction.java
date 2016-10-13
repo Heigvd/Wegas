@@ -20,26 +20,19 @@ public class PlayerAction implements Serializable {
     /**
      *
      */
-    private Long playerId;
+    private Player player;
     /**
      *
      * @param p
      */
     public PlayerAction(Player p) {
-        this.playerId = p.getId();
+        this.player = p;
     }
 
     /**
      * @return the playerId
      */
-    public Long getPlayerId() {
-        return this.playerId;
-    }
-
-    /**
-     * @param player the player to set
-     */
-    public void setPlayer(Player player) {
-        this.playerId = player.getId();
+    public Player getPlayer() {
+        return this.player;
     }
 }
