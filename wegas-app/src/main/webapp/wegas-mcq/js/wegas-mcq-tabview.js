@@ -147,7 +147,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             while (question = queue.shift()) {
                 if (question instanceof Wegas.persistence.QuestionDescriptor) {
                     oldTab = Y.Array.find(tabs, function(item) {
-                        return item.cQuestion.get("id") === question.get("id");
+                        return item.cQuestion && item.cQuestion.get("id") === question.get("id");
                     });
                     questionInstance = question.getInstance();
 
