@@ -89,7 +89,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
         updateTab: function(tab, question) {
             var questionInstance = question.getInstance(),
                 choiceDescriptor,
-                label, cbxType = question.get("cbx"),
+                label = null, cbxType = question.get("cbx"),
                 validatedCbx = (cbxType ? questionInstance.get('validated') : false),
                 nbReplies = questionInstance.get("replies").length,
                 highlightUnanswered = (this.get("highlightUnanswered") && (cbxType ? !validatedCbx : (nbReplies === 0)));
@@ -131,10 +131,11 @@ YUI.add('wegas-mcq-tabview', function(Y) {
         },
         updateTabs: function(questions) {
             var question, questionInstance, oldTab, newTab, tabs, toRemove, index, queue,
-                oldIndex;
+                oldIndex, selectedTab, lastSelection;
             tabs = this.tabView._items;
             toRemove = tabs.slice(0);
 
+            selectedTab = this.tabView.get('selection');
 
             if (!Y.Lang.isArray(questions)) {
                 queue = [questions];
@@ -174,8 +175,19 @@ YUI.add('wegas-mcq-tabview', function(Y) {
              * Remvoe tabs which are not to be no longer displayed
              */
             while (question = toRemove.shift()) {
+                if (selectedTab === question) {
+                    selectedTab = null;
+                }
                 question.remove();
             }
+
+            lastSelection = (selectedTab) ? selectedTab.get('index') : 0;
+            if (lastSelection >= this.tabView.size()) { // Can occur when questions list has changed during event
+                lastSelection = 0;
+            }
+            this.tabView.selectChild(lastSelection);
+
+
         },
         /**
          * @function
@@ -201,12 +213,6 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 this.tabView.selectChild(0);
             } else {
                 this.get("contentBox").removeClass("empty");
-                selectedTab = this.tabView.get('selection');
-                lastSelection = (selectedTab) ? selectedTab.get('index') : 0;
-                if (lastSelection >= this.tabView.size()) { // Can occur when questions list has changed during event
-                    lastSelection = 0;
-                }
-                this.tabView.selectChild(lastSelection);
             }
         },
         /**
