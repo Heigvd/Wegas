@@ -127,12 +127,6 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
         for (Player player : resetEvent.getConcernedPlayers()) {
             this.runForPlayer(player);
         }
-
-        /*
-        Force resources release
-         */
-        getEntityManager().flush();
-        getEntityManager().clear();
     }
 
     private List<StateMachineDescriptor> getAllStateMachines(final GameModel gameModel) {
