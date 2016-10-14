@@ -24,13 +24,12 @@ import com.wegas.core.persistence.variable.statemachine.*;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
+import javax.ejb.EJBException;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.TypedQuery;
-import javax.script.Invocable;
-import javax.script.ScriptException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,9 +37,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.ejb.EJBException;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 /**
  * Run state machines.
@@ -49,7 +45,7 @@ import javax.persistence.PersistenceContext;
  */
 @Stateless
 @LocalBean
-public class StateMachineFacade {
+public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(StateMachineFacade.class);
 
@@ -58,9 +54,6 @@ public class StateMachineFacade {
      * {@value #EVENT_PARAMETER_NAME}
      */
     static final private String EVENT_PARAMETER_NAME = "param";
-
-    @PersistenceContext(unitName = "wegasPU")
-    private EntityManager em;
 
     @EJB
     private VariableDescriptorFacade variableDescriptorFacade;
@@ -88,10 +81,11 @@ public class StateMachineFacade {
      *
      */
     public StateMachineFacade() {
+        super(StateMachineDescriptor.class);
     }
 
     public Transition findTransition(Long transitionId) {
-        return em.find(Transition.class, transitionId);
+        return getEntityManager().find(Transition.class, transitionId);
     }
 
     /**
@@ -118,6 +112,11 @@ public class StateMachineFacade {
             }
         }
         this.runForPlayer(player);
+        /*
+        Force resources release
+         */
+        getEntityManager().flush();
+        getEntityManager().clear();
     }
 
     /**
@@ -125,15 +124,20 @@ public class StateMachineFacade {
      */
     public void resetEventListener(@Observes ResetEvent resetEvent) throws WegasScriptException {
         logger.debug("Received Reset event");
-        //System.out.println("ResetEvent");
         for (Player player : resetEvent.getConcernedPlayers()) {
             this.runForPlayer(player);
         }
     }
 
-    private List<StateMachineDescriptor> getAllStateMachines(GameModel gameModel) {
-        final TypedQuery<StateMachineDescriptor> q = em.createNamedQuery("StateMachineDescriptor.findAllForGameModelId", StateMachineDescriptor.class);
-        return q.setParameter("gameModelId", gameModel.getId()).getResultList();
+    private List<StateMachineDescriptor> getAllStateMachines(final GameModel gameModel) {
+        final List<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
+        final List<StateMachineDescriptor> stateMachineDescriptors = new ArrayList<>();
+        for (VariableDescriptor vd : variableDescriptors) {
+            if (vd instanceof StateMachineDescriptor) {
+                stateMachineDescriptors.add((StateMachineDescriptor) vd);
+            }
+        }
+        return stateMachineDescriptors;
     }
 
     private void runForPlayer(Player player) throws WegasScriptException {
@@ -142,6 +146,7 @@ public class StateMachineFacade {
         stateMachineEventsCounter = new InternalStateMachineEventCounter();
         Integer steps = this.doSteps(player, passed, statemachines, 0);
         logger.info("#steps[" + steps + "] - Player {} triggered transition(s):{}", player.getName(), passed);
+        stateMachineEventsCounter = null;
     }
 
     private Integer doSteps(Player player, List<Transition> passedTransitions, List<StateMachineDescriptor> stateMachineDescriptors, Integer steps) throws WegasScriptException {
@@ -167,8 +172,8 @@ public class StateMachineFacade {
                     break; // already have a valid transition
                 }
                 if (transition instanceof DialogueTransition
-                    && ((DialogueTransition) transition).getActionText() != null
-                    && !((DialogueTransition) transition).getActionText().isEmpty()) {                 // Dialogue, don't eval if not null or empty
+                        && ((DialogueTransition) transition).getActionText() != null
+                        && !((DialogueTransition) transition).getActionText().isEmpty()) {                 // Dialogue, don't eval if not null or empty
                     continue;
                 } else if (this.isNotDefined(transition.getTriggerCondition())) {
                     validTransition = true;
@@ -205,7 +210,7 @@ public class StateMachineFacade {
                 }
                 if (validTransition == null) {
                     throw WegasErrorMessage.error("Please review condition [" + sm.getLabel() + "]:\n"
-                        + transition.getTriggerCondition().getContent());
+                            + transition.getTriggerCondition().getContent());
                 } else if (validTransition) {
                     if (passedTransitions.contains(transition)) {
                         /*
@@ -235,7 +240,7 @@ public class StateMachineFacade {
             /*@DIRTY, @TODO : find something else : Running scripts overrides previous state change Only for first Player (resetEvent). */
             /* Fixed by lib, currently commenting it  @removeme */
 //            this.getAllStateMachines(player.getGameModel());
-            
+
             for (Map.Entry<StateMachineInstance, Transition> entry : selectedTransitions.entrySet()) {
 
                 StateMachineInstance fsmi = entry.getKey();
@@ -294,41 +299,6 @@ public class StateMachineFacade {
     }
 
     /**
-     * Run given script with given parameter. Script may use named parameter
-     * {@value #EVENT_PARAMETER_NAME} to access passed parameter.
-     *
-     * @param script the script to run
-     * @param param  the parameter to pass to the script
-     * @see #EVENT_PARAMETER_NAME
-     */
-    private void evalEventImpact(Player player, final Script script, final Object param, VariableDescriptor context) throws WegasRuntimeException {
-        //try {
-        final Object impactFunc;
-        if (script.getLanguage().toLowerCase().equals("javascript")) {
-            impactFunc = scriptManager.eval(player, new Script(script.getLanguage(),
-                String.format("function(%s){%s}", EVENT_PARAMETER_NAME, script.getContent()) // A JavaScript Function. should check for engine type
-            ), context);
-        } else {
-            return; // define other language here
-        }
-        try {
-            if (param instanceof ScriptEventFacade.EmptyObject) {
-                ((Invocable) requestManager.getCurrentEngine()).invokeMethod(impactFunc, "call", impactFunc);
-            } else {
-                ((Invocable) requestManager.getCurrentEngine()).invokeMethod(impactFunc, "call", impactFunc, param);
-            }
-        } catch (ScriptException ex) {
-            throw new WegasScriptException(ex.getFileName(), ex.getLineNumber(), ex.getMessage());
-        } catch (NoSuchMethodException ex) {
-            logger.debug("Event transition script failed", ex);
-        } catch (WegasRuntimeException ex) { // throw our exception as-is
-            throw ex;
-        } catch (RuntimeException ex) {
-            throw new WegasScriptException(ex.getMessage());
-        }
-    }
-
-    /**
      * Test if a script is not defined, ie empty or null
      *
      * @param script to test
@@ -336,7 +306,7 @@ public class StateMachineFacade {
      */
     private Boolean isNotDefined(Script script) {
         return script == null || script.getContent() == null
-            || script.getContent().equals("");
+                || script.getContent().equals("");
     }
 
     public StateMachineInstance doTransition(Long gameModelId, Long playerId, Long stateMachineDescriptorId, Long transitionId) {
@@ -376,7 +346,18 @@ public class StateMachineFacade {
         }
         return stateMachineInstance;
     }
-    public static class TransitionTraveled {
+
+    @Override
+    public void create(StateMachineDescriptor entity) {
+        variableDescriptorFacade.create(entity);
+    }
+
+    @Override
+    public void remove(StateMachineDescriptor entity) {
+        variableDescriptorFacade.remove(entity);
+    }
+
+    private static class TransitionTraveled {
 
         final public StateMachineDescriptor descriptor;
         final public StateMachineInstance instance;
@@ -384,7 +365,7 @@ public class StateMachineFacade {
         final public State from;
         final public State to;
 
-        public TransitionTraveled(StateMachineDescriptor descriptor, StateMachineInstance instance, Transition transition, State from, State to) {
+        private TransitionTraveled(StateMachineDescriptor descriptor, StateMachineInstance instance, Transition transition, State from, State to) {
             this.descriptor = descriptor;
             this.instance = instance;
             this.transition = transition;
@@ -437,7 +418,7 @@ public class StateMachineFacade {
         return count;
     }
 
-    public boolean isTransitionValid(DialogueTransition transition, Long playerId, StateMachineDescriptor context) {
+    private boolean isTransitionValid(DialogueTransition transition, Long playerId, StateMachineDescriptor context) {
         boolean valid = true;
 
         if (transition.getTriggerCondition() != null && !transition.getTriggerCondition().getContent().equals("")) {
