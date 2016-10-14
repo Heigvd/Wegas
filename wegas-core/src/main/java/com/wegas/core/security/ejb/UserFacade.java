@@ -621,6 +621,9 @@ public class UserFacade extends BaseFacade<User> {
             this.remove(account.getUser());
         }
 
+        //Force flush before closing RequestManager !
+        getEntityManager().flush();
+
         logger.info("removeIdleGuests(): " + resultList.size() + " unused guest accounts removed (idle since: " + calendar.getTime() + ")");
     }
 

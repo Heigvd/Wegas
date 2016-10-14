@@ -55,8 +55,11 @@ public class DelayedScriptEventFacade {
     public void timeout(Timer timer) {
         Serializable info = timer.getInfo();
         if (info instanceof DelayedEventPayload) {
-            requestFacade.getRequestManager().setEnv(RequestManager.RequestEnvironment.INTERNAL);
+            RequestManager rm = requestFacade.getRequestManager();
+            rm.setEnv(RequestManager.RequestEnvironment.INTERNAL);
             DelayedEventPayload payload = (DelayedEventPayload) info;
+            rm.setMethod("DELAYED EVENT");
+            rm.setPath(payload.getEventName());
             Player p = playerFacade.find(payload.getPlayerId());
 
             // fire Script (ie base mechanism and static server script eval)
@@ -64,6 +67,7 @@ public class DelayedScriptEventFacade {
             // force FSM evaluation and make sur EntityManager has flush
             requestFacade.commit(p);
 
+            rm.markManagermentStartTime();
             /*
              * ManagedModeResponseFilter mock-up.
              * To propagate instances through websockets
@@ -73,8 +77,11 @@ public class DelayedScriptEventFacade {
             Map<String, List<AbstractEntity>> outdatedEntities = requestFacade.getOutdatedEntities();
 
             if (!(updatedEntities.isEmpty() && destroyedEntities.isEmpty() && outdatedEntities.isEmpty())) {
+                rm.markPropagationStartTime();
                 websocketFacade.onRequestCommit(updatedEntities, destroyedEntities, outdatedEntities, null);
+                rm.markPropagationEndTime();
             }
+            rm.markSerialisationStartTime();
         } else {
             logger.error("UNREADABLE INFO");
         }
