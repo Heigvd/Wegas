@@ -33,6 +33,7 @@ import javax.inject.Named;
 import javax.script.ScriptEngine;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import javax.annotation.PostConstruct;
 import javax.ejb.DependsOn;
 import javax.ws.rs.core.Response;
 
@@ -412,10 +413,16 @@ public class RequestManager {
         long endTime = System.currentTimeMillis();
 
         long totalDuration = endTime - this.startTimestamp;
-        long processingDuration = this.managementStartTime - this.startTimestamp;
-        long managementDuration = this.serialisationStartTime - this.managementStartTime;
-        Long propagationTime = this.propagationEndTime != null ? this.propagationEndTime - this.propagationStartTime : null;
-        long serialisationDuration = endTime - this.serialisationStartTime;
+
+        String processingDuration;
+        String managementDuration;
+        String propagationDuration;
+        String serialisationDuration;
+
+        processingDuration = this.managementStartTime != null ? Long.toString(this.managementStartTime - this.startTimestamp) : "N/A";
+        managementDuration = this.serialisationStartTime != null && this.managementStartTime != null ? Long.toString(this.serialisationStartTime - this.managementStartTime) : "N/A";
+        propagationDuration = this.propagationEndTime != null ? Long.toString(this.propagationEndTime - this.propagationStartTime) : "N/A";
+        serialisationDuration = this.serialisationStartTime != null ? Long.toString(endTime - this.serialisationStartTime) : "N/A";
 
         Team currentTeam = null;
         if (currentPlayer != null) {
@@ -431,7 +438,7 @@ public class RequestManager {
                 + " processed in " + totalDuration + " ms ("
                 + " processing: " + processingDuration + "; "
                 + " management: " + managementDuration + "; "
-                + (propagationTime != null ? "propagation: " + propagationTime + "; " : "")
+                + (propagationDuration != null ? "propagation: " + propagationDuration + "; " : "")
                 + " serialisation: " + serialisationDuration
                 + ") => " + this.status);
     }
@@ -439,10 +446,11 @@ public class RequestManager {
     /**
      * Lifecycle
      */
-    /*@PostConstruct
+    @PostConstruct
     public void postConstruct() {
-        logger.error("Request Manager: PostConstruct: " + this);
-    }*/
+        this.markProcessingStartTime();
+    }
+
     @PreDestroy
     public void preDestroy() {
         while (!lockedToken.isEmpty()) {

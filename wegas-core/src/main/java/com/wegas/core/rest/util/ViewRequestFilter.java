@@ -61,7 +61,6 @@ public class ViewRequestFilter implements ContainerRequestFilter {
         RequestFacade rmf = RequestFacade.lookup();
 
         rmf.getRequestManager().setRequestId(idGenerator.getUniqueIdentifier());
-        rmf.getRequestManager().markProcessingStartTime();
         rmf.getRequestManager().setMethod(cr.getMethod());
         rmf.getRequestManager().setPath(cr.getUriInfo().getPath());
 
