@@ -428,6 +428,22 @@ YUI.add('wegas-mcq-entities', function(Y) {
                             value: SELF
                         }]
                 },
+                hasNotBeenSelected: {
+                    label: "has not been selected",
+                    returns: BOOLEAN,
+                    arguments: [{
+                            type: HIDDEN,
+                            value: SELF
+                        }]
+                },
+                hasBeenIgnored: {
+                    label: "has been ignored",
+                    returns: BOOLEAN,
+                    arguments: [{
+                            type: HIDDEN,
+                            value: SELF
+                        }]
+                },
                 hasResultBeenApplied: {
                     label: "has result been applied",
                     returns: BOOLEAN,
@@ -640,6 +656,22 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 },
                 hasBeenSelected: {
                     label: "has been selected",
+                    returns: BOOLEAN,
+                    arguments: [{
+                            type: HIDDEN,
+                            value: SELF
+                        }]
+                },
+                hasNotBeenSelected: {
+                    label: "has not been selected",
+                    returns: BOOLEAN,
+                    arguments: [{
+                            type: HIDDEN,
+                            value: SELF
+                        }]
+                },
+                hasBeenIgnored: {
+                    label: "has been ignored",
                     returns: BOOLEAN,
                     arguments: [{
                             type: HIDDEN,
