@@ -479,7 +479,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
          */
         genScopeTreeViewElements: function(el) {
             var children = [],
-                i, label, team, player, instance,
+                i, label, team, player, instance, iconFa,
                 instances; // = el.get("scope").get("variableInstances");
             instances = Y.Wegas.Facade.Instance.cache.find("descriptorId", el.get("id")).variableInstances;
 
@@ -494,20 +494,27 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                                 continue;
                             }
                             label = (player) ? player.get(NAME) : "undefined";
+                            iconFa = "fa-user";
                             break;
                         case 'TeamScope':
                             team = Wegas.Facade.Game.cache.getTeamById(i);
                             if (!team) {
                                 continue;
                             }
-                            label = (team) ? team.get(NAME) : "undefined";
+                            if (Y.Wegas.Facade.Game.cache.getCurrentGame().get("properties.freeForAll") && team.get("players").length > 0) {
+                                label = team.get("players")[0].get(NAME);
+                            } else {
+                                label = team.get(NAME);
+                            }
+                            iconFa = "fa-group";
                             break;
                         case 'GameScope':
                         case 'GameModelScope':
                             label = 'Global';
+                            iconFa = "fa-globe";
                             break;
                     }
-                    children.push(this.genVariableInstanceElements(label, instance));
+                    children.push(this.genVariableInstanceElements(label, instance, iconFa));
                 }
             }
             return children;
@@ -516,65 +523,49 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
          * @function
          * @private
          */
-        genVariableInstanceElements: function(label, el) {
-            var selected = (+this.currentSelection === +el.get(ID)) ? 2 : 0,
-                k, children, collapsed;
+        genVariableInstanceElements: function(label, el, iconFa) {
+            var iconCss, selected = (+this.currentSelection === +el.get(ID)) ? 2 : 0,
+                k, node;
+
+            iconFa = iconFa || "fa-file-o";
+
+            iconCss = "fa fa-1x " + iconFa;
+
+            node = {
+                label: label,
+                selected: selected,
+                iconCSS: iconCss,
+                data: {
+                    entity: el
+                }
+            };
+
             switch (el.get(CLASS)) {
                 case 'TextInstance':
-                    return {
-                        label: label + ': ' + el.get("value").slice(0.10),
-                        selected: selected,
-                        data: {
-                            entity: el
-                        }
-                    };
+                    node.label += ': ' + el.get("value").slice(0.10);
+                    break;
                 case 'StringInstance':
                 case 'NumberInstance':
                 case 'ListInstance':
-                    return {
-                        label: label + ': ' + el.get("value"),
-                        selected: selected,
-                        data: {
-                            entity: el
-                        }
-                    };
+                    node.label += ': ' + el.get("value");
+                    break;
                 case 'QuestionInstance':
-                    return {
-                        label: label +
-                            ((el.get("replies").length > 0) ? ': ' + el.get("replies").get(NAME) : ': unanswered'),
-                        selected: selected,
-                        data: {
-                            entity: el
-                        }
-                    };
+                    node.label += ((el.get("replies").length > 0) ? ': ' + el.get("replies").get(NAME) : ': unanswered');
+                    break;
                 case 'InboxInstance':
-                    children = [];
-                    collapsed = !this.isNodeExpanded(el);
-                    label += "(" + el.get("messages").length + ")";
+                    node.type = 'TreeNode';
+                    node.children = [];
+                    node.collapsed = !this.isNodeExpanded(el);
+                    node.label += "(" + el.get("messages").length + ")";
                     for (k = 0; k < el.get("messages").length; k += 1) {
-                        children.push({
+                        node.children.push({
                             label: el.get("messages")[k].get("subject")
                         });
                     }
-                    return {
-                        type: 'TreeNode',
-                        label: label,
-                        selected: selected,
-                        collapsed: collapsed,
-                        data: {
-                            entity: el
-                        },
-                        children: children
-                    };
+                    break;
                 default:
-                    return {
-                        label: label,
-                        selected: selected,
-                        data: {
-                            entity: el
-                        }
-                    };
             }
+            return node;
         }
     });
     Wegas.VariableTreeView = VariableTreeView;
