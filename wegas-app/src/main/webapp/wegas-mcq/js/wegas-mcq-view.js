@@ -82,6 +82,12 @@ YUI.add('wegas-mcq-view', function(Y) {
          * When datasource is updated, do syncUI;
          */
         bindUI: function() {
+            this.handlers.push(Y.Wegas.Facade.Variable.after("updatedDescriptor", function(e) {
+                var question = this.get("variable.evaluated");
+                if (question && question.get("id") === e.entity.get("id")) {
+                    this.syncUI();
+                }
+            }, this));
             this.handlers.push(Y.Wegas.Facade.Instance.after("updatedInstance", function(e) {
                 var question = this.get("variable.evaluated");
                 if (question && question.getInstance().get("id") === e.entity.get("id")) {
