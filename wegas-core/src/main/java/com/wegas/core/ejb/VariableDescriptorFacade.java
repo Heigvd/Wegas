@@ -254,12 +254,12 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      * @throws WegasNoResultException
      */
     public VariableDescriptor find(final GameModel gameModel, final String name) throws WegasNoResultException {
-        /*for (VariableDescriptor vd : gameModel.getVariableDescriptors()) {
-            if (name.equals(vd.getName())) {
-                return vd;
-            }
-        }
-        throw new WegasNoResultException();*/
+//        for (VariableDescriptor vd : gameModel.getVariableDescriptors()) {
+//            if (name.equals(vd.getName())) {
+//                return vd;
+//            }
+//        }
+//        throw new WegasNoResultException();
         
         try {
             TypedQuery<VariableDescriptor> query = getEntityManager().createNamedQuery("VariableDescriptor.findByGameModelIdAndName", VariableDescriptor.class);

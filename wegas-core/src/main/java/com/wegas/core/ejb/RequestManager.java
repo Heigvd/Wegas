@@ -10,13 +10,11 @@ package com.wegas.core.ejb;
 import com.wegas.core.event.client.ClientEvent;
 import com.wegas.core.event.client.CustomEvent;
 import com.wegas.core.event.client.ExceptionEvent;
-import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
-import com.wegas.core.rest.util.RequestIdentifierGenerator;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
@@ -25,19 +23,20 @@ import jdk.nashorn.internal.runtime.ScriptObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.ejb.DependsOn;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.script.ScriptEngine;
+import javax.script.ScriptContext;
+import javax.ws.rs.core.Response;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.PostConstruct;
-import javax.ejb.DependsOn;
-import javax.ws.rs.core.Response;
 
 //import javax.annotation.PostConstruct;
+
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
@@ -119,7 +118,7 @@ public class RequestManager {
     /**
      *
      */
-    private ScriptEngine currentEngine = null;
+    private ScriptContext currentScriptContext = null;
 
     public RequestEnvironment getEnv() {
         return env;
@@ -186,7 +185,7 @@ public class RequestManager {
      */
     public void setPlayer(Player currentPlayer) {
         if (this.currentPlayer == null || !this.currentPlayer.equals(currentPlayer)) {
-            this.setCurrentEngine(null);
+            this.setCurrentScriptContext(null);
         }
         this.currentPlayer = currentPlayer != null ? (currentPlayer.getId() != null ? playerFacade.find(currentPlayer.getId()) : currentPlayer) : null;
     }
@@ -199,17 +198,17 @@ public class RequestManager {
     }
 
     /**
-     * @return the currentEngine
+     * @return the currentScriptContext
      */
-    public ScriptEngine getCurrentEngine() {
-        return currentEngine;
+    public ScriptContext getCurrentScriptContext() {
+        return currentScriptContext;
     }
 
     /**
-     * @param currentEngine the currentEngine to set
+     * @param currentScriptContext the currentScriptContext to set
      */
-    public void setCurrentEngine(ScriptEngine currentEngine) {
-        this.currentEngine = currentEngine;
+    public void setCurrentScriptContext(ScriptContext currentScriptContext) {
+        this.currentScriptContext = currentScriptContext;
     }
 
     /**
@@ -456,6 +455,10 @@ public class RequestManager {
         while (!lockedToken.isEmpty()) {
             String remove = lockedToken.remove(0);
             mutexSingleton.unlockFull(remove);
+        }
+        if (this.currentScriptContext != null) {
+            this.currentScriptContext.getBindings(ScriptContext.ENGINE_SCOPE).clear();
+            this.currentScriptContext = null;
         }
 
         this.logRequest();
