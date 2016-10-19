@@ -60,13 +60,13 @@ YUI().use(function(Y) {
                 requires: "inputex-jsonschema"
             },
             "wegas-i18n-global-fr": {
-                path: 'js/i18n/i18n-global-fr.js'
+                path: 'js/i18n/i18n-global-fr-min.js'
             },
             "wegas-i18n-global-en": {
-                path: 'js/i18n/i18n-global-en.js'
+                path: 'js/i18n/i18n-global-en-min.js'
             },
             "wegas-i18n-global": {
-                path: 'js/i18n/i18n-global.js',
+                path: 'js/i18n/i18n-global-min.js',
                 requires: ['wegas-i18n']
             },
             "wegas-i18n": {},
@@ -901,6 +901,7 @@ YUI().use(function(Y) {
                     "wegas-reviewing-entities",
                     "datatable",
                     "overlay",
+                    "wegas-i18n-review",
                     "slider",
                     "wegas-teams-dashboard",
                     "chartist",
@@ -913,6 +914,16 @@ YUI().use(function(Y) {
                     "GradeInput",
                     "TextEvalInput",
                     "CategorizationInput"]
+            },
+            "wegas-i18n-review-fr": {
+                path: 'js/i18n/i18n-review-fr-min.js'
+            },
+            "wegas-i18n-review-en": {
+                path: 'js/i18n/i18n-review-en-min.js'
+            },
+            "wegas-i18n-review": {
+                path: 'js/i18n/i18n-review-min.js',
+                requires: ['wegas-i18n', 'wegas-i18n-global']
             }
         }
     });

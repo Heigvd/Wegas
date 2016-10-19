@@ -21,12 +21,11 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Instance of the PeerReviewDescriptor variable
- * Author:<br />
+ * Instance of the PeerReviewDescriptor variable Author:<br />
  * - has to review several other authors: <code>toReview</code> Review
  * list<br />
- * - is reviewed by several other authors: <code>reviewed</code> Review list
- * The review is in a specific state, see PeerReviewDescriptor
+ * - is reviewed by several other authors: <code>reviewed</code> Review list The
+ * review is in a specific state, see PeerReviewDescriptor
  *
  * @author Maxence Laurent (maxence.laurent gmail.com)
  * @see PeerReviewDescriptor

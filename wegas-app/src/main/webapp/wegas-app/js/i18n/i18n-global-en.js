@@ -14,6 +14,10 @@
 
 YUI.add("wegas-i18n-global-en", function(Y) {
     Y.Wegas.I18n.register("wegas-i18n-global", "en", {
+        wegas: {
+            player: "player",
+            team: "team"
+        },
         global: {
             and: "and",
             description: "description",
@@ -27,10 +31,10 @@ YUI.add("wegas-i18n-global-en", function(Y) {
             conflict: "Your request could not be completed due to a conflict. This usually means you tried to update an outdated element.",
             greaterThan: "{{value}} is greater greater than {{max}}",
             lessThan: "{{value}} is less than {{min}}",
-			limitReached: "You cannot select more than {{num}} values",
-			prohibited: "\"{{value}}\" not allowed. It must be one of these: {{values}}",
-            nan : "\"{{value}}\" is not a number",
-            notAPositiveInteger : "\"{{value}}\" is not a positive integer",
+            limitReached: "You cannot select more than {{num}} values",
+            prohibited: "\"{{value}}\" not allowed. It must be one of these: {{values}}",
+            nan: "\"{{value}}\" is not a number",
+            notAPositiveInteger: "\"{{value}}\" is not a positive integer",
             outOfBounds: "{{value}} not in [{{min}},{{max}}]"
         },
         inbox: {
