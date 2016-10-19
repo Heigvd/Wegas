@@ -70,7 +70,7 @@ public class Neo4jStatistics {
     @Path("LogId/{logid: [^/]+}/Number/{varName : [^/]+}")
     public Object showNumber(@PathParam("logid") String logid,
                              @PathParam("varName") String vName, @QueryParam("gid") String gameIds) {
-        if (!Neo4jUtils.checkDataBaseIsRunning()) {
+        if (!Neo4jCommunication.isDBUp()) {
             return null;
         }
         String query;
@@ -91,7 +91,7 @@ public class Neo4jStatistics {
     @Path("LogId")
     @RequiresRoles("Administrator")
     public Object getLogIds() {
-        if (!Neo4jUtils.checkDataBaseIsRunning()) {
+        if (!Neo4jCommunication.isDBUp()) {
             return null;
         }
         final String query = "MATCH n RETURN DISTINCT n.logID";
