@@ -18,6 +18,8 @@
     position: absolute;
     font-size: 11px;
     min-width: 12em;
+    max-height: 100%;
+    overflow-y: auto;
 }
 .yui3-menu-hidden {
     display:none;

@@ -21,13 +21,6 @@ public class PlayerAction implements Serializable {
      *
      */
     private Player player;
-
-    /**
-     *
-     */
-    public PlayerAction() {
-    }
-
     /**
      *
      * @param p
@@ -37,16 +30,9 @@ public class PlayerAction implements Serializable {
     }
 
     /**
-     * @return the player
+     * @return the playerId
      */
     public Player getPlayer() {
-        return player;
-    }
-
-    /**
-     * @param player the player to set
-     */
-    public void setPlayer(Player player) {
-        this.player = player;
+        return this.player;
     }
 }

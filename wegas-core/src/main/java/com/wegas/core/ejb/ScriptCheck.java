@@ -19,7 +19,9 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.SystemException;
@@ -44,6 +46,7 @@ public class ScriptCheck {
     private RequestFacade requestFacade;
     @EJB
     private ScriptFacade scriptFacade;
+    private ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
 
     /**
      * Validate a given script, searching for errors in it.
@@ -54,29 +57,28 @@ public class ScriptCheck {
      * @return Exception the exception found in script or null if none occured
      */
     public WegasScriptException validate(Script script, Player player, VariableDescriptor context) {
-        ScriptEngine engine = scriptFacade.instantiateEngine(player, script.getLanguage());
-
-        return this.rollbackEval(engine, script, player.getId(), context);
+        ScriptContext ctx = scriptFacade.instantiateScriptContext(player, script.getLanguage());
+        return this.rollbackEval(ctx, script, player.getId(), context);
 
     }
 
     /**
      * Execute a script before rolling it back.
      *
-     * @param engine   the engine on which the script should execute
+     * @param ctx   the context on which the script should execute
      * @param script   the script
      * @param playerId the player's id, needed to set up Java env.
      *
      * @return Exception the exception found in script or null if none occured
      */
-    private WegasScriptException rollbackEval(ScriptEngine engine, Script script, Long playerId, VariableDescriptor context) {
+    private WegasScriptException rollbackEval(ScriptContext ctx, Script script, Long playerId, VariableDescriptor context) {
 
         try {
             utx.begin();
             requestFacade.setPlayer(playerId);
             try {
-                engine.put(ScriptFacade.CONTEXT, context);
-                engine.eval(script.getContent());
+                ctx.getBindings(ScriptContext.ENGINE_SCOPE).put(ScriptFacade.CONTEXT, context);
+                engine.eval(script.getContent(), ctx);
             } catch (ScriptException ex) {
                 logger.debug("Script Error: {} \n {}", script.getContent(), ex.getMessage(), ex.getStackTrace());
                 return new WegasScriptException(script.getContent(), ex.getLineNumber(), ex.getMessage());

@@ -46,10 +46,6 @@ public class TeamFacade extends BaseFacade<Team> {
 
     /**
      *
-     * @EJB private TeamSingleton teamSingleton;
-     */
-    /**
-     *
      */
     @EJB
     private PlayerFacade playerFacade;

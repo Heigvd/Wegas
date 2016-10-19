@@ -35,7 +35,7 @@ import java.util.Map.Entry;
 @NamedQueries(
         @NamedQuery(
                 name = "StateMachineDescriptor.findAllForGameModelId",
-                query = "SELECT sm FROM StateMachineDescriptor sm WHERE sm.gameModel.id=:gameModelId"
+                query = "SELECT DISTINCT sm FROM StateMachineDescriptor sm WHERE sm.gameModel.id = :gameModelId"
         )
 )
 public class StateMachineDescriptor extends VariableDescriptor<StateMachineInstance> implements Scripted {
