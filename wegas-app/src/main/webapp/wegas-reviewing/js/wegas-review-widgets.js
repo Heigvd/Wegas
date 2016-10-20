@@ -986,7 +986,7 @@ YUI.add("wegas-review-widgets", function(Y) {
          */
         destructor: function() {
             this.tabView.each(function(item) {
-                item.reviewWidget.destroy();
+                item.reviewWidget && item.reviewWidget.destroy();
             });
             this.tabView.destroy();
             Y.Array.each(this.handlers, function(h) {
@@ -1039,7 +1039,7 @@ YUI.add("wegas-review-widgets", function(Y) {
      * @constructor
      * @description Is used to display a specific review.
      */
-    ReviewWidget = Y.Base.create("wegas-review-widget", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
+    ReviewWidget = Y.Base.create("wegas-review-widget", Y.Widget, [Y.WidgetParent, Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         CONTENT_TEMPLATE: "<div>"
             + "  <div class=\"title\"></div>"
             + "  <div class=\"container\">"
@@ -1061,11 +1061,15 @@ YUI.add("wegas-review-widgets", function(Y) {
             + "      <div class=\"content\"></div>"
             + "    </div>"
             + "  </div>"
-            + "  <div class=\"submit\"></div>"
+            + "  <div>"
+            + "    <div class=\"submit\"></div>"
+            + "  </div>"
             + "</div>",
         initializer: function() {
             this._status = this.get("review").get("reviewState");
             this.widgets = {};
+            this.handlers = {};
+            this.locks = {};
         },
         /**
          *
@@ -1097,7 +1101,9 @@ YUI.add("wegas-review-widgets", function(Y) {
                         widget = new Wegas.CategorizationInput(cfg).render(container);
                         break;
                 }
-                widget.on(["*:message", "*:showOverlay", "*:hideOverlay"], this.fire, this); // Event on the loaded
+                this.add(widget);
+                //widget.before("*:save", this.fire, this);
+                //widget.on(["*:message", "*:saved", "*:revert", "*:editing", "*:showOverlay", "*:hideOverlay"], this.fire, this); // Event on the loaded
             }
             return widget;
         },
@@ -1169,10 +1175,12 @@ YUI.add("wegas-review-widgets", function(Y) {
             }
 
             if (modeFb === "write" || modeFbEval === "write") {
-                this.saveButton = new Y.Button({
-                    label: I18n.t("review.global.save"),
-                    visible: true
-                }).render(this.get(CONTENTBOX).one('.submit'));
+                if (modeFb === "write") {
+                    this.get("contentBox").one(".container .feedback .subtitle").append("<span class=\"save-status\"></span>");
+                } else {
+                    this.get("contentBox").one(".container .feedbackEv .subtitle").append("<span class=\"save-status\"></span>");
+                }
+
                 if (this.get("showSubmitButton")) {
                     this.submitButton = new Y.Button({
                         label: I18n.t("review.global.submit"),
@@ -1212,25 +1220,80 @@ YUI.add("wegas-review-widgets", function(Y) {
             if (this.submitButton) {
                 this.submitButton.on("click", this.submit, this);
             }
-            if (this.saveButton) {
-                this.saveButton.on("click", this.save, this);
+            /*if (this.saveButton) {
+             this.saveButton.on("click", this.save, this);
+             }*/
+
+            //this.handlers.beforeAnswerSave = this.before("*:save", this.onSave, this);
+            this.handlers.afterAnswerSave = this.after("*:saved", this.onSaved, this);
+            this.handlers.editing = this.on("*:editing", this.onEdit, this);
+            this.handlers.revert = this.on("*:revert", this.onRevert, this);
+
+        },
+        /*onSave: function(e) {
+         Y.log("SAVE " + e.id + " := " + e.value);
+         },*/
+        setStatus: function(status) {
+            this.get("contentBox").one(".save-status").setContent(status);
+
+            if (this.statusTimer) {
+                this.statusTimer.cancel();
             }
+            this.statusTimer = Y.later(3000, this, function() {
+                this.get("contentBox").one(".save-status").setContent("");
+            });
+        },
+        onSaved: function(e) {
+            this.setStatus("not saved");
+            this.submitButton.set("disabled", true);
+            delete this.locks[e.id];
+            if (this.timer) {
+                this.timer.cancel();
+            }
+            this.timer = Y.later(2000, this, function() {
+                var id;
+                for (id in this.locks) {
+                    if (this.locks.hasOwnProperty(id) && this.locks[id]) {
+                        return;
+                    }
+                }
+                this.setStatus("saving <i class=\"fa fa-1x fa-spinner fa-spin\"></i>");
+                this.save();
+            });
+        },
+        onEdit: function(e) {
+            this.locks[e.id] = true;
+            this.setStatus("not saved");
+            this.submitButton.set("disabled", true);
+        },
+        onRevert: function(e) {
+            delete this.locks[e.id];
         },
         destructor: function() {
             Y.log("DESTROY REVIEW WIDGET");
-            var id;
-            for (id in this.widgets) {
-                this.widgets[id] && this.widgets[id].destroy();
+            if (this.timer) {
+                this.timer.cancel();
+                this.save();
             }
+            var id;
+            for (id in this.handlers) {
+                if (this.handlers.hasOwnProperty(id)) {
+                    this.handlers[id].detach();
+                }
+            }
+
+            /*for (id in this.widgets) {
+             this.widgets[id] && this.widgets[id].destroy();
+             }*/
 
             if (this.submitButton) {
                 this.submitButton.destroy();
             }
-            if (this.saveButton) {
-                this.saveButton.destroy();
-            }
+            /*if (this.saveButton) {
+             this.saveButton.destroy();
+             }*/
         },
-        _sendRequest: function(action, updateCache) {
+        _sendRequest: function(action, updateCache, cb) {
             this.showOverlay();
             Y.Wegas.Facade.Variable.sendRequest({
                 request: "/PeerReviewController/" + action
@@ -1243,16 +1306,21 @@ YUI.add("wegas-review-widgets", function(Y) {
                 on: {
                     success: Y.bind(function() {
                         this.hideOverlay();
+                        cb && cb.call(this);
                     }, this),
                     failure: Y.bind(function() {
                         this.hideOverlay();
+                        cb && cb.call(this);
                         this.showMessage("error", "Something went wrong: " + action + " review");
                     }, this)
                 }
             });
         },
         save: function() {
-            this._sendRequest("SaveReview");
+            this._sendRequest("SaveReview", false, function() {
+                this.submitButton.set("disabled", false);
+                this.setStatus("saved");
+            });
         },
         submit: function() {
             Wegas.Panel.confirm(I18n.t("review.global.confirmation").capitalize(), Y.bind(function() {
@@ -1313,10 +1381,24 @@ YUI.add("wegas-review-widgets", function(Y) {
             this.xSlider = null;
             this._initialValue = undefined;
             //this.get("evaluation").get("value");
+            this.publish("save", {
+                emitFacade: true
+            });
+            this.publish("saved", {
+                emitFacade: true
+            });
+            this.publish("editing", {
+                emitFacade: true
+            });
+            /* to be fired if content is edited and canceled in a shot */
+            this.publish("revert", {
+                emitFacade: true
+            });
         },
         renderUI: function() {
             var ev = this.get("evaluation"), desc = ev.get("descriptor"),
                 CB = this.get("contentBox");
+            this.evId = ev.get("id");
             CB.one(".wegas-review-evaluation-label").setContent(desc.get("name"));
             CB.one(".wegas-review-evaluation-desc").setContent(desc.get("description"));
 
@@ -1339,6 +1421,8 @@ YUI.add("wegas-review-widgets", function(Y) {
             var evl, value;
             evl = this.get("evaluation");
             value = evl.get("value");
+            this.evId = evl.get("id");
+
             if (value !== this._initialValue) {
                 this._initialValue = value;
 
@@ -1372,6 +1456,12 @@ YUI.add("wegas-review-widgets", function(Y) {
             if (input) {
                 this.handlers.push(input.on("keyup", this.updateSlider, this));
             }
+            this.on("save", this._save);
+        },
+        _save: function(e) {
+            var ev = this.get("evaluation");
+            ev.set("value", e.value);
+            this.fire("saved", {id: e.id, value: e.value});
         },
         destructor: function() {
             this.timer && this.timer.cancel();
@@ -1393,7 +1483,12 @@ YUI.add("wegas-review-widgets", function(Y) {
                 this.showMessage("error", I18n.t("errors.outOfBounds", {value: value, min: desc.get("minValue"), max: desc.get("maxValue")}));
                 return false;
             }
-            ev.set("value", value);
+
+            if (value === this._initialValue) {
+                this.fire("revert", {"id": this.evId, "value": value});
+            } else {
+                this.fire("save", {"id": this.evId, "value": value});
+            }
 
             return true;
         },
@@ -1408,6 +1503,8 @@ YUI.add("wegas-review-widgets", function(Y) {
         updateSlider: function(e) {
             var input = this.get(CONTENTBOX).one(".wegas-review-grade-instance-input"),
                 value = input.get("value");
+
+            this.fire("editing", {"id": this.evId, "value": value});
 
             if (this.timer) {
                 this.timer.cancel();
@@ -1456,11 +1553,26 @@ YUI.add("wegas-review-widgets", function(Y) {
             return this._initialValue;
         },
         valueChanged: function(newValue) {
-            this.save(newValue);
+            //this.save(newValue);
         },
-        save: function(value) {
-            this.get("evaluation").set("value", value);
-            return true;
+        getPayload: function(value) {
+            return {
+                id: this.get("evaluation").get("id"),
+                value: value
+            };
+        },
+        /*save: function(value) {
+         this.get("evaluation").set("value", value);
+         return true;
+         },*/
+        _save: function(e) {
+            var cb = this.get("contentBox"),
+                value = e.value,
+                ev = this.get("evaluation");
+            this._initialContent = value;
+            ev.set("value", value);
+            cb.removeClass("loading");
+            this.fire("saved", this.getPayload(e.value));
         },
         syncUI: function() {
             var evl, value;
@@ -1507,6 +1619,19 @@ YUI.add("wegas-review-widgets", function(Y) {
         initializer: function() {
             this.handlers = [];
             this._initialValue = undefined;
+            this.publish("save", {
+                emitFacade: true
+            });
+            this.publish("saved", {
+                emitFacade: true
+            });
+            this.publish("editing", {
+                emitFacade: true
+            });
+            /* to be fired if content is edited and canceled in a shot */
+            this.publish("revert", {
+                emitFacade: true
+            });
         },
         renderUI: function() {
             var ev = this.get("evaluation"), desc = ev.get("descriptor"), categs, i,
@@ -1580,6 +1705,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                 value = e.target.get("value");
 
             ev.set("value", value);
+            this.fire("saved", {id: ev.get("id"), value: value});
 
             return true;
         }

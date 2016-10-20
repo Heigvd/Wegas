@@ -161,6 +161,17 @@
     padding-bottom: 5px;
 }
 
+.wegas-review-widget .feedback .subtitle,
+.wegas-review-widget .feedbackEv .subtitle {
+}
+
+.wegas-review-widget .feedback .save-status,
+.wegas-review-widget .feedbackEv .save-status {
+    font-style: italic;
+    color:#888;
+    float: right;
+}
+
 .wegas-review-widget .toReview,
 .wegas-review-widget .feedback,
 .wegas-review-widget .feedbackEv {
