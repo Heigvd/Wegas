@@ -36,9 +36,9 @@ import java.util.Iterator;
 
 class Neo4jUtils {
 
-    private static final String NEO4J_SERVER_URL = Helper.getWegasProperty("neo4j.server.url");
+    private static final String NEO4J_SERVER_URL = Helper.getWegasProperty("neo4j.server.url", "");
 
-    private static final String NEO4J_BASIC_AUTH = Helper.getWegasProperty("neo4j.server.auth");
+    private static final String NEO4J_BASIC_AUTH = Helper.getWegasProperty("neo4j.server.auth", "");
 
     private static final Logger logger = LoggerFactory.getLogger(Neo4jUtils.class);
 
