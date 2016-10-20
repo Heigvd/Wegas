@@ -18,7 +18,6 @@ import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +29,7 @@ import javax.inject.Inject;
 import javax.script.*;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -60,6 +59,10 @@ public class ScriptFacade {
      * Must be included in each Bindings.
      */
     private static final CompiledScript noSuchProperty;
+    /**
+     * Keep static scripts pre-compiled
+     */
+    private static final Map<String, CompiledScript> staticCache = new Helper.LRUCache<>(100);
     /*
     Initialize noSuchProperty
      */
@@ -174,6 +177,11 @@ public class ScriptFacade {
      * @param gm  GameModel from which scripts are taken
      */
     private void injectStaticScript(ScriptContext ctx, GameModel gm) {
+        String scriptURI = gm.getProperties().getScriptUri();
+        if (scriptURI == null || scriptURI.equals("")) {
+            return;
+        }
+
         String currentPath = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
         Integer index = currentPath.indexOf("WEB-INF");
         String root;
@@ -188,28 +196,30 @@ public class ScriptFacade {
         } else {
             root = currentPath.substring(0, index);
         }
+        String cacheFileName;
+        for (File f : getJavaScriptsRecursively(root, scriptURI.split(";"))) {
+            cacheFileName = f.getPath() + f.lastModified();
+            if (staticCache.get(cacheFileName) == null) {
 
-        String[] files = ArrayUtils.EMPTY_STRING_ARRAY;
-        String scriptURI = gm.getProperties().getScriptUri();
-        if (scriptURI != null && !scriptURI.equals("")) {
-            files = gm.getProperties().getScriptUri().split(";");
-        }
-
-        for (String f : getJavaScriptsRecursively(root, files)) {
-            ctx.setAttribute(ScriptEngine.FILENAME, "Script file " + f, ScriptContext.ENGINE_SCOPE);
+                try (
+                        java.io.FileInputStream fis = new FileInputStream(f);
+                        java.io.InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8)
+                ) {
+                    staticCache.putIfAbsent(cacheFileName, ((Compilable) engine).compile(isr));
+                } catch (IOException e) {
+                    logger.warn("File " + f.getPath() + " was not found");
+                } catch (ScriptException ex) {
+                    throw new WegasScriptException(f.getPath(), ex.getLineNumber(), ex.getMessage());
+                }
+            }
             try {
-
-                java.io.FileInputStream fis = new FileInputStream(f);
-                java.io.InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
-
-                engine.eval(isr, ctx);
+                ctx.setAttribute(ScriptEngine.FILENAME, "Static Scripts " + f.getPath(), ScriptContext.ENGINE_SCOPE);
+                staticCache.get(cacheFileName).eval(ctx);
                 logger.info("File " + f + " successfully injected");
-            } catch (FileNotFoundException ex) {
-                logger.warn("File " + f + " was not found");
             } catch (ScriptException ex) { // script exception (Java -> JS -> throw)
-                throw new WegasScriptException(f, ex.getLineNumber(), ex.getMessage());
+                throw new WegasScriptException(scriptURI, ex.getLineNumber(), ex.getMessage());
             } catch (RuntimeException ex) { // Unwrapped Java exception (Java -> JS -> Java -> throw)
-                throw new WegasScriptException(f, ex.getMessage());
+                throw new WegasScriptException(scriptURI, ex.getMessage());
             }
         }
     }
@@ -222,6 +232,7 @@ public class ScriptFacade {
      * @param arguments
      * @return
      */
+
     private Object eval(Script script, Map<String, AbstractEntity> arguments) throws WegasScriptException {
         if (script == null) {
             return null;
@@ -257,9 +268,9 @@ public class ScriptFacade {
      * @param files
      * @return
      */
-    private Collection<String> getJavaScriptsRecursively(String root, String[] files) {
+    private Collection<File> getJavaScriptsRecursively(String root, String[] files) {
         List<File> queue = new LinkedList<>();
-        List<String> result = new LinkedList<>();
+        List<File> result = new LinkedList<>();
 
         for (String file : files) {
             File f = new File(root + "/" + file);
@@ -269,7 +280,7 @@ public class ScriptFacade {
             if (f.isDirectory()) {
                 queue.add(f);
             } else {
-                result.add(f.getPath());
+                result.add(f);
             }
         }
 
@@ -287,7 +298,7 @@ public class ScriptFacade {
                 } else if (current.isFile()
                         && current.getName().endsWith(".js") // Is a javascript
                         && !isMinifedDuplicata(current)) { // avoid minified version when original exists
-                    result.add(current.getPath());
+                    result.add(current);
                 }
             }
         }
