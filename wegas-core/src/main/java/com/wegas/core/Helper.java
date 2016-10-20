@@ -814,4 +814,29 @@ public class Helper {
         }
         return sb.toString();
     }
+
+    /**
+     * A Least Recently Used key-value in memory cache.
+     *
+     * @param <K> key type
+     * @param <V> value type
+     */
+    public static class LRUCache<K, V> extends LinkedHashMap<K, V> {
+        private int cacheSize;
+
+        /**
+         * Constructor a new LRU Cache of given size
+         *
+         * @param cacheSize Max size the cache should have
+         */
+        public LRUCache(int cacheSize) {
+            super(16, 0.75f, true); // default values
+            this.cacheSize = cacheSize;
+        }
+
+        @Override
+        protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+            return this.size() >= this.cacheSize;
+        }
+    }
 }
