@@ -219,8 +219,6 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
 
         // Edit this descriptor
         descriptor1 = (T) vdf.find(descriptor1.getId());
-        System.out.println("VersionD: " + descriptor1.getVersion());
-        System.out.println("VersionI: " + descriptor1.getDefaultInstance().getVersion());
 
         /*
          * update against up-to-date version
@@ -232,8 +230,6 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
 
         // Edit this descriptor
         descriptor1 = (T) vdf.find(descriptor1.getId());
-        System.out.println("VersionD: " + descriptor1.getVersion());
-        System.out.println("VersionI: " + descriptor1.getDefaultInstance().getVersion());
 
         gameModelFacade.reset(gameModel.getId());
 

@@ -565,7 +565,7 @@ public class UserFacade extends BaseFacade<User> {
                 emailFacade.send(acc.getEmail(), from, null, subject, body, Message.RecipientType.TO, "text/plain", true);
             }
         } catch (WegasNoResultException | MessagingException ex) {
-            System.out.println(ex);
+            logger.error("Error while sending new password for email: " + email, ex);
         }
     }
 
