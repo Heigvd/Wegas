@@ -352,9 +352,6 @@ YUI.add("wegas-review-widgets", function(Y) {
                     this.get(CONTENTBOX).one(".transition.start-review span").addClass("active");
                     this.get(CONTENTBOX).one(".transition.close-review span").addClass("active");
                     this.get(CONTENTBOX).one(".transition.close-review span").addClass("active");
-                    this.dispatchButton.enable(); // UKNW
-                    this.notifyButton.enable();  // UKNW
-                    this.closeButton.enable(); // UKWN
                     break;
             }
 
@@ -533,9 +530,6 @@ YUI.add("wegas-review-widgets", function(Y) {
          * @description Destroy widget and detach all functions created by this widget
          */
         destructor: function() {
-            this.dispatchButton.destroy();
-            this.notifyButton.destroy();
-            this.closeButton.destroy();
             Y.Array.each(this.handlers, function(h) {
                 h.detach();
             });

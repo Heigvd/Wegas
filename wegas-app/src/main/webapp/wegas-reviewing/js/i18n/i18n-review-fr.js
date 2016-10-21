@@ -32,7 +32,7 @@ YUI.add("wegas-i18n-review-fr", function(Y) {
                     },
                     completed: {
                         title: "Terminé",
-                        description: "Le processus de révision est terminé<br /><br /><i>Les pairs prennent connaissance des commentaires qui on été faits à propos de leurs avis</i>"
+                        description: "Le processus de révision est terminé<br /><br /><i>Les pairs prennent connaissance des commentaires qui ont été faits à propos de leurs avis</i>"
                     }
                 },
                 overview: "aperçu",

@@ -318,6 +318,7 @@ public class PeerReviewController {
             try {
                 Player findAPlayer = instanceFacade.findAPlayer(pri);
                 requestFacade.commit(findAPlayer);
+                //requestFacade.firePlayerAction(findAPlayer);
             } catch (NoPlayerException ex) {
             }
         }
