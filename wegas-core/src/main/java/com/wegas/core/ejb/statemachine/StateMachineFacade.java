@@ -114,9 +114,9 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
         this.runForPlayer(player);
         /*
         Force resources release
-         */
         getEntityManager().flush();
         getEntityManager().clear();
+         */
     }
 
     /**
@@ -356,8 +356,10 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
     public void remove(StateMachineDescriptor entity) {
         variableDescriptorFacade.remove(entity);
     }
-
-    private static class TransitionTraveled {
+    /**
+     * Access from nashhorn event callback
+     */
+    public static class TransitionTraveled {
 
         final public StateMachineDescriptor descriptor;
         final public StateMachineInstance instance;
