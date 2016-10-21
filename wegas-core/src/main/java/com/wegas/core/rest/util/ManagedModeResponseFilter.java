@@ -47,7 +47,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
      *
      */
     @EJB
-    private RequestFacade rmf;
+    private RequestFacade requestFacade;
 
     @EJB
     private UserFacade userFacade;
@@ -64,7 +64,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
         final String managedMode = request.getHeaderString("managed-mode");
 
         // Todo find a way to access response from RequestManager.preDestroy (@Context HttpServletResponse?)  WHY ?
-        RequestManager requestManager = rmf.getRequestManager();
+        RequestManager requestManager = requestFacade.getRequestManager();
 
         requestManager.markManagermentStartTime();
         requestManager.setStatus(response.getStatusInfo());
@@ -139,9 +139,9 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                 response.setStatus(HttpStatus.SC_OK);
             }
 
-            Map<String, List<AbstractEntity>> updatedEntitiesMap = rmf.getUpdatedEntities();
-            Map<String, List<AbstractEntity>> destroyedEntitiesMap = rmf.getDestroyedEntities();
-            Map<String, List<AbstractEntity>> outdatedEntitiesMap = rmf.getOutdatedEntities();
+            Map<String, List<AbstractEntity>> updatedEntitiesMap = requestManager.getUpdatedEntities();
+            Map<String, List<AbstractEntity>> destroyedEntitiesMap = requestManager.getDestroyedEntities();
+            Map<String, List<AbstractEntity>> outdatedEntitiesMap = requestManager.getOutdatedEntities();
 
             if (!rollbacked && !(updatedEntitiesMap.isEmpty() && destroyedEntitiesMap.isEmpty() && outdatedEntitiesMap.isEmpty())) {
                 /*
@@ -196,6 +196,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
             response.setEntity(serverResponse);
 
         }
+        requestFacade.flushClear();
         requestManager.markSerialisationStartTime();
     }
 }
