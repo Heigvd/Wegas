@@ -451,6 +451,14 @@ YUI.add("wegas-text-input", function(Y) {
                 h.detach();
             });
         },
+        getPayload: function(value) {
+            var desc = this._descriptor || this.get("variable.evaluated");
+
+            return {
+                descriptor: desc,
+                value: value
+            };
+        },
         /**
          * Try to save value.
          * @param {type} value the new value to save
