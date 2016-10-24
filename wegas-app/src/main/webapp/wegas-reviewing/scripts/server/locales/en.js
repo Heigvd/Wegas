@@ -17,6 +17,24 @@ var i18nOrdinate = (function(module) {
     }(i18nTable || {}));
 
 i18nTable.en = {
+    wc: "Words count",
+    cc: "Characters count",
+    data: "Data",
+    mean: "Average",
+    median: "Median",
+    sd: "standard deviation",
+    overview: "Overview",
+    status: "Status",
+    reviewDone: "Done",
+    commented: "Done",
+    closed: "Done",
+    completed: "Done",
+    commenting: "Ongoing",
+    reviewing: "Ongoing",
+    editing: "Ongoing",
+    ready: "Done",
+    na: "N/A",
+    evicted: "Evicted"
 };
 
 i18nOrdinate.en = function(number) {
