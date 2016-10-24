@@ -39,6 +39,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -47,6 +48,7 @@ import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import org.eclipse.persistence.jpa.JpaHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -184,6 +186,7 @@ public class ReviewingFacade {
             ei.setCommentsReview(r);
             r.getComments().add(ei);
         }
+        em.persist(r);
         return r;
     }
 
@@ -192,12 +195,14 @@ public class ReviewingFacade {
      * given peer review descriptor and dispatch them (who review who?)
      *
      * @param prd peer review descriptor to dispatch
+     * @return
      */
     public List<PeerReviewInstance> dispatch(PeerReviewDescriptor prd) {
         AbstractScope scope = prd.getScope();
-        Collection<VariableInstance> values = scope.getVariableInstances().values();
-        List<PeerReviewInstance> pris = new ArrayList(values);
+        //Collection<VariableInstance> values = scope.getVariableInstances().values(); // TODO
+        List<PeerReviewInstance> pris = new ArrayList<>();
         List<PeerReviewInstance> touched = new ArrayList<>();
+        List<PeerReviewInstance> evicted = new ArrayList<>();
 
         if (scope instanceof GameModelScope || scope instanceof GameScope) {
             throw WegasErrorMessage.error("Invalid Scope for PeerReview descriptor. GameScope or GameModelScope does not make any sense for this kind of data");
@@ -221,24 +226,28 @@ public class ReviewingFacade {
                 for (Team team : game.getTeams()) {
                     if (scope instanceof TeamScope) {
                         // 1 instance per team: evict empty team instances
+                        TeamScope tScope = (TeamScope) scope;
+                        PeerReviewInstance instance = (PeerReviewInstance) tScope.getVariableInstances().get(team);
                         if (team.getPlayers().isEmpty() || team instanceof DebugTeam) {
-                            TeamScope tScope = (TeamScope) scope;
-                            PeerReviewInstance instance = (PeerReviewInstance) tScope.getVariableInstances().get(team);
                             // Discared instance
                             instance.setReviewState(PeerReviewDescriptor.ReviewingState.DISCARDED);
-                            pris.remove(instance);
                             variableInstanceFacade.merge(instance);
                             touched.add(instance);
+                        } else {
+                            pris.add(instance);
                         }
-                    } else if (team instanceof DebugTeam) {
+                    } else { // PlayerScoped
                         // 1 instance per player: evict test player instance
                         for (Player p : team.getPlayers()) {
                             PeerReviewInstance instance = prd.getInstance(p);
-                            // Discared instance
-                            instance.setReviewState(PeerReviewDescriptor.ReviewingState.DISCARDED);
-                            pris.remove(instance);
-                            variableInstanceFacade.merge(instance);
-                            touched.add(instance);
+                            if (team instanceof DebugTeam) {
+                                // Discared instance
+                                instance.setReviewState(PeerReviewDescriptor.ReviewingState.DISCARDED);
+                                variableInstanceFacade.merge(instance);
+                                touched.add(instance);
+                            } else {
+                                pris.add(instance);
+                            }
                         }
                     }
                 }
@@ -262,6 +271,7 @@ public class ReviewingFacade {
                         pri.setReviewState(PeerReviewDescriptor.ReviewingState.EVICTED);
                         variableInstanceFacade.merge(pri);
                         touched.add(pri);
+                        evicted.add(pri);
                         it.remove();
                     }
                 } catch (NoPlayerException ex) {
@@ -279,20 +289,36 @@ public class ReviewingFacade {
         int i, j;
         for (i = 0; i < pris.size(); i++) {
             PeerReviewInstance author = pris.get(i);
+
             if (author.getReviewState() == PeerReviewDescriptor.ReviewingState.SUBMITTED
                     || author.getReviewState() == PeerReviewDescriptor.ReviewingState.NOT_STARTED) {
                 logger.warn("Dispatch Author");
                 //List<Review> reviewed = author.getReviewed();
                 for (j = 1; j <= numberOfReview; j++) {
                     PeerReviewInstance reviewer = pris.get((i + j) % pris.size());
+
                     Review r = createReview(prd, author, reviewer);
                     //reviewed.add(r);
                     //reviewer.getToReview().add(r);
+                    variableInstanceFacade.merge(reviewer);
                 }
                 author.setReviewState(PeerReviewDescriptor.ReviewingState.DISPATCHED);
+                variableInstanceFacade.merge(author);
                 touched.add(author);
             }
         }
+
+        if (prd.getIncludeEvicted()) {
+            // Give some work even to users who didn't do their job
+            for (PeerReviewInstance reviewer : evicted) {
+                for (j = 0; j < numberOfReview; j++) {
+                    // NOTE : such an author will have some extra feedback !
+                    PeerReviewInstance author = pris.get(j % pris.size());
+                    Review r = createReview(prd, author, reviewer);
+                }
+            }
+        }
+
         /*for (PeerReviewInstance pri : pris) {
             variableInstanceFacade.merge(pri);
             em.flush();
@@ -342,16 +368,11 @@ public class ReviewingFacade {
      * @param review
      * @return peer review instance that belong to the current player
      */
-    public PeerReviewInstance getPeerReviewInstanceFromReview(Review review) {
+    public PeerReviewInstance getPeerReviewInstanceFromReview(Review review, Player player) {
         PeerReviewInstance author = review.getAuthor();
-        Player currentPlayer = requestManager.getPlayer();
-        if (currentPlayer == null) {
-            // No current player => debug team -> test player
-            currentPlayer = author.getDescriptor().getGameModel().getGames().get(0).getPlayers().get(0);
-        }
 
         //PeerReviewDescriptor desc = (PeerReviewDescriptor) descriptorFacade.find(author.getDescriptor().getId());
-        PeerReviewInstance instance = (PeerReviewInstance) author.getDescriptor().getInstance(currentPlayer);
+        PeerReviewInstance instance = (PeerReviewInstance) author.getDescriptor().getInstance(player);
         return instance;
     }
 
@@ -396,9 +417,9 @@ public class ReviewingFacade {
      * @param review the review to submit
      * @return review
      */
-    public Review submitReview(Review review) {
+    public Review submitReview(Review review, Player player) {
         Review r = this.findReview(review.getId());
-        PeerReviewInstance pri = this.getPeerReviewInstanceFromReview(r);
+        PeerReviewInstance pri = this.getPeerReviewInstanceFromReview(r, player);
         r = this.saveReview(pri, review);
         if (r.getReviewState() == Review.ReviewState.DISPATCHED) {
             r.setReviewState(Review.ReviewState.REVIEWED);
@@ -417,8 +438,8 @@ public class ReviewingFacade {
      * @param reviewId
      * @return the submitted review
      */
-    public Review submitReview(Long reviewId) {
-        return this.submitReview(em.find(Review.class, reviewId));
+    public Review submitReview(Long reviewId, Player player) {
+        return this.submitReview(em.find(Review.class, reviewId), player);
     }
 
     /**
@@ -436,8 +457,10 @@ public class ReviewingFacade {
                 }
             }
             touched.add(pri);
-            pri.setReviewState(PeerReviewDescriptor.ReviewingState.NOTIFIED);
-            //variableInstanceFacade.merge(pri);
+            if (pri.getReviewState() != PeerReviewDescriptor.ReviewingState.EVICTED) {
+                pri.setReviewState(PeerReviewDescriptor.ReviewingState.NOTIFIED);
+            }
+            variableInstanceFacade.merge(pri);
             //requestManager.addUpdatedInstance(pri);
         }
         return touched;
@@ -473,9 +496,11 @@ public class ReviewingFacade {
                     review.setReviewState(Review.ReviewState.CLOSED);
                 }
             }
-            pri.setReviewState(PeerReviewDescriptor.ReviewingState.COMPLETED);
+            if (pri.getReviewState() != PeerReviewDescriptor.ReviewingState.EVICTED) {
+                pri.setReviewState(PeerReviewDescriptor.ReviewingState.COMPLETED);
+            }
             touched.add(pri);
-            //variableInstanceFacade.merge(pri);
+            variableInstanceFacade.merge(pri);
             //requestManager.addUpdatedInstance(pri);
         }
         return touched;
@@ -485,7 +510,7 @@ public class ReviewingFacade {
      * Reviewing phase is over -> author will be able to see feedbacks
      *
      * @param peerReviewDescriptorId
-     * @return 
+     * @return
      */
     public List<PeerReviewInstance> close(Long peerReviewDescriptorId) {
         VariableDescriptor vd = variableDescriptorFacade.find(peerReviewDescriptorId);

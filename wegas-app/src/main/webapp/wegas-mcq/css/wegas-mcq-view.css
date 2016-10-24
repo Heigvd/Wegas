@@ -292,8 +292,6 @@
 }
 
 
-
-/* Corrections for new question layout (Jan. 2016) */
 .wegas-mcqview .mcq-question .yui3-button {
     vertical-align: middle;
 }
@@ -305,5 +303,9 @@
 .wegas-mcqview .numberOfReplies {
     line-height: normal !important;
 }
-/* EOF  Corrections for new question layout (Jan. 2016) */
+
+.mcq-checkbox[type='checkbox'],
+.mcq-checkbox[type='radio'] {
+    margin-bottom:8px;
+}
 

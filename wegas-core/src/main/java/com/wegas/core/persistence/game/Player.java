@@ -30,9 +30,9 @@ import java.util.Map;
  */
 @Entity
 @NamedQueries({
-    @NamedQuery(name = "Player.findPlayerByGameId", query = "SELECT player FROM Player player WHERE player.team.game.id = :gameId"),
-    @NamedQuery(name = "Player.findPlayerByGameIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.game.id = :gameId"),
-    @NamedQuery(name = "Player.findPlayerByTeamIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.id = :teamId")
+    @NamedQuery(name = "DEPRECATED_Player.findPlayerByGameId", query = "SELECT player FROM Player player WHERE player.team.game.id = :gameId"),
+    @NamedQuery(name = "DEPRECATED_Player.findPlayerByGameIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.game.id = :gameId"),
+    @NamedQuery(name = "DEPRECATED_Player.findPlayerByTeamIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.id = :teamId")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Table(indexes = {
@@ -203,8 +203,8 @@ public class Player extends AbstractEntity implements Broadcastable {
      */
     //@XmlTransient
     @JsonIgnore
-    public int getGameModelId() {
-        return this.getTeam().getGame().getGameModel().getId().intValue();
+    public long getGameModelId() {
+        return this.getTeam().getGame().getGameModel().getId();
     }
 
     /**
@@ -222,8 +222,8 @@ public class Player extends AbstractEntity implements Broadcastable {
      */
     //@XmlTransient
     @JsonIgnore
-    public int getGameId() {
-        return this.getTeam().getGame().getId().intValue();
+    public long getGameId() {
+        return this.getTeam().getGame().getId();
     }
 
     /**

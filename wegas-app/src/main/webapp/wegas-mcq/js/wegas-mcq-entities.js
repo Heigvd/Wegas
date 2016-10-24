@@ -16,18 +16,30 @@ YUI.add('wegas-mcq-entities', function (Y) {
         HTML = "html", SCRIPT = "script", NUMBER = "number",
         NULLSTRING = ["null", STRING],
         Wegas = Y.Wegas, persistence = Wegas.persistence,
-        IDATTRDEF = {
-            type: NUMBER,
-            optional: true, // The id is optional for entites that have not been persisted
-            view: {
-                type: HIDDEN
-            }
-        },
-        SELFARG = {
-            type: 'identifier',
-            value: 'self',
-            view: { type: HIDDEN }
-        };
+        VERSION_ATTR_DEF,
+        SELFARG,
+        IDATTRDEF;
+
+    VERSION_ATTR_DEF = {
+        type: NUMBER,
+        view: {
+            type: HIDDEN
+        }
+    };
+
+
+    IDATTRDEF = {
+        type: NUMBER,
+        optional: true, // The id is optional for entites that have not been persisted
+        view: {
+            type: HIDDEN
+        }
+    };
+    SELFARG = {
+        type: 'identifier',
+        value: 'self',
+        view: { type: HIDDEN }
+    };
 
     /**
      * QuestionDescriptor mapper
@@ -37,186 +49,187 @@ YUI.add('wegas-mcq-entities', function (Y) {
             return this.getInstance().getRepliesByStartTime(startTime);
         }
     }, {
-            ATTRS: {
-                "@class": {
-                    type: STRING,
-                    value: "QuestionDescriptor"
+        ATTRS: {
+            "@class": {
+                type: STRING,
+                value: "QuestionDescriptor"
+            },
+            items: {
+                type: ARRAY,
+                value: [],
+                "transient": true,
+                view: {
+                    type: HIDDEN
                 },
-                items: {
-                    type: ARRAY,
-                    value: [],
-                    "transient": true,
-                    view: {
-                        type: HIDDEN
-                    },
-                    setter: function (val) {
-                        for (var i = 0; i < val.length; i = i + 1) {                // We set up a back reference to the parent
-                            val[i].parentDescriptor = this;
-                        }
-                        return val;
+                setter: function (val) {
+                    for (var i = 0; i < val.length; i = i + 1) {                // We set up a back reference to the parent
+                        val[i].parentDescriptor = this;
                     }
-                },
-                title: {
-                    type: NULLSTRING,
-                    optional: true,
-                    index: -1,
-                    view: {
-                        label: "Label",
-                        description: "Displayed to players"
-                    }
-                },
-                allowMultipleReplies: {
-                    value: false,
-                    type: BOOLEAN,
-                    index: 8,
-                    view: {
-                        label: 'Allow multiple replies'
-                    }
-                },
-                cbx: {
-                    type: BOOLEAN,
-                    value: false,
-                    view: {
-                        label: "Checkbox selection",
-                        description: "Pour QCM standard",
-                    },
-                    index: 9
-                },
-                tabular: {
-                    type: BOOLEAN,
-                    value: false,
-                    view: {
-                        label: "Tabular layout",
-                        description: "Replies are presented horizontally",
-                        className: 'wegas-advanced-feature'
-                    },
-                    index: 10
-                },
-                description: {
-                    type: NULLSTRING,
-                    format: HTML,
-                    index: 11,
-                    view: { type: HTML, label: "Description" }
-                },
-                defaultInstance: {
-                    type: "object",
-                    required: true,
-                    properties: {
-                        "@class": {
-                            type: STRING,
-                            value: "QuestionInstance",
-                            view: {
-                                type: HIDDEN
-                            }
-                        },
-                        id: IDATTRDEF,
-                        descriptorId: IDATTRDEF,
-                        unread: {
-                            value: true,
-                            type: BOOLEAN,
-                            view: { type: HIDDEN }
-                        },
-                        validated: {
-                            value: false,
-                            type: BOOLEAN,
-                            view: { type: HIDDEN }
-                        },
-                        replies: {
-                            value: [],
-                            type: ARRAY,
-                            view: {
-                                type: HIDDEN
-                            }
-                        },
-                        active: {
-                            type: BOOLEAN,
-                            value: true,
-                            view: {
-                                label: 'Active from start'
-                            }
-                        }
-                    },
-                    index: 3
-                },
-                pictures: {
-                    type: ARRAY,
-                    items: {
-                        type: STRING,
-                        view: {
-                            type: "wegasimageurl",
-                            label: "URL"
-                        }
-                    },
-                    view: {
-                        className: 'wegas-advanced-feature'
-                    }
+                    return val;
                 }
             },
-            EDITMENU: [{
-                type: "EditEntityButton"
-            }, {
-                type: BUTTON,
-                label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add choice",
-                plugins: [{
-                    fn: "WidgetMenu",
-                    cfg: {
-                        children: [{
-                            type: BUTTON,
-                            label: "Standard",
-                            plugins: [{
-                                fn: "AddEntityChildAction",
-                                cfg: {
-                                    targetClass: "SingleResultChoiceDescriptor"
-                                }
-                            }]
-                        }, {
-                            type: BUTTON,
-                            label: "Conditional results",
-                            plugins: [{
-                                fn: "AddEntityChildAction",
-                                cfg: {
-                                    targetClass: "ChoiceDescriptor"
-                                }
-                            }]
-                        }]
+            title: {
+                type: NULLSTRING,
+                optional: true,
+                index: -1,
+                view: {
+                    label: "Label",
+                    description: "Displayed to players"
+                }
+            },
+            allowMultipleReplies: {
+                value: false,
+                type: BOOLEAN,
+                index: 8,
+                view: {
+                    label: 'Allow multiple replies'
+                }
+            },
+            cbx: {
+                type: BOOLEAN,
+                value: false,
+                view: {
+                    label: "Checkbox selection",
+                    description: "Pour QCM standard",
+                },
+                index: 9
+            },
+            tabular: {
+                type: BOOLEAN,
+                value: false,
+                view: {
+                    label: "Tabular layout",
+                    description: "Replies are presented horizontally",
+                    className: 'wegas-advanced-feature'
+                },
+                index: 10
+            },
+            description: {
+                type: NULLSTRING,
+                format: HTML,
+                index: 11,
+                view: { type: HTML, label: "Description" }
+            },
+            defaultInstance: {
+                type: "object",
+                required: true,
+                properties: {
+                    "@class": {
+                        type: STRING,
+                        value: "QuestionInstance",
+                        view: {
+                            type: HIDDEN
+                        }
+                    },
+                    id: IDATTRDEF,
+                    version: VERSION_ATTR_DEF,
+                    descriptorId: IDATTRDEF,
+                    unread: {
+                        value: true,
+                        type: BOOLEAN,
+                        view: { type: HIDDEN }
+                    },
+                    validated: {
+                        value: false,
+                        type: BOOLEAN,
+                        view: { type: HIDDEN }
+                    },
+                    replies: {
+                        value: [],
+                        type: ARRAY,
+                        view: {
+                            type: HIDDEN
+                        }
+                    },
+                    active: {
+                        type: BOOLEAN,
+                        value: true,
+                        view: {
+                            label: 'Active from start'
+                        }
                     }
-                }]
-            }, {
-                type: BUTTON,
-                label: "Copy",
-                plugins: [{
-                    fn: "DuplicateEntityAction"
-                }]
-            }, {
-                type: "DeleteEntityButton"
-            }],
+                },
+                index: 3
+            },
+            pictures: {
+                type: ARRAY,
+                items: {
+                    type: STRING,
+                    view: {
+                        type: "wegasimageurl",
+                        label: "URL"
+                    }
+                },
+                view: {
+                    className: 'wegas-advanced-feature'
+                }
+            }
+        },
+        EDITMENU: [{
+            type: "EditEntityButton"
+        }, {
+            type: BUTTON,
+            label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add choice",
+            plugins: [{
+                fn: "WidgetMenu",
+                cfg: {
+                    children: [{
+                        type: BUTTON,
+                        label: "Standard",
+                        plugins: [{
+                            fn: "AddEntityChildAction",
+                            cfg: {
+                                targetClass: "SingleResultChoiceDescriptor"
+                            }
+                        }]
+                    }, {
+                        type: BUTTON,
+                        label: "Conditional results",
+                        plugins: [{
+                            fn: "AddEntityChildAction",
+                            cfg: {
+                                targetClass: "ChoiceDescriptor"
+                            }
+                        }]
+                    }]
+                }
+            }]
+        }, {
+            type: BUTTON,
+            label: "Copy",
+            plugins: [{
+                fn: "DuplicateEntityAction"
+            }]
+        }, {
+            type: "DeleteEntityButton"
+        }],
             /**
              * Defines methods available in wysiwyge script editor
              */
-            METHODS: {
-                activate: {
-                    arguments: [SELFARG]
-                },
-                desactivate: {
-                    arguments: [SELFARG]
-                },
-                isReplied: {
-                    label: "has been replied",
-                    returns: BOOLEAN,
-                    arguments: [SELFARG]
-                },
-                isNotReplied: {
-                    label: "has not been replied",
-                    returns: BOOLEAN,
-                    arguments: [SELFARG]
-                },
-                isActive: {
-                    label: "is active",
-                    returns: BOOLEAN,
-                    arguments: [SELFARG]
-                }
+        METHODS: {
+            activate: {
+                arguments: [SELFARG]
+            },
+            desactivate: {
+                arguments: [SELFARG]
+            },
+            isReplied: {
+                label: "has been replied",
+                returns: BOOLEAN,
+                arguments: [SELFARG]
+            },
+            isNotReplied: {
+                label: "has not been replied",
+                returns: BOOLEAN,
+                arguments: [SELFARG]
+            },
+            isActive: {
+                label: "is active",
+                returns: BOOLEAN,
+                arguments: [SELFARG]
             }
-        });
+        }
+    });
     /**
      * QuestionInstance mapper
      */
@@ -231,31 +244,31 @@ YUI.add('wegas-mcq-entities', function (Y) {
             return ret;
         }
     }, {
-            ATTRS: {
-                "@class": {
-                    value: "QuestionInstance"
-                },
-                active: {
-                    value: true,
-                    type: BOOLEAN
-                },
-                unread: {
-                    value: true,
-                    type: BOOLEAN
-                },
-                validated: {
-                    value: false,
-                    type: BOOLEAN
-                },
-                replies: {
-                    value: [],
-                    type: ARRAY,
-                    view: {
-                        type: HIDDEN
-                    }
+        ATTRS: {
+            "@class": {
+                value: "QuestionInstance"
+            },
+            active: {
+                value: true,
+                type: BOOLEAN
+            },
+            unread: {
+                value: true,
+                type: BOOLEAN
+            },
+            validated: {
+                value: false,
+                type: BOOLEAN
+            },
+            replies: {
+                value: [],
+                type: ARRAY,
+                view: {
+                    type: HIDDEN
                 }
             }
-        });
+        }
+    });
     /**
      * ChoiceDescriptor mapper
      */
@@ -288,7 +301,6 @@ YUI.add('wegas-mcq-entities', function (Y) {
                         label: "Description"
                     }
                 },
-
                 defaultInstance: {
                     properties: {
                         '@class': {
@@ -299,6 +311,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                             }
                         },
                         id: IDATTRDEF,
+                        version: VERSION_ATTR_DEF,
                         descriptorId: IDATTRDEF,
                         unread: {
                             type: BOOLEAN,
@@ -409,6 +422,22 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     returns: BOOLEAN,
                     arguments: [SELFARG]
                 },
+                hasNotBeenSelected: {
+                    label: "has not been selected",
+                    returns: BOOLEAN,
+                    arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }]
+                },
+                hasBeenIgnored: {
+                    label: "has been ignored",
+                    returns: BOOLEAN,
+                    arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }]
+                },
                 hasResultBeenApplied: {
                     label: "has result been applied",
                     returns: BOOLEAN,
@@ -451,6 +480,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                             }
                         },
                         id: IDATTRDEF,
+                        version: VERSION_ATTR_DEF,
                         descriptorId: IDATTRDEF,
                         unread: {
                             type: BOOLEAN,
@@ -487,6 +517,16 @@ YUI.add('wegas-mcq-entities', function (Y) {
                                 type: STRING,
                                 view: {
                                     type: HIDDEN
+                                }
+                            },
+                            version: {
+                                type: NUMBER,
+                                optional: true,
+                                value: 0,
+                                _inputex: {
+                                    _type: "uneditable",
+                                    wrapperClassName: "inputEx-fieldWrapper inputEx-uneditableField wegas-advanced-feature",
+                                    index: -1
                                 }
                             },
                             name: {
@@ -612,6 +652,22 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     returns: BOOLEAN,
                     arguments: [SELFARG]
                 },
+                hasNotBeenSelected: {
+                    label: "has not been selected",
+                    returns: BOOLEAN,
+                    arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }]
+                },
+                hasBeenIgnored: {
+                    label: "has been ignored",
+                    returns: BOOLEAN,
+                    arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }]
+                },
                 isActive: {
                     label: "is active",
                     returns: BOOLEAN,
@@ -636,141 +692,153 @@ YUI.add('wegas-mcq-entities', function (Y) {
             return "fa fa-cog";
         }
     }, {
-            ATTRS: {
-                "@class": {
-                    value: "Result"
-                },
-                label: {
-                    type: STRING,
-                    "transient": false,
-                    getter: function (val) {
-                        return val || this.get("name");
-                    },
-                    index: -1,
-                    view: {
-                        label: "Name"
-                    }
-                },
-                name: {
-                    value: "",
-                    type: NULLSTRING,
-                    optional: true,
-                    index: -1,
-                    view: {
-                        className: "wegas-advanced-feature",
-                        label: "Script alias",
-                        //regexp: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/,
-                        description: "Alphanumeric characters,'_','$'. Without a digit as first character.<br/>Changing this may break your scripts."
-                    },
-                    validator: function (s) {
-                        return s === null || Y.Lang.isString(s);
-                    }
-                },
-                answer: {
-                    type: STRING,
-                    optional: true,
-                    view: {
-                        type: HTML,
-                        label: "Feedback when selected"
-                    }
-                },
-                impact: {
-                    type: ["null", OBJECT],
-                    properties: {
-                        "@class": { type: "string", value: "Script", view: { type: HIDDEN } },
-                        content: {
-                            type: STRING
-                        }
-                    },
-                    view: {
-                        label: "Impact when selected",
-                        type: SCRIPT
-                    }
-                },
-                ignorationAnswer: {
-                    type: STRING,
-                    optional: true,
-                    visible: function (val, formVal) {
-                        var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.choiceDescriptorId);
-                        return parent ? parent.parentDescriptor.get("cbx") : false;
-                    },
-                    view: {
-                        type: HTML,
-                        label: "Feedback when ignored"
-                    }
-                },
-                ignorationImpact: {
-                    type: ["null", OBJECT],
-                    properties: {
-                        "@class": { type: "string", value: "Script", view: { type: HIDDEN } },
-                        content: {
-                            type: STRING
-                        }
-                    },
-                    visible: function (val, formVal) {
-                        var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.choiceDescriptorId);
-                        return parent ? parent.parentDescriptor.get("cbx") : false;
-                    },
-                    view: {
-                        label: "Impact on variables when ignored",
-                        type: SCRIPT
-                    }
-                },
-                choiceDescriptorId: {
-                    type: STRING,
-                    optional: true,
-                    view: {
-                        type: HIDDEN
-                    }
-                },
-                files: {
-                    optional: true,
-                    type: ARRAY,
-                    value: [],
-                    items: {
-                        type: STRING,
-                        optional: true,
-                        view: {
-                            type: "wegasurl",
-                            label: ""
-                        }
-                    },
-                    view: {
-                        type: HIDDEN
-                    }
+        ATTRS: {
+            "@class": {
+                value: "Result"
+            },
+            version: {
+                type: NUMBER,
+                optional: false,
+                value: 0,
+                _inputex: {
+                    _type: "uneditable",
+                    wrapperClassName: "inputEx-fieldWrapper inputEx-uneditableField wegas-advanced-feature",
+                    index: -1
                 }
             },
-            EDITMENU: [{
-                type: BUTTON,
-                label: "Edit",
-                plugins: [{
-                    fn: "EditEntityArrayFieldAction",
-                    cfg: {
-                        attributeKey: "results"
+            label: {
+                type: STRING,
+                "transient": false,
+                getter: function (val) {
+                    return val || this.get("name");
+                },
+                index: -1,
+                view: {
+                    label: "Name"
+                }
+            },
+            name: {
+                value: "",
+                type: NULLSTRING,
+                optional: true,
+                index: -1,
+                view: {
+                    className: "wegas-advanced-feature",
+                    label: "Script alias",
+                        //regexp: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/,
+                    description: "Alphanumeric characters,'_','$'. Without a digit as first character.<br/>Changing this may break your scripts."
+                },
+                validator: function (s) {
+                    return s === null || Y.Lang.isString(s);
+                }
+            },
+            answer: {
+                type: STRING,
+                optional: true,
+                view: {
+                    type: HTML,
+                    label: "Feedback when selected",
+                    index: 3
+                }
+            },
+            impact: {
+                type: ["null", OBJECT],
+                properties: {
+                    "@class": { type: "string", value: "Script", view: { type: HIDDEN } },
+                    content: {
+                        type: STRING
                     }
-                }]
-            }, {
-                type: BUTTON,
-                label: "Copy",
-                plugins: [{
-                    fn: "EditEntityArrayFieldAction",
-                    cfg: {
-                        method: "copy",
-                        attributeKey: "results"
+                },
+                view: {
+                    label: "Impact when selected",
+                    type: SCRIPT
+                }
+            },
+            ignorationAnswer: {
+                type: STRING,
+                optional: true,
+                visible: function (val, formVal) {
+                    var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.choiceDescriptorId);
+                    return parent ? parent.parentDescriptor.get("cbx") : false;
+                },
+                view: {
+                    type: HTML,
+                    label: "Feedback when ignored",
+                    index: 6
+                }
+            },
+            ignorationImpact: {
+                type: ["null", OBJECT],
+                properties: {
+                    "@class": { type: "string", value: "Script", view: { type: HIDDEN } },
+                    content: {
+                        type: STRING
                     }
-                }]
-            }, {
-                type: BUTTON,
-                label: "Delete",
-                plugins: [{
-                    fn: "EditEntityArrayFieldAction",
-                    cfg: {
-                        method: "delete",
-                        attributeKey: "results"
+                },
+                visible: function (val, formVal) {
+                    var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.choiceDescriptorId);
+                    return parent ? parent.parentDescriptor.get("cbx") : false;
+                },
+                view: {
+                    label: "Impact on variables when ignored",
+                    type: SCRIPT
+                }
+            },
+            choiceDescriptorId: {
+                type: STRING,
+                optional: true,
+                view: {
+                    type: HIDDEN
+                }
+            },
+            files: {
+                optional: true,
+                type: ARRAY,
+                value: [],
+                items: {
+                    type: STRING,
+                    optional: true,
+                    view: {
+                        type: "wegasurl",
+                        label: ""
                     }
-                }]
+                },
+                view: {
+                    type: HIDDEN
+                }
+            }
+        },
+        EDITMENU: [{
+            type: BUTTON,
+            label: "Edit",
+            plugins: [{
+                fn: "EditEntityArrayFieldAction",
+                cfg: {
+                    attributeKey: "results"
+                }
             }]
-        });
+        }, {
+            type: BUTTON,
+            label: "Copy",
+            plugins: [{
+                fn: "EditEntityArrayFieldAction",
+                cfg: {
+                    method: "copy",
+                    attributeKey: "results"
+                }
+            }]
+        }, {
+            type: BUTTON,
+            label: "Delete",
+            plugins: [{
+                fn: "EditEntityArrayFieldAction",
+                cfg: {
+                    method: "delete",
+                    attributeKey: "results"
+                }
+            }]
+        }]
+    });
     /**
      * MCQ ChoiceInstance mapper
      */
@@ -818,43 +886,43 @@ YUI.add('wegas-mcq-entities', function (Y) {
             }
         }
     }, {
-            ATTRS: {
-                "@class": {
-                    value: "Reply"
-                },
-                choiceDescriptorId: {
-                    type: STRING,
-                    optional: true,
-                    view: {
-                        type: HIDDEN
-                    }
-                },
-                unread: {
-                    type: BOOLEAN,
-                    value: true,
-                    view: {
-                        label: 'Is unread'
-                    }
-                },
-                startTime: {
-                    type: STRING,
-                    setter: function (val) {
-                        return val * 1;
-                    }
-                },
-                ignored: {
-                    type: BOOLEAN,
-                    view: {
-                        label: 'Is ignored'
-                    }
-                },
-                result: {
-                    view: {
-                        type: HIDDEN
-                    },
-                    "transient": true
+        ATTRS: {
+            "@class": {
+                value: "Reply"
+            },
+            choiceDescriptorId: {
+                type: STRING,
+                optional: true,
+                view: {
+                    type: HIDDEN
                 }
+            },
+            unread: {
+                type: BOOLEAN,
+                value: true,
+                view: {
+                    label: 'Is unread'
+                }
+            },
+            startTime: {
+                type: STRING,
+                setter: function (val) {
+                    return val * 1;
+                }
+            },
+            ignored: {
+                type: BOOLEAN,
+                view: {
+                    label: 'Is ignored'
+                }
+            },
+            result: {
+                view: {
+                    type: HIDDEN
+                },
+                "transient": true
             }
-        });
+        }
+    });
 });
 

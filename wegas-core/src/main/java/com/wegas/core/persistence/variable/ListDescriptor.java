@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  */
 @Entity
 @NamedQuery(name = "ListDescriptor.findDistinctChildrenLabels",
-    query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.parentList = :container")
+    query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.parentList.id = :containerId")
 public class ListDescriptor extends VariableDescriptor<VariableInstance> implements DescriptorListI<VariableDescriptor> {
 
     private static final long serialVersionUID = 1L;

@@ -150,7 +150,8 @@ public class AdminFacade extends BaseFacade<GameAdmin> {
         for(GameAdmin ga : resultList){
             this.deleteGame(ga);
         }
-        
+        // Flush to trigger EntityListener events before loosing RequestManager !
+        getEntityManager().flush();
     }
 
     @Override

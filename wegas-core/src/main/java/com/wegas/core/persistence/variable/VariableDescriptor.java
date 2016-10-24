@@ -34,7 +34,12 @@ import com.wegas.resourceManagement.persistence.BurndownDescriptor;
 import com.wegas.resourceManagement.persistence.ResourceDescriptor;
 import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
+import org.eclipse.persistence.annotations.CacheIndex;
+import org.eclipse.persistence.annotations.CacheIndexes;
 import org.eclipse.persistence.annotations.JoinFetch;
+import org.eclipse.persistence.config.CacheUsage;
+import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.config.QueryType;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -51,42 +56,47 @@ import java.util.Map;
 @Inheritance(strategy = InheritanceType.JOINED)
 //@EntityListeners({GmVariableDescriptorListener.class})
 @Table(uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"gamemodel_gamemodelid", "name"}) // Name has to be unique for the whole game model
+        @UniqueConstraint(columnNames = {"gamemodel_gamemodelid", "name"}) // Name has to be unique for the whole game model
 // @UniqueConstraint(columnNames = {"variabledescriptor_id", "name"})           // Name has to be unique within a list
 // @UniqueConstraint(columnNames = {"rootgamemodel_id", "name"})                // Names have to be unique at the base of a game model (root elements)
 }, indexes = {
-    @Index(columnList = "defaultinstance_variableinstance_id"),
-    @Index(columnList = "items_variabledescriptor_id"),
-    @Index(columnList = "rootgamemodel_id"),
-    @Index(columnList = "dtype")
+        @Index(columnList = "defaultinstance_variableinstance_id"),
+        @Index(columnList = "items_variabledescriptor_id"),
+        @Index(columnList = "rootgamemodel_id"),
+        @Index(columnList = "dtype")
 })
 @NamedQueries({
-    @NamedQuery(
-            name = "VariableDescriptor.findByRootGameModelId",
-            query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.gameModel AS gm WHERE gm.id = :gameModelId"
-    ),
-    @NamedQuery(
-            name = "VariableDescriptor.findByGameModelAndName",
-            query = "SELECT vd FROM VariableDescriptor vd where vd.gameModel = :gameModel AND vd.name LIKE :name"
-    )
+        @NamedQuery(
+                name = "VariableDescriptor.findByRootGameModelId",
+                query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.gameModel AS gm WHERE gm.id = :gameModelId"
+        ),
+        @NamedQuery(
+                name = "VariableDescriptor.findByGameModelIdAndName",
+                query = "SELECT vd FROM VariableDescriptor vd where vd.gameModel.id = :gameModelId AND vd.name LIKE :name",
+                hints = {@QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject), @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)}
+        )
+})
+@CacheIndexes(value = {
+        @CacheIndex(columnNames = {"GAMEMODEL_GAMEMODELID", "NAME"}) // bug uppercase: https://bugs.eclipse.org/bugs/show_bug.cgi?id=407834
 })
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "ListDescriptor", value = ListDescriptor.class),
-    @JsonSubTypes.Type(name = "StringDescriptor", value = StringDescriptor.class),
-    @JsonSubTypes.Type(name = "TextDescriptor", value = TextDescriptor.class),
-    @JsonSubTypes.Type(name = "BooleanDescriptor", value = BooleanDescriptor.class),
-    @JsonSubTypes.Type(name = "NumberDescriptor", value = NumberDescriptor.class),
-    @JsonSubTypes.Type(name = "InboxDescriptor", value = InboxDescriptor.class),
-    @JsonSubTypes.Type(name = "FSMDescriptor", value = StateMachineDescriptor.class),
-    @JsonSubTypes.Type(name = "ResourceDescriptor", value = ResourceDescriptor.class),
-    @JsonSubTypes.Type(name = "TaskDescriptor", value = TaskDescriptor.class),
-    @JsonSubTypes.Type(name = "QuestionDescriptor", value = QuestionDescriptor.class),
-    @JsonSubTypes.Type(name = "ChoiceDescriptor", value = ChoiceDescriptor.class),
-    @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class),
-    @JsonSubTypes.Type(name = "ObjectDescriptor", value = ObjectDescriptor.class),
-    @JsonSubTypes.Type(name = "PeerReviewDescriptor", value = PeerReviewDescriptor.class),
-    @JsonSubTypes.Type(name = "BurndownDescriptor", value = BurndownDescriptor.class)
+        @JsonSubTypes.Type(name = "ListDescriptor", value = ListDescriptor.class),
+        @JsonSubTypes.Type(name = "StringDescriptor", value = StringDescriptor.class),
+        @JsonSubTypes.Type(name = "TextDescriptor", value = TextDescriptor.class),
+        @JsonSubTypes.Type(name = "BooleanDescriptor", value = BooleanDescriptor.class),
+        @JsonSubTypes.Type(name = "NumberDescriptor", value = NumberDescriptor.class),
+        @JsonSubTypes.Type(name = "InboxDescriptor", value = InboxDescriptor.class),
+        @JsonSubTypes.Type(name = "FSMDescriptor", value = StateMachineDescriptor.class),
+        @JsonSubTypes.Type(name = "ResourceDescriptor", value = ResourceDescriptor.class),
+        @JsonSubTypes.Type(name = "TaskDescriptor", value = TaskDescriptor.class),
+        @JsonSubTypes.Type(name = "QuestionDescriptor", value = QuestionDescriptor.class),
+        @JsonSubTypes.Type(name = "ChoiceDescriptor", value = ChoiceDescriptor.class),
+        @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class),
+        @JsonSubTypes.Type(name = "ObjectDescriptor", value = ObjectDescriptor.class),
+        @JsonSubTypes.Type(name = "PeerReviewDescriptor", value = PeerReviewDescriptor.class),
+        @JsonSubTypes.Type(name = "BurndownDescriptor", value = BurndownDescriptor.class)
 })
+@MappedSuperclass
 abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity implements Searchable, LabelledEntity, Broadcastable {
 
     private static final long serialVersionUID = 1L;
@@ -104,7 +114,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      * correctly
      */
     @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, optional = false)
-    @JsonView(value = Views.EditorExtendedI.class)
+    @JsonView(value = Views.EditorI.class)
     private VariableInstance defaultInstance;
 
     /**
@@ -112,8 +122,8 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      */
     //@JsonBackReference
     @ManyToOne
-    @JoinColumn
-    //@CacheIndex
+    @JoinColumn(name = "gamemodel_gamemodelid")
+    @CacheIndex
     private GameModel gameModel;
 
     /**
@@ -150,7 +160,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     //@JsonManagedReference
     @OneToOne(cascade = {CascadeType.ALL}, orphanRemoval = true, optional = false)
     @JoinFetch
-    @JsonView(value = Views.WithScopeI.class)
+    //@JsonView(value = Views.WithScopeI.class)
     private AbstractScope scope;
 
     /**
@@ -164,11 +174,21 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     /**
      *
      */
-    //@JsonView(Views.EditorExtendedI.class)
     @NotNull
     @Basic(optional = false)
     //@CacheIndex
     protected String name;
+
+    @Version
+    private Long version;
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
 
     /**
      *
@@ -180,6 +200,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     //    @JoinColumn(referencedColumnName = "tag_id")})
     //@XmlTransient
     //private List<Tag> tags;
+
     /**
      *
      */
@@ -338,8 +359,8 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     /**
      * @param defaultInstance indicate whether one wants the default instance r
-     * the one belonging to player
-     * @param player the player
+     *                        the one belonging to player
+     * @param player          the player
      * @return either the default instance of the one belonging to player
      */
     @JsonIgnore
@@ -428,6 +449,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
             try {
                 super.merge(a);
                 VariableDescriptor other = (VariableDescriptor) a;
+                this.setVersion(other.getVersion());
                 this.setName(other.getName());
                 this.setLabel(other.getLabel());
                 this.setTitle(other.getTitle());
@@ -457,7 +479,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     /**
      * @param context allow to circumscribe the propagation within the given
-     * context. It may be an instance of GameModel, Game, Team, or Player
+     *                context. It may be an instance of GameModel, Game, Team, or Player
      */
     public void propagateDefaultInstance(AbstractEntity context) {
         int sFlag = 0;
@@ -510,7 +532,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     /**
-     *
      * @return Class simple name + id
      */
     @Override

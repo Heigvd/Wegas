@@ -9,30 +9,26 @@ package com.wegas.reviewing.persistence;
 
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.EntityIdComparator;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.VariableInstance;
-import java.util.ArrayList;
-import java.util.List;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
- *
- * Instance of the PeerReviewDescriptor variable
- *
- * Author:<br />
+ * Instance of the PeerReviewDescriptor variable Author:<br />
  * - has to review several other authors: <code>toReview</code> Review
  * list<br />
- * - is reviewed by several other authors: <code>reviewed</code> Review list
- *
- * The review is in a specific state, see PeerReviewDescriptor
- *
- *
- * @see PeerReviewDescriptor
+ * - is reviewed by several other authors: <code>reviewed</code> Review list The
+ * review is in a specific state, see PeerReviewDescriptor
  *
  * @author Maxence Laurent (maxence.laurent gmail.com)
+ * @see PeerReviewDescriptor
  */
 @Entity
 public class PeerReviewInstance extends VariableInstance {
@@ -48,14 +44,12 @@ public class PeerReviewInstance extends VariableInstance {
      * List of review that contains feedback written by player owning this
      */
     @OneToMany(mappedBy = "reviewer", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("id ASC")
     private List<Review> toReview = new ArrayList<>();
 
     /**
      * List of review that contains others feedback
      */
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("id ASC")
     private List<Review> reviewed = new ArrayList<>();
 
     /**
@@ -82,7 +76,8 @@ public class PeerReviewInstance extends VariableInstance {
      * @return the list of feedback
      */
     public List<Review> getToReview() {
-        return toReview;
+        Collections.sort(this.toReview, new EntityIdComparator<>());
+        return this.toReview;
     }
 
     /**
@@ -95,7 +90,6 @@ public class PeerReviewInstance extends VariableInstance {
     }
 
     /**
-     *
      * @param r
      */
     public void addToToReview(Review r) {
@@ -109,7 +103,8 @@ public class PeerReviewInstance extends VariableInstance {
      * @return all feedbacks from others
      */
     public List<Review> getReviewed() {
-        return reviewed;
+        Collections.sort(this.reviewed, new EntityIdComparator<>());
+        return this.reviewed;
     }
 
     /**
@@ -131,6 +126,7 @@ public class PeerReviewInstance extends VariableInstance {
         if (a != null) {
             if (a instanceof PeerReviewInstance) {
                 PeerReviewInstance o = (PeerReviewInstance) a;
+                super.merge(a);
                 this.setReviewState(o.getReviewState());
                 this.setReviewed(ListUtils.mergeLists(this.getReviewed(), o.getReviewed()));
                 this.setToReview(ListUtils.mergeLists(this.getToReview(), o.getToReview()));

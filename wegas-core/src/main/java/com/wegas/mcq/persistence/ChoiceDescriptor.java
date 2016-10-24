@@ -33,9 +33,9 @@ import com.wegas.core.persistence.variable.Scripted;
  */
 @Entity
 @Table(name = "MCQChoiceDescriptor",
-    indexes = {
-        @Index(columnList = "question_variabledescriptor_id")
-    })
+        indexes = {
+            @Index(columnList = "question_variabledescriptor_id")
+        })
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 //@XmlType(name = "ChoiceDescriptor")
 @JsonSubTypes(value = {
@@ -252,6 +252,79 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     }
 
     /**
+     * has the choice been explicitely ignored ?
+     *
+     * @param p
+     * @return true only if the choice is not selectable any longer
+     */
+    public boolean hasBeenIgnored(Player p) {
+        QuestionInstance qi = this.getQuestion().getInstance(p);
+
+        if (this.getQuestion().getCbx()) {
+            if (!qi.getValidated()) {
+                //Check box not yet validated -> no choices have been submited, nor ignorated
+                return false;
+            } else {
+                for (Reply r : qi.getReplies()) {
+                    if (r.getResult().getChoiceDescriptor().equals(this)) {
+                        // reply for this choice found
+                        return r.getIgnored();
+                    }
+                }
+                return false;
+            }
+        } else {
+            for (Reply r : qi.getReplies()) {
+                if (r.getResult().getChoiceDescriptor().equals(this)) {
+                    // Choice is linked to a reply => not ignored
+                    return false;
+                }
+            }
+            // this choice has not been selected and no choices are selectable any longer
+            return !(this.getQuestion().getAllowMultipleReplies() || qi.getReplies().isEmpty());
+        }
+    }
+
+    /**
+     * has the choice not (yet) been selected ? <br>
+     * Such a case happened for
+     * <ul>
+     * <li>MCQ Questions, after the question has been validated, for all
+     * unselected choices, or before the validation, for all choices </li>
+     * <li>Standard question, if the choice is not linked to a reply </li>
+     * </ul>
+     * <p>
+     * @param p the player
+     * <p>
+     * @return
+     *
+     */
+    public boolean hasNotBeenSelected(Player p) {
+        if (this.getQuestion().getCbx()) {
+            if (!this.getQuestion().getInstance(p).getValidated()) {
+                //Check box not yet validated -> no chocie have been selected 
+                return true;
+            } else {
+                for (Reply r : this.getQuestion().getInstance(p).getReplies()) {
+                    if (r.getResult().getChoiceDescriptor().equals(this)) {
+                        // reply for this choice found
+                        return r.getIgnored();
+                    }
+                }
+                return false;
+            }
+        } else {
+            for (Reply r : this.getQuestion().getInstance(p).getReplies()) {
+                if (r.getResult().getChoiceDescriptor().equals(this)) {
+                    // Choice is linked to a reply => not ignored
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
+    /**
      * Does this choice has been selected by the given player
      * <p>
      * @param p the player
@@ -260,8 +333,11 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      *         exist
      */
     public boolean hasBeenSelected(Player p) {
+        if (this.getQuestion().getCbx() && !this.getQuestion().getInstance(p).getValidated()) {
+            return false;
+        }
         for (Reply r : this.getQuestion().getInstance(p).getReplies()) {
-            if (r.getResult().getChoiceDescriptor().equals(this)) {
+            if (!r.getIgnored() && r.getResult().getChoiceDescriptor().equals(this)) {
                 return true;
             }
         }
@@ -345,7 +421,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     @Override
     public Boolean containsAll(List<String> criterias) {
         if (Helper.insensitiveContainsAll(this.getDescription(), criterias)
-            || super.containsAll(criterias)) {
+                || super.containsAll(criterias)) {
             return true;
         }
         for (Result r : this.getResults()) {

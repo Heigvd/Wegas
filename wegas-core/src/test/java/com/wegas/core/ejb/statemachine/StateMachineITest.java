@@ -25,13 +25,15 @@ import org.junit.Test;
 
 import javax.naming.NamingException;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class StateMachineITest extends AbstractEJBTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(StateMachineITest.class);
 
     private static TeamFacade teamFacade;
 
@@ -49,7 +51,7 @@ public class StateMachineITest extends AbstractEJBTest {
             playerFacade = lookupBy(PlayerFacade.class);
             instanceFacade = lookupBy(VariableInstanceFacade.class);
         } catch (NamingException ex) {
-            Logger.getLogger(StateMachineITest.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error("LookingUpError", ex);
         }
     }
 
@@ -157,7 +159,7 @@ public class StateMachineITest extends AbstractEJBTest {
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new TriggerInstance());
         trigger.setTriggerEvent(new Script("1===1"));
-        trigger.setPostTriggerEvent(new Script("numberTest.value = " + FINAL_VALUE));
+        trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, \"numberTest\").setValue(self, " + FINAL_VALUE + ");"));
         trigger.setOneShot(Boolean.FALSE);
         trigger.setDisableSelf(Boolean.FALSE);
         descriptorFacade.create(gameModel.getId(), trigger);
@@ -169,7 +171,8 @@ public class StateMachineITest extends AbstractEJBTest {
         p0Instance.setValue(50);
         RequestFacade rf = lookupBy(RequestFacade.class);
         rf.getRequestManager().setPlayer(null);
-        instanceFacade.update(p0Instance.getId(), p0Instance);
+        instanceFacade.update(p0Instance.getId(), p0Instance); // Triggers rf.commit -> StateMachine check
+
         Assert.assertEquals(FINAL_VALUE, ((NumberInstance) instanceFacade.find(testNumber.getId(), testPlayer)).getValue(), 0.0);
     }
 
@@ -273,5 +276,34 @@ public class StateMachineITest extends AbstractEJBTest {
         instanceFacade.update(testInstance.getId(), testInstance);
         Assert.assertEquals(0, ((NumberInstance) instanceFacade.find(testNumber.getId(), player.getId())).getValue(), 0.001);
 
+    }
+
+    public void testChose() throws NamingException, NoSuchMethodException, IOException, WegasNoResultException {
+        this.testEvent();
+
+        this.clear();
+        this.createGameModel();
+
+        this.PlayerJoinTest();
+
+        this.clear();
+        this.createGameModel();
+
+        this.editorUpdate();
+
+        this.clear();
+        this.createGameModel();
+
+        this.highScore();
+
+        this.clear();
+        this.createGameModel();
+
+        this.duplicate();
+
+        this.clear();
+        this.createGameModel();
+
+        this.disable();
     }
 }

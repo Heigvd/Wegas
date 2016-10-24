@@ -33,12 +33,12 @@ import java.util.Map.Entry;
 //        @UniqueConstraint(columnNames = "name"))
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NamedQueries({
-    @NamedQuery(name = "GameModel.findByStatus", query = "SELECT a FROM GameModel a WHERE a.status = :status ORDER BY a.createdTime ASC"),
-    @NamedQuery(name = "GameModel.findDistinctChildrenLabels", query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.rootGameModel = :container"),
-    @NamedQuery(name = "GameModel.findByName", query = "SELECT a FROM GameModel a WHERE a.name = :name"),
-    @NamedQuery(name = "GameModel.findTemplate", query = "SELECT a FROM GameModel a WHERE a.template = TRUE"),
-    @NamedQuery(name = "GameModel.findTemplateByStatus", query = "SELECT a FROM GameModel a WHERE a.template = TRUE AND a.status = :status ORDER BY a.name"),
-    @NamedQuery(name = "GameModel.findAll", query = "SELECT gm FROM GameModel gm")})
+        @NamedQuery(name = "GameModel.findByStatus", query = "SELECT a FROM GameModel a WHERE a.status = :status ORDER BY a.createdTime ASC"),
+        @NamedQuery(name = "GameModel.findDistinctChildrenLabels", query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.rootGameModel.id = :containerId"),
+        @NamedQuery(name = "GameModel.findByName", query = "SELECT a FROM GameModel a WHERE a.name = :name"),
+        @NamedQuery(name = "GameModel.findTemplate", query = "SELECT a FROM GameModel a WHERE a.template = TRUE"),
+        @NamedQuery(name = "GameModel.findTemplateByStatus", query = "SELECT a FROM GameModel a WHERE a.template = TRUE AND a.status = :status ORDER BY a.name"),
+        @NamedQuery(name = "GameModel.findAll", query = "SELECT gm FROM GameModel gm")})
 public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor> /*, Broadcastable */ {
 
     private static final long serialVersionUID = 1L;
@@ -64,7 +64,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      */
     @Lob
-    @Basic(fetch = FetchType.LAZY)
+    //@Basic(fetch = FetchType.LAZY)
     @JsonView(Views.ExtendedI.class)
     private String description;
 
@@ -79,7 +79,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      */
     @Lob
-    @Basic(fetch = FetchType.LAZY)
+    //@Basic(fetch = FetchType.LAZY)
     @JsonView(Views.ExtendedI.class)
     private String comments;
 
@@ -128,7 +128,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      */
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.LAZY)
-    @OrderBy("createdTime")
     @JsonManagedReference
     @JsonIgnore
     //@JsonView(Views.ExportI.class)
@@ -360,8 +359,8 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
 
     /**
      * @return a list of Variable Descriptors that are at the root level of the
-     *         hierarchy (other VariableDescriptor can be placed inside of a
-     *         ListDescriptor's items List)
+     * hierarchy (other VariableDescriptor can be placed inside of a
+     * ListDescriptor's items List)
      */
     public List<VariableDescriptor> getChildVariableDescriptors() {
         return childVariableDescriptors;
@@ -398,7 +397,13 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     @JsonIgnore
     public List<Game> getGames() {
-        return games;
+        Collections.sort(this.games, new Comparator<Game>() {
+            @Override
+            public int compare(Game g1, Game g2) {
+                return g1.getCreatedTime().compareTo(g2.getCreatedTime());
+            }
+        });
+        return this.games;
     }
 
     /**
@@ -609,7 +614,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
 
     /**
      * @return name of the user who created this or null if user no longer
-     *         exists
+     * exists
      */
     public String getCreatedByName() {
         if (this.getCreatedBy() != null) {
@@ -640,7 +645,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
-     *
      * TODO: select game.* FROM GAME where dtype like 'DEBUGGAME' and
      * gamemodelid = this.getId()
      *

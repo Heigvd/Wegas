@@ -102,7 +102,7 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
 
     /**
      *
-     * Duplicate an entity by serializing it using the "Editor" view and
+     * Duplicate an entity by serializing it using the "Export" view and
      * serializing it back.
      *
      * @param entityId

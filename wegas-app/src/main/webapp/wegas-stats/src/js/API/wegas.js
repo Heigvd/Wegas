@@ -1,7 +1,7 @@
 import Axios from 'axios';
 
 const PUBLIC = 'Public';
-const EDITOR_EXTENDED = 'EditorExtended';
+const EDITOR_EXTENDED = "Editor";
 function basePath(view = 'Public') {
     return `/rest/${view}/GameModel/`;
 }

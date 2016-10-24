@@ -12,11 +12,11 @@ import com.pusher.rest.data.PresenceUser;
 import com.pusher.rest.data.Result;
 import com.wegas.core.Helper;
 import com.wegas.core.event.client.ClientEvent;
+import com.wegas.core.event.client.DestroyedEntity;
 import com.wegas.core.event.client.EntityDestroyedEvent;
 import com.wegas.core.event.client.EntityUpdatedEvent;
-import com.wegas.core.exception.internal.NoPlayerException;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.event.client.OutdatedEntitiesEvent;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -24,26 +24,21 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.SecurityHelper;
-import java.io.ByteArrayOutputStream;
+import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.MissingResourceException;
+import java.util.*;
 import java.util.zip.GZIPOutputStream;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import org.apache.shiro.SecurityUtils;
 
 /**
  * @author Yannick Lagger (lagger.yannick.com)
@@ -89,68 +84,6 @@ public class WebsocketFacade {
     private PlayerFacade playerFacade;
 
     /**
-     * Check if current user has access to type/id entity
-     *
-     * @param type
-     * @param id
-     * @param currentPlayer
-     * @return true if current user has access to
-     */
-    private boolean hasPermission(String type, Long id, Player currentPlayer) {
-        if ("GameModel".equals(type)) {
-            return SecurityUtils.getSubject().isPermitted("GameModel:View:gm" + id);
-        } else if ("Game".equals(type)) {
-            Game game = gameFacade.find(id);
-            return game != null && SecurityHelper.isPermitted(game, "View");
-        } else if ("Team".equals(type)) {
-            Team team = teamFacade.find(id);
-            User user = userFacade.getCurrentUser();
-
-            if (currentPlayer != null && currentPlayer.getUser() != null
-                    && currentPlayer.getUser().equals(user)) {
-                // Current logged User is the player itself
-                // the player MUST be a member of the team
-                return playerFacade.checkExistingPlayerInTeam(team.getId(), user.getId()) != null;
-            } else {
-                // Trainer of scenarist (player is not linked to user)
-                return SecurityHelper.isPermitted(team.getGame(), "Edit");
-            }
-        } else if ("Player".equals(type)) {
-            User user = userFacade.getCurrentUser();
-            Player player = playerFacade.find(id);
-
-            if (player != null) {
-                if (currentPlayer != null && currentPlayer.getUser() != null
-                        && currentPlayer.getUser().equals(user)) {
-                    return player.equals(currentPlayer);
-                } else {
-                    // Trainer and scenarist 
-                    return SecurityHelper.isPermitted(player.getGame(), "Edit");
-                }
-            } else {
-                return false;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * can current user subscribe to given channel ?
-     *
-     * @param channel
-     * @param currentPlayer
-     * @return true if access granted
-     */
-    public boolean hasPermission(String channel, Player currentPlayer) {
-        String[] split = channel.split("-");
-        if (split.length != 2) {
-            return false;
-        } else {
-            return hasPermission(split[0], Long.parseLong(split[1]), currentPlayer);
-        }
-    }
-
-    /**
      * Get all channels based on entites
      *
      * @param entities
@@ -193,7 +126,6 @@ public class WebsocketFacade {
     }
 
     /**
-     *
      * @param channel
      * @param status
      * @param socketId
@@ -216,7 +148,6 @@ public class WebsocketFacade {
     }
 
     /**
-     *
      * @param channel
      * @param message
      * @param socketId
@@ -278,12 +209,10 @@ public class WebsocketFacade {
      * @param dispatchedEntities
      * @param destroyedEntities
      * @param outdatedEntities
-     * @throws com.wegas.core.exception.internal.NoPlayerException
      */
-    @Asynchronous
     public void onRequestCommit(final Map<String, List<AbstractEntity>> dispatchedEntities,
             final Map<String, List<AbstractEntity>> destroyedEntities,
-            final Map<String, List<AbstractEntity>> outdatedEntities) throws NoPlayerException {
+            final Map<String, List<AbstractEntity>> outdatedEntities) {
         this.onRequestCommit(dispatchedEntities, destroyedEntities, outdatedEntities, null);
     }
 
@@ -295,24 +224,21 @@ public class WebsocketFacade {
      * @param outdatedEntities
      * @param socketId           Client's socket id. Prevent that specific
      *                           client to receive this particular message
-     * @throws com.wegas.core.exception.internal.NoPlayerException
      */
-    @Asynchronous
     public void onRequestCommit(final Map<String, List<AbstractEntity>> dispatchedEntities,
             final Map<String, List<AbstractEntity>> destroyedEntities,
             final Map<String, List<AbstractEntity>> outdatedEntities,
-            final String socketId) throws NoPlayerException {
+            final String socketId) {
         if (this.pusher == null) {
             return;
         }
 
-        propagate(dispatchedEntities, socketId, EntityUpdatedEvent.class);
         propagate(destroyedEntities, socketId, EntityDestroyedEvent.class);
+        propagate(dispatchedEntities, socketId, EntityUpdatedEvent.class);
         propagate(outdatedEntities, socketId, OutdatedEntitiesEvent.class);
     }
 
     /**
-     *
      * @param <T>
      * @param container
      * @param socketId
@@ -323,24 +249,22 @@ public class WebsocketFacade {
             for (Map.Entry<String, List<AbstractEntity>> entry : container.entrySet()) {
                 String audience = entry.getKey();
                 List<AbstractEntity> toPropagate = entry.getValue();
+                ClientEvent event;
 
-                /**
-                 * #1222: concurrency issue
-                 * 
-                 * this process is asynchronous, entities (and underlying EntityManager) 
-                 * come from another thread. This is strictly forbidden (EntityManager 
-                 * is not thread-safe) and leads to some very strange and hardly 
-                 * reproducible deadlocks. (involving uninitialized IndirectList...)
-                 * 
-                 * The fix consists to re-find all entities within a new EntityManager 
-                 * before serialization occurs
-                 */
-                List<AbstractEntity> refreshed = new ArrayList<>();
-                for (AbstractEntity ae : toPropagate) {
-                    refreshed.add(em.find(ae.getClass(), ae.getId()));
+                if (eventClass == EntityDestroyedEvent.class) {
+                    List<AbstractEntity> refreshed = new ArrayList<>();
+                    /*
+                     * Not possible to find an already destroyed entity, so, in 
+                     * this case (and since those informations are sufficient), 
+                     * only id and class name are propagated
+                     */
+                    for (AbstractEntity ae : toPropagate) {
+                        refreshed.add(new DestroyedEntity(ae.getId(), ae.getJSONClassName()));
+                    }
+                    event = eventClass.getDeclaredConstructor(List.class).newInstance(refreshed);
+                } else {
+                    event = eventClass.getDeclaredConstructor(List.class).newInstance(toPropagate);
                 }
-                //logger.error(eventClass.getSimpleName() + " entities: " + audience + ": " + toPropagate.size());
-                ClientEvent event = eventClass.getDeclaredConstructor(List.class).newInstance(refreshed);
                 propagate(event, audience, socketId);
             }
         } catch (NoSuchMethodException | SecurityException |

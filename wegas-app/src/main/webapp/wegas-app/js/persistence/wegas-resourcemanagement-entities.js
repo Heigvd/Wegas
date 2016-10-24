@@ -21,26 +21,23 @@ YUI.add('wegas-resourcemanagement-entities', function (Y) {
             view: { type: HIDDEN }
         },
         Wegas = Y.Wegas, persistence = Wegas.persistence,
-        PROPERTIESELEMENTTYPE = {
-            type: COMBINE,
-            fields: [{
-                name: NAME,
-                typeInvite: NAME,
-                size: 16
-            }, {
-                name: VALUE,
-                typeInvite: VALUE,
-                size: 16
-            }]
-        },
-        IDATTRDEF = {
-            type: NUMBER,
-            optional: true, // The id is optional for entites that have not been persisted
-            view: {
-                type: HIDDEN
-            }
-        },
-        lvl;
+        VERSION_ATTR_DEF,
+        IDATTRDEF, lvl;
+
+    VERSION_ATTR_DEF = {
+        type: NUMBER,
+        view: {
+            type: HIDDEN
+        }
+    };
+
+    IDATTRDEF = {
+        type: NUMBER,
+        optional: true, // The id is optional for entites that have not been persisted
+        view: {
+            type: HIDDEN
+        }
+    };
     Y.namespace("Wegas.persistence.Resources"); // Create namespace
 
     /**
@@ -165,6 +162,7 @@ YUI.add('wegas-resourcemanagement-entities', function (Y) {
                             }
                         },
                         id: IDATTRDEF,
+                        version: VERSION_ATTR_DEF,
                         descriptorId: IDATTRDEF,
                         active: {
                             type: BOOLEAN,
@@ -556,6 +554,7 @@ YUI.add('wegas-resourcemanagement-entities', function (Y) {
                             }
                         },
                         id: IDATTRDEF,
+                        version: VERSION_ATTR_DEF,
                         descriptorId: IDATTRDEF,
                         requirements: {
                             type: ARRAY,
@@ -887,6 +886,7 @@ YUI.add('wegas-resourcemanagement-entities', function (Y) {
                             }
                         },
                         id: IDATTRDEF,
+                        version: VERSION_ATTR_DEF,
                         iterations: {
                             type: ARRAY,
                             _inputex: {

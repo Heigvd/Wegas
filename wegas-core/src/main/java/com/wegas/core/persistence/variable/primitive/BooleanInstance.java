@@ -61,6 +61,7 @@ public class BooleanInstance extends VariableInstance {
      */
     @Override
     public void merge(AbstractEntity a) {
+        super.merge(a);
         BooleanInstance other = (BooleanInstance) a;
         this.setValue(other.getValue());
     }

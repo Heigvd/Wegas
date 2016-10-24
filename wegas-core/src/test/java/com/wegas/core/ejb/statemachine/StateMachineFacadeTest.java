@@ -193,7 +193,6 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         final GameModelFacade gmf = lookupBy(GameModelFacade.class);
         final StateMachineFacade stateMachineFacade = lookupBy(StateMachineFacade.class);
 
-
         DialogueDescriptor dial = new DialogueDescriptor();
         dial.setName("dial");
         StateMachineInstance dialI = new StateMachineInstance();

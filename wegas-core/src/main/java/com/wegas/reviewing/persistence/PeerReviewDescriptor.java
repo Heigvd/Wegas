@@ -70,7 +70,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
         SUBMITTED, // authors can't edit toReview anymore
         DISPATCHED, // toReview are dispatched, state became review dependent
         NOTIFIED, // tema take aquintance of peer's evaluations
-        DISCARDED,    // completely out of reviewing process (debug team for instance)
+        DISCARDED, // completely out of reviewing process (debug team for instance)
         EVICTED, // partially out of reviewing process -> nothing to review
         COMPLETED // 
     }
@@ -87,6 +87,11 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      */
     @Transient
     private String toReviewName;
+
+    /**
+     * Allow evicted users to receive something to review
+     */
+    private Boolean includeEvicted;
 
     /**
      * Expected number of reviews. The number of reviews may be smaller,
@@ -133,6 +138,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
             this.setToReviewName(other.getToReviewName());
             this.getFeedback().merge(other.getFeedback());
             this.getFbComments().merge(other.getFbComments());
+            this.setIncludeEvicted(other.getIncludeEvicted());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
@@ -168,7 +174,8 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
     /**
      * Used to fetch the JSON de-serialised variable name
      *
-     * @return the name of the variable that will be reviewed, as imported from a JSON
+     * @return the name of the variable that will be reviewed, as imported from
+     *         a JSON
      */
     @JsonIgnore
     public String getImportedToReviewName() {
@@ -261,14 +268,21 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
     /*
      * SUGAR
      */
-
-
     /**
      * Get the review state of the given player's instance
-     * @param p the player 
+     *
+     * @param p the player
      * @return player's instance state
      */
-    public String getState(Player p){
+    public String getState(Player p) {
         return this.getInstance(p).getReviewState().toString();
+    }
+
+    public Boolean getIncludeEvicted() {
+        return includeEvicted;
+    }
+
+    public void setIncludeEvicted(Boolean includeEvicted) {
+        this.includeEvicted = includeEvicted;
     }
 }

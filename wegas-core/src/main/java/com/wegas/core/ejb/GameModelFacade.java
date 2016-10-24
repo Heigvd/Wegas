@@ -393,7 +393,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      */
     public void reset(final GameModel gameModel) {
         // Need to flush so prepersit events will be thrown (for example Game will add default teams)
-        //getEntityManager().flush();
+        ///getEntityManager().flush();
         //gameModel.propagateGameModel();  -> propagation is now done automatically after descriptor creation
         gameModel.propagateDefaultInstance(gameModel);
         //getEntityManager().flush();
@@ -439,7 +439,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
             String serialized = model.toJson(Views.Export.class);
             String hash = Integer.toHexString(serialized.hashCode());
 
-            //System.out.println("for" + model + "*" + hash);
+            //logger.info("for" + model + "*" + hash);
             if (!fileController.directoryExists(model.getId(), "/" + HISTORYPATH)) {// Create version folder if it does not exist
                 fileController.createDirectory(model.getId(), HISTORYPATH, "/", null, null);
             }
@@ -447,9 +447,9 @@ public class GameModelFacade extends BaseFacade<GameModel> {
             List<AbstractContentDescriptor> history = fileController.listDirectory(model.getId(), "/" + HISTORYPATH);
             boolean found = false;
             for (AbstractContentDescriptor item : history) {
-                //System.out.println("checking" + item.getName() + "*" + hash);
+                //logger.info.println("checking" + item.getName() + "*" + hash);
                 if (item.getName().contains(hash)) {
-                    //System.out.println("fOUND");
+                    //logger.info.println("fOUND");
                     found = true;
                     break;
                 }

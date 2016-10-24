@@ -36,6 +36,26 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
     private static final Logger logger = LoggerFactory.getLogger(VariableDescriptorFacadeTest.class);
 
     @Test
+    public void testDoubleReset() throws NamingException, WegasNoResultException {
+        VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+
+        // Test the descriptor
+        NumberDescriptor desc1 = new NumberDescriptor("x");
+        desc1.setDefaultInstance(new NumberInstance(0));
+
+        vdf.create(gameModel.getId(), desc1);
+
+        gameModelFacade.reset(gameModel.getId());
+
+        vdf.update(desc1.getId(), desc1);
+
+        gameModelFacade.reset(gameModel.getId());
+        gameModelFacade.reset(gameModel.getId());
+
+        vdf.remove(desc1.getId());
+    }
+
+    @Test
     public void testNumberDescriptor() throws NamingException, WegasNoResultException {
         final String VARIABLENAME = "test-variable";
         final String VARIABLENAME2 = "test-variable2";
@@ -59,7 +79,10 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         Assert.assertEquals(VAL2, instance.getValue());
 
         // Edit the variable instance
-        vif.update(desc1.getId(), player.getId(), new NumberInstance(VAL3));
+        NumberInstance newNumberInstance = new NumberInstance(VAL3);
+        newNumberInstance.setVersion(instance.getVersion());
+
+        vif.update(desc1.getId(), player.getId(), newNumberInstance);
 
         // Verify the new value
         instance = (NumberInstance) vif.find(desc1.getId(), player.getId());
@@ -97,7 +120,10 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         Assert.assertEquals(VALUE2, instance.getValue());
 
         // Edit the variable instance
-        vif.update(stringDescriptor.getId(), player.getId(), new StringInstance(VALUE3));
+        StringInstance newStringInstance = new StringInstance(VALUE3);
+        newStringInstance.setVersion(instance.getVersion());
+
+        vif.update(stringDescriptor.getId(), player.getId(), newStringInstance);
 
         // Verify the new value
         instance = (StringInstance) vif.find(stringDescriptor.getId(), player.getId());
@@ -131,7 +157,9 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         Assert.assertEquals(false, instance.getValue());
 
         // Edit the variable instance
-        vif.update(booleanDescriptor.getId(), player.getId(), new BooleanInstance(true));
+        BooleanInstance newInstance = new BooleanInstance(true);
+        newInstance.setVersion(instance.getVersion());
+        vif.update(booleanDescriptor.getId(), player.getId(), newInstance);
 
         // Verify the new value
         instance = (BooleanInstance) vif.find(booleanDescriptor.getId(), player.getId());
@@ -179,7 +207,7 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
     }
 
     public <T extends VariableDescriptor> T testVariableDescriptor(T descriptor1, T descriptor2)
-        throws NamingException, WegasNoResultException {
+            throws NamingException, WegasNoResultException {
         final String VARIABLENAME2 = "test-variable2";
         VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
 
@@ -187,8 +215,21 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         logger.info("" + descriptor1 + "*" + descriptor2);
         vdf.create(gameModel.getId(), descriptor1);
 
+        gameModelFacade.reset(gameModel.getId());
+
         // Edit this descriptor
+        descriptor1 = (T) vdf.find(descriptor1.getId());
+
+        /*
+         * update against up-to-date version
+         */
+        descriptor2.setVersion(descriptor1.getVersion());
+        descriptor2.getDefaultInstance().setVersion(descriptor1.getDefaultInstance().getVersion());
+
         vdf.update(descriptor1.getId(), descriptor2);
+
+        // Edit this descriptor
+        descriptor1 = (T) vdf.find(descriptor1.getId());
 
         gameModelFacade.reset(gameModel.getId());
 
@@ -232,7 +273,10 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         Assert.assertEquals(VAL2, instance.getValue());
 
         // Edit the variable instance
-        vif.update(desc1.getId(), player.getId(), new NumberInstance(VAL3));
+        NumberInstance newInstance = new NumberInstance(VAL3);
+        newInstance.setVersion(instance.getVersion());
+
+        vif.update(desc1.getId(), player.getId(), newInstance);
 
         // Verify the new value
         instance = (NumberInstance) vif.find(desc1.getId(), player.getId());
@@ -418,7 +462,7 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         vdf.createChild(list4.getId(), nb);
 
         DescriptorListI duplicate
-            = (DescriptorListI) vdf.duplicate(list1.getId());                 // Duplicate a root variable
+                = (DescriptorListI) vdf.duplicate(list1.getId());                 // Duplicate a root variable
         Assert.assertEquals(10.0, ((NumberDescriptor) ((DescriptorListI) ((DescriptorListI) duplicate.item(1)).item(0)).item(0)).getInstance(player).getValue());
 
         duplicate = (DescriptorListI) vdf.duplicate(list3.getId());             // Duplicate a sub child variable

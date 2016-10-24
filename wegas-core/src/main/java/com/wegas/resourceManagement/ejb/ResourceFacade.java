@@ -7,6 +7,7 @@
  */
 package com.wegas.resourceManagement.ejb;
 
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.ScriptEventFacade;
@@ -31,9 +32,12 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,6 +116,10 @@ public class ResourceFacade {
         return getEntityManager().find(Assignment.class, id);
     }
 
+    public WRequirement findRequirement(Long id) {
+        return getEntityManager().find(WRequirement.class, id);
+    }
+
     /**
      * Is the given resource assign to the given task descriptor ?
      *
@@ -122,12 +130,10 @@ public class ResourceFacade {
      */
     public Assignment findAssignment(Long resourceId, Long taskDescriptorId) {
         EntityManager em = getEntityManager();
-        TaskDescriptor taskDescriptor = em.find(TaskDescriptor.class, taskDescriptorId);
-        ResourceInstance resourceInstance = em.find(ResourceInstance.class, resourceId);
-        Query query = em.createNamedQuery("Assignment.findByResourceInstanceAndTaskDescriptor").
-                setParameter("resourceInstance", resourceInstance).
-                setParameter("taskDescriptor", taskDescriptor);
-        return (Assignment) query.getSingleResult();
+        TypedQuery<Assignment> query = em.createNamedQuery("Assignment.findByResourceInstanceIdAndTaskDescriptorId", Assignment.class).
+                setParameter("resourceInstanceId", resourceId).
+                setParameter("taskDescriptorId", taskDescriptorId);
+        return query.getSingleResult();
     }
 
     /**
@@ -406,6 +412,18 @@ public class ResourceFacade {
                 Long level = (Long) skills.values().toArray()[0];
                 ri.setProperty("level", level.toString());
             }
+        }
+    }
+
+    /**
+     * @return Looked-up EJB
+     */
+    public static ResourceFacade lookup() {
+        try {
+            return Helper.lookupBy(ResourceFacade.class);
+        } catch (NamingException ex) {
+            logger.error("Error retrieving var inst f", ex);
+            return null;
         }
     }
 }

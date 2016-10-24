@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
@@ -43,11 +42,23 @@ import java.util.List;
         }
 )
 @NamedQueries({
-    @NamedQuery(name = "Result.findByName", query = "SELECT DISTINCT res FROM Result res WHERE res.choiceDescriptor=:choicedescriptor AND res.name LIKE :name")
+    @NamedQuery(name = "Result.findByName", query = "SELECT DISTINCT res FROM Result res WHERE res.choiceDescriptor.id=:choicedescriptorId AND res.name LIKE :name")
 })
 public class Result extends NamedEntity implements Searchable, Scripted, LabelledEntity {
 
     private static final long serialVersionUID = 1L;
+
+    @Version
+    private Long version;
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+
     /**
      *
      */
@@ -67,16 +78,16 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     /**
      *
      */
-    @Column(length = 4096)
-    //@Basic(fetch = FetchType.LAZY) // CARE, lazy fetch on Basics has some trouble.
+    @Lob
+    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
     //@JsonView(Views.ExtendedI.class)
     private String answer;
 
     /**
      *
      */
-    @Column(length = 4096)
-    //@Basic(fetch = FetchType.LAZY) // CARE, lazy fetch on Basics has some trouble.
+    @Lob
+    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
     //@JsonView(Views.ExtendedI.class)
     private String ignorationAnswer;
 
@@ -89,7 +100,7 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
      *
      */
     @Embedded
-    @JsonView(Views.EditorExtendedI.class)
+    @JsonView(Views.EditorI.class)
     private Script impact;
     /**
      *
@@ -101,7 +112,7 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
         @AttributeOverride(name = "lang", column
                 = @Column(name = "ignoration_language"))
     })
-    @JsonView(Views.EditorExtendedI.class)
+    @JsonView(Views.EditorI.class)
     private Script ignorationImpact;
     /**
      *
@@ -132,7 +143,6 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     }
 
     /**
-     *
      * @param name
      */
     public Result(String name) {
@@ -141,7 +151,6 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     }
 
     /**
-     *
      * @param name
      */
     public Result(String name, String label) {
@@ -169,13 +178,13 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     }
 
     /**
-     *
      * @param a
      */
     @Override
     public void merge(AbstractEntity a) {
         if (a instanceof Result) {
             Result other = (Result) a;
+            this.setVersion(other.getVersion());
             this.setName(other.getName());
             this.setLabel(other.getLabel());
             this.setAnswer(other.getAnswer());
@@ -189,7 +198,7 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
         }
     }
 
-//    @PreRemove
+    //    @PreRemove
 //    private void preRemove() {                                                  // When a response is destroyed
 //
 //        for (ChoiceInstance c : this.getChoiceInstances()) {                    // remove it from all the instance it is the current result
@@ -222,7 +231,6 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     }
 
     /**
-     *
      * @return id from the parent choice descriptor
      */
     @JsonView(Views.IndexI.class)

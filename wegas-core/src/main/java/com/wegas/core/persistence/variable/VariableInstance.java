@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.eclipse.persistence.annotations.OptimisticLocking;
 
 ////import javax.xml.bind.annotation.XmlTransient;
 /**
@@ -47,12 +48,14 @@ import java.util.Map;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @NamedQueries({
-    //@NamedQuery(name = "findTeamInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.teamScopeKey = :teamid"),
-    //@NamedQuery(name = "findPlayerInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.playerScopeKey = :playerid"),
-    @NamedQuery(name = "VariableInstance.findInstancesForPlayer",
-        query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE EXISTS "
-            + "(SELECT player From Player player WHERE player.id = :playerid AND "
-            + "(variableinstance.player = player OR variableinstance.team = player.team OR variableinstance.game = player.team.game))")
+    @NamedQuery(name = "VariableInstance.findPlayerInstance",
+            query = "SELECT vi FROM VariableInstance vi WHERE "
+            + "(vi.player.id = :playerId AND vi.playerScope.id = :scopeId)"
+    ),
+    @NamedQuery(name = "VariableInstance.findTeamInstance",
+            query = "SELECT vi FROM VariableInstance vi WHERE "
+            + "(vi.team.id = :teamId AND vi.teamScope.id = :scopeId)"
+    )
 })
 
 /*@Indexes(value = { // JPA 2.0 eclipse link extension TO BE REMOVED
@@ -89,11 +92,23 @@ import java.util.Map;
     @JsonSubTypes.Type(name = "PeerReviewInstance", value = PeerReviewInstance.class),
     @JsonSubTypes.Type(name = "BurndownInstance", value = BurndownInstance.class)
 })
+@OptimisticLocking(cascade = true)
 abstract public class VariableInstance extends AbstractEntity implements Broadcastable {
 
     private static final long serialVersionUID = 1L;
 
     private static final Logger logger = LoggerFactory.getLogger(VariableInstance.class);
+
+    @Version
+    private Long version;
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
 
     /**
      *
@@ -183,9 +198,19 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     @JsonIgnore
     public String getAudience() {
         if (this.getTeam() != null) {
-            return Helper.getAudienceTokenForTeam(this.getTeam().getId());
+            if (this.getTeamScope().getBroadcastScope().equals("GameScope")) {
+                return Helper.getAudienceTokenForGame(this.getTeam().getGame().getId());
+            } else {
+                return Helper.getAudienceTokenForTeam(this.getTeam().getId());
+            }
         } else if (this.getPlayer() != null) {
-            return Helper.getAudienceTokenForPlayer(this.getPlayer().getId());
+            if (this.getPlayerScope().getBroadcastScope().equals("TeamScope")) {
+                return Helper.getAudienceTokenForTeam(this.getPlayer().getTeam().getId());
+            } else if (this.getPlayerScope().getBroadcastScope().equals("GameScope")) {
+                return Helper.getAudienceTokenForGame(this.getPlayer().getGameId());
+            } else {
+                return Helper.getAudienceTokenForPlayer(this.getPlayer().getId());
+            }
         } else if (this.getGame() != null) {
             return Helper.getAudienceTokenForGame(this.getGame().getId());
         } else if (this.gameModelScope != null) {
@@ -225,6 +250,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      */
     //@XmlTransient
     @JsonIgnore
+    //@JsonView(Views.ExtendedI.class)
     public AbstractScope getScope() {
         if (this.getTeamScope() != null) {
             return this.getTeamScope();
@@ -237,6 +263,29 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
         } else {
             return null;
         }
+    }
+
+    //@JsonView(Views.ExtendedI.class)
+    public Long getScopeKey() {
+        if (this.getTeamScope() != null) {
+            return this.getTeam().getId();
+        } else if (this.getPlayerScope() != null) {
+            return this.getPlayer().getId();
+        } else if (this.getGameScope() != null) {
+            return this.getGame().getId();
+        } else if (this.getGameModelScope() != null) {
+            return 0l;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     *
+     * @param key
+     */
+    public void setScopeKey(Long key) {
+        // Just to be ignored
     }
 
     /**
@@ -317,6 +366,10 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
         return id;
     }
 
+    /*public void setId(Long id) {
+        //Thread.dumpStack();
+        this.id = id;
+    }*/
     /**
      * Id of the team owning the instance
      *
@@ -448,6 +501,14 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      */
     public void setGameModelScope(GameModelScope gameModelScope) {
         this.gameModelScope = gameModelScope;
+    }
+
+    @Override
+    public void merge(AbstractEntity other) {
+        if (other instanceof VariableInstance) {
+            VariableInstance instance = (VariableInstance) other;
+            this.setVersion(instance.getVersion());
+        }
     }
 
     /**

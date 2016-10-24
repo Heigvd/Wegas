@@ -29,12 +29,13 @@
             <!--</ui:repeat>-->
 
             <script type="text/javascript">
-                YUI().use('wegas-app', 'wegas-scripteval', "wegas-websocketlistener", function(Y) {
+                YUI().use('wegas-app', 'wegas-scripteval', "wegas-websocketlistener", function (Y) {
                     var app = new Y.Wegas.App({
                         dataSources: {
                             Variable: {
-                                source: "rest/Private/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
+                                //source: "rest/Private/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
                                 //source: "rest/Editor/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
+                                source: "rest/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
                                 initialRequest: "",
                                 plugins: [{
                                         fn: "VariableDescriptorCache",
@@ -49,6 +50,16 @@
                                      dataSource: "Pusher"
                                      }
                                      }*/]
+                            },
+                            Instance: {
+                                source: "rest/Editor/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
+                                initialRequest: "/VariableInstance/AllPlayerInstances/#{gameController.currentPlayer.id}",
+                                plugins: [{
+                                        fn: "VariableInstanceCache",
+                                        cfg: {
+                                            indexes: ["descriptorId"]
+                                        }
+                                    }]
                             },
                             Page: {
                                 /*
@@ -127,7 +138,7 @@
                         }
                     });
 
-                    app.after("render", function() {
+                    app.after("render", function () {
                         try {
                 #{gameController.clientScripts}                     // Run game model specific js footer
                         } catch (e) {

@@ -126,6 +126,10 @@ public class RequestFacade {
 //    public void reset() {
 //        this.getUpdatedInstances().clear();
 //    }
+    public void firePlayerAction(Player player) {
+        playerActionEvent.fire(new PlayerAction(player));
+    }
+
     /**
      *
      * @param player
@@ -137,7 +141,7 @@ public class RequestFacade {
          */
         em.flush();
         if (requestManager.getUpdatedEntities().size() > 0 || scriptEvent.isEventFired()) {
-            playerActionEvent.fire(new PlayerAction(player));
+            this.firePlayerAction(player);
             /*   if (this.getPlayer() != null) {
              // RequestManager.PlayerAction action = new RequestManager.PlayerAction();
              //action.setPlayer(this.getPlayer());
@@ -228,5 +232,10 @@ public class RequestFacade {
      */
     public Map<String, List<AbstractEntity>> getDestroyedEntities() {
         return requestManager.getDestroyedEntities();
+    }
+
+    public void flushClear() {
+        em.flush();
+        em.clear();
     }
 }
