@@ -1,4 +1,4 @@
- /*
+/*
  * Wegas
  * http://wegas.albasim.ch
  *
@@ -7,6 +7,7 @@
  */
 package com.wegas.reviewing.persistence.evaluation;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.persistence.AbstractEntity;
@@ -46,7 +47,7 @@ public class GradeInstance extends EvaluationInstance {
      * @throws WegasOutOfBoundException when grade is out of bound
      */
     public void setValue(Double value) {
-        if (this.getDescriptor() != null && this.getDescriptor() instanceof GradeDescriptor) {
+        if (value != null && !Double.isNaN(value) && this.getDescriptor() != null && this.getDescriptor() instanceof GradeDescriptor) {
             GradeDescriptor desc = (GradeDescriptor) this.getDescriptor();
             if ((desc.getMaxValue() != null && value > desc.getMaxValue())
                     || (desc.getMinValue() != null && value < desc.getMinValue())) {
