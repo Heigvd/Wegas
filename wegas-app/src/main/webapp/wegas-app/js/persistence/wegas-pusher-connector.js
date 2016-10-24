@@ -47,7 +47,8 @@ YUI.add('wegas-pusher-connector', function(Y) {
             }
             pusherInstance = new Pusher(cfg.applicationKey, {
                 authEndpoint: Y.Wegas.app.get("base") + "rest/Pusher/auth",
-                encrypted: true
+                encrypted: true,
+                cluster: cfg.cluster
             });
             pusherInstance.connection.bind('error', function(err) {
                 if (err.data && err.data.code === 4004) {
