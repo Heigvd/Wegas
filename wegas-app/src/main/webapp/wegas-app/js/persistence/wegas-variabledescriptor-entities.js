@@ -134,18 +134,18 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
             var key, scope;
             player = player || Wegas.Facade.Game.get("currentPlayer");
             switch (this.get("scope").get("@class")) {
-            case "PlayerScope":
-                key = player.get("id");
-                break;
-            case "TeamScope":
-                key = player.get("team").get("id");
-                break;
-            case "GameScope":
-                key = player.get("team").get("gameId");
-                break;
-            case "GameModelScope":
-                key = 0;
-                break;
+                case "PlayerScope":
+                    key = player.get("id");
+                    break;
+                case "TeamScope":
+                    key = player.get("team").get("id");
+                    break;
+                case "GameScope":
+                    key = player.get("team").get("gameId");
+                    break;
+                case "GameModelScope":
+                    key = 0;
+                    break;
             }
 
             scope = Y.Wegas.Facade.Instance.cache.find("descriptorId", this.get("id"));
@@ -192,160 +192,160 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
             this.get("scope").setInstance(player, promise);
         }
     }, {
-        ATTRS: {
-            version: VERSION_ATTR_DEF,
-            parentDescriptorId: {
-                type: NUMBER,
-                view: {
-                    type: HIDDEN
-                }
-            },
-            comments: {
-                type: ["null", STRING],
-                index: 100,
-                view: {
-                    type: "textarea",
-                    className: "wegas-comments"
-                }
-            },
-            label: {
-                type: STRING,
-                value: undefined,
-                errored: function (v) {
-                    return v ? '' : 'is required';
+            ATTRS: {
+                version: VERSION_ATTR_DEF,
+                parentDescriptorId: {
+                    type: NUMBER,
+                    view: {
+                        type: HIDDEN
+                    }
                 },
-                index: -1,
-                "transient": false,
-                getter: function (val) {
-                    return val || this.get(NAME);
+                comments: {
+                    type: ["null", STRING],
+                    index: 100,
+                    view: {
+                        type: "textarea",
+                        className: "wegas-comments"
+                    }
                 },
-                view: {
-                    label: "Name"
-                }
-            },
-            name: {
-                type: STRING,
-                index: -1,
-                view: {
-                    className: "wegas-advanced-feature",
-                    label: "Script alias",
-                        //regexp: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/,
-                    description: "Alphanumeric characters,'_','$'. Without a digit as first character.<br/>Changing this may break your scripts."
-                },
-                validator: function (s) {
-                    return s === null || Y.Lang.isString(s);
-                }
-            },
-            scope: {
-                valueFn: function () {
-                    return new persistence.TeamScope(); // Should the default scope be set
-                        // server or client side?
-                },
-                validator: function (o) {
-                    return o instanceof persistence.Scope;
-                },
-                view: {
-                    className: "wegas-advanced-feature"
-                },
-                properties: {
-                    "@class": {
-                        type: STRING,
-                        view: {
-                            type: SELECT,
-                            choices: [{
-                                value: "TeamScope",
-                                label: "different for each team"
-                            }, {
-                                value: "PlayerScope",
-                                label: "different for each user"
-                            }, {
-                                value: "GameScope",
-                                label: "different for each game"
-                            }, {
-                                value: "GameModelScope",
-                                label: "the same for everybody"
-                            }],
-                            label: "Variable is"
-                        }
+                label: {
+                    type: STRING,
+                    value: undefined,
+                    errored: function (v) {
+                        return v ? '' : 'is required';
                     },
-                    broadcastScope: {
-                        type: STRING,
-                        view: {
-                            type: SELECT,
-                            label: "Variable is visible by",
-                            choices: [{
-                                value: "TeamScope",
-                                label: "anyone in the player's team"
-                            }, {
-                                value: "PlayerScope",
-                                label: "the current player only"
-                            }, {
-                                value: "GameScope",
-                                label: "anybody in the game"
-                            }]
+                    index: -1,
+                    "transient": false,
+                    getter: function (val) {
+                        return val || this.get(NAME);
+                    },
+                    view: {
+                        label: "Name"
+                    }
+                },
+                name: {
+                    type: STRING,
+                    index: -1,
+                    view: {
+                        className: "wegas-advanced-feature",
+                        label: "Script alias",
+                        //regexp: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/,
+                        description: "Alphanumeric characters,'_','$'. Without a digit as first character.<br/>Changing this may break your scripts."
+                    },
+                    validator: function (s) {
+                        return s === null || Y.Lang.isString(s);
+                    }
+                },
+                scope: {
+                    valueFn: function () {
+                        return new persistence.TeamScope(); // Should the default scope be set
+                        // server or client side?
+                    },
+                    validator: function (o) {
+                        return o instanceof persistence.Scope;
+                    },
+                    view: {
+                        className: "wegas-advanced-feature"
+                    },
+                    properties: {
+                        "@class": {
+                            type: STRING,
+                            view: {
+                                type: SELECT,
+                                choices: [{
+                                    value: "TeamScope",
+                                    label: "different for each team"
+                                }, {
+                                    value: "PlayerScope",
+                                    label: "different for each user"
+                                }, {
+                                    value: "GameScope",
+                                    label: "different for each game"
+                                }, {
+                                    value: "GameModelScope",
+                                    label: "the same for everybody"
+                                }],
+                                label: "Variable is"
+                            }
+                        },
+                        broadcastScope: {
+                            type: STRING,
+                            view: {
+                                type: SELECT,
+                                label: "Variable is visible by",
+                                choices: [{
+                                    value: "TeamScope",
+                                    label: "anyone in the player's team"
+                                }, {
+                                    value: "PlayerScope",
+                                    label: "the current player only"
+                                }, {
+                                    value: "GameScope",
+                                    label: "anybody in the game"
+                                }]
+                            }
                         }
+                    }
+                },
+                defaultInstance: {
+                    value: {},
+                    validator: function (o) {
+                        return o instanceof persistence.VariableInstance;
                     }
                 }
             },
-            defaultInstance: {
-                value: {},
-                validator: function (o) {
-                    return o instanceof persistence.VariableInstance;
-                }
+            EDITMENU: [{
+                type: "EditEntityButton"
+            }, {
+                type: BUTTON,
+                label: "Copy",
+                plugins: [{
+                    fn: "DuplicateEntityAction"
+                }]
+            }, {
+                type: "DeleteEntityButton"
+            }, {
+                type: BUTTON,
+                label: "Export",
+                plugins: [{
+                    fn: "WidgetMenu",
+                    cfg: {
+                        children: [{
+                            type: "PrintButton",
+                            label: "Html"
+                        }, {
+                            type: "PrintButton",
+                            label: "Html (Players document)",
+                            mode: "player"
+                        }, {
+                            type: "PrintButton",
+                            label: "Pdf",
+                            outputType: "pdf"
+                        }, {
+                            type: "PrintButton",
+                            label: "Pdf (Players document)",
+                            outputType: "pdf",
+                            mode: "player"
+                        }, {
+                            type: "OpenEntityButton",
+                            label: "Json",
+                            url: "rest/Export/GameModel/VariableDescriptor/{id}"
+                        }]
+                    }
+                }]
+            }, {
+                type: BUTTON,
+                label: "More",
+                cssClass: "wegas-advanced-feature",
+                plugins: [{
+                    fn: "WidgetMenu",
+                    cfg: {
+                        children: []
+                    }
+                }]
             }
-        },
-        EDITMENU: [{
-            type: "EditEntityButton"
-        }, {
-            type: BUTTON,
-            label: "Copy",
-            plugins: [{
-                fn: "DuplicateEntityAction"
-            }]
-        }, {
-            type: "DeleteEntityButton"
-        }, {
-            type: BUTTON,
-            label: "Export",
-            plugins: [{
-                fn: "WidgetMenu",
-                cfg: {
-                    children: [{
-                        type: "PrintButton",
-                        label: "Html"
-                    }, {
-                        type: "PrintButton",
-                        label: "Html (Players document)",
-                        mode: "player"
-                    }, {
-                        type: "PrintButton",
-                        label: "Pdf",
-                        outputType: "pdf"
-                    }, {
-                        type: "PrintButton",
-                        label: "Pdf (Players document)",
-                        outputType: "pdf",
-                        mode: "player"
-                    }, {
-                        type: "OpenEntityButton",
-                        label: "Json",
-                        url: "rest/Export/GameModel/VariableDescriptor/{id}"
-                    }]
-                }
-            }]
-        }, {
-            type: BUTTON,
-            label: "More",
-            cssClass: "wegas-advanced-feature",
-            plugins: [{
-                fn: "WidgetMenu",
-                cfg: {
-                    children: []
-                }
-            }]
-        }
             ]
-    });
+        });
 
     /**
      * Scope mapper
@@ -363,23 +363,23 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
             Y.error("SHOULD BE OVERRIDDEN, abstract!", new Error("setPromise, abstract"), "Wegas.persistance.Scope");
         }
     }, {
-        ATTRS: {
-            variableInstances: {
-                "transient": true,
-                getter: function (val) {
-                    if (!val) {
-                        return this.get("privateInstances");
+            ATTRS: {
+                variableInstances: {
+                    "transient": true,
+                    getter: function (val) {
+                        if (!val) {
+                            return this.get("privateInstances");
+                        }
+                        return val;
                     }
-                    return val;
-                }
-            },
-            privateInstances: {
-                value: {},
-                "transient": true
-            },
-            broadcastScope: {}
-        }
-    });
+                },
+                privateInstances: {
+                    value: {},
+                    "transient": true
+                },
+                broadcastScope: {}
+            }
+        });
     /**
      * GameModelScope mapper
      */
@@ -391,12 +391,12 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
             this.get("variableInstances")[0] = promise;
         }
     }, {
-        ATTRS: {
-            "@class": {
-                value: "GameModelScope"
+            ATTRS: {
+                "@class": {
+                    value: "GameModelScope"
+                }
             }
-        }
-    });
+        });
     /**
      * GameScope mapper
      */
@@ -408,12 +408,12 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
             this.get("variableInstances")[String(Wegas.Facade.Game.get("currentGameId"))] = promise;
         }
     }, {
-        ATTRS: {
-            "@class": {
-                value: "GameScope"
+            ATTRS: {
+                "@class": {
+                    value: "GameScope"
+                }
             }
-        }
-    });
+        });
 
     /**
      * TeamScope mapper
@@ -426,12 +426,12 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
             this.get("variableInstances")[player.get("id")] = promise;
         }
     }, {
-        ATTRS: {
-            "@class": {
-                value: "TeamScope"
+            ATTRS: {
+                "@class": {
+                    value: "TeamScope"
+                }
             }
-        }
-    });
+        });
 
     /**
      * PlayerScope mapper
@@ -444,12 +444,12 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
             this.get("variableInstances")[player.get("id")] = promise;
         }
     }, {
-        ATTRS: {
-            "@class": {
-                value: "PlayerScope"
+            ATTRS: {
+                "@class": {
+                    value: "PlayerScope"
+                }
             }
-        }
-    });
+        });
 
     /**
      * VariableInstance mapper
@@ -457,10 +457,11 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
     persistence.VariableInstance = Base.create("VariableInstance", persistence.Entity, [], {}, {
         ATTRS: {
             version: VERSION_ATTR_DEF,
-            descriptorId: IDATTRDEF
-        },
-        scopeKey: {
-            type: NUMBER,
+            descriptorId: IDATTRDEF,
+            scopeKey: {
+                type: NUMBER,
+                view: { type: HIDDEN }
+            },
         },
         EDITMENU: [{
             type: "EditEntityButton"
@@ -872,113 +873,113 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
             return "\u229e " + this.getEditorLabel();
         }
     }, {
-        ATTRS: {
-            "@class": {
-                value: "ListDescriptor"
-            },
-            items: {
-                type: ARRAY,
-                value: [],
-                "transient": true,
-                setter: function (val) {
-                    var i;
-                    for (i = 0; i < val.length; i = i + 1) { // We set up a back reference to the parent
-                        val[i].parentDescriptor = this;
+            ATTRS: {
+                "@class": {
+                    value: "ListDescriptor"
+                },
+                items: {
+                    type: ARRAY,
+                    value: [],
+                    "transient": true,
+                    setter: function (val) {
+                        var i;
+                        for (i = 0; i < val.length; i = i + 1) { // We set up a back reference to the parent
+                            val[i].parentDescriptor = this;
+                        }
+                        return val;
                     }
-                    return val;
-                }
-            },
+                },
                 /**
                  * The currently selected element based on current ListInstance.
                  */
-            currentItem: {
-                "transient": true,
-                getter: function () {
-                    var inst = this.getInstance();
-                    if (!Y.Lang.isUndefined(inst) &&
+                currentItem: {
+                    "transient": true,
+                    getter: function () {
+                        var inst = this.getInstance();
+                        if (!Y.Lang.isUndefined(inst) &&
                             this.get(ITEMS)[inst.get(VALUE)]) {
-                        return this.get(ITEMS)[inst.get(VALUE)];
-                    } else {
-                        return null;
-                    }
-                }
-            },
-            defaultInstance: {
-                view: { type: HIDDEN },
-                type: "object",
-                valueFn: function () { return new persistence.ListInstance(); },
-                properties: {
-                    "@class": {
-                        type: STRING,
-                        value: "ListInstance",
-                        view: {
-                            type: HIDDEN
+                            return this.get(ITEMS)[inst.get(VALUE)];
+                        } else {
+                            return null;
                         }
-                    },
-                    id: IDATTRDEF,
-                    version: VERSION_ATTR_DEF,
-                    descriptorId: IDATTRDEF
-                }
-            },
-            allowedTypes: {
-                type: ARRAY,
-                cssClass: "wegas-advanced-feature",
-                view: {
-                    label: "Allowed Types",
-                    className: "wegas-advanced-feature"
+                    }
                 },
-                items: {
+                defaultInstance: {
+                    view: { type: HIDDEN },
+                    type: "object",
+                    valueFn: function () { return new persistence.ListInstance(); },
+                    properties: {
+                        "@class": {
+                            type: STRING,
+                            value: "ListInstance",
+                            view: {
+                                type: HIDDEN
+                            }
+                        },
+                        id: IDATTRDEF,
+                        version: VERSION_ATTR_DEF,
+                        descriptorId: IDATTRDEF
+                    }
+                },
+                allowedTypes: {
+                    type: ARRAY,
+                    cssClass: "wegas-advanced-feature",
+                    view: {
+                        label: "Allowed Types",
+                        className: "wegas-advanced-feature"
+                    },
+                    items: {
+                        type: STRING,
+                        required: true,
+                        view: {
+                            type: SELECT,
+                            label: "type",
+                            choices: AVAILABLE_TYPES
+                        }
+                    }
+                },
+                addShortcut: {
                     type: STRING,
-                    required: true,
                     view: {
                         type: SELECT,
-                        label: "type",
-                        choices: AVAILABLE_TYPES
+                        label: "default children type",
+                        choices: OPTIONAL_AVAILABLE_TYPES
                     }
                 }
             },
-            addShortcut: {
-                type: STRING,
-                view: {
-                    type: SELECT,
-                    label: "default children type",
-                    choices: OPTIONAL_AVAILABLE_TYPES
-                }
-            }
-        },
-        EDITORNAME: "Folder",
-        EDITMENU: [{
-            type: "EditEntityButton"
-        }, {
-            type: BUTTON,
-            label: "Add",
-            plugins: [{
-                fn: "WidgetMenu",
-                cfg: {
-                    children: [{
-                        type: "AddEntityChildButton",
-                        label: "Number",
-                        targetClass: "NumberDescriptor"
-                    }, {
-                        type: "AddEntityChildButton",
-                        label: "Text",
-                        targetClass: "TextDescriptor"
-                    }, {
-                        type: "AddEntityChildButton",
-                        label: "Folder",
-                        targetClass: "ListDescriptor"
-                    }, {
-                        type: "AddEntityChildButton",
-                        label: "Question",
-                        targetClass: "QuestionDescriptor"
-                    }, {
-                        type: "AddEntityChildButton",
-                        label: "Trigger",
-                        targetClass: "TriggerDescriptor"
-                    }, {
-                        type: "AddEntityChildButton",
-                        label: "State machine",
-                        targetClass: "FSMDescriptor" /*,
+            EDITORNAME: "Folder",
+            EDITMENU: [{
+                type: "EditEntityButton"
+            }, {
+                type: BUTTON,
+                label: "Add",
+                plugins: [{
+                    fn: "WidgetMenu",
+                    cfg: {
+                        children: [{
+                            type: "AddEntityChildButton",
+                            label: "Number",
+                            targetClass: "NumberDescriptor"
+                        }, {
+                            type: "AddEntityChildButton",
+                            label: "Text",
+                            targetClass: "TextDescriptor"
+                        }, {
+                            type: "AddEntityChildButton",
+                            label: "Folder",
+                            targetClass: "ListDescriptor"
+                        }, {
+                            type: "AddEntityChildButton",
+                            label: "Question",
+                            targetClass: "QuestionDescriptor"
+                        }, {
+                            type: "AddEntityChildButton",
+                            label: "Trigger",
+                            targetClass: "TriggerDescriptor"
+                        }, {
+                            type: "AddEntityChildButton",
+                            label: "State machine",
+                            targetClass: "FSMDescriptor" /*,
                                      cfg: {
                                      states: {
                                      1: {
@@ -986,29 +987,29 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
                                      }
                                      }
                                      }*/
-                    }, {
-                        type: "AddEntityChildButton",
-                        label: "Inbox",
-                        targetClass: "InboxDescriptor"
-                    }, {
-                        type: "AddEntityChildButton",
-                        label: "String",
-                        targetClass: "StringDescriptor"
+                        }, {
+                            type: "AddEntityChildButton",
+                            label: "Inbox",
+                            targetClass: "InboxDescriptor"
+                        }, {
+                            type: "AddEntityChildButton",
+                            label: "String",
+                            targetClass: "StringDescriptor"
                             //cssClass: "wegas-advanced-feature"
-                    }, {
-                        type: "AddEntityChildButton",
-                        label: "Boolean",
-                        targetClass: "BooleanDescriptor",
-                        cssClass: "wegas-advanced-feature"
-                    }, {
-                        type: "AddEntityChildButton",
-                        label: "Object",
-                        targetClass: "ObjectDescriptor",
-                        cssClass: "wegas-advanced-feature"
-                    }, {
-                        type: "AddEntityChildButton",
-                        label: "Dialogue",
-                        targetClass: "DialogueDescriptor" /*,
+                        }, {
+                            type: "AddEntityChildButton",
+                            label: "Boolean",
+                            targetClass: "BooleanDescriptor",
+                            cssClass: "wegas-advanced-feature"
+                        }, {
+                            type: "AddEntityChildButton",
+                            label: "Object",
+                            targetClass: "ObjectDescriptor",
+                            cssClass: "wegas-advanced-feature"
+                        }, {
+                            type: "AddEntityChildButton",
+                            label: "Dialogue",
+                            targetClass: "DialogueDescriptor" /*,
                                      cfg: {
                                      states: {
                                      1: {
@@ -1016,86 +1017,86 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
                                      }
                                      }
                                      }*/
-                    }, {
-                        type: "AddEntityChildButton",
-                        label: "Resource",
-                        targetClass: "ResourceDescriptor",
-                        cssClass: "wegas-advanced-feature"
-                    }, {
-                        type: "AddEntityChildButton",
-                        label: "Task",
-                        targetClass: "TaskDescriptor",
-                        cssClass: "wegas-advanced-feature"
-                    }, {
-                        type: "AddEntityChildButton",
-                        label: "Peer Review",
-                        targetClass: "PeerReviewDescriptor",
-                        cssClass: "wegas-advanced-feature"
-                    }, {
+                        }, {
+                            type: "AddEntityChildButton",
+                            label: "Resource",
+                            targetClass: "ResourceDescriptor",
+                            cssClass: "wegas-advanced-feature"
+                        }, {
+                            type: "AddEntityChildButton",
+                            label: "Task",
+                            targetClass: "TaskDescriptor",
+                            cssClass: "wegas-advanced-feature"
+                        }, {
+                            type: "AddEntityChildButton",
+                            label: "Peer Review",
+                            targetClass: "PeerReviewDescriptor",
+                            cssClass: "wegas-advanced-feature"
+                        }, {
                             type: "AddEntityChildButton",
                             label: "Burndown",
                             targetClass: "BurndownDescriptor",
                             cssClass: "wegas-advanced-feature"
                         }
                         ]
-                }
-            }]
-        }, {
-            type: BUTTON,
-            label: '<span class="wegas-icon wegas-icon-sort"></span>Sort',
-            plugins: [{
-                fn: "SortEntityAction"
-            }]
-        }, {
-            type: BUTTON,
-            label: "Copy",
-            plugins: [{
-                fn: "DuplicateEntityAction"
-            }]
-        }, {
-            type: "DeleteEntityButton"
-        }, {
-            type: BUTTON,
-            label: "Export",
-            plugins: [{
-                fn: "WidgetMenu",
-                cfg: {
-                    children: [{
-                        type: "PrintButton",
-                        label: "Html"
-                    }, {
-                        type: "PrintButton",
-                        label: "Html (Players document)",
-                        mode: "player"
-                    }, {
-                        type: "PrintButton",
-                        label: "Pdf",
-                        outputType: "pdf"
-                    }, {
-                        type: "PrintButton",
-                        label: "Pdf (Players document)",
-                        outputType: "pdf",
-                        mode: "player"
-                    }, {
-                        type: "OpenEntityButton",
-                        label: "Json",
-                        url: "rest/Export/GameModel/VariableDescriptor/{id}"
-                    }]
-                }
-            }]
-        }, {
-            type: BUTTON,
-            label: "More",
-            cssClass: "wegas-advanced-feature",
-            plugins: [{
-                fn: "WidgetMenu",
-                cfg: {
-                    children: []
-                }
-            }]
-        }
+                    }
+                }]
+            }, {
+                type: BUTTON,
+                label: '<span class="wegas-icon wegas-icon-sort"></span>Sort',
+                plugins: [{
+                    fn: "SortEntityAction"
+                }]
+            }, {
+                type: BUTTON,
+                label: "Copy",
+                plugins: [{
+                    fn: "DuplicateEntityAction"
+                }]
+            }, {
+                type: "DeleteEntityButton"
+            }, {
+                type: BUTTON,
+                label: "Export",
+                plugins: [{
+                    fn: "WidgetMenu",
+                    cfg: {
+                        children: [{
+                            type: "PrintButton",
+                            label: "Html"
+                        }, {
+                            type: "PrintButton",
+                            label: "Html (Players document)",
+                            mode: "player"
+                        }, {
+                            type: "PrintButton",
+                            label: "Pdf",
+                            outputType: "pdf"
+                        }, {
+                            type: "PrintButton",
+                            label: "Pdf (Players document)",
+                            outputType: "pdf",
+                            mode: "player"
+                        }, {
+                            type: "OpenEntityButton",
+                            label: "Json",
+                            url: "rest/Export/GameModel/VariableDescriptor/{id}"
+                        }]
+                    }
+                }]
+            }, {
+                type: BUTTON,
+                label: "More",
+                cssClass: "wegas-advanced-feature",
+                plugins: [{
+                    fn: "WidgetMenu",
+                    cfg: {
+                        children: []
+                    }
+                }]
+            }
             ]
-    });
+        });
     /*
      * ListInstance mapper
      */
@@ -1113,35 +1114,35 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
             //return "fa fa-envelope-o";
         }
     }, {
-        ATTRS: {
-            "@class": {
-                value: "InboxDescriptor"
-            },
-            capped: {
-                value: false,
-                type: BOOLEAN,
-                view: {
-                    label: "Limit to one message",
-                    description: "Each new message ejects the previous one",
-                    className: 'wegas-advanced-feature'
+            ATTRS: {
+                "@class": {
+                    value: "InboxDescriptor"
+                },
+                capped: {
+                    value: false,
+                    type: BOOLEAN,
+                    view: {
+                        label: "Limit to one message",
+                        description: "Each new message ejects the previous one",
+                        className: 'wegas-advanced-feature'
+                    }
+                },
+                defaultInstance: {
+                    properties: {
+                        "@class": {
+                            type: STRING,
+                            value: "InboxInstance",
+                            view: {
+                                type: HIDDEN
+                            }
+                        },
+                        id: IDATTRDEF,
+                        version: VERSION_ATTR_DEF,
+                        descriptorId: IDATTRDEF
+                    }
                 }
             },
-            defaultInstance: {
-                properties: {
-                    "@class": {
-                        type: STRING,
-                        value: "InboxInstance",
-                        view: {
-                            type: HIDDEN
-                        }
-                    },
-                    id: IDATTRDEF,
-                    version: VERSION_ATTR_DEF,
-                    descriptorId: IDATTRDEF
-                }
-            }
-        },
-        METHODS: {
+            METHODS: {
                 /*sendMessage: {
                  label: "send message",
                  className: "wegas-method-sendmessage",
@@ -1208,64 +1209,64 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
                  }
                  }]
                  },*/
-            sendMessage: {
-                label: "send message",
-                className: "wegas-method-sendmessage",
-                "arguments": [
-                    SELFARG,
-                    {
-                        type: STRING,
-                        view: { label: "From" }
-                    }, {
-                        type: STRING,
-                        view: { label: "Date" }
-                    }, {
-                        type: STRING,
-                        view: { label: "Subject" },
-                        required: true
-                    }, {
-                        type: STRING,
-                        view: { type: HTML, label: "Body" },
-                        required: true
-                    }, {
-                        type: STRING,
-                        view: {
-                            label: "Token",
-                            className: "wegas-advanced-feature",
-                            description: "like an message identifier, may be used to reference the message within FSM/Trigger condition"
-                        }
-                    }, {
-                        type: "array",
-                        items: {
+                sendMessage: {
+                    label: "send message",
+                    className: "wegas-method-sendmessage",
+                    "arguments": [
+                        SELFARG,
+                        {
+                            type: STRING,
+                            view: { label: "From" }
+                        }, {
+                            type: STRING,
+                            view: { label: "Date" }
+                        }, {
+                            type: STRING,
+                            view: { label: "Subject" },
+                            required: true
+                        }, {
+                            type: STRING,
+                            view: { type: HTML, label: "Body" },
+                            required: true
+                        }, {
                             type: STRING,
                             view: {
-                                type: "wegasurl",
-                                label: "",
-                                required: true
+                                label: "Token",
+                                className: "wegas-advanced-feature",
+                                description: "like an message identifier, may be used to reference the message within FSM/Trigger condition"
                             }
-                        }
-                    }]
-            },
-            isEmpty: {
-                label: "is empty",
-                returns: BOOLEAN,
-                "arguments": [SELFARG],
-                localEval: function (player) {
-                    return this.getInstance(player).get("messages").length < 1;
-                }
-            },
-            isTokenMarkedAsRead: {
-                label: "is token marked as read",
-                returns: BOOLEAN,
-                "arguments": [
-                    SELFARG,
-                    {
-                        type: STRING
+                        }, {
+                            type: "array",
+                            items: {
+                                type: STRING,
+                                view: {
+                                    type: "wegasurl",
+                                    label: "",
+                                    required: true
+                                }
+                            }
+                        }]
+                },
+                isEmpty: {
+                    label: "is empty",
+                    returns: BOOLEAN,
+                    "arguments": [SELFARG],
+                    localEval: function (player) {
+                        return this.getInstance(player).get("messages").length < 1;
                     }
-                ]
+                },
+                isTokenMarkedAsRead: {
+                    label: "is token marked as read",
+                    returns: BOOLEAN,
+                    "arguments": [
+                        SELFARG,
+                        {
+                            type: STRING
+                        }
+                    ]
+                }
             }
-        }
-    });
+        });
 
     /**
      * InboxInstance mapper
@@ -1356,28 +1357,28 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
             return (this.content === null || this.content === "");
         }
     }, {
-        ATTRS: {
-            id: {
-                value: undefined, // An Embeddable has no ID !!! Forcing it
-                readOnly: true,
-                "transient": true
-            },
-            "@class": {
-                value: "Script"
-            },
-            content: {
-                type: STRING,
-                format: TEXT,
-                view: {
-                    label: 'content'
+            ATTRS: {
+                id: {
+                    value: undefined, // An Embeddable has no ID !!! Forcing it
+                    readOnly: true,
+                    "transient": true
                 },
-                setter: function (v) {
-                    this._result = null;
-                    return v;
+                "@class": {
+                    value: "Script"
+                },
+                content: {
+                    type: STRING,
+                    format: TEXT,
+                    view: {
+                        label: 'content'
+                    },
+                    setter: function (v) {
+                        this._result = null;
+                        return v;
+                    }
                 }
             }
-        }
-    });
+        });
 
     /**
      *
