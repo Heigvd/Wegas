@@ -11,11 +11,7 @@ import com.pusher.rest.Pusher;
 import com.pusher.rest.data.PresenceUser;
 import com.pusher.rest.data.Result;
 import com.wegas.core.Helper;
-import com.wegas.core.event.client.ClientEvent;
-import com.wegas.core.event.client.DestroyedEntity;
-import com.wegas.core.event.client.EntityDestroyedEvent;
-import com.wegas.core.event.client.EntityUpdatedEvent;
-import com.wegas.core.event.client.OutdatedEntitiesEvent;
+import com.wegas.core.event.client.*;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
@@ -82,6 +78,23 @@ public class WebsocketFacade {
 
     @EJB
     private PlayerFacade playerFacade;
+
+    /**
+     * Initialize Pusher Connection
+     */
+    public WebsocketFacade() {
+        Pusher tmp;
+        try {
+            tmp = new Pusher(getProperty("pusher.appId"),
+                    getProperty("pusher.key"), getProperty("pusher.secret"));
+            tmp.setCluster(getProperty("pusher.cluster"));
+        } catch (Exception e) {
+            logger.warn("Pusher init failed, please check your configuration");
+            logger.debug("Pusher error details", e);
+            tmp = null;
+        }
+        pusher = tmp;
+    }
 
     /**
      * Get all channels based on entites
@@ -173,22 +186,6 @@ public class WebsocketFacade {
     }
 
     /**
-     * Initialize Pusher Connection
-     */
-    public WebsocketFacade() {
-        Pusher tmp;
-        try {
-            tmp = new Pusher(getProperty("pusher.appId"),
-                    getProperty("pusher.key"), getProperty("pusher.secret"));
-        } catch (Exception e) {
-            logger.warn("Pusher init failed, please check your configuration");
-            logger.debug("Pusher error details", e);
-            tmp = null;
-        }
-        pusher = tmp;
-    }
-
-    /**
      * @param filter
      * @param entityType
      * @param entityId
@@ -211,8 +208,8 @@ public class WebsocketFacade {
      * @param outdatedEntities
      */
     public void onRequestCommit(final Map<String, List<AbstractEntity>> dispatchedEntities,
-            final Map<String, List<AbstractEntity>> destroyedEntities,
-            final Map<String, List<AbstractEntity>> outdatedEntities) {
+                                final Map<String, List<AbstractEntity>> destroyedEntities,
+                                final Map<String, List<AbstractEntity>> outdatedEntities) {
         this.onRequestCommit(dispatchedEntities, destroyedEntities, outdatedEntities, null);
     }
 
@@ -226,9 +223,9 @@ public class WebsocketFacade {
      *                           client to receive this particular message
      */
     public void onRequestCommit(final Map<String, List<AbstractEntity>> dispatchedEntities,
-            final Map<String, List<AbstractEntity>> destroyedEntities,
-            final Map<String, List<AbstractEntity>> outdatedEntities,
-            final String socketId) {
+                                final Map<String, List<AbstractEntity>> destroyedEntities,
+                                final Map<String, List<AbstractEntity>> outdatedEntities,
+                                final String socketId) {
         if (this.pusher == null) {
             return;
         }

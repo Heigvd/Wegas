@@ -44,9 +44,12 @@ public class WebsocketController {
 
     @GET
     @Path("ApplicationKey")
-    @Produces(MediaType.TEXT_PLAIN)
-    public String getApplicationKey() {
-        return Helper.getWegasProperty("pusher.key");
+    @Produces(MediaType.APPLICATION_JSON)
+    public Object getApplicationKey() {
+        return new Object(){
+            public final String key = Helper.getWegasProperty("pusher.key");
+            public final String cluster = Helper.getWegasProperty("pusher.cluster");
+        };
     }
 
     @GET
