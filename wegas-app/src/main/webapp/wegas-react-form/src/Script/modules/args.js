@@ -112,7 +112,7 @@ function handleArgs(variable, method, args, onChange) {
                 key={`arg${i}`}
                 schema={argSchema(a, variable)}
                 value={typeToValue(val, a)}
-                onChange={v => {
+                onChange={(v) => {
                     ret[i] = valueToType(v, a);
                     onChange(ret);
                     // setTimeout(() => onChange(ret), 0);

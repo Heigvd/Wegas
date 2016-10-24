@@ -8,7 +8,7 @@
 
 let Z;
 /* global YUI */
-YUI.add('wegas-react-form', Y => {
+YUI.add('wegas-react-form', (Y) => {
     Z = Y;
     require('./wegas-react-form'); // eslint-disable-line
 });

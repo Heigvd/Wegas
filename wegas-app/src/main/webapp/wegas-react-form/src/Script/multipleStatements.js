@@ -7,7 +7,7 @@ const TYPE = {
     CONDITION: 'condition'
 };
 function collector(coll) {
-    return path => {
+    return (path) => {
         coll.push(path);
         return false;
     };

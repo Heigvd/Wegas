@@ -19,22 +19,34 @@ module.exports = {
         new webpack.NoErrorsPlugin()
     ],
     module: {
-        loaders: [
-            {
-                test: /\.jsx?$/,
-                loader: 'babel',
-                // include: [
-                //     path.join(__dirname, 'src')
-                // ]
-                exclude: /node_modules/
-            },
-            {
-                test: /\.css$/,
-                loader: 'style!css?modules&importLoaders=1!postcss'
-            }
-        ]
+         rules: [{
+            test: /\.jsx?$/,
+            loaders: ['babel'],
+            exclude: /node_modules/
+            // include: [
+            //     path.join(__dirname, 'src')
+            // ]
+        }, {
+            test: /\.css$/,
+            use: [
+                'style',
+                {
+                    loader: 'css',
+                    options: {
+                        modules: true,
+                        importLoaders: 1
+                    }
+                },
+                {
+                    loader: 'postcss',
+                    options: {
+                        plugins: () => [cssnext]
+                    }
+
+                }
+            ]
+        }]
     },
-    postcss: () => [cssnext],
     devServer: {
         reload: false,
         inline: true

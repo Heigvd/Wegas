@@ -1,8 +1,8 @@
 /* eslint-disable jsx-a11y/label-has-for */
 import React, { PropTypes } from 'react';
 import TinyMCE from 'react-tinymce';
-import './../../../wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar.js';
-import { getY } from './../index.js';
+import './../../../wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar';
+import { getY } from './../index';
 
 const Wegas = getY().Wegas;
 

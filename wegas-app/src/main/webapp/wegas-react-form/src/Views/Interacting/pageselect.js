@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import Select from '../select';
 import { getY } from '../../index';
 
-const choices = () => new Promise(resolve => {
+const choices = () => new Promise((resolve) => {
     getY().Wegas.Facade.Page.cache.getIndex(
         index => resolve(
             index.map(page => ({

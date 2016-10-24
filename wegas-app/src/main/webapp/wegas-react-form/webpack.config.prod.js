@@ -27,7 +27,7 @@ module.exports = {
         })
     ],
     module: {
-        loaders: [{
+        rules: [{
             test: /\.jsx?$/,
             loaders: ['babel'],
             exclude: /node_modules/
@@ -36,8 +36,23 @@ module.exports = {
             // ]
         }, {
             test: /\.css$/,
-            loader: 'style!css?modules&importLoaders=1!postcss'
+            use: [
+                'style',
+                {
+                    loader: 'css',
+                    options: {
+                        modules: true,
+                        importLoaders: 1
+                    }
+                },
+                {
+                    loader: 'postcss',
+                    options: {
+                        plugins: () => [cssnext]
+                    }
+
+                }
+            ]
         }]
-    },
-    postcss: () => [cssnext],
+    }
 };

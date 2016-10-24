@@ -39,7 +39,7 @@ class HashlistView extends React.Component {
     }
     render() {
         const { removeKey, alterKey, children, ...restProps } = this.props;
-        const newChildren = React.Children.map(children, child => {
+        const newChildren = React.Children.map(children, (child) => {
             function remove() {
                 removeKey(child.props.editKey);
             }
@@ -63,7 +63,7 @@ class HashlistView extends React.Component {
                     />
                     <div
                         style={halfWidth}
-                        ref={node => { this.child[child.props.editKey] = node; }}
+                        ref={(node) => { this.child[child.props.editKey] = node; }}
                     >
                         {child}
                     </div>
@@ -78,7 +78,7 @@ class HashlistView extends React.Component {
                 value={this.state.newInputValue}
                 onChange={this.onAdderChange}
                 floatingLabelText={this.props.view.keyLabel || 'Name'}
-                ref={node => { this.newInput = node; }}
+                ref={(node) => { this.newInput = node; }}
             />
             <IconButton
                 iconClassName="fa fa-plus"

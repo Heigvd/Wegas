@@ -9,7 +9,7 @@ function singleStatement(Comp) {
             <Comp
                 {...props}
                 node={stmt}
-                onChange={(v) => onChange([types.builders.expressionStatement(v)])}
+                onChange={v => onChange([types.builders.expressionStatement(v)])}
             />
         );
     }
