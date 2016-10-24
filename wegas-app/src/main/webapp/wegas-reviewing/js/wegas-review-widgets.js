@@ -245,7 +245,7 @@ YUI.add("wegas-review-widgets", function(Y) {
         syncTable: function() {
             //this.dashboard && this.dashboard.syncUI();
             var ctx = this,
-                columns = {}, data = {},
+                columns = {}, data = {}, formatter,
                 game, team, globalStatus, teamStatus, prd,
                 group, item, i, j, teamId, entry, key, section;
 
@@ -268,7 +268,10 @@ YUI.add("wegas-review-widgets", function(Y) {
 
                     for (j = 0; j < group.items.length; j++) {
                         item = group.items[j];
-                        entry.children.push({key: item.id, label: item.label, formatter: (item.formatter === "null" ? "<span class=\"" + item.id.replace(/[0-9]+-/, "") + "\">{value}</span>" : item.formatter)});
+                        if (item.formatter) {
+                            formatter = item.formatter.indexOf("function") === 0 ? eval("(" + item.formatter + ")") : item.formatter;
+                        }
+                        entry.children.push({key: item.id, label: item.label, formatter: (formatter === "null" ? "<span class=\"" + item.id.replace(/[0-9]+-/, "") + "\">{value}</span>" : formatter)});
                     }
                     columns[section].push(entry);
                 }
@@ -1439,7 +1442,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             if (this.get("readonly")) {
                 return this.get(CONTENTBOX).one(".wegas-review-grade-instance-input-container p").getContent();
             } else {
-                return +this.get(CONTENTBOX).one(".wegas-review-grade-instance-input").get("value");
+                return parseInt(this.get(CONTENTBOX).one(".wegas-review-grade-instance-input").get("value"), 10);
             }
         },
         bindUI: function() {

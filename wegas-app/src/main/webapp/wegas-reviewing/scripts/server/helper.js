@@ -128,6 +128,13 @@ var ReviewHelper = (function() {
         };
     }
 
+    function formatToFixed2(o) {
+        if (o.value !== undefined && o.value !== null) {
+            return o.value.toFixed(2);
+        }
+        return "";
+    }
+
     function getEvStructure(evDescriptor) {
         var i, cats, structure;
 
@@ -138,13 +145,13 @@ var ReviewHelper = (function() {
         };
 
         if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.TextEvaluationDescriptor) {
-            structure.items.push({"id": evDescriptor.getId() + "-wc", "label": I18n.t("wc"), formatter: null});
-            structure.items.push({"id": evDescriptor.getId() + "-cc", "label": I18n.t("cc"), formatter: null});
+            structure.items.push({"id": evDescriptor.getId() + "-wc", "label": I18n.t("wc"), formatter: formatToFixed2});
+            structure.items.push({"id": evDescriptor.getId() + "-cc", "label": I18n.t("cc"), formatter: formatToFixed2});
             structure.items.push({"id": evDescriptor.getId() + "-data", "label": I18n.t("data"), formatter: '<span class="texteval-data"><i data-ref="' + evDescriptor.getId() + '-data" class="fa fa-info-circle"></i></span>'});
         } else if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.GradeDescriptor) {
-            structure.items.push({"id": evDescriptor.getId() + "-mean", "label": I18n.t("mean"), formatter: null});
+            structure.items.push({"id": evDescriptor.getId() + "-mean", "label": I18n.t("mean"), formatter: formatToFixed2});
             //structure.items.push({"id": evDescriptor.getId() + "-median", "label": "median", formatter: null});
-            structure.items.push({"id": evDescriptor.getId() + "-sd", "label": I18n.t("sd"), formatter: null});
+            structure.items.push({"id": evDescriptor.getId() + "-sd", "label": I18n.t("sd"), formatter: formatToFixed2});
         } else if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.CategorizedEvaluationDescriptor) {
             cats = Java.from(evDescriptor.getCategories());
             for (i = 0; i < cats.length; i += 1) {
