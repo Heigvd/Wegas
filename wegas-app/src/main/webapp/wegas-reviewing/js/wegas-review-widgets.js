@@ -175,13 +175,13 @@ YUI.add("wegas-review-widgets", function(Y) {
                 if (data) {
                     body = "";
                     for (i = data.length - 1; i >= 0; i -= 1) {
-                        body += data[i];
+                        body += (data[i] ? data[i] : "<I>" + I18n.t("review.editor.noValueProvided") + "</i>");
                         if (i > 0) {
                             body += "<hr />";
                         }
                     }
                 } else {
-                    body = "Not available yet";
+                    body = "<i>" + I18n.t("review.orchestrator.notAvailableYet") + "</i>";
                 }
                 this.currentTarget = token;
                 this.currentPos = [e.pageX + 10, e.pageY + 20];
@@ -245,8 +245,8 @@ YUI.add("wegas-review-widgets", function(Y) {
         syncTable: function() {
             //this.dashboard && this.dashboard.syncUI();
             var ctx = this,
-                columns = {}, data = {}, formatter,
-                game, team, globalStatus, teamStatus, prd,
+                columns = {}, data = {}, formatter, nodeFormatter,
+                game, team, globalStatus, teamStatus, prd, childEntry,
                 group, item, i, j, teamId, entry, key, section;
 
             game = Y.Wegas.Facade.Game.cache.getCurrentGame();
@@ -271,7 +271,23 @@ YUI.add("wegas-review-widgets", function(Y) {
                         if (item.formatter) {
                             formatter = item.formatter.indexOf("function") === 0 ? eval("(" + item.formatter + ")") : item.formatter;
                         }
-                        entry.children.push({key: item.id, label: item.label, formatter: (formatter === "null" ? "<span class=\"" + item.id.replace(/[0-9]+-/, "") + "\">{value}</span>" : formatter)});
+
+                        if (item.nodeFormatter) {
+                            nodeFormatter = item.nodeFormatter.indexOf("function") === 0 ? eval("(" + item.nodeFormatter + ")") : item.nodeFormatter;
+                        } else {
+                            nodeFormatter = null;
+                        }
+                        childEntry = {
+                            key: item.id,
+                            label: item.label,
+                            formatter: (formatter === "null" ? "<span class=\"" + item.id.replace(/[0-9]+-/, "") + "\">{value}</span>" : formatter),
+                            allowHTML: (item.allowHTML || false)
+                        };
+                        if (nodeFormatter) {
+                            childEntry.nodeFormatter = nodeFormatter;
+                        }
+
+                        entry.children.push(childEntry);
                     }
                     columns[section].push(entry);
                 }
@@ -454,7 +470,7 @@ YUI.add("wegas-review-widgets", function(Y) {
         },
         _formatNumber: function(value, nD) {
             nD = nD || 2;
-            return value ? value.toFixed(nD) : "n/a";
+            return Y.Lang.isNumber(value) ? value.toFixed(nD) : "n/a";
         },
         buildCharts: function(evals, node, summary) {
             var i, evD, klass, data;/*math,*/
@@ -1430,7 +1446,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                     }
                 } else {
                     this.get(CONTENTBOX).one(".wegas-review-grade-instance-input-container").setContent('<p>' +
-                        value + '</p>');
+                        (value ? value : "<i>" + I18n.t("review.editor.noValueProvided")) + '</i></p>');
                 }
             } else {
                 if (!this.get("readonly")) {
@@ -1547,6 +1563,11 @@ YUI.add("wegas-review-widgets", function(Y) {
             CB.one(".wegas-review-evaluation-label").setContent(desc.get("name"));
             CB.one(".wegas-review-evaluation-desc").setContent(desc.get("description"));
             this._initialValue = ev.get("value");
+
+            if (this.get("readonly.evaluated") && !this._initialValue) {
+                return "<i>" + I18n.t("review.editor.noValueProvided") + '</i>';
+            }
+
             return this._initialValue;
         },
         valueChanged: function(newValue) {
@@ -1670,16 +1691,17 @@ YUI.add("wegas-review-widgets", function(Y) {
             CB = this.get("contentBox");
             evl = this.get("evaluation");
             value = evl.get("value");
-            if (value !== this._initialValue) {
-                this._initialValue = value;
-                if (this.get("readonly")) {
-                    CB.one(".wegas-review-categinput-content").setContent(value);
-                } else {
-                    select = CB.one(".wegas-review-categinput-content select");
-                    option = select.one("option[value='" + value + "']");
-
-                    option && option.setAttribute("selected");
+            if (this.get("readonly")) {
+                if (!value) {
+                    value = "<i>" + I18n.t("review.editor.noValueProvided") + '</i>';
                 }
+                CB.one(".wegas-review-categinput-content").setContent(value);
+            } else if (value !== this._initialValue) {
+                this._initialValue = value;
+                select = CB.one(".wegas-review-categinput-content select");
+                option = select.one("option[value='" + value + "']");
+
+                option && option.setAttribute("selected");
             } else {
                 // no-update case, fetch effective value from "select"
                 evl.set("value", this.getCurrentValue());

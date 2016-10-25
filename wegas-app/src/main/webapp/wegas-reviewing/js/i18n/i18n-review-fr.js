@@ -50,16 +50,17 @@ YUI.add("wegas-i18n-review-fr", function(Y) {
                     basedOn: "basé sur {{available}}/{{expected}} valeurs",
                     avgWc: "Nombre moyen de mots",
                     avgCc: "Nombre moyen de caractères"
-                }
+                },
+                notAvailableYet: "Pas encore disponible"
             },
-            global:{
-                submit: "Valider", 
+            global: {
+                submit: "Valider",
                 confirmation: "Une fois validées, vous ne pourrez plus modifier ces informations.<br />Ẽtes-vous sûr de vouloir continuer ?",
                 save: "Sauver"
             },
             tabview: {
                 emptyness_message: "Aucune évaluation n'est actuellement visible",
-                toReview : "Texte à évaluer",
+                toReview: "Texte à évaluer",
                 toComment: "Feedback reçu"
             },
             editor: {
@@ -72,7 +73,8 @@ YUI.add("wegas-i18n-review-fr", function(Y) {
                 ask_comment: "Que pensez vous du feedback reçu ?",
                 comment: "Ce que vous pensez du feedback reçu",
                 author_comment: "Ce que l'auteur pense de votre feedback",
-                oob: "Votre note "
+                oob: "Votre note ",
+                noValueProvided: "Aucune évaluation n'a été fournie"
             }
         }
     });

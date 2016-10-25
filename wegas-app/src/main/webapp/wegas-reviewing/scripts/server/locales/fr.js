@@ -29,6 +29,8 @@ i18nTable.fr = {
     sd: "écart-type",
     overview: "Aperçu",
     status: "État",
+    reviewDoneTitle: "Feedbacks terminés",
+    commentsDoneTitle: "Commentaires Terminés",
     reviewDone: "Terminé",
     commented: "Terminé",
     closed: "Terminé",
