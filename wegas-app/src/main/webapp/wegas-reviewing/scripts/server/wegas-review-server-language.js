@@ -17,7 +17,8 @@ var i18nOrdinate = (function(module) {
 }(i18nOrdinate || {})),
     i18nTable = (function(module) {
         return module;
-    }(i18nTable || {})),
+    }(i18nTable || {}))
+    ,
     I18n = (function() {
         "use strict";
 
@@ -44,7 +45,11 @@ var i18nOrdinate = (function(module) {
 
 
         function currentLocale() {
-            return Variable.findByName(gameModel, "language").getValue(self);
+            try {
+                return Variable.find(gameModel, "language").getValue(self);
+            } catch (error) {
+                return "fr";
+            }
         }
         /**
          * Return the translation for the key messages, according to current locale

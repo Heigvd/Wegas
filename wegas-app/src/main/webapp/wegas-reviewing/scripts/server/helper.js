@@ -194,7 +194,7 @@ var ReviewHelper = (function() {
     }
 
     function summarize(peerReviewDescriptorName) {
-        var prd = Variable.findByName(gameModel, peerReviewDescriptorName),
+        var prd = Variable.find(gameModel, peerReviewDescriptorName),
             game = self.getGame(), teams = game.getTeams(), t, teamId, team,
             pris, pri, reviews, review, evs, ev, evK, i, j, k,
             entry, nbRDone, nbRTot, nbRCom, nbRComClosed, nbRComTotal,
