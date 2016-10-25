@@ -37,6 +37,13 @@ public class WebsocketController {
 
     private static final Logger logger = LoggerFactory.getLogger(WebsocketController.class);
     /**
+     * Keep Websocket auth info
+     */
+    private static final Object WebsocketInfo = new Object(){
+        public final String key = Helper.getWegasProperty("pusher.key");
+        public final String cluster = Helper.getWegasProperty("pusher.cluster");
+    };
+    /**
      *
      */
     @EJB
@@ -46,10 +53,7 @@ public class WebsocketController {
     @Path("ApplicationKey")
     @Produces(MediaType.APPLICATION_JSON)
     public Object getApplicationKey() {
-        return new Object(){
-            public final String key = Helper.getWegasProperty("pusher.key");
-            public final String cluster = Helper.getWegasProperty("pusher.cluster");
-        };
+        return WebsocketInfo;
     }
 
     @GET
