@@ -85,7 +85,7 @@ public class GradeDescriptor extends EvaluationDescriptor<GradeInstance> {
         } else {
             gi.setValue(0.0);
         }*/
-        gi.setValue(Double.NaN);
+        gi.setValue(null);
         return gi;
     }
 }
