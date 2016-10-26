@@ -102,13 +102,9 @@ var StatisticHelper = (function() {
         for (i = 0; i < effectiveValues.length; i += 1) {
             x = (effectiveValues[i] - mean);
             sd += x * x;
-            print("SD+: " + sd);
         }
-        print("somme SD: " + sd + " / " + effectiveValues.length);
         sd /= effectiveValues.length;
-        print("SD/ : " + sd);
         sd = Math.sqrt(sd);
-        print("sqrt(SD): " + sd);
 
         if (effectiveValues.length % 2 === 1) {
             median = sortedValues[Math.floor(effectiveValues.length / 2)];
