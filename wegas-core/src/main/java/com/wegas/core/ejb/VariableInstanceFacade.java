@@ -283,7 +283,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
         }
         
         VariableInstance ret = super.update(entityId, entity);
-        requestFacade.commit();
+        requestFacade.commit(true);
         return ret;
     }
 

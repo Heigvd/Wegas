@@ -88,7 +88,6 @@ public class TeamFacade extends BaseFacade<Team> {
     /**
      * @param gameId
      * @param t
-     * @return managed newly created team
      */
     public void create(Long gameId, Team t) {
         Game g = gameFacade.find(gameId);
@@ -102,7 +101,6 @@ public class TeamFacade extends BaseFacade<Team> {
         g = gameFacade.find(gameId);
         gameFacade.addRights(userFacade.getCurrentUser(), g);  // @fixme Should only be done for a player, but is done here since it will be needed in later requests to add a player
         g.getGameModel().propagateDefaultInstance(t);
-
     }
 
     @Override

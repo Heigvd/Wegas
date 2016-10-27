@@ -70,7 +70,7 @@ public class QuestionController {
         checkPermissions(playerFacade.find(playerId).getGame(), playerId);
 
         questionDescriptorFacade.selectAndValidateChoice(choiceId, playerId);
-        requestFacade.commit();
+        requestFacade.commit(true);
 
         return Response.ok().build();
     }
@@ -92,7 +92,7 @@ public class QuestionController {
         checkPermissions(playerFacade.find(playerId).getGame(), playerId);
 
         questionDescriptorFacade.validateQuestion(questionInstanceId, playerId);
-        requestFacade.commit();
+        requestFacade.commit(true);
 
         return Response.ok().build();
     }
@@ -113,7 +113,7 @@ public class QuestionController {
         checkPermissions(playerFacade.find(playerId).getGame(), playerId);
 
         Reply reply = questionDescriptorFacade.cancelReply(playerId, replyId);
-        requestFacade.commit();
+        requestFacade.commit(true);
         return reply.getQuestionInstance();
     }
 
@@ -135,7 +135,7 @@ public class QuestionController {
 
         Reply reply = questionDescriptorFacade.selectChoice(choiceId, playerId, startTime);
 
-        requestFacade.commit();
+        requestFacade.commit(true);
 
         return reply.getQuestionInstance();
     }

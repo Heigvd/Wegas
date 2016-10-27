@@ -10,6 +10,7 @@ package com.wegas.core.rest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
@@ -37,7 +38,6 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -79,8 +79,8 @@ public class UpdateController {
     @Inject
     ResourceFacade resourceFacade;
 
-    @PersistenceContext(unitName = "wegasPU")
-    private EntityManager em;
+    @Inject
+    RequestManager requestManager;
 
     /**
      * @return Some String encoded HTML
@@ -170,6 +170,7 @@ public class UpdateController {
     }
 
     private List<GameModel> findPMGs(boolean scenarioOnly) {
+        EntityManager em = this.getEntityManager();
         final CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         final CriteriaQuery<GameModel> query = criteriaBuilder.createQuery(GameModel.class);
 
@@ -193,6 +194,7 @@ public class UpdateController {
 
     private void updateScope(VariableDescriptor vd) {
         if (!(vd.getScope() instanceof GameModelScope)) {
+            EntityManager em = this.getEntityManager();
             GameModelScope scope = new GameModelScope();
             scope.setBroadcastScope("GameScope");
             scope.setVariableDescscriptor(vd);
@@ -261,7 +263,7 @@ public class UpdateController {
     private String newScope(GameModel gameModel, VariableDescriptor vd) {
         StringBuilder sb = new StringBuilder();
         try {
-            em.detach(vd);
+            descriptorFacade.detach(vd);
             String name = vd.getName();
             String parentName = vd.getParentList().getName();
 
@@ -272,7 +274,7 @@ public class UpdateController {
             logger.error("JSON for " + parentName + "/" + name + " variable: " + json);
 
             descriptorFacade.remove(vd.getId());
-            em.flush();
+            descriptorFacade.flush();
 
             logger.error("REMOVED");
 
@@ -344,7 +346,7 @@ public class UpdateController {
         try {
             VariableDescriptor vd = mapper.readValue(json, VariableDescriptor.class);
             descriptorController.createChild(gm.getId(), parentName, vd);
-            em.flush();
+            descriptorFacade.flush();
             return "OK";
         } catch (WegasNotFoundException ex) {
             logger.error("Error white adding the variable : parent " + parentName + " not found", ex);
@@ -397,6 +399,7 @@ public class UpdateController {
     public String killOrphans() {
         List<VariableInstance> findOrphans = this.findOrphans();
         int counter = 0;
+        EntityManager em = this.getEntityManager();
 
         /* Kill'em all */
         for (VariableInstance vi : findOrphans) {
@@ -427,9 +430,9 @@ public class UpdateController {
             logger.error("Restore Game: " + g.getName() + "/" + g.getId());
             DebugTeam dt = new DebugTeam();
             g.addTeam(dt);
-            em.persist(dt);
+            this.getEntityManager().persist(dt);
             g.getGameModel().propagateDefaultInstance(dt);
-            em.flush();
+            this.getEntityManager().flush();
             if (++counter == 25) {
                 break;
             }
@@ -440,7 +443,7 @@ public class UpdateController {
     }
 
     private EntityManager getEntityManager() {
-        return em;
+        return requestManager.getEntityManager();
     }
 
     private boolean hasOccupation(ResourceInstance ri, double time) {
@@ -501,6 +504,7 @@ public class UpdateController {
     }
 
     private List<Game> findNoDebugTeamGames() {
+        EntityManager em = this.getEntityManager();
         final CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         final CriteriaQuery<Game> query = criteriaBuilder.createQuery(Game.class);
 
@@ -530,13 +534,13 @@ public class UpdateController {
 
     private Long countOrphans() {
         String sql = "SELECT count(variableinstance) FROM VariableInstance variableinstance WHERE  (variableinstance.playerScopeKey IS NOT NULL AND  variableinstance.playerScopeKey NOT IN (SELECT player.id FROM Player player)) OR (variableinstance.teamScopeKey IS NOT NULL AND variableinstance.teamScopeKey NOT IN (SELECT team.id FROM Team team)) OR (variableinstance.gameScopeKey IS NOT NULL AND variableinstance.gameScopeKey NOT IN (SELECT game.id from Game game))";
-        TypedQuery<Long> query = em.createQuery(sql, Long.class);
+        TypedQuery<Long> query = this.getEntityManager().createQuery(sql, Long.class);
         return query.getSingleResult();
     }
 
     private List<VariableInstance> findOrphans() {
         String sql = "SELECT variableinstance FROM VariableInstance variableinstance WHERE  (variableinstance.playerScopeKey IS NOT NULL AND  variableinstance.playerScopeKey NOT IN (SELECT player.id FROM Player player)) OR (variableinstance.teamScopeKey IS NOT NULL AND variableinstance.teamScopeKey NOT IN (SELECT team.id FROM Team team)) OR (variableinstance.gameScopeKey IS NOT NULL AND variableinstance.gameScopeKey NOT IN (SELECT game.id from Game game))";
-        TypedQuery<VariableInstance> query = em.createQuery(sql, VariableInstance.class).setMaxResults(3000);
+        TypedQuery<VariableInstance> query = this.getEntityManager().createQuery(sql, VariableInstance.class).setMaxResults(3000);
         return query.getResultList();
     }
 }

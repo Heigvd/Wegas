@@ -25,8 +25,6 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -44,9 +42,6 @@ import java.util.List;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class GameController {
-
-    @PersistenceContext(unitName = "wegasPU")
-    private EntityManager em;
 
     /**
      *
@@ -121,9 +116,9 @@ public class GameController {
         gameFacade.publishAndCreate(gameModelId, game);
         //@Dirty: those lines exist to get a new game pointer. Cache is messing with it
         // removing debug team will stay in cache as this game pointer is new. work around
-        em.flush();
-        em.detach(game);
-        game = em.find(Game.class, game.getId());
+        gameFacade.flush();
+        gameFacade.detach(game);
+        game = gameFacade.find(game.getId());
         //gameFacade.create(gameModelId, game);
         return getGameWithoutDebugTeam(game);
     }
@@ -312,7 +307,7 @@ public class GameController {
      */
     private Game getGameWithoutDebugTeam(Game game) {
         if (game != null) {
-            em.detach(game);
+            gameFacade.detach(game);
             List<Team> withoutDebugTeam = new ArrayList<>();
             for (Team teamToCheck : game.getTeams()) {
                 if (!(teamToCheck instanceof DebugTeam)) {

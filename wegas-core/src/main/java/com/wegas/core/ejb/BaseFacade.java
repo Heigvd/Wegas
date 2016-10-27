@@ -11,6 +11,7 @@ import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.persistence.AbstractEntity;
 import java.io.IOException;
 import java.util.List;
+import javax.inject.Inject;
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -25,18 +26,22 @@ import javax.persistence.criteria.Root;
  */
 public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFacade<T> {
 
+    @Inject
+    private RequestManager requestManager;
+
+    /*
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
-
+     */
     /**
      * get the entity manager
      *
      * @return the wegasPU entityManager
      */
     protected EntityManager getEntityManager() {
-        return em;
+        return requestManager.getEntityManager();
     }
-
+    
     /**
      * the Class the facade manage
      */
@@ -67,6 +72,16 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
         getEntityManager().flush();
         getEntityManager().refresh(entity);
     }
+
+    /**
+     * Detach an entity
+     *
+     * @param entity the entity to detach
+     */
+    public void detach(final T entity) {
+        getEntityManager().detach(entity);
+    }
+
 
 //    /**
 //     *
@@ -156,7 +171,7 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
      *
      * @param range int array containing two elements... it's quite ugly...
      * @return all entities matching the range filter
-     * @deprecated 
+     * @deprecated
      */
     @Override
     public List<T> findRange(int[] range) {

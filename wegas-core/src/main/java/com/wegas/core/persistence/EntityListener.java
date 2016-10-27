@@ -36,7 +36,6 @@ public class EntityListener {
 
     @PostPersist
     void onPostPersist(Object o) {
-        logger.trace("Post Persist: " + o);
         if (o instanceof Broadcastable) {
             Broadcastable b = (Broadcastable) o;
             Map<String, List<AbstractEntity>> entities = b.getEntities();
@@ -50,7 +49,6 @@ public class EntityListener {
 
     @PostUpdate
     void onPostUpdate(Object o) {
-        logger.trace("POST UPDATE: " + o);
         if (o instanceof Broadcastable) {
             Broadcastable b = (Broadcastable) o;
             if (b instanceof GameModel) {
@@ -60,7 +58,7 @@ public class EntityListener {
                 // GameModel is not broadcastable ...
                 /// requestManager.addOutofdateEntities(b.getEntities());
             } else if (b instanceof AbstractEntity) {
-                logger.debug("Propagate: " + b);
+                logger.debug("Propagate: " + b.getClass().getSimpleName() + "::" + ((AbstractEntity)b).getId());
                 Map<String, List<AbstractEntity>> entities = b.getEntities();
                 requestManager.addUpdatedEntities(entities);
             }
@@ -69,7 +67,6 @@ public class EntityListener {
 
     @PreRemove
     void onPreRemove(Object o) {
-        logger.trace("Pre Remove: " + o);
         if (o instanceof Broadcastable) {
             Broadcastable b = (Broadcastable) o;
             Map<String, List<AbstractEntity>> entities = b.getEntities();

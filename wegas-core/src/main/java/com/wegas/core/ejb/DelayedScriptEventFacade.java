@@ -8,7 +8,6 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.event.internal.DelayedEventPayload;
-import com.wegas.core.event.internal.PlayerAction;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
@@ -17,12 +16,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
 import javax.ejb.*;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import javax.script.ScriptEngine;
 
 /**
  * @author Maxence Laurent (maxence.laurent gmail.com)
@@ -48,9 +45,6 @@ public class DelayedScriptEventFacade {
     @EJB
     private WebsocketFacade websocketFacade;
 
-    @Inject
-    private Event<PlayerAction> playerActionEvent;
-
     @Timeout
     public void timeout(Timer timer) {
         Serializable info = timer.getInfo();
@@ -65,7 +59,7 @@ public class DelayedScriptEventFacade {
             // fire Script (ie base mechanism and static server script eval)
             scriptEventFacade.fire(p, payload.getEventName());
             // force FSM evaluation and make sur EntityManager has flush
-            requestFacade.commit(p);
+            requestFacade.commit(p, true);
 
             rm.markManagermentStartTime();
             /*

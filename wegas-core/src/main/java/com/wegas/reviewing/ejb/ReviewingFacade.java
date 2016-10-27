@@ -35,20 +35,15 @@ import com.wegas.reviewing.persistence.Review;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptor;
 import com.wegas.reviewing.persistence.evaluation.EvaluationInstance;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.naming.NamingException;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import org.eclipse.persistence.jpa.JpaHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,9 +62,9 @@ public class ReviewingFacade {
     static final private Logger logger = LoggerFactory.getLogger(ReviewingFacade.class);
     /**
      * The so called wegasPU persistenceContext
-     */
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
+     */
 
     /**
      * Default Constructor
@@ -105,7 +100,7 @@ public class ReviewingFacade {
      * @return the corresponding review or null
      */
     public Review findReview(final Long entityId) {
-        return em.find(Review.class, entityId);
+        return requestManager.getEntityManager().find(Review.class, entityId);
     }
 
     /**
@@ -115,7 +110,7 @@ public class ReviewingFacade {
      * @return the evaluation instance or null
      */
     public EvaluationInstance findEvaluationInstance(Long evId) {
-        return em.find(EvaluationInstance.class, evId);
+        return requestManager.getEntityManager().find(EvaluationInstance.class, evId);
     }
 
     /**
@@ -125,7 +120,7 @@ public class ReviewingFacade {
      * @return the evaluation descriptor or null
      */
     public EvaluationDescriptor findEvaluationDescriptor(Long evId) {
-        return em.find(EvaluationDescriptor.class, evId);
+        return requestManager.getEntityManager().find(EvaluationDescriptor.class, evId);
     }
 
     /**
@@ -186,7 +181,7 @@ public class ReviewingFacade {
             ei.setCommentsReview(r);
             r.getComments().add(ei);
         }
-        em.persist(r);
+        requestManager.getEntityManager().persist(r);
         return r;
     }
 
@@ -404,7 +399,7 @@ public class ReviewingFacade {
             mergeEvaluations(other.getFeedback());
         }
 
-        em.merge(review);
+        requestManager.getEntityManager().merge(review);
         return review;
     }
 
@@ -439,7 +434,7 @@ public class ReviewingFacade {
      * @return the submitted review
      */
     public Review submitReview(Long reviewId, Player player) {
-        return this.submitReview(em.find(Review.class, reviewId), player);
+        return this.submitReview(requestManager.getEntityManager().find(Review.class, reviewId), player);
     }
 
     /**

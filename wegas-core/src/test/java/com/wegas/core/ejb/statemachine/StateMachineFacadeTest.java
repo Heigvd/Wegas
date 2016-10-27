@@ -270,12 +270,12 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
 
         /* player fire event twice */
         sf.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event')"), null);
-        lookupBy(RequestFacade.class).commit();
+        lookupBy(RequestFacade.class).commit(true);
         assertEquals(INITIALVALUE + 5 + 10, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
 
         /* player21 fire event only once */
         sf.eval(player21, new Script("JavaScript", "Event.fire('event');"), null);
-        lookupBy(RequestFacade.class).commit();
+        lookupBy(RequestFacade.class).commit(true);
         assertEquals(INITIALVALUE + 5, ((NumberInstance) vif.find(number.getId(), player21)).getValue(), .1);
         // Clean up
         vdf.remove(number.getId());

@@ -34,6 +34,8 @@ import javax.script.ScriptContext;
 import javax.ws.rs.core.Response;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 //import javax.annotation.PostConstruct;
 /**
@@ -43,6 +45,13 @@ import java.util.concurrent.TimeUnit;
 @RequestScoped
 @DependsOn("MutexSingleton")
 public class RequestManager {
+
+    @PersistenceContext(unitName = "wegasPU")
+    private EntityManager em;
+
+    public EntityManager getEntityManager() {
+        return em;
+    }
 
     public enum RequestEnvironment {
         STD, // Standard request from standard client (ie a browser)
@@ -429,7 +438,7 @@ public class RequestManager {
             mgmtTime -= propagationTime;
             propagationDuration = Long.toString(propagationTime);
         } else {
-            propagationDuration =" N/A";
+            propagationDuration = " N/A";
         }
 
         processingDuration = this.managementStartTime != null ? Long.toString(this.managementStartTime - this.startTimestamp) : "N/A";
@@ -475,6 +484,9 @@ public class RequestManager {
         }
 
         this.logRequest();
+
+        //this.getEntityManager().flush();
+        this.getEntityManager().clear();
     }
 
     /**

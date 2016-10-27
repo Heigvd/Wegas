@@ -8,7 +8,6 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
-import com.wegas.core.event.internal.PlayerAction;
 import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
 import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
@@ -60,6 +59,9 @@ public class GameFacade extends BaseFacade<Game> {
     @Inject
     private Event<PreEntityRemoved<Game>> gameRemovedEvent;
 
+    @EJB
+    private RequestFacade requestFacade;
+
     /**
      *
      */
@@ -83,12 +85,6 @@ public class GameFacade extends BaseFacade<Game> {
      */
     @EJB
     private UserFacade userFacade;
-
-    /**
-     *
-     */
-    @Inject
-    private Event<PlayerAction> playerActionEvent;
 
     /**
      *
@@ -369,7 +365,7 @@ public class GameFacade extends BaseFacade<Game> {
         team.addPlayer(player);
         getEntityManager().persist(player);
         team.getGame().getGameModel().propagateDefaultInstance(player);
-        playerActionEvent.fire(new PlayerAction(player));
+        requestFacade.firePlayerAction(player, true);
     }
 
     /**
@@ -390,8 +386,10 @@ public class GameFacade extends BaseFacade<Game> {
      */
     public Player joinTeam(Team team, User user) {
         // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
-        Player p = new Player(user, team);
+        Player p = new Player();
         user.getPlayers().add(p);
+        p.setUser(user);
+        p.setName(user.getName());
         this.joinTeam(team, p);
         this.addRights(user, p.getGame());
         return p;

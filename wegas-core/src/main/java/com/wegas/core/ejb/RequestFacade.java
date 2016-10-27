@@ -23,7 +23,6 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,11 +45,6 @@ public class RequestFacade {
      */
     @Inject
     private ScriptEventFacade scriptEvent;
-    /**
-     *
-     */
-    @PersistenceContext(unitName = "wegasPU")
-    private EntityManager em;
     /**
      *
      */
@@ -126,22 +120,27 @@ public class RequestFacade {
 //    public void reset() {
 //        this.getUpdatedInstances().clear();
 //    }
-    public void firePlayerAction(Player player) {
-        playerActionEvent.fire(new PlayerAction(player));
+    public void firePlayerAction(Player player, boolean clear) {
+        playerActionEvent.fire(new PlayerAction(player, clear));
     }
 
     /**
      *
      * @param player
+     * @param clear
      */
-    public void commit(Player player) {
+    public void commit(Player player, boolean clear) {
         /*
-         * Flush is required to triggered EntityListener's lifecycles events which populate 
+         * Flush is required to triggered EntityListener's lifecycles events which populate
          * requestManager touched (deleted, updated and so on) entities
          */
+        EntityManager em = requestManager.getEntityManager();
+
         em.flush();
         if (requestManager.getUpdatedEntities().size() > 0 || scriptEvent.isEventFired()) {
-            this.firePlayerAction(player);
+
+            // TODO
+            this.firePlayerAction(player, clear);
             /*   if (this.getPlayer() != null) {
              // RequestManager.PlayerAction action = new RequestManager.PlayerAction();
              //action.setPlayer(this.getPlayer());
@@ -181,8 +180,8 @@ public class RequestFacade {
     /**
      *
      */
-    public void commit() {
-        this.commit(this.getPlayer());
+    public void commit(boolean clear) {
+        this.commit(this.getPlayer(), clear);
     }
 
     /**
@@ -235,7 +234,7 @@ public class RequestFacade {
     }
 
     public void flushClear() {
-        em.flush();
-        em.clear();
+        requestManager.getEntityManager().flush();
+        requestManager.getEntityManager().clear();
     }
 }

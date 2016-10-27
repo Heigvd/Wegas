@@ -196,7 +196,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
             response.setEntity(serverResponse);
 
         }
-        requestFacade.flushClear();
+        //requestFacade.flushClear();
         requestManager.markSerialisationStartTime();
     }
 }

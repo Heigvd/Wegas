@@ -2,8 +2,7 @@ package com.wegas.core.ejb;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import javax.inject.Inject;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -12,10 +11,10 @@ import javax.persistence.PersistenceContext;
 @LocalBean
 public class HelperBean {
 
-    @PersistenceContext(unitName = "wegasPU")
-    private EntityManager em;
+    @Inject
+    RequestManager requestManager;
 
     public void wipeCache() {
-        em.getEntityManagerFactory().getCache().evictAll();
+        requestManager.getEntityManager().getEntityManagerFactory().getCache().evictAll();
     }
 }

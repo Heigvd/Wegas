@@ -34,8 +34,6 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import org.slf4j.Logger;
@@ -50,14 +48,9 @@ import org.slf4j.LoggerFactory;
 public class ResourceFacade {
 
     static final private Logger logger = LoggerFactory.getLogger(ResourceFacade.class);
-    /**
-     *
-     */
-    @PersistenceContext(unitName = "wegasPU")
-    private EntityManager em;
 
     private EntityManager getEntityManager() {
-        return em;
+        return requestManager.getEntityManager();
     }
 
     /**
