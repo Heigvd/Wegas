@@ -33,6 +33,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.io.IOException;
+import java.security.Security;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -413,6 +414,17 @@ public class GameFacade extends BaseFacade<Game> {
         user.addPermission(
                 "Game:View:g" + game.getId(), // Add "View" right on game,
                 "GameModel:View:gm" + game.getGameModel().getId());             // and also "View" right on its associated game model
+    }
+
+    public void recoverRights(Game game) {
+        for (Team team : game.getTeams()) {
+            for (Player player : team.getPlayers()) {
+                User user = player.getUser();
+                if (user != null) {
+                    this.addRights(user, game);
+                }
+            }
+        }
     }
 
     /**

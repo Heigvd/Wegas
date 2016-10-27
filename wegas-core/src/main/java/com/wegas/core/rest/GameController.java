@@ -169,6 +169,23 @@ public class GameController {
     }
 
     /**
+     * Due to strange unpredictable bug, some users might not have rights to
+     * view the game. This method check if all player within the game have the
+     * correct rights and create them if it's not the case
+     *
+     * @param gameId id of the game one want to recover players rights
+     * @return the game
+     */
+    @PUT
+    @Path("{gameId: [1-9][0-9]*}/recoverRights")
+    public Game recoverRights(@PathParam("gameId") Long gameId) {
+        Game game = gameFacade.find(gameId);
+        SecurityHelper.checkPermission(game, "Edit");
+        gameFacade.recoverRights(game);
+        return game;
+    }
+
+    /**
      * Change game status (bin, live, delete)
      *
      * @param entityId
