@@ -33,7 +33,6 @@ import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.io.IOException;
-import java.security.Security;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -391,8 +390,8 @@ public class GameFacade extends BaseFacade<Game> {
         user.getPlayers().add(p);
         p.setUser(user);
         p.setName(user.getName());
+        this.addRights(user, team.getGame());
         this.joinTeam(team, p);
-        this.addRights(user, p.getGame());
         return p;
     }
 

@@ -7,11 +7,13 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.User;
 import java.util.List;
 import javax.naming.NamingException;
@@ -85,6 +87,54 @@ public class PlayerFacadeTest extends AbstractEJBTest {
     @Test
     public void getInstances() {
         List<VariableInstance> instances = playerFacade.getInstances(player.getId());
+    }
+
+    private Team createTeam(Game g, String name) {
+        Team t = new Team(name);
+        t.setGame(g);
+        teamFacade.create(t);
+        return t;
+    }
+
+    private Player createPlayer(Team t) {
+        User u = new User();
+        userFacade.create(u);
+
+        return gameFacade.joinTeam(t.getId(), u.getId());
+    }
+
+    /**
+     * Test registeredGames
+     */
+    @Test
+    public void testMassiveJoin() throws Exception {
+        Game g = new Game("game");
+        g.setGameModel(gameModel);
+        gameFacade.create(g);
+
+        for (int i = 0; i < 10; i++) {
+            Team t = createTeam(g, "T" + i);
+            for (int j = 0; j < 100; j++) {
+                createPlayer(t);
+            }
+        }
+
+        g = gameFacade.find(g.getId());
+
+        Assert.assertEquals(11, g.getTeams().size());
+        for (Team t : g.getTeams()) {
+            t = teamFacade.find(t.getId());
+            if (t instanceof DebugTeam == false) {
+                Assert.assertEquals(100, t.getPlayers().size());
+                for (Player p : t.getPlayers()) {
+                    Assert.assertEquals(1, p.getUser().getPermissions().size());
+                    Permission perm = p.getUser().getPermissions().get(0);
+                    Assert.assertEquals("Game:View:g" + g.getId(), perm.getValue());
+                    Assert.assertEquals("GameModel:View:gm" + g.getGameModel().getId(), perm.getInducedPermission());
+                }
+            }
+        }
+
     }
 
 }
