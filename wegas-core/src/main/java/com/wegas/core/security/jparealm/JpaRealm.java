@@ -43,24 +43,24 @@ public class JpaRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authcToken) throws AuthenticationException {
         UsernamePasswordToken token = (UsernamePasswordToken) authcToken;
         try {
-            JpaAccount account = accountFacade().findByEmail(token.getUsername());
-            SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(account.getId(), account.getPasswordHex(), getName());
-            info.setCredentialsSalt(new SimpleByteSource(account.getSalt()));
-            return info;
-
-        } catch (WegasNoResultException e) {                                         // Could not find correponding mail, 
+            AccountFacade accountFacade = accountFacade();
             try {
-                JpaAccount account = (JpaAccount) accountFacade().findByUsername(token.getUsername());// try with the username
+                JpaAccount account = accountFacade.findByEmail(token.getUsername());
                 SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(account.getId(), account.getPasswordHex(), getName());
                 info.setCredentialsSalt(new SimpleByteSource(account.getSalt()));
                 return info;
 
-            } catch (WegasNoResultException ex) {
-                logger.error("Unable to find token", ex);
-                return null;
-            } catch (NamingException ex) {
-                logger.error("Unable to find AccountFacade EJB", ex);
-                return null;
+            } catch (WegasNoResultException e) {                                         // Could not find correponding mail, 
+                try {
+                    JpaAccount account = (JpaAccount) accountFacade.findByUsername(token.getUsername());// try with the username
+                    SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(account.getId(), account.getPasswordHex(), getName());
+                    info.setCredentialsSalt(new SimpleByteSource(account.getSalt()));
+                    return info;
+
+                } catch (WegasNoResultException ex) {
+                    logger.error("Unable to find token", ex);
+                    return null;
+                }
             }
         } catch (NamingException ex) {
             logger.error("Unable to find AccountFacade EJB", ex);

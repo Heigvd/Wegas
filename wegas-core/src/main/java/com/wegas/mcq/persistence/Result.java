@@ -18,6 +18,7 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.Scripted;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
@@ -379,8 +380,8 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     }
 
     @Override
-    public void updateCacheOnDelete() {
-        VariableInstanceFacade vif = VariableInstanceFacade.lookup();
+    public void updateCacheOnDelete(Beanjection beans) {
+        VariableInstanceFacade vif = beans.getVariableInstanceFacade();
 
         for (ChoiceInstance cInstance : this.getChoiceInstances()) {
             cInstance = (ChoiceInstance) vif.find(cInstance.getId());

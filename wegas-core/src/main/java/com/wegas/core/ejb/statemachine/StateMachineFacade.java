@@ -126,6 +126,7 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
      */
     public void resetEventListener(@Observes ResetEvent resetEvent) throws WegasScriptException {
         logger.debug("Received Reset event");
+        getEntityManager().flush();
         for (Player player : resetEvent.getConcernedPlayers()) {
             this.runForPlayer(player);
         }

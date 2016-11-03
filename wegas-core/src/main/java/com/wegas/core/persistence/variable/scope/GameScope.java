@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.*;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.game.Team;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,13 +33,14 @@ public class GameScope extends AbstractScope<Game> {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(GameScope.class);
+
+    /*
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "gameScope")
     @JoinColumn(name = "gamescope_id", referencedColumnName = "id")
     @MapKeyJoinColumn(name = "gamevariableinstances_key", referencedColumnName = "game_id")
     //@XmlTransient
     @JsonIgnore
-    private Map<Game, VariableInstance> gameVariableInstances = new HashMap<>();
-
+    private Map<Game, VariableInstance> gameVariableInstances = new HashMap<>();*/
     /**
      *
      */
@@ -50,25 +51,28 @@ public class GameScope extends AbstractScope<Game> {
 
     @Override
     public void setVariableInstance(Game key, VariableInstance v) {
-        this.getVariableInstances().put(key, v);
         v.setGame(key);
         v.setGameScope(this);
     }
 
     @Override
     public VariableInstance getVariableInstance(Player player) {
-        return this.getVariableInstances().get(player.getGame());
+        return this.getVariableInstance(player.getGame());
+    }
+
+    public VariableInstance getVariableInstance(Game game) {
+        return getVariableInstanceFacade().getGameInstance(this, game);
     }
 
     @Override
     public Map<Game, VariableInstance> getVariableInstances() {
-        return this.gameVariableInstances;
+        return getVariableInstanceFacade().getAllGameInstances(this);
     }
 
     @Override
     protected void propagate(Game g) {
         VariableDescriptor vd = this.getVariableDescriptor();
-        VariableInstance vi = this.getVariableInstances().get(g);
+        VariableInstance vi = this.getVariableInstance(g);
         if (vi == null) {
             VariableInstance clone = vd.getDefaultInstance().clone();
             g.getPrivateInstances().add(clone);

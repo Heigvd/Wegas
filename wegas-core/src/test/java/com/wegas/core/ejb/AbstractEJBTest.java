@@ -12,7 +12,9 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.persistence.Role;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -32,6 +34,7 @@ public class AbstractEJBTest {
     private static final Logger logger = LoggerFactory.getLogger(AbstractEJBTest.class);
     private static EJBContainer ejbContainer;
     protected static GameModelFacade gameModelFacade;
+    protected static RoleFacade roleFacade;
     protected static VariableDescriptorFacade descriptorFacade;
     // *** Fields *** //
     protected static GameModel gameModel;
@@ -50,6 +53,8 @@ public class AbstractEJBTest {
         ejbContainer = TestHelper.getEJBContainer();
         gameModelFacade = lookupBy(GameModelFacade.class);
         descriptorFacade = lookupBy(VariableDescriptorFacade.class);
+        roleFacade = lookupBy(RoleFacade.class);
+
         lookupBy(UserFacade.class).guestLogin();
     }
 

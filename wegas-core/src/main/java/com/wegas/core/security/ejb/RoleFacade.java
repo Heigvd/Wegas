@@ -11,6 +11,7 @@ import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
+import java.util.List;
 import java.util.Set;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;

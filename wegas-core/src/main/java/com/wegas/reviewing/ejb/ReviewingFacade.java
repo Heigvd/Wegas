@@ -60,10 +60,11 @@ import org.slf4j.LoggerFactory;
 public class ReviewingFacade {
 
     static final private Logger logger = LoggerFactory.getLogger(ReviewingFacade.class);
+
     /**
      * The so called wegasPU persistenceContext
-    @PersistenceContext(unitName = "wegasPU")
-    private EntityManager em;
+     *
+     * @PersistenceContext(unitName = "wegasPU") private EntityManager em;
      */
 
     /**

@@ -23,7 +23,6 @@ import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
-import java.util.AbstractList;
 import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

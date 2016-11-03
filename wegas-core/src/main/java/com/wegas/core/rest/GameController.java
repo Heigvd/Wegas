@@ -239,14 +239,7 @@ public class GameController {
     @GET
     @Path("status/{status: [A-Z]*}/count")
     public int countByStatus(@PathParam("status") final Game.Status status) {
-        final Collection<Game> retGames = new ArrayList<>();
-        final Collection<Game> games = gameFacade.findAll(status);
-        for (Game g : games) {
-            if (SecurityHelper.isPermitted(g, "Edit")) {
-                retGames.add(g);
-            }
-        }
-        return retGames.size();
+        return findByStatus(status).size();
     }
 
     /**

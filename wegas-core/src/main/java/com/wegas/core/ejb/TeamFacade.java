@@ -100,6 +100,7 @@ public class TeamFacade extends BaseFacade<Team> {
         g.addTeam(t);
         g = gameFacade.find(gameId);
         gameFacade.addRights(userFacade.getCurrentUser(), g);  // @fixme Should only be done for a player, but is done here since it will be needed in later requests to add a player
+        getEntityManager().persist(t);
         g.getGameModel().propagateDefaultInstance(t);
     }
 

@@ -1,0 +1,135 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
+package com.wegas.core.persistence.variable;
+
+import com.wegas.core.ejb.GameFacade;
+import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.TeamFacade;
+import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.mcq.ejb.QuestionDescriptorFacade;
+import com.wegas.resourceManagement.ejb.IterationFacade;
+import com.wegas.resourceManagement.ejb.ResourceFacade;
+import com.wegas.reviewing.ejb.ReviewingFacade;
+import java.io.Serializable;
+
+/**
+ * Some bean container
+ *
+ * @author Maxence Laurent (maxence.laurent at gmail.com)
+ */
+public class Beanjection implements Serializable {
+
+    private static final long serialVersionUID = 8656248029961666978L;
+
+    private VariableInstanceFacade variableInstanceFacade;
+
+    private VariableDescriptorFacade variableDescriptorFacade;
+
+    private ResourceFacade resourceFacade;
+
+    private IterationFacade iterationFacade;
+
+    private ReviewingFacade reviewingFacade;
+
+    private UserFacade userFacade;
+
+    private TeamFacade teamFacade;
+
+    private QuestionDescriptorFacade questionDescriptorFacade;
+
+    public Beanjection() {
+    }
+
+    public Beanjection(VariableInstanceFacade variableInstanceFacade) {
+        this.variableInstanceFacade = variableInstanceFacade;
+    }
+
+    public Beanjection(VariableInstanceFacade variableInstanceFacade,
+            VariableDescriptorFacade variableDescriptorFacade,
+            ResourceFacade resourceFacade,
+            IterationFacade iterationFacade,
+            ReviewingFacade reviewingFacade,
+            UserFacade userFacade,
+            TeamFacade teamFacade,
+            QuestionDescriptorFacade questionDescriptorFacade) {
+        this.variableInstanceFacade = variableInstanceFacade;
+        this.variableDescriptorFacade = variableDescriptorFacade;
+        this.resourceFacade = resourceFacade;
+        this.iterationFacade = iterationFacade;
+        this.reviewingFacade = reviewingFacade;
+        this.userFacade = userFacade;
+        this.teamFacade = teamFacade;
+        this.questionDescriptorFacade = questionDescriptorFacade;
+    }
+
+    public VariableInstanceFacade getVariableInstanceFacade() {
+        return variableInstanceFacade;
+    }
+
+    public void setVariableInstanceFacade(VariableInstanceFacade variableInstanceFacade) {
+        this.variableInstanceFacade = variableInstanceFacade;
+    }
+
+    public ReviewingFacade getReviewingFacade() {
+        return reviewingFacade;
+    }
+
+    public void setReviewingFacade(ReviewingFacade reviewinFacade) {
+        this.reviewingFacade = reviewinFacade;
+    }
+
+    public VariableDescriptorFacade getVariableDescriptorFacade() {
+        return variableDescriptorFacade;
+    }
+
+    public void setVariableDescriptorFacade(VariableDescriptorFacade variableDescriptorFacade) {
+        this.variableDescriptorFacade = variableDescriptorFacade;
+    }
+
+    public IterationFacade getIterationFacade() {
+        return iterationFacade;
+    }
+
+    public void setIterationFacade(IterationFacade iterationFacade) {
+        this.iterationFacade = iterationFacade;
+    }
+
+    public UserFacade getUserFacade() {
+        return userFacade;
+    }
+
+    public void setUserFacade(UserFacade userFacade) {
+        this.userFacade = userFacade;
+    }
+
+    public TeamFacade getTeamFacade() {
+        return teamFacade;
+    }
+
+    public void setTeamFacade(TeamFacade teamFacade) {
+        this.teamFacade = teamFacade;
+    }
+
+    public QuestionDescriptorFacade getQuestionDescriptorFacade() {
+        return questionDescriptorFacade;
+    }
+
+    public void setQuestionDescriptorFacade(QuestionDescriptorFacade questionDescriptorFacade) {
+        this.questionDescriptorFacade = questionDescriptorFacade;
+    }
+
+    public ResourceFacade getResourceFacade() {
+        return resourceFacade;
+    }
+
+    public void setResourceFacade(ResourceFacade resourceFacade) {
+        this.resourceFacade = resourceFacade;
+    }
+}

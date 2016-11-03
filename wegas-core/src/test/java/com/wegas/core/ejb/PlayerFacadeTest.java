@@ -108,13 +108,14 @@ public class PlayerFacadeTest extends AbstractEJBTest {
      */
     @Test
     public void testMassiveJoin() throws Exception {
+        int nb = 10;
         Game g = new Game("game");
         g.setGameModel(gameModel);
         gameFacade.create(g);
 
         for (int i = 0; i < 10; i++) {
             Team t = createTeam(g, "T" + i);
-            for (int j = 0; j < 100; j++) {
+            for (int j = 0; j < nb; j++) {
                 createPlayer(t);
             }
         }
@@ -125,7 +126,7 @@ public class PlayerFacadeTest extends AbstractEJBTest {
         for (Team t : g.getTeams()) {
             t = teamFacade.find(t.getId());
             if (t instanceof DebugTeam == false) {
-                Assert.assertEquals(100, t.getPlayers().size());
+                Assert.assertEquals(nb, t.getPlayers().size());
                 for (Player p : t.getPlayers()) {
                     Assert.assertEquals(1, p.getUser().getPermissions().size());
                     Permission perm = p.getUser().getPermissions().get(0);

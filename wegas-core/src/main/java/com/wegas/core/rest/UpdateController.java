@@ -484,7 +484,7 @@ public class UpdateController {
             /**
              * make sure each occupation exists for each resources
              */
-            Collection<ResourceInstance> resourceInstances = rd.getScope().getVariableInstances().values();
+            Collection<ResourceInstance> resourceInstances = rd.getScope().getPrivateInstances().values();
             for (ResourceInstance resourceInstance : resourceInstances) {
                 for (Entry<Long, List<Occupation>> entry : map.entrySet()) {
                     if (!hasOccupation(resourceInstance, entry.getKey().doubleValue())) {

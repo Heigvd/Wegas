@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.client.WegasNotFoundException;
@@ -47,6 +48,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.wegas.core.persistence.AcceptInjection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @param <T>
@@ -56,50 +60,54 @@ import java.util.Map;
 @Inheritance(strategy = InheritanceType.JOINED)
 //@EntityListeners({GmVariableDescriptorListener.class})
 @Table(uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"gamemodel_gamemodelid", "name"}) // Name has to be unique for the whole game model
+    @UniqueConstraint(columnNames = {"gamemodel_gamemodelid", "name"}) // Name has to be unique for the whole game model
 // @UniqueConstraint(columnNames = {"variabledescriptor_id", "name"})           // Name has to be unique within a list
 // @UniqueConstraint(columnNames = {"rootgamemodel_id", "name"})                // Names have to be unique at the base of a game model (root elements)
 }, indexes = {
-        @Index(columnList = "defaultinstance_variableinstance_id"),
-        @Index(columnList = "items_variabledescriptor_id"),
-        @Index(columnList = "rootgamemodel_id"),
-        @Index(columnList = "dtype")
+    @Index(columnList = "defaultinstance_variableinstance_id"),
+    @Index(columnList = "items_variabledescriptor_id"),
+    @Index(columnList = "rootgamemodel_id"),
+    @Index(columnList = "dtype")
 })
 @NamedQueries({
-        @NamedQuery(
-                name = "VariableDescriptor.findByRootGameModelId",
-                query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.gameModel AS gm WHERE gm.id = :gameModelId"
-        ),
-        @NamedQuery(
-                name = "VariableDescriptor.findByGameModelIdAndName",
-                query = "SELECT vd FROM VariableDescriptor vd where vd.gameModel.id = :gameModelId AND vd.name LIKE :name",
-                hints = {@QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject), @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)}
-        )
+    @NamedQuery(
+            name = "VariableDescriptor.findByRootGameModelId",
+            query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.gameModel AS gm WHERE gm.id = :gameModelId"
+    ),
+    @NamedQuery(
+            name = "VariableDescriptor.findByGameModelIdAndName",
+            query = "SELECT vd FROM VariableDescriptor vd where vd.gameModel.id = :gameModelId AND vd.name LIKE :name",
+            hints = {
+                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
+                @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)}
+    )
 })
 @CacheIndexes(value = {
-        @CacheIndex(columnNames = {"GAMEMODEL_GAMEMODELID", "NAME"}) // bug uppercase: https://bugs.eclipse.org/bugs/show_bug.cgi?id=407834
+    @CacheIndex(columnNames = {"GAMEMODEL_GAMEMODELID", "NAME"}) // bug uppercase: https://bugs.eclipse.org/bugs/show_bug.cgi?id=407834
 })
 @JsonSubTypes(value = {
-        @JsonSubTypes.Type(name = "ListDescriptor", value = ListDescriptor.class),
-        @JsonSubTypes.Type(name = "StringDescriptor", value = StringDescriptor.class),
-        @JsonSubTypes.Type(name = "TextDescriptor", value = TextDescriptor.class),
-        @JsonSubTypes.Type(name = "BooleanDescriptor", value = BooleanDescriptor.class),
-        @JsonSubTypes.Type(name = "NumberDescriptor", value = NumberDescriptor.class),
-        @JsonSubTypes.Type(name = "InboxDescriptor", value = InboxDescriptor.class),
-        @JsonSubTypes.Type(name = "FSMDescriptor", value = StateMachineDescriptor.class),
-        @JsonSubTypes.Type(name = "ResourceDescriptor", value = ResourceDescriptor.class),
-        @JsonSubTypes.Type(name = "TaskDescriptor", value = TaskDescriptor.class),
-        @JsonSubTypes.Type(name = "QuestionDescriptor", value = QuestionDescriptor.class),
-        @JsonSubTypes.Type(name = "ChoiceDescriptor", value = ChoiceDescriptor.class),
-        @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class),
-        @JsonSubTypes.Type(name = "ObjectDescriptor", value = ObjectDescriptor.class),
-        @JsonSubTypes.Type(name = "PeerReviewDescriptor", value = PeerReviewDescriptor.class),
-        @JsonSubTypes.Type(name = "BurndownDescriptor", value = BurndownDescriptor.class)
+    @JsonSubTypes.Type(name = "ListDescriptor", value = ListDescriptor.class),
+    @JsonSubTypes.Type(name = "StringDescriptor", value = StringDescriptor.class),
+    @JsonSubTypes.Type(name = "TextDescriptor", value = TextDescriptor.class),
+    @JsonSubTypes.Type(name = "BooleanDescriptor", value = BooleanDescriptor.class),
+    @JsonSubTypes.Type(name = "NumberDescriptor", value = NumberDescriptor.class),
+    @JsonSubTypes.Type(name = "InboxDescriptor", value = InboxDescriptor.class),
+    @JsonSubTypes.Type(name = "FSMDescriptor", value = StateMachineDescriptor.class),
+    @JsonSubTypes.Type(name = "ResourceDescriptor", value = ResourceDescriptor.class),
+    @JsonSubTypes.Type(name = "TaskDescriptor", value = TaskDescriptor.class),
+    @JsonSubTypes.Type(name = "QuestionDescriptor", value = QuestionDescriptor.class),
+    @JsonSubTypes.Type(name = "ChoiceDescriptor", value = ChoiceDescriptor.class),
+    @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class),
+    @JsonSubTypes.Type(name = "ObjectDescriptor", value = ObjectDescriptor.class),
+    @JsonSubTypes.Type(name = "PeerReviewDescriptor", value = PeerReviewDescriptor.class),
+    @JsonSubTypes.Type(name = "BurndownDescriptor", value = BurndownDescriptor.class)
 })
 @MappedSuperclass
 abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity implements Searchable, LabelledEntity, Broadcastable {
 
     private static final long serialVersionUID = 1L;
+
+    private static final Logger logger = LoggerFactory.getLogger(VariableDescriptor.class);
 
     /**
      *
@@ -200,7 +208,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     //    @JoinColumn(referencedColumnName = "tag_id")})
     //@XmlTransient
     //private List<Tag> tags;
-
     /**
      *
      */
@@ -479,7 +486,8 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     /**
      * @param context allow to circumscribe the propagation within the given
-     *                context. It may be an instance of GameModel, Game, Team, or Player
+     *                context. It may be an instance of GameModel, Game, Team,
+     *                or Player
      */
     public void propagateDefaultInstance(AbstractEntity context) {
         int sFlag = 0;

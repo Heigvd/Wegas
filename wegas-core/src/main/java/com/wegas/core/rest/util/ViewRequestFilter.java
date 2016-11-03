@@ -13,6 +13,7 @@ import com.fasterxml.jackson.jaxrs.cfg.EndpointConfigBase;
 import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterInjector;
 import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterModifier;
 import com.wegas.core.ejb.RequestFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
@@ -49,6 +50,9 @@ public class ViewRequestFilter implements ContainerRequestFilter {
     @EJB
     UserFacade userFacade;
 
+    @EJB
+    RequestFacade requestFacade;
+
     private final static Logger logger = LoggerFactory.getLogger(ViewRequestFilter.class);
 
     /**
@@ -58,11 +62,12 @@ public class ViewRequestFilter implements ContainerRequestFilter {
      */
     @Override
     public void filter(ContainerRequestContext cr) throws IOException {
-        RequestFacade rmf = RequestFacade.lookup();
+        //RequestFacade rmf = RequestFacade.lookup();
+        RequestManager requestManager = requestFacade.getRequestManager();
 
-        rmf.getRequestManager().setRequestId(idGenerator.getUniqueIdentifier());
-        rmf.getRequestManager().setMethod(cr.getMethod());
-        rmf.getRequestManager().setPath(cr.getUriInfo().getPath());
+        requestManager.setRequestId(idGenerator.getUniqueIdentifier());
+        requestManager.setMethod(cr.getMethod());
+        requestManager.setPath(cr.getUriInfo().getPath());
 
         //String userAgent = cr.getHeaderString("user-agent");
         User currentUser = null;
@@ -70,18 +75,18 @@ public class ViewRequestFilter implements ContainerRequestFilter {
             currentUser = userFacade.getCurrentUser();
         } catch (WegasNotFoundException e) {
         }
-        rmf.getRequestManager().setCurrentUser(currentUser);
+        requestManager.setCurrentUser(currentUser);
 
         Class<?> view;
 
         // Handle language parameter
         if (cr.getHeaderString("lang") != null
                 && !cr.getHeaderString("lang").isEmpty()) {
-            rmf.setLocale(new Locale(cr.getHeaderString("lang")));
+            requestFacade.setLocale(new Locale(cr.getHeaderString("lang")));
         } else if (cr.getHeaderString("Accept-Language") != null && !cr.getHeaderString("Accept-Language").isEmpty()) {
-            rmf.setLocale(new Locale(cr.getHeaderString("Accept-Language")));
+            requestFacade.setLocale(new Locale(cr.getHeaderString("Accept-Language")));
         } else {
-            rmf.setLocale(Locale.getDefault());
+            requestFacade.setLocale(Locale.getDefault());
         }
 
         String newUri = cr.getUriInfo().getRequestUri().toASCIIString();
@@ -105,7 +110,7 @@ public class ViewRequestFilter implements ContainerRequestFilter {
                 break;
         }
 
-        logger.info("Start Request [" + rmf.getRequestManager().getRequestId()
+        logger.info("Start Request [" + requestManager.getRequestId()
                 + "] " + cr.getMethod() + " " + cr.getUriInfo().getPath());
 
         try {

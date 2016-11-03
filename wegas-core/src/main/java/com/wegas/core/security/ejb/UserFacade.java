@@ -169,16 +169,16 @@ public class UserFacade extends BaseFacade<User> {
         try {
             this.addRole(user, roleFacade.findByName("Public"));
         } catch (WegasNoResultException ex) {
-            logger.error("Unable to find Role: Public");
+            //logger.error("Unable to find Role: Public");
         }
         try {
             this.addRole(user, roleFacade.findByName("Registered"));
         } catch (WegasNoResultException ex) {
             //logger.error("Unable to find Role: Registered", ex);
-            logger.error("Unable to find Role: Registered");
+            //logger.error("Unable to find Role: Registered");
         }
         /*
-         * Very strange behaviour: without this flush, RequestManaged failed to be injected within others beans...
+         * Very strange behaviour: without this flush, RequestManages faild to be injected within others beans...
          */
         this.getEntityManager().flush();
     }

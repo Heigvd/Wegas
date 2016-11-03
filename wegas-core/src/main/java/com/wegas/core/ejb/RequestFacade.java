@@ -121,6 +121,7 @@ public class RequestFacade {
 //        this.getUpdatedInstances().clear();
 //    }
     public void firePlayerAction(Player player, boolean clear) {
+        requestManager.getEntityManager().flush();
         playerActionEvent.fire(new PlayerAction(player, clear));
     }
 
@@ -136,7 +137,6 @@ public class RequestFacade {
          */
         EntityManager em = requestManager.getEntityManager();
 
-        em.flush();
         if (requestManager.getUpdatedEntities().size() > 0 || scriptEvent.isEventFired()) {
 
             // TODO

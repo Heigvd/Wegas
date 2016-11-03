@@ -16,6 +16,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.Result;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -260,7 +261,7 @@ public class Helper {
      * @param usedLabels result sibling's label
      */
     public static void setNameAndLabelForResult(Result r,
-                                                List<String> usedNames, List<String> usedLabels) {
+            List<String> usedNames, List<String> usedLabels) {
         boolean hasLabel = !isNullOrEmpty(r.getLabel());
         boolean hasName = !isNullOrEmpty(r.getName());
         if (hasLabel && !hasName) {
@@ -434,7 +435,7 @@ public class Helper {
      * @param propertyName
      * @param defaultValue
      * @return the wegasProperty or the defaultValue if the property does not
-     * exists
+     *         exists
      */
     public static String getWegasProperty(String propertyName, String defaultValue) {
         try {
@@ -579,7 +580,6 @@ public class Helper {
      }
      return sb.toString();
      }*/
-
     /**
      * print ENV variables to log
      */
@@ -822,6 +822,7 @@ public class Helper {
      * @param <V> value type
      */
     public static class LRUCache<K, V> extends LinkedHashMap<K, V> {
+
         private int cacheSize;
 
         /**

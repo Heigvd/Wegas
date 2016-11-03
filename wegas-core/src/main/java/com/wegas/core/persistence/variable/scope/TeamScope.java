@@ -17,7 +17,7 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wegas.core.ejb.VariableInstanceFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,32 +31,32 @@ public class TeamScope extends AbstractScope<Team> {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(TeamScope.class.getName());
+
     /*
      * FIXME Here we should use Team reference and add a key deserializer
      * module. @JoinTable(joinColumns = @JoinColumn(name = "teamscope_id",
      * referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name =
      * "variableinstance_id", referencedColumnName = "variableinstance_id"))
-     */
+     
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "teamScope")
     @JoinColumn(name = "teamscope_id", referencedColumnName = "id")
     @MapKeyJoinColumn(name = "teamvariableinstances_key", referencedColumnName = "id")
     //@XmlTransient
     @JsonIgnore
     private Map<Team, VariableInstance> teamVariableInstances = new HashMap<>();
-
+     */
     /**
      *
      * @return
      */
     @Override
     public Map<Team, VariableInstance> getVariableInstances() {
-        return this.teamVariableInstances;
+        return this.getVariableInstanceFacade().getAllTeamInstances(this);
     }
 
-    public void setVariableInstances(Map<Team, VariableInstance> teamVariableInstances) {
+    /*public void setVariableInstances(Map<Team, VariableInstance> teamVariableInstances) {
         this.teamVariableInstances = teamVariableInstances;
-    }
-
+    }*/
     /**
      *
      * @param player
@@ -64,7 +64,11 @@ public class TeamScope extends AbstractScope<Team> {
      */
     @Override
     public VariableInstance getVariableInstance(Player player) {
-        return this.getVariableInstances().get(player.getTeam());
+        return this.getVariableInstance(player.getTeam());
+    }
+
+    private VariableInstance getVariableInstance(Team t) {
+        return this.getVariableInstanceFacade().getTeamInstance(this, t);
     }
 
     @Override
@@ -75,7 +79,7 @@ public class TeamScope extends AbstractScope<Team> {
         if (cPlayer != null) {
             if (this.getBroadcastScope().equals(GameScope.class.getSimpleName())) {
                 for (Team t : cPlayer.getGame().getTeams()) {
-                    ret.put(t, this.getVariableInstances().get(t));
+                    ret.put(t, this.getVariableInstance(t));
                 }
             } else {
                 ret.put(cPlayer.getTeam(), this.getVariableInstance(cPlayer));
@@ -91,7 +95,7 @@ public class TeamScope extends AbstractScope<Team> {
      */
     @Override
     public void setVariableInstance(Team key, VariableInstance v) {
-        this.getVariableInstances().put(key, v);
+        //this.getVariableInstances().put(key, v);
         //v.setTeamScopeKey(key.getId());
         v.setTeam(key);
         v.setTeamScope(this);
@@ -108,13 +112,14 @@ public class TeamScope extends AbstractScope<Team> {
     @Override
     protected void propagate(Team t) {
         VariableDescriptor vd = this.getVariableDescriptor();
-        VariableInstance vi = this.getVariableInstances().get(t);
+        VariableInstance vi = this.getVariableInstance(t);
         if (vi == null) {
             VariableInstance newInstance = vd.getDefaultInstance().clone();
             //t.setPrivateInstance(ListUtils.cloneAdd(t.getPrivateInstances(), newInstance));
             t.getPrivateInstances().add(newInstance);
             this.setVariableInstance(t, newInstance);
 
+            //vif.create(newInstance);  //<----
         } else {
             Long version = vi.getVersion();
             vi.merge(vd.getDefaultInstance());

@@ -11,12 +11,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.Broadcastable;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.rest.util.Views;
 import com.wegas.reviewing.ejb.ReviewingFacade;
 import com.wegas.reviewing.persistence.Review;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import javax.persistence.*;
 
@@ -204,8 +202,8 @@ public abstract class EvaluationInstance extends AbstractEntity /*implements Bro
         }
     }*/
     @Override
-    public void updateCacheOnDelete() {
-        ReviewingFacade rF = ReviewingFacade.lookup();
+    public void updateCacheOnDelete(Beanjection beans) {
+        ReviewingFacade rF = beans.getReviewingFacade();
         EvaluationDescriptor descriptor = this.getDescriptor();
         if (descriptor != null) {
             descriptor = rF.findEvaluationDescriptor(descriptor.getId());
@@ -228,6 +226,6 @@ public abstract class EvaluationInstance extends AbstractEntity /*implements Bro
                 theReview.getComments().remove(this);
             }
         }
-        super.updateCacheOnDelete();
+        super.updateCacheOnDelete(beans);
     }
 }

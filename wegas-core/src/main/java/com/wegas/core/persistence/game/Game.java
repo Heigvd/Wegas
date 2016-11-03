@@ -106,7 +106,7 @@ public class Game extends NamedEntity implements Broadcastable {
     private List<Team> teams = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "game", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
     private List<VariableInstance> privateInstances = new ArrayList<>();
 
     /**
