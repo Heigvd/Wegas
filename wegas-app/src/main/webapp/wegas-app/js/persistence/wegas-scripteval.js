@@ -170,8 +170,6 @@ YUI.add('wegas-scripteval', function(Y) {
          * @returns Request id
          */
         checkGameModel: function(callback, errorCallback) {
-            var that = this;
-            that.errored = {};
             return this.get("host").sendRequest({
                 request: "/Script/Test/",
                 cfg: {
@@ -183,7 +181,6 @@ YUI.add('wegas-scripteval', function(Y) {
                 },
                 on: {
                     success: function(e) {
-                        that.errored = e.serverResponse;
                         if (Y.Lang.isFunction(callback)) {
                             callback(e.serverResponse);
                         }
