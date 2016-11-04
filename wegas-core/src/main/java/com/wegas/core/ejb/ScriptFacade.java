@@ -71,20 +71,16 @@ public class ScriptFacade {
         CompiledScript compile = null;
         try {
             compile = ((Compilable) engine).compile("(function(global){"
-                    + "var defaultNoSuchProperty = global.__noSuchProperty__;"
-                    + // Store nashorn's implementation
-                    "Object.defineProperty(global, '__noSuchProperty__', {"
+                    + "var defaultNoSuchProperty = global.__noSuchProperty__;" // Store nashorn's implementation
+                    + "Object.defineProperty(global, '__noSuchProperty__', {"
                     + "value: function(prop){"
                     + "try{"
                     + "var ret = Variable.find(gameModel, prop).getInstance(self);"
-                    + "print('SCRIPT_ALIAS_CALL: [GM]' + gameModel.getId() + ' [alias]' + prop);"
-                    + // log usage if var exists
-                    "return ret;"
-                    + // Try to find a VariableDescriptor's instance for that given prop
-                    "}catch(e){"
-                    + "return defaultNoSuchProperty.call(global, prop);"
-                    + // Use default implementation if no VariableDescriptor
-                    "}}"
+                    + "print('SCRIPT_ALIAS_CALL: [GM]' + gameModel.getId() + ' [alias]' + prop);" // log usage if var exists
+                    + "return ret;" // Try to find a VariableDescriptor's instance for that given prop
+                    + "}catch(e){"
+                    + "return defaultNoSuchProperty.call(global, prop);" // Use default implementation if no VariableDescriptor
+                    + "}}"
                     + "})"
                     + "})(this);"); // Run on Bindings
         } catch (ScriptException e) {
