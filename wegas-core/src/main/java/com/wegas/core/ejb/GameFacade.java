@@ -363,8 +363,9 @@ public class GameFacade extends BaseFacade<Game> {
      */
     public void joinTeam(Team team, Player player) {
         team.addPlayer(player);
-        getEntityManager().persist(player);
+        this.getEntityManager().persist(player);
         team.getGame().getGameModel().propagateDefaultInstance(player);
+        this.getEntityManager().flush();
         requestFacade.firePlayerAction(player, true);
     }
 
