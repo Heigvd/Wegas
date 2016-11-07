@@ -233,10 +233,15 @@ YUI.add('wegas-datasource', function(Y) {
          * @private
          */
         initializer: function() {
-            var host = this.get(HOST);
+            var host = this.get(HOST), indexes, i, indexOn;
             host.data = [];
             this._indexes = {
             };
+            indexes = this.get("indexes");
+            for (i in indexes) {
+                indexOn = indexes[i];
+                this._indexes[indexOn] = {};
+            }
 
             this.publish("EntityUpdatedEvent", {
                 broadcast: true,
@@ -867,7 +872,13 @@ YUI.add('wegas-datasource', function(Y) {
                     return value === needleValue &&
                         (!needle._classes || entity instanceof needle._classes[0]);
                 }
+            },
+            indexes: {
+                type: "array",
+                value: [],
+                optional: true
             }
+
         }
     });
     Plugin.WegasCache = WegasCache;
@@ -888,11 +899,7 @@ YUI.add('wegas-datasource', function(Y) {
             // Server event, triggered through the managed-mode response events.
             //this._indexes.name = {};
             //this._indexes.id = {};
-            var indexes = this.get("indexes"), i, indexOn;
-            for (i in indexes) {
-                indexOn = indexes[i];
-                this._indexes[indexOn] = {};
-            }
+
 
             this.on("CustomEvent", function(e) { // TODO MOVE SOMEWHERE...
                 this.get(HOST).fire(e.serverEvent.get("val.type"), e.serverEvent.get("val.payload"));
@@ -1036,11 +1043,6 @@ YUI.add('wegas-datasource', function(Y) {
         NS: "cache",
         NAME: "VariableDescriptorCache",
         ATTRS: {
-            indexes: {
-                type: "array",
-                value: [],
-                optional: true
-            }
         }
     });
     Plugin.VariableDescriptorCache = VariableDescriptorCache;

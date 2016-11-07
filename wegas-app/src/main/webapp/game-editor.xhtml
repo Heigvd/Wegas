@@ -92,7 +92,8 @@
                                         cfg: {
                                             currentGameId: #{gameController.currentGame.id},
                                             currentTeamId: #{gameController.currentPlayer.team.id},
-                                            currentPlayerId: #{gameController.currentPlayer.id}
+                                            currentPlayerId: #{gameController.currentPlayer.id},
+                                            indexed = ["id"]
                                         }
                                     }
                                 ]
