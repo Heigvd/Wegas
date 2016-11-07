@@ -97,7 +97,8 @@ YUI.add("wegas-text-input", function(Y) {
                                 });
                             }
                             // Update on editor update
-                            editor.on('keyUp', Y.bind(this._onChange, this)); // Update on editor update
+                            editor.on('change', Y.bind(this._onChange, this)); // click on taskbar buttons
+                            editor.on('keyUp', Y.bind(this._onChange, this)); // text input & ctrl-related operations
                             //editor.on('NodeChange', Y.bind(this.setContent, this)); // Update on editor update
                             this.editor = editor;
                             this.syncUI();
