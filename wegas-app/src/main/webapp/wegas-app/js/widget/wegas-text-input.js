@@ -266,6 +266,7 @@ YUI.add("wegas-text-input", function(Y) {
             return valid;
         },
         onSave: function() {
+            if (!this.editor) return; // Is null when save timeout occurs too late (e.g. after leaving the current page).
             var value = this.editor.getContent(),
                 valid, msg;
             valid = true || this.updateCounters(); // Fixme do something... (prevent saving or not...)
