@@ -419,8 +419,6 @@ YUI.add("wegas-review-widgets", function(Y) {
         },
         createGradeChart: function(klass, summary, descriptor) {
             var min, max, data, options, i, bar;
-            min = summary.min;
-            max = summary.max;
 
             data = {
                 labels: [],
@@ -437,7 +435,9 @@ YUI.add("wegas-review-widgets", function(Y) {
 
             for (i in summary.histogram) {
                 bar = summary.histogram[i];
-                data.labels.push("[" + bar.min.toFixed(2) + "," + bar.max.toFixed(2) + "[");
+                min = bar.min || Number.NaN;
+                max = bar.max || Number.NaN;
+                data.labels.push("[" + min.toFixed(2) + "," + max.toFixed(2) + "[");
                 data.series[0].data.push(bar.count);
             }
             this.chart = new Chartist.Bar(klass, data, options);
