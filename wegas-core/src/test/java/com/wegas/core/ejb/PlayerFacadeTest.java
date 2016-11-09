@@ -92,7 +92,7 @@ public class PlayerFacadeTest extends AbstractEJBTest {
     private Team createTeam(Game g, String name) {
         Team t = new Team(name);
         t.setGame(g);
-        teamFacade.create(t);
+        teamFacade.create(g.getId(), t);
         return t;
     }
 
@@ -108,7 +108,7 @@ public class PlayerFacadeTest extends AbstractEJBTest {
      */
     @Test
     public void testMassiveJoin() throws Exception {
-        int nbTeam = 10;
+        int nbTeam = 100;
         int nbPlayer = 10;
         Game g = new Game("game");
         g.setGameModel(gameModel);
