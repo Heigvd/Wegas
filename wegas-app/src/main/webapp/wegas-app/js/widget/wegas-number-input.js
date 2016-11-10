@@ -9,14 +9,14 @@
  * @fileoverview
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
-YUI.add("wegas-number-input", function (Y) {
+YUI.add("wegas-number-input", function(Y) {
     "use strict";
     var CONTENTBOX = "contentBox", AbstractNumberInput,
         NumberInput, BoxesNumberInput,
         Wegas = Y.Wegas;
 
     AbstractNumberInput = Y.Base.create("wegas-abstract-number-input", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
-        initializer: function () {
+        initializer: function() {
             this.handlers = [];
             this._initialValue = undefined;
             this._previousValue = undefined;
@@ -30,15 +30,15 @@ YUI.add("wegas-number-input", function (Y) {
                 emitFacade: true
             });
         },
-        bindUI: function () {
+        bindUI: function() {
             this.on("save", this._save);
         },
-        destructor: function () {
-            Y.Array.each(this.handlers, function (h) {
+        destructor: function() {
+            Y.Array.each(this.handlers, function(h) {
                 h.detach();
             });
         },
-        _getValue: function () {
+        _getValue: function() {
             return this.get("variable.evaluated").getInstance().get("value");
         },
         /**
@@ -50,7 +50,7 @@ YUI.add("wegas-number-input", function (Y) {
          * @param {type} value the new numeric value to save
          * @returns {Boolean} true is the value has been saved, false otherwise
          */
-        updateValue: function (raw_value) {
+        updateValue: function(raw_value) {
             var desc = this.get("variable.evaluated"),
                 inst = desc.getInstance(),
                 min = desc.get("minValue"),
@@ -109,35 +109,57 @@ YUI.add("wegas-number-input", function (Y) {
                 });
             }
         },
-        _saved: function (value) {
+        _saved: function(value) {
             var desc = this.get("variable.evaluated");
             this.fire("saved", {
                 descriptor: desc,
                 value: value
             });
+
+            if (this.waitForValue === value) {
+                this.waitForValue = null;
+                if (this.queuedValue) {
+                    this.processSave(this.queuedValue.value, this.queuedValue.descriptor);
+                }
+            }
         },
-        _save: function (e) {
-            var cb = this.get("contentBox"),
-                value = e.value,
-                theVar = e.descriptor.getInstance();
-            this._initialContent = value;
-            theVar.set("value", value);
+        _save: function(e) {
+            var value = e.value;
             if (this.get("selfSaving")) {
-                Wegas.Facade.Variable.script.remoteEval("Variable.find(gameModel, \"" + e.descriptor.get("name") + "\").setValue(self, " + value + ");", {
-                    on: {
-                        success: Y.bind(function () {
-                            cb.removeClass("loading");
-                            this._saved(value);
-                        }, this),
-                        failure: Y.bind(function () {
-                            cb.removeClass("loading");
-                            this._saved(value);
-                        }, this)
-                    }
-                });
+                if (!this.waitForValue) {
+                    this.processSave(value, e.descriptor);
+                } else {
+                    this.queuedValue = {
+                        value: value,
+                        descriptor: e.descriptor
+                    };
+                }
             } else {
+                this._initialValue = value;
+                e.descriptor.getInstance().set("value", value);
                 this._saved(value);
             }
+        },
+        processSave: function(value, descriptor) {
+            var cb = this.get("contentBox"),
+                theVar = descriptor.getInstance();
+
+            this.waitForValue = value;
+            this._initialValue = value;
+            theVar.set("value", value);
+
+            Wegas.Facade.Variable.script.remoteEval("Variable.find(gameModel, \"" + descriptor.get("name") + "\").setValue(self, " + value + ");", {
+                on: {
+                    success: Y.bind(function() {
+                        cb.removeClass("loading");
+                        this._saved(value);
+                    }, this),
+                    failure: Y.bind(function() {
+                        cb.removeClass("loading");
+                        this._saved(value);
+                    }, this)
+                }
+            });
         }
     }, {
         /** @lends Y.Wegas.AbstractNumberInput */
@@ -191,13 +213,13 @@ YUI.add("wegas-number-input", function (Y) {
             "<input class=\"wegas-input\" />" +
             "</div>" +
             "</div>",
-        initializer: function () {
+        initializer: function() {
             this.xSlider = null;
             this.publish("editing", {
                 emitFacade: true
             });
         },
-        renderUI: function () {
+        renderUI: function() {
             var desc = this.get("variable.evaluated"),
                 inst = desc.getInstance(),
                 CB = this.get("contentBox");
@@ -221,7 +243,7 @@ YUI.add("wegas-number-input", function (Y) {
                     inst.get("value") + '</p>');
             }
         },
-        syncUI: function () {
+        syncUI: function() {
             var desc = this.get("variable.evaluated"),
                 inst = desc.getInstance(),
                 CB = this.get("contentBox"),
@@ -234,7 +256,7 @@ YUI.add("wegas-number-input", function (Y) {
                     var snapshot = +CB.one(".wegas-input").get("value");
                     if (this._initialValue !== undefined && snapshot !== value
                         // But do the syncUI anyway if the variable was updated by another means than this input field:
-                        && this._initialValue != snapshot){
+                        && this._initialValue != snapshot) {
                         //Y.log("*** Number input: different syncUI(" + value + ") vs. " + snapshot);
                         return;
                     }
@@ -251,7 +273,7 @@ YUI.add("wegas-number-input", function (Y) {
             }
 
         },
-        bindUI: function () {
+        bindUI: function() {
             var input = this.get(CONTENTBOX).one(".wegas-input");
             NumberInput.superclass.constructor.prototype.bindUI.call(this);
             this.handlers.push(Y.Wegas.Facade.Variable.after("update", this.syncUI, this));
@@ -265,34 +287,34 @@ YUI.add("wegas-number-input", function (Y) {
                 this.handlers.push(input.on("valuechange", this.onValueChange, this));
             }
         },
-        destructor: function () {
+        destructor: function() {
         },
-        updateInput: function (e) {
+        updateInput: function(e) {
             var input = this.get(CONTENTBOX).one(".wegas-input"),
                 value = this.xSlider.get("value");
 
             //this.updateValue(value);
             input.set("value", value);
         },
-        updateFromSlider: function (e) {
+        updateFromSlider: function(e) {
             var value = this.xSlider.get("value");
 
             this.updateValue(value);
         },
-        onValueChange: function (e) {
+        onValueChange: function(e) {
             var input = this.get(CONTENTBOX).one("input"),
                 value = input.get("value");
             this.fire("editing", {"descriptor": this._descriptor, "value": value});
             this.updateFromInput();
         },
-        updateFromInput: function () {
+        updateFromInput: function() {
             var input = this.get(CONTENTBOX).one(".wegas-input");
 
             if (this.wait) {
                 this.wait.cancel();
             }
             if (this.get("selfSaving")) {
-                this.wait = Y.later(750, this, function () {
+                this.wait = Y.later(750, this, function() {
                     this.wait = null;
                     this.updateValue(input.get("value")); // Make sure to grab the very latest state of user input
                 });
@@ -316,9 +338,9 @@ YUI.add("wegas-number-input", function (Y) {
             "<div class=\"boxes\"></div>" +
             "<div style=\"clear: both;\"></div>" +
             "</div>",
-        initializer: function () {
+        initializer: function() {
         },
-        renderUI: function () {
+        renderUI: function() {
             var boxes = this.get(CONTENTBOX).one(".boxes"),
                 desc = this.get("variable.evaluated"),
                 min = desc.get("minValue"),
@@ -340,7 +362,7 @@ YUI.add("wegas-number-input", function (Y) {
                 }
             }
         },
-        syncUI: function () {
+        syncUI: function() {
             var boxes = this.get(CONTENTBOX).one(".boxes"),
                 desc = this.get("variable.evaluated"),
                 min = desc.get("minValue"),
@@ -384,14 +406,14 @@ YUI.add("wegas-number-input", function (Y) {
                 }
             }
         },
-        bindUI: function () {
+        bindUI: function() {
             BoxesNumberInput.superclass.constructor.prototype.bindUI.call(this);
             this.handlers.push(Y.Wegas.Facade.Variable.after("update", this.syncUI, this));
             this.handlers.push(this.get(CONTENTBOX).delegate("click", this.onBoxClick, ".box", this));
         },
-        destructor: function () {
+        destructor: function() {
         },
-        onBoxClick: function (e) {
+        onBoxClick: function(e) {
             var value;
             if (!this._readonly) {
                 value = e.currentTarget.getAttribute("data-value");

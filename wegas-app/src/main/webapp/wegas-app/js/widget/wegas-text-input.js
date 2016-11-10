@@ -277,34 +277,56 @@ YUI.add("wegas-text-input", function(Y) {
             this.setStatus(msg);
         },
         _save: function(e) {
-            var cb = this.get("contentBox"),
-                value = e.value,
+            var value = e.value,
                 theVar = e.descriptor.getInstance();
-            this._initialContent = value;
-            theVar.set("value", value);
             if (this.get("selfSaving")) {
-                Wegas.Facade.Variable.script.remoteEval("Variable.find(gameModel, \"" + e.descriptor.get("name") + "\").setValue(self, " + JSON.stringify(value) + ");", {
-                    on: {
-                        success: Y.bind(function() {
-                            cb.removeClass("loading");
-                            this.setStatus("Saved");
-                            this._saved(value);
-                        }, this),
-                        failure: Y.bind(function() {
-                            cb.removeClass("loading");
-                            this.setStatus("Something went wrong");
-                            this._saved(value);
-                        }, this)
-                    }
-                });
+                if (!this.waitForValue) {
+                    this.processSave(value, e.descriptor);
+                } else {
+                    this.queuedValue = {
+                        value: value,
+                        descriptor: e.descriptor
+                    };
+                }
             } else {
+                this._initialContent = value;
+                theVar.set("value", value);
                 this.setStatus("Saved");
                 this._saved(value);
             }
         },
+        processSave: function(value, descriptor) {
+            var theVar = descriptor.getInstance(),
+                cb = this.get("contentBox");
+
+            this.waitForValue = value;
+            this._initialContent = value;
+            theVar.set("value", value);
+
+            Wegas.Facade.Variable.script.remoteEval("Variable.find(gameModel, \"" + descriptor.get("name") + "\").setValue(self, " + JSON.stringify(value) + ");", {
+                on: {
+                    success: Y.bind(function() {
+                        cb.removeClass("loading");
+                        this.setStatus("Saved");
+                        this._saved(value);
+                    }, this),
+                    failure: Y.bind(function() {
+                        cb.removeClass("loading");
+                        this.setStatus("Something went wrong");
+                        this._saved(value);
+                    }, this)
+                }
+            });
+        },
         _saved: function(value) {
-            var desc = this.get("variable.evaluated");
             this.fire("saved", this.getPayload(value));
+
+            if (this.waitForValue === value) {
+                this.waitForValue = null;
+                if (this.queuedValue) {
+                    this.processSave(this.queuedValue.value, this.queuedValue.descriptor);
+                }
+            }
         },
         save: function(value) {
             var desc = this.get("variable.evaluated"),

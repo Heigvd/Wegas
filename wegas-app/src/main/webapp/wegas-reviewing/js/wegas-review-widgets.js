@@ -1308,7 +1308,7 @@ YUI.add("wegas-review-widgets", function(Y) {
         },
         _sendRequest: function(action, updateCache, cb) {
             this.showOverlay();
-            Y.Wegas.Facade.Variable.sendRequest({
+            Y.Wegas.Facade.Variable.sendQueuedRequest({
                 request: "/PeerReviewController/" + action
                     + "/" + Y.Wegas.Facade.Game.cache.get("currentPlayerId"),
                 cfg: {
@@ -1330,9 +1330,12 @@ YUI.add("wegas-review-widgets", function(Y) {
             });
         },
         save: function() {
-            this._sendRequest("SaveReview", false, function() {
-                this.submitButton.set("disabled", false);
-                this.setStatus("saved");
+            Y.log("SendSaveReviewRequest");
+            Y.later(500, this, function() {
+                this._sendRequest("SaveReview", false, function() {
+                    this.submitButton.set("disabled", false);
+                    this.setStatus("saved");
+                });
             });
         },
         submit: function() {
@@ -1562,16 +1565,19 @@ YUI.add("wegas-review-widgets", function(Y) {
 
             CB.one(".wegas-review-evaluation-label").setContent(desc.get("name"));
             CB.one(".wegas-review-evaluation-desc").setContent(desc.get("description"));
-            this._initialValue = ev.get("value");
+            this._initialContent = ev.get("value");
 
-            if (this.get("readonly.evaluated") && !this._initialValue) {
+            if (this.get("readonly.evaluated") && !this._initialContent) {
                 return "<i>" + I18n.t("review.editor.noValueProvided") + '</i>';
             }
 
-            return this._initialValue;
+            return this._initialContent;
         },
         valueChanged: function(newValue) {
-            //this.save(newValue);
+            this.currentValue = newValue;
+        },
+        getCurrentValue: function(){
+            return this.currentValue;  
         },
         getPayload: function(value) {
             return {
@@ -1588,6 +1594,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                 value = e.value,
                 ev = this.get("evaluation");
             this._initialContent = value;
+            Y.log("SetInitialContext _Save -> " + value);
             ev.set("value", value);
             cb.removeClass("loading");
             this.fire("saved", this.getPayload(e.value));
@@ -1596,9 +1603,13 @@ YUI.add("wegas-review-widgets", function(Y) {
             var evl, value;
             evl = this.get("evaluation");
             value = evl.get("value");
-            if (value !== this._initialValue) {
+            Y.log("Sync? " + value + " <==> " + this._initialContent);
+            if (value !== this._initialContent && this.getCurrentValue() === this._initialContent) {
+                Y.log("Sync: Set _content & Editor to \"" + value + "\"");
                 Y.later(100, this, function() {
-                    this.editor.setContent(this.getInitialContent());
+                    var content = this.getInitialContent();
+                    this.currentValue = content;
+                    this.editor.setContent(content);
                     /*var tmceI = tinyMCE.get(this.get("contentBox").one(".wegas-text-input-editor"));
                      if (tmceI) {
                      tmceI.setContent(this.getInitialContent());
