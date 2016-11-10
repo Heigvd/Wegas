@@ -138,13 +138,13 @@ public class GameFacade extends BaseFacade<Game> {
             throw WegasErrorMessage.error("This token is already in use.");
         }
         getEntityManager().persist(game);
+        gameModel.propagateDefaultInstance(game, true);
 
         game.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
         gameModel.addGame(game);
         this.addDebugTeam(game);
 
-//        this.flush();
-        gameModelFacade.reset(gameModel);                                       // Reset the game so the default player will have instances
+        //gameModelFacade.reset(gameModel);                                       // Reset the game so the default player will have instances
 
         userFacade.addUserPermission(currentUser,
                 "Game:View,Edit:g" + game.getId());                             // Grant permission to creator
@@ -167,7 +167,10 @@ public class GameFacade extends BaseFacade<Game> {
      */
     public boolean addDebugTeam(Game game) {
         if (!game.hasDebugTeam()) {
-            game.addTeam(new DebugTeam());
+            DebugTeam debugTeam = new DebugTeam();
+            debugTeam.setGame(game);
+            teamFacade.create(debugTeam);
+            //game.addTeam(new DebugTeam());
             return true;
         } else {
             return false;
@@ -364,7 +367,7 @@ public class GameFacade extends BaseFacade<Game> {
     public void joinTeam(Team team, Player player) {
         team.addPlayer(player);
         this.getEntityManager().persist(player);
-        team.getGame().getGameModel().propagateDefaultInstance(player);
+        team.getGame().getGameModel().propagateDefaultInstance(player, true);
         this.getEntityManager().flush();
         requestFacade.firePlayerAction(player, true);
     }
@@ -462,7 +465,7 @@ public class GameFacade extends BaseFacade<Game> {
     public void reset(final Game game) {
         // Need to flush so prepersit events will be thrown (for example Game will add default teams)
         //getEntityManager().flush();
-        game.getGameModel().propagateDefaultInstance(game);
+        game.getGameModel().propagateDefaultInstance(game, false);
         //getEntityManager().flush(); // DA FU    ()
         // Send an reset event (for the state machine and other)
         resetEvent.fire(new ResetEvent(game));

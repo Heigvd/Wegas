@@ -144,13 +144,13 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         if (propagate) {
             AbstractScope scope = entity.getScope();
             scope.setBeanjection(new Beanjection(variableInstanceFacade));
-            scope.propagateDefaultInstance(null);
+            scope.propagateDefaultInstance(null, true);
         }
 
         descriptorRevivedEvent.fire(new DescriptorRevivedEvent(entity));
         gameModel.addToVariableDescriptors(entity);
         if (entity instanceof DescriptorListI) {
-            this.reviveItems(gameModel, (DescriptorListI) entity, propagate);
+            this.reviveItems(gameModel, (DescriptorListI) entity, propagate); // also revive children
         }
     }
 

@@ -86,15 +86,15 @@ public class PlayerScope extends AbstractScope<Player> {
      * @param p instance owner
      */
     @Override
-    protected void propagate(Player p) {
+    protected void propagate(Player p, boolean create) {
         VariableDescriptor vd = getVariableDescriptor();
-        VariableInstance vi = this.getVariableInstance(p);
-        if (vi == null) {
+        if (create) {
             VariableInstance clone = vd.getDefaultInstance().clone();
             p.getPrivateInstances().add(clone);
             this.setVariableInstance(p, clone);
             //vif.create(clone);
         } else {
+            VariableInstance vi = this.getVariableInstance(p);
             Long version = vi.getVersion();
             vi.merge(vd.getDefaultInstance());
             vi.setVersion(version);
@@ -102,15 +102,15 @@ public class PlayerScope extends AbstractScope<Player> {
     }
 
     @Override
-    public void propagateDefaultInstance(AbstractEntity context) {
+    public void propagateDefaultInstance(AbstractEntity context, boolean create) {
         if (context instanceof Player) {
-            propagate((Player) context);
+            propagate((Player) context, create);
         } else if (context instanceof Team) {
-            propagate((Team) context);
+            propagate((Team) context, create);
         } else if (context instanceof Game) {
-            propagate((Game) context);
+            propagate((Game) context, create);
         } else { // instanceof GameModel or null
-            propagate(getVariableDescriptor().getGameModel());
+            propagate(getVariableDescriptor().getGameModel(), create);
         }
     }
 

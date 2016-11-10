@@ -158,7 +158,7 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
      *
      * @param p instance owner
      */
-    protected void propagate(Player p) {
+    protected void propagate(Player p, boolean create) {
     }
 
     /**
@@ -166,9 +166,9 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
      *
      * @param t the team
      */
-    protected void propagate(Team t) {
+    protected void propagate(Team t, boolean create) {
         for (Player p : t.getPlayers()) {
-            propagate(p);
+            propagate(p, create);
         }
     }
 
@@ -177,9 +177,9 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
      *
      * @param g the game
      */
-    protected void propagate(Game g) {
+    protected void propagate(Game g, boolean create) {
         for (Team t : g.getTeams()) {
-            propagate(t);
+            propagate(t, create);
         }
     }
 
@@ -188,9 +188,9 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
      *
      * @param gm the gameModel
      */
-    protected void propagate(GameModel gm) {
+    protected void propagate(GameModel gm, boolean create) {
         for (Game g : gm.getGames()) {
-            propagate(g);
+            propagate(g, create);
         }
     }
 
@@ -199,8 +199,9 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
      *
      * @param context instance (GameModel, Game, Team, Player) to propagate
      *                instances to (null means propagate to everybody)
+     * @param create
      */
-    abstract public void propagateDefaultInstance(AbstractEntity context);
+    abstract public void propagateDefaultInstance(AbstractEntity context, boolean create);
 
     /**
      * @return

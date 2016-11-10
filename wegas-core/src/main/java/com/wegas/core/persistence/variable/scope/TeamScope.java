@@ -17,7 +17,6 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.*;
-import com.wegas.core.ejb.VariableInstanceFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,10 +109,9 @@ public class TeamScope extends AbstractScope<Team> {
     }
 
     @Override
-    protected void propagate(Team t) {
+    protected void propagate(Team t, boolean create) {
         VariableDescriptor vd = this.getVariableDescriptor();
-        VariableInstance vi = this.getVariableInstance(t);
-        if (vi == null) {
+        if (create) {
             VariableInstance newInstance = vd.getDefaultInstance().clone();
             //t.setPrivateInstance(ListUtils.cloneAdd(t.getPrivateInstances(), newInstance));
             t.getPrivateInstances().add(newInstance);
@@ -121,6 +119,7 @@ public class TeamScope extends AbstractScope<Team> {
 
             //vif.create(newInstance);  //<----
         } else {
+            VariableInstance vi = this.getVariableInstance(t);
             Long version = vi.getVersion();
             vi.merge(vd.getDefaultInstance());
             vi.setVersion(version);
@@ -128,16 +127,16 @@ public class TeamScope extends AbstractScope<Team> {
     }
 
     @Override
-    public void propagateDefaultInstance(AbstractEntity context) {
+    public void propagateDefaultInstance(AbstractEntity context, boolean create) {
         //logger.info("Propagating default instance for VariableDescriptor: {}", this.getVariableDescriptor());
         if (context instanceof Player) {
             // No need to propagate since the team already exists
         } else if (context instanceof Team) {
-            propagate((Team) context);
+            propagate((Team) context, create);
         } else if (context instanceof Game) {
-            propagate((Game) context);
+            propagate((Game) context, create);
         } else {
-            propagate(getVariableDescriptor().getGameModel());
+            propagate(getVariableDescriptor().getGameModel(), create);
         }
     }
 

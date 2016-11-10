@@ -397,7 +397,7 @@ public class PlayerFacade extends BaseFacade<Player> {
         // Need to flush so prepersit events will be thrown (for example Game will add default teams)
         // F*cking flush
         //getEntityManager().flush();
-        player.getGameModel().propagateDefaultInstance(player);
+        player.getGameModel().propagateDefaultInstance(player, false);
         // F*cking flush
         //getEntityManager().flush();
         // Send an reset event (for the state machine and other)

@@ -79,6 +79,8 @@ public class GameModelController {
         // logger.info(Level.INFO, "POST GameModel");
 
         SecurityUtils.getSubject().checkPermission("GameModel:Duplicate:gm" + templateGameModelId);
+
+        //TODO : replace duplicate + addDebugGame by duplicateWithDebugGame !
         GameModel duplicate = gameModelFacade.duplicate(templateGameModelId);
         duplicate.setName(gm.getName());
 

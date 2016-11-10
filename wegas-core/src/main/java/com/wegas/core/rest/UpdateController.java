@@ -200,7 +200,7 @@ public class UpdateController {
             scope.setVariableDescscriptor(vd);
             vd.setScope(scope);
             em.persist(vd);
-            vd.propagateDefaultInstance(null);
+            vd.propagateDefaultInstance(null, true);
         }
     }
 
@@ -431,7 +431,7 @@ public class UpdateController {
             DebugTeam dt = new DebugTeam();
             g.addTeam(dt);
             this.getEntityManager().persist(dt);
-            g.getGameModel().propagateDefaultInstance(dt);
+            g.getGameModel().propagateDefaultInstance(dt, true);
             this.getEntityManager().flush();
             if (++counter == 25) {
                 break;
