@@ -208,7 +208,7 @@ public class ReviewingFacade {
         if (prd.getGameModel().getTemplate()) {
             // Edit Scenario Case -> there is only one game (debug) and one player (TestPlayer)
             // In this case, allow the player to review itself once
-            numberOfReview = 1;
+            numberOfReview = 2;
             Player testPlayer = prd.getGameModel().getGames().get(0).getTeams().get(0).getPlayers().get(0);
             pris.add(prd.getInstance(testPlayer));
         } else {
