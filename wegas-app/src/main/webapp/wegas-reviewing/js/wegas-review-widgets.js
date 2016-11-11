@@ -1083,6 +1083,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             this.widgets = {};
             this.handlers = {};
             this.locks = {};
+            this.values = {}; // to store last saved values
         },
         /**
          *
@@ -1205,11 +1206,13 @@ YUI.add("wegas-review-widgets", function(Y) {
             evls = review.get("feedback");
             for (i in evls) {
                 this.widgets[evls[i].get("id")] = this.addEvaluation(evls[i], fbContainer, modeFb);
+                this.values[evls[i].get("id")] = evls[i].get("value");
             }
 
             evls = review.get("comments");
             for (i in evls) {
                 this.widgets[evls[i].get("id")] = this.addEvaluation(evls[i], fbEContainer, modeFbEval);
+                this.values[evls[i].get("id")] = evls[i].get("value");
             }
         },
         syncUI: function() {
@@ -1221,7 +1224,10 @@ YUI.add("wegas-review-widgets", function(Y) {
                 w = this.widgets[evl.get("id")];
                 if (w) {
                     w.set("evaluation", evl);
-                    w.syncUI();
+                    if (this.values[evl.get("id")] !== evl.get("value")) {
+                        this.values[evl.get("id")] = evl.get("value");
+                        w.syncUI(true);
+                    }
                 }
             }
         },
@@ -1257,37 +1263,40 @@ YUI.add("wegas-review-widgets", function(Y) {
             });
         },
         onSaved: function(e) {
-            this.setStatus("not saved");
             this.submitButton.set("disabled", true);
             delete this.locks[e.id];
             if (this.timer) {
                 this.timer.cancel();
             }
-            this.timer = Y.later(2000, this, function() {
+            this.timer = Y.later(500, this, function() {
                 var id;
                 for (id in this.locks) {
                     if (this.locks.hasOwnProperty(id) && this.locks[id]) {
+                        // at least one evaluation is being edited -> do not save yet 
+                        // but wait for edition end
                         return;
                     }
                 }
-                this.setStatus("saving <i class=\"fa fa-1x fa-spinner fa-spin\"></i>");
                 this.save();
             });
         },
         onEdit: function(e) {
             this.locks[e.id] = true;
-            this.setStatus("not saved");
+            this.setStatus("saving <i class=\"fa fa-1x fa-spinner fa-spin\"></i>");
             this.submitButton.set("disabled", true);
         },
         onRevert: function(e) {
             delete this.locks[e.id];
         },
         destructor: function() {
-            Y.log("DESTROY REVIEW WIDGET");
+            this.set("predestroyed", true);
             if (this.timer) {
                 this.timer.cancel();
                 this.save();
             }
+
+            this.statusTimer && this.statusTimer.cancel();
+
             var id;
             for (id in this.handlers) {
                 if (this.handlers.hasOwnProperty(id)) {
@@ -1307,7 +1316,9 @@ YUI.add("wegas-review-widgets", function(Y) {
              }*/
         },
         _sendRequest: function(action, updateCache, cb) {
-            this.showOverlay();
+            if (!this.get("destroyed") && !this.get("predestroyed")) {
+                this.showOverlay();
+            }
             Y.Wegas.Facade.Variable.sendQueuedRequest({
                 request: "/PeerReviewController/" + action
                     + "/" + Y.Wegas.Facade.Game.cache.get("currentPlayerId"),
@@ -1317,31 +1328,46 @@ YUI.add("wegas-review-widgets", function(Y) {
                     data: this.get("review")
                 },
                 on: {
-                    success: Y.bind(function() {
+                    success: Y.bind(function(e) {
                         this.hideOverlay();
-                        cb && cb.call(this);
+                        cb && cb.call(this, e);
                     }, this),
-                    failure: Y.bind(function() {
+                    failure: Y.bind(function(e) {
                         this.hideOverlay();
-                        cb && cb.call(this);
+                        cb && cb.call(this, e);
                         this.showMessage("error", "Something went wrong: " + action + " review");
                     }, this)
                 }
             });
         },
+        syncSavedValues: function() {
+            var review, evls, i;
+            review = this.get("review");
+
+            evls = review.get("feedback");
+            for (i in evls) {
+                this.values[evls[i].get("id")] = evls[i].get("value");
+            }
+
+            evls = review.get("comments");
+            for (i in evls) {
+                this.values[evls[i].get("id")] = evls[i].get("value");
+            }
+        },
         save: function() {
-            Y.log("SendSaveReviewRequest");
-            Y.later(500, this, function() {
-                this._sendRequest("SaveReview", false, function() {
+            this._sendRequest("SaveReview", false, function(e) {
+                if (!this.get("destroyed")) {
                     this.submitButton.set("disabled", false);
                     this.setStatus("saved");
-                });
+                    this.syncSavedValues();
+                }
             });
         },
         submit: function() {
             Wegas.Panel.confirm(I18n.t("review.global.confirmation").capitalize(), Y.bind(function() {
-                Wegas.Panel.confirmPlayerAction(Y.bind(function() {
+                Wegas.Panel.confirmPlayerAction(Y.bind(function(e) {
                     this._sendRequest("SubmitReview", true);
+                    this.syncSavedValues();
                 }, this));
             }, this));
         }
@@ -1395,7 +1421,6 @@ YUI.add("wegas-review-widgets", function(Y) {
         initializer: function() {
             this.handlers = [];
             this.xSlider = null;
-            this._initialValue = undefined;
             //this.get("evaluation").get("value");
             this.publish("save", {
                 emitFacade: true
@@ -1433,29 +1458,31 @@ YUI.add("wegas-review-widgets", function(Y) {
             }
 
         },
-        syncUI: function() {
+        syncUI: function(quiet) {
             var evl, value;
             evl = this.get("evaluation");
             value = evl.get("value");
             this.evId = evl.get("id");
+            this._quiet = quiet;
 
-            if (value !== this._initialValue) {
-                this._initialValue = value;
+            //if (value !== this._initialValue) {
+            //    this._initialValue = value;
 
-                if (!this.get("readonly")) {
-                    this.get(CONTENTBOX).one(".wegas-review-grade-instance-input").set("value", value);
-                    if (this.xSlider) {
-                        this.xSlider.set("value", value);
-                    }
-                } else {
-                    this.get(CONTENTBOX).one(".wegas-review-grade-instance-input-container").setContent('<p>' +
-                        (value ? value : "<i>" + I18n.t("review.editor.noValueProvided")) + '</i></p>');
+            if (!this.get("readonly")) {
+                this.get(CONTENTBOX).one(".wegas-review-grade-instance-input").set("value", value);
+                if (this.xSlider) {
+                    this.xSlider.set("value", value);
                 }
             } else {
-                if (!this.get("readonly")) {
-                    evl.set("value", this.getCurrentValue());
-                }
+                this.get(CONTENTBOX).one(".wegas-review-grade-instance-input-container").setContent('<p>' +
+                    (value ? value : "<i>" + I18n.t("review.editor.noValueProvided")) + '</i></p>');
             }
+            this._quiet = false;
+            //} else {
+            //if (!this.get("readonly")) {
+            //evl.set("value", this.getCurrentValue());
+            //}
+            //}
         },
         getCurrentValue: function() {
             if (this.get("readonly")) {
@@ -1501,10 +1528,11 @@ YUI.add("wegas-review-widgets", function(Y) {
             }
 
             if (value === this._initialValue) {
-                this.fire("revert", {"id": this.evId, "value": value});
+                !this._quiet && this.fire("revert", {"id": this.evId, "value": value});
             } else {
-                this.fire("save", {"id": this.evId, "value": value});
+                !this._quiet && this.fire("save", {"id": this.evId, "value": value});
             }
+            this._quiet = false;
 
             return true;
         },
@@ -1529,7 +1557,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                 this.timer = null;
                 if (this.updateValue(value)) {
                     if (this.xSlider) {
-                        this.xSlider.set("value", value);
+                        this.xSlider.set("value", +value);
                     }
                 }
             });
@@ -1576,8 +1604,8 @@ YUI.add("wegas-review-widgets", function(Y) {
         valueChanged: function(newValue) {
             this.currentValue = newValue;
         },
-        getCurrentValue: function(){
-            return this.currentValue;  
+        getCurrentValue: function() {
+            return this.currentValue;
         },
         getPayload: function(value) {
             return {
@@ -1593,19 +1621,20 @@ YUI.add("wegas-review-widgets", function(Y) {
             var cb = this.get("contentBox"),
                 value = e.value,
                 ev = this.get("evaluation");
-            this._initialContent = value;
-            Y.log("SetInitialContext _Save -> " + value);
-            ev.set("value", value);
-            cb.removeClass("loading");
-            this.fire("saved", this.getPayload(e.value));
+            if (!this._quiet) {
+                this._initialContent = value;
+                ev.set("value", value);
+                cb.removeClass("loading");
+                this.fire("saved", this.getPayload(e.value));
+            }
         },
-        syncUI: function() {
+        syncUI: function(quiet) {
             var evl, value;
             evl = this.get("evaluation");
             value = evl.get("value");
-            Y.log("Sync? " + value + " <==> " + this._initialContent);
+            this._quiet = quiet;
+
             if (value !== this._initialContent && this.getCurrentValue() === this._initialContent) {
-                Y.log("Sync: Set _content & Editor to \"" + value + "\"");
                 Y.later(100, this, function() {
                     var content = this.getInitialContent();
                     this.currentValue = content;
@@ -1614,9 +1643,10 @@ YUI.add("wegas-review-widgets", function(Y) {
                      if (tmceI) {
                      tmceI.setContent(this.getInitialContent());
                      }*/
-
+                    this._quiet = false;
                 });
             } else {
+                this._quiet = quiet;
                 if (!this.get("readonly.evaluated")) {
                     evl.set("value", this.editor.getContent());
                 }
@@ -1675,7 +1705,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                 for (i in categs) {
                     if (categs.hasOwnProperty(i)) {
                         categ = categs[i];
-                        frag.push("<option value=\"" + categ + "\" " +
+                        frag.push("<option value=\"" + encodeURIComponent(categ) + "\" " +
                             (categ === ev.get("value") ? "selected=''" : "") +
                             ">" + categ + "</option>");
                     }
@@ -1687,7 +1717,7 @@ YUI.add("wegas-review-widgets", function(Y) {
         getCurrentValue: function() {
             var option = this.get("contentBox").one(".wegas-review-categinput-content select");
             if (option) {
-                return option.get("options").item(option.get("selectedIndex")).getAttribute("value");
+                return decodeURIComponent(option.get("options").item(option.get("selectedIndex")).getAttribute("value"));
             } else {
                 option = this.get("contentBox").one(".wegas-review-categinput-content");
                 if (option) {
@@ -1697,8 +1727,9 @@ YUI.add("wegas-review-widgets", function(Y) {
                 }
             }
         },
-        syncUI: function() {
+        syncUI: function(quiet) {
             var evl, CB, value, select, option;
+            this._quiet = quiet;
             CB = this.get("contentBox");
             evl = this.get("evaluation");
             value = evl.get("value");
@@ -1710,13 +1741,18 @@ YUI.add("wegas-review-widgets", function(Y) {
             } else if (value !== this._initialValue) {
                 this._initialValue = value;
                 select = CB.one(".wegas-review-categinput-content select");
-                option = select.one("option[value='" + value + "']");
+                option = select.one("option[value=\"" + encodeURIComponent(value) + "\"]");
+                if (option) {
+                    var x = select.one("option[selected]");
+                    x && x.removeAttribute("selected");
 
-                option && option.setAttribute("selected");
+                    option.setAttribute("selected");
+                }
             } else {
                 // no-update case, fetch effective value from "select"
                 evl.set("value", this.getCurrentValue());
             }
+            this._quiet = false;
         },
         bindUI: function() {
             var select;
@@ -1732,10 +1768,10 @@ YUI.add("wegas-review-widgets", function(Y) {
         },
         updateValue: function(e) {
             var ev = this.get("evaluation"),
-                value = e.target.get("value");
+                value = decodeURIComponent(e.target.get("value"));
 
             ev.set("value", value);
-            this.fire("saved", {id: ev.get("id"), value: value});
+            !this._quiet && this.fire("saved", {id: ev.get("id"), value: value});
 
             return true;
         }

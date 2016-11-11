@@ -266,7 +266,8 @@ YUI.add("wegas-text-input", function(Y) {
             return valid;
         },
         onSave: function() {
-            if (!this.editor) return; // Is null when save timeout occurs too late (e.g. after leaving the current page).
+            if (!this.editor)
+                return; // Is null when save timeout occurs too late (e.g. after leaving the current page).
             var value = this.editor.getContent(),
                 valid, msg;
             valid = true || this.updateCounters(); // Fixme do something... (prevent saving or not...)
@@ -343,6 +344,10 @@ YUI.add("wegas-text-input", function(Y) {
             return "TextInput";
         },
         destructor: function() {
+            if (this.wait) {
+                this.wait.cancel();
+                this.onSave();
+            }
             try {
                 this.editor && this.editor.remove();
             } catch (e) {
