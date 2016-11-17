@@ -19,7 +19,7 @@
     height:100%;
 }
 
-.wegas-text-input span{
+.wegas-text-input .status{
     height: 24px;
     float: right;
     padding-left: 10px;

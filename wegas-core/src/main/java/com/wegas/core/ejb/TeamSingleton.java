@@ -11,13 +11,10 @@ import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Team;
 
-import javax.ejb.LocalBean;
-import javax.ejb.Singleton;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.persistence.EntityManager;
+import javax.inject.Inject;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 /**
@@ -28,8 +25,7 @@ import javax.persistence.TypedQuery;
 @Deprecated
 public class TeamSingleton {
 
-    @PersistenceContext(unitName = "wegasPU")
-    private EntityManager em;
+    @Inject RequestManager requestManager;
 
     /**
      * @param gameId
@@ -38,7 +34,7 @@ public class TeamSingleton {
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
     public Team findByName(Long gameId, String name) throws WegasNoResultException {
-        final TypedQuery<Team> query = em.createNamedQuery("Team.findByGameIdAndName", Team.class);
+        final TypedQuery<Team> query = requestManager.getEntityManager().createNamedQuery("Team.findByGameIdAndName", Team.class);
         query.setParameter("gameId", gameId);
         query.setParameter("name", name);
         try {
@@ -56,7 +52,7 @@ public class TeamSingleton {
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public Team persistTeam(Game game, Team team) {
-        game = em.find(Game.class, game.getId());
+        game = requestManager.getEntityManager().find(Game.class, game.getId());
         final String baseName
                 = team.getName() == null || team.getName().isEmpty()
                         ? team.getGame().getShortName()
@@ -75,7 +71,7 @@ public class TeamSingleton {
         } while (team.getName() == null);
 //        game.addTeam(team);
         game.addTeam(team);
-        em.flush(); // register name
+        requestManager.getEntityManager().flush(); // register name
         return team;
     }
 }

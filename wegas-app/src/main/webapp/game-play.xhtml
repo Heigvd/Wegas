@@ -29,7 +29,7 @@
             <!--</ui:repeat>-->
 
             <script type="text/javascript">
-                YUI().use('wegas-app', 'wegas-scripteval', "wegas-websocketlistener", function (Y) {
+                YUI().use('wegas-app', 'wegas-scripteval', "wegas-websocketlistener", function(Y) {
                     var app = new Y.Wegas.App({
                         dataSources: {
                             Variable: {
@@ -102,7 +102,8 @@
                                         cfg: {
                                             currentGameId: #{gameController.currentGame.id},
                                             currentTeamId: #{gameController.currentPlayer.team.id},
-                                            currentPlayerId: #{gameController.currentPlayer.id}
+                                            currentPlayerId: #{gameController.currentPlayer.id},
+                                            indexes: ["id"]
                                         }
                                     }
                                 ]
@@ -139,7 +140,7 @@
                         }
                     });
 
-                    app.after("render", function () {
+                    app.after("render", function() {
                         try {
                 #{gameController.clientScripts}                     // Run game model specific js footer
                         } catch (e) {

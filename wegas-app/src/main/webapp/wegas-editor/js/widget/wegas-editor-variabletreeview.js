@@ -308,10 +308,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 node,
                 /* + "  <span class='treeview-sub'>" + el.getType().replace("Descriptor", "") + "</span>"
                  tooltip = entity.getType().replace("Descriptor", "") + ": " + entity.getEditorLabel(),*/
-                erroredClass = Y.Object.hasKey(Y.Wegas.Facade.Variable.script.errored, entity.get(ID)) ?
-                "variable-error" : "",
-                advancedClass = text.indexOf("_") === 0 ? "wegas-advanced-feature" : "",
-                addClass = [erroredClass, advancedClass].join(" ");
+                advancedClass = text.indexOf("_") === 0 ? "wegas-advanced-feature" : "";
             if (entity.get("items")) {
                 collapsed = collapsed && !Y.Array.find(entity.get("items"), function(e) {
                     return this.currentSelection === e.get(ID);
@@ -346,7 +343,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         //rightWidget: Y.Node.create(EDITBUTTONTPL),
                         //iconCSS: "wegas-icon-variabledescriptor wegas-icon-" + elClass.toLowerCase(),
                         iconCSS: entity.getIconCss(),
-                        cssClass: "wegas-editor-listitem " + addClass
+                        cssClass: "wegas-editor-listitem " + advancedClass
                     };
                 case 'ListDescriptor':
                     node = {
@@ -360,7 +357,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         data: {
                             entity: entity
                         },
-                        cssClass: "wegas-editor-listitem wegas-editor-list " + addClass
+                        cssClass: "wegas-editor-listitem wegas-editor-list " + advancedClass
                     };
                     return node;
                 case 'QuestionDescriptor':
@@ -378,7 +375,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                             entity: entity
                         },
                         iconCSS: "fa fa-question-circle",
-                        cssClass: "wegas-editor-listitem wegas-editor-question " + addClass
+                        cssClass: "wegas-editor-listitem wegas-editor-question " + advancedClass
                     };
                 case 'ChoiceDescriptor':
                     children = Y.Array.map(entity.get("results"), function(result) {
@@ -406,7 +403,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         selected: selected,
                         //rightWidget: Y.Node.create(EDITBUTTONTPL),
                         iconCSS: entity.getIconCss(),
-                        cssClass: "wegas-editor-questionitem " + addClass
+                        cssClass: "wegas-editor-questionitem " + advancedClass
                     };
                 case 'SingleResultChoiceDescriptor':
                     return {
@@ -418,7 +415,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                             entity: entity
                         },
                         iconCSS: entity.getIconCss(),
-                        cssClass: "wegas-editor-questionitem " + addClass
+                        cssClass: "wegas-editor-questionitem " + advancedClass
                     };
                 case 'PeerReviewDescriptor':
                     children = Y.Array.map(["feedback", "fbComments"], function(category) {
@@ -460,7 +457,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         selected: selected,
                         //rightWidget: Y.Node.create(EDITBUTTONTPL),
                         iconCSS: "fa fa-users fa-1",
-                        cssClass: "wegas-editor-questionitem " + addClass
+                        cssClass: "wegas-editor-questionitem " + advancedClass
                     };
                 default:
                     return {

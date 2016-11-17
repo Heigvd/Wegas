@@ -81,7 +81,7 @@ public class Team extends AbstractEntity implements Broadcastable {
     private List<Player> players = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "team", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
     private List<VariableInstance> privateInstances = new ArrayList<>();
 
     /**

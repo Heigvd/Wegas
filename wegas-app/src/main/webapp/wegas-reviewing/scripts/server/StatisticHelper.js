@@ -39,29 +39,36 @@ var StatisticHelper = (function() {
      */
     function getNumericStatistics(values, min, max, numberOfClass) {
         var i, histogram = [], k,
-            mean, median, sd,
+            mean, median, sd, effectiveValues,
             sortedValues, x, classSize;
+
+        effectiveValues = [];
+        for (i = 0; i < values.length; i += 1) {
+            if (isNumber(values[i])) {
+                effectiveValues.push(values[i]);
+            }
+        }
 
         if (!isNumber(numberOfClass)) {
             numberOfClass = 5;
-            if (values.length > 100) {
+            if (effectiveValues.length > 100) {
                 numberOfClass = 20;
             }
 
         }
 
         if (!isNumber(min)) { // if min not provided, determine it from distribution
-            min = Math.min.apply(null, values);
+            min = Math.min.apply(null, effectiveValues);
         } else {
             // Otherwise, make sure min in less than distribution one
-            min = Math.min(min, Math.min.apply(null, values));
+            min = Math.min(min, Math.min.apply(null, effectiveValues));
         }
 
         if (!isNumber(max)) { // if max not provided, detemine it from distribution
-            max = Math.max.apply(null, values);
+            max = Math.max.apply(null, effectiveValues);
         } else {
             // Otherwise, make sure max in greater that distribution one
-            max = Math.max(max, Math.max.apply(null, values));
+            max = Math.max(max, Math.max.apply(null, effectiveValues));
         }
 
         classSize = (max - min) / (numberOfClass - 1);
@@ -73,40 +80,41 @@ var StatisticHelper = (function() {
                 count: 0
             });
         }
-        sortedValues = values.sort(function(a, b) {
-            return a < b;
-        });
 
         mean = 0;
-        for (i = 0; i < values.length; i += 1) {
-            for (k = 0; k < numberOfClass; k += 1) {
-                if (values[i] < histogram[k].max || k === numberOfClass - 1) {
+        for (i = 0; i < effectiveValues.length; i += 1) {
+            for (k = 0; k <= numberOfClass; k += 1) {
+                if (effectiveValues[i] < histogram[k].max || k === numberOfClass - 1) {
                     break;
                 }
             }
-            //k = Math.floor((values[i] - min) / classSize);
             histogram[k].count += 1;
-            mean += values[i];
+            mean += effectiveValues[i];
         }
-        mean /= values.length;
+        mean /= effectiveValues.length;
+
+        sortedValues = effectiveValues.sort(function(a, b) {
+            return a < b;
+        });
+
 
         sd = 0;
-        for (i = 0; i < values.length; i += 1) {
-            x = (values[i] - mean);
+        for (i = 0; i < effectiveValues.length; i += 1) {
+            x = (effectiveValues[i] - mean);
             sd += x * x;
         }
-        sd /= values.length;
+        sd /= effectiveValues.length;
         sd = Math.sqrt(sd);
 
-        if (values.length % 2 === 1) {
-            median = sortedValues[Math.floor(values.length / 2)];
+        if (effectiveValues.length % 2 === 1) {
+            median = sortedValues[Math.floor(effectiveValues.length / 2)];
         } else {
-            x = values.length / 2;
+            x = effectiveValues.length / 2;
             median = (sortedValues[x - 1] + sortedValues[x]) / 2;
         }
 
         return {
-            numberOfValues: values.length,
+            numberOfValues: effectiveValues.length,
             mean: mean,
             min: min,
             max: max,

@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -85,7 +84,7 @@ public class StateMachineController {
 
         checkPermissions(player.getGame().getId(), playerId);
         final StateMachineInstance stateMachineInstance = stateMachineFacade.doTransition(gameModelId, playerId, stateMachineDescriptorId, transitionId);
-        requestFacade.commit(player);
+        requestFacade.commit(player, true);
         return stateMachineInstance;
     }
 

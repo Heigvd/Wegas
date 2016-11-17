@@ -153,7 +153,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
 
                     if (questionInstance.get("active")) {
                         if (oldTab) {
-                            // Simple Update 
+                            // Simple Update
                             this.updateTab(oldTab, question);
                             oldIndex = toRemove.indexOf(oldTab);
                             if (oldIndex >= 0) {
@@ -172,7 +172,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             }
 
             /*
-             * Remvoe tabs which are not to be no longer displayed
+             * Remove tabs which are to be no longer displayed
              */
             while (question = toRemove.shift()) {
                 if (selectedTab === question) {
@@ -181,12 +181,13 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 question.remove();
             }
 
-            lastSelection = (selectedTab) ? selectedTab.get('index') : 0;
-            if (lastSelection >= this.tabView.size()) { // Can occur when questions list has changed during event
-                lastSelection = 0;
+            if (this.tabView.size()) { // There might be no active question to select
+                lastSelection = (selectedTab) ? selectedTab.get('index') : 0;
+                if (lastSelection >= this.tabView.size()) { // Can occur when questions list has changed during event
+                    lastSelection = 0;
+                }
+                this.tabView.selectChild(lastSelection);
             }
-            this.tabView.selectChild(lastSelection);
-
 
         },
         /**

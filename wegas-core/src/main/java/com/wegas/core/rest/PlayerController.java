@@ -10,6 +10,7 @@ package com.wegas.core.rest;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
+import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
@@ -86,29 +87,35 @@ public class PlayerController {
     /**
      *
      * @param teamId
-     * @return HTTP 200 with the team or 4xx if something went wrong
+     * @return HTTP 201 with the team or 4xx if something went wrong
      */
     @POST
     public Response create(@PathParam("teamId") Long teamId) {
-        Response r = Response.status(Response.Status.UNAUTHORIZED).build();
-        User currentUser = userFacade.getCurrentUser();
-        if (currentUser != null) {
-            r = Response.status(Response.Status.BAD_REQUEST).build();
-            Team teamToJoin = teamFacade.find(teamId);
-            if (teamToJoin != null) {
-                r = Response.status(Response.Status.FORBIDDEN).build();
-                if (!(teamToJoin instanceof DebugTeam)
-                        && teamToJoin.getGame().getAccess() == Game.GameAccess.OPEN
-                        && !teamToJoin.getGame().getProperties().getFreeForAll()) {
-                    Player existingPlayer = playerFacade.checkExistingPlayer(teamToJoin.getGameId(), currentUser.getId());
-                    if (existingPlayer == null) {
-                        playerFacade.create(teamToJoin, currentUser);
-                        r = Response.status(Response.Status.CREATED).entity(teamToJoin).build();
-                    }
+        User currentUser;
+        try {
+            currentUser = userFacade.getCurrentUser();
+        } catch (WegasNotFoundException ex) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+        Team teamToJoin = teamFacade.find(teamId);
+        if (teamToJoin != null) {
+            if (!(teamToJoin instanceof DebugTeam)
+                    && teamToJoin.getGame().getAccess() == Game.GameAccess.OPEN
+                    && !teamToJoin.getGame().getProperties().getFreeForAll()) {
+
+                Player existingPlayer = playerFacade.checkExistingPlayer(teamToJoin.getGameId(), currentUser.getId());
+
+                if (existingPlayer == null) {
+                    playerFacade.create(teamToJoin, currentUser);
+
+                    return Response.status(Response.Status.CREATED).entity(teamToJoin).build();
                 }
             }
+            //Not a joinable team (debugteam, closed game or individual game) or user already registerd within the game
+            return Response.status(Response.Status.FORBIDDEN).build();
         }
-        return r;
+        //the team doesn't exists
+        return Response.status(Response.Status.BAD_REQUEST).build();
     }
 
     /**

@@ -114,9 +114,11 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
         this.runForPlayer(player);
         /*
         Force resources release
-        getEntityManager().flush();
-        getEntityManager().clear();
          */
+        getEntityManager().flush();
+        if (playerAction.getClear()) {
+            getEntityManager().clear();
+        }
     }
 
     /**
@@ -124,6 +126,7 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
      */
     public void resetEventListener(@Observes ResetEvent resetEvent) throws WegasScriptException {
         logger.debug("Received Reset event");
+        getEntityManager().flush();
         for (Player player : resetEvent.getConcernedPlayers()) {
             this.runForPlayer(player);
         }
@@ -237,8 +240,8 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
         }
         if (transitionPassed) {
             /* WHAT ? */
-            /*@DIRTY, @TODO : find something else : Running scripts overrides previous state change Only for first Player (resetEvent). */
-            /* Fixed by lib, currently commenting it  @removeme */
+ /*@DIRTY, @TODO : find something else : Running scripts overrides previous state change Only for first Player (resetEvent). */
+ /* Fixed by lib, currently commenting it  @removeme */
 //            this.getAllStateMachines(player.getGameModel());
 
             for (Map.Entry<StateMachineInstance, Transition> entry : selectedTransitions.entrySet()) {
@@ -356,6 +359,7 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
     public void remove(StateMachineDescriptor entity) {
         variableDescriptorFacade.remove(entity);
     }
+
     /**
      * Access from nashhorn event callback
      */

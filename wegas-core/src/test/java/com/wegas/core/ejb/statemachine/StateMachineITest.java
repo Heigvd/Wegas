@@ -69,14 +69,14 @@ public class StateMachineITest extends AbstractEJBTest {
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new TriggerInstance());
         trigger.setTriggerEvent(new Script("1===1"));
-        trigger.setPostTriggerEvent(new Script("number.value = " + FINAL_VALUE));
+        trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, \"number\").getInstance(self).value = " + FINAL_VALUE));
         trigger.setOneShot(Boolean.TRUE);
         trigger.setDisableSelf(Boolean.FALSE);
 
         TriggerDescriptor trigger2 = new TriggerDescriptor();
         trigger2.setDefaultInstance(new TriggerInstance());
         trigger2.setTriggerEvent(new Script("true"));
-        trigger2.setPostTriggerEvent(new Script("number2.value += 1 "));
+        trigger2.setPostTriggerEvent(new Script("Variable.find(gameModel, \"number2\").getInstance(self).value += 1 "));
         trigger2.setOneShot(Boolean.FALSE);
         trigger2.setDisableSelf(Boolean.FALSE);
 
@@ -191,8 +191,8 @@ public class StateMachineITest extends AbstractEJBTest {
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setScope(new PlayerScope());
         trigger.setDefaultInstance(new TriggerInstance());
-        trigger.setTriggerEvent(new Script("personalScore.value > highScore.value"));
-        trigger.setPostTriggerEvent(new Script("highScore.value = 10"));
+        trigger.setTriggerEvent(new Script("Variable.find(gameModel, 'personalScore').getInstance(self).value > Variable.find(gameModel, 'highScore').getInstance(self).value"));
+        trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, 'highScore').getInstance(self).value = 10"));
         trigger.setOneShot(Boolean.FALSE);
 
         descriptorFacade.create(gameModel.getId(), trigger);
@@ -204,10 +204,10 @@ public class StateMachineITest extends AbstractEJBTest {
         RequestFacade rf = lookupBy(RequestFacade.class);
         rf.getRequestManager().setPlayer(null);
 
-        scriptFacade.eval(player.getId(), new Script("personalScore.value = 10"), null);
+        scriptFacade.eval(player.getId(), new Script("Variable.find(gameModel, 'personalScore').getInstance(self).value = 10"), null);
         rf.getRequestManager().setPlayer(null);
         rf.getRequestManager().setPlayer(player);
-        rf.commit();
+        rf.commit(true);
         Assert.assertEquals(10, ((NumberInstance) instanceFacade.find(personalScore.getId(), player.getId())).getValue(), 0);
         Assert.assertEquals(10, ((NumberInstance) instanceFacade.find(highScore.getId(), player.getId())).getValue(), 0);
     }
@@ -227,11 +227,11 @@ public class StateMachineITest extends AbstractEJBTest {
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new TriggerInstance());
         trigger.setTriggerEvent(new Script("Event.fired('testEvent')"));
-        trigger.setPostTriggerEvent(new Script("print('Update testnumber');VariableDescriptorFacade.findByName(gameModel, 'testnumber').setValue(self, "+ENDVAL+");"));
+        trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, " + ENDVAL + ");"));
         descriptorFacade.create(gameModel.getId(), trigger);
 
         sf.eval(player, new Script("JavaScript", "Event.on('testEvent', function(e){print('args: ' + e)});Event.fire('testEvent', " + ENDVAL + ")"), null);
-        lookupBy(RequestFacade.class).commit();
+        lookupBy(RequestFacade.class).commit(true);
         Assert.assertEquals(ENDVAL, ((NumberInstance) instanceFacade.find(number.getId(), player.getId())).getValue(), 0);
     }
 
@@ -242,7 +242,7 @@ public class StateMachineITest extends AbstractEJBTest {
         trigger.setName("trigger");
         trigger.setDefaultInstance(new TriggerInstance());
         trigger.setTriggerEvent(new Script("Event.fired('testEvent')"));
-        trigger.setPostTriggerEvent(new Script("println('Update testnumber');VariableDescriptorFacade.findByName(gameModel, 'testnumber').setValue(self, param);"));
+        trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, param);"));
         descriptorFacade.create(gameModel.getId(), trigger);
         GameModel duplicateGm = gameModelFacade.duplicateWithDebugGame(gameModel.getId());
         TriggerDescriptor find = (TriggerDescriptor) vdf.find(duplicateGm, "trigger");
@@ -261,7 +261,7 @@ public class StateMachineITest extends AbstractEJBTest {
         trigger.setName("trigger");
         trigger.setDefaultInstance(new TriggerInstance());
         trigger.setTriggerEvent(new Script("true"));
-        trigger.setPostTriggerEvent(new Script("VariableDescriptorFacade.findByName(gameModel, 'number').setValue(self, 5);"));
+        trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, 'number').setValue(self, 5);"));
         trigger.setOneShot(Boolean.FALSE);
         trigger.setDisableSelf(Boolean.TRUE);
         descriptorFacade.create(gameModel.getId(), trigger);

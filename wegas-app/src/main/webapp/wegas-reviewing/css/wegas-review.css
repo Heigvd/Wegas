@@ -229,6 +229,30 @@
     /* border: 1px groove; */
 }
 
+.yui3-skin-sam .wegas-review-orchestrator .summary .yui3-datatable-cell.status-red {
+    background-color: #ce9292;
+}
+
+.yui3-skin-sam .wegas-review-orchestrator .summary .yui3-datatable-cell.status-orange {
+    background-color: #fff1c2;
+}
+
+.yui3-skin-sam .wegas-review-orchestrator .summary .yui3-datatable-cell.status-green {
+    background-color: #92e6a6;
+}
+
+.yui3-skin-sam .wegas-review-orchestrator .summary .yui3-datatable-sorted.status-red {
+    background-color: #a25e5e;
+}
+
+.yui3-skin-sam .wegas-review-orchestrator .summary .yui3-datatable-sorted.status-orange {
+    background-color: #eac18e;
+}
+
+.yui3-skin-sam .wegas-review-orchestrator .summary .yui3-datatable-sorted.status-green {
+    background-color: #92e6a6;
+}
+
 .wegas-review-orchestrator .summary table th {
     font-weight: 600;
     font-style : italic;

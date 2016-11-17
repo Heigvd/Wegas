@@ -59,8 +59,8 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         // Create a trigger
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new TriggerInstance());
-        trigger.setTriggerEvent(new Script("testnumber.value >= 0.9"));
-        trigger.setPostTriggerEvent(new Script("testnumber.value = 2;"));
+        trigger.setTriggerEvent(new Script("Variable.find(gameModel, \"testnumber\").getInstance(self).value >= 0.9"));
+        trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, \"testnumber\").getInstance(self).value = 2;"));
         vdf.create(gameModel.getId(), trigger);
 
         // Test initial values
@@ -156,14 +156,14 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         sm.setName("testSM");
         State state0 = new State();
         State state1 = new State();
-        state1.setOnEnterEvent(new Script("testnumber.value += 5"));
+        state1.setOnEnterEvent(new Script("Variable.find(gameModel, \"testnumber\").getInstance(self).value += 5"));
         State state2 = new State();
-        state2.setOnEnterEvent(new Script("testnumber.value += 10"));
+        state2.setOnEnterEvent(new Script("Variable.find(gameModel, \"testnumber\").getInstance(self).value += 10"));
         sm.setStates(toMap(toList(1L, 2L, 3L), toList(state0, state1, state2)));
         Transition t1 = new Transition();
-        t1.setPreStateImpact(new Script("testnumber.value +=1"));
+        t1.setPreStateImpact(new Script("Variable.find(gameModel, \"testnumber\").getInstance(self).value +=1"));
         Transition t2 = new Transition();
-        t2.setPreStateImpact(new Script("testnumber.value +=2"));
+        t2.setPreStateImpact(new Script("Variable.find(gameModel, \"testnumber\").getInstance(self).value +=2"));
 
         t1.setNextStateId(2L);
         t2.setNextStateId(3L);
@@ -270,12 +270,12 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
 
         /* player fire event twice */
         sf.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event')"), null);
-        lookupBy(RequestFacade.class).commit();
+        lookupBy(RequestFacade.class).commit(true);
         assertEquals(INITIALVALUE + 5 + 10, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
 
         /* player21 fire event only once */
         sf.eval(player21, new Script("JavaScript", "Event.fire('event');"), null);
-        lookupBy(RequestFacade.class).commit();
+        lookupBy(RequestFacade.class).commit(true);
         assertEquals(INITIALVALUE + 5, ((NumberInstance) vif.find(number.getId(), player21)).getValue(), .1);
         // Clean up
         vdf.remove(number.getId());

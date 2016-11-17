@@ -34,9 +34,10 @@ import javax.script.ScriptContext;
 import javax.ws.rs.core.Response;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 //import javax.annotation.PostConstruct;
-
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
@@ -44,6 +45,13 @@ import java.util.concurrent.TimeUnit;
 @RequestScoped
 @DependsOn("MutexSingleton")
 public class RequestManager {
+
+    @PersistenceContext(unitName = "wegasPU")
+    private EntityManager em;
+
+    public EntityManager getEntityManager() {
+        return em;
+    }
 
     public enum RequestEnvironment {
         STD, // Standard request from standard client (ie a browser)
@@ -413,14 +421,28 @@ public class RequestManager {
 
         long totalDuration = endTime - this.startTimestamp;
 
+        Long mgmtTime = null;
+        Long propagationTime = null;
+
         String processingDuration;
         String managementDuration;
         String propagationDuration;
         String serialisationDuration;
 
+        mgmtTime = this.serialisationStartTime != null && this.managementStartTime != null ? (this.serialisationStartTime - this.managementStartTime) : null;
+        propagationTime = this.propagationEndTime != null ? (this.propagationEndTime - this.propagationStartTime) : null;
+
+        if (propagationTime != null) {
+            //If propagation occurs, deduct its duration from managementTime because
+            //management includes propagation
+            mgmtTime -= propagationTime;
+            propagationDuration = Long.toString(propagationTime);
+        } else {
+            propagationDuration = " N/A";
+        }
+
         processingDuration = this.managementStartTime != null ? Long.toString(this.managementStartTime - this.startTimestamp) : "N/A";
-        managementDuration = this.serialisationStartTime != null && this.managementStartTime != null ? Long.toString(this.serialisationStartTime - this.managementStartTime) : "N/A";
-        propagationDuration = this.propagationEndTime != null ? Long.toString(this.propagationEndTime - this.propagationStartTime) : "N/A";
+        managementDuration = mgmtTime != null ? Long.toString(mgmtTime) : "N/A";
         serialisationDuration = this.serialisationStartTime != null ? Long.toString(endTime - this.serialisationStartTime) : "N/A";
 
         Team currentTeam = null;
@@ -462,6 +484,9 @@ public class RequestManager {
         }
 
         this.logRequest();
+
+        //this.getEntityManager().flush();
+        this.getEntityManager().clear();
     }
 
     /**

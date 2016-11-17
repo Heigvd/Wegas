@@ -8,7 +8,6 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
-import com.wegas.core.event.internal.PlayerAction;
 import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
 import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
@@ -60,6 +59,9 @@ public class GameFacade extends BaseFacade<Game> {
     @Inject
     private Event<PreEntityRemoved<Game>> gameRemovedEvent;
 
+    @EJB
+    private RequestFacade requestFacade;
+
     /**
      *
      */
@@ -83,12 +85,6 @@ public class GameFacade extends BaseFacade<Game> {
      */
     @EJB
     private UserFacade userFacade;
-
-    /**
-     *
-     */
-    @Inject
-    private Event<PlayerAction> playerActionEvent;
 
     /**
      *
@@ -142,13 +138,13 @@ public class GameFacade extends BaseFacade<Game> {
             throw WegasErrorMessage.error("This token is already in use.");
         }
         getEntityManager().persist(game);
+        gameModel.propagateDefaultInstance(game, true);
 
         game.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
         gameModel.addGame(game);
         this.addDebugTeam(game);
 
-//        this.flush();
-        gameModelFacade.reset(gameModel);                                       // Reset the game so the default player will have instances
+        //gameModelFacade.reset(gameModel);                                       // Reset the game so the default player will have instances
 
         userFacade.addUserPermission(currentUser,
                 "Game:View,Edit:g" + game.getId());                             // Grant permission to creator
@@ -171,7 +167,10 @@ public class GameFacade extends BaseFacade<Game> {
      */
     public boolean addDebugTeam(Game game) {
         if (!game.hasDebugTeam()) {
-            game.addTeam(new DebugTeam());
+            DebugTeam debugTeam = new DebugTeam();
+            debugTeam.setGame(game);
+            teamFacade.create(debugTeam);
+            //game.addTeam(new DebugTeam());
             return true;
         } else {
             return false;
@@ -367,9 +366,10 @@ public class GameFacade extends BaseFacade<Game> {
      */
     public void joinTeam(Team team, Player player) {
         team.addPlayer(player);
-        getEntityManager().persist(player);
-        team.getGame().getGameModel().propagateDefaultInstance(player);
-        playerActionEvent.fire(new PlayerAction(player));
+        this.getEntityManager().persist(player);
+        team.getGame().getGameModel().propagateDefaultInstance(player, true);
+        this.getEntityManager().flush();
+        requestFacade.firePlayerAction(player, true);
     }
 
     /**
@@ -390,10 +390,12 @@ public class GameFacade extends BaseFacade<Game> {
      */
     public Player joinTeam(Team team, User user) {
         // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
-        Player p = new Player(user, team);
+        Player p = new Player();
         user.getPlayers().add(p);
+        p.setUser(user);
+        p.setName(user.getName());
+        this.addRights(user, team.getGame());
         this.joinTeam(team, p);
-        this.addRights(user, p.getGame());
         return p;
     }
 
@@ -415,6 +417,17 @@ public class GameFacade extends BaseFacade<Game> {
         user.addPermission(
                 "Game:View:g" + game.getId(), // Add "View" right on game,
                 "GameModel:View:gm" + game.getGameModel().getId());             // and also "View" right on its associated game model
+    }
+
+    public void recoverRights(Game game) {
+        for (Team team : game.getTeams()) {
+            for (Player player : team.getPlayers()) {
+                User user = player.getUser();
+                if (user != null) {
+                    this.addRights(user, game);
+                }
+            }
+        }
     }
 
     /**
@@ -452,7 +465,7 @@ public class GameFacade extends BaseFacade<Game> {
     public void reset(final Game game) {
         // Need to flush so prepersit events will be thrown (for example Game will add default teams)
         //getEntityManager().flush();
-        game.getGameModel().propagateDefaultInstance(game);
+        game.getGameModel().propagateDefaultInstance(game, false);
         //getEntityManager().flush(); // DA FU    ()
         // Send an reset event (for the state machine and other)
         resetEvent.fire(new ResetEvent(game));

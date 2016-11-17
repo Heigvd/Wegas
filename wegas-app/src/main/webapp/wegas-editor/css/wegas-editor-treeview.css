@@ -204,10 +204,3 @@
     background: #f6f6f6;
 }
 
-.yui3-skin-sam .wegas-editor-variabletreeview .variable-error > .content-header {
-    -moz-box-shadow: 0px 0px 10px red;
-    -webkit-box-shadow: 0px 0px 10px red;
-    -o-box-shadow: 0px 0px 10px red;
-    box-shadow: 0px 0px 2px red;
-}
-

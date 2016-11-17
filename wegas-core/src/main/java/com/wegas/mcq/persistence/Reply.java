@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 
 import javax.persistence.*;
@@ -24,11 +25,11 @@ import javax.persistence.*;
 //@XmlType(name = "Reply")
 @JsonTypeName(value = "Reply")
 @Table(name = "MCQReply", indexes = {
-        @Index(columnList = "variableinstance_id"),
-        @Index(columnList = "result_id")
+    @Index(columnList = "variableinstance_id"),
+    @Index(columnList = "result_id")
 })
 @NamedQueries({
-        @NamedQuery(name = "Reply.countForInstance", query = "SELECT COUNT(r) FROM Reply r WHERE r.questionInstance.id = :instanceId")
+    @NamedQuery(name = "Reply.countForInstance", query = "SELECT COUNT(r) FROM Reply r WHERE r.questionInstance.id = :instanceId")
 })
 public class Reply extends AbstractEntity /*implements Broadcastable */ {
 
@@ -160,9 +161,9 @@ public class Reply extends AbstractEntity /*implements Broadcastable */ {
     }
 
     @Override
-    public void updateCacheOnDelete() {
-        QuestionDescriptorFacade qF = QuestionDescriptorFacade.lookup();
-        VariableInstanceFacade vif = VariableInstanceFacade.lookup();
+    public void updateCacheOnDelete(Beanjection beans) {
+        QuestionDescriptorFacade qF = beans.getQuestionDescriptorFacade();
+        VariableInstanceFacade vif = beans.getVariableInstanceFacade();
         QuestionInstance qInst = this.getQuestionInstance();
         if (qInst != null) {
             qInst = (QuestionInstance) vif.find(qInst.getId());
@@ -179,6 +180,6 @@ public class Reply extends AbstractEntity /*implements Broadcastable */ {
             }
         }
 
-        super.updateCacheOnDelete();
+        super.updateCacheOnDelete(beans);
     }
 }

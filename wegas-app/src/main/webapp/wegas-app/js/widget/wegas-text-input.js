@@ -97,7 +97,8 @@ YUI.add("wegas-text-input", function(Y) {
                                 });
                             }
                             // Update on editor update
-                            editor.on('keyUp', Y.bind(this._onChange, this)); // Update on editor update
+                            editor.on('change', Y.bind(this._onChange, this)); // click on taskbar buttons
+                            editor.on('keyUp', Y.bind(this._onChange, this)); // text input & ctrl-related operations
                             //editor.on('NodeChange', Y.bind(this.setContent, this)); // Update on editor update
                             this.editor = editor;
                             this.syncUI();
@@ -266,6 +267,8 @@ YUI.add("wegas-text-input", function(Y) {
             return valid;
         },
         onSave: function() {
+            if (!this.editor)
+                return; // Is null when save timeout occurs too late (e.g. after leaving the current page).
             var value = this.editor.getContent(),
                 valid, msg;
             valid = true || this.updateCounters(); // Fixme do something... (prevent saving or not...)
@@ -277,34 +280,56 @@ YUI.add("wegas-text-input", function(Y) {
             this.setStatus(msg);
         },
         _save: function(e) {
-            var cb = this.get("contentBox"),
-                value = e.value,
+            var value = e.value,
                 theVar = e.descriptor.getInstance();
-            this._initialContent = value;
-            theVar.set("value", value);
             if (this.get("selfSaving")) {
-                Wegas.Facade.Variable.script.remoteEval("Variable.find(gameModel, \"" + e.descriptor.get("name") + "\").setValue(self, " + JSON.stringify(value) + ");", {
-                    on: {
-                        success: Y.bind(function() {
-                            cb.removeClass("loading");
-                            this.setStatus("Saved");
-                            this._saved(value);
-                        }, this),
-                        failure: Y.bind(function() {
-                            cb.removeClass("loading");
-                            this.setStatus("Something went wrong");
-                            this._saved(value);
-                        }, this)
-                    }
-                });
+                if (!this.waitForValue) {
+                    this.processSave(value, e.descriptor);
+                } else {
+                    this.queuedValue = {
+                        value: value,
+                        descriptor: e.descriptor
+                    };
+                }
             } else {
+                this._initialContent = value;
+                theVar.set("value", value);
                 this.setStatus("Saved");
                 this._saved(value);
             }
         },
+        processSave: function(value, descriptor) {
+            var theVar = descriptor.getInstance(),
+                cb = this.get("contentBox");
+
+            this.waitForValue = value;
+            this._initialContent = value;
+            theVar.set("value", value);
+
+            Wegas.Facade.Variable.script.remoteEval("Variable.find(gameModel, \"" + descriptor.get("name") + "\").setValue(self, " + JSON.stringify(value) + ");", {
+                on: {
+                    success: Y.bind(function() {
+                        cb.removeClass("loading");
+                        this.setStatus("Saved");
+                        this._saved(value);
+                    }, this),
+                    failure: Y.bind(function() {
+                        cb.removeClass("loading");
+                        this.setStatus("Something went wrong");
+                        this._saved(value);
+                    }, this)
+                }
+            });
+        },
         _saved: function(value) {
-            var desc = this.get("variable.evaluated");
             this.fire("saved", this.getPayload(value));
+
+            if (this.waitForValue === value) {
+                this.waitForValue = null;
+                if (this.queuedValue) {
+                    this.processSave(this.queuedValue.value, this.queuedValue.descriptor);
+                }
+            }
         },
         save: function(value) {
             var desc = this.get("variable.evaluated"),
@@ -320,6 +345,10 @@ YUI.add("wegas-text-input", function(Y) {
             return "TextInput";
         },
         destructor: function() {
+            if (this.wait) {
+                this.wait.cancel();
+                this.onSave();
+            }
             try {
                 this.editor && this.editor.remove();
             } catch (e) {

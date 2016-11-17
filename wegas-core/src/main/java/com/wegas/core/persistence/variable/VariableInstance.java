@@ -11,10 +11,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
-import com.wegas.core.ejb.GameFacade;
-import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.ejb.TeamFacade;
-import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.game.Game;
@@ -39,7 +35,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.eclipse.persistence.annotations.CacheIndex;
+import org.eclipse.persistence.annotations.CacheIndexes;
 import org.eclipse.persistence.annotations.OptimisticLocking;
+import org.eclipse.persistence.config.CacheUsage;
+import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.config.QueryType;
 
 ////import javax.xml.bind.annotation.XmlTransient;
 /**
@@ -50,12 +51,45 @@ import org.eclipse.persistence.annotations.OptimisticLocking;
 @NamedQueries({
     @NamedQuery(name = "VariableInstance.findPlayerInstance",
             query = "SELECT vi FROM VariableInstance vi WHERE "
-            + "(vi.player.id = :playerId AND vi.playerScope.id = :scopeId)"
+            + "(vi.player.id = :playerId AND vi.playerScope.id = :scopeId)",
+            hints = {
+                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
+                @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
+            }
     ),
     @NamedQuery(name = "VariableInstance.findTeamInstance",
             query = "SELECT vi FROM VariableInstance vi WHERE "
-            + "(vi.team.id = :teamId AND vi.teamScope.id = :scopeId)"
+            + "(vi.team.id = :teamId AND vi.teamScope.id = :scopeId)",
+            hints = {
+                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
+                @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
+            }
+    ),
+    @NamedQuery(name = "VariableInstance.findGameInstance",
+            query = "SELECT vi FROM VariableInstance vi WHERE "
+            + "(vi.game.id = :gameId AND vi.gameScope.id = :scopeId)",
+            hints = {
+                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
+                @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
+            }
+    ),
+    @NamedQuery(name = "VariableInstance.findAllPlayerInstances",
+            query = "SELECT vi FROM VariableInstance vi WHERE "
+            + "(vi.playerScope.id = :scopeId)"
+    ),
+    @NamedQuery(name = "VariableInstance.findAllTeamInstances",
+            query = "SELECT vi FROM VariableInstance vi WHERE "
+            + "(vi.teamScope.id = :scopeId)"
+    ),
+    @NamedQuery(name = "VariableInstance.findAllGameInstances",
+            query = "SELECT vi FROM VariableInstance vi WHERE "
+            + "(vi.gameScope.id = :scopeId)"
     )
+})
+@CacheIndexes(value = {
+    @CacheIndex(columnNames = {"GAMESCOPE_ID", "GAMEVARIABLEINSTANCES_KEY"}),
+    @CacheIndex(columnNames = {"TEAMSCOPE_ID", "TEAMVARIABLEINSTANCES_KEY"}),
+    @CacheIndex(columnNames = {"PLAYERSCOPE_ID", "VARIABLEINSTANCES_KEY"})
 })
 
 /*@Indexes(value = { // JPA 2.0 eclipse link extension TO BE REMOVED
@@ -124,6 +158,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      */
     @ManyToOne
     @JsonIgnore
+    @JoinColumn(name = "gamescope_id")
     private GameScope gameScope;
 
     /**
@@ -131,6 +166,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      */
     @ManyToOne
     @JsonIgnore
+    @JoinColumn(name = "teamscope_id")
     private TeamScope teamScope;
 
     /**
@@ -138,6 +174,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      */
     @ManyToOne
     @JsonIgnore
+    @JoinColumn(name = "playerscope_id")
     private PlayerScope playerScope;
 
     /**
@@ -161,7 +198,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     /**
      *
      */
-    @JoinColumn(name = "variableinstances_key", insertable = false, updatable = false)
+    @JoinColumn(name = "variableinstances_key")
     @ManyToOne
     @JsonIgnore
     private Player player;
@@ -173,7 +210,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     /**
      *
      */
-    @JoinColumn(name = "gamevariableinstances_key", insertable = false, updatable = false)
+    @JoinColumn(name = "gamevariableinstances_key")
     @ManyToOne
     @JsonIgnore
     private Game game;
@@ -185,7 +222,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     /**
      *
      */
-    @JoinColumn(name = "teamvariableinstances_key", insertable = false, updatable = false)
+    @JoinColumn(name = "teamvariableinstances_key")
     @ManyToOne
     @JsonIgnore
     private Team team;
@@ -524,58 +561,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
             return this.getClass().getSimpleName() + "( " + getId() + ") for " + this.getDescriptor().getName();
         } else {
             return this.getClass().getSimpleName() + "( " + getId() + ") NO DESC";
-        }
-    }
-
-    @Override
-    public void updateCacheOnDelete() {
-        // do not update anything for default instances
-        if (this.getDefaultDescriptor() == null) {
-            VariableDescriptor variableDescriptor = VariableDescriptorFacade.lookup().find(this.getScope().getVariableDescriptor().getId());
-
-            // if variable descriptor does not exists, it means it has been removed too
-            if (variableDescriptor != null) {
-
-                // When a player/team/game is removed, its instances are deleted too (JPA Casacding)
-                // Scopes for each deleted variables shall be updated too
-                AbstractScope scope = variableDescriptor.getScope();
-
-                if (scope != null) {
-                    if (scope instanceof PlayerScope) {
-                        scope.getVariableInstances().remove(this.getPlayer());
-                    } else if (scope instanceof TeamScope) {
-                        scope.getVariableInstances().remove(this.getTeam());
-                    } else if (scope instanceof GameScope) {
-                        scope.getVariableInstances().remove(this.getGame());
-                    } else if (this.gameModelScope != null) {
-                    }
-                }
-            }
-
-            AbstractScope scope = this.getScope();
-
-            if (scope != null) {
-                // When a descriptor is deleted, all of its instances are removed too (JPA cascading)
-                // References to those instances shall be remove from owner private instances list
-                if (scope instanceof PlayerScope) {
-                    Player find = PlayerFacade.lookup().find(this.getPlayer().getId());
-                    if (find != null) {
-                        find.getPrivateInstances().remove(this);
-                    }
-                } else if (scope instanceof TeamScope) {
-                    Team find = TeamFacade.lookup().find(this.getTeam().getId());
-                    if (find != null) {
-                        find.getPrivateInstances().remove(this);
-                    }
-                } else if (scope instanceof GameScope) {
-                    Game find = GameFacade.lookup().find(this.getGame().getId());
-                    if (find != null) {
-                        find.getPrivateInstances().remove(this);
-                    }
-                } else if (this.gameModelScope != null) {
-                    // noop
-                }
-            }
         }
     }
 }

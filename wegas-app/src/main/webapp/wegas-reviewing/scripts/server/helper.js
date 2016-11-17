@@ -128,6 +128,18 @@ var ReviewHelper = (function() {
         };
     }
 
+    function colorize(o) {
+        o.cell.setHTML("<span>" + o.value + "</span>");
+        o.cell.addClass("status-" + o.data.color);
+    }
+
+    function formatToFixed2(o) {
+        if (o.value !== undefined && o.value !== null) {
+            return o.value.toFixed(2);
+        }
+        return "N/A";
+    }
+
     function getEvStructure(evDescriptor) {
         var i, cats, structure;
 
@@ -138,13 +150,13 @@ var ReviewHelper = (function() {
         };
 
         if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.TextEvaluationDescriptor) {
-            structure.items.push({"id": evDescriptor.getId() + "-wc", "label": I18n.t("wc"), formatter: null});
-            structure.items.push({"id": evDescriptor.getId() + "-cc", "label": I18n.t("cc"), formatter: null});
+            structure.items.push({"id": evDescriptor.getId() + "-wc", "label": I18n.t("wc"), formatter: formatToFixed2});
+            structure.items.push({"id": evDescriptor.getId() + "-cc", "label": I18n.t("cc"), formatter: formatToFixed2});
             structure.items.push({"id": evDescriptor.getId() + "-data", "label": I18n.t("data"), formatter: '<span class="texteval-data"><i data-ref="' + evDescriptor.getId() + '-data" class="fa fa-info-circle"></i></span>'});
         } else if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.GradeDescriptor) {
-            structure.items.push({"id": evDescriptor.getId() + "-mean", "label": I18n.t("mean"), formatter: null});
+            structure.items.push({"id": evDescriptor.getId() + "-mean", "label": I18n.t("mean"), formatter: formatToFixed2});
             //structure.items.push({"id": evDescriptor.getId() + "-median", "label": "median", formatter: null});
-            structure.items.push({"id": evDescriptor.getId() + "-sd", "label": I18n.t("sd"), formatter: null});
+            structure.items.push({"id": evDescriptor.getId() + "-sd", "label": I18n.t("sd"), formatter: formatToFixed2});
         } else if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.CategorizedEvaluationDescriptor) {
             cats = Java.from(evDescriptor.getCategories());
             for (i = 0; i < cats.length; i += 1) {
@@ -187,7 +199,7 @@ var ReviewHelper = (function() {
     }
 
     function summarize(peerReviewDescriptorName) {
-        var prd = Variable.findByName(gameModel, peerReviewDescriptorName),
+        var prd = Variable.find(gameModel, peerReviewDescriptorName),
             game = self.getGame(), teams = game.getTeams(), t, teamId, team,
             pris, pri, reviews, review, evs, ev, evK, i, j, k,
             entry, nbRDone, nbRTot, nbRCom, nbRComClosed, nbRComTotal,
@@ -202,9 +214,9 @@ var ReviewHelper = (function() {
                     overview: [{
                             title: I18n.t("overview"),
                             items: [
-                                {id: "status", label: I18n.t("status"), formatter: null},
-                                {id: "done", label: I18n.t("reviewDone"), formatter: null},
-                                {id: "commented", label: I18n.t("commented"), formatter: null}
+                                {id: "status", label: I18n.t("status"), formatter: null, nodeFormatter: colorize, allowHTML: true},
+                                {id: "done", label: I18n.t("reviewDoneTitle"), formatter: null},
+                                {id: "commented", label: I18n.t("commentsDoneTitle"), formatter: null}
                             ]
                         }
                     ],
@@ -339,34 +351,43 @@ var ReviewHelper = (function() {
 
                 // Set status
                 if (pri.getReviewState().toString() === "EVICTED") {
+                    entry.overview.color = "red";
                     entry.overview.internal_status = "evicted";
                     entry.overview.status = I18n.t("evicted");
                 } else if (nbRComTotal > 0) {
                     if (nbRComTotal === nbRComClosed) {
+                        entry.overview.color = "green";
                         entry.overview.internal_status = "closed";
                         entry.overview.status = I18n.t("closed");
                     } else if (nbRComTotal === nbRCom) {
+                        entry.overview.color = "green";
                         entry.overview.internal_status = "completed";
                         entry.overview.status = I18n.t("completed");
                     } else {
+                        entry.overview.color = "orange";
                         entry.overview.internal_status = "commenting";
                         entry.overview.status = I18n.t("commenting");
                     }
                 } else if (nbRTot > 0) {
                     if (nbRTot === nbRDone) {
+                        entry.overview.color = "green";
                         entry.overview.internal_status = "done";
                         entry.overview.status = I18n.t("reviewDone");
                     } else {
+                        entry.overview.color = "orange";
                         entry.overview.internal_status = "reviewing";
                         entry.overview.status = I18n.t("reviewing");
                     }
                 } else if (pri.getReviewState().toString() === "NOT_STARTED") {
+                    entry.overview.color = "orange";
                     entry.overview.internal_status = "editing";
                     entry.overview.status = I18n.t("editing");
                 } else if (pri.getReviewState().toString() === "SUBMITTED") {
+                    entry.overview.color = "green";
                     entry.overview.internal_status = "ready";
                     entry.overview.status = I18n.t("ready");
                 } else {
+                    entry.overview.color = "red";
                     entry.overview.internal_status = "na";
                     entry.overview.status = I18n.t("na");
                 }
@@ -396,6 +417,9 @@ var ReviewHelper = (function() {
             monitoring.structure[key].forEach(function(groupItems) {
                 groupItems.items.forEach(function(item) {
                     item.formatter = item.formatter + "";
+                    if (item.nodeFormatter) {
+                        item.nodeFormatter = item.nodeFormatter + "";
+                    }
                 });
             });
         }

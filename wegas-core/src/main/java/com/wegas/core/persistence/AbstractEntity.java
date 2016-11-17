@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wegas.core.persistence.variable.Beanjection;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -185,7 +186,7 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      * cascaded entity deletion
      *
      */
-    public void updateCacheOnDelete() {
+    public void updateCacheOnDelete(Beanjection beans) {
     }
 
     @JsonIgnore

@@ -50,38 +50,39 @@ public class ScriptFacade {
      */
     static final String CONTEXT = "currentDescriptor";
     /**
-     * A single, thread safe, javascript engine (only language currently supported)
+     * A single, thread safe, javascript engine (only language currently
+     * supported)
      */
     private static final ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
     /**
-     * Pre-compiled script.
-     * nashorn specific __noSuchProperty__ hijacking : find a variableDescriptor's scriptAlias.
-     * Must be included in each Bindings.
+     * Pre-compiled script. nashorn specific __noSuchProperty__ hijacking : find
+     * a variableDescriptor's scriptAlias. Must be included in each Bindings.
      */
     private static final CompiledScript noSuchProperty;
     /**
      * Keep static scripts pre-compiled
      */
     private static final Map<String, CompiledScript> staticCache = new Helper.LRUCache<>(100);
+
     /*
     Initialize noSuchProperty
      */
     static {
         CompiledScript compile = null;
         try {
-            compile = ((Compilable) engine).compile("(function(global){" +
-                    "var defaultNoSuchProperty = global.__noSuchProperty__;" + // Store nashorn's implementation
-                    "Object.defineProperty(global, '__noSuchProperty__', {" +
-                    "value: function(prop){" +
-                    "try{" +
-                    "var ret = Variable.find(gameModel, prop).getInstance(self);" +
-                    "print('SCRIPT_ALIAS_CALL: [GM]' + gameModel.getId() + ' [alias]' + prop);" + // log usage if var exists
-                    "return ret;" + // Try to find a VariableDescriptor's instance for that given prop
-                    "}catch(e){" +
-                    "return defaultNoSuchProperty.call(global, prop);" + // Use default implementation if no VariableDescriptor
-                    "}}" +
-                    "})" +
-                    "})(this);"); // Run on Bindings
+            compile = ((Compilable) engine).compile("(function(global){"
+                    + "var defaultNoSuchProperty = global.__noSuchProperty__;" // Store nashorn's implementation
+                    + "Object.defineProperty(global, '__noSuchProperty__', {"
+                    + "value: function(prop){"
+                    + "try{"
+                    + "var ret = Variable.find(gameModel, prop).getInstance(self);"
+                    + "print('SCRIPT_ALIAS_CALL: [GM]' + gameModel.getId() + ' [alias]' + prop);" // log usage if var exists
+                    + "return ret;" // Try to find a VariableDescriptor's instance for that given prop
+                    + "}catch(e){"
+                    + "return defaultNoSuchProperty.call(global, prop);" // Use default implementation if no VariableDescriptor
+                    + "}}"
+                    + "})"
+                    + "})(this);"); // Run on Bindings
         } catch (ScriptException e) {
             logger.error("noSuchProperty script compilation failed", e);
         }
@@ -99,6 +100,12 @@ public class ScriptFacade {
      */
     @EJB
     private VariableDescriptorFacade variableDescriptorFacade;
+
+    /**
+     *
+     */
+    @EJB
+    private VariableInstanceFacade variableInstanceFacade;
 
     /**
      *
@@ -203,8 +210,7 @@ public class ScriptFacade {
 
                 try (
                         java.io.FileInputStream fis = new FileInputStream(f);
-                        java.io.InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8)
-                ) {
+                        java.io.InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8)) {
                     staticCache.putIfAbsent(cacheFileName, ((Compilable) engine).compile(isr));
                 } catch (IOException e) {
                     logger.warn("File " + f.getPath() + " was not found");
@@ -232,7 +238,6 @@ public class ScriptFacade {
      * @param arguments
      * @return
      */
-
     private Object eval(Script script, Map<String, AbstractEntity> arguments) throws WegasScriptException {
         if (script == null) {
             return null;
@@ -321,7 +326,6 @@ public class ScriptFacade {
     }
 
     // *** Sugar *** //
-
     /**
      * Concatenate scripts
      *

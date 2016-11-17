@@ -27,8 +27,6 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -54,9 +52,6 @@ public class WebsocketFacade {
         READY,
         OUTDATED
     }
-
-    @PersistenceContext(unitName = "wegasPU")
-    private EntityManager em;
 
     /**
      *
@@ -278,7 +273,7 @@ public class WebsocketFacade {
      * @return gzipped data
      * @throws IOException
      */
-    private String gzip(String data) throws IOException {
+    private GzContent gzip(String data) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         GZIPOutputStream gzos = new GZIPOutputStream(baos);
         OutputStreamWriter osw = new OutputStreamWriter(gzos, "UTF-8");
@@ -297,8 +292,27 @@ public class WebsocketFacade {
              */
             sb.append(Character.toString((char) Byte.toUnsignedInt(ba[i])));
         }
-        return sb.toString();
+        return new GzContent(sb.toString(), ba.length);
     }
+
+    private static class GzContent {
+
+        private final int length;
+        private final String content;
+
+        public GzContent(String content, int length) {
+            this.length = length;
+            this.content = content;
+        }
+
+        public int getLength() {
+            return length;
+        }
+
+        public String getContent() {
+            return content;
+        }
+    };
 
     /**
      * Send data through pusher
@@ -311,18 +325,12 @@ public class WebsocketFacade {
         try {
             String eventName = clientEvent.getClass().getSimpleName() + ".gz";
             //if (eventName.matches(".*\\.gz$")) {
-            String content = gzip(clientEvent.toJson());
-            //} else {
-            //    content = clientEvent.toJson();
-            //}
-            Result result = pusher.trigger(audience, eventName, content, socketId);
+            GzContent gzip = gzip(clientEvent.toJson());
+            String content = gzip.getContent();
 
-            if (result.getHttpStatus() == 403) {
-                logger.error("403 QUOTA REACHED");
-                // Pusher Message Quota Reached...
-            } else if (result.getHttpStatus() == 413) {
+            if (gzip.length > 1048576) {
                 logger.error("413 MESSAGE TOO BIG");
-                // wooops pusher error (too big ?)
+                // wooops pusher error (too big)
                 if (clientEvent instanceof EntityUpdatedEvent) {
                     this.propagate(new OutdatedEntitiesEvent(((EntityUpdatedEvent) clientEvent).getUpdatedEntities()),
                             audience, socketId);
@@ -330,6 +338,11 @@ public class WebsocketFacade {
                 } else {
                     logger.error("  -> OUTDATE");
                     this.sendLifeCycleEvent(audience, WegasStatus.OUTDATED, socketId);
+                }
+            } else {
+                Result result = pusher.trigger(audience, eventName, content, socketId);
+                if (result.getHttpStatus() == 403) {
+                    logger.error("403 QUOTA REACHED");
                 }
             }
         } catch (IOException ex) {

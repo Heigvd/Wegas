@@ -141,7 +141,7 @@ public class PeerReviewController {
         checkPermissions(playerFacade.find(playerId).getGame(), playerId);
 
         reviewFacade.submit(prdId, playerId);
-        requestFacade.commit(); // Player scoped
+        requestFacade.commit(true); // Player scoped
 
         return Response.ok().build();
     }
@@ -217,7 +217,7 @@ public class PeerReviewController {
         Player player = playerFacade.find(playerId);
         assertReviewWriteRight(reviewFacade.findReview(review.getId()), player);
         Review submitedReview = reviewFacade.submitReview(review, player);
-        requestFacade.commit(); // Player scoped
+        requestFacade.commit(true); // Player scoped
         return reviewFacade.getPeerReviewInstanceFromReview(submitedReview, player);
     }
 
@@ -317,10 +317,11 @@ public class PeerReviewController {
         for (PeerReviewInstance pri : instances) {
             try {
                 Player findAPlayer = instanceFacade.findAPlayer(pri);
-                requestFacade.commit(findAPlayer);
+                requestFacade.commit(findAPlayer, false);
                 //requestFacade.firePlayerAction(findAPlayer);
             } catch (NoPlayerException ex) {
             }
         }
+        requestFacade.flushClear();
     }
 }

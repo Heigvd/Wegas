@@ -51,7 +51,8 @@ YUI.add("wegas-i18n-review-en", function(Y) {
                     basedOn: "based on {{available}}/{{expected}} values",
                     avgWc: "Average number of words",
                     avgCc: "Average number of characters"
-                }
+                },
+                notAvailableYet : "Not available yet" 
             },
             global: {
                 submit: "submit",
@@ -72,7 +73,8 @@ YUI.add("wegas-i18n-review-en", function(Y) {
                 ask_reviewer_feedback: "",
                 ask_comment: "What do you think about your reviewer feedback?",
                 comment: "Your thoughts about feedback your reviewer feedback",
-                author_comment: "What author thinks about your feedback:"
+                author_comment: "What author thinks about your feedback:",
+                noValueProvided: "No evaluation provided"
             }
         }
     });

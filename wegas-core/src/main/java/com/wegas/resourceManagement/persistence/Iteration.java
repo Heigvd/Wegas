@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.Broadcastable;
+import com.wegas.core.persistence.variable.Beanjection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -323,18 +323,18 @@ public class Iteration extends AbstractEntity /*implements Broadcastable */ {
         return this.getBurndownInstance().getEntities();
     }*/
     @Override
-    public void updateCacheOnDelete() {
-        VariableDescriptorFacade lookup = VariableDescriptorFacade.lookup();
+    public void updateCacheOnDelete(Beanjection beans) {
+        VariableDescriptorFacade vdf = beans.getVariableDescriptorFacade();
         BurndownInstance theBdI = this.getBurndownInstance();
 
         if (theBdI != null) {
-            theBdI = (BurndownInstance) VariableInstanceFacade.lookup().find(theBdI.getId());
+            theBdI = (BurndownInstance) beans.getVariableInstanceFacade().find(theBdI.getId());
             if (theBdI != null) {
                 theBdI.getIterations().remove(this);
             }
         }
         for (TaskDescriptor task : this.getTasks()) {
-            task = (TaskDescriptor) lookup.find(task.getId());
+            task = (TaskDescriptor) vdf.find(task.getId());
             if (task != null) {
                 task.getIterations().remove(this);
             }

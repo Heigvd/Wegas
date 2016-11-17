@@ -18,9 +18,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.Broadcastable;
-import java.util.List;
-import java.util.Map;
+import com.wegas.core.persistence.variable.Beanjection;
 
 /**
  *
@@ -139,18 +137,18 @@ public class Assignment extends AbstractAssignement /*implements Broadcastable *
     }
 
     @Override
-    public void updateCacheOnDelete() {
+    public void updateCacheOnDelete(Beanjection beans) {
         TaskDescriptor theTask = this.getTaskDescriptor();
         ResourceInstance theResource = this.getResourceInstance();
 
         if (theTask != null) {
-            theTask = ((TaskDescriptor) VariableDescriptorFacade.lookup().find(theTask.getId()));
+            theTask = ((TaskDescriptor) beans.getVariableDescriptorFacade().find(theTask.getId()));
             if (theTask != null) {
                 theTask.getAssignments().remove(this);
             }
         }
         if (theResource != null) {
-            theResource = ((ResourceInstance) VariableInstanceFacade.lookup().find(theResource.getId()));
+            theResource = ((ResourceInstance) beans.getVariableInstanceFacade().find(theResource.getId()));
             if (theResource != null) {
                 theResource.getAssignments().remove(this);
             }
