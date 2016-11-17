@@ -11,7 +11,6 @@ module.exports = {
         publicPath: '/static/'
     },
     resolve: {
-        root: [path.resolve('./src')],
         mainFields: ['module', 'jsnext:main', 'browser', 'main']
     },
     plugins: [
@@ -21,7 +20,7 @@ module.exports = {
     module: {
          rules: [{
             test: /\.jsx?$/,
-            loaders: ['babel'],
+            loaders: ['babel-loader'],
             exclude: /node_modules/
             // include: [
             //     path.join(__dirname, 'src')
@@ -29,21 +28,15 @@ module.exports = {
         }, {
             test: /\.css$/,
             use: [
-                'style',
+                'style-loader',
                 {
-                    loader: 'css',
+                    loader: 'css-loader',
                     options: {
                         modules: true,
                         importLoaders: 1
                     }
                 },
-                {
-                    loader: 'postcss',
-                    options: {
-                        plugins: () => [cssnext]
-                    }
-
-                }
+                'postcss-loader'
             ]
         }]
     },
