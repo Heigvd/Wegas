@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { types } from 'recast';
-import IconButton from 'material-ui/IconButton';
+import IconButton from '../Components/iconButton.js';
 
 export default function addStatement(Comp) {
     class AddStatement extends React.Component {
@@ -20,12 +20,14 @@ export default function addStatement(Comp) {
                 <div>
                     <Comp {...this.props} code={this.state.code} />
                     <IconButton
-                        iconClassName="fa fa-plus"
                         onClick={() => {
                             this.setState({
                                 code: this.state.code.concat([types.builders.emptyStatement()])
                             });
                         }}
+                        iconColor="#9DC06F"
+                        icon="fa fa-plus"
+                        tooltip="add"
                     />
                 </div>);
         }
@@ -40,8 +42,10 @@ export const removeStatement = (Comp) => {
         return (
             <div>
                 <IconButton
-                    iconClassName="fa fa-minus"
+                    icon="fa fa-minus"
                     onClick={props.onRemove}
+                    tooltip="remove"
+                    iconColor="darkred"
                 />
                 <Comp {...props} />
             </div>
