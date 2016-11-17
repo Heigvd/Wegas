@@ -30,14 +30,15 @@ import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.script.ScriptContext;
 import javax.ws.rs.core.Response;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 //import javax.annotation.PostConstruct;
+
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
@@ -148,7 +149,7 @@ public class RequestManager {
         this.addEntities(entities, destroyedEntities);
     }
 
-    public void addEntities(Map<String, List<AbstractEntity>> entities, Map<String, List<AbstractEntity>> container) {
+    private void addEntities(Map<String, List<AbstractEntity>> entities, Map<String, List<AbstractEntity>> container) {
         if (entities != null) {
             for (Map.Entry<String, List<AbstractEntity>> entry : entities.entrySet()) {
                 this.addEntities(entry.getKey(), entry.getValue(), container);
@@ -156,7 +157,7 @@ public class RequestManager {
         }
     }
 
-    public void addEntities(String audience, List<AbstractEntity> updated, Map<String, List<AbstractEntity>> container) {
+    private void addEntities(String audience, List<AbstractEntity> updated, Map<String, List<AbstractEntity>> container) {
         for (AbstractEntity entity : updated) {
             this.addEntity(audience, entity, container);
         }
@@ -360,7 +361,7 @@ public class RequestManager {
         this.status = statusInfo;
     }
 
-    public void markProcessingStartTime() {
+    private void markProcessingStartTime() {
         this.startTimestamp = System.currentTimeMillis();
     }
 
@@ -416,13 +417,13 @@ public class RequestManager {
         this.path = path;
     }
 
-    public void logRequest() {
+    private void logRequest() {
         long endTime = System.currentTimeMillis();
 
         long totalDuration = endTime - this.startTimestamp;
 
-        Long mgmtTime = null;
-        Long propagationTime = null;
+        Long mgmtTime;
+        Long propagationTime;
 
         String processingDuration;
         String managementDuration;
@@ -459,7 +460,7 @@ public class RequestManager {
                 + " processed in " + totalDuration + " ms ("
                 + " processing: " + processingDuration + "; "
                 + " management: " + managementDuration + "; "
-                + (propagationDuration != null ? "propagation: " + propagationDuration + "; " : "")
+                + " propagation: " + propagationDuration + "; "
                 + " serialisation: " + serialisationDuration
                 + ") => " + this.status);
     }
