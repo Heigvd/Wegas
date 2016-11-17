@@ -171,7 +171,7 @@ YUI.add('wegas-resourcemanagement-entities', function (Y) {
                             type: BOOLEAN,
                             value: true,
                             view: {
-                                label: "Active by default",
+                                label: "Active from start",
                             }
                         },
                         confidence: {
@@ -616,7 +616,7 @@ YUI.add('wegas-resourcemanagement-entities', function (Y) {
                         active: {
                             type: BOOLEAN,
                             view: {
-                                label: 'Active by default',
+                                label: 'Active from start',
                                 value: true
                             }
                         },

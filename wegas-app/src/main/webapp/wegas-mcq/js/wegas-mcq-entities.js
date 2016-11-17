@@ -474,6 +474,8 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 },
                 results: {
                     type: ARRAY,
+                    maxItems: 1,
+                    minItems: 1,
                     value: [{
                         "@class": "Result"
                     }],
@@ -510,7 +512,8 @@ YUI.add('wegas-mcq-entities', function (Y) {
                                 index: 1,
                                 view: {
                                     type: HTML,
-                                    label: "Feedback"
+                                    label: "Feedback",
+                                    borderTop: true
                                 }
                             },
                             impact: {
@@ -524,7 +527,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                                     }
                                 },
                                 view: {
-                                    label: "Impact on variables",
+                                    label: "Impact",
                                     type: SCRIPT
                                 }
                             },
@@ -554,7 +557,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                                     return parent ? parent.get("cbx") : false;
                                 },
                                 view: {
-                                    label: "Impact on variables when ignored",
+                                    label: "Impact",
                                     type: SCRIPT
                                 },
                                 index: 5,
@@ -684,7 +687,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                         }
                     },
                     view: {
-                        label: "Impact when selected",
+                        label: "Impact",
                         type: SCRIPT
                     }
                 },
@@ -713,7 +716,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                         return parent ? parent.parentDescriptor.get("cbx") : false;
                     },
                     view: {
-                        label: "Impact on variables when ignored",
+                        label: "Impact",
                         type: SCRIPT
                     }
                 },

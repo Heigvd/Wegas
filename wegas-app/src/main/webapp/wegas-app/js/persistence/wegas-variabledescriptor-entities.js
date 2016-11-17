@@ -169,7 +169,7 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
                 type: ["null", STRING],
                 index: 100,
                 view: {
-                        label: "comments",
+                        label: "Comments",
                         type: "string",
                         className: "wegas-comments",
                         rows : 8
@@ -644,7 +644,7 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
                     },
                     view: {
                         label: "Minimum",
-                        length:6
+                        layout:'shortInline'
                     }
                 },
                 maxValue: {
@@ -661,7 +661,7 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
                     },
                     view: {
                         label: "Maximum",
-                        length:6
+                        layout:'shortInline'
                     }
                 },
                 value: {
@@ -702,7 +702,7 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
                             },
                             view: {
                                 label: "Default value",
-                                length:6
+                                layout:'short'
                             }
                         },
                         history: {
@@ -925,7 +925,7 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
                     required: true,
                     view: {
                         type: SELECT,
-                        label: "type",
+                        label: "",
                         choices: AVAILABLE_TYPES
                     }
                 }
@@ -934,7 +934,7 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
                 type: STRING,
                 view: {
                     type: SELECT,
-                    label: "default children type",
+                    label: "Default children type",
                     choices: OPTIONAL_AVAILABLE_TYPES
                 }
             }
