@@ -1,40 +1,27 @@
-.half {
-  display: inline-block;
-  margin-right: 5%;
-  width: 45%;
-  margin-top: 8px;
-
-}
-
-.short{
-    width:45%;
-    margin-top: 8px;
-}
-
-.infos{
-  color:dodgerblue;
-  font-size: 10px; 
-  margin-left: 5px;
-}
-
-input{
-
+.input{
     border-radius: 3px;
     border:lightgrey solid 1px;
     margin-top:5px;
-    width:300px;
-    max-width:300px;
-    font-size: 14px;
-}
-
-input.numb{
-    width:55px;
+    font-size: 16px;
+    width:100%;
+    color:darkslategrey;
 }
 
 textarea{
-    background: #F4F4F4;
     border-radius: 3px;
-    width:33em;
-    max-width:332em;
+    width:100%;
+    font-style: italic;
     font-size: 14px;
+    border: none;
+    color:darkgrey;
+}
+
+textarea:focus{
+    border-radius: 3px;
+    width:100%;
+    font-size: 14px;
+    border:lightgrey solid 1px;
+    color:darkgrey;
+;
+
 }
