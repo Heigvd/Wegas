@@ -7,12 +7,16 @@ function BooleanView(props) {
     };
 
     return (
-        <div className={styles.short}>
+        <div
+            style={{ marginTop: '7px' }}
+        >
             <label
                 className={styles.label}
             >
                 <input
+                    checked={props.value}
                     type="checkbox"
+                    className={styles.checkbox}
                     onChange={ev => props.onChange(ev.target.checked)}
                 />
                 {props.view.label || props.path[props.path.length - 1]}

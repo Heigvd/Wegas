@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react';
+import commonView from '../HOC/commonView';
 import TextField from 'material-ui/TextField';
 import ObjectView from './object';
 import IconButton from '../Components/iconButton.js';
@@ -50,7 +51,6 @@ class HashlistView extends React.Component {
 
             return (<div>
                 <IconButton
-                    iconColor="red"
                     icon="fa fa-minus"
                     tooltip="remove"
                     onClick={remove}
@@ -82,7 +82,6 @@ class HashlistView extends React.Component {
                 ref={node => { this.newInput = node; }}
             />
             <IconButton
-                iconColor="green"
                 icon="fa fa-plus"
                 tooltip="add"
                 onClick={this.addChild}
@@ -99,4 +98,4 @@ HashlistView.propTypes = {
         keyLabel: PropTypes.string
     })
 };
-export default HashlistView;
+export default commonView(HashlistView);

@@ -11,6 +11,7 @@ function genItems(o, i) {
                 key={i}
                 value={o}
                 primaryText={o}
+                
             />);
     }
     const { label = o.value, value, disabled } = o;
@@ -26,8 +27,8 @@ function genItems(o, i) {
 }
 
 function SelectView(props) {
-    const onChange = function onChange(event, index, value) {
-        setTimeout(props.onChange(value));
+    const onChange = function onChange(event) {
+        props.onChange(event.target.value);
     };
     const choices = props.view.choices || [];
     const menuItems = choices.map(genItems);

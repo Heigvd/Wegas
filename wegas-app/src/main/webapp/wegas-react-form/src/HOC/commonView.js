@@ -7,20 +7,24 @@ export default function comonView(Comp) {
         const errors = props.errorMessage && props.errorMessage.map(
             v => (
                 <span>
-                    <i
-                        className={classNames({
-                            fa: props.errorMessage,
-                            'fa-info-circle': props.errorMessage
-                        })
-                        }aria-hidden="true"
-                    />
-                        {v}
+                    {v}
                 </span>
 
-                ));
-
+            ));
+        const layout = props.view.layout || 'long';
         return (
-            <div className={props.view.className}>
+            <div
+                className={classNames(
+                    props.view.className,
+                    {
+                        [styles.short]: layout === 'short',
+                        [styles.shortInline]: layout === 'shortInline',
+                        [styles.long]: layout === 'long',
+                        [styles.borderTop]: props.view.borderTop
+                    })
+                }
+                style={{ marginTop: '20px' }}
+            >
                 <div
                     className={styles.label}
                 >
@@ -33,13 +37,6 @@ export default function comonView(Comp) {
                     })
                     }
                 >
-                    <i
-                        className={classNames({
-                            fa: props.view.description,
-                            'fa-info-circle': props.view.description
-                        })
-                        }aria-hidden="true"
-                    />
                     {props.view.description}
                 </div>
                 <div
@@ -55,7 +52,8 @@ export default function comonView(Comp) {
         view: PropTypes.shape({
             label: PropTypes.string,
             description: PropTypes.string,
-            className: PropTypes.string
+            className: PropTypes.string,
+            borderTop: PropTypes.bool
         }).isRequired
     };
     return CommonComp;

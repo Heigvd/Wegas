@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-for */
 import React, { PropTypes } from 'react';
 import TinyMCE from 'react-tinymce';
-import classNames from 'classnames';
 import commonView from '../HOC/commonView';
 import './../../../wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar.js';
 import { getY } from './../index.js';
@@ -106,9 +105,10 @@ function HTMLView(props) {
     const onValueChange = event => onChange(event.target.getContent());
     return (
         <div
-            className={classNames(styles.margin, styles.border)}
+            className={styles.margin}
         >
             <TinyMCE
+                style={{ minHeight: '45px' }}
                 content={props.value}
                 config={TINYCONFIG}
                 onChange={onValueChange}

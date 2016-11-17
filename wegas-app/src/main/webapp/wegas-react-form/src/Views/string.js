@@ -3,7 +3,6 @@ import classNames from 'classnames';
 import debounce from '../HOC/callbackDebounce';
 import commonView from '../HOC/commonView';
 import styles from '../css/string.css';
-import IconButton from '../Components/iconButton.js';
 
 
 const debounceOnChange = debounce('onChange');
@@ -14,19 +13,22 @@ function StringView(props) {
             <textarea
                 rows={props.view.rows}
                 onChange={ev => props.onChange(ev.target.value)}
+                placeholder="key in!"
+                style={{
+                    fontSize: '14px',
+                    color: 'darkgrey',
+
+                }}
+                defaultValue={props.value}
             />
         );
     }
-    const length = props.view.length || '10';
-    return (
-        <div>
-            <input
-                className={classNames({ [styles.numb]: length === 6 })}
-                type="text"
-                defaultValue={props.value}
-                onChange={ev => props.onChange(ev.target.value)}
-            />
-        </div>
+    return (<input
+        className={styles.input}
+        type="text"
+        defaultValue={props.value}
+        onChange={ev => props.onChange(ev.target.value)}
+    />
     );
 }
 
