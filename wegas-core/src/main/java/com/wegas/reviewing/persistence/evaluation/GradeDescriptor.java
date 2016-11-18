@@ -1,4 +1,4 @@
- /*
+/*
  * Wegas
  * http://wegas.albasim.ch
  *
@@ -76,7 +76,7 @@ public class GradeDescriptor extends EvaluationDescriptor<GradeInstance> {
     @Override
     protected GradeInstance newInstance() {
         GradeInstance gi = new GradeInstance();
-        if (this.getMinValue() != null && this.getMaxValue() != null) {
+        /*if (this.getMinValue() != null && this.getMaxValue() != null) {
             gi.setValue(Math.floor((getMinValue() + getMaxValue()) / 2.0));
         } else if (this.getMinValue() != null) {
             gi.setValue(getMinValue().doubleValue());
@@ -84,7 +84,8 @@ public class GradeDescriptor extends EvaluationDescriptor<GradeInstance> {
             gi.setValue(getMaxValue().doubleValue());
         } else {
             gi.setValue(0.0);
-        }
+        }*/
+        gi.setValue(null);
         return gi;
     }
 }

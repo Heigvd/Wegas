@@ -7,19 +7,20 @@
  */
 package com.wegas.core.rest.util;
 
-import com.wegas.core.Helper;
 import com.wegas.core.ejb.RequestFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.WebsocketFacade;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasWrappedException;
-import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.security.ejb.UserFacade;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.naming.NamingException;
+import javax.ejb.EJB;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
@@ -28,15 +29,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Provider
+//@Stateless
 public class ManagedModeResponseFilter implements ContainerResponseFilter {
 
     private final static Logger logger = LoggerFactory.getLogger(ManagedModeResponseFilter.class);
+    /**
+     *
+     */
+    @EJB
+    private WebsocketFacade websocketFacade;
+    /**
+     *
+     */
+    @EJB
+    private RequestFacade requestFacade;
+
+    @EJB
+    private UserFacade userFacade;
 
     /**
      * This method encapsulates a Jersey response's entities in a ServerResponse
@@ -47,12 +61,14 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
      */
     @Override
     public void filter(ContainerRequestContext request, ContainerResponseContext response) {
-        RequestFacade rmf = RequestFacade.lookup();
         final String managedMode = request.getHeaderString("managed-mode");
 
-        // Todo find a way to access responce from RequestManager.preDestroy (@Context HttpServletResponse?)
-        rmf.getRequestManager().setStatus(response.getStatusInfo());
-       
+        // Todo find a way to access response from RequestManager.preDestroy (@Context HttpServletResponse?)  WHY ?
+        RequestManager requestManager = requestFacade.getRequestManager();
+
+        requestManager.markManagermentStartTime();
+        requestManager.setStatus(response.getStatusInfo());
+
         if (response.getStatusInfo().getStatusCode() >= 400) {
             logger.warn("Problem : " + response.getEntity());
         }
@@ -60,6 +76,10 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
         if (managedMode != null && !managedMode.toLowerCase().equals("false")) {
 
             ManagedResponse serverResponse = new ManagedResponse();
+            /* 
+             * returnd entities are not to propagate through websockets
+             * unless they're registered within requestManager's updatedEntities
+             */
             List updatedEntities;
             List deletedEntities = new ArrayList<>();
 
@@ -72,27 +92,28 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
              * Behaviour is to return a managed response with an empty entity list
              * and to register the exception as a request exception event
              */
-            if (response.getEntity() instanceof Exception) {
+            if (response.getEntity() instanceof Exception || requestManager.getExceptionCounter() > 0) {
+
                 // No Entities but register exception as event
                 updatedEntities = new ArrayList<>();
                 WegasRuntimeException wrex;
 
                 if (response.getEntity() instanceof WegasRuntimeException) {
                     wrex = (WegasRuntimeException) response.getEntity();
-                } else {
+                } else if (response.getEntity() instanceof Exception) {
                     wrex = new WegasWrappedException((Exception) response.getEntity());
+                } else {
+                    wrex = WegasErrorMessage.error("Something went wrong");
                 }
-
-                rmf.getRequestManager().addException(wrex);
+                requestManager.addException(wrex);
 
                 // Set response http status code to 400
                 response.setStatus(HttpStatus.SC_BAD_REQUEST);
                 rollbacked = true;
             } else {
                 /* 
-                 * Request has been processed without throwing a fatal exception lead
-                 * to DB modifications 
-                 * -> Include all modifed entites in the managed response
+                 * Request has been processed without throwing a fatal exception
+                 * -> Include all returned entities (modified or not) in the managed response
                  */
 
                 List entities;
@@ -118,63 +139,64 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                 response.setStatus(HttpStatus.SC_OK);
             }
 
-            Map<String, List<AbstractEntity>> updatedEntitiesMap = rmf.getUpdatedEntities();
-            Map<String, List<AbstractEntity>> destroyedEntitiesMap = rmf.getDestroyedEntities();
-            Map<String, List<AbstractEntity>> outdatedEntitiesMap = rmf.getOutdatedEntities();
+            Map<String, List<AbstractEntity>> updatedEntitiesMap = requestManager.getUpdatedEntities();
+            Map<String, List<AbstractEntity>> destroyedEntitiesMap = requestManager.getDestroyedEntities();
+            Map<String, List<AbstractEntity>> outdatedEntitiesMap = requestManager.getOutdatedEntities();
 
             if (!rollbacked && !(updatedEntitiesMap.isEmpty() && destroyedEntitiesMap.isEmpty() && outdatedEntitiesMap.isEmpty())) {
-                try {
-                    WebsocketFacade websocketFacade = Helper.lookupBy(WebsocketFacade.class, WebsocketFacade.class);
-                    /*
-                     * Merge updatedInstance within ManagedResponse entities
-                     */
-                    for (Entry<String, List<AbstractEntity>> entry : updatedEntitiesMap.entrySet()) {
-                        String audience = entry.getKey();
-                        if (websocketFacade.hasPermission(audience, rmf.getPlayer())) {
-                            for (AbstractEntity ae : entry.getValue()) {
-                                if (!updatedEntities.contains(ae)) {
-                                    updatedEntities.add(ae);
-                                }
+                /*
+                 * Include all detected updated entites within updatedEntites 
+                 * (the ones which will be returned to the client)
+                 */
+                for (Entry<String, List<AbstractEntity>> entry : updatedEntitiesMap.entrySet()) {
+                    String audience = entry.getKey();
+                    if (userFacade.hasPermission(audience)) {
+                        for (AbstractEntity ae : entry.getValue()) {
+                            if (!updatedEntities.contains(ae)) {
+                                updatedEntities.add(ae);
                             }
                         }
                     }
-                    /*
-                     * Merge updatedInstance within ManagedResponse entities
-                     */
-                    for (Entry<String, List<AbstractEntity>> entry : destroyedEntitiesMap.entrySet()) {
-                        String audience = entry.getKey();
-                        if (websocketFacade.hasPermission(audience, rmf.getPlayer())) {
-                            for (AbstractEntity ae : entry.getValue()) {
-                                if (!deletedEntities.contains(ae)) {
-                                    deletedEntities.add(ae);
-                                }
-                                /* 
-                                 * Since each entity which has been returned by the rest method is included
-                                 * within updatedEntities list by default, make sure to not include thoses which
-                                 * where destroyed 
-                                 */
-                                if (updatedEntities.contains(ae)) {
-                                    updatedEntities.remove(ae);
-                                }
-                            }
-                        }
-                    }
-
-                    websocketFacade.onRequestCommit(updatedEntitiesMap, destroyedEntitiesMap, outdatedEntitiesMap,
-                            (managedMode.matches("^[\\d\\.]+$") ? managedMode : null));
-                } catch (NamingException | NoPlayerException ex) {
-                    java.util.logging.Logger.getLogger(ManagedModeResponseFilter.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                /*
+                 * Let's do the same but for destroyed entities
+                 */
+                for (Entry<String, List<AbstractEntity>> entry : destroyedEntitiesMap.entrySet()) {
+                    String audience = entry.getKey();
+                    if (userFacade.hasPermission(audience)) {
+                        for (AbstractEntity ae : entry.getValue()) {
+                            if (!deletedEntities.contains(ae)) {
+                                deletedEntities.add(ae);
+                            }
+                            /*
+                             * Since each entity which has been returned by the rest method is included
+                             * within updatedEntities list by default, make sure to not include thoses which
+                             * where destroyed
+                             */
+                            if (updatedEntities.contains(ae)) {
+                                updatedEntities.remove(ae);
+                            }
+                        }
+                    }
+                }
+
+                requestManager.markPropagationStartTime();
+                websocketFacade.onRequestCommit(updatedEntitiesMap, destroyedEntitiesMap, outdatedEntitiesMap,
+                        (managedMode.matches("^[\\d\\.]+$") ? managedMode : null));
+                requestManager.markPropagationEndTime();
             }
 
             // Push events stored in RequestManager
-            serverResponse.getEvents().addAll(rmf.getRequestManager().getClientEvents());
+            serverResponse.getEvents().addAll(requestManager.getClientEvents());
 
             // Set entities
             serverResponse.setUpdatedEntities(updatedEntities);
             serverResponse.setDeletedEntities(deletedEntities);
 
             response.setEntity(serverResponse);
+
         }
+        //requestFacade.flushClear();
+        requestManager.markSerialisationStartTime();
     }
 }

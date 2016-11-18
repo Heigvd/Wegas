@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 @Startup
 public class MutexSingleton {
 
-    public class RefCounterLock {
+    public static class RefCounterLock {
 
         public int counter;
         public ReentrantLock sem;

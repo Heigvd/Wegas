@@ -107,6 +107,9 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     @EJB
     private PlayerFacade playerFacade;
 
+    @EJB
+    private GameFacade gameFacade;
+
     /**
      *
      */
@@ -122,7 +125,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         final User currentUser = userFacade.getCurrentUser();
         entity.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
 
-        variableDescriptorFacade.reviveItems(entity, entity, true);                           // Revive entities
+        variableDescriptorFacade.reviveItems(entity, entity, true); // brand new GameModel -> revive all descriptor
         createdGameModelEvent.fire(new EntityCreated<>(entity));
         userFacade.getCurrentUser().addPermission("GameModel:View,Edit,Delete,Duplicate,Instantiate:gm" + entity.getId());
         userFacade.getCurrentUser().addPermission("GameModel:Duplicate:gm" + entity.getId());
@@ -140,9 +143,12 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     public boolean addDebugGame(GameModel gameModel) {
         if (!gameModel.hasDebugGame()) {
             DebugGame debugGame = new DebugGame();
-            debugGame.addTeam(new DebugTeam());
-
             this.addGame(gameModel, debugGame);
+            getEntityManager().persist(debugGame);
+            gameModel.propagateDefaultInstance(debugGame, true);
+
+            gameFacade.addDebugTeam(debugGame);
+
             return true;
         }
         return false;
@@ -217,7 +223,8 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     public void addGame(final GameModel gameModel, final Game game) {
         gameModel.addGame(game);
         // Should reset the new game only? nope ?  -> gameFacade.reset(game.getId());
-        this.reset(gameModel);
+        //this.reset(gameModel);
+        gameModel.propagateDefaultInstance(game, true);
     }
 
     @Asynchronous
@@ -393,9 +400,9 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      */
     public void reset(final GameModel gameModel) {
         // Need to flush so prepersit events will be thrown (for example Game will add default teams)
-        //getEntityManager().flush();
+        ///getEntityManager().flush();
         //gameModel.propagateGameModel();  -> propagation is now done automatically after descriptor creation
-        gameModel.propagateDefaultInstance(gameModel);
+        gameModel.propagateDefaultInstance(gameModel, false);
         //getEntityManager().flush();
         // Send an reset event (for the state machine and other)
         resetEvent.fire(new ResetEvent(gameModel));
@@ -439,7 +446,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
             String serialized = model.toJson(Views.Export.class);
             String hash = Integer.toHexString(serialized.hashCode());
 
-            //System.out.println("for" + model + "*" + hash);
+            //logger.info("for" + model + "*" + hash);
             if (!fileController.directoryExists(model.getId(), "/" + HISTORYPATH)) {// Create version folder if it does not exist
                 fileController.createDirectory(model.getId(), HISTORYPATH, "/", null, null);
             }
@@ -447,9 +454,9 @@ public class GameModelFacade extends BaseFacade<GameModel> {
             List<AbstractContentDescriptor> history = fileController.listDirectory(model.getId(), "/" + HISTORYPATH);
             boolean found = false;
             for (AbstractContentDescriptor item : history) {
-                //System.out.println("checking" + item.getName() + "*" + hash);
+                //logger.info.println("checking" + item.getName() + "*" + hash);
                 if (item.getName().contains(hash)) {
-                    //System.out.println("fOUND");
+                    //logger.info.println("fOUND");
                     found = true;
                     break;
                 }

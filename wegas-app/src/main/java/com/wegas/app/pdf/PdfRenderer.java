@@ -22,7 +22,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
+import javax.ejb.EJB;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -34,9 +38,20 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.POST;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
+import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.security.ejb.RoleFacade;
+import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.persistence.Permission;
+import com.wegas.core.security.persistence.Role;
+import com.wegas.core.security.persistence.User;
+import org.apache.shiro.authz.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMException;
@@ -65,9 +80,18 @@ public class PdfRenderer implements Filter {
 
     // The filter configuration object we are associated with.  If
     // this value is null, this filter instance is not currently
-    // configured. 
+    // configured.
     private FilterConfig filterConfig = null;
     private DocumentBuilder documentBuilder;
+
+    @EJB
+    private UserFacade userFacade;
+
+    @EJB
+    private RoleFacade roleFacade;
+
+    @EJB
+    private GameModelFacade gameModelFacade;
 
     @Override
     public void init(FilterConfig config) throws ServletException {
@@ -84,14 +108,16 @@ public class PdfRenderer implements Filter {
     }
 
     /**
-     *
      * @param request  The servlet request we are processing
      * @param response The servlet response we are creating
      * @param chain    The filter chain we are processing
      *
+     * When HTTP method is POST, input comes exclusively from POST data.
+     *
      * @exception IOException      if an input/output error occurs
      * @exception ServletException if a servlet error occurs
      */
+    @POST
     @Override
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain)
@@ -108,16 +134,41 @@ public class PdfRenderer implements Filter {
                 HttpServletResponse resp = (HttpServletResponse) response;
 
                 String renderType = req.getParameter("outputType");
+                String title = req.getParameter("title");
+                String content;
 
-                if (renderType != null && renderType.equals("pdf")) {
-                    // specific type ? capture response 
+                if (req.getMethod().equalsIgnoreCase("POST")){
+                    // To prevent abuse, check that the user is logged in and has at least trainer credentials:
+                    User user = userFacade.getCurrentUser();
+                    boolean isTrainer = false;
+                    for (Role r : user.getRoles()) {
+                        String role = r.getName();
+                        if (role.equals("Trainer") || role.equals("PMG-trainer") || role.equals("Scenarist")){
+                            isTrainer = true;
+                            break;
+                        }
+                    }
+                    if (!isTrainer){
+                        throw new UnauthorizedException("User is not a trainer");
+                    }
+
+                    // In a POST'ed filter method, all parameters must be in the post data.
+                    String body = req.getParameter("body");
+                    content = createHtmlDoc("Wegas - " + title, "<h2>" + title + "</h2><hr />" + body);
+                } else {
+                    if (renderType == null) return; // Hack to exit when content was initially POST'ed
+
+                    // specific type ? capture response
                     ContentCaptureServletResponse capContent = new ContentCaptureServletResponse(resp);
 
                     chain.doFilter(req, capContent);
                     /*
-                     * convert xhtml from String to XML Document 
+                     * convert xhtml from String to XML Document
                      */
-                    String content = capContent.getContent();
+                    content = capContent.getContent();
+                }
+
+                if (renderType != null && renderType.equals("pdf")) {
                     Tidy tidy = new Tidy();
                     tidy.setXmlOut(true);
 
@@ -133,7 +184,8 @@ public class PdfRenderer implements Filter {
                     if (debug) {
                         Helper.logEnv();
                         Element utf8Test = xhtmlDocument.getElementById("testUTF8");
-                        log("UTF-8 P test" + utf8Test.getTextContent());
+                        if (utf8Test != null)
+                            log("UTF-8 P test" + utf8Test.getTextContent());
                         log("Default charset: " + Charset.defaultCharset());
                     }
 
@@ -149,6 +201,23 @@ public class PdfRenderer implements Filter {
                     renderer.layout();
 
                     resp.setContentType("application/pdf; charset=UTF-8");
+                    String fileName;
+                    try {
+                        if (title == null) {
+                            String gmId = req.getParameter("gameModelId");
+                            if (gmId != null) {
+                                GameModel gm = gameModelFacade.find(Long.parseLong(gmId));
+                                title = gm.getName() + "-Wegas";
+                            }
+                        }
+                        // Make sure the filename is valid (space characters are used as delimiters by certain browsers):
+                        fileName = title.replaceAll("[^\\sa-zA-Z0-9_.-]", "-").replaceAll("[\\s]", "_") + ".pdf";
+                    } catch (Exception e) {
+                        // Default document title:
+                        fileName = "Wegas.pdf";
+                    }
+                    // Display the PDF in the browser AND provide a nice filename for saving it to disk:
+                    resp.setHeader("Content-disposition", "inline; filename="+ fileName);
                     OutputStream browserStream = resp.getOutputStream();
 
                     renderer.createPDF(browserStream);
@@ -175,6 +244,19 @@ public class PdfRenderer implements Filter {
             }
             sendProcessingError(problem, response);
         }
+    }
+
+    /*
+    ** For POST'ed contents: adds basic tags to make it a valid HTML document.
+    */
+    private String createHtmlDoc(String title, String body) {
+        return "" //"<?xml version=\"1.0\" encoding=\"UTF-8\" ?> "
+             + "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://wegas.albasim.ch/wegas-app/DTD/xhtml1-transitional.dtd\"> "
+             + "<html><head><meta charset=\"UTF-8\" /><meta http-equiv=\"Content-Type\" content=\"text/html\" /><title>"
+             + title
+             + "</title></head><body style=\"font-family:Helvetica, Arial; font-size:12px\">"
+             + body
+             + "</body></html>";
     }
 
     /**

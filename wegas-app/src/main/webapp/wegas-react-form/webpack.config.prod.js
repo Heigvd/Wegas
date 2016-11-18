@@ -1,6 +1,5 @@
 const path = require('path');
 const webpack = require('webpack');
-const cssnext = require('postcss-cssnext');
 
 module.exports = {
     devtool: 'source-map',
@@ -10,6 +9,9 @@ module.exports = {
         filename: 'bundle.js',
         library: 'JSONInput',
         libraryTarget: 'umd'
+    },
+    resolve: {
+        mainFields: ['module', 'jsnext:main', 'browser', 'main']
     },
     plugins: [
         new webpack.optimize.OccurrenceOrderPlugin(),
@@ -27,17 +29,26 @@ module.exports = {
         })
     ],
     module: {
-        loaders: [{
+        rules: [{
             test: /\.jsx?$/,
-            loaders: ['babel'],
+            loaders: ['babel-loader'],
             exclude: /node_modules/
             // include: [
             //     path.join(__dirname, 'src')
             // ]
         }, {
             test: /\.css$/,
-            loader: 'style!css?modules&importLoaders=1!postcss'
+            use: [
+                'style-loader',
+                {
+                    loader: 'css-loader',
+                    options: {
+                        modules: true,
+                        importLoaders: 1
+                    }
+                },
+                'postcss-loader'
+            ]
         }]
-    },
-    postcss: () => [cssnext],
+    }
 };

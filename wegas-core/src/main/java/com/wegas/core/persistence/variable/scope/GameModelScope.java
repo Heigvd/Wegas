@@ -9,6 +9,7 @@ package com.wegas.core.persistence.variable.scope;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
@@ -52,14 +53,16 @@ public class GameModelScope extends AbstractScope<GameModel> {
     }
 
     @Override
-    protected void propagate(GameModel gameModel) {
+    protected void propagate(GameModel gameModel, boolean create) {
         VariableDescriptor vd = this.getVariableDescriptor();
         VariableInstance vi = this.getVariableInstance();
         if (vi == null) {
             VariableInstance clone = vd.getDefaultInstance().clone();
             this.setVariableInstance(gameModel, clone);
         } else {
+            Long version = vi.getVersion();
             vi.merge(vd.getDefaultInstance());
+            vi.setVersion(version);
         }
     }
 
@@ -69,7 +72,7 @@ public class GameModelScope extends AbstractScope<GameModel> {
      */
     @JsonIgnore
     @Override
-    public void propagateDefaultInstance(AbstractEntity context) {
+    public void propagateDefaultInstance(AbstractEntity context, boolean create) {
         if (context instanceof Player) {
             // Since player's gamemodel already exists, nothing to propagate
         } else if (context instanceof Team) {
@@ -77,7 +80,7 @@ public class GameModelScope extends AbstractScope<GameModel> {
         } else if (context instanceof Game) {
             // Since game's gamemodel already exists, nothing to propagate
         } else {
-            propagate(getVariableDescriptor().getGameModel());
+            propagate(getVariableDescriptor().getGameModel(), create);
         }
     }
 
@@ -112,7 +115,7 @@ public class GameModelScope extends AbstractScope<GameModel> {
 
     /**
      *
-     * @param userId
+     * @param key
      * @param v
      */
     @Override

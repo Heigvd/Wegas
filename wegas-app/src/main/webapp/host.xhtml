@@ -9,7 +9,13 @@
             name="title">#{editorGameController.currentGame.name} - #{editorGameController.currentGameModel.name}</ui:define>
 
     <ui:define name="editorHeader">
-        <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-host-min.css"/>
+        <ui:fragment rendered="#{requestController.debugMode()}">
+            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-host.css"/>
+        </ui:fragment>
+        <ui:fragment rendered="#{!requestController.debugMode()}">
+            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-host-min.css"/>
+        </ui:fragment>
+
     </ui:define>
 
     <ui:define name="pageUri">wegas-app/db/wegas-host-layout.json</ui:define>

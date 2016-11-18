@@ -361,7 +361,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     /**
      * @param values
      * @return bag of scrap
-     * @deprecated 
+     * @deprecated
      */
     public List<Map> findAccountsByEmailValues(List<String> values) {
         List<Map> returnValue = new ArrayList<>();

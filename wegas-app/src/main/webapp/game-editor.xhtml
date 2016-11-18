@@ -33,9 +33,10 @@
                     var app = new Y.Wegas.App({
                         dataSources: {
                             Variable: {
-                                source: "rest/EditorPrivate/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
+                                //source: "rest/EditorPrivate/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
                                 //source: "rest/Editor/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
-                                initialRequest: "",
+                                source: "rest/Editor/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
+                                initialRequest: ["", "/PlayerInstances/#{gameController.currentPlayer.id}"],
                                 plugins: [{
                                         fn: "VariableDescriptorCache",
                                         cfg: {
@@ -91,7 +92,8 @@
                                         cfg: {
                                             currentGameId: #{gameController.currentGame.id},
                                             currentTeamId: #{gameController.currentPlayer.team.id},
-                                            currentPlayerId: #{gameController.currentPlayer.id}
+                                            currentPlayerId: #{gameController.currentPlayer.id},
+                                            indexed = ["id"]
                                         }
                                     }
                                 ]
@@ -101,6 +103,7 @@
                                 source: "rest/Pusher/",
 //                                applicationKey: "#{gameController.currentGameModel.properties.websocket}"
                                 applicationKey: "#{gameController.getWegasProperty('pusher.key')}",
+                                cluster: "#{gameController.getWegasProperty('pusher.cluster')}",
                                 plugins: [{
                                         fn: "WebSocketListener",
                                         cfg: {

@@ -64,6 +64,11 @@
     line-height:64px;
     text-align:center;
     color:#666;
+    transition: 0.3s;
+}
+
+.modal .modal__header .button.button--close:hover {
+    color: #000;
 }
 
 .modal .modal__header.modal__header--illustred .icon{

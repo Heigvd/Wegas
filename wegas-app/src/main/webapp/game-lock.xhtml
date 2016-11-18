@@ -4,12 +4,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets">
 
-<ui:composition template="game-play.xhtml">
-    <ui:define name="title">#{gameController.currentPlayer.team.name} - #{gameController.currentGame.name}</ui:define>
-        
+    <ui:composition template="game-play.xhtml">
+        <ui:define name="title">#{gameController.currentGameModel.properties.freeForAll ? gameController.currentPlayer.name : gameController.currentPlayer.team.name} - #{gameController.currentGame.name}</ui:define>
 
-    <ui:define name="pageUri">wegas-app/db/wegas-app-noaction-layout.json</ui:define>
 
-</ui:composition>
+        <ui:define name="pageUri">wegas-app/db/wegas-app-noaction-layout.json</ui:define>
+
+    </ui:composition>
 
 </html>

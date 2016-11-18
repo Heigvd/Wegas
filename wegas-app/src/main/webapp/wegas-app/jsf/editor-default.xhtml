@@ -40,8 +40,9 @@
                     var app = new Y.Wegas.App({
                         dataSources: {
                             Variable: {
-                                source: "rest/EditorPrivate/#{editorGameController.currentPlayer.id}/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
-//                                source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
+                                //source: "rest/EditorPrivate/#{editorGameController.currentPlayer.id}/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
+                                //source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
+                                source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
                                 initialRequest: "",
                                 plugins: [{
                                         fn: "VariableDescriptorCache"
@@ -54,6 +55,16 @@
                                      }
                                      }, { */
                                         fn: "ServerLog"
+                                    }]
+                            },
+                            Instance: {
+                                source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
+                                initialRequest: "/VariableInstance/AllPlayerInstances/#{editorGameController.currentPlayer.id}",
+                                plugins: [{
+                                        fn: "VariableInstanceCache",
+                                        cfg: {
+                                            indexes: ["descriptorId"]
+                                        }
                                     }]
                             },
                             Page: {
@@ -124,6 +135,7 @@
                                 source: "rest/Pusher/",
                                 //   applicationKey: "#{editorGameController.currentGameModel.properties.websocket}"
                                 applicationKey: "#{editorGameController.getWegasProperty('pusher.key')}",
+                                cluster: "#{editorGameController.getWegasProperty('pusher.cluster')}",
                                 mode: '<ui:insert name="pusherMode">FULL</ui:insert>',
                                 plugins: [{
                                         fn: "WebSocketListener",

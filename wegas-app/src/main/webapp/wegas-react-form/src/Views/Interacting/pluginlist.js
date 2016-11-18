@@ -28,7 +28,7 @@ function updateCfg(cfg) {
 }
 const AsyncForm = asyncForm(({ value }) => {
     const Y = getY();
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
         if (value && value.fn) {
             Y.Wegas.use({ type: value.fn }, () => { // load required modules
                 const targetPlg = Y.Plugin[value.fn];

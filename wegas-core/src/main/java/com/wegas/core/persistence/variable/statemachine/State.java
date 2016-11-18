@@ -7,6 +7,7 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -22,6 +23,7 @@ import com.wegas.core.rest.util.Views;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 //import javax.xml.bind.annotation.XmlRootElement;
@@ -30,24 +32,42 @@ import java.util.List;
  */
 @Entity
 @Table(
-    name = "fsm_state",
-    indexes = {
-        @Index(columnList = "statemachine_id")
-    }
+        name = "fsm_state",
+        indexes = {
+            @Index(columnList = "statemachine_id")
+        }
 )
 //@XmlRootElement
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "DialogueState", value = DialogueState.class)
 })
+
+//@OptimisticLocking(cascade = true)
 public class State extends AbstractEntity implements Searchable, Scripted {
 
     private static final long serialVersionUID = 1L;
 
+    @ManyToOne
+    @JoinColumn(name = "statemachine_id")
+    @JsonIgnore
+    private StateMachineDescriptor stateMachine;
+
+    @Version
+    private Long version;
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+
     /**
      *
      */
-    @JsonView(value = Views.EditorExtendedI.class)
+    @JsonView(value = Views.EditorI.class)
     private Coordinate editorPosition;
 
     /**
@@ -68,7 +88,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
      *
      */
     @Embedded
-    @JsonView(Views.EditorExtendedI.class)
+    @JsonView(Views.EditorI.class)
     private Script onEnterEvent;
 
     /**
@@ -76,13 +96,28 @@ public class State extends AbstractEntity implements Searchable, Scripted {
      */
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "state_id", referencedColumnName = "state_id")
-    @OrderBy("index")
     private List<Transition> transitions = new ArrayList<>();
 
     /**
      *
      */
     public State() {
+    }
+
+    public StateMachineDescriptor getStateMachine() {
+        return stateMachine;
+    }
+
+    public void setStateMachine(StateMachineDescriptor stateMachine) {
+        this.stateMachine = stateMachine;
+    }
+
+    public Long getStateMachineId() {
+        return getStateMachine().getId();
+    }
+
+    public void setStateMachineId(Long stateMachineId) {
+        //this.stateMachine = stateMachine;
     }
 
     @Override
@@ -162,18 +197,30 @@ public class State extends AbstractEntity implements Searchable, Scripted {
      * @return
      */
     public List<Transition> getTransitions() {
-        return transitions;
+        Collections.sort(this.transitions, new Comparator<Transition>() {
+            @Override
+            public int compare(Transition t1, Transition t2) {
+                return t1.getIndex() - t2.getIndex();
+            }
+        });
+        return this.transitions;
+    }
+
+    public Transition addTransition(Transition t) {
+        List<Transition> ts = this.getTransitions();
+        ts.add(t);
+        this.setTransitions(ts);
+        return t;
     }
 
     /**
      * @param transitions
      */
     public void setTransitions(List<Transition> transitions) {
-        Collections.sort(transitions, (o1, o2) -> o1.getIndex() - o2.getIndex());
-        this.transitions = transitions;
-        for (Transition t : this.transitions) {
+        for (Transition t : transitions) {
             t.setState(this);
         }
+        this.transitions = transitions;
     }
 
     @Override
@@ -181,6 +228,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
         if (other instanceof State) {
             State newState = (State) other;
             this.setLabel(newState.getLabel());
+            this.setVersion(newState.getVersion());
             this.setOnEnterEvent(newState.getOnEnterEvent());
             this.setEditorPosition(newState.getEditorPosition());
             this.setTransitions(ListUtils.mergeReplace(this.getTransitions(), newState.getTransitions()));
@@ -191,6 +239,6 @@ public class State extends AbstractEntity implements Searchable, Scripted {
 
     @Override
     public String toString() {
-        return "State{" + "id=" + id + ", label=" + label + ", onEnterEvent=" + onEnterEvent + ", transitions=" + transitions + '}';
+        return "State{" + "id=" + id + ", v=" + version + ", label=" + label + ", onEnterEvent=" + onEnterEvent + ", transitions=" + transitions + '}';
     }
 }

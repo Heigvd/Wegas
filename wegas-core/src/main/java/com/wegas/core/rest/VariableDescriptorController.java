@@ -7,6 +7,7 @@
  */
 package com.wegas.core.rest;
 
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
@@ -17,6 +18,7 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.util.SecurityHelper;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
@@ -60,6 +62,12 @@ public class VariableDescriptorController {
     private PlayerFacade playerFacade;
 
     /**
+     *
+     */
+    @EJB
+    private UserFacade userFacade;
+
+    /**
      * @param gameModelId
      * @return all root level variable descriptors
      */
@@ -70,6 +78,19 @@ public class VariableDescriptorController {
 
         GameModel gameModel = gameModelFacade.find(gameModelId);
         return gameModel.getChildVariableDescriptors();
+    }
+
+    @POST
+    @Path("ByIds")
+    public Collection<VariableDescriptor> getByIds(@PathParam("gameModelId") Long gameModelId, List<Long> ids) {
+        Collection<VariableDescriptor> descriptors = new ArrayList<>();
+        for (Long id : ids) {
+            VariableDescriptor desc = variableDescriptorFacade.find(id);
+            if (userFacade.hasPermission(Helper.getAudienceToken(desc.getGameModel()))) {
+                descriptors.add(desc);
+            }
+        }
+        return descriptors;
     }
 
     /**
@@ -84,19 +105,6 @@ public class VariableDescriptorController {
         SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + vd.getGameModelId());
 
         return vd;
-    }
-
-    /**
-     *
-     * @param gameModelId id of the gameModel
-     * @param playerId    player id
-     * @return all instances from player's game belonging to the player
-     */
-    @GET
-    @Path("/PlayerInstances/{playerId:[1-9][0-9]*}")
-    public Collection<VariableInstance> get(@PathParam("gameModelId") Long gameModelId, @PathParam("playerId") Long playerId) {
-        SecurityHelper.checkPermission(playerFacade.find(playerId).getGame(), "View");
-        return playerFacade.getInstances(playerId);
     }
 
     /**

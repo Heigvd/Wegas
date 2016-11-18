@@ -11,7 +11,6 @@ module.exports = {
         publicPath: '/static/'
     },
     resolve: {
-        root: [path.resolve('./src')],
         mainFields: ['module', 'jsnext:main', 'browser', 'main']
     },
     plugins: [
@@ -19,22 +18,28 @@ module.exports = {
         new webpack.NoErrorsPlugin()
     ],
     module: {
-        loaders: [
-            {
-                test: /\.jsx?$/,
-                loader: 'babel',
-                // include: [
-                //     path.join(__dirname, 'src')
-                // ]
-                exclude: /node_modules/
-            },
-            {
-                test: /\.css$/,
-                loader: 'style!css?modules&importLoaders=1!postcss'
-            }
-        ]
+         rules: [{
+            test: /\.jsx?$/,
+            loaders: ['babel-loader'],
+            exclude: /node_modules/
+            // include: [
+            //     path.join(__dirname, 'src')
+            // ]
+        }, {
+            test: /\.css$/,
+            use: [
+                'style-loader',
+                {
+                    loader: 'css-loader',
+                    options: {
+                        modules: true,
+                        importLoaders: 1
+                    }
+                },
+                'postcss-loader'
+            ]
+        }]
     },
-    postcss: () => [cssnext],
     devServer: {
         reload: false,
         inline: true

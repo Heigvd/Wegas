@@ -3,7 +3,7 @@ import React, { PropTypes } from 'react';
 import TinyMCE from 'react-tinymce';
 import commonView from '../HOC/commonView';
 import './../../../wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar.js';
-import { getY } from './../index.js';
+import { getY } from './../index';
 import styles from '../css/html.css';
 
 const Wegas = getY().Wegas;

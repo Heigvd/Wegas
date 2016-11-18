@@ -13,7 +13,7 @@ function ObjectView(props) {
                 {props.view.label}
             </legend>
             {props.children}
-            {props.errorMessage.map((message) => <div
+            {props.errorMessage.map(message => <div
                 className={styles.error}
             >{message}</div>)}
         </fieldset>

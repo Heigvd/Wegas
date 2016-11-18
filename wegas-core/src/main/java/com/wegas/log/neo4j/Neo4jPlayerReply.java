@@ -7,27 +7,26 @@
  */
 package com.wegas.log.neo4j;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.internal.NoPlayerException;
+import com.wegas.core.persistence.NumberListener;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
+import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.Reply;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+import org.codehaus.jettison.json.JSONString;
 
-import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
-import javax.ejb.Schedule;
-import javax.ejb.Singleton;
-import java.util.Date;
+import javax.ejb.Stateless;
+import javax.enterprise.event.Observes;
 
 /**
  * This class contains all the methods used to add, modify or delete graphs
@@ -36,34 +35,36 @@ import java.util.Date;
  * @author Gérald Eberle
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-@Singleton
+@Stateless
 @LocalBean
 public class Neo4jPlayerReply {
 
-    private static final ObjectMapper objectMapper;
-    private boolean dbUp;
-
-    static {
-        objectMapper = new ObjectMapper();
-        objectMapper.configure(JsonGenerator.Feature.QUOTE_FIELD_NAMES, false);
-        objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
-    }
-
-    private enum TYPE {
+    enum TYPE {
 
         QUESTION,
         NUMBER
     }
 
-    public void addNumberUpdate(final Player player, final NumberInstance numberInstance) throws NoPlayerException, JsonProcessingException {
+    @EJB
+    private Neo4jCommunication neo4jCommunication;
+
+    public void onReplyValidate(@Observes QuestionDescriptorFacade.ReplyValidate event) throws JSONException {
+        this.addPlayerReply(event.player, event.reply, (ChoiceDescriptor) event.choice.getDescriptor(), (QuestionDescriptor) event.question.getDescriptor());
+    }
+
+    public void onNumberUpdate(@Observes NumberListener.NumberUpdate update) throws NoPlayerException, JSONException {
+        this.addNumberUpdate(update.player, update.number);
+    }
+
+    private void addNumberUpdate(final Player player, final NumberInstance numberInstance) throws NoPlayerException, JSONException {
         if (player == null || player.getGame() instanceof DebugGame || player.getTeam() instanceof DebugTeam
                 || Helper.isNullOrEmpty(player.getGameModel().getProperties().getLogID())
-                || !dbUp) {
+                || !Neo4jCommunication.isDBUp()) {
             return;
         }
-        final String key = nodeKey(player, TYPE.NUMBER);
-        ObjectNode newNode = createJsonNode(player, numberInstance.getDescriptor().getName(), numberInstance.getValue());
-        createLinkedToYoungest(key, "gamelink", newNode, player.getGameModel().getName());
+        final String key = Neo4jPlayerReply.nodeKey(player, Neo4jPlayerReply.TYPE.NUMBER);
+        JSONObject newNode = Neo4jPlayerReply.createJsonNode(player, numberInstance.getDescriptor().getName(), numberInstance.getValue());
+        neo4jCommunication.createLinkedToYoungest(key, "gamelink", newNode, player.getGameModel().getName());
     }
 
     /**
@@ -74,17 +75,17 @@ public class Neo4jPlayerReply {
      * @param reply              the player's answer data
      * @param choiceDescriptor   the selected choice description
      * @param questionDescriptor the selected question description
-     * @throws JsonProcessingException
+     * @throws JSONException
      */
-    public void addPlayerReply(final Player player, Reply reply, final ChoiceDescriptor choiceDescriptor, final QuestionDescriptor questionDescriptor) throws JsonProcessingException {
+    private void addPlayerReply(final Player player, Reply reply, final ChoiceDescriptor choiceDescriptor, final QuestionDescriptor questionDescriptor) throws JSONException {
         if (player.getGame() instanceof DebugGame
                 || Helper.isNullOrEmpty(player.getGameModel().getProperties().getLogID())
-                || !dbUp) {
+                || !Neo4jCommunication.isDBUp()) {
             return;
         }
-        String key = nodeKey(player, TYPE.QUESTION);
-        ObjectNode newNode = createJsonNode(player, reply, choiceDescriptor, questionDescriptor);
-        createLinkedToYoungest(key, "gamelink", newNode, player.getGameModel().getName());
+        String key = Neo4jPlayerReply.nodeKey(player, Neo4jPlayerReply.TYPE.QUESTION);
+        JSONObject newNode = Neo4jPlayerReply.createJsonNode(player, reply, choiceDescriptor, questionDescriptor);
+        neo4jCommunication.createLinkedToYoungest(key, "gamelink", newNode, player.getGameModel().getName());
     }
 
     /**
@@ -93,7 +94,7 @@ public class Neo4jPlayerReply {
      * @param player the player data
      * @return the formed key
      */
-    private static String nodeKey(Player player, TYPE type) {
+    static String nodeKey(Player player, TYPE type) {
         return "{playerId:" + player.getId() + ", teamId:" + player.getTeamId() + ", gameId:" + player.getGameId() + ", type:\"" + type.toString() + "\"}";
     }
 
@@ -106,15 +107,15 @@ public class Neo4jPlayerReply {
      * @param questionDescriptor the selected question description
      * @return a node object
      */
-    private static ObjectNode createJsonNode(Player player, Reply reply, ChoiceDescriptor choiceDescriptor, QuestionDescriptor questionDescriptor) {
-        ObjectNode jsonObject = objectMapper.createObjectNode();
+    static JSONObject createJsonNode(Player player, Reply reply, ChoiceDescriptor choiceDescriptor, QuestionDescriptor questionDescriptor) throws JSONException {
+        JSONObject jsonObject = new JSONObject();
 
         jsonObject.put("playerId", player.getId());
         jsonObject.put("type", TYPE.QUESTION.toString());
         jsonObject.put("teamId", player.getTeamId());
         jsonObject.put("gameId", player.getGameId());
         jsonObject.put("name", player.getName());
-        jsonObject.put("starttime", (new Date()).getTime());
+        jsonObject.put("starttime", new JSONFunction("timestamp()"));
         jsonObject.put("choice", choiceDescriptor.getName());
         jsonObject.put("question", questionDescriptor.getName());
         jsonObject.put("result", reply.getResult().getName());
@@ -135,59 +136,33 @@ public class Neo4jPlayerReply {
      * @param name   the variable name
      * @param value  the actual variable value
      * @return a node object
-     * @throws JsonProcessingException
+     * @throws JSONException
      */
-    private static ObjectNode createJsonNode(Player player, String name, double value) throws JsonProcessingException {
-        ObjectNode jsonObject = objectMapper.createObjectNode();
-
+    static JSONObject createJsonNode(Player player, String name, double value) throws JSONException {
+        JSONObject jsonObject = new JSONObject();
         jsonObject.put("type", TYPE.NUMBER.toString());
         jsonObject.put("playerId", player.getId());
         jsonObject.put("teamId", player.getTeamId());
         jsonObject.put("gameId", player.getGameId());
         jsonObject.put("name", player.getName());
-        jsonObject.put("starttime", (new Date()).getTime());
+        jsonObject.put("starttime", new JSONFunction("timestamp()"));
         jsonObject.put("variable", name);
         jsonObject.put("number", value);
         jsonObject.put("logID", player.getGameModel().getProperties().getLogID());
         return jsonObject;
     }
 
-    /**
-     * Link a new node to an already existing newest filtered by key
-     *
-     * @param key           key to filter "youngest" nodes
-     * @param relationLabel label to put onto the relation
-     * @param target        new node to create
-     * @param label         label to put onto the node
-     * @throws JsonProcessingException
-     */
-    private static void createLinkedToYoungest(String key, String relationLabel, ObjectNode target, String label) throws JsonProcessingException {
-        String query = "CREATE (p:`" + label + "` " + objectMapper.writeValueAsString(target) + ") WITH p AS p Match (n " + key
-                + ") WHERE n <> p WITH max(n.starttime) AS max, p AS p MATCH (n "
-                + key + ") WHERE n.starttime = max AND n <> p WITH n AS n, p AS p CREATE (n)-[:`"
-                + relationLabel + "`]->(p) return p";
-        String result = Neo4jUtils.queryDBString(query);
-        checkError(result);
-    }
+    private static class JSONFunction implements JSONString {
 
-    /**
-     * Checks if an error occurred during the execution of a query. The
-     * potential error message is recorded in the JSON result of the query. If
-     * an error was found this method raises an exception.
-     *
-     * @param result the result of the query
-     */
-    private static void checkError(String result) {
-        String err = Neo4jUtils.extractErrorData(result);
-        if (err == null) {
-            return;
+        private String string;
+
+        public JSONFunction(String string) {
+            this.string = string;
         }
-        throw new RuntimeException(err);
-    }
 
-    @Schedule(hour = "*", minute = "*/15")
-    @PostConstruct
-    private void checkDB() {
-        dbUp = Neo4jUtils.checkDataBaseIsRunning();
+        @Override
+        public String toJSONString() {
+            return string;
+        }
     }
 }

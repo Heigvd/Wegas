@@ -8,24 +8,37 @@
 /**
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
-YUI.add('wegas-reviewing-entities', function(Y) {
+YUI.add('wegas-reviewing-entities', function (Y) {
     "use strict";
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array", ENUM = "enum",
         SELF = "self", BOOLEAN = "boolean", BUTTON = "Button", OBJECT = "object",
         HTML = "html", SCRIPT = "script", NUMBER = "number",
         Wegas = Y.Wegas, persistence = Wegas.persistence,
-        IDATTRDEF = {
-            type: STRING,
-            optional: true, // The id is optional for entites that have not been persisted
-            _inputex: {
-                _type: HIDDEN
-            }
-        };
+        VERSION_ATTR_DEF,
+        IDATTRDEF;
+
+    VERSION_ATTR_DEF = {
+        type: "number",
+        optional: true,
+        _inputex: {
+            _type: HIDDEN
+        }
+    };
+
+
+    IDATTRDEF = {
+        type: STRING,
+        optional: true, // The id is optional for entites that have not been persisted
+        _inputex: {
+            _type: HIDDEN
+        }
+    };
+
     /**
      * PeerReviewescriptor mapper
      */
     persistence.PeerReviewDescriptor = Y.Base.create("PeerReviewDescriptor", persistence.VariableDescriptor, [], {
-        helloWorld: function() {
+        helloWorld: function () {
             return "hello, world!\n";
         }
     }, {
@@ -44,7 +57,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             toReview: {
                 type: STRING,
                 "transient": true,
-                getter: function() {
+                getter: function () {
                     return Wegas.Facade.Variable.cache.find("name", this.get("toReviewName"));
                 }
             },
@@ -88,6 +101,16 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                     index: 1
                 }
             },
+            includeEvicted: {
+                type: BOOLEAN,
+                value: false,
+                _inputex: {
+                    label: "Despatch to evicted",
+                    description: "Despatch reviews to users who didn't submit anything",
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
+                    index: 2
+                }
+            },
             defaultInstance: {
                 properties: {
                     "@class": {
@@ -97,7 +120,8 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                             value: "PeerReviewInstance"
                         }
                     },
-                    id: IDATTRDEF
+                    id: IDATTRDEF,
+                    version: VERSION_ATTR_DEF
                 },
                 _inputex: {
                     index: 3
@@ -342,10 +366,10 @@ YUI.add('wegas-reviewing-entities', function(Y) {
      * GradeDescriptor
      */
     persistence.GradeDescriptor = Y.Base.create("GradeDescriptor", persistence.EvaluationDescriptor, [], {
-        getMaxValue: function() {
+        getMaxValue: function () {
             return this.get("maxValue");
         },
-        getMinValue: function() {
+        getMinValue: function () {
             return this.get("minValue");
         }
     }, {

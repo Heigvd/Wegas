@@ -13,9 +13,8 @@ import com.fasterxml.jackson.jaxrs.cfg.EndpointConfigBase;
 import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterInjector;
 import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterModifier;
 import com.wegas.core.ejb.RequestFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.exception.client.WegasNotFoundException;
-import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import java.io.IOException;
@@ -36,8 +35,8 @@ import org.slf4j.LoggerFactory;
  * This filters takes the first path segment (first line of code) and uses it as
  * the current View in for jackson serialization.
  *
- * @see com.wegas.core.ejb.RequestManager . Available view are "Index",
- * "Public", "Private" and "Export", "Editor" and "PrivatEditor"
+ * @see com.wegas.core.ejb.RequestManager . Available view are
+ * "Public"(default), "Export", "Editor", "Extended", "Instance"
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
@@ -51,6 +50,9 @@ public class ViewRequestFilter implements ContainerRequestFilter {
     @EJB
     UserFacade userFacade;
 
+    @EJB
+    RequestFacade requestFacade;
+
     private final static Logger logger = LoggerFactory.getLogger(ViewRequestFilter.class);
 
     /**
@@ -60,13 +62,12 @@ public class ViewRequestFilter implements ContainerRequestFilter {
      */
     @Override
     public void filter(ContainerRequestContext cr) throws IOException {
-        RequestFacade rmf = RequestFacade.lookup();
+        //RequestFacade rmf = RequestFacade.lookup();
+        RequestManager requestManager = requestFacade.getRequestManager();
 
-        String uniqueIdentifier = idGenerator.getUniqueIdentifier();
-        Long timestamp = System.currentTimeMillis();
-
-        rmf.getRequestManager().setRequestId(uniqueIdentifier);
-        rmf.getRequestManager().setTimestamp(timestamp);
+        requestManager.setRequestId(idGenerator.getUniqueIdentifier());
+        requestManager.setMethod(cr.getMethod());
+        requestManager.setPath(cr.getUriInfo().getPath());
 
         //String userAgent = cr.getHeaderString("user-agent");
         User currentUser = null;
@@ -74,38 +75,30 @@ public class ViewRequestFilter implements ContainerRequestFilter {
             currentUser = userFacade.getCurrentUser();
         } catch (WegasNotFoundException e) {
         }
+        requestManager.setCurrentUser(currentUser);
 
         Class<?> view;
 
         // Handle language parameter
         if (cr.getHeaderString("lang") != null
                 && !cr.getHeaderString("lang").isEmpty()) {
-            rmf.setLocale(new Locale(cr.getHeaderString("lang")));
+            requestFacade.setLocale(new Locale(cr.getHeaderString("lang")));
         } else if (cr.getHeaderString("Accept-Language") != null && !cr.getHeaderString("Accept-Language").isEmpty()) {
-            rmf.setLocale(new Locale(cr.getHeaderString("Accept-Language")));
+            requestFacade.setLocale(new Locale(cr.getHeaderString("Accept-Language")));
         } else {
-            rmf.setLocale(Locale.getDefault());
+            requestFacade.setLocale(Locale.getDefault());
         }
 
         String newUri = cr.getUriInfo().getRequestUri().toASCIIString();
         String firstPathSeg = cr.getUriInfo().getPathSegments().get(0).getPath();
 
         switch (firstPathSeg) {
-            case "Private":
-            case "EditorPrivate":
-                String id = cr.getUriInfo().getPathSegments().get(1).getPath();
-                //rmf.setView(this.stringToView(firstPathSeg));
-                view = this.stringToView(firstPathSeg);
-                rmf.setPlayer(Long.valueOf(id));
-                newUri = newUri.replace(firstPathSeg + "/" + id + "/", "");
-                break;
-
-            case "Index":
             case "Public":
             case "Extended":
             case "Export":
             case "Editor":
-            case "EditorExtended":
+            case "Lobby":
+            case "Instance":
                 //rmf.setView(this.stringToView(firstPathSeg));
                 view = this.stringToView(firstPathSeg);
                 newUri = newUri.replace(firstPathSeg + "/", "");
@@ -117,19 +110,8 @@ public class ViewRequestFilter implements ContainerRequestFilter {
                 break;
         }
 
-        Player currentPlayer = rmf.getPlayer();
-        Team currentTeam = null;
-        if (currentPlayer != null) {
-            currentTeam = currentPlayer.getTeam();
-        }
-
-        logger.info("Start Request Processing [" + uniqueIdentifier
-                + "] for user::player::team("
-                + (currentUser != null ? userFacade.getCurrentUser().getId() : "anonymous") + "::"
-                + (currentPlayer != null ? currentPlayer.getId() : "n/a") + "::"
-                + (currentTeam != null ? currentTeam.getId() : "n/a") + "::"
-                + "): " /* + userAgent */ + " " + cr.getMethod() + ": "
-                + cr.getUriInfo().getPath());
+        logger.info("Start Request [" + requestManager.getRequestId()
+                + "] " + cr.getMethod() + " " + cr.getUriInfo().getPath());
 
         try {
             cr.setRequestUri(new URI(newUri));
@@ -154,26 +136,20 @@ public class ViewRequestFilter implements ContainerRequestFilter {
      */
     public Class stringToView(String str) {
         switch (str) {
-            case "Index":
-                return Views.Index.class;
-
             case "Extended":
                 return Views.Extended.class;
-
-            case "Private":
-                return Views.Private.class;
 
             case "Export":
                 return Views.Export.class;
 
+            case "Instance":
+                return Views.Instance.class;
+
+            case "Lobby":
+                return Views.Lobby.class;
+
             case "Editor":
                 return Views.Editor.class;
-
-            case "EditorPrivate":
-                return Views.EditorPrivate.class;
-
-            case "EditorExtended":
-                return Views.EditorExtended.class;
 
             case "Public":
             default:

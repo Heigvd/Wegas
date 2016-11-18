@@ -60,13 +60,13 @@ YUI().use(function(Y) {
                 requires: "inputex-jsonschema"
             },
             "wegas-i18n-global-fr": {
-                path: 'js/i18n/i18n-global-fr.js'
+                path: 'js/i18n/i18n-global-fr-min.js'
             },
             "wegas-i18n-global-en": {
-                path: 'js/i18n/i18n-global-en.js'
+                path: 'js/i18n/i18n-global-en-min.js'
             },
             "wegas-i18n-global": {
-                path: 'js/i18n/i18n-global.js',
+                path: 'js/i18n/i18n-global-min.js',
                 requires: ['wegas-i18n']
             },
             "wegas-i18n": {},
@@ -98,23 +98,52 @@ YUI().use(function(Y) {
             "wegas-variabledescriptor-entities": {
                 path: "js/persistence/wegas-variabledescriptor-entities-min.js",
                 requires: ["wegas-entity", "promise"],
-                ws_provides: ["NumberDescriptor", "TextDescriptor"]
+                ws_provides: [
+                    "BooleanDescriptor",
+                    "BooleantInstance",
+                    "InboxDescriptor",
+                    "InboxInstance",
+                    "ListDescriptor",
+                    "ListInstance",
+                    "NumberDescriptor",
+                    "NumberInstance",
+                    "StringDescriptor",
+                    "StringInstance",
+                    "TextDescriptor",
+                    "TextInstance"
+                ]
             },
             "wegas-statemachine-entities": {
                 path: "js/persistence/wegas-statemachine-entities-min.js",
-                ws_provides: ["DialogueDescriptor", "TriggerDescriptor", "FSMDescriptor"]
+                ws_provides: [
+                    "DialogueDescriptor",
+                    "TriggerDescriptor",
+                    "TriggerInstance",
+                    "FSMDescriptor",
+                    "FSMInstance"
+                ]
             },
             "wegas-content-entities": {
                 path: "js/persistence/wegas-content-entities-min.js"
             },
             "wegas-object-entities": {
                 path: "js/persistence/wegas-object-entities-min.js",
-                ws_provides: "ObjectDescriptor"
+                ws_provides: [
+                    "ObjectDescriptor",
+                    "ObjectInstance"
+                ]
             },
             "wegas-resourcemanagement-entities": {
                 path: "js/persistence/wegas-resourcemanagement-entities-min.js",
                 requires: "arraysort",
-                ws_provides: ["ResourceDescriptor", "TaskDescriptor", "BurndownDescriptor"]
+                ws_provides: [
+                    "ResourceDescriptor",
+                    "ResourceInstance",
+                    "TaskDescriptor",
+                    "TaskInstance",
+                    "BurndownDescriptor",
+                    "BurndownInstance"
+                ]
             },
             /**
              * Widgets
@@ -444,7 +473,7 @@ YUI().use(function(Y) {
                 type: CSS
             },
             "wegas-cards-resizable": {
-                requires: ["base", "plugin", "wegas-cards-resizablecss", "wegas-plugin", "wegas-editable"],
+                requires: ["base", "event-resize", "plugin", "wegas-cards-resizablecss", "wegas-plugin", "wegas-editable"],
                 ws_provides: "CardsResizable"
             },
             "wegas-cardcss": {
@@ -605,7 +634,7 @@ YUI().use(function(Y) {
             "wegas-editor-action": {
                 path: "js/plugin/wegas-editor-action-min.js",
                 requires: ["wegas-button", "wegas-plugin", "event-key", "inputex-string"],
-                ws_provides: ["OpenTabAction", "OpenTabButton", "Linkwidget"]
+                ws_provides: ["OpenTabAction", "OpenTabButton", "Linkwidget", "OnDeleteListener"]
             },
             "wegas-editor-entityaction": {
                 path: "js/plugin/wegas-editor-entityaction-min.js",
@@ -747,6 +776,8 @@ YUI().use(function(Y) {
                 requires: [
                     "promise",
                     "font-awesome",
+                    "overlay",
+                    "widget-stdmod",
                     "wegas-card",
                     'wegas-cards-resizable',
                     "wegas-modal",
@@ -799,7 +830,7 @@ YUI().use(function(Y) {
         root: "/wegas-mcq/",
         modules: {
             "wegas-mcq-entities": {
-                ws_provides: "QuestionDescriptor"
+                ws_provides: ["QuestionDescriptor", "QuestionInstance"]
             },
             "wegas-mcq-tabview": {
                 requires: ["wegas-tabview", "wegas-gallery",
@@ -873,13 +904,14 @@ YUI().use(function(Y) {
             },
             "wegas-reviewing-entities": {
                 requires: "wegas-entity",
-                ws_provides: "PeerReviewDescriptor"
+                ws_provides: ["PeerReviewDescriptor", "PeerReviewInstance"]
             },
             "wegas-review-widgets": {
                 requires: ["wegas-review-css",
                     "wegas-reviewing-entities",
                     "datatable",
                     "overlay",
+                    "wegas-i18n-review",
                     "slider",
                     "wegas-teams-dashboard",
                     "chartist",
@@ -892,6 +924,16 @@ YUI().use(function(Y) {
                     "GradeInput",
                     "TextEvalInput",
                     "CategorizationInput"]
+            },
+            "wegas-i18n-review-fr": {
+                path: 'js/i18n/i18n-review-fr-min.js'
+            },
+            "wegas-i18n-review-en": {
+                path: 'js/i18n/i18n-review-en-min.js'
+            },
+            "wegas-i18n-review": {
+                path: 'js/i18n/i18n-review-min.js',
+                requires: ['wegas-i18n', 'wegas-i18n-global']
             }
         }
     });
@@ -1000,7 +1042,7 @@ YUI().use(function(Y) {
                 path: "ace/src-min/ace.js"
             },
             pusher: {
-                fullpath: "//js.pusher.com/2.2/pusher.min.js"
+                fullpath: "//js.pusher.com/3.2/pusher.min.js"
             },
             googletranslate: {
                 async: false,
@@ -1008,7 +1050,7 @@ YUI().use(function(Y) {
             },
             "font-awesome": {
                 type: CSS,
-                fullpath: "//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"
+                fullpath: "//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"
             },
             "roboto-font": {
                 type: CSS,

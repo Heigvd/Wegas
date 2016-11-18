@@ -328,7 +328,7 @@ public class WRequirement extends AbstractEntity {
 
     @Override
     public String toString() {
-        return "Requirement(" + this.id + ", " + this.work + ", limit: " + this.limit + ", level:  " + this.level + ")";
+        return "Requirement[" + this.getName() + "](" + this.id + ", " + this.work + ", limit: " + this.limit + ", level:  " + this.level + ")";
     }
 
     @PrePersist

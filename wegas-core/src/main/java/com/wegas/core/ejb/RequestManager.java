@@ -14,22 +14,28 @@ import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.persistence.User;
 import jdk.nashorn.api.scripting.ScriptUtils;
 import jdk.nashorn.internal.runtime.ScriptObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.ejb.DependsOn;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.script.ScriptEngine;
+import javax.script.ScriptContext;
+import javax.ws.rs.core.Response;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import javax.ejb.DependsOn;
-import javax.ws.rs.core.Response;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 //import javax.annotation.PostConstruct;
 /**
@@ -40,17 +46,31 @@ import javax.ws.rs.core.Response;
 @DependsOn("MutexSingleton")
 public class RequestManager {
 
+    @PersistenceContext(unitName = "wegasPU")
+    private EntityManager em;
+
+    public EntityManager getEntityManager() {
+        return em;
+    }
+
     public enum RequestEnvironment {
         STD, // Standard request from standard client (ie a browser)
         TEST, // Testing Request from standard client
         INTERNAL // Internal Process (timer, etc)
     }
 
+    /*
+    @Resource
+    private TransactionSynchronizationRegistry txReg;
+     */
     @Inject
     MutexSingleton mutexSingleton;
 
     @EJB
     private PlayerFacade playerFacade;
+
+    @EJB
+    private UserFacade userFacade;
 
     private static Logger logger = LoggerFactory.getLogger(RequestManager.class);
 
@@ -65,10 +85,19 @@ public class RequestManager {
      *
      */
     private Player currentPlayer;
+    private User currentUser;
 
     private String requestId;
-    private Long timestamp;
+    private String method;
+    private String path;
+    private Long startTimestamp;
+    private Long managementStartTime;
+    private Long serialisationStartTime;
+    private Long propagationStartTime;
+    private Long propagationEndTime;
+
     private Response.StatusType status;
+    private Long exceptionCounter = 0L;
 
     /**
      * Contains all updated entities
@@ -97,7 +126,7 @@ public class RequestManager {
     /**
      *
      */
-    private ScriptEngine currentEngine = null;
+    private ScriptContext currentScriptContext = null;
 
     public RequestEnvironment getEnv() {
         return env;
@@ -151,12 +180,20 @@ public class RequestManager {
         return currentPlayer;
     }
 
+    public User getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(User currentUser) {
+        this.currentUser = currentUser;
+    }
+
     /**
      * @param currentPlayer the currentPlayer to set
      */
     public void setPlayer(Player currentPlayer) {
         if (this.currentPlayer == null || !this.currentPlayer.equals(currentPlayer)) {
-            this.setCurrentEngine(null);
+            this.setCurrentScriptContext(null);
         }
         this.currentPlayer = currentPlayer != null ? (currentPlayer.getId() != null ? playerFacade.find(currentPlayer.getId()) : currentPlayer) : null;
     }
@@ -169,17 +206,17 @@ public class RequestManager {
     }
 
     /**
-     * @return the currentEngine
+     * @return the currentScriptContext
      */
-    public ScriptEngine getCurrentEngine() {
-        return currentEngine;
+    public ScriptContext getCurrentScriptContext() {
+        return currentScriptContext;
     }
 
     /**
-     * @param currentEngine the currentEngine to set
+     * @param currentScriptContext the currentScriptContext to set
      */
-    public void setCurrentEngine(ScriptEngine currentEngine) {
-        this.currentEngine = currentEngine;
+    public void setCurrentScriptContext(ScriptContext currentScriptContext) {
+        this.currentScriptContext = currentScriptContext;
     }
 
     /**
@@ -235,6 +272,7 @@ public class RequestManager {
     public void addException(WegasRuntimeException e) {
         ArrayList<WegasRuntimeException> exceptions = new ArrayList<>();
         exceptions.add(e);
+        this.exceptionCounter++;
         this.addEvent(new ExceptionEvent(exceptions));
     }
 
@@ -251,6 +289,14 @@ public class RequestManager {
         } else {
             this.addEvent(new CustomEvent(type, payload));
         }
+    }
+
+    public Long getExceptionCounter() {
+        return exceptionCounter;
+    }
+
+    public void setExceptionCounter(Long exceptionCounter) {
+        this.exceptionCounter = exceptionCounter;
     }
 
     /**
@@ -314,31 +360,133 @@ public class RequestManager {
         this.status = statusInfo;
     }
 
-    public void setTimestamp(Long timestamp) {
-        this.timestamp = timestamp;
+    public void markProcessingStartTime() {
+        this.startTimestamp = System.currentTimeMillis();
+    }
+
+    /**
+     * before ManagedModeResponseFilter
+     */
+    public void markManagermentStartTime() {
+        this.managementStartTime = System.currentTimeMillis();
+    }
+
+    /**
+     * after ManagedModeResponseFilter
+     */
+    public void markSerialisationStartTime() {
+        this.serialisationStartTime = System.currentTimeMillis();
+    }
+
+    /**
+     * after ManagedModeResponseFilter
+     */
+    public void markPropagationStartTime() {
+        this.propagationStartTime = System.currentTimeMillis();
+    }
+
+    /**
+     * after Propagation
+     */
+    public void markPropagationEndTime() {
+        this.propagationEndTime = System.currentTimeMillis();
     }
 
     public void setRequestId(String uniqueIdentifier) {
         this.requestId = uniqueIdentifier;
     }
 
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public void logRequest() {
+        long endTime = System.currentTimeMillis();
+
+        long totalDuration = endTime - this.startTimestamp;
+
+        Long mgmtTime = null;
+        Long propagationTime = null;
+
+        String processingDuration;
+        String managementDuration;
+        String propagationDuration;
+        String serialisationDuration;
+
+        mgmtTime = this.serialisationStartTime != null && this.managementStartTime != null ? (this.serialisationStartTime - this.managementStartTime) : null;
+        propagationTime = this.propagationEndTime != null ? (this.propagationEndTime - this.propagationStartTime) : null;
+
+        if (propagationTime != null) {
+            //If propagation occurs, deduct its duration from managementTime because
+            //management includes propagation
+            mgmtTime -= propagationTime;
+            propagationDuration = Long.toString(propagationTime);
+        } else {
+            propagationDuration = " N/A";
+        }
+
+        processingDuration = this.managementStartTime != null ? Long.toString(this.managementStartTime - this.startTimestamp) : "N/A";
+        managementDuration = mgmtTime != null ? Long.toString(mgmtTime) : "N/A";
+        serialisationDuration = this.serialisationStartTime != null ? Long.toString(endTime - this.serialisationStartTime) : "N/A";
+
+        Team currentTeam = null;
+        if (currentPlayer != null) {
+            currentTeam = currentPlayer.getTeam();
+        }
+
+        String info = "[" + (currentUser != null ? currentUser.getId() : "anonymous") + "::"
+                + (currentPlayer != null ? currentPlayer.getId() : "n/a") + "::"
+                + (currentTeam != null ? currentTeam.getId() : "n/a") + "]";
+
+        RequestManager.logger.info("Request [" + this.requestId + "] \""
+                + this.getMethod() + " " + this.getPath() + "\"" + " for " + info
+                + " processed in " + totalDuration + " ms ("
+                + " processing: " + processingDuration + "; "
+                + " management: " + managementDuration + "; "
+                + (propagationDuration != null ? "propagation: " + propagationDuration + "; " : "")
+                + " serialisation: " + serialisationDuration
+                + ") => " + this.status);
+    }
+
     /**
      * Lifecycle
      */
-    /*@PostConstruct
+    @PostConstruct
     public void postConstruct() {
-        logger.error("Request Manager: PostConstruct: " + this);
-    }*/
+        this.markProcessingStartTime();
+    }
+
     @PreDestroy
     public void preDestroy() {
         while (!lockedToken.isEmpty()) {
             String remove = lockedToken.remove(0);
             mutexSingleton.unlockFull(remove);
         }
-        long duration = System.currentTimeMillis() - this.timestamp;
+        if (this.currentScriptContext != null) {
+            this.currentScriptContext.getBindings(ScriptContext.ENGINE_SCOPE).clear();
+            this.currentScriptContext = null;
+        }
 
-        logger.info("Request [" + this.requestId + "] Processed in " + duration
-                + " [ms] => " + this.status);
+        this.logRequest();
+
+        //this.getEntityManager().flush();
+        this.getEntityManager().clear();
     }
 
     /**

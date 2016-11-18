@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
-YUI.add('wegas-object-entities', function (Y) {
+YUI.add('wegas-object-entities', function(Y) {
     "use strict";
 
     var STRING = "string",
@@ -33,102 +33,110 @@ YUI.add('wegas-object-entities', function (Y) {
             type: 'identifier',
             value: 'self',
             view: { type: HIDDEN }
+        },
+        VERSION_ATTR_DEF = {
+            type: NUMBER,
+            view: {
+                type: HIDDEN
+            }
         };
+
 
     /**
      * ObjectDescriptor mapper
      */
     persistence.ObjectDescriptor = Y.Base.create("ObjectDescriptor", persistence.VariableDescriptor, [], {
-        getProperty: function (player, key) {
+        getProperty: function(player, key) {
             return this.getInstance(player).get("properties." + key);
         },
-        getIconCss: function () {
+        getIconCss: function() {
             return "fa fa-database";
         }
     }, {
-            ATTRS: {
-                "@class": {
-                    value: "ObjectDescriptor"
+        ATTRS: {
+            "@class": {
+                value: "ObjectDescriptor"
+            },
+            properties: {
+                type: "object",
+                defaultProperties: {
+                    type: STRING,
+                    required: true,
+                    view: {
+                        label: VALUE
+                    }
                 },
+                view: {
+                    label: "Descriptor properties",
+                    type: HASHLIST,
+                    keyLabel: NAME
+                }
+            },
+            defaultInstance: {
+                type: "object",
                 properties: {
-                    type: "object",
-                    defaultProperties: {
+                    '@class': {
                         type: STRING,
-                        required: true,
+                        value: 'ObjectInstance',
                         view: {
-                            label: VALUE
+                            type: HIDDEN
                         }
                     },
-                    view: {
-                        label: "Descriptor properties",
-                        type: HASHLIST,
-                        keyLabel: NAME
-                    }
-                },
-                defaultInstance: {
-                    type: "object",
+                    id: IDATTRDEF,
+                    version: VERSION_ATTR_DEF,
+                    descriptorId: IDATTRDEF,
                     properties: {
-                        '@class': {
+                        type: "object",
+                        defaultProperties: {
                             type: STRING,
-                            value: 'ObjectInstance',
+                            required: true,
                             view: {
-                                type: HIDDEN
+                                label: VALUE
                             }
                         },
-                        id: IDATTRDEF,
-                        descriptorId: IDATTRDEF,
-                        properties: {
-                            type: "object",
-                            defaultProperties: {
-                                type: STRING,
-                                required: true,
-                                view: {
-                                    label: VALUE
-                                }
-                            },
-                            view: {
-                                label: "Default properties",
-                                type: HASHLIST,
-                                keyLabel: NAME
-                            }
+                        view: {
+                            label: "Default properties",
+                            type: HASHLIST,
+                            keyLabel: NAME
                         }
-                    }
-                },
-                description: {
-                    type: ["null", STRING],
-                    view: {
-                        type: HTML,
-                        label: "Description",
-                        className: 'wegas-advanced-feature'
                     }
                 }
             },
-            METHODS: {
-                size: {
-                    label: "size",
-                    returns: "number",
-                    arguments: [SELFARG]
-                },
-                getProperty: {
-                    label: "property equals",
-                    returns: STRING,
-                    arguments: [SELFARG, {
-                        view: { label: NAME },
-                        type: STRING
-                    }]
-                },
-                setProperty: {
-                    label: "set property",
-                    arguments: [SELFARG, {
-                        view: { label: NAME },
-                        type: STRING
-                    }, {
-                            view: { label: NAME },
-                            type: STRING
-                        }]
+            description: {
+                type: ["null", STRING],
+                view: {
+                    type: HTML,
+                    label: "Description",
+                    className: 'wegas-advanced-feature'
                 }
             }
-        });
+        },
+        METHODS: {
+            size: {
+                label: "size",
+                returns: "number",
+                arguments: [SELFARG]
+            },
+            getProperty: {
+                label: "property equals",
+                returns: STRING,
+                arguments: [SELFARG, {
+                    view: { label: NAME },
+                    type: STRING
+                }]
+            },
+            setProperty: {
+                label: "set property",
+                arguments: [SELFARG, {
+                    view: { label: NAME },
+                    type: STRING
+                }, {
+                    view: { label: NAME },
+                    type: STRING
+                }]
+            }
+        }
+    });
 
     /**
      * ObjectInstance mapper

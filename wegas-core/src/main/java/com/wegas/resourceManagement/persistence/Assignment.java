@@ -18,9 +18,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.Broadcastable;
-import java.util.List;
-import java.util.Map;
+import com.wegas.core.persistence.variable.Beanjection;
 
 /**
  *
@@ -32,8 +30,8 @@ import java.util.Map;
 })
 @NamedQueries({
     @NamedQuery(
-            name = "Assignment.findByResourceInstanceAndTaskDescriptor",
-            query = "SELECT a FROM Assignment a where a.resourceInstance = :resourceInstance AND a.taskDescriptor = :taskDescriptor"
+            name = "Assignment.findByResourceInstanceIdAndTaskDescriptorId",
+            query = "SELECT a FROM Assignment a where a.resourceInstance.id = :resourceInstanceId AND a.taskDescriptor.id = :taskDescriptorId"
     )
 })
 @Entity
@@ -82,10 +80,11 @@ public class Assignment extends AbstractAssignement /*implements Broadcastable *
     public void merge(AbstractEntity a) {
         if (a instanceof Assignment) {
             Assignment other = (Assignment) a;
+            // TODO TGSS: Avoid setting/updating relations within merge method !
             this.setResourceInstance(other.getResourceInstance());
             this.setTaskDescriptor(other.getTaskDescriptor());
         } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + (a != null ? a.getClass().getSimpleName() : "NULL") + ") is not possible");
         }
     }
 
@@ -138,18 +137,18 @@ public class Assignment extends AbstractAssignement /*implements Broadcastable *
     }
 
     @Override
-    public void updateCacheOnDelete() {
+    public void updateCacheOnDelete(Beanjection beans) {
         TaskDescriptor theTask = this.getTaskDescriptor();
         ResourceInstance theResource = this.getResourceInstance();
 
         if (theTask != null) {
-            theTask = ((TaskDescriptor) VariableDescriptorFacade.lookup().find(theTask.getId()));
+            theTask = ((TaskDescriptor) beans.getVariableDescriptorFacade().find(theTask.getId()));
             if (theTask != null) {
                 theTask.getAssignments().remove(this);
             }
         }
         if (theResource != null) {
-            theResource = ((ResourceInstance) VariableInstanceFacade.lookup().find(theResource.getId()));
+            theResource = ((ResourceInstance) beans.getVariableInstanceFacade().find(theResource.getId()));
             if (theResource != null) {
                 theResource.getAssignments().remove(this);
             }

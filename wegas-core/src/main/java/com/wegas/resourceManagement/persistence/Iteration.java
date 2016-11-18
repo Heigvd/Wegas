@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.Broadcastable;
+import com.wegas.core.persistence.variable.Beanjection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +33,7 @@ import java.util.Map;
 @Table(indexes = {
     @Index(columnList = "burndowninstance_variableinstance_id")
 })
-public class Iteration extends AbstractEntity implements Broadcastable {
+public class Iteration extends AbstractEntity /*implements Broadcastable */ {
 
     private static final long serialVersionUID = 1L;
 
@@ -317,24 +317,24 @@ public class Iteration extends AbstractEntity implements Broadcastable {
     /**
      * tie lifecycle events with burdownInstnace ones
      */
+    /*
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
         return this.getBurndownInstance().getEntities();
-    }
-
+    }*/
     @Override
-    public void updateCacheOnDelete() {
-        VariableDescriptorFacade lookup = VariableDescriptorFacade.lookup();
+    public void updateCacheOnDelete(Beanjection beans) {
+        VariableDescriptorFacade vdf = beans.getVariableDescriptorFacade();
         BurndownInstance theBdI = this.getBurndownInstance();
 
         if (theBdI != null) {
-            theBdI = (BurndownInstance) VariableInstanceFacade.lookup().find(theBdI.getId());
+            theBdI = (BurndownInstance) beans.getVariableInstanceFacade().find(theBdI.getId());
             if (theBdI != null) {
                 theBdI.getIterations().remove(this);
             }
         }
         for (TaskDescriptor task : this.getTasks()) {
-            task = (TaskDescriptor) lookup.find(task.getId());
+            task = (TaskDescriptor) vdf.find(task.getId());
             if (task != null) {
                 task.getIterations().remove(this);
             }

@@ -87,7 +87,7 @@ public class InboxDescriptorController {
      * Edit a message
      *
      * @param messageId if of message to edit
-     * @param message new message version
+     * @param message   new message version
      * @return the new message version
      */
     @PUT
@@ -116,9 +116,33 @@ public class InboxDescriptorController {
 
         update.setUnread(false);
         if (!Helper.isNullOrEmpty(update.getToken())) {
-            requestFacade.commit();
+            requestFacade.commit(true);
         }
         return update.getInboxInstance();
+    }
+
+    /**
+     * Mark all messages as read
+     *
+     * @param id id of inbox instance to read messages from
+     * @return inbox instance which contains read messages
+     */
+    @PUT
+    @Path("{inboxInstanceId : [1-9][0-9]*}/ReadAll")
+    public InboxInstance readAllMessages(@PathParam("inboxInstanceId") Long id) {
+
+        InboxInstance inbox = (InboxInstance) variableInstanceFacade.find(id);
+        checkPermissions(inbox);
+        boolean commit = false;
+
+        for (Message message : inbox.getMessages()) {
+            message.setUnread(false);
+            commit = commit || !Helper.isNullOrEmpty(message.getToken());
+        }
+        if (commit) {
+            requestFacade.commit(true);
+        }
+        return inbox;
     }
 
     /**
@@ -143,7 +167,7 @@ public class InboxDescriptorController {
      *
      * @param instance
      * @throws UnauthorizedException if currentUser do not have access to the
-     * inbox
+     *                               inbox
      */
     private void checkPermissions(VariableInstance instance) {
         if (!SecurityHelper.isPermitted(variableInstanceFacade.findGame(instance), "Edit")) {

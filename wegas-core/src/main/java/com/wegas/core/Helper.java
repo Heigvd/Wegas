@@ -16,6 +16,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.Result;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -30,6 +31,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,6 +46,8 @@ public class Helper {
     private static final String DEFAULT_VARIABLE_LABEL = "Unnammed";
 
     private static final Logger logger = LoggerFactory.getLogger(Helper.class);
+
+    private static final Random random = new SecureRandom();
 
     private static String WEGAS_ROOT_DIRECTORY;
 
@@ -257,7 +261,7 @@ public class Helper {
      * @param usedLabels result sibling's label
      */
     public static void setNameAndLabelForResult(Result r,
-                                                List<String> usedNames, List<String> usedLabels) {
+            List<String> usedNames, List<String> usedLabels) {
         boolean hasLabel = !isNullOrEmpty(r.getLabel());
         boolean hasName = !isNullOrEmpty(r.getName());
         if (hasLabel && !hasName) {
@@ -395,24 +399,17 @@ public class Helper {
     }
 
     /**
-     * Generate an alphanumeric token based on system time.
+     * Generate an alphanumeric random token.
      *
-     * @param maxLength Token maximum length. The shorter, the sooner it will
-     *                  collide.
+     * @param length Token length
      * @return String token
      */
-    public static String genToken(Integer maxLength) {
-        final String digits = "abcdefghijklmnopqrstuvwxyzABCDEFGHYJKLMNOPQRSTUVWXYZ1234567890";
-        final int digitSize = digits.length();
-        final StringBuilder sb = new StringBuilder();
-        int modulo;
-        long time = System.nanoTime();
-        while (time > 0) {
-            modulo = (int) (time % digitSize);
-            sb.append(digits.substring(modulo, modulo + 1));
-            time = time / digitSize;
-        }
-        return sb.toString().substring(0, Math.min(sb.length(), maxLength));
+    public static String genToken(final int length) {
+        return random.ints(48, 123) // 48-57 [0-9] 65-90 [A-Z] 97-122 [a-z]
+                .filter(i -> (i < 58) || (i > 64 && i < 91) || (i > 96))
+                .limit(length)
+                .collect(StringBuilder::new, (sb, i) -> sb.append((char) i), StringBuilder::append)
+                .toString();
     }
 
     /**
@@ -438,7 +435,7 @@ public class Helper {
      * @param propertyName
      * @param defaultValue
      * @return the wegasProperty or the defaultValue if the property does not
-     * exists
+     *         exists
      */
     public static String getWegasProperty(String propertyName, String defaultValue) {
         try {
@@ -583,7 +580,6 @@ public class Helper {
      }
      return sb.toString();
      }*/
-
     /**
      * print ENV variables to log
      */
@@ -817,5 +813,31 @@ public class Helper {
             sb.append(genRandomLetters(length - 1));
         }
         return sb.toString();
+    }
+
+    /**
+     * A Least Recently Used key-value in memory cache.
+     *
+     * @param <K> key type
+     * @param <V> value type
+     */
+    public static class LRUCache<K, V> extends LinkedHashMap<K, V> {
+
+        private int cacheSize;
+
+        /**
+         * Constructor a new LRU Cache of given size
+         *
+         * @param cacheSize Max size the cache should have
+         */
+        public LRUCache(int cacheSize) {
+            super(16, 0.75f, true); // default values
+            this.cacheSize = cacheSize;
+        }
+
+        @Override
+        protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+            return this.size() >= this.cacheSize;
+        }
     }
 }

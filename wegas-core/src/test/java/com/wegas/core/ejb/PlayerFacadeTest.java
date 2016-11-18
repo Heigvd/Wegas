@@ -7,11 +7,15 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.User;
+import java.util.List;
 import javax.naming.NamingException;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -79,4 +83,60 @@ public class PlayerFacadeTest extends AbstractEJBTest {
 
         gameFacade.remove(g.getId());                                           // Clean up
     }
+
+    @Test
+    public void getInstances() {
+        List<VariableInstance> instances = playerFacade.getInstances(player.getId());
+    }
+
+    private Team createTeam(Game g, String name) {
+        Team t = new Team(name);
+        t.setGame(g);
+        teamFacade.create(g.getId(), t);
+        return t;
+    }
+
+    private Player createPlayer(Team t) {
+        User u = new User();
+        userFacade.create(u);
+
+        return gameFacade.joinTeam(t.getId(), u.getId());
+    }
+
+    /**
+     * Test registeredGames
+     */
+    @Test
+    public void testMassiveJoin() throws Exception {
+        int nbTeam = 100;
+        int nbPlayer = 10;
+        Game g = new Game("game");
+        g.setGameModel(gameModel);
+        gameFacade.create(g);
+
+        for (int i = 0; i < nbTeam; i++) {
+            Team t = createTeam(g, "T" + i);
+            for (int j = 0; j < nbPlayer; j++) {
+                createPlayer(t);
+            }
+        }
+
+        g = gameFacade.find(g.getId());
+
+        Assert.assertEquals(nbTeam + 1, g.getTeams().size()); // + 1 to count debug team
+        for (Team t : g.getTeams()) {
+            t = teamFacade.find(t.getId());
+            if (t instanceof DebugTeam == false) {
+                Assert.assertEquals(nbPlayer, t.getPlayers().size());
+                for (Player p : t.getPlayers()) {
+                    Assert.assertEquals(1, p.getUser().getPermissions().size());
+                    Permission perm = p.getUser().getPermissions().get(0);
+                    Assert.assertEquals("Game:View:g" + g.getId(), perm.getValue());
+                    Assert.assertEquals("GameModel:View:gm" + g.getGameModel().getId(), perm.getInducedPermission());
+                }
+            }
+        }
+
+    }
+
 }

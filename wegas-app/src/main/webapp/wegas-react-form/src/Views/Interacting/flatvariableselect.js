@@ -5,7 +5,7 @@ import { getY } from '../../index';
 function genSpaces(nb) {
     let i;
     let ret = '';
-    for (i = 0; i < nb; i++) {
+    for (i = 0; i < nb; i += 1) {
         ret += '\u00a0\u00a0\u00a0'; // 3 whitespaces
     }
     return ret;
@@ -14,7 +14,7 @@ function genChoices(items, level, maxLevel, classFilter, selectable) {
     const enableFolder = classFilter.indexOf('ListDescriptor') > -1;
     let ret = [];
     if (level <= maxLevel) {
-        items.forEach(i => {
+        items.forEach((i) => {
             if (i.get('@class') === 'ListDescriptor') {
                 const newItems = genChoices(
                     i.get('items'),

@@ -21,32 +21,29 @@ public class PlayerAction implements Serializable {
      *
      */
     private Player player;
-
-    /**
-     *
-     */
-    public PlayerAction() {
-    }
+    private boolean clear;
 
     /**
      *
      * @param p
      */
     public PlayerAction(Player p) {
+        this(p, true);
+    }
+
+    public PlayerAction(Player p, boolean clear) {
         this.player = p;
+        this.clear = clear;
     }
 
     /**
-     * @return the player
+     * @return the playerId
      */
     public Player getPlayer() {
-        return player;
+        return this.player;
     }
 
-    /**
-     * @param player the player to set
-     */
-    public void setPlayer(Player player) {
-        this.player = player;
+    public boolean getClear() {
+        return clear;
     }
 }

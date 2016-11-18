@@ -33,8 +33,9 @@
                     var app = new Y.Wegas.App({
                         dataSources: {
                             Variable: {
-                                source: "rest/Private/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
+                                //source: "rest/Private/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
                                 //source: "rest/Editor/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
+                                source: "rest/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
                                 initialRequest: "",
                                 plugins: [{
                                         fn: "VariableDescriptorCache",
@@ -49,6 +50,16 @@
                                      dataSource: "Pusher"
                                      }
                                      }*/]
+                            },
+                            Instance: {
+                                source: "rest/Editor/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
+                                initialRequest: "/VariableInstance/AllPlayerInstances/#{gameController.currentPlayer.id}",
+                                plugins: [{
+                                        fn: "VariableInstanceCache",
+                                        cfg: {
+                                            indexes: ["descriptorId"]
+                                        }
+                                    }]
                             },
                             Page: {
                                 /*
@@ -91,7 +102,8 @@
                                         cfg: {
                                             currentGameId: #{gameController.currentGame.id},
                                             currentTeamId: #{gameController.currentPlayer.team.id},
-                                            currentPlayerId: #{gameController.currentPlayer.id}
+                                            currentPlayerId: #{gameController.currentPlayer.id},
+                                            indexes: ["id"]
                                         }
                                     }
                                 ]
@@ -101,6 +113,7 @@
                                 source: "rest/Pusher/",
 //                                applicationKey: "#{gameController.currentGameModel.properties.websocket}"
                                 applicationKey: "#{gameController.getWegasProperty('pusher.key')}",
+                                cluster: "#{gameController.getWegasProperty('pusher.cluster')}",
                                 plugins: [{
                                         fn: "WebSocketListener",
                                         cfg: {

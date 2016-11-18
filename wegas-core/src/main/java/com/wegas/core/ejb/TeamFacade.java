@@ -48,12 +48,6 @@ public class TeamFacade extends BaseFacade<Team> {
      *
      */
     @EJB
-    private TeamSingleton teamSingleton;
-
-    /**
-     *
-     */
-    @EJB
     private PlayerFacade playerFacade;
 
     /**
@@ -94,7 +88,6 @@ public class TeamFacade extends BaseFacade<Team> {
     /**
      * @param gameId
      * @param t
-     * @return managed newly created team
      */
     public void create(Long gameId, Team t) {
         Game g = gameFacade.find(gameId);
@@ -104,19 +97,21 @@ public class TeamFacade extends BaseFacade<Team> {
             //&& t.getName() == null ) {
             t.setName(((GameAccount) userFacade.getCurrentUser().getMainAccount()).getEmail());
         }
-//        g.addTeam(t);
-        teamSingleton.persistTeam(g, t);
+        g.addTeam(t);
         g = gameFacade.find(gameId);
-        t = this.find(t.getId());
         gameFacade.addRights(userFacade.getCurrentUser(), g);  // @fixme Should only be done for a player, but is done here since it will be needed in later requests to add a player
-        g.getGameModel().propagateDefaultInstance(t);
-
+        getEntityManager().persist(t);
+        g.getGameModel().propagateDefaultInstance(t, true);
     }
 
     @Override
     public void create(Team entity) {
+        Game game = entity.getGame();
+        game = gameFacade.find(game.getId());
+        game.addTeam(entity);
+
         getEntityManager().persist(entity);
-        getEntityManager().find(Game.class, entity.getGame().getId()).addTeam(entity);
+        game.getGameModel().propagateDefaultInstance(entity, true);
     }
 
     /**
@@ -162,7 +157,7 @@ public class TeamFacade extends BaseFacade<Team> {
         // Need to flush so prepersit events will be thrown (for example Game will add default teams)
         // F*cking flush
         //getEntityManager().flush();
-        team.getGame().getGameModel().propagateDefaultInstance(team);
+        team.getGame().getGameModel().propagateDefaultInstance(team, false);
         // F*cking flush
         //getEntityManager().flush(); // DA FU    ()
         // Send an reset event (for the state machine and other)

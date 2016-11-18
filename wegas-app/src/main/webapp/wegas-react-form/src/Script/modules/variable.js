@@ -34,7 +34,7 @@ export const extractVar = (node) => {
     });
     return ret;
 };
-export const build = (v) => (
+export const build = v => (
         b.callExpression(
             b.memberExpression(
                 b.identifier('Variable'),
@@ -46,7 +46,7 @@ export const build = (v) => (
             ]
         )
 );
-export const schema = (optView) => ({
+export const schema = optView => ({
     type: 'string',
     required: 'true',
     view: Object.assign({}, optView, {
@@ -62,7 +62,7 @@ function Variable({ node, onChange, view }) {
         <Form
             schema={schema(view)}
             value={value}
-            onChange={(v) => onChange(build(v))}
+            onChange={v => onChange(build(v))}
         />
     );
 }

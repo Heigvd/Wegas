@@ -7,6 +7,7 @@
  */
 package com.wegas.mcq.ejb;
 
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.mcq.persistence.*;
@@ -15,9 +16,8 @@ import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.persistence.EntityManager;
+import javax.inject.Inject;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 /**
@@ -27,15 +27,15 @@ import javax.persistence.TypedQuery;
 @LocalBean
 public class QuestionSingleton {
 
-    @PersistenceContext(unitName = "wegasPU")
-    private EntityManager em;
+    @Inject
+    RequestManager requestManager;
 
     /**
      * @param instanceId
      * @return count the number of reply for the given question
      */
     public int findReplyCount(Long instanceId) {
-        final TypedQuery<Long> query = em.createNamedQuery("Reply.countForInstance", Long.class);
+        final TypedQuery<Long> query = requestManager.getEntityManager().createNamedQuery("Reply.countForInstance", Long.class);
         query.setParameter("instanceId", instanceId);
         try {
             return query.getSingleResult().intValue();
@@ -51,7 +51,7 @@ public class QuestionSingleton {
      * @return
      */
     private Reply createReplyNonTransactional(Long choiceId, Player player, Long startTime) {
-        ChoiceDescriptor choice = em.find(ChoiceDescriptor.class, choiceId);
+        ChoiceDescriptor choice = requestManager.getEntityManager().find(ChoiceDescriptor.class, choiceId);
 
         QuestionDescriptor questionDescriptor = choice.getQuestion();
         QuestionInstance questionInstance = questionDescriptor.getInstance(player);
@@ -88,9 +88,9 @@ public class QuestionSingleton {
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)                // cancelReply
     public Reply cancelReplyTransactional(Long replyId) {
-        final Reply reply = em.find(Reply.class, replyId);
+        final Reply reply = requestManager.getEntityManager().find(Reply.class, replyId);
         reply.getQuestionInstance().getReplies().remove(reply);
-        em.remove(reply);
+        requestManager.getEntityManager().remove(reply);
         return reply;
     }
 }

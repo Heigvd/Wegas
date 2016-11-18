@@ -88,23 +88,26 @@ public class PeerReviewController {
      * Return the VariableInstance to review, according to given peer review
      * descriptor and given review
      *
-     * @param prdId ID of the peer review descriptor which specify the variable
-     *              to review
-     * @param rId   ID of the review indicating whom the variable to review
-     *              belongs
+     * @param prdId    ID of the peer review descriptor which specify the
+     *                 variable to review
+     * @param rId      ID of the review indicating whom the variable to review
+     *                 belongs
+     * @param playerId
      * @return the variable instance to review
      */
     @GET
-    @Path("/{reviewDescriptorId : [1-9][0-9]*}/ToReview/{reviewId : [1-9][0-9]*}")
+    @Path("/{reviewDescriptorId : [1-9][0-9]*}/ToReview/{reviewId : [1-9][0-9]*}/{playerId: [1-9][0-9]*}")
     public VariableInstance getInstanceToReview(
             @PathParam("reviewDescriptorId") Long prdId,
-            @PathParam("reviewId") Long rId) {
+            @PathParam("reviewId") Long rId,
+            @PathParam("playerId") Long playerId) {
 
         try {
+            Player player = playerFacade.find(playerId);
             Review review = reviewFacade.findReview(rId);
             PeerReviewInstance authorInstance = review.getAuthor();
             // Make sure the currentPlayer can read the Author variable
-            assertReviewReadRight(review);
+            assertReviewReadRight(review, player);
 
             PeerReviewDescriptor prd = (PeerReviewDescriptor) authorInstance.getDescriptor();
 
@@ -138,7 +141,7 @@ public class PeerReviewController {
         checkPermissions(playerFacade.find(playerId).getGame(), playerId);
 
         reviewFacade.submit(prdId, playerId);
-        requestFacade.commit(); // Player scoped
+        requestFacade.commit(true); // Player scoped
 
         return Response.ok().build();
     }
@@ -188,11 +191,12 @@ public class PeerReviewController {
      * @return updated PeerReviewInstance
      */
     @POST
-    @Path("/SaveReview")
-    public PeerReviewInstance saveReview(Review other) {
+    @Path("/SaveReview/{playerId: [1-9][0-9]*}")
+    public PeerReviewInstance saveReview(Review other, @PathParam("playerId") Long playerId) {
         Review review = reviewFacade.findReview(other.getId());
-        PeerReviewInstance instance = reviewFacade.getPeerReviewInstanceFromReview(review);
-        assertReviewWriteRight(review);
+        Player player = playerFacade.find(playerId);
+        PeerReviewInstance instance = reviewFacade.getPeerReviewInstanceFromReview(review, player);
+        assertReviewWriteRight(review, player);
         reviewFacade.saveReview(instance, other);
         return instance;
     }
@@ -203,16 +207,18 @@ public class PeerReviewController {
      * to REVIEWED. The second time is when the author post his comments, switch
      * from NOTIFIED to COMPLETED
      *
-     * @param review review to submit
+     * @param review   review to submit
+     * @param playerId
      * @return peerReviewInstance with up to date reviews
      */
     @POST
-    @Path("/SubmitReview")
-    public PeerReviewInstance submitReview(Review review) {
-        assertReviewWriteRight(reviewFacade.findReview(review.getId()));
-        Review submitedReview = reviewFacade.submitReview(review);
-        requestFacade.commit(); // Player scoped
-        return reviewFacade.getPeerReviewInstanceFromReview(submitedReview);
+    @Path("/SubmitReview/{playerId: [1-9][0-9]*}")
+    public PeerReviewInstance submitReview(Review review, @PathParam("playerId") Long playerId) {
+        Player player = playerFacade.find(playerId);
+        assertReviewWriteRight(reviewFacade.findReview(review.getId()), player);
+        Review submitedReview = reviewFacade.submitReview(review, player);
+        requestFacade.commit(true); // Player scoped
+        return reviewFacade.getPeerReviewInstanceFromReview(submitedReview, player);
     }
 
     /**
@@ -265,11 +271,12 @@ public class PeerReviewController {
      *
      * @param r the review to read
      */
-    private void assertReviewReadRight(Review r) {
-        PeerReviewInstance pri = reviewFacade.getPeerReviewInstanceFromReview(r);
+    private void assertReviewReadRight(Review r, Player player) {
+        PeerReviewInstance pri = reviewFacade.getPeerReviewInstanceFromReview(r, player);
         Game game = instanceFacade.findGame(pri);
 
-        if (!((SecurityHelper.isPermitted(game, "Edit")) || // Teacher/Scenarist
+        if (!((SecurityHelper.isPermitted(game, "Edit"))
+                || // Teacher/Scenarist
                 (pri.getToReview().contains(r))
                 || (pri.getReviewed().contains(r)))) { // Author when review the feedback
             throw new UnauthorizedException(); // Not one of this case ? NOT AUTHORIZED
@@ -281,11 +288,12 @@ public class PeerReviewController {
      *
      * @param r the review to edit
      */
-    private void assertReviewWriteRight(Review r) {
-        PeerReviewInstance pri = reviewFacade.getPeerReviewInstanceFromReview(r);
+    private void assertReviewWriteRight(Review r, Player player) {
+        PeerReviewInstance pri = reviewFacade.getPeerReviewInstanceFromReview(r, player);
         Game game = instanceFacade.findGame(pri);
 
-        if (!((SecurityHelper.isPermitted(game, "Edit")) || // Teacher/Scenarist
+        if (!((SecurityHelper.isPermitted(game, "Edit"))
+                || // Teacher/Scenarist
                 (r.getReviewState() == Review.ReviewState.DISPATCHED && pri.getToReview().contains(r)) // Reviewer when reviewing
                 || (r.getReviewState() == Review.ReviewState.NOTIFIED && pri.getReviewed().contains(r)))) { // Author when review the feedback
             throw new UnauthorizedException(); // Not one of this case ? NOT AUTHORIZED
@@ -309,9 +317,11 @@ public class PeerReviewController {
         for (PeerReviewInstance pri : instances) {
             try {
                 Player findAPlayer = instanceFacade.findAPlayer(pri);
-                requestFacade.commit(findAPlayer);
+                requestFacade.commit(findAPlayer, false);
+                //requestFacade.firePlayerAction(findAPlayer);
             } catch (NoPlayerException ex) {
             }
         }
+        requestFacade.flushClear();
     }
 }

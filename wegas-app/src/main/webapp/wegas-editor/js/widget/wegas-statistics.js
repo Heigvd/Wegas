@@ -83,7 +83,7 @@ YUI.add("wegas-statistics", function(Y) {
                 this._gmPromise.then(Y.bind(function(gm) {
                     if (!gm.get("properties.logID")) {
                         this.get("contentBox").hide();
-                        this.get("boundingBox").append("Statistics are not enable for this game");
+                        this.get("boundingBox").append("Statistics are not enabled for this game");
                     }
                 }, this));
             },

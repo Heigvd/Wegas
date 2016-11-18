@@ -11,12 +11,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.Broadcastable;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.rest.util.Views;
 import com.wegas.reviewing.ejb.ReviewingFacade;
 import com.wegas.reviewing.persistence.Review;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import javax.persistence.*;
 
@@ -39,7 +37,7 @@ import javax.persistence.*;
     @JsonSubTypes.Type(value = CategorizedEvaluationInstance.class),
     @JsonSubTypes.Type(value = GradeInstance.class)
 })
-public abstract class EvaluationInstance extends AbstractEntity implements Broadcastable {
+public abstract class EvaluationInstance extends AbstractEntity /*implements Broadcastable */ {
 
     private static final long serialVersionUID = 1L;
 
@@ -193,7 +191,7 @@ public abstract class EvaluationInstance extends AbstractEntity implements Broad
         this.feedbackReview = rd;
     }
 
-    @Override
+    /*@Override
     public Map<String, List<AbstractEntity>> getEntities() {
         if (feedbackReview != null) {
             return feedbackReview.getEntities();
@@ -202,11 +200,10 @@ public abstract class EvaluationInstance extends AbstractEntity implements Broad
         } else {
             return null;
         }
-    }
-
+    }*/
     @Override
-    public void updateCacheOnDelete() {
-        ReviewingFacade rF = ReviewingFacade.lookup();
+    public void updateCacheOnDelete(Beanjection beans) {
+        ReviewingFacade rF = beans.getReviewingFacade();
         EvaluationDescriptor descriptor = this.getDescriptor();
         if (descriptor != null) {
             descriptor = rF.findEvaluationDescriptor(descriptor.getId());
@@ -229,6 +226,6 @@ public abstract class EvaluationInstance extends AbstractEntity implements Broad
                 theReview.getComments().remove(this);
             }
         }
-        super.updateCacheOnDelete();
+        super.updateCacheOnDelete(beans);
     }
 }

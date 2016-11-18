@@ -18,12 +18,12 @@ import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
-import org.apache.shiro.SecurityUtils;
 
 import javax.jcr.RepositoryException;
 import javax.persistence.*;
 import java.util.*;
 import java.util.Map.Entry;
+import org.apache.shiro.SecurityUtils;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -34,7 +34,7 @@ import java.util.Map.Entry;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NamedQueries({
     @NamedQuery(name = "GameModel.findByStatus", query = "SELECT a FROM GameModel a WHERE a.status = :status ORDER BY a.createdTime ASC"),
-    @NamedQuery(name = "GameModel.findDistinctChildrenLabels", query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.rootGameModel = :container"),
+    @NamedQuery(name = "GameModel.findDistinctChildrenLabels", query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.rootGameModel.id = :containerId"),
     @NamedQuery(name = "GameModel.findByName", query = "SELECT a FROM GameModel a WHERE a.name = :name"),
     @NamedQuery(name = "GameModel.findTemplate", query = "SELECT a FROM GameModel a WHERE a.template = TRUE"),
     @NamedQuery(name = "GameModel.findTemplateByStatus", query = "SELECT a FROM GameModel a WHERE a.template = TRUE AND a.status = :status ORDER BY a.name"),
@@ -42,6 +42,15 @@ import java.util.Map.Entry;
 public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor> /*, Broadcastable */ {
 
     private static final long serialVersionUID = 1L;
+
+    @Transient
+    private Boolean canView = null;
+    @Transient
+    private Boolean canEdit = null;
+    @Transient
+    private Boolean canInstantiate = null;
+    @Transient
+    private Boolean canDuplicate = null;
 
     /**
      *
@@ -64,7 +73,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      */
     @Lob
-    @Basic(fetch = FetchType.LAZY)
+    //@Basic(fetch = FetchType.LAZY)
     @JsonView(Views.ExtendedI.class)
     private String description;
 
@@ -79,7 +88,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      */
     @Lob
-    @Basic(fetch = FetchType.LAZY)
+    //@Basic(fetch = FetchType.LAZY)
     @JsonView(Views.ExtendedI.class)
     private String comments;
 
@@ -128,7 +137,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      */
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.LAZY)
-    @OrderBy("createdTime")
     @JsonManagedReference
     @JsonIgnore
     //@JsonView(Views.ExportI.class)
@@ -207,9 +215,9 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     /**
      * @param context
      */
-    public void propagateDefaultInstance(AbstractEntity context) {
+    public void propagateDefaultInstance(AbstractEntity context, boolean create) {
         for (VariableDescriptor vd : this.getVariableDescriptors()) {
-            vd.propagateDefaultInstance(context);
+            vd.propagateDefaultInstance(context, create);
         }
     }
 
@@ -272,8 +280,12 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     @JsonView(Views.IndexI.class)
     public Boolean getCanView() {
-        // I DO NOT LIKE VERY MUCH USING SHIRO WITHIN ENTITIES...
-        return SecurityUtils.getSubject().isPermitted("GameModel:View:gm" + this.id);
+        if (canView != null) {
+            return canView;
+        } else {
+            // I DO NOT LIKE VERY MUCH USING SHIRO WITHIN ENTITIES...
+            return SecurityUtils.getSubject().isPermitted("GameModel:View:gm" + this.id);
+        }
     }
 
     /**
@@ -281,8 +293,12 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     @JsonView(Views.IndexI.class)
     public Boolean getCanEdit() {
-        // I DO NOT LIKE VERY MUCH USING SHIRO WITHIN ENTITIES...
-        return SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + this.id);
+        if (canEdit != null) {
+            return canEdit;
+        } else {
+            // I DO NOT LIKE VERY MUCH USING SHIRO WITHIN ENTITIES...
+            return SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + this.id);
+        }
     }
 
     /**
@@ -290,8 +306,12 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     @JsonView(Views.IndexI.class)
     public Boolean getCanDuplicate() {
-        // I DO NOT LIKE VERY MUCH USING SHIRO WITHIN ENTITIES...
-        return SecurityUtils.getSubject().isPermitted("GameModel:Duplicate:gm" + this.id);
+        if (canDuplicate != null) {
+            return canDuplicate;
+        } else {
+            // I DO NOT LIKE VERY MUCH USING SHIRO WITHIN ENTITIES...
+            return SecurityUtils.getSubject().isPermitted("GameModel:Duplicate:gm" + this.id);
+        }
     }
 
     /**
@@ -299,7 +319,28 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     @JsonView(Views.IndexI.class)
     public Boolean getCanInstantiate() {
-        return SecurityUtils.getSubject().isPermitted("GameModel:Instantiate:gm" + this.id);
+        if (canInstantiate != null) {
+            return canInstantiate;
+        } else {
+            // I DO NOT LIKE VERY MUCH USING SHIRO WITHIN ENTITIES...
+            return SecurityUtils.getSubject().isPermitted("GameModel:Instantiate:gm" + this.id);
+        }
+    }
+
+    public void setCanView(Boolean canView) {
+        this.canView = canView;
+    }
+
+    public void setCanEdit(Boolean canEdit) {
+        this.canEdit = canEdit;
+    }
+
+    public void setCanInstantiate(Boolean canInstantiate) {
+        this.canInstantiate = canInstantiate;
+    }
+
+    public void setCanDuplicate(Boolean canDuplicate) {
+        this.canDuplicate = canDuplicate;
     }
 
     @Override
@@ -398,7 +439,13 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     @JsonIgnore
     public List<Game> getGames() {
-        return games;
+        Collections.sort(this.games, new Comparator<Game>() {
+            @Override
+            public int compare(Game g1, Game g2) {
+                return g1.getCreatedTime().compareTo(g2.getCreatedTime());
+            }
+        });
+        return this.games;
     }
 
     /**
@@ -640,7 +687,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
-     *
      * TODO: select game.* FROM GAME where dtype like 'DEBUGGAME' and
      * gamemodelid = this.getId()
      *

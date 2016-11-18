@@ -90,10 +90,10 @@ define(["ember"], function(Ember) {
             return DICT[this.get("model").get("gameStatus")];
         }.property("gameStatus"),
         doneId: function() {
-            return this.get('model').get('gameId') + 'done';
+            return this.get('model').get('id') + 'done';
         }.property("gameId"),
         chargedId: function() {
-            return this.get('model').get('gameId') + 'charged';
+            return this.get('model').get('id') + 'charged';
         }.property("gameId"),
         declaredSize: function() {
             var count=0;

@@ -8,6 +8,7 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.NoGameException;
 import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.exception.internal.NoTeamException;
@@ -21,11 +22,15 @@ import com.wegas.core.persistence.variable.scope.GameScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.naming.NamingException;
+import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,6 +79,81 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
             Player player) {
         VariableDescriptor vd = variableDescriptorFacade.find(variableDescriptorId);
         return vd.getInstance(player);
+    }
+
+    public VariableInstance getGameInstance(GameScope scope, Game game) {
+        try {
+            TypedQuery<VariableInstance> query = getEntityManager().createNamedQuery(
+                    "VariableInstance.findGameInstance", VariableInstance.class);
+            query.setParameter("scopeId", scope.getId());
+            query.setParameter("gameId", game.getId());
+            return query.getSingleResult();
+        } catch (NoResultException ex) {
+            return null;
+        }
+    }
+
+    public VariableInstance getTeamInstance(TeamScope scope, Team team) {
+        try {
+            TypedQuery<VariableInstance> query = getEntityManager().createNamedQuery(
+                    "VariableInstance.findTeamInstance", VariableInstance.class);
+            query.setParameter("scopeId", scope.getId());
+            query.setParameter("teamId", team.getId());
+            return query.getSingleResult();
+        } catch (NoResultException ex) {
+            return null;
+        }
+    }
+
+    public VariableInstance getPlayerInstance(PlayerScope scope, Player player) {
+        try {
+            TypedQuery<VariableInstance> query = getEntityManager().createNamedQuery(
+                    "VariableInstance.findPlayerInstance", VariableInstance.class);
+            query.setParameter("scopeId", scope.getId());
+            query.setParameter("playerId", player.getId());
+            return query.getSingleResult();
+        } catch (NoResultException ex) {
+            return null;
+        }
+    }
+
+    public Map<Player, VariableInstance> getAllPlayerInstances(PlayerScope scope) {
+        Map<Player, VariableInstance> instances = new HashMap<>();
+        TypedQuery<VariableInstance> query = getEntityManager().createNamedQuery(
+                "VariableInstance.findAllPlayerInstances", VariableInstance.class);
+        query.setParameter("scopeId", scope.getId());
+
+        List<VariableInstance> resultList = query.getResultList();
+        for (VariableInstance vi : resultList) {
+            instances.put(vi.getPlayer(), vi);
+        }
+        return instances;
+    }
+
+    public Map<Team, VariableInstance> getAllTeamInstances(TeamScope scope) {
+        Map<Team, VariableInstance> instances = new HashMap<>();
+        TypedQuery<VariableInstance> query = getEntityManager().createNamedQuery(
+                "VariableInstance.findAllTeamInstances", VariableInstance.class);
+        query.setParameter("scopeId", scope.getId());
+
+        List<VariableInstance> resultList = query.getResultList();
+        for (VariableInstance vi : resultList) {
+            instances.put(vi.getTeam(), vi);
+        }
+        return instances;
+    }
+
+    public Map<Game, VariableInstance> getAllGameInstances(GameScope scope) {
+        Map<Game, VariableInstance> instances = new HashMap<>();
+        TypedQuery<VariableInstance> query = getEntityManager().createNamedQuery(
+                "VariableInstance.findAllGameInstances", VariableInstance.class);
+        query.setParameter("scopeId", scope.getId());
+
+        List<VariableInstance> resultList = query.getResultList();
+        for (VariableInstance vi : resultList) {
+            instances.put(vi.getGame(), vi);
+        }
+        return instances;
     }
 
     /**
@@ -187,6 +267,8 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
             throws NoPlayerException {
         Player p;
         try {
+            // make sure to have a managed instance to have the scope !
+            instance = this.find(instance.getId());
             if (instance.getScope() instanceof PlayerScope) {
                 p = playerFacade.find(instance.getPlayer().getId());
                 if (p == null) {
@@ -263,29 +345,40 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
 
     @Override
     public VariableInstance update(final Long entityId, final VariableInstance entity) {
+        if (requestFacade.getRequestManager().getPlayer() == null) {
+            /*
+             * When there is no player in the current requestFacade context and 
+             * since requestFacade will blindly selects any player in such a case.
+             * A player who match the given variableInstance scope must be 
+             * manually selected !
+             */
+            try {
+                Player findAPlayer = this.findAPlayer(entity);
+                requestFacade.getRequestManager().setPlayer(findAPlayer);
+            } catch (NoPlayerException ex) {
+                throw WegasErrorMessage.error("Unable to find a player for instance " + entity);
+            }
+        }
+
         VariableInstance ret = super.update(entityId, entity);
-        requestFacade.commit();
+        requestFacade.commit(true);
         return ret;
     }
 
     @Override
     public void remove(VariableInstance entity) {
         getEntityManager().remove(entity);
-        /*
-        if (entity.getPlayerScopeKey() != null) {
-            Player find = playerFacade.find(entity.getPlayerScopeKey());
-            find.getPrivateInstances().remove(entity);
-        } else if (entity.getTeamScopeKey() != null) {
-            Team find = teamFacade.find(entity.getTeamScopeKey());
-            find.getPrivateInstances().remove(entity);
-        } else if (entity.getGameScopeKey() != null) {
-            Game find = gameFacade.find(entity.getGameScopeKey());
-            find.getPrivateInstances().remove(entity);
-        } else if (entity.getGameModelScope() != null) {
-            //find.getPrivateInstances().remove(entity);
+
+        if (entity.getPlayer() != null) {
+            entity.getPlayer().getPrivateInstances().remove(entity);
+        } else if (entity.getTeam() != null) {
+            entity.getTeam().getPrivateInstances().remove(entity);
+        } else if (entity.getGame() != null) {
+            entity.getGame().getPrivateInstances().remove(entity);
         }
-         */
-        entity.getScope().getVariableInstances().remove(entity);
+        /* else {
+             nothing to do for GameModelScoped instance nor for default one
+        } */
     }
 
     /**

@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.client.WegasNotFoundException;
@@ -34,7 +35,12 @@ import com.wegas.resourceManagement.persistence.BurndownDescriptor;
 import com.wegas.resourceManagement.persistence.ResourceDescriptor;
 import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
+import org.eclipse.persistence.annotations.CacheIndex;
+import org.eclipse.persistence.annotations.CacheIndexes;
 import org.eclipse.persistence.annotations.JoinFetch;
+import org.eclipse.persistence.config.CacheUsage;
+import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.config.QueryType;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -42,6 +48,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.wegas.core.persistence.AcceptInjection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @param <T>
@@ -66,9 +75,15 @@ import java.util.Map;
             query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.gameModel AS gm WHERE gm.id = :gameModelId"
     ),
     @NamedQuery(
-            name = "VariableDescriptor.findByGameModelAndName",
-            query = "SELECT vd FROM VariableDescriptor vd where vd.gameModel = :gameModel AND vd.name LIKE :name"
+            name = "VariableDescriptor.findByGameModelIdAndName",
+            query = "SELECT vd FROM VariableDescriptor vd where vd.gameModel.id = :gameModelId AND vd.name LIKE :name",
+            hints = {
+                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
+                @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)}
     )
+})
+@CacheIndexes(value = {
+    @CacheIndex(columnNames = {"GAMEMODEL_GAMEMODELID", "NAME"}) // bug uppercase: https://bugs.eclipse.org/bugs/show_bug.cgi?id=407834
 })
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "ListDescriptor", value = ListDescriptor.class),
@@ -87,9 +102,12 @@ import java.util.Map;
     @JsonSubTypes.Type(name = "PeerReviewDescriptor", value = PeerReviewDescriptor.class),
     @JsonSubTypes.Type(name = "BurndownDescriptor", value = BurndownDescriptor.class)
 })
+@MappedSuperclass
 abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity implements Searchable, LabelledEntity, Broadcastable {
 
     private static final long serialVersionUID = 1L;
+
+    private static final Logger logger = LoggerFactory.getLogger(VariableDescriptor.class);
 
     /**
      *
@@ -104,7 +122,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      * correctly
      */
     @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, optional = false)
-    @JsonView(value = Views.EditorExtendedI.class)
+    @JsonView(value = Views.EditorI.class)
     private VariableInstance defaultInstance;
 
     /**
@@ -112,8 +130,8 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      */
     //@JsonBackReference
     @ManyToOne
-    @JoinColumn
-    //@CacheIndex
+    @JoinColumn(name = "gamemodel_gamemodelid")
+    @CacheIndex
     private GameModel gameModel;
 
     /**
@@ -150,7 +168,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     //@JsonManagedReference
     @OneToOne(cascade = {CascadeType.ALL}, orphanRemoval = true, optional = false)
     @JoinFetch
-    @JsonView(value = Views.WithScopeI.class)
+    //@JsonView(value = Views.WithScopeI.class)
     private AbstractScope scope;
 
     /**
@@ -164,11 +182,21 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     /**
      *
      */
-    //@JsonView(Views.EditorExtendedI.class)
     @NotNull
     @Basic(optional = false)
     //@CacheIndex
     protected String name;
+
+    @Version
+    private Long version;
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
 
     /**
      *
@@ -338,8 +366,8 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     /**
      * @param defaultInstance indicate whether one wants the default instance r
-     * the one belonging to player
-     * @param player the player
+     *                        the one belonging to player
+     * @param player          the player
      * @return either the default instance of the one belonging to player
      */
     @JsonIgnore
@@ -428,6 +456,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
             try {
                 super.merge(a);
                 VariableDescriptor other = (VariableDescriptor) a;
+                this.setVersion(other.getVersion());
                 this.setName(other.getName());
                 this.setLabel(other.getLabel());
                 this.setTitle(other.getTitle());
@@ -457,9 +486,10 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     /**
      * @param context allow to circumscribe the propagation within the given
-     * context. It may be an instance of GameModel, Game, Team, or Player
+     *                context. It may be an instance of GameModel, Game, Team,
+     *                or Player
      */
-    public void propagateDefaultInstance(AbstractEntity context) {
+    public void propagateDefaultInstance(AbstractEntity context, boolean create) {
         int sFlag = 0;
         if (scope instanceof GameModelScope) { // gms
             sFlag = 4;
@@ -476,7 +506,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
                 || (context instanceof Game && sFlag < 4) // g ctx -> skip gms
                 || (context instanceof Team && sFlag < 3) // t ctx -> skip gms, gs
                 || (context instanceof Player && sFlag < 2)) { // p ctx -> skip gms, gs, ts
-            scope.propagateDefaultInstance(context);
+            scope.propagateDefaultInstance(context, create);
         }
     }
 
@@ -510,7 +540,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     /**
-     *
      * @return Class simple name + id
      */
     @Override

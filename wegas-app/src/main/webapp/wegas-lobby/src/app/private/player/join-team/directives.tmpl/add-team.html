@@ -5,7 +5,8 @@
        ng-model="newTeam.name" placeholder="{{'PLAYER-MODALE-JOIN-TEAM-CREATE-INPUT' | translate}}"
        ng-keyup="$event.keyCode == 13 && newTeam.name != '' && newTeam.validSize && create()"/>
 
-<select title="{{'PLAYER-MODALE-JOIN-TEAM-CREATE-SIZE-TOOLTIP' | translate}}"
+<select id="newTeamSize"
+       title="{{'PLAYER-MODALE-JOIN-TEAM-CREATE-SIZE-TOOLTIP' | translate}}"
        class="input input-small size"
        ng-model="newTeam.size">
 <option value="0" selected="selected">{{'PLAYER-MODALE-JOIN-TEAM-CREATE-SIZE' | translate}}</option>

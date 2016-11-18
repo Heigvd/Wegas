@@ -1,8 +1,13 @@
 language: java
 sudo: false
-dist: trusty
+#dist: trusty
 jdk:
   - oraclejdk8
+addons:
+  ssh_known_hosts: dev.albasim.ch
+  apt:
+    packages:
+      - oracle-java8-installer
 services: postgresql
 cache:
   directories:
@@ -13,9 +18,6 @@ git:
 branches:
   only:
   - master
-sudo: false
-addons:
-  ssh_known_hosts: dev.albasim.ch
 env:
   global:
   - NODE_VERSION=5.7 CC=clang CXX=clang++
@@ -23,7 +25,7 @@ env:
   #- secure: dc1+zvl7dLsaietPU2/s/MKyIopVry5BTS5sS6z+D2e50JH1zvhFoLD92UDJM0rs8zDWa4nzrwG0yYj8roDlVzCj+VJ+VMyQFspHtcHle109Uqo+V0Ac3BSfugkchbJfO2I545CiVXnJGR/SxOfiLPwPy7rRUU0YT34xyW5A8b0=
   #- secure: PHeQHurKoerHNWSRsORNIZd/nFFw5WqOCqYUj0VX1xCq+GdMNuPpe8UEln4/hFU53XVeSMEbF2Mjrs+5g6CoeeMw16VcUYJvpdZaty2dquyXZN7PVPROf1yaptEb4nxD2oiaQ2X0jQDSmF56sGxA15kA/EoYSLnGkA5eBv2wFfA=
 install:
-- mvn -B -P release-profile generate-resources
+  - mvn -B -P release-profile generate-resources
 before_install:
   - echo -e "machine github.com\n  login $GIT_USER\n  password $GIT_TOKEN" >> ~/.netrc
   - git submodule update --init --recursive

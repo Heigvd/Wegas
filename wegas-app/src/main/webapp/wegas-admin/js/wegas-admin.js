@@ -102,6 +102,7 @@ define(["game",
                                 newTeam = {name: 'Internal JSON error', declaredSize: 0, playerNames: []};
                             }
                             newTeam.realMatchesDeclaredSize = (newTeam.playerNames.length === newTeam.declaredSize);
+                            newTeam.realGreaterThanDeclaredSize = (newTeam.playerNames.length > newTeam.declaredSize);
                             newTeam.hasDeclaredSize = (newTeam.declaredSize>0);
                             newTeams.push(newTeam);
                         });

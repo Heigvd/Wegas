@@ -34,17 +34,18 @@ import java.util.Iterator;
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 
-public class Neo4jUtils {
+class Neo4jUtils {
 
-    protected static final String NEO4J_SERVER_URL = Helper.getWegasProperty("neo4j.server.url");
+    private static final String NEO4J_SERVER_URL = Helper.getWegasProperty("neo4j.server.url", "");
 
-    protected static final String NEO4J_BASIC_AUTH = Helper.getWegasProperty("neo4j.server.auth");
+    private static final String NEO4J_BASIC_AUTH = Helper.getWegasProperty("neo4j.server.auth", "");
 
     private static final Logger logger = LoggerFactory.getLogger(Neo4jUtils.class);
 
     private static final Client client = ClientBuilder.newClient();
 
     private static final ObjectMapper objectMapper;
+
 
     static {
         objectMapper = new ObjectMapper();
@@ -58,7 +59,7 @@ public class Neo4jUtils {
      *
      * @return true if the neo4j database is running, false otherwise
      */
-    protected static boolean checkDataBaseIsRunning() {
+    static boolean checkDataBaseIsRunning() {
         if (NEO4J_SERVER_URL.isEmpty()) {
             return false;
         }
@@ -79,7 +80,7 @@ public class Neo4jUtils {
      * @param query the query to be submitted
      * @return a string containing the query's answer
      */
-    protected static String queryDBString(String query) {
+    static String queryDBString(String query) {
         final String qURL = NEO4J_SERVER_URL + "transaction/commit";
         String entity = "{ \"statements\" : [ { \"statement\" : \"" + StringEscapeUtils.escapeJson(query) + "\" } ] }";
         String result = null;
@@ -98,7 +99,7 @@ public class Neo4jUtils {
      * @param result the result of the query
      * @return the error message if an error occurred, null otherwise
      */
-    protected static String extractErrorData(String result) {
+    static String extractErrorData(String result) {
         ObjectMapper om = new ObjectMapper();
         try {
             JsonNode jn = om.readTree(result);
@@ -125,7 +126,7 @@ public class Neo4jUtils {
      * @param result the result of a query
      * @return the data list as a Json object
      */
-    protected static ArrayNode extractListData(String result) {
+    static ArrayNode extractListData(String result) {
         ArrayNode on = objectMapper.createArrayNode();
         ObjectMapper om = new ObjectMapper();
         try {
@@ -161,7 +162,6 @@ public class Neo4jUtils {
         }
 
     }
-
     /**
      * Checks the http status code. The successful operations return a status
      * code between 200 and 299.

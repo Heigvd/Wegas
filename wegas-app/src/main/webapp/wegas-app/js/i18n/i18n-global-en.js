@@ -14,6 +14,10 @@
 
 YUI.add("wegas-i18n-global-en", function(Y) {
     Y.Wegas.I18n.register("wegas-i18n-global", "en", {
+        wegas: {
+            player: "player",
+            team: "team"
+        },
         global: {
             and: "and",
             description: "description",
@@ -24,13 +28,14 @@ YUI.add("wegas-i18n-global-en", function(Y) {
             logout: "logout"
         },
         errors: {
-            notAPositiveInteger : "\"{{value}}\" is not a positive integer",
-            nan : "\"{{value}}\" is not a number",
-            outOfBounds: "{{value}} not in [{{min}},{{max}}]",
-            lessThan: "{{value}} is less than {{min}}",
+            conflict: "Your request could not be completed due to a conflict. This usually means you tried to update an outdated element.",
             greaterThan: "{{value}} is greater greater than {{max}}",
-			prohibited: "\"{{value}}\" not allowed. It must be one of these: {{values}}",
-			limitReached: "You cannot select more than {{num}} values"
+            lessThan: "{{value}} is less than {{min}}",
+            limitReached: "You cannot select more than {{num}} values",
+            prohibited: "\"{{value}}\" not allowed. It must be one of these: {{values}}",
+            nan: "\"{{value}}\" is not a number",
+            notAPositiveInteger: "\"{{value}}\" is not a positive integer",
+            outOfBounds: "{{value}} not in [{{min}},{{max}}]"
         },
         inbox: {
             deleteEmailConfirmation: "The e-mail {{subject}} will be permanently deleted. Continue?",
