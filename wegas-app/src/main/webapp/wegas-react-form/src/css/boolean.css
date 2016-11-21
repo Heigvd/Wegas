@@ -1,0 +1,19 @@
+
+.label {
+    font-family: Rockwell;
+    color:dimgrey;
+    font-size: 14px;
+    left:0;
+    margin-left: 50px;
+}
+
+.checkbox{
+    border-radius: 3px;
+    border:lightgrey solid 1px;
+    margin-top:5px;
+    width:15px!important;
+    max-width:15px!important;
+    font-size: 14px;
+}
+
+

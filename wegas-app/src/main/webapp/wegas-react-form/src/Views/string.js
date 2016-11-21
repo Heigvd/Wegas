@@ -1,54 +1,43 @@
 import React, { PropTypes } from 'react';
-import TextField from 'material-ui/TextField';
+import classNames from 'classnames';
 import debounce from '../HOC/callbackDebounce';
+import commonView from '../HOC/commonView';
+import styles from '../css/string.css';
+
 
 const debounceOnChange = debounce('onChange');
 
-class StringView extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            val: props.value
-        };
-        this.updateHandle = this.updateHandle.bind(this);
-    }
-    componentWillReceiveProps(next) {
-        this.setState({ val: next.value });
-    }
-    updateHandle(event) {
-        this.setState({ val: event.target.value }, () => this.props.onChange(this.state.val));
-    }
-    render() {
-        const props = this.props;
-        const errorMessage = props.errorMessage && props.errorMessage.length ?
-            props.errorMessage :
-            undefined;
+function StringView(props) {
+    if (typeof props.view.rows === 'number') {
         return (
-            <TextField
-                className={props.view.className}
-                value={this.state.val || ''}
-                floatingLabelText={props.view.label || props.path[props.path.length - 1]}
-                errorText={errorMessage}
-                onChange={this.updateHandle}
-                disabled={props.disabled}
-                multiLine={props.multiLine}
-                fullWidth
+            <textarea
+                rows={props.view.rows}
+                onChange={ev => props.onChange(ev.target.value)}
+                placeholder="key in!"
+                style={{
+                    fontSize: '14px',
+                    color: 'darkgrey',
+
+                }}
+                defaultValue={props.value}
             />
         );
     }
+    return (<input
+        className={styles.input}
+        type="text"
+        defaultValue={props.value}
+        onChange={ev => props.onChange(ev.target.value)}
+    />
+    );
 }
 
 StringView.propTypes = {
-    errorMessage: PropTypes.arrayOf(PropTypes.string),
     onChange: PropTypes.func.isRequired,
     value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     view: PropTypes.shape({
-        label: PropTypes.string,
-        className: PropTypes.string
-    }),
-    path: PropTypes.arrayOf(PropTypes.string),
-    disabled: PropTypes.bool,
-    multiLine: PropTypes.bool
+        rows: PropTypes.number
+    })
 };
 
-export default debounceOnChange(StringView);
+export default commonView(debounceOnChange(StringView));

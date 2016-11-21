@@ -1,0 +1,27 @@
+.input{
+    border-radius: 3px;
+    border:lightgrey solid 1px;
+    margin-top:5px;
+    font-size: 16px;
+    width:100%;
+    color:darkslategrey;
+}
+
+textarea{
+    border-radius: 3px;
+    width:100%;
+    font-style: italic;
+    font-size: 14px;
+    border: none;
+    color:darkgrey;
+}
+
+textarea:focus{
+    border-radius: 3px;
+    width:100%;
+    font-size: 14px;
+    border:lightgrey solid 1px;
+    color:darkgrey;
+;
+
+}

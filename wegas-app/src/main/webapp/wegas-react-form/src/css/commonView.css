@@ -1,0 +1,46 @@
+.short{
+    max-width:12.5em;
+    margin-left:50px;
+}
+
+.shortInline {
+  composes: short;
+  display: inline-block;
+  margin-right: 20px;
+  margin-top: 8px;
+  vertical-align:top;
+}
+
+.long{
+    margin-top:5px;
+    max-width:28em;
+    font-size: 14px;
+    margin-left:50px;
+}
+
+.infos{
+  color:lightslategrey;
+  font-size: 10px; 
+  margin-left: 5px;
+  font-style: italic;
+}
+
+.errs{
+  color:darkorange;
+  font-size: 10px; 
+  font-style: italic;
+}
+
+.label {
+
+    font-family: Rockwell;
+    color:#6A95B6;
+    font-size: 15.5px;
+    margin-top:8px;
+    width:130%;    
+}
+
+.borderTop{
+  border-top: solid 2px #4A8C9C ;
+  margin-left:0px;
+}

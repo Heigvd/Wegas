@@ -9,7 +9,7 @@ function ObjectView(props) {
                 { [styles.borderTop]: props.view.label },
                 props.view.className)}
         >
-            <legend>
+            <legend className={styles.legend}>
                 {props.view.label}
             </legend>
             {props.children}

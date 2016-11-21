@@ -1,0 +1,43 @@
+.shape{
+    width:15px;
+	height:15px;
+	border-radius:50%;
+	color:#fff;
+	line-height: 2em;
+	font-size:7.6px;
+	margin-left:5px;
+	text-align: center;
+	display:inline-block;
+	cursor: pointer;
+	background-color: grey;
+}
+
+.shape:hover{
+	cursor: pointer;
+	background-color: #9DC06F;
+}
+
+.disabled{
+    width:20px;
+	height:20px;
+	border-radius:50%;
+	color:black;
+    background-color:darkslategrey;
+}
+
+.opacity{
+	opacity:0;
+}
+
+.grey{
+	color:darkslategrey;
+	font-weight: bold;
+	font-size:15px;
+	background-color: white;
+	background-opacity:0;
+}
+
+.grey:hover{
+	background-color: white;
+	background-opacity:0;
+}

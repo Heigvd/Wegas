@@ -1,49 +1,45 @@
 import React, { PropTypes } from 'react';
-import SelectField from 'material-ui/SelectField';
-import MenuItem from 'material-ui/MenuItem';
+import classNames from 'classnames';
 import async from '../HOC/async';
+import commonView from '../HOC/commonView';
+import styles from '../css/select.css';
 
 function genItems(o, i) {
     if (typeof o !== 'object') {
         return (
-            <MenuItem
+            <option
                 key={i}
                 value={o}
                 primaryText={o}
+                
             />);
     }
     const { label = o.value, value, disabled } = o;
     return (
-        <MenuItem
+        <option
             key={i}
             value={value}
-            primaryText={label}
-            label={label}
             disabled={disabled}
-        />);
+        >
+            {label}
+        </option>
+        );
 }
 
 function SelectView(props) {
-    const errorMessage = props.errorMessage.length ?
-        props.errorMessage :
-        undefined;
-    const onChange = function onChange(event, index, value) {
-        setTimeout(props.onChange(value));
+    const onChange = function onChange(event) {
+        props.onChange(event.target.value);
     };
     const choices = props.view.choices || [];
     const menuItems = choices.map(genItems);
     return (
-        <SelectField
-            className={props.view.className}
+        <select
+            className={classNames(props.view.className, styles.select)}
             value={props.value}
-            floatingLabelText={props.view.label || props.editKey}
-            errorText={errorMessage}
             onChange={onChange}
-            disabled={props.disabled}
-            fullWidth
         >
             {menuItems}
-        </SelectField>
+        </select>
     );
 }
 SelectView.defaultProps = {
@@ -64,10 +60,14 @@ SelectView.propTypes = {
     disabled: PropTypes.bool,
     multiLine: PropTypes.bool
 };
-export default async(SelectView)(({ view }) => {
+
+
+export default commonView(async(SelectView)(({ view }) => {
     const { choices } = view;
     if (typeof choices === 'function') {
         return Promise.resolve(choices()).then(ch => ({ view: { ...view, choices: ch } }));
     }
     return {};
-});
+})
+);
+

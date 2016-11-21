@@ -127,6 +127,7 @@ YUI.add('wegas-resourcemanagement-entities', function (Y) {
                     view: {
                         label: "Label",
                         description: "Displayed to players",
+                        lengthType:"short"
                     },
                     index: -1
                 },
@@ -168,7 +169,7 @@ YUI.add('wegas-resourcemanagement-entities', function (Y) {
                             type: BOOLEAN,
                             value: true,
                             view: {
-                                label: "Active by default",
+                                label: "Active from start",
                             }
                         },
                         confidence: {
@@ -614,7 +615,7 @@ YUI.add('wegas-resourcemanagement-entities', function (Y) {
                         active: {
                             type: BOOLEAN,
                             view: {
-                                label: 'Active by default',
+                                label: 'Active from start',
                                 value: true
                             }
                         },

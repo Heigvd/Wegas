@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
 import { parse, print, types } from 'recast';
-import IconButton from 'material-ui/IconButton';
+import classNames from 'classnames';
+import styles from '../css/string.css';
 
 class ViewSrc extends React.Component {
     constructor(props) {
@@ -13,10 +14,7 @@ class ViewSrc extends React.Component {
             child = [(
                 <textarea
                     key="code"
-                    style={{
-                        width: '90%',
-                        height: '200px'
-                    }}
+                    className={styles.textarea}
                     defaultValue={this.props.value}
                     onChange={event => this.props.onChange(event.target.value)}
                 />
@@ -24,17 +22,18 @@ class ViewSrc extends React.Component {
         } else {
             child = this.props.children;
         }
-        return (
+        return (<span>
+            <i
+                className={classNames('fa fa-code', styles.icon)}
+                onClick={() => this.setState({
+                            src: !this.state.src
+                        })}
+            >
+            </i>
             <div>
-                <IconButton
-                    disabled={!!this.props.error}
-                    iconClassName="fa fa-pencil"
-                    onClick={() => this.setState({
-                        src: !this.state.src
-                    })}
-                />
                 {child}
             </div>
+        </span>
         );
     }
 }

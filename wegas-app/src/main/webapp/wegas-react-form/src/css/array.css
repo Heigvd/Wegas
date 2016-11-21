@@ -1,0 +1,30 @@
+.label{
+    
+    font-family: Rockwell;
+    color:dimgrey;
+    font-size: 13.5px;
+}
+
+
+
+.test{
+    opacity:0;
+}
+
+.opacity{
+    opacity:0;
+}
+
+.liste2:hover .opacity{
+    opacity:1;
+    -webkit-transition: opacity 2s; /* Safari */
+    transition: opacity 2s;
+}
+
+.hiddenLabel{
+    display:none;
+}
+
+
+
+

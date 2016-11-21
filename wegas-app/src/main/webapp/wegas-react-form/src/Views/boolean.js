@@ -1,16 +1,28 @@
 import React, { PropTypes } from 'react';
-import Toggle from 'material-ui/Toggle';
+import styles from '../css/boolean.css';
 
 function BooleanView(props) {
     const onChange = function onChange(event) {
         props.onChange(event.target.checked);
     };
-    return (<Toggle
-        className={props.view.className}
-        defaultToggled={props.value}
-        label={props.view.label || props.path[props.path.length - 1]}
-        onToggle={onChange}
-    />);
+
+    return (
+        <div
+            style={{ marginTop: '7px' }}
+        >
+            <label
+                className={styles.label}
+            >
+                <input
+                    checked={props.value}
+                    type="checkbox"
+                    className={styles.checkbox}
+                    onChange={ev => props.onChange(ev.target.checked)}
+                />
+                {props.view.label || props.path[props.path.length - 1]}
+            </label>
+        </div>
+    );
 }
 
 BooleanView.propTypes = {

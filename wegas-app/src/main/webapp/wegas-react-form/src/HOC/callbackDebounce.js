@@ -20,4 +20,4 @@ function debounced(wait) {
     };
 }
 
-export default debounced(400);
+export default debounced(600);
