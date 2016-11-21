@@ -86,7 +86,10 @@ gulp.task("compress-js", ["submodule"], function() {
         }))
         .pipe(sourcemaps.init())
         // .pipe(cache(uglify()))
-        .pipe(uglify())
+        .pipe(uglify().on('error', function(e){
+            console.log(e.message);
+            throw e;
+        }))
         .pipe(rename({
             suffix: "-min"
         }))
