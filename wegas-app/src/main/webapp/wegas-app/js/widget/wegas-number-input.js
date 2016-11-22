@@ -386,7 +386,7 @@ YUI.add("wegas-number-input", function(Y) {
                 boxes.toggleClass("clickable");
             }
 
-            if (this._initialValue !== value) {
+            if (true || this._initialValue !== value) { // @Hack since this._initialValue already has the new value
                 this._initialValue = value;
 
                 if (Y.Lang.isNumber(min) && Y.Lang.isNumber(max)) {
