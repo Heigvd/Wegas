@@ -26,10 +26,9 @@ class ViewSrc extends React.Component {
             <i
                 className={classNames('fa fa-code', styles.icon)}
                 onClick={() => this.setState({
-                            src: !this.state.src
-                        })}
-            >
-            </i>
+                    src: !this.state.src
+                })}
+            />
             <div>
                 {child}
             </div>

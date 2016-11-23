@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { types } from 'recast';
-import IconButton from '../Components/iconButton.js';
+import IconButton from '../Components/IconButton';
 
 export default function addStatement(Comp) {
     class AddStatement extends React.Component {

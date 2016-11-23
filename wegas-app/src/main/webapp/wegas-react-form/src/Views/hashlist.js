@@ -1,8 +1,8 @@
 import React, { PropTypes } from 'react';
-import commonView from '../HOC/commonView';
 import TextField from 'material-ui/TextField';
+import commonView from '../HOC/commonView';
 import ObjectView from './object';
-import IconButton from '../Components/iconButton.js';
+import IconButton from '../Components/IconButton';
 
 const halfWidth = {
     display: 'inline-block',

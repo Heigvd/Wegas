@@ -11,7 +11,7 @@ function genItems(o, i) {
                 key={i}
                 value={o}
                 primaryText={o}
-                
+
             />);
     }
     const { label = o.value, value, disabled } = o;
@@ -23,7 +23,7 @@ function genItems(o, i) {
         >
             {label}
         </option>
-        );
+    );
 }
 
 function SelectView(props) {

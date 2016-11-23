@@ -1,18 +1,8 @@
 import React, { PropTypes } from 'react';
 import commonView from '../HOC/commonView';
 import styles from '../css/array.css';
-import IconButton from '../Components/IconButton.js';
+import IconButton from '../Components/IconButton';
 
-const minusStyle = {
-    float: 'left',
-    marginTop: '12px'
-};
-const childStyle = {
-    marginLeft: '48spx'
-};
-const legendStyle = {
-    textAlign: 'center'
-};
 function ArrayWidget(props) {
     function renderChild(child, index) {
         return (
@@ -24,7 +14,7 @@ function ArrayWidget(props) {
                     className={styles.liste2}
                 >
                     <span
-                        style={{ 'margin-right': '5px' }}
+                        style={{ marginRight: '5px' }}
                     >
                         {child}
                     </span>
@@ -56,10 +46,10 @@ function ArrayWidget(props) {
                 icon="fa fa-plus"
                 onClick={props.onChildAdd}
                 tooltip="add"
-            />:null}
+            /> : null}
             {children}
         </div>
-        );
+    );
 }
 
 ArrayWidget.propTypes = {
@@ -71,7 +61,6 @@ ArrayWidget.propTypes = {
     schema: PropTypes.shape({
         minItems: PropTypes.number,
         maxItems: PropTypes.number
-    }),
-    editKey: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+    })
 };
 export default commonView(ArrayWidget);

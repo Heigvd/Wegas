@@ -11,7 +11,7 @@ function IconButton({ icon, onClick, grey, disabled, iconColor, tooltip, opacity
                 [styles.grey]: grey
             })}
             onClick={onClick}
-            
+
         />
     );
 }

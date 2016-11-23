@@ -51,7 +51,6 @@ class VariableCondition extends React.Component {
         } else if (this.returns !== descr.returns) {
             this.setState({ operator: '===', right: undefined });
             this.returns = descr.returns;
-            return;
         } else if (this.state.operator && this.state.left && this.state.right) {
             const node = b.binaryExpression(this.state.operator, this.state.left, this.state.right);
             this.props.onChange(node);
