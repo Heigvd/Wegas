@@ -626,6 +626,7 @@ YUI.add("wegas-widget", function (Y) {
      *
      */
     Y.WidgetParent.prototype.destroyAll = function () {
+        this.deselectAll();
         this.removeAll().each(function () {
             this.destroy();
         });

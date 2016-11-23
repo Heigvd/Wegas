@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react';
 import TinyMCE from 'react-tinymce';
 import commonView from '../HOC/commonView';
-import './../../../wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar.js';
+import './../../../wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar';
 import { getY } from './../index';
 import styles from '../css/html.css';
 
@@ -102,7 +102,13 @@ const TINYCONFIG = {
 };
 function HTMLView(props) {
     const { onChange } = props;
-    const onValueChange = event => onChange(event.target.getContent());
+    const onValueChange = (event) => {
+        try {
+            onChange(event.target.getContent());
+        } catch (e) {
+            // Has been destroyed ....
+        }
+    };
     return (
         <div
             className={styles.margin}
