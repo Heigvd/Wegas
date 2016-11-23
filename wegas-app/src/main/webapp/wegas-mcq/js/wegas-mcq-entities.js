@@ -83,8 +83,8 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 type: BOOLEAN,
                 value: false,
                 _inputex: {
-                    label: "Checkbox selection",
-                    description: "Pour QCM standard",
+                    label: "Checkbox answers",
+                    description: "For standard multiple-choice questions",
                     index: 9
                 }
             },
