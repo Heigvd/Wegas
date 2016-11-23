@@ -53,24 +53,24 @@ import org.eclipse.persistence.config.QueryType;
             query = "SELECT vi FROM VariableInstance vi WHERE "
             + "(vi.player.id = :playerId AND vi.playerScope.id = :scopeId)",
             hints = {
-                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
-                @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
+                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject)//,
+                //@QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
             }
     ),
     @NamedQuery(name = "VariableInstance.findTeamInstance",
             query = "SELECT vi FROM VariableInstance vi WHERE "
             + "(vi.team.id = :teamId AND vi.teamScope.id = :scopeId)",
             hints = {
-                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
-                @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
+                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject)//,
+                //@QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
             }
     ),
     @NamedQuery(name = "VariableInstance.findGameInstance",
             query = "SELECT vi FROM VariableInstance vi WHERE "
             + "(vi.game.id = :gameId AND vi.gameScope.id = :scopeId)",
             hints = {
-                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
-                @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
+                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject)//,
+                //@QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
             }
     ),
     @NamedQuery(name = "VariableInstance.findAllPlayerInstances",
@@ -127,6 +127,7 @@ import org.eclipse.persistence.config.QueryType;
     @JsonSubTypes.Type(name = "BurndownInstance", value = BurndownInstance.class)
 })
 @OptimisticLocking(cascade = true)
+//@Cacheable(false)
 abstract public class VariableInstance extends AbstractEntity implements Broadcastable {
 
     private static final long serialVersionUID = 1L;
