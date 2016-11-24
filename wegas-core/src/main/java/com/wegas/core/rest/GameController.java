@@ -10,6 +10,7 @@ package com.wegas.core.rest;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.DebugTeam;
@@ -25,6 +26,7 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -48,7 +50,11 @@ public class GameController {
      */
     @EJB
     private GameFacade gameFacade;
-
+    /**
+     *
+     */
+    @Inject
+    private RequestManager requestManager;
     /**
      *
      */
@@ -293,14 +299,16 @@ public class GameController {
             if (game != null) {
                 r = Response.status(Response.Status.CONFLICT).build();
                 if (game.getAccess() == Game.GameAccess.OPEN) {
-                    Player player = playerFacade.checkExistingPlayer(game.getId(), currentUser.getId());
-                    if (player == null) {
-                        if (game.getGameModel().getProperties().getFreeForAll()) {
-                            Team team = new Team("Ind-" + Helper.genToken(12), 1);
-                            teamFacade.create(game.getId(), team); // return managed team
-                            playerFacade.create(team, currentUser);
-                            //Team find = teamFacade.find(team.getId());
-                            r = Response.status(Response.Status.CREATED).entity(team).build();
+                    if (requestManager.tryLock("join-" + gameId + "-" + currentUser.getId())) {
+                        Player player = playerFacade.checkExistingPlayer(game.getId(), currentUser.getId());
+                        if (player == null) {
+                            if (game.getGameModel().getProperties().getFreeForAll()) {
+                                Team team = new Team("Ind-" + Helper.genToken(12), 1);
+                                teamFacade.create(game.getId(), team); // return managed team
+                                playerFacade.create(team, currentUser);
+                                //Team find = teamFacade.find(team.getId());
+                                r = Response.status(Response.Status.CREATED).entity(team).build();
+                            }
                         }
                     }
                 }
