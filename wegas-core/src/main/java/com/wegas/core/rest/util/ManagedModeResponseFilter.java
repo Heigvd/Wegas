@@ -92,7 +92,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
              * Behaviour is to return a managed response with an empty entity list
              * and to register the exception as a request exception event
              */
-            if (response.getEntity() instanceof Exception || requestManager.getExceptionCounter() > 0) {
+            if (response.getEntity() instanceof Exception || requestManager.getExceptionCounter() > 0 || response.getStatusInfo().getStatusCode() >= 400) {
 
                 // No Entities but register exception as event
                 updatedEntities = new ArrayList<>();
@@ -108,7 +108,9 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                 requestManager.addException(wrex);
 
                 // Set response http status code to 400
-                response.setStatus(HttpStatus.SC_BAD_REQUEST);
+                if(response.getStatusInfo().getStatusCode()< 400) {
+                    response.setStatus(HttpStatus.SC_BAD_REQUEST);
+                }
                 rollbacked = true;
             } else {
                 /* 
