@@ -5,11 +5,12 @@ angular.module('private.scenarist.directives', [
         "use strict";
         var ctrl = this,
             initMaxScenariosDisplayed = function() {
-                if (ctrl.scenarios.length > 22) {
-                    ctrl.maxScenariosDisplayed = 20;
-                } else {
-                    ctrl.maxScenariosDisplayed = ctrl.scenarios.length;
-                }
+                /*if (ctrl.scenarios.length > 22) {
+                 ctrl.maxScenariosDisplayed = 20;
+                 } else {
+                 ctrl.maxScenariosDisplayed = ctrl.scenarios.length;
+                 }*/
+                ctrl.maxScenariosDisplayed = ctrl.scenarios.length;
             },
             updateDisplayScenarios = function() {
                 if (ctrl.maxScenariosDisplayed === null) {
@@ -31,7 +32,7 @@ angular.module('private.scenarist.directives', [
         ctrl.maxScenariosDisplayed = null;
 
         ctrl.updateScenarios = function(updateDisplay) {
-            var hideScrollbarDuringInitialRender = (ctrl.scenarios.length===0);
+            var hideScrollbarDuringInitialRender = (ctrl.scenarios.length === 0);
             if (hideScrollbarDuringInitialRender) {
                 $('#scenarist-scenarios-list').css('overflow-y', 'hidden');
             }
@@ -43,41 +44,45 @@ angular.module('private.scenarist.directives', [
                     updateDisplayScenarios();
                 }
                 if (hideScrollbarDuringInitialRender) {
-                    $timeout(function () { $('#scenarist-scenarios-list').css('overflow-y', 'auto'); }, 1000);
+                    $timeout(function() {
+                        $('#scenarist-scenarios-list').css('overflow-y', 'auto');
+                    }, 1000);
                 }
             });
-            if (updateDisplay) {
-                ScenariosModel.countArchivedScenarios().then(function(response) {
-                    ctrl.nbArchives = response.data;
-                });
-            }
+            /*if (updateDisplay) {
+             ScenariosModel.countArchivedScenarios().then(function(response) {
+             ctrl.nbArchives = response.data;
+             });
+             }*/
         };
 
         ctrl.archiveScenario = function(scenario) {
-            $('#archive-'+scenario.id).removeClass('button--archive').addClass('busy-button');
+            $('#archive-' + scenario.id).removeClass('button--archive').addClass('busy-button');
             ScenariosModel.archiveScenario(scenario).then(function(response) {
                 if (response.isErroneous()) {
                     response.flash();
                 } else {
+                    ctrl.nbArchives += 1;
                     $rootScope.$emit('changeScenarios', true);
                 }
-                $timeout(function(){
-                    $('#archive-'+scenario.id).removeClass('busy-button').addClass('button--archive');
+                $timeout(function() {
+                    $('#archive-' + scenario.id).removeClass('busy-button').addClass('button--archive');
                 }, 500);
             });
         };
 
         ctrl.duplicate = function(scenario) {
-            if (ctrl.duplicating) return;
+            if (ctrl.duplicating)
+                return;
             ctrl.duplicating = true;
-            $('#dupe-'+scenario.id).addClass('busy-button');
+            $('#dupe-' + scenario.id).addClass('busy-button');
             ScenariosModel.copyScenario(scenario.id).then(function(response) {
                 if (response.isErroneous()) {
                     response.flash();
                 } else {
                     $rootScope.$emit('changeScenarios', true);
                 }
-                $('#dupe-'+scenario.id).removeClass('busy-button');
+                $('#dupe-' + scenario.id).removeClass('busy-button');
                 ctrl.duplicating = false;
             });
         };
@@ -96,8 +101,13 @@ angular.module('private.scenarist.directives', [
             });
             return deferred.promise;
         };
+
+        $rootScope.$on('entrenchNbArchives', function(e, count) {
+            ctrl.nbArchives -= count;
+        });
+
         $rootScope.$on('changeLimit', function(e, hasNewData) {
-            if (hasNewData) {
+            if (e.currentScope.currentRole === "SCENARIST" && hasNewData) {
                 ctrl.updateScenarios(true);
             }
         });
@@ -110,12 +120,11 @@ angular.module('private.scenarist.directives', [
         });
 
         ctrl.updateScenarios(true);
-        /*
-        // This is redundant with ctrl.updateScenarios(true);
+
         ScenariosModel.countArchivedScenarios().then(function(response) {
             ctrl.nbArchives = response.data;
         });
-        */
+
     })
     .directive('scenaristScenariosIndex', function() {
         "use strict";

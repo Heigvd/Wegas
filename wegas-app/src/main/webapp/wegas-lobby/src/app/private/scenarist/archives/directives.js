@@ -31,6 +31,7 @@ angular.module('private.scenarist.archives.directives', [])
             if (scenarioToUnarchive) {
                 ScenariosModel.unarchiveScenario(scenarioToUnarchive).then(function(response) {
                     if (!response.isErroneous()) {
+                        $rootScope.$emit('entrenchNbArchives', 1);
                         $rootScope.$emit('changeLimit', true);
                         ctrl.updateScenarios();
                     } else {
@@ -48,6 +49,7 @@ angular.module('private.scenarist.archives.directives', [])
             if (scenarioToDelete) {
                 ScenariosModel.deleteArchivedScenario(scenarioToDelete).then(function(response) {
                     if (!response.isErroneous()) {
+                        $rootScope.$emit('entrenchNbArchives', 1);
                         $rootScope.$emit('changeScenarios', true);
                     } else {
                         response.flash();
