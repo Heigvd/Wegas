@@ -9,6 +9,7 @@ package com.wegas.core.rest;
 
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.persistence.game.DebugTeam;
@@ -18,15 +19,16 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.SecurityHelper;
-import java.util.Collection;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Collection;
 
 /**
- *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
@@ -40,7 +42,8 @@ public class PlayerController {
      */
     @EJB
     private UserFacade userFacade;
-
+    @Inject
+    private RequestManager requestManager;
     /**
      *
      */
@@ -58,7 +61,6 @@ public class PlayerController {
     private GameFacade gameFacade;
 
     /**
-     *
      * @param playerId
      * @return the player matching given id
      */
@@ -71,7 +73,6 @@ public class PlayerController {
     }
 
     /**
-     *
      * Returns ALL players in the server ....
      *
      * @param gameId
@@ -85,7 +86,6 @@ public class PlayerController {
     }
 
     /**
-     *
      * @param teamId
      * @return HTTP 201 with the team or 4xx if something went wrong
      */
@@ -102,14 +102,16 @@ public class PlayerController {
             if (!(teamToJoin instanceof DebugTeam)
                     && teamToJoin.getGame().getAccess() == Game.GameAccess.OPEN
                     && !teamToJoin.getGame().getProperties().getFreeForAll()) {
+                if (requestManager.tryLock("join-" + teamToJoin.getGameId() + "-" + currentUser.getId())) {
+                    Player existingPlayer = playerFacade.checkExistingPlayer(teamToJoin.getGameId(), currentUser.getId());
 
-                Player existingPlayer = playerFacade.checkExistingPlayer(teamToJoin.getGameId(), currentUser.getId());
+                    if (existingPlayer == null) {
+                        playerFacade.create(teamToJoin, currentUser);
 
-                if (existingPlayer == null) {
-                    playerFacade.create(teamToJoin, currentUser);
-
-                    return Response.status(Response.Status.CREATED).entity(teamToJoin).build();
+                        return Response.status(Response.Status.CREATED).entity(teamToJoin).build();
+                    }
                 }
+                return Response.status(Response.Status.CONFLICT).build();
             }
             //Not a joinable team (debugteam, closed game or individual game) or user already registerd within the game
             return Response.status(Response.Status.FORBIDDEN).build();
@@ -133,7 +135,6 @@ public class PlayerController {
     }
 
     /**
-     *
      * @param playerId
      * @return just deleted player
      */
