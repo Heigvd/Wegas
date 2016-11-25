@@ -6,127 +6,9 @@
 * Licensed under the MIT License
 */
 
-/*   Created on : 26-Mar-2015, 11:32:03
- *    Author     : Maxence Laurent (maxence.laurent at gmail.com)
+/*
+ * VariableEditor
  */
-
-
-.wegas-review-orchestrator .summary > div {
-    clear: both;
-    margin:10px;
-    position: relative;
-}
-.wegas-review-orchestrator .control-panel {
-    height: 125px;
-}
-
-.wegas-review-orchestrator .control-panel > * {
-    float: left;
-    display: block;
-    position: relative;
-}
-
-.wegas-review-orchestrator .control-panel .include-evicted {
-    margin:10px;
-    cursor: default;
-}
-
-.wegas-review-orchestrator .control-panel .include-evicted.enabled {
-    cursor: pointer;
-}
-
-.wegas-review-orchestrator .control-panel .include-evicted .checkbox {
-    background:none;
-    padding-top: 3px;
-    padding-bottom: 3px;
-    padding-left: 32px;
-}
-
-.wegas-review-orchestrator .control-panel .include-evicted .checkbox:before {
-    display:block;
-    position:absolute;
-    top:0px;
-    left:0px;
-    content:"";
-    width:24px;
-    height:24px;
-    background:none;
-    border:solid 1px #666666;
-    border-radius:4px;
-}
-
-.wegas-review-orchestrator .control-panel .include-evicted.selected .checkbox {
-    background:none;
-}
-
-.wegas-review-orchestrator .control-panel .include-evicted.selected .checkbox:before {
-    background:#ed6a3b;
-}
-
-.wegas-review-orchestrator .control-panel .state.current {
-    background-color: hsl(16, 83%, 58%);
-    color: #FFFDFD;
-}
-.wegas-review-orchestrator .control-panel .state h7{
-    display:block;
-    line-height: 1.5em;
-    font-variant:small-caps;
-    font-size: 1.5em;
-}
-
-.wegas-review-orchestrator .control-panel .state {
-    background-color: #bbb;
-    width: 200px;
-    border-radius: 5px;
-    text-align: center;
-    border: 1px solid #999;
-    padding: 5px 10px 10px;
-    height: 100%;
-    color: #999;
-}
-
-.wegas-review-orchestrator .control-panel .transition {
-    height: calc(100% + 17px);
-    position: relative;
-}
-
-.wegas-review-orchestrator .control-panel .transition span{
-    color: #DDDDDD;
-    padding-top: 46px;
-    position: relative;
-}
-
-.wegas-review-orchestrator .control-panel .transition span.active{
-    color: #446d71;
-}
-
-.wegas-review-orchestrator .control-panel .transition span.active:hover{
-    color: #40868d;
-    cursor:pointer;
-}
-
-.wegas-review-orchestrator .summary table thead tr:nth-child(2) th {
-    font-weight : 400;
-    font-size : 0.9em;
-}
-
-.wegas-review-orchestrator .summary table th {
-    max-width: 80px;
-    white-space: normal;
-    background-image: none;
-    /* background-color : azure; */
-    border-bottom: 1px solid #cbcbcb;
-    vertical-align: middle;
-}
-.wegas-review-orchestrator .summary table th div {
-    text-overflow: ellipsis;
-    /* position: relative; */
-    /* display: block; */
-}
-
-.wegas-review-orchestrator .summary table td {
-    width: 80px;
-}
 
 .wegas-review-variableeditor .wegas-review-header {
     margin-bottom: 20px;
@@ -136,6 +18,9 @@
     margin-top: 20px;
 }
 
+/*
+ * Review Widget
+ */
 .wegas-review-widget-content {
     margin: 5px;
 }
@@ -222,9 +107,166 @@
     width: auto;
 }
 
+
 /*
  * Orchestrator 
  */
+
+
+.wegas-review-orchestrator-content > div{
+    margin-left:20px;
+}
+
+.wegas-review-orchestrator,
+.yui3-skin-sam .wegas-review-orchestrator .yui3-datatable-header
+{
+    color: #212121;
+}
+
+.wegas-review-orchestrator .summary > div {
+    clear: both;
+    margin-top:10px;
+    margin-bottom:10px;
+    position: relative;
+    margin-bottom: 40px;
+}
+.wegas-review-orchestrator .summary > div.header {
+    margin-bottom: 10px;
+}
+
+.wegas-review-orchestrator h1,
+.wegas-review-orchestrator h2,
+.wegas-review-orchestrator h3 {
+    color: #446d71
+}
+
+.wegas-review-orchestrator .header{
+    position:relative;    
+}
+
+.wegas-review-orchestrator .header h2 {
+    left: 0;
+    display: inline-block;
+}
+
+.wegas-review-orchestrator .header .refresh {
+    right :0;
+    position: absolute;
+    cursor: pointer;
+}
+
+.wegas-review-orchestrator .control-panel {
+    height: 125px;
+}
+
+.wegas-review-orchestrator .control-panel > * {
+    float: left;
+    display: block;
+    position: relative;
+}
+
+.wegas-review-orchestrator .properties .include-evicted {
+    margin:10px;
+    cursor: default;
+}
+
+.wegas-review-orchestrator .properties .include-evicted.enabled {
+    cursor: pointer;
+}
+
+.wegas-review-orchestrator .properties .include-evicted .checkbox {
+    background:none;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 20px;
+}
+
+.wegas-review-orchestrator .properties .include-evicted .checkbox:before {
+    display:block;
+    position:absolute;
+    /*top:0px;*/
+    /*left:0px;*/
+    content:"";
+    width:15px;
+    height:15px;
+    background:none;
+    border:solid 1px #666666;
+    border-radius:4px;
+}
+
+.wegas-review-orchestrator .properties .include-evicted.selected .checkbox {
+    background:none;
+}
+
+.wegas-review-orchestrator .properties .include-evicted.selected .checkbox:before {
+    background:#ed6a3b;
+}
+
+.wegas-review-orchestrator .control-panel .state.current {
+    background-color: hsl(16, 83%, 58%);
+    color: #FFFDFD;
+}
+.wegas-review-orchestrator .control-panel .state h7{
+    display:block;
+    line-height: 1.5em;
+    font-variant:small-caps;
+    font-size: 1.5em;
+}
+
+.wegas-review-orchestrator .control-panel .state {
+    background-color: #bbb;
+    width: 200px;
+    border-radius: 5px;
+    text-align: center;
+    border: 1px solid #999;
+    padding: 5px 10px 10px;
+    height: 100%;
+    color: #999;
+}
+
+.wegas-review-orchestrator .control-panel .transition {
+    height: calc(100% + 17px);
+    position: relative;
+}
+
+.wegas-review-orchestrator .control-panel .transition span{
+    color: #DDDDDD;
+    padding-top: 46px;
+    position: relative;
+}
+
+.wegas-review-orchestrator .control-panel .transition span.active{
+    color: #446d71;
+}
+
+.wegas-review-orchestrator .control-panel .transition span.active:hover{
+    color: #40868d;
+    cursor:pointer;
+}
+
+.wegas-review-orchestrator .summary table thead tr:nth-child(2) th {
+    font-weight : 400;
+    font-size : 0.9em;
+}
+
+.wegas-review-orchestrator .summary table th {
+    max-width: 80px;
+    white-space: normal;
+    background-image: none;
+    /* background-color : azure; */
+    border-bottom: 1px solid #cbcbcb;
+    vertical-align: middle;
+}
+.wegas-review-orchestrator .summary table th div {
+    text-overflow: ellipsis;
+    /* position: relative; */
+    /* display: block; */
+}
+
+.wegas-review-orchestrator .summary table td {
+    width: 80px;
+}
+
 .wegas-review-orchestrator .summary table tr > * {
     /* border: 1px groove; */
 }
@@ -323,6 +365,7 @@
     color: rgb(28, 28, 28);
 }
 
+.wegas-review-orchestrator .yui3-datatable-cell span.gradeeval-data,
 .wegas-review-orchestrator .yui3-datatable-cell span.texteval-data,
 .wegas-review-orchestrator .yui3-datatable-col-team-name {
     cursor: pointer;
@@ -346,7 +389,6 @@
     padding:0px 0px 0px 0px;
     box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
     color:#333333;
-    min-width: 460px;
     max-width: 460px;
 }
 
@@ -368,4 +410,69 @@
     padding:16px 24px 12px 24px;
 }
 
+/*
+ * ReviewTreeView
+ */
 
+.wegas-review-treeview,
+.wegas-review-treeview .wegas-review-treeview-content {
+    width: 100%;
+    height: 100%;
+    overflow-y:  hidden;
+}
+
+.wegas-review-treeview .wegas-review-tv {
+    width: 25%;
+    height:100%;
+    overflow-y:  auto;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.wegas-review-treeview .wegas-review-tv .title > div {
+    font-variant: small-caps;
+    font-size: 1.2em;
+}
+
+.wegas-review-treeview .wegas-review-tv .unread{
+    font-weight: bold;
+}
+
+.wegas-review-treeview .wegas-review-treeview__panel {
+    /* width: calc(100% - 300px); */
+    width: 75%;
+    height:100%;
+    display: inline-block;
+}
+
+.wegas-review-treeview .wegas-review-treeview__panel .wegas-text,
+.wegas-review-treeview .wegas-review-treeview__panel .wegas-review-widget {
+    border-left: 1px solid lightgray;
+    box-sizing: border-box;
+}
+
+.wegas-review-treeview .wegas-review-treeview__panel .wegas-absolutelayout-content {
+    overflow-y:  auto;
+}
+
+.wegas-review-treeview .yui3-treeleaf-content {
+    cursor: pointer;
+}
+
+/*.wegas-review-treeview .yui3-treenode-content-icon,
+.wegas-review-treeview .yui3-treeleaf-content-icon,
+.wegas-review-treeview .yui3-treenode-content-toggle {
+    display: none;
+}
+*/
+
+.wegas-review-treeview .wegas-absolutelayout-content:empty:before{
+    content: "";
+}
+
+.wegas-app-default .wegas-review-orchestrator .ct-series-a .ct-bar,
+.wegas-app-default .wegas-review-orchestrator .ct-series-a .ct-line,
+.wegas-app-default .wegas-review-orchestrator .ct-series-a .ct-point,
+.wegas-app-default .wegas-review-orchestrator .ct-series-a .ct-slice-donut {
+    stroke: #ed6a3b;
+}

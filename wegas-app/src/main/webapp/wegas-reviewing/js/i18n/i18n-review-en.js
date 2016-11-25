@@ -16,7 +16,7 @@ YUI.add("wegas-i18n-review-en", function(Y) {
     Y.Wegas.I18n.register("wegas-i18n-review", "en", {
         review: {
             orchestrator: {
-                mainTitle: "Summary",
+                mainTitle: "Peer Review Process for \"{{variableName}}\"",
                 includeEvicted: "Allow authors who didn't wrote anything to receive something to review",
                 state: {
                     edition: {
@@ -36,6 +36,7 @@ YUI.add("wegas-i18n-review-en", function(Y) {
                         description: "The reviewing process has been completed<br /><br /><i>The authors take acquaintance of comments on reviews they've done</i>"
                     }
                 },
+                properties: "properties",
                 overview: "overview",
                 reviews: "reviews",
                 comments: "comments",
@@ -61,8 +62,10 @@ YUI.add("wegas-i18n-review-en", function(Y) {
             },
             tabview: {
                 emptyness_message: "No review available yet",
-                toReview: "Text to review",
-                toComment: "Received feedback"
+                toReviewTitle: "Review your peers",
+                toReview: "Submission",
+                toCommentTitle: "Reviews of your submission",
+                toComment: "Reviewer"
             },
             editor: {
                 given: "Given: ",
@@ -74,7 +77,11 @@ YUI.add("wegas-i18n-review-en", function(Y) {
                 ask_comment: "What do you think about your reviewer feedback?",
                 comment: "Your thoughts about feedback your reviewer feedback",
                 author_comment: "What author thinks about your feedback:",
-                noValueProvided: "No evaluation provided"
+                noValueProvided: "No evaluation provided",
+                didNotProvide: "did not provide any evaluation",
+                didNotProvidePluralized: "did not provide evaluation",
+                noTeamProvide: "no team has provide evaluation",
+                noPlayerProvide: "no player has provide evaluation"
             }
         }
     });
