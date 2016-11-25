@@ -23,6 +23,7 @@ angular.module('wegas.directives.search.users', [
                         excludes = pt.exclude;
 
                     function highlight(str, term) {
+                        if (! str) return "";
                         var highlightRegex = new RegExp('(' + term + ')', 'gi');
                         return str.replace(highlightRegex,
                             '<strong>$1</strong>');
