@@ -65,7 +65,11 @@ public class IntegrationTest {
         glassfishProperties.setPort("http-listener-1", 5454);
         glassfishProperties.setPort("http-listener-2", 5353);
         //glassfishProperties.setInstanceRoot("./src/test/glassfish/domains/domain1");
-        glassfishProperties.setConfigFileURI((new File("./src/test/glassfish/domains/domain1/config/domain.xml")).toURI().toString());
+        String domainConfig = (new File("./src/test/glassfish/domains/domain1/config/domain.xml")).toURI().toString();
+        
+        System.out.println("DOMAIN.XML:" + domainConfig);
+        
+        glassfishProperties.setConfigFileURI(domainConfig);
         //glassfishProperties.setConfigFileReadOnly(false);
         TestHelper.resetTestDB();
         glassfish = GlassFishRuntime.bootstrap(bootstrapProperties).newGlassFish(glassfishProperties);
