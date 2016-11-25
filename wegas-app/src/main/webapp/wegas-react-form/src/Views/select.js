@@ -35,7 +35,7 @@ function SelectView(props) {
     return (
         <select
             className={classNames(props.view.className, styles.select)}
-            value={props.value}
+            value={props.value || ''}
             onChange={onChange}
         >
             {menuItems}
