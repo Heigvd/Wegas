@@ -14,6 +14,7 @@ import FlatVariableSelect from './Views/Interacting/flatvariableselect';
 import PluginList from './Views/Interacting/pluginlist';
 import EntityArrayFieldSelect from './Views/Interacting/entityarrayfieldselect';
 import PageSelect from './Views/Interacting/pageselect';
+import TreeVariableSelect from './Views/Interacting/treevariableselect';
 import { VariableStatement, MultiVariableMethod, MultiVariableCondition } from './Script/index';
 
 Form.setDefaultWidgets({
@@ -35,5 +36,6 @@ Form.setDefaultWidgets({
     pageselect: PageSelect,
     variableselect: VariableStatement,
     script: MultiVariableMethod,
-    scriptcondition: MultiVariableCondition
+    scriptcondition: MultiVariableCondition,
+    treevariableselect: TreeVariableSelect
 });

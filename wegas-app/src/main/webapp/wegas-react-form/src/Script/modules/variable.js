@@ -50,7 +50,7 @@ export const schema = optView => ({
     type: 'string',
     required: 'true',
     view: Object.assign({}, optView, {
-        type: 'flatvariableselect'
+        type: 'treevariableselect'
     })
 });
 /**
