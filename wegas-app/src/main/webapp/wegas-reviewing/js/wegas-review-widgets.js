@@ -163,8 +163,8 @@ YUI.add("wegas-review-widgets", function(Y) {
             this.get(CONTENTBOX).delegate("click", this.syncUI, ".header .refresh", this);
             //this.datatable.after("synched", this.syncSummary, this);
         },
-        onEvalClick: function(e, separator) {
-            var cell, teamId, data, title, body, i, dt, evId, token, missing = 0;
+        onEvalClick: function(e, separator, sortFn) {
+            var cell, teamId, data, fData, title, body, i, dt, evId, token, missing = 0;
             for (dt in this.datatables) {
                 cell = this.datatables[dt].getRecord(e.currentTarget);
                 if (cell) {
@@ -182,18 +182,28 @@ YUI.add("wegas-review-widgets", function(Y) {
                 }).title;
 
                 if (data) {
-                    body = "";
-                    data.sort(Y.Array.numericSort);
+                    fData = [];
                     for (i = 0; i < data.length; i += 1) {
                         if (data[i]) {
-                            body += data[i];
-                            if (i < data.length - 1) {
-                                body += separator;
-                            }
+                            fData.push(data[i]);
                         } else {
                             missing++;
                         }
                     }
+
+                    if (sortFn) {
+                        fData.sort(sortFn);
+                    }
+
+                    body = "";
+                    for (i = 0; i < fData.length; i += 1) {
+                        body += fData[i];
+                        if (i < fData.length - 1) {
+                            body += separator;
+                        }
+                    }
+
+
                     body += this.generateMissingText(missing, data.length);
                 } else {
                     body = "<i>" + I18n.t("review.orchestrator.notAvailableYet") + "</i>";
@@ -227,7 +237,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             return text;
         },
         onGradeEvalClick: function(e) {
-            this.onEvalClick(e, "<br />");
+            this.onEvalClick(e, "<br />", Y.Array.numericSort);
         },
         onTextEvalClick: function(e) {
             this.onEvalClick(e, "<hr />");
