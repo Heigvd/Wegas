@@ -176,6 +176,7 @@
 
 .wegas-review-orchestrator .properties .include-evicted .checkbox {
     background:none;
+    display: inline-block;
     padding-top: 3px;
     padding-bottom: 3px;
     padding-left: 20px;
@@ -192,6 +193,7 @@
     background:none;
     border:solid 1px #666666;
     border-radius:4px;
+    margin-left: -22px;
 }
 
 .wegas-review-orchestrator .properties .include-evicted.selected .checkbox {
