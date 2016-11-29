@@ -120,14 +120,16 @@ public class ImpactPrinter {
                 UIHelper.endDiv(writer);
             }
 
-            pattern = Pattern.compile("(VariableDescriptorFacade|Variable)\\.find\\(gameModel, \"(.*)\"\\)\\.(.*)\\(self, *(.*)\\).*;$");
+            //pattern = Pattern.compile("(VariableDescriptorFacade|Variable)\\.find\\(gameModel, \"(.*)\"\\)\\.(.*)\\(self, *(.*)\\).*;$");
+            pattern = Pattern.compile("(?:(?:(?:VariableDescriptorFacade|Variable)\\.find\\(gameModel, \"(.*)\"\\))|(.*))\\.(.*)\\((?:self, )* *(.*)\\).*;$");
 
             Matcher matcher = pattern.matcher(str);
 
             if (matcher.matches()) {
                 if (matcher.matches()) {
                     //String group = matcher.group(0);
-                    String variableAlias = matcher.group(2);
+                    String variableAlias = matcher.group(1);
+                    String shortcut = matcher.group(2);
                     String operator = matcher.group(3);
                     String value = matcher.group(4);
 
@@ -137,13 +139,38 @@ public class ImpactPrinter {
                     if ("sendMessage".equals(operator)) { // e-mail like message
                         String[] args;
                         args = value.split("(?s)[,](?=(?:(?:.*?(?<!\\\\)\"){2})*[^\"]*$)"); // arg separation
-                        UIHelper.printMessage(context, writer, variableAlias, args[0], args[1], null, args[2], null);
-                                                              // TO           FROM     SUBJECT  DATE    BODY
-                    } else if ("sendDatedMessage".equals(operator)) { // dated e-mail like message
+                        switch (args.length) {
+                            case 3:
+                                //                                     TO             FROM     SUBJECT  DATE  BODY,    TOKEN, ATTACHEMENTS
+                                UIHelper.printMessage(context, writer, variableAlias, args[0], args[1], null, args[2], null, null);
+                                break;
+                            case 4:
+                                //                                     TO             FROM     SUBJECT  DATE  BODY,    TOKEN, ATTACHEMENTS
+                                UIHelper.printMessage(context, writer, variableAlias, args[0], args[1], null, args[2], null, null);
+                                break;
+                            default:
+                                //                                     TO             FROM     SUBJECT  DATE  BODY,    TOKEN, ATTACHEMENTS
+                                UIHelper.printMessage(context, writer, variableAlias, args[0], args[2], args[1], args[3], args[4], null);
+                                break;
+                        }
+                    } else if ("sendMessageWithToken".equals(operator)) { // dated e-mail like message
                         String[] args;
                         args = value.split("(?s)[,](?=(?:(?:.*?(?<!\\\\)\"){2})*[^\"]*$)"); // arg separation
-                        UIHelper.printMessage(context, writer, variableAlias, args[0], args[2], args[1], args[3], null);
-                                                              // TO           FROM     SUBJECT  DATE    BODY
+                        UIHelper.printMessage(context, writer, variableAlias, args[0], args[1], null, args[2], args[4], null);
+                        //                                      TO           FROM     SUBJECT  DATE    BODY
+                    } else if ("sendDatedMessage".equals(operator)) { // dated e-mail like message
+                        String[] args;
+                        args = value.split("(?"
+                                + "s)[,](?=(?:(?:.*?(?<!\\\\)\"){2})*[^\"]*$)"); // arg separation
+                        switch (args.length) {
+                            case 5:
+                                //                                     TO             FROM     SUBJECT  DATE  BODY,    TOKEN, ATTACHEMENTS
+                                UIHelper.printMessage(context, writer, variableAlias, args[0], args[2], args[1], args[3], null, null);
+                                break;
+                            default:
+                                //                                     TO             FROM     SUBJECT  DATE  BODY,    TOKEN, ATTACHEMENTS
+                                UIHelper.printMessage(context, writer, variableAlias, args[0], args[2], args[1], args[3], null, null);
+                        }
                     } else {
                         String var = variableAlias;
                         String op;
