@@ -154,7 +154,7 @@ var ReviewHelper = (function() {
             structure.items.push({"id": evDescriptor.getId() + "-cc", "label": I18n.t("cc"), formatter: formatToFixed2});
             structure.items.push({"id": evDescriptor.getId() + "-data", "label": I18n.t("data"), formatter: '<span class="texteval-data"><i data-ref="' + evDescriptor.getId() + '-data" class="fa fa-info-circle"></i></span>'});
         } else if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.GradeDescriptor) {
-            structure.items.push({"id": evDescriptor.getId() + "-mean", "label": I18n.t("mean"), formatter: formatToFixed2});
+            structure.items.push({"id": evDescriptor.getId() + "-mean", "label": I18n.t("mean"), formatter: '<span class="gradeeval-data">{value} <i data-ref="' + evDescriptor.getId() + '-data" class="fa fa-info-circle"></i></span>'});
             //structure.items.push({"id": evDescriptor.getId() + "-median", "label": "median", formatter: null});
             structure.items.push({"id": evDescriptor.getId() + "-sd", "label": I18n.t("sd"), formatter: formatToFixed2});
         } else if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.CategorizedEvaluationDescriptor) {
@@ -175,9 +175,9 @@ var ReviewHelper = (function() {
             entry[summary.id + "-data"] = values;
         } else if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.GradeDescriptor) {
             summary = getGradeSummary(values, evDescriptor, true);
-            entry[summary.id + "-mean"] = summary.mean;
-            entry[summary.id + "-median"] = summary.median;
+            entry[summary.id + "-mean"] = (summary.mean.toFixed ? summary.mean.toFixed(2) : summary.mean);
             entry[summary.id + "-sd"] = summary.sd;
+            entry[summary.id + "-data"] = values;
         } else if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.CategorizedEvaluationDescriptor) {
             summary = getCategorizationSummary(values, evDescriptor, true);
             for (k in summary.histogram) {

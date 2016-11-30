@@ -15,7 +15,7 @@ YUI.add("wegas-i18n-review-fr", function(Y) {
     Y.Wegas.I18n.register("wegas-i18n-review", "fr", {
         review: {
             orchestrator: {
-                mainTitle: "Résumé",
+                mainTitle: "Processus d'évaluations croisées pour \"{{variableName}}\"",
                 includeEvicted: "Permettre aux auteurs n'ayant pas fourni de données à examiner de recevoir quelques chose à évaluer",
                 state: {
                     edition: {
@@ -35,6 +35,7 @@ YUI.add("wegas-i18n-review-fr", function(Y) {
                         description: "Le processus de révision est terminé<br /><br /><i>Les pairs prennent connaissance des commentaires qui ont été faits à propos de leurs avis</i>"
                     }
                 },
+                properties: "propriétés",
                 overview: "aperçu",
                 reviews: "feedbacks",
                 comments: "commentaires",
@@ -60,8 +61,10 @@ YUI.add("wegas-i18n-review-fr", function(Y) {
             },
             tabview: {
                 emptyness_message: "Aucune évaluation n'est actuellement visible",
-                toReview: "Texte à évaluer",
-                toComment: "Feedback reçu"
+                toReviewTitle: "Évaluer vos pairs",
+                toReview: "Soumission",
+                toCommentTitle: "Avis concernant votre sousmission",
+                toComment: "Avis"
             },
             editor: {
                 given: "Selon : ",
@@ -74,7 +77,11 @@ YUI.add("wegas-i18n-review-fr", function(Y) {
                 comment: "Ce que vous pensez du feedback reçu",
                 author_comment: "Ce que l'auteur pense de votre feedback",
                 oob: "Votre note ",
-                noValueProvided: "Aucune évaluation n'a été fournie"
+                noValueProvided: "Aucune évaluation n'a été fournie",
+                didNotProvide: "n'a pas fourni d'évaluation",
+                didNotProvidePluralized: "n'ont pas fourni d'évaluation",
+                noTeamProvide: "aucune équipe n'a fourni d'évaluation",
+                noPlayerProvide: "aucun joueur n'a fourni d'évaluation"
             }
         }
     });

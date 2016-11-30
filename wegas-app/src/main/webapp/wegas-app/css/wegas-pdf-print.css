@@ -310,7 +310,33 @@ div.wegas-pdf-folder {
     border-bottom: 1px dashed rgb(129, 129, 129);
 }
 
-div.wegas-pdf-variable-container, div.wegas-pdf-message-container {
+div.wegas-pdf-message-container {
+    padding-top: 5px;
+}
+
+div.wegas-pdf-message-container > .wegas-pdf-property,
+div.wegas-pdf-message-container .wegas-pdf-message-header{
+    border :1px solid grey;
+    box-sizing: border-box;
+    margin-left:10px;
+}
+
+div.wegas-pdf-message-container .wegas-pdf-message-header{
+    border-bottom: none;
+}
+
+.wegas-variable-history div.wegas-pdf-message-container > .wegas-pdf-property,
+.wegas-variable-history div.wegas-pdf-message-container .wegas-pdf-message-header{
+    border: none;
+}
+
+div.wegas-pdf-message-container .wegas-pdf-message-container-title,
+div.wegas-pdf-message-container div.wegas-pdf-message-firstline {
+    padding: 0px;
+}
+
+
+div.wegas-pdf-variable-container{
     padding-top: 5px;
     margin: 0px 5px 0px 5px;
 }
@@ -335,8 +361,9 @@ span.wegas-pdf-property-value {
     font-weight: 700;
 }
 
-
+.wegas-variable-history .wegas-pdf-message-container-title,
 .wegas-variable-history .wegas-pdf-variable-title.wegas-pdf-inboxdescriptor,
+.wegas-variable-history .wegas-pdf-message-date .wegas-pdf-property-key,
 .wegas-variable-history .wegas-pdf-message-subject,
 .wegas-variable-history .wegas-pdf-message-from {
     display: none;

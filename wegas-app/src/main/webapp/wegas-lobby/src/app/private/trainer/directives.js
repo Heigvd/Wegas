@@ -12,11 +12,12 @@ angular.module('private.trainer.directives', [
         "use strict";
         var ctrl = this,
             initMaxSessionsDisplayed = function() {
-                if (ctrl.sessions.length > 22) {
-                    ctrl.maxSessionsDisplayed = 20;
-                } else {
-                    ctrl.maxSessionsDisplayed = ctrl.sessions.length;
-                }
+                /*if (ctrl.sessions.length > 22) {
+                 ctrl.maxSessionsDisplayed = 20;
+                 } else {
+                 ctrl.maxSessionsDisplayed = ctrl.sessions.length;
+                 }*/
+                ctrl.maxSessionsDisplayed = ctrl.sessions.length;
             },
             updateDisplaySessions = function() {
                 if (ctrl.maxSessionsDisplayed === null) {
@@ -37,7 +38,7 @@ angular.module('private.trainer.directives', [
         ctrl.maxSessionsDisplayed = null;
 
         ctrl.updateSessions = function(updateDisplay) {
-            var hideScrollbarDuringInitialRender = (ctrl.sessions.length===0);
+            var hideScrollbarDuringInitialRender = (ctrl.sessions.length === 0);
             if (hideScrollbarDuringInitialRender) {
                 $('#trainer-sessions-list').css('overflow-y', 'hidden');
             }
@@ -50,14 +51,16 @@ angular.module('private.trainer.directives', [
                     updateDisplaySessions();
                 }
                 if (hideScrollbarDuringInitialRender) {
-                    $timeout(function () { $('#trainer-sessions-list').css('overflow-y', 'auto'); }, 1000);
+                    $timeout(function() {
+                        $('#trainer-sessions-list').css('overflow-y', 'auto');
+                    }, 1000);
                 }
             });
-            if (updateDisplay) {
+            /*if (updateDisplay) {
                 SessionsModel.countArchivedSessions().then(function(response) {
                     ctrl.nbArchives = response.data;
                 });
-            }
+            }*/
         };
 
         ctrl.editAccess = function(sessionToSet) {
@@ -71,35 +74,31 @@ angular.module('private.trainer.directives', [
         };
 
         ctrl.archiveSession = function(sessionToArchive) {
-            $('#archive-'+sessionToArchive.id).removeClass('button--archive').addClass('busy-button');
+            $('#archive-' + sessionToArchive.id).removeClass('button--archive').addClass('busy-button');
             if (sessionToArchive) {
                 SessionsModel.archiveSession(sessionToArchive).then(function(response) {
                     if (!response.isErroneous()) {
                         ctrl.updateSessions();
-                        $rootScope.$emit('changeArchives', true);
+                        $rootScope.$emit('changeSessionsArchives', 1);
                     } else {
                         response.flash();
                     }
-                    $timeout(function(){
-                        $('#archive-'+sessionToArchive.id).removeClass('busy-button').addClass('button--archive');
+                    $timeout(function() {
+                        $('#archive-' + sessionToArchive.id).removeClass('busy-button').addClass('button--archive');
                     }, 500);
                 });
             } else {
                 $translate('COMMONS-SCENARIOS-NO-SCENARIO-FLASH-ERROR').then(function(message) {
                     Flash.danger(message);
-                    $timeout(function(){
-                        $('#archive-'+sessionToArchive.id).removeClass('busy-button').addClass('button--archive');
+                    $timeout(function() {
+                        $('#archive-' + sessionToArchive.id).removeClass('busy-button').addClass('button--archive');
                     }, 500);
                 });
             }
         };
 
-        $rootScope.$on('changeArchives', function(e, hasNewData) {
-            if (hasNewData) {
-                SessionsModel.countArchivedSessions().then(function(response) {
-                    ctrl.nbArchives = response.data;
-                });
-            }
+        $rootScope.$on('changeSessionsArchives', function(e, count) {
+            ctrl.nbArchives += count;
         });
 
         $rootScope.$on('changeSessions', function(e, hasNewData) {
@@ -111,19 +110,17 @@ angular.module('private.trainer.directives', [
         });
 
         $rootScope.$on('changeLimit', function(e, hasNewData) {
-            if (hasNewData) {
+            if (e.currentScope.currentRole === "TRAINER" && hasNewData) {
                 ctrl.updateSessions(true);
             }
         });
 
         /* Request data. */
         ctrl.updateSessions(true);
-        /*
-        // This is redundant with ctrl.updateSessions(true):
+
         SessionsModel.countArchivedSessions().then(function(response) {
             ctrl.nbArchives = response.data;
         });
-        */
     })
     .directive('trainerSessionsAdd', function(ScenariosModel, SessionsModel, Flash, $translate) {
         "use strict";
@@ -135,9 +132,9 @@ angular.module('private.trainer.directives', [
                 scope.scenarios = [];
                 scope.loadingScenarios = false;
                 var loadScenarios = function() {
-                    if (scope.scenarios.length==0) {
+                    if (scope.scenarios.length == 0) {
                         scope.loadingScenarios = true;
-                        ScenariosModel.getScenarios("LIVE").then(function (response) {
+                        ScenariosModel.getScenarios("LIVE").then(function(response) {
                             if (!response.isErroneous()) {
                                 scope.loadingScenarios = false;
                                 scope.scenarios = response.data;
@@ -160,7 +157,7 @@ angular.module('private.trainer.directives', [
 
                 scope.addSession = function() {
                     var button = $(element).find(".form__submit");
-                    if (scope.newSession.name==""){
+                    if (scope.newSession.name == "") {
                         $translate('COMMONS-SESSIONS-NO-NAME-FLASH-ERROR').then(function(message) {
                             Flash.warning(message);
                         });
@@ -227,4 +224,4 @@ angular.module('private.trainer.directives', [
             }
         };
     })
-;
+    ;

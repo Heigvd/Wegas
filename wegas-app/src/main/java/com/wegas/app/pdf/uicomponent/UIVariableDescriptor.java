@@ -642,7 +642,7 @@ public class UIVariableDescriptor extends UIComponentBase {
         UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, inbox.getDescription(), false, false);
 
         for (Message msg : instance.getMessages()) {
-            UIHelper.printMessage(context, writer, "", msg.getFrom(), msg.getSubject(), msg.getDate(), msg.getBody(), msg.getAttachements());
+            UIHelper.printMessage(context, writer, "", msg.getFrom(), msg.getSubject(), msg.getDate(), msg.getBody(), msg.getToken(), msg.getAttachements());
         }
 
         UIHelper.endDiv(writer);

@@ -16,7 +16,7 @@ YUI.add("wegas-review-widgets", function(Y) {
     var CONTENTBOX = "contentBox", WIDGET = "widget", PAGEID = "pageId",
         Wegas = Y.Wegas, ReviewVariableEditor, pageloaderErrorMessageClass = "wegas-pageloader-error",
         SUBPAGE = "wegas-review-subpage", BUTTON = "wegas-review-button",
-        ReviewOrchestrator, ReviewWidget, ReviewTabView,
+        ReviewOrchestrator, ReviewWidget, ReviewTabView, ReviewTreeView, ReviewTV,
         GradeInput, TextEvalInput, CategorizationInput;
 
     /**
@@ -30,8 +30,11 @@ YUI.add("wegas-review-widgets", function(Y) {
     ReviewOrchestrator = Y.Base.create("wegas-review-orchestrator", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         /** @lends Y.Wegas.ReviewOrchestrator# */
         CONTENT_TEMPLATE: "<div>" +
-            "<div class=\"summary\"><h1>" + I18n.t("review.orchestrator.mainTitle") +
-            "<span class=\"refresh\"></span></h1>" +
+            "<div class=\"summary\">" +
+            "<div class=\"header\">" +
+            "<h2>" + I18n.t("review.orchestrator.mainTitle") + "</h2>" +
+            "<span class=\"refresh\"></span>" +
+            "</div>" +
             "<div class=\"control-panel\">" +
             "<div class=\"state not-started\">" +
             "<h7>" + I18n.t("review.orchestrator.state.edition.title") + "</h7>" +
@@ -53,6 +56,8 @@ YUI.add("wegas-review-widgets", function(Y) {
             I18n.t("review.orchestrator.state.completed.description") +
             "</div>" +
             "<div style=\"clear: both;\"></div>" +
+            "</div>" +
+            "<div class=\"properties\"><h2>" + I18n.t("review.orchestrator.properties").capitalize() + "</h2>" +
             "<div class=\"include-evicted\">" +
             "<span class=\"checkbox\">" + I18n.t("review.orchestrator.includeEvicted") +
             "</span>" +
@@ -93,11 +98,13 @@ YUI.add("wegas-review-widgets", function(Y) {
             var prd = this.get("variable.evaluated"), ctx;
             ctx = this;
             this.refreshButton = new Y.Button({
-                label: "<span class=\"fa fa-refresh\"></span>",
+                label: "force update <i class=\"fa fa-refresh\"></i>",
                 //label: "<span class=\"wegas-icon wegas-icon-refresh\"></span>",
                 visible: true
                     //}).render(this.get(CONTENTBOX));
             }).render(this.get(CONTENTBOX).one(".refresh"));
+
+            this.get("contentBox").one(".header h2").setContent(I18n.t("review.orchestrator.mainTitle", {variableName: prd.get("label")}));
 
             this.request = "ReviewHelper.summarize('" + prd.get("name") + "');";
         },
@@ -141,8 +148,9 @@ YUI.add("wegas-review-widgets", function(Y) {
             this.get(CONTENTBOX).delegate("click", this.onTeamNameClick, ".yui3-datatable-col-team-name", this);
 
             this.get(CONTENTBOX).delegate("click", this.onTextEvalClick, ".yui3-datatable-cell span.texteval-data", this);
+            this.get(CONTENTBOX).delegate("click", this.onGradeEvalClick, ".yui3-datatable-cell span.gradeeval-data", this);
 
-            this.get(CONTENTBOX).delegate("click", this.onIncludeEvictedClick, ".control-panel .include-evicted.enabled", this);
+            this.get(CONTENTBOX).delegate("click", this.onIncludeEvictedClick, ".properties .include-evicted.enabled", this);
 
             /*this.handlers.push(Y.Wegas.Facade.Variable.after("updatedDescriptor", function(e) {
              var question = this.get("variable.evaluated");
@@ -151,11 +159,12 @@ YUI.add("wegas-review-widgets", function(Y) {
              }
              }, this));*/
 
-            this.refreshButton.on("click", this.syncUI, this);
+            //this.refreshButton.on("click", this.syncUI, this);
+            this.get(CONTENTBOX).delegate("click", this.syncUI, ".header .refresh", this);
             //this.datatable.after("synched", this.syncSummary, this);
         },
-        onTextEvalClick: function(e) {
-            var cell, teamId, data, title, body, i, dt, evId, token;
+        onEvalClick: function(e, separator, sortFn) {
+            var cell, teamId, data, fData, title, body, i, dt, evId, token, missing = 0;
             for (dt in this.datatables) {
                 cell = this.datatables[dt].getRecord(e.currentTarget);
                 if (cell) {
@@ -173,13 +182,29 @@ YUI.add("wegas-review-widgets", function(Y) {
                 }).title;
 
                 if (data) {
-                    body = "";
-                    for (i = data.length - 1; i >= 0; i -= 1) {
-                        body += (data[i] ? data[i] : "<I>" + I18n.t("review.editor.noValueProvided") + "</i>");
-                        if (i > 0) {
-                            body += "<hr />";
+                    fData = [];
+                    for (i = 0; i < data.length; i += 1) {
+                        if (data[i]) {
+                            fData.push(data[i]);
+                        } else {
+                            missing++;
                         }
                     }
+
+                    if (sortFn) {
+                        fData.sort(sortFn);
+                    }
+
+                    body = "";
+                    for (i = 0; i < fData.length; i += 1) {
+                        body += fData[i];
+                        if (i < fData.length - 1) {
+                            body += separator;
+                        }
+                    }
+
+
+                    body += this.generateMissingText(missing, data.length);
                 } else {
                     body = "<i>" + I18n.t("review.orchestrator.notAvailableYet") + "</i>";
                 }
@@ -191,6 +216,31 @@ YUI.add("wegas-review-widgets", function(Y) {
                 this.currentTarget = null;
             }
             e.halt(true);
+        },
+        generateMissingText: function(nbMissing, total) {
+            var subject, text = "";
+            if (nbMissing) {
+                subject = this._freeForAll ? I18n.t("wegas.player") : I18n.t("wegas.team");
+                text = "<i>";
+                if (nbMissing === total) {
+                    text += I18n.t("review.editor.no" + (this._freeForAll ? "Player" : "Team") + "Provide");
+                } else {
+                    text = "<hr /><i>" + nbMissing + " ";
+                    if (nbMissing > 1) {
+                        text += subject.pluralize() + " " + I18n.t("review.editor.didNotProvidePluralized");
+                    } else {
+                        text += subject + " " + I18n.t("review.editor.didNotProvide");
+                    }
+                }
+                text += "</i>";
+            }
+            return text;
+        },
+        onGradeEvalClick: function(e) {
+            this.onEvalClick(e, "<br />", Y.Array.numericSort);
+        },
+        onTextEvalClick: function(e) {
+            this.onEvalClick(e, "<hr />");
         },
         onTeamNameClick: function(e) {
             var cell, teamId, dt, token;
@@ -235,7 +285,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             this.syncIncludeEvicted();
         },
         syncIncludeEvicted: function() {
-            this.get(CONTENTBOX).one(".control-panel .include-evicted").toggleClass("selected", this.get("variable.evaluated").get("includeEvicted"));
+            this.get(CONTENTBOX).one(".properties .include-evicted").toggleClass("selected", this.get("variable.evaluated").get("includeEvicted"));
         },
         onIncludeEvictedClick: function() {
             var prd = this.get("variable.evaluated");
@@ -248,6 +298,8 @@ YUI.add("wegas-review-widgets", function(Y) {
                 columns = {}, data = {}, formatter, nodeFormatter,
                 game, team, globalStatus, teamStatus, prd, childEntry,
                 group, item, i, j, teamId, entry, key, section;
+
+            this.refreshButton.get("contentBox").one("i").addClass("fa-spin");
 
             game = Y.Wegas.Facade.Game.cache.getCurrentGame();
             data = {
@@ -348,12 +400,12 @@ YUI.add("wegas-review-widgets", function(Y) {
             this.get(CONTENTBOX).one(".transition.close-review span").removeClass("active");
             this.get(CONTENTBOX).one(".transition.close-comment span").removeClass("active");
 
-            this.get(CONTENTBOX).one(".control-panel .include-evicted").removeClass("enabled");
+            this.get(CONTENTBOX).one(".properties .include-evicted").removeClass("enabled");
 
             switch (globalStatus) {
                 case "NOT_STARTED":
                     this.get(CONTENTBOX).one(".transition.start-review span").addClass("active");
-                    this.get(CONTENTBOX).one(".control-panel .include-evicted").addClass("enabled");
+                    this.get(CONTENTBOX).one(".properties .include-evicted").addClass("enabled");
                     this.get(CONTENTBOX).one(".state.not-started").addClass("current");
                     break;
                 case "REVIEWING":
@@ -383,6 +435,10 @@ YUI.add("wegas-review-widgets", function(Y) {
                 ctx.datatables[section].render(this.get(CONTENTBOX).one(".summary ." + section));
             }
             ctx.syncSummary();
+
+            Y.later(500, this, function() {
+                this.refreshButton.get("contentBox").one("i").removeClass("fa-spin");
+            });
         },
         addCell: function(table, content, td) {
             td = td || "td";
@@ -410,9 +466,9 @@ YUI.add("wegas-review-widgets", function(Y) {
 
             node = this.get(CONTENTBOX).one(".charts");
             node.setContent("");
-            node.append("<h1>" + I18n.t("review.orchestrator.charts").capitalize() + "</h1>");
-            node.append("<div class=\"feedback\"><h2>" + I18n.t("review.orchestrator.reviews").capitalize() + "</h2></div>");
-            node.append("<div class=\"comments\"><h2>" + I18n.t("review.orchestrator.comments").capitalize() + "</h2></div>");
+            //node.append("<h1>" + I18n.t("review.orchestrator.charts").capitalize() + "</h1>");
+            node.append("<div class=\"feedback\"><h2>" + I18n.t("review.orchestrator.charts").capitalize() + " " + I18n.t("review.orchestrator.reviews") + "</h2></div>");
+            node.append("<div class=\"comments\"><h2>" + I18n.t("review.orchestrator.charts").capitalize() + " " + I18n.t("review.orchestrator.comments") + "</h2></div>");
 
             this.buildCharts(prd.get("feedback").get("evaluations"), node.one(".feedback"), evalSummary);
             this.buildCharts(prd.get("fbComments").get("evaluations"), node.one(".comments"), evalSummary);
@@ -782,6 +838,9 @@ YUI.add("wegas-review-widgets", function(Y) {
     });
     Wegas.ReviewVariableEditor = ReviewVariableEditor;
 
+    ReviewTV = Y.Base.create("wegas-review-tv", Y.TreeView, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+    });
+    Y.Wegas.ReviewTV = ReviewTV;
 
     /**
      * @name Y.Wegas.ReviewTabView
@@ -794,242 +853,236 @@ YUI.add("wegas-review-widgets", function(Y) {
      * his thoughts about work done by others players. The second contains the reviews
      * written by others about the work of the current player.
      */
-    ReviewTabView = Y.Base.create("wegas-review-tabview", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
-        /** @lends Y.Wegas.ReviewTabView# */
-        // *** Lifecycle Methods *** //
-        CONTENT_TEMPLATE: null,
-        /**
-         * @function
-         * @private
-         * @description Set variable with initials values.
-         */
+    ReviewTreeView = Y.Base.create("wegas-review-treeview", Y.Widget,
+        [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         initializer: function() {
-            /**
-             * datasource from Y.Wegas.Facade.Variable
-             */
-            this.dataSource = Wegas.Facade.Variable;
-            this.tabView = new Y.TabView();
-            /**
-             * Reference to each used functions
-             */
-            this.handlers = [];
-            this.isRemovingTabs = false;
+            this.handlers = {};
         },
-        /**
-         * @function
-         * @private
-         * @description Render the TabView widget in the content box.
-         */
         renderUI: function() {
-            var cb = this.get(CONTENTBOX),
-                prd, pri;
+            this.destroyAll();
 
-            this.tabView.render(cb);
-            this.tabView.get("boundingBox").addClass("horizontal-tabview");
-            cb.append("<div style='clear:both'></div>");
+            this._treeview = new Y.Wegas.ReviewTV({
+            });
+            this._treeview.addTarget(this);
 
-            prd = this.get("variable.evaluated");
-            pri = prd.getInstance();
+            //this.plug(Y.Plugin.RememberExpandedTreeView);
 
-            if (pri.get("reviewState") === "NOT_STARTED") {
-                this.status = "EMPTY";
-                this.tabView.add(new Y.Tab({
-                    label: "",
-                    content: "<center><i><br /><br /><br />" + I18n.t("review.tabview.emptyness_message") + "</i></center>"
-                }));
-                this.tabView.selectChild(0);
-            }/* else {
-             this.status = "BUILT";
-             this.addReviews(pri);
-             }*/
+            this._panel = new Y.Wegas.AbsoluteLayout({
+                cssClass: "wegas-review-treeview__panel"
+            });
 
+            this.add(this._treeview);
+            this.add(this._panel);
+
+            //this.syncTree();
         },
         bindUI: function() {
-            this.tabView.after("selectionChange", this.onTabSelected, this);
-            //this.handlers.push(this.dataSource.after("update", this.syncUI, this));
-            this.handlers.push(Y.Wegas.Facade.Instance.after("updatedInstance", this.syncEntity, this));
-
+            this.handlers.update = Y.Wegas.Facade.Variable.after("update", this.syncUI, this);
+            this.handlers.tvClick = this._treeview.after("*:click", this.onTvClick, this);
 
         },
-        syncEntity: function(payload) {
-            var prd = this.get("variable.evaluated"),
-                pri = prd.getInstance(),
-                entity = payload.entity;
-            if (entity.get("@class") === pri.get("@class") && entity.get("id") === pri.get("id")) {
-                this.syncUI();
+        syncTree: function() {
+            var nodes = this._genTreeView();
+            if (nodes[1] && nodes[1].children.length === 0) {
+                nodes.pop();
             }
-        },
-        /**
-         * @function
-         * @private
-         * @description Clear and re-fill the TabView with reviews
-         * Display a message if there is not time to review (NOT_STARTED)
-         */
-        syncUI: function() {
-            var prd = this.get("variable.evaluated"),
-                pri = prd.getInstance();
-            //selectedTab = this.tabView.get('selection'),
-            //lastSelection = (selectedTab) ? selectedTab.get('index') : 0;
-
-            //this.hideOverlay();
-
-            if (this.status === "EMPTY" && pri.get("reviewState") !== "NOT_STARTED") {
-                this.status = "BUILT";
-                this.isRemovingTabs = true;
-                this.tabView.destroyAll();
-                this.isRemovingTabs = false;
-                this.addReviews(pri);
-            } else {
-                this.updateReviews(pri);
+            if (nodes[0] && nodes[0].children.length === 0) {
+                nodes.shift();
+                this._panel.destroyAll();
             }
+            this._treeview.destroyAll();
+            this._treeview.add(nodes);
+            this._treeview.syncUI();
+            this.updateTreeSelection();
         },
-        addReview: function(review, i, j) {
-            var tab;
+        updateTreeSelection: function() {
+            var currentReviewId, isReviewer, nodeToSelect;
 
-            if (i === 0 || review.get("reviewState") === "NOTIFIED" ||
-                review.get("reviewState") === "COMPLETED" ||
-                review.get("reviewState") === "CLOSED") {
-                tab = new Y.Tab({
-                    label: (i === 0 ? I18n.t("review.tabview.toReview") : I18n.t("review.tabview.toComment")) + " " + I18n.t("review.editor.number") + (j + 1)
+            if (this._currentPanel && this._currentPanel.get("review")) {
+                currentReviewId = this._currentPanel.get("review").get("id");
+                isReviewer = this._currentPanel.get("reviewer");
+                nodeToSelect = this._treeview.find(function(item) {
+                    // is current item refers to current edited review ?
+                    return item.get("data.review") && item.get("data.review").get("id") === currentReviewId &&
+                        // is mode the same (aka prevent selected review rather than comment when debugging)
+                        isReviewer === item.get("data.reviewer");
                 });
-                tab.loaded = false;
-                tab.review = review;
-                tab.reviewer = (i === 0);
-                this.updateUnreadStatus(tab);
-                this.tabView.add(tab);
+                if (nodeToSelect) {
+                    nodeToSelect.set("selected", 2);
+                }
             }
         },
-        updateUnreadStatus: function(tab) {
-            // TODO _ improve 
-            if ((tab.reviewer && tab.review.get("reviewState") === "DISPATCHED") ||
-                (!tab.reviewer && tab.review.get("reviewState") === "NOTIFIED")) {
-                tab.get("boundingBox").addClass("unread");
-            } else {
-                tab.get("boundingBox").removeClass("unread");
+        syncUI: function() {
+            this.syncTree();
+            this.refreshPanel();
+        },
+        refreshPanel: function() {
+            if (this._currentPanel instanceof Y.Wegas.ReviewWidget) {
+                var i, j, reviews, review,
+                    prd = this.get("variable.evaluated"),
+                    pri = prd.getInstance();
+
+                // Find the correct review
+                reviews = pri.get(this._currentPanel.get("reviewer") ? "toReview" : "reviewed");
+
+                for (j = 0; j < reviews.length; j++) {
+                    review = reviews[j];
+
+                    if (this._currentPanel.get("review") && this._currentPanel.get("review").get("id") === review.get("id")) {
+                        if (review.get("reviewState") !== this._currentPanel._status) {
+                            // Build new
+                            this.renderReviewWidget(review, this._currentPanel.get("title"), this._currentPanel.get("reviewer"));
+                        } else {
+                            this._currentPanel.set("review", review);
+                            this._currentPanel.syncUI();
+                        }
+                    }
+                }
+                //}
             }
         },
-        updateReviews: function(pri) {
-            var i, j, k, types = ["toReview", "reviewed"],
-                reviews, review, tab,
-                selectedTab = this.tabView.get('selection'),
-                lastSelection = (selectedTab ? selectedTab.get('index') : 0);
+        destructor: function() {
+            for (var k in this.handlers) {
+                this.handlers[k].detach();
+            }
+        },
+        _genTreeView: function() {
+
+            var prd = this.get("variable.evaluated"),
+                pri = prd.getInstance(), i, j,
+                types = ["toReview", "reviewed"],
+                reviews, root, nodes = [], i, review, node;
+
+            nodes.push({
+                label: I18n.t("review.tabview.toReviewTitle"),
+                type: "TreeNode",
+                collapsed: false,
+                selected: 0,
+                data: {
+                    type: "REVIEW_TITLE"
+                },
+                children: [],
+                iconCSS: "fa fa-users",
+                cssClass: "title"
+            });
+
+            nodes.push({
+                label: I18n.t("review.tabview.toCommentTitle"),
+                selected: 0,
+                collapsed: false,
+                type: "TreeNode",
+                iconCSS: "fa fa-users",
+                data: {
+                    type: "FB_TITLE"
+                },
+                children: [],
+                cssClass: "title"
+            });
 
             for (i = 0; i < 2; i++) {
                 reviews = pri.get(types[i]);
                 for (j = 0; j < reviews.length; j++) {
                     review = reviews[j];
-                    tab = null;
-                    for (k = 0; k < this.tabView.size(); k += 1) {
-                        if (this.tabView.item(k).reviewer === (i === 0) && this.tabView.item(k).review && this.tabView.item(k).review.get("id") === review.get("id")) {
-                            tab = this.tabView.item(k);
-                            break;
-                        }
-                    }
-                    if (tab) {
-                        if (tab.reviewWidget) {
-                            tab.review = reviews[j];
-                            this.updateUnreadStatus(tab);
-                            if (review.get("reviewState") !== tab.reviewWidget._status) {
-                                // Build new
-                                this.renderTab(tab);
-                            } else {
-                                //if (tab === selectedTab) {
-                                //tab.reviewWidget.outdate();
-                                //} else {
-                                tab.reviewWidget.set("review", tab.review);
-                                tab.reviewWidget.syncUI();
-                                //}
-                            }
-                        }
-                    } else {
-                        this.addReview(reviews[j], i, j);
-                    }
-                }
-            }
-        },
-        addReviews: function(pri) {
-            var i, j, types = ["toReview", "reviewed"], reviews;
+                    node = null;
 
-            for (i = 0; i < 2; i++) {
-                reviews = pri.get(types[i]);
-                for (j = 0; j < reviews.length; j++) {
-                    this.addReview(reviews[j], i, j);
+
+                    if (i === 0 || review.get("reviewState") === "NOTIFIED" ||
+                        review.get("reviewState") === "COMPLETED" ||
+                        review.get("reviewState") === "CLOSED") {
+
+                        node = {
+                            label: (i === 0 ? I18n.t("review.tabview.toReview") : I18n.t("review.tabview.toComment")) + " " + I18n.t("review.editor.number") + (j + 1),
+                            type: "TreeLeaf",
+                            iconCSS: "fa fa-user-circle-o",
+                            data: {
+                                type: "REVIEW",
+                                review: review,
+                                reviewer: (i === 0)
+                            }
+                        };
+
+                        if (
+                            (node.data.reviewer
+                                && (
+                                    node.data.review.get("reviewState") === "DISPATCHED"  // Review is reviewing
+                                    || node.data.review.get("reviewState") === "CLOSED") // Reviewe can read review comment
+                                )
+                            || (!node.data.reviewer
+                                && (
+                                    node.data.review.get("reviewState") === "NOTIFIED")  // Author comments review
+                                )) {
+                            node.cssClass = "unread";
+                        }
+
+                        nodes[i].children.push(node);
+                    }
+
+                    //this.addReview(reviews[j], i, j);
                 }
             }
+            return nodes;
         },
-        /**
-         * @function
-         * @param e description
-         * @private
-         * @description Display selected question's description on current tab.
-         */
-        onTabSelected: function(e) {
-            if (e.newVal && e.newVal.review
-                && (!this.isRemovingTabs && !e.newVal.loaded) ||
-                e.newVal.reviewWidget._status === "OUTDATED") {
-                e.newVal.loaded = true;
-                this.renderTab(e.newVal);
+        //isNodeExpanded: function(entity) {
+        //return this.RememberExpandedTreeView.expandedIds[entity.get("id")] || false;
+        //},
+        renderReviewWidget: function(review, label, reviewer) {
+            if (this._currentPanel) {
+                this._panel.destroyAll();
             }
-        },
-        renderTab: function(tab) {
-            if (tab.reviewWidget) {
-                tab.reviewWidget.destroy();
-            }
-            tab.reviewWidget = new Wegas.ReviewWidget({
-                title: tab.get("label"),
-                review: tab.review,
+
+            this._currentPanel = new Wegas.ReviewWidget({
+                title: label,
+                review: review,
                 descriptor: this.get("variable.evaluated"),
-                reviewer: tab.reviewer,
+                reviewer: reviewer,
                 showSubmitButton: this.get("showSubmitButton")
-            }).render(tab.get("panelNode"));
-            tab.reviewWidget.on(["*:message", "*:showOverlay", "*:hideOverlay"], this.fire, this); // Event on the loaded
+            });
+            this._currentPanel.plug(Y.Plugin.CSSPosition, {
+                styles: {
+                    position: "relative"
+                }});
+
+            this._panel.add(this._currentPanel);
         },
-        getEditorLabel: function() {
-            var variable = this.get("variable.evaluated");
-            if (variable) {
-                return variable.getEditorLabel();
+        onTvClick: function(e) {
+            var data;
+            data = e.target.get("data");
+            if (data) {
+                switch (data.type) {
+                    case "REVIEW":
+                        this.renderReviewWidget(data.review, e.target.get("label"),
+                            data.reviewer);
+                        break;
+                    default:
+                        Y.later(0, this, function() {
+                            this._treeview.deselectAll();
+                            this.updateTreeSelection();
+                        });
+                        // Title
+                        /*this._panel.destroyAll();
+                         
+                         this._currentPanel = new Y.Wegas.Text({
+                         editable: false,
+                         cssClass: "wegas-review-treeview__title__panel",
+                         content: "<h2>RTFM</h2>"
+                         });
+                         
+                         this._panel.add(this._currentPanel);
+                         */
+                        break;
+                }
             }
-            return null;
-        },
-        /**
-         * @function
-         * @private
-         * @description Destroy TabView and detach all functions created
-         *  by this widget
-         */
-        destructor: function() {
-            this.tabView.each(function(item) {
-                item.reviewWidget && item.reviewWidget.destroy();
-            });
-            this.tabView.destroy();
-            Y.Array.each(this.handlers, function(h) {
-                h.detach();
-            });
         }
     }, {
-        EDITORNAME: "Review display",
-        /** @lends Y.Wegas.ReviewTabView */
-        /**
-         * @field
-         * @static
-         * @description
-         * <p><strong>Attributes</strong></p>
-         * <ul>
-         *    <li>variable: The target variable, returned either based on the name
-         *     attribute, and if absent by evaluating the expr attribute.</li>
-         * </ul>
-         */
+        EDITORNAME: "Review TreeView display",
         ATTRS: {
             variable: {
-                /**
-                 * The target variable, returned either based on the name attribute,
-                 * and if absent by evaluating the expr attribute.
-                 */
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
                     _type: "variableselect",
-                    label: "Peer Review",
-                    classFilter: ["PeerReviewDescriptor"]
+                    label: "Peer Review Descriptor",
+                    classFilter: ["PeerReviewDescriptor"],
+                    wrapperClassName: "inputEx-fieldWrapper"
                 }
             },
             showSubmitButton: {
@@ -1041,7 +1094,8 @@ YUI.add("wegas-review-widgets", function(Y) {
             }
         }
     });
-    Wegas.ReviewTabView = ReviewTabView;
+    Y.Wegas.ReviewTreeView = ReviewTreeView;
+    Y.Wegas.ReviewTabView = ReviewTreeView;
 
 
     /**

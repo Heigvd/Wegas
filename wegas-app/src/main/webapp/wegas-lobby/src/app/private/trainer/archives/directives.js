@@ -34,6 +34,7 @@ angular.module('private.trainer.archives.directives', [])
             SessionsModel.unarchiveSession(sessionToUnarchive).then(function(response) {
                 if (!response.isErroneous()) {
                     $rootScope.$emit('changeLimit', true);
+                    $rootScope.$emit('changeSessionsArchives', -1);
                     ctrl.updateSessions();
                 } else {
                     response.flash();
@@ -50,7 +51,8 @@ angular.module('private.trainer.archives.directives', [])
         if (sessionToDelete) {
             SessionsModel.deleteArchivedSession(sessionToDelete).then(function(response) {
                 if (!response.isErroneous()) {
-                    $rootScope.$emit('changeArchives', true);
+                    $rootScope.$emit('changeLimit', true);
+                    $rootScope.$emit('changeSessionsArchives', -1);
                     ctrl.updateSessions();
                 } else {
                     response.flash();
@@ -94,11 +96,11 @@ angular.module('private.trainer.archives.directives', [])
     };
 
     /* Listen for new session */
-    $rootScope.$on('changeArchives', function(e, hasNewData) {
-        if (hasNewData) {
-            ctrl.updateSessions();
-        }
-    });
+    /*$rootScope.$on('changeArchives', function(e, hasNewData) {
+     if (hasNewData) {
+     ctrl.updateSessions();
+     }
+     });*/
 
     ctrl.updateSessions();
 })

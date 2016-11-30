@@ -37,6 +37,7 @@ public class UIHelper {
 
     public static final String CSS_CLASS_MENU = CSS_CLASS_PREFIX + "menu";
 
+    public static final String CSS_CLASS_MESSAGE_TITLE = CSS_CLASS_PREFIX + "message-container-title";
     public static final String CSS_CLASS_MESSAGE_CONTAINER = CSS_CLASS_PREFIX + "message-container";
     public static final String CSS_CLASS_MESSAGE_HEADER = CSS_CLASS_PREFIX + "message-header";
     public static final String CSS_CLASS_MESSAGE_HEADER_FIRSTLINE = CSS_CLASS_PREFIX + "message-firstline";
@@ -93,6 +94,7 @@ public class UIHelper {
     public static final String TEXT_DESTINATION = "To";
     public static final String TEXT_SUBJECT = "Subject";
     public static final String TEXT_MESSAGE = "Message";
+    public static final String TEXT_SEND_MESSAGE = "Send Message";
     public static final String TEXT_MAIN_SKILL = "Mail Skill";
     public static final String TEXT_ATTACHEMENTS = "Attachements";
 
@@ -418,7 +420,7 @@ public class UIHelper {
             text = TEXT_NOT_AVAILABLE;
             style += " " + CSS_CLASS_PROPERTY_VALUE_NA;
         }
-        
+
         startDiv(writer, style);
         HtmlOutputText t = new HtmlOutputText();
         //t.setStyleClass(style);
@@ -427,7 +429,7 @@ public class UIHelper {
         t.setValue(text);
         t.encodeAll(ctx);
         endDiv(writer);
-        
+
     }
 
     /**
@@ -522,15 +524,17 @@ public class UIHelper {
      * @throws IOException
      */
     public static void printMessage(FacesContext context, ResponseWriter writer,
-            String destination, String from, String subject, String date, String body,
+            String destination, String from, String subject, String date, String body, String token,
             List<String> attachements) throws IOException {
 
         UIHelper.startDiv(writer, CSS_CLASS_MESSAGE_CONTAINER);
+        printText(context, writer, TEXT_SEND_MESSAGE, CSS_CLASS_MESSAGE_TITLE);
         UIHelper.startDiv(writer, CSS_CLASS_MESSAGE_HEADER);
         UIHelper.startDiv(writer, CSS_CLASS_MESSAGE_HEADER_FIRSTLINE);
 
-        UIHelper.startSpan(writer, CSS_CLASS_MESSAGE_SUBJECT);
-        printText(context, writer, unescapeAndTrimQuotes(subject), CSS_CLASS_PROPERTY_VALUE);
+        UIHelper.startSpan(writer, CSS_CLASS_MESSAGE_FROM);
+        //printText(context, writer, unescapeAndTrimQuotes(from), CSS_CLASS_PROPERTY_VALUE);
+        UIHelper.printProperty(context, writer, UIHelper.TEXT_FROM, unescapeAndTrimQuotes(from));
         UIHelper.endSpan(writer);
 
         if (destination != null && destination.length() > 0) {
@@ -541,15 +545,18 @@ public class UIHelper {
 
         if (date != null && !date.isEmpty()) {
             UIHelper.startSpan(writer, CSS_CLASS_MESSAGE_DATE);
-            printText(context, writer, unescapeAndTrimQuotes(date), CSS_CLASS_PROPERTY_VALUE);
+            UIHelper.printProperty(context, writer, UIHelper.TEXT_DATE, unescapeAndTrimQuotes(date));
+            //printText(context, writer, unescapeAndTrimQuotes(date), CSS_CLASS_PROPERTY_VALUE);
             UIHelper.endSpan(writer);
         }
 
         UIHelper.endDiv(writer); // </div class="firstline">
 
-        UIHelper.startSpan(writer, CSS_CLASS_MESSAGE_FROM);
-        printText(context, writer, unescapeAndTrimQuotes(from), CSS_CLASS_PROPERTY_VALUE);
+        UIHelper.startSpan(writer, CSS_CLASS_MESSAGE_SUBJECT);
+        //printText(context, writer, unescapeAndTrimQuotes(subject), CSS_CLASS_PROPERTY_VALUE);
+        UIHelper.printProperty(context, writer, UIHelper.TEXT_SUBJECT, unescapeAndTrimQuotes(subject));
         UIHelper.endSpan(writer);
+
 
         UIHelper.endDiv(writer); // </div class="header">
 

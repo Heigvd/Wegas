@@ -914,12 +914,15 @@ YUI().use(function(Y) {
                     "wegas-i18n-review",
                     "slider",
                     "wegas-teams-dashboard",
+                    "wegas-layout-list",
                     "chartist",
+                    "treeview",
                     "wegas-text-input",
                     "wegas-tabview"],
                 ws_provides: ["ReviewVariableEditor",
                     "ReviewOrchestrator",
                     "ReviewTabView",
+                    "ReviewTreeView",
                     "ReviewWidget",
                     "GradeInput",
                     "TextEvalInput",
@@ -1050,7 +1053,7 @@ YUI().use(function(Y) {
             },
             "font-awesome": {
                 type: CSS,
-                fullpath: "//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"
+                fullpath: "//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
             },
             "roboto-font": {
                 type: CSS,

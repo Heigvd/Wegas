@@ -1,7 +1,7 @@
 angular.module('private.admin.users', [
-        'wegas.behaviours.repeat.autoload',
-        'private.admin.users.edit'
-    ])
+    'wegas.behaviours.repeat.autoload',
+    'private.admin.users.edit'
+])
     .config(function($stateProvider) {
         "use strict";
         $stateProvider
@@ -43,7 +43,7 @@ angular.module('private.admin.users', [
         };
 
         ctrl.updateUsersList = function(displayUp) {
-            var hideScrollbarDuringInitialRender = (ctrl.users.length===0);
+            var hideScrollbarDuringInitialRender = (ctrl.users.length === 0);
             if (hideScrollbarDuringInitialRender) {
                 $('#admin-index-list').css('overflow-y', 'hidden');
             }
@@ -59,7 +59,9 @@ angular.module('private.admin.users', [
                     }
                 }
                 if (hideScrollbarDuringInitialRender) {
-                    $timeout(function () { $('#admin-index-list').css('overflow-y', 'auto'); }, 1000);
+                    $timeout(function() {
+                        $('#admin-index-list').css('overflow-y', 'auto');
+                    }, 1000);
                 }
             });
         };
@@ -85,11 +87,11 @@ angular.module('private.admin.users', [
             });
         };
         $rootScope.$on('changeLimit', function(e, hasNewData) {
-            if (hasNewData) {
+            if (e.currentScope.currentRole === "ADMIN" && hasNewData) {
                 ctrl.updateUsersList(true);
             }
         });
 
         ctrl.updateUsersList(true);
     })
-;
+    ;
