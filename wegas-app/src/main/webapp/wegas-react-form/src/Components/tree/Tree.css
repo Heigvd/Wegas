@@ -4,13 +4,16 @@
 
 .selected {
     font-style: italic;
-    color:pink;
+    color: pink;
 }
 
-.no-display {
+.noDisplay {
     display: none;
 }
-
+.noSelect {
+    font-style: italic;
+    opacity: 0.7;
+}
 .treeNodeContainer {
     list-style: none;
 

@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 
 function defaultSearchFn(item, search) {
     return item.value.toLowerCase().indexOf(search.toLowerCase()) > -1;
 }
 
-function matchNode(item, search, match) {
-    return match(item, search) ||
-        (item.items &&
-        filterChildren(item.items, search, match).length); // eslint-disable-line
+function matchNode(item, search, matchFn) {
+    return (matchFn(item, search) && item.value) || (
+        item.items &&
+        filterChildren(item.items, search, matchFn).length); // eslint-disable-line
 }
 
 function filterChildren(items, search, match) {
@@ -18,7 +18,7 @@ function filterChildren(items, search, match) {
             return {
                 ...i,
                 match: match(i, search),
-                expanded: childItems.length,
+                expanded: Boolean(childItems.length),
                 items: childItems
             };
         }
@@ -30,11 +30,26 @@ function filterChildren(items, search, match) {
 }
 
 export default function searchableTree(Comp) {
-    return function SearchableTreeSelect(props) {
-        const { items, search, match = defaultSearchFn, ...rest } = props;
-        return (<Comp
-            {...rest}
-            items={search.trim() ? filterChildren(items, search.trim(), match) : items}
-        />);
+    function SearchableTreeSelect(props) {
+        const {
+            items,
+            search,
+            match = defaultSearchFn,
+            ...rest
+        } = props;
+        return (
+            <Comp
+                {...rest}
+                items={search.trim() ?
+                               filterChildren(items, search.trim(), match) :
+                               items}
+            />);
+    }
+
+    SearchableTreeSelect.propTypes = {
+        items: PropTypes.arrayOf(PropTypes.object).isRequired,
+        search: PropTypes.string,
+        match: PropTypes.func
     };
+    return SearchableTreeSelect;
 }

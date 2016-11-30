@@ -3,8 +3,11 @@ import React, { PropTypes } from 'react';
 import Form from 'jsoninput';
 import isMatch from 'lodash/fp/isMatch';
 
-const { builders: b, visit } = types;
-export const isVar = node => isMatch({
+const {
+    builders: b,
+    visit
+} = types;
+export const isVariable = node => isMatch({
     type: 'CallExpression',
     callee: {
         type: 'MemberExpression',
@@ -24,8 +27,9 @@ export const extractVar = (node) => {
     visit(node, {
         visitCallExpression: function visitCallExpression(path) {
             const nod = path.node;
-            if (isVar(nod)) {
+            if (isVariable(nod)) {
                 if (nod.arguments.length) {
+                    // get last argument. Handle (self, var) and (var)
                     ret = nod.arguments[nod.arguments.length - 1].value;
                 }
             }
@@ -35,16 +39,16 @@ export const extractVar = (node) => {
     return ret;
 };
 export const build = v => (
-        b.callExpression(
-            b.memberExpression(
-                b.identifier('Variable'),
-                b.identifier('find')
-            ),
-            [
-                b.identifier('gameModel'),
-                b.literal(v)
-            ]
-        )
+b.callExpression(
+    b.memberExpression(
+        b.identifier('Variable'),
+        b.identifier('find')
+    ),
+    [
+        b.identifier('gameModel'),
+        b.literal(v)
+    ]
+)
 );
 export const schema = optView => ({
     type: 'string',
@@ -56,7 +60,11 @@ export const schema = optView => ({
 /**
  * Variable statement
  */
-function Variable({ node, onChange, view }) {
+function Variable({
+        node,
+        onChange,
+        view
+    }) {
     const value = extractVar(node);
     return (
         <Form
@@ -66,6 +74,7 @@ function Variable({ node, onChange, view }) {
         />
     );
 }
+
 Variable.propTypes = {
     node: PropTypes.object,
     onChange: PropTypes.func.isRequired,

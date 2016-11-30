@@ -19,11 +19,11 @@ const { builders: b } = types;
 //         />
 //     );
 // }
-const argSchema = (schema, variable) => {
+const argSchema = (schema, entity) => {
     const type = schema.type === 'identifier' ? 'string' : schema.type;
     return Object.assign({}, schema, {
         type,
-        view: Object.assign({}, schema.view, { entity: variable })
+        view: Object.assign({}, schema.view, { entity })
     });
 };
 /**
@@ -91,10 +91,7 @@ function typeToValue(v, schema) {
         throw Error(`implement me ${schema.type}`);
     }
 }
-
-function handleArgs(variable, method, args, onChange) {
-    const methodDescr = Y.Wegas.Facade.Variable.cache.find('name', variable)
-        .getMethodCfgs()[method];
+function handleMethodArgs(methodDescr, args, onChange, entity) {
     if (!methodDescr) {
         return [];
     }
@@ -102,7 +99,7 @@ function handleArgs(variable, method, args, onChange) {
     const ret = argDescr.map((v, i) => args[i] || valueToType(undefined, v));
 
     if (args.length !== argDescr.length) { // remove/create unknown arguments
-        setTimeout(() => onChange(ret), 0);
+        setTimeout(() => onChange(ret), 0); // delay to let react's render end.
         return [];
     }
     return argDescr.map((a, i) => {
@@ -110,19 +107,24 @@ function handleArgs(variable, method, args, onChange) {
         return (
             <Form
                 key={`arg${i}`}
-                schema={argSchema(a, variable)}
+                schema={argSchema(a, entity)}
                 value={typeToValue(val, a)}
                 onChange={(v) => {
                     ret[i] = valueToType(v, a);
                     onChange(ret);
-                    // setTimeout(() => onChange(ret), 0);
                 }}
             />
         );
     });
 }
+function handleArgs(variable, method, args, onChange) {
+    const methodDescr = Y.Wegas.Facade.Variable.cache.find('name', variable)
+        .getMethodCfgs()[method];
+    return handleMethodArgs(methodDescr, args, onChange, variable);
+}
 export {
     handleArgs,
+    handleMethodArgs,
     valueToType,
     typeToValue
 };

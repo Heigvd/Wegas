@@ -1,10 +1,9 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import cx from 'classnames';
 import style from './Tree.css';
 
 function noop() {
 }
-
 
 function update(props, val) {
     return {
@@ -14,7 +13,17 @@ function update(props, val) {
 }
 
 export default function TreeNode(props) {
-    const { label, value, expanded = false, selected = false, match = true, items, onSelect = noop, onChange = noop, className } = props;
+    const {
+        label,
+        value,
+        expanded = false,
+        items,
+        className,
+        match = true,
+        onSelect = noop,
+        selected,
+        onChange = noop
+    } = props;
     function toggle() {
         onChange(update(props, {
             expanded: !expanded
@@ -22,7 +31,9 @@ export default function TreeNode(props) {
     }
 
     function handleSelect() {
-        onSelect(value);
+        if (value) {
+            onSelect(value);
+        }
     }
 
     function onChildChange(i) {
@@ -56,7 +67,6 @@ export default function TreeNode(props) {
             event.stopPropagation();
             break;
         default:
-
         }
         return false;
     }
@@ -73,11 +83,13 @@ export default function TreeNode(props) {
                     {expanded ? '\u25BC' : '\u25B6'}
                 </a> : null}
             <a
-                tabIndex={match ? '0' : '1'}
+                tabIndex={match ? '0' : '-1'}
                 onClick={handleSelect}
                 onKeyDown={handleKeyDown}
-                className={cx(style.pointer, style.treeHead, {
-                    [style.selected]: selected === value
+                className={cx(style.treeHead, {
+                    [style.noSelect]: !value,
+                    [style.pointer]: value,
+                    [style.selected]: selected && selected === value
                 })}
             >
                 {label !== undefined ? label : value}
@@ -85,7 +97,7 @@ export default function TreeNode(props) {
             {items ?
                 <ul
                     className={cx(style.treeChildren, {
-                        [style['no-display']]: !expanded
+                        [style.noDisplay]: !expanded
                     })}
                 >
                     {items.map((c, i) => (
@@ -101,3 +113,15 @@ export default function TreeNode(props) {
         </li>
     );
 }
+
+TreeNode.propTypes = {
+    label: PropTypes.string,
+    value: PropTypes.string,
+    expanded: PropTypes.bool,
+    selected: PropTypes.string,
+    match: PropTypes.bool,
+    items: PropTypes.arrayOf(PropTypes.shape(TreeNode.propTypes)),
+    onSelect: PropTypes.func,
+    onChange: PropTypes.func.isRequired,
+    className: PropTypes.string
+};

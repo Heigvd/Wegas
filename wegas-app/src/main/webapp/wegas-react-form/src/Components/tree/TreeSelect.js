@@ -1,11 +1,8 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import TreeNode from './TreeNode';
 import HandleUpDown from './HandleUpDown';
 import searchable from './searchable';
 import style from './Tree.css';
-
-function noop() {
-}
 
 class TreeSelect extends React.Component {
     constructor(props) {
@@ -14,7 +11,7 @@ class TreeSelect extends React.Component {
             items: props.items,
             selected: props.selected
         };
-        this.handleInputChange = this.handleInputChange.bind(this);
+        this.onSelect = this.onSelect.bind(this);
     }
     componentWillReceiveProps(nextProps) {
         let state = {};
@@ -32,24 +29,21 @@ class TreeSelect extends React.Component {
         }
         this.setState(state);
     }
-    handleInputChange(ev) {
+    onSelect(v) {
         this.setState({
-            search: ev.target.value
-        });
+            selected: v
+        }, () => this.props.onSelect(this.state.selected));
     }
-    render() {
-        const onSelect = (v) => {
-            this.setState({
-                selected: v
-            }, () => this.props.onSelect(this.state.selected));
-        };
-        const onChildChange = i => child => this.setState({
+    onChildChange(i) {
+        return child => this.setState({
             items: [
                 ...this.state.items.slice(0, i),
                 child,
                 ...this.state.items.slice(i + 1, this.state.items.length)
             ]
         });
+    }
+    render() {
         const items = this.state.items;
         return (
             <HandleUpDown selector={`.${style.treeHead}`}>
@@ -58,16 +52,20 @@ class TreeSelect extends React.Component {
                         key={index}
                         {...item}
                         selected={this.state.selected}
-                        onSelect={onSelect}
-                        onChange={onChildChange(index)}
+                        onSelect={this.onSelect}
+                        onChange={this.onChildChange(index)}
                     />
                  ))}
-            </HandleUpDown>
-        );
+            </HandleUpDown>);
     }
 }
 
-TreeSelect.defaultProps = {
-    onSelect: noop
+TreeSelect.propTypes = {
+    items: PropTypes.arrayOf(PropTypes.shape({
+        label: PropTypes.string,
+        value: PropTypes.string
+    })),
+    selected: PropTypes.string,
+    onSelect: PropTypes.func.isRequired
 };
 export default searchable(TreeSelect);

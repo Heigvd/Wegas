@@ -15,7 +15,7 @@ function collector(coll) {
 function multipleStatement(Comp) {
     const RemovableComp = removeStatement(Comp);
     function MultipleStatement(props) {
-        const { code, onChange, type } = props;
+        const { code, onChange, type, ...restProps } = props;
         const rootExpression = [];
         if (type === TYPE.GETTER) {
             visit(code, {
@@ -32,7 +32,8 @@ function multipleStatement(Comp) {
         const children = rootExpression.map((path, i) => (
             <RemovableComp
                 key={i}
-                {...props}
+                {...restProps}
+                type={type}
                 node={path.value}
                 onChange={(v) => {
                     const comments = path.get('comments');

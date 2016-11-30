@@ -10,9 +10,11 @@ function methodDescriptor(variable, method) {
         return null;
     }
 }
+
 /**
  * @param {string} variable variable to generate method from
  * @param {string} type 'condition' or 'getter' used to filter available methods
+ * @returns {Array} list of available methods.
  */
 function genChoices(variable, type) {
     const descr = Y.Wegas.Facade.Variable.cache.find('name', variable);
@@ -25,8 +27,13 @@ function genChoices(variable, type) {
             label: methods[v].label || v
         }));
 }
+
 // Replace with select with if it stays in this shape
-function MethodView({ value, onChange, view }) {
+function MethodView({
+        value,
+        onChange,
+        view
+    }) {
     return (
         <SelectView
             value={value}
@@ -35,6 +42,7 @@ function MethodView({ value, onChange, view }) {
         />
     );
 }
+
 MethodView.propTypes = {
     value: PropTypes.string,
     view: PropTypes.object,
@@ -42,15 +50,18 @@ MethodView.propTypes = {
 };
 const methodSchema = (view, variable, type) => {
     const choices = genChoices(variable, type);
+    if (!choices.length) {
+        return null;
+    }
     return {
         type: 'string',
         required: true,
         value: choices[0].value,
-        view: Object.assign({}, view, { type: MethodView, choices })
+        view: Object.assign({}, view, {
+            type: MethodView,
+            choices
+        })
     };
 };
 
-export {
-    methodSchema,
-    methodDescriptor
-};
+export { methodSchema, methodDescriptor, genChoices };

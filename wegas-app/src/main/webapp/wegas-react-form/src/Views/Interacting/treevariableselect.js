@@ -3,16 +3,38 @@ import TreeSelect from '../../Components/tree/TreeSelect';
 import { getY } from '../../index';
 
 const variableFacade = getY().Wegas.Facade.Variable;
-function labelForVariable(name) {
-    const target = getY().Wegas.Facade.Variable.cache.find('name', name);
-    return target ? target.get('label') : '';
+function defaultTrue() {
+    return true;
 }
 
-function genItems(items) {
+function labelForVariable(name) {
+    const target = getY().Wegas.Facade.Variable.cache.find('name', name);
+    return target ? target.getEditorLabel() : '';
+}
+
+function match(item, search) {
+    return item.label.toLowerCase().indexOf(search.toLowerCase()) > -1;
+}
+
+function buildPath(name) {
+    const variable = getY().Wegas.Facade.Variable.cache.find('name', name);
+    const path = [];
+    if (!variable) {
+        return null;
+    }
+    let parent = variable.parentDescriptor;
+    while (parent) {
+        path.push(parent.getEditorLabel());
+        parent = parent.parentDescriptor;
+    }
+    return path.reverse().join(' \u21E8 ');
+}
+
+function genVarItems(items, selectableFn = defaultTrue) {
     return items.map(i => ({
         label: i.get('label'),
-        value: i.get('name'),
-        items: i.get('items') && genItems(i.get('items'))
+        value: selectableFn(i) ? i.get('name') : undefined,
+        items: i.get('items') && genVarItems(i.get('items'), selectableFn)
     }));
 }
 
@@ -23,11 +45,33 @@ class TreeVariableSelect extends React.Component {
             search: labelForVariable(props.value),
             searching: false
         };
+        this.handleOnSelect = this.handleOnSelect.bind(this);
+    }
+    handleOnSelect(v) {
+        this.setState({
+            searching: false,
+            search: labelForVariable(v)
+        }, () => this.props.onChange(v));
+    }
+    /**
+     * @returns {Array} items generated from variable and additional
+     */
+    genItems() {
+        return genVarItems(variableFacade.data.concat(),
+            this.props.view.selectable)
+            .concat(this.props.view.additional);
+    }
+    labelForAdditional() {
+        const found = this.props.view.additional.find(i => i.value === this.props.value);
+        if (found) {
+            return found.label || this.props.value;
+        }
+        return undefined;
     }
     renderSearch() {
         if (this.state.searching) {
             return (
-                <div style={{ position: 'absolute', top: 0, zIndex: 1000, backgroundColor: 'white', boxShadow: '0 2px 5px black' }}>
+                <div style={{ position: 'absolute', top: 0, zIndex: 1000, backgroundColor: 'white', boxShadow: '0 2px 5px black', borderRadius: '3px' }}>
                     <input
                         ref={(n) => {
                             if (n) {
@@ -41,18 +85,11 @@ class TreeVariableSelect extends React.Component {
                         })}
                     />
                     <TreeSelect
-                        match={function match(item, search) {
-                            return item.label.toLowerCase().indexOf(search.toLowerCase()) > -1;
-                        }}
+                        match={match}
                         selected={this.props.value}
-                        items={genItems(variableFacade.data.concat())}
+                        items={this.genItems()}
                         search={this.state.search}
-                        onSelect={(v) => {
-                            this.setState({
-                                searching: false,
-                                search: labelForVariable(v)
-                            }, () => this.props.onChange(v));
-                        }}
+                        onSelect={this.handleOnSelect}
                     />
                 </div>
             );
@@ -60,17 +97,18 @@ class TreeVariableSelect extends React.Component {
         return null;
     }
     render() {
-        const variable = variableFacade.cache.find('name', this.props.value);
         return (
             <div style={{ position: 'relative' }}>
-                <input
-                    value={(variable && variable.get('label')) || 'select...'}
+                <a
                     tabIndex="0"
                     onFocus={() => this.setState({
                         searching: true
                     })}
-                    onChange={() => {}}
-                />
+                >
+                    <div style={{ fontSize: '75%', opacity: 0.5 }}>
+                        {buildPath(this.props.value)} </div>
+                    {labelForVariable(this.props.value) || this.labelForAdditional() || 'select...'}
+                </a>
                 {this.renderSearch()}
             </div>);
     }
@@ -78,15 +116,22 @@ class TreeVariableSelect extends React.Component {
 
 TreeVariableSelect.propTypes = {
     view: PropTypes.shape({
-        maxLevel: PropTypes.number,
-        root: PropTypes.string,
-        classFilter: PropTypes.oneOfType([
-            PropTypes.arrayOf(PropTypes.string),
-            PropTypes.string
-        ]),
-        selectableLevels: PropTypes.arrayOf(PropTypes.number)
+        selectable: PropTypes.func,
+        additional: PropTypes.arrayOf(PropTypes.shape(TreeSelect.propTypes))
+    // maxLevel: PropTypes.number,
+    // root: PropTypes.string,
+    // classFilter: PropTypes.oneOfType([
+    //     PropTypes.arrayOf(PropTypes.string),
+    //     PropTypes.string
+    // ]),
+    // selectableLevels: PropTypes.arrayOf(PropTypes.number)
     }),
     value: PropTypes.string,
     onChange: PropTypes.func.isRequired
+};
+TreeVariableSelect.defaultProps = {
+    view: {
+        additional: []
+    }
 };
 export default TreeVariableSelect;
