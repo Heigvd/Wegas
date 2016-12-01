@@ -110,6 +110,8 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
                 new Script("VariableDescriptorFacade.find(" + number.getId() + ").setValue(self, " + FINALVALUE + " )"));
         vdf.create(gameModel.getId(), trigger);
 
+        RequestFacade.lookup().getRequestManager().clearUpdatedEntities();
+
         // Do an update
         NumberInstance numberI = number.getInstance(player);
         numberI.setValue(INTERMEDIATEVALUE);
@@ -238,10 +240,10 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         sm.setName("testSM");
         State state0 = new State();
         State state1 = new State();
-        state1.setOnEnterEvent(new Script("VariableDescriptorFacade.findByName(gameModel, 'testnumber').setValue(self, VariableDescriptorFacade.findByName(gameModel, 'testnumber').getValue(self) + 5)"));
+        state1.setOnEnterEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 5)"));
         State state2 = new State();
         //Second state will read an object parameter
-        state2.setOnEnterEvent(new Script("VariableDescriptorFacade.findByName(gameModel, 'testnumber').setValue(self, VariableDescriptorFacade.findByName(gameModel, 'testnumber').getValue(self) + 10)"));
+        state2.setOnEnterEvent(new Script("Variable.findByName(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 10)"));
         sm.setStates(toMap(toList(1L, 2L, 3L), toList(state0, state1, state2)));
 
         Transition t1 = new Transition();

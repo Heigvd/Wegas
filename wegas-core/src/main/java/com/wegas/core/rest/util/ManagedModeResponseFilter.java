@@ -141,7 +141,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                 response.setStatus(HttpStatus.SC_OK);
             }
 
-            Map<String, List<AbstractEntity>> updatedEntitiesMap = requestManager.getUpdatedEntities();
+            Map<String, List<AbstractEntity>> updatedEntitiesMap = requestManager.getAllUpdatedEntities();
             Map<String, List<AbstractEntity>> destroyedEntitiesMap = requestManager.getDestroyedEntities();
             Map<String, List<AbstractEntity>> outdatedEntitiesMap = requestManager.getOutdatedEntities();
 

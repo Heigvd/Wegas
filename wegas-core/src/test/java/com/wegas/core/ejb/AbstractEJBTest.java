@@ -101,9 +101,11 @@ public class AbstractEJBTest {
     public void clear() throws NamingException {
         TestHelper.wipeEmCache();
         RequestFacade rm = AbstractEJBTest.lookupBy(RequestFacade.class);
+        gameModelFacade.remove(gameModel.getId());
+
         rm.getRequestManager().setPlayer(null);
         rm.getRequestManager().clearUpdatedEntities();
-        gameModelFacade.remove(gameModel.getId());
+
         TestHelper.wipeEmCache();
     }
 

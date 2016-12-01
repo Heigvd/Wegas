@@ -35,10 +35,10 @@ import javax.persistence.PersistenceContext;
 import javax.script.ScriptContext;
 import javax.ws.rs.core.Response;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 //import javax.annotation.PostConstruct;
-
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
@@ -105,6 +105,8 @@ public class RequestManager {
      */
     private Map<String, List<AbstractEntity>> updatedEntities = new HashMap<>();
 
+    private Map<String, List<AbstractEntity>> justUpdatedEntities = new HashMap<>();
+
     private Map<String, List<AbstractEntity>> outdatedEntities = new HashMap<>();
 
     private Map<String, List<AbstractEntity>> destroyedEntities = new HashMap<>();
@@ -138,7 +140,7 @@ public class RequestManager {
     }
 
     public void addUpdatedEntities(Map<String, List<AbstractEntity>> entities) {
-        this.addEntities(entities, updatedEntities);
+        this.addEntities(entities, justUpdatedEntities);
     }
 
     public void addOutofdateEntities(Map<String, List<AbstractEntity>> entities) {
@@ -224,7 +226,16 @@ public class RequestManager {
      *
      */
     public void clearUpdatedEntities() {
+        this.justUpdatedEntities.clear();
         this.updatedEntities.clear();
+    }
+
+    /**
+     *
+     */
+    public void migrateUpdateEntities() {
+        this.addEntities(justUpdatedEntities, updatedEntities);
+        justUpdatedEntities.clear();
     }
 
     /**
@@ -232,6 +243,23 @@ public class RequestManager {
      */
     public Map<String, List<AbstractEntity>> getUpdatedEntities() {
         return updatedEntities;
+    }
+
+    /**
+     * @return
+     */
+    public Map<String, List<AbstractEntity>> getAllUpdatedEntities() {
+        Map<String, List<AbstractEntity>> all = new HashMap<>();
+        this.addEntities(updatedEntities, all);
+        this.addEntities(justUpdatedEntities, all);
+        return all;
+    }
+
+    /**
+     * @return
+     */
+    public Map<String, List<AbstractEntity>> getJustUpdatedEntities() {
+        return justUpdatedEntities;
     }
 
     /**

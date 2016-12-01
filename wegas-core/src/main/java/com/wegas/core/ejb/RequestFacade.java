@@ -138,7 +138,7 @@ public class RequestFacade {
 
         requestManager.getEntityManager().flush();
 
-        if (requestManager.getUpdatedEntities().size() > 0 || scriptEvent.isEventFired()) {
+        if (requestManager.getJustUpdatedEntities().size() > 0 || scriptEvent.isEventFired()) {
 
             // TODO
             this.firePlayerAction(player, clear);
@@ -213,7 +213,7 @@ public class RequestFacade {
      * @return all entities which were updated during the transaction
      */
     public Map<String, List<AbstractEntity>> getUpdatedEntities() {
-        return requestManager.getUpdatedEntities();
+        return requestManager.getAllUpdatedEntities();
     }
 
     /**

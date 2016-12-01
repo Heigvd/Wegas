@@ -66,12 +66,24 @@ public class StateMachineITest extends AbstractEJBTest {
         testNumber2.setDefaultInstance(new NumberInstance(0));
         testNumber2.setScope(new GameScope());
 
+        NumberDescriptor nbPlayer;
+        nbPlayer = new NumberDescriptor("nbPlayer");
+        nbPlayer.setDefaultInstance(new NumberInstance(0));
+        nbPlayer.setScope(new GameScope());
+
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new TriggerInstance());
         trigger.setTriggerEvent(new Script("1===1"));
         trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, \"number\").getInstance(self).value = " + FINAL_VALUE));
         trigger.setOneShot(Boolean.TRUE);
         trigger.setDisableSelf(Boolean.FALSE);
+
+        TriggerDescriptor countPlayer = new TriggerDescriptor();
+        countPlayer.setDefaultInstance(new TriggerInstance());
+        countPlayer.setTriggerEvent(new Script("1===1"));
+        countPlayer.setPostTriggerEvent(new Script("Variable.find(gameModel, \"nbPlayer\").getInstance(self).value += 1;"));
+        countPlayer.setOneShot(Boolean.TRUE);
+        countPlayer.setDisableSelf(Boolean.FALSE);
 
         TriggerDescriptor trigger2 = new TriggerDescriptor();
         trigger2.setDefaultInstance(new TriggerInstance());
@@ -80,9 +92,14 @@ public class StateMachineITest extends AbstractEJBTest {
         trigger2.setOneShot(Boolean.FALSE);
         trigger2.setDisableSelf(Boolean.FALSE);
 
+        logger.error(" * * * *  * * * * * * * * * * * * CREATE DESC TESTNUMBER");
         descriptorFacade.create(gameModel.getId(), testNumber);
+        logger.error(" * * * *  * * * * * * * * * * * * CREATE DESC TESTNUMBER");
         descriptorFacade.create(gameModel.getId(), testNumber2);
+        descriptorFacade.create(gameModel.getId(), nbPlayer);
+        logger.error(" * * * *  * * * * * * * * * * * * CREATE TRIGGER TESTNUMBER");
         descriptorFacade.create(gameModel.getId(), trigger);
+        logger.error(" * * * *  * * * * * * * * * * * * CREATE TRIGGER2 TESTNUMBER");
         descriptorFacade.create(gameModel.getId(), trigger2);
 
         Team team3 = new Team("test-team3");
@@ -92,13 +109,17 @@ public class StateMachineITest extends AbstractEJBTest {
 
         team4.setGame(game);
 
+        logger.error(" * * * *  * * * * * * * * * * * * CREATE TEAM3");
         teamFacade.create(game.getId(), team3);
+        logger.error(" * * * *  * * * * * * * * * * * * CREATE TEAM4");
         teamFacade.create(game.getId(), team4);
 
         Player testPlayer0 = new Player("TestPlayer0");
         Player testPlayer1 = new Player("TestPlayer1");
 
+        logger.error(" * * * *  * * * * * * * * * * * * CREATE testPlayer0");
         playerFacade.create(team.getId(), testPlayer0);
+        logger.error(" * * * *  * * * * * * * * * * * * CREATE testPlayer1");
         playerFacade.create(team4.getId(), testPlayer1);
 
         NumberDescriptor number = (NumberDescriptor) descriptorFacade.find(testNumber.getId());
@@ -113,41 +134,61 @@ public class StateMachineITest extends AbstractEJBTest {
         /*
          * Player created before variable -> state machines don't execute
          */
-        Assert.assertEquals(0.0, ((NumberInstance) instanceFacade.find(testNumber.getId(), player2)).getValue(), 0.0);
+        Assert.assertEquals(1.0, ((NumberInstance) instanceFacade.find(testNumber.getId(), player2)).getValue(), 0.0);
         /*
          * Game Scope trigger increase for each player added after trigger creation
          */
-        Assert.assertEquals(2, ((NumberInstance) instanceFacade.find(testNumber2.getId(), testPlayer0)).getValue(), 0.0);
+        Assert.assertEquals(5, ((NumberInstance) instanceFacade.find(testNumber2.getId(), testPlayer0)).getValue(), 0.0);
         /*
          * add a player in not empty team then Reset, trigger will execute
          */
+        logger.error(" * * * *  * * * * * * * * * * * * CREATE testPlayer5");
         playerFacade.create(team4.getId(), new Player("TestPlayer5"));
+        logger.error(" * * * *  * * * * * * * * * * * * RESET");
         gameModelFacade.reset(gameModel.getId());
         Assert.assertEquals(FINAL_VALUE, ((NumberInstance) instanceFacade.find(testNumber.getId(), testPlayer0)).getValue(), 0.0);
         Assert.assertEquals(FINAL_VALUE, ((NumberInstance) instanceFacade.find(testNumber.getId(), testPlayer1)).getValue(), 0.0);
         Assert.assertEquals(FINAL_VALUE, ((NumberInstance) instanceFacade.find(testNumber.getId(), player2)).getValue(), 0.0);
 
         /*
-         * trigger2 will execute numberOfPlayers times after a reset -> increment testNumber2 by the same amount.
-         * For each player
+         * trigger2 will execute numberOfNonEmptyTeam  times after a reset -> increment testNumber2 by the same amount.
          */
-        Assert.assertEquals(playerFacade.find(testPlayer0.getId()).getGame().getPlayers().size(), ((NumberInstance) instanceFacade.find(testNumber2.getId(), testPlayer0)).getValue(), 0.0);
+        Assert.assertEquals(3, ((NumberInstance) instanceFacade.find(testNumber2.getId(), testPlayer0)).getValue(), 0.0);
 
+        logger.error(" * * * *  * * * * * * * * * * * * CREATE testPlayer6");
         playerFacade.create(team4.getId(), new Player("TestPlayer6"));
-        Assert.assertEquals(playerFacade.find(testPlayer0.getId()).getGame().getPlayers().size(), ((NumberInstance) instanceFacade.find(testNumber2.getId(), testPlayer0)).getValue(), 0.0);
+        /**
+         * Trigger triggers one time for each non empty team -> + 3
+         */
+        Assert.assertEquals(6, ((NumberInstance) instanceFacade.find(testNumber2.getId(), testPlayer0)).getValue(), 0.0);
+
         gameModelFacade.reset(gameModel.getId());
-        Assert.assertEquals(playerFacade.find(testPlayer0.getId()).getGame().getPlayers().size(), ((NumberInstance) instanceFacade.find(testNumber2.getId(), testPlayer0)).getValue(), 0.0);
+        /**
+         * One time for each non empty team -> 3
+         */
+        Assert.assertEquals(3, ((NumberInstance) instanceFacade.find(testNumber2.getId(), testPlayer0)).getValue(), 0.0);
         /*
          * Player added in empty team.
          */
         playerFacade.create(team3.getId(), new Player("TestPlayer7"));
-        Assert.assertEquals(playerFacade.find(testPlayer0.getId()).getGame().getPlayers().size(), ((NumberInstance) instanceFacade.find(testNumber2.getId(), testPlayer0)).getValue(), 0.0);
+        /**
+         * += 4
+         */
+        Assert.assertEquals(7, ((NumberInstance) instanceFacade.find(testNumber2.getId(), testPlayer0)).getValue(), 0.0);
+
+        
         gameModelFacade.reset(gameModel.getId());
-        Assert.assertEquals(playerFacade.find(testPlayer0.getId()).getGame().getPlayers().size(), ((NumberInstance) instanceFacade.find(testNumber2.getId(), testPlayer0)).getValue(), 0.0);
+
+        
+        Assert.assertEquals(4, ((NumberInstance) instanceFacade.find(testNumber2.getId(), testPlayer0)).getValue(), 0.0);
+        // +4
         playerFacade.create(team3.getId(), new Player("TestPlayer8"));
+        // +4
         playerFacade.create(team3.getId(), new Player("TestPlayer9"));
+        // +4
         playerFacade.create(team3.getId(), new Player("TestPlayer10"));
-        Assert.assertEquals(playerFacade.find(testPlayer0.getId()).getGame().getPlayers().size(), ((NumberInstance) instanceFacade.find(testNumber2.getId(), testPlayer0)).getValue(), 0.0);
+        
+        Assert.assertEquals(4 + 3*4, ((NumberInstance) instanceFacade.find(testNumber2.getId(), testPlayer0)).getValue(), 0.0);
     }
 
     @Test
