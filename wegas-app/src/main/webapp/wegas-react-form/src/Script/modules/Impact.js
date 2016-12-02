@@ -1,16 +1,10 @@
 import React, { PropTypes } from 'react';
-import { types } from 'recast';
-import isMatch from 'lodash/fp/isMatch';
 import Form from 'jsoninput';
-import { build, extractVar, schema as variableSchema, isVariable } from './variable';
-import { handleArgs } from './args';
-import { methodSchema, genChoices } from './method';
+import { schema as variableSchema } from './Variable';
+import { methodSchema, genChoices, extractMethod, buildMethod, handleArgs } from './method';
 import { genChoices as genGlobalChoices, handleArgs as handleGlobalArgs } from './globalMethod';
 
-const {
-    builders: b,
-    visit
-} = types;
+
 const upgradeSchema = (varSchema, methodType = 'getter') => {
     const ret = {
         ...varSchema
@@ -24,65 +18,11 @@ const upgradeSchema = (varSchema, methodType = 'getter') => {
     };
     return ret;
 };
-const buildMethod = (v, type) => {
-    if (type === 'getter') {
-        return b.expressionStatement(
-            buildMethod(v)
-        );
-    }
-    return b.callExpression(
-        b.memberExpression(
-            build(v.variable),
-            b.identifier(v.method)
-        ),
-        v.args
-    );
-};
-const isGlobalMethod = node => isMatch({
-    type: 'CallExpression',
-    callee: {
-        type: 'MemberExpression'
-    }
-}, node);
-const isVarMethod = node => isMatch({
-    type: 'CallExpression',
-    callee: {
-        type: 'MemberExpression'
-    }
-}, node) &&
-    isVariable(node.callee.object);
-export const extractMethod = (node) => {
-    const ret = {
-        global: false,
-        variable: undefined,
-        method: undefined,
-        member: undefined,
-        args: []
-    };
-    visit(node, {
-        visitCallExpression: function visitCallExpression(path) {
-            const nod = path.node;
-            if (isVarMethod(nod)) {
-                ret.method = nod.callee.property.value || nod.callee.property.name;
-                ret.args = nod.arguments;
-                ret.variable = extractVar(nod.callee.object);
-                return false;
-            } else if (isGlobalMethod(nod)) {
-                ret.global = true;
-                ret.method = nod.callee.property.value || nod.callee.property.name;
-                ret.args = nod.arguments;
-                ret.member = nod.callee.object.name;
-                return false;
-            }
-            return this.traverse(path);
-        }
-    });
-    return ret;
-};
+
 /**
  * handles method call on VariableDescriptor
  */
-class VariableMethod extends React.Component {
+class Impact extends React.Component {
     constructor(props) {
         super(props);
         const {
@@ -106,10 +46,10 @@ class VariableMethod extends React.Component {
             this.setState(extractMethod(nextProps.node));
         }
     }
-    check() {
+    checkVariableMethod() {
         const schema = methodSchema(this.props.view.method, this.state.variable, this.props.type);
         if (!schema || !schema.view.choices.some(c => c.value === this.state.method)) {
-            this.setState({
+            this.setState({ // method does not exist in method's schema, remove it
                 method: undefined
             });
         } else if (this.state.variable && this.state.method) {
@@ -120,6 +60,11 @@ class VariableMethod extends React.Component {
             }
         }
     }
+    checkGlobalMethod() {
+        if (this.state.member && this.state.method) {
+            this.props.onChange(buildMethod(this.state, this.props.type));
+        }
+    }
     handleVariableChange(v) {
         if (v.indexOf('.') > -1) { // global
             const split = v.split('.');
@@ -128,13 +73,13 @@ class VariableMethod extends React.Component {
                 member: split[0],
                 method: split[1],
                 variable: undefined
-            });
+            }, this.checkGlobalMethod);
         } else {
             this.setState({
                 global: false,
                 variable: v,
                 member: undefined
-            }, this.check);
+            }, this.checkVariableMethod);
         }
     }
     render() {
@@ -159,7 +104,7 @@ class VariableMethod extends React.Component {
                         value={this.state.method}
                         onChange={v => this.setState({
                             method: v
-                        }, this.check)}
+                        }, this.checkVariableMethod)}
                     />
                 );
             }
@@ -173,7 +118,7 @@ class VariableMethod extends React.Component {
             child = child.concat(
                 handleArgs(variable, method, args, v => this.setState({
                     args: v
-                }, this.check))
+                }, this.checkVariableMethod))
             );
         }
         if (this.state.member && this.state.method) {
@@ -181,7 +126,7 @@ class VariableMethod extends React.Component {
                 handleGlobalArgs(`${this.state.member}.${this.state.method}`, this.state.args, (v) => {
                     this.setState({
                         args: v
-                    });
+                    }, this.checkGlobalMethod);
                 })
             );
         }
@@ -192,10 +137,10 @@ class VariableMethod extends React.Component {
         );
     }
 }
-VariableMethod.propTypes = {
+Impact.propTypes = {
     node: PropTypes.object,
     onChange: PropTypes.func.isRequired,
     view: PropTypes.object,
     type: PropTypes.oneOf(['getter', 'condition'])
 };
-export default VariableMethod;
+export default Impact;

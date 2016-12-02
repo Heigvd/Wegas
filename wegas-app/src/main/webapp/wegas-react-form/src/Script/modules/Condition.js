@@ -1,10 +1,10 @@
 import React, { PropTypes } from 'react';
 import { types } from 'recast';
-import Form from 'jsoninput';
-import VariableMethod, { extractMethod } from './VariableMethod';
-import { methodDescriptor } from './method';
+import Impact from './Impact';
+import { methodDescriptor, extractMethod } from './method';
+import { methodDescriptor as globalMethodDescriptor } from './globalMethod';
 import ConditionOperator from './ConditionOperator';
-import { typeToValue, valueToType } from './args';
+import { renderForm } from './args';
 
 const b = types.builders;
 /**
@@ -24,7 +24,11 @@ function defaultValue(type) {
         throw new Error(`Default value for 'returns' property '${type}' is not implemented`);
     }
 }
-class VariableCondition extends React.Component {
+function getMethodDescriptor(left) {
+    const { global, method, variable, member } = extractMethod(left);
+    return global ? globalMethodDescriptor(member, method) : methodDescriptor(variable, method);
+}
+class Condition extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -32,8 +36,7 @@ class VariableCondition extends React.Component {
             right: props.node.right,
             operator: props.node.operator || '==='
         };
-        const { method, variable } = extractMethod(this.state.left);
-        const descr = methodDescriptor(variable, method);
+        const descr = getMethodDescriptor(this.state.left);
         this.returns = descr && descr.returns; // store current method's returns
     }
     componentWillReceiveProps(nextProps) {
@@ -44,8 +47,7 @@ class VariableCondition extends React.Component {
         });
     }
     check() {
-        const { method, variable } = extractMethod(this.state.left);
-        const descr = methodDescriptor(variable, method);
+        const descr = getMethodDescriptor(this.state.left);
         if (!descr) {
             this.setState({ right: undefined });
         } else if (this.returns !== descr.returns) {
@@ -57,8 +59,7 @@ class VariableCondition extends React.Component {
         }
     }
     render() {
-        const { method, variable } = extractMethod(this.state.left);
-        const descr = methodDescriptor(variable, method);
+        const descr = getMethodDescriptor(this.state.left);
         let container;
         if (descr) {
             const schema = {
@@ -73,18 +74,12 @@ class VariableCondition extends React.Component {
                     onChange={v => this.setState({ operator: v }, this.check)}
                     type={descr.returns}
                 />
-            ), (
-                <Form
-                    key="right"
-                    schema={schema}
-                    value={typeToValue(this.state.right, schema)}
-                    onChange={v => this.setState({ right: valueToType(v, schema) }, this.check)}
-                />
+            ), (renderForm(this.state.right, schema, v => this.setState({ right: v }, this.check), undefined, 'right')
             )];
         }
         return (
             <div>
-                <VariableMethod
+                <Impact
                     {...this.props}
                     node={this.state.left}
                     onChange={v => this.setState({ left: v }, this.check)}
@@ -94,8 +89,8 @@ class VariableCondition extends React.Component {
         );
     }
 }
-VariableCondition.propTypes = {
+Condition.propTypes = {
     onChange: PropTypes.func.isRequired,
     node: PropTypes.object
 };
-export default VariableCondition;
+export default Condition;

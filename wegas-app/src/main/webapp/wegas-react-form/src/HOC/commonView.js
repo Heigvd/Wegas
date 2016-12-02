@@ -2,11 +2,11 @@ import React, { PropTypes } from 'react';
 import classNames from 'classnames';
 import styles from '../css/commonView.css';
 
-export default function comonView(Comp) {
+export default function commonView(Comp) {
     function CommonComp(props) {
         const errors = props.errorMessage && props.errorMessage.map(
-            v => (
-                <span>
+            (v, errorId) => (
+                <span key={errorId}>
                     {v}
                 </span>
 

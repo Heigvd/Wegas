@@ -1,41 +1,35 @@
 import React from 'react';
 import { types, print, parse, visit } from 'recast';
 import Form from 'jsoninput';
-import { getY } from '../../index';
 
-const Y = getY();
-const { builders: b } = types;
-// export function ArgView({ view, onChange, value, schema }) {
-//     const type = value.type;
-//     const val = value.name || value.value;
-//     console.log(schema);
-//     return (
-//         <input
-//             value={val}
-//             onChange={
-//                 event =>
-//                     onChange(b[type.charAt(0).toLowerCase() + type.slice(1)](event.target.value))
-//             }
-//         />
-//     );
-// }
+const {
+    builders: b
+} = types;
+/**
+ * Handle a Form's' schema for unknown datatypes
+ * @param {{type:string}} schema The schema
+ * @param {?=} entity optional object to merge into the schema
+ * @returns {{type:string}} a corrected / increased schema
+ */
 const argSchema = (schema, entity) => {
     const type = schema.type === 'identifier' ? 'string' : schema.type;
     return Object.assign({}, schema, {
         type,
-        view: Object.assign({}, schema.view, { entity })
+        view: Object.assign({}, schema.view, {
+            entity
+        })
     });
 };
 /**
  * Convert a value to an AST node base on a type
  * @template T
- * @param {T=} v the optional value, may pass 'undefined'
+ * @param {T=} value the optional value
  * @param {{type: string, value: T=}} schema the schema containing the type
  * and an optional default value
  * @returns {Object} AST node
  */
-function valueToType(v, schema) {
-    const val = v === undefined ? schema.value : v;
+export function valueToType(value, schema) {
+    const val = value;
     if (val === undefined) {
         return b.identifier('undefined');
     }
@@ -55,23 +49,25 @@ function valueToType(v, schema) {
         throw Error(`implement me ${schema.type}`);
     }
 }
+
 /**
  * Convert AST to value based on a type
- * @param {Object} v the AST node value
- * @param {Object} schema value's jsonschema
+ * @param {Object} value the AST node value
+ * @param {{type:string}} schema value's jsonschema
+ * @returns {?} The inferred value.
  */
-function typeToValue(v, schema) {
+export function typeToValue(value, schema) {
     const tmp = [];
-    if (!v || v.name === 'undefined') {
+    if (!value || value.name === 'undefined') {
         return undefined;
     }
     switch (schema.type) {
     case 'string':
     case 'boolean':
-        return v.value;
+        return value.value;
     case 'number':
-            // handle negative values.
-        visit(v, {
+        // handle negative values.
+        visit(value, {
             visitUnaryExpression: function visitUnaryExpression(path) {
                 tmp.push(path.node.operator);
                 this.traverse(path);
@@ -81,50 +77,84 @@ function typeToValue(v, schema) {
                 return false;
             }
         });
-        return tmp.join('');
+        return Number(tmp.join(''));
     case 'identifier':
-        return v.name;
+        return value.name;
     case 'array':
     case 'object':
-        return Function(`return ${print(v).code};`)(); // eslint-disable-line no-new-func
+        return Function(`return ${print(value).code};`)(); // eslint-disable-line no-new-func
     default:
         throw Error(`implement me ${schema.type}`);
     }
 }
-function handleMethodArgs(methodDescr, args, onChange, entity) {
+
+/**
+ * Check if a given AST matches it's schema
+ * @param {Object} value The ast node
+ * @param {{type:string}} schema The schema to check against
+ */
+function matchSchema(value, schema) {
+    const newVal = valueToType(typeToValue(value, schema), schema);
+    return value &&
+        newVal.type === value.type &&
+        newVal.name === value.name &&
+        newVal.value === value.value;
+}
+/**
+ * Create a Form for an AST node
+ * @param {Object} astValue The AST node
+ * @param {{type:string}} descriptor The schema for the given node
+ * @param {function(Object):void} onChange Callback for a value change.
+ * @param {?=} entity An optional entity to merge into schema's view
+ * @param {string=} key An optional key for React. In case this form is in an array
+ * @returns {JSX.Element} Form element
+ */
+export function renderForm(astValue, descriptor, onChange, entity, key) {
+    return (
+        <Form
+            key={key}
+            schema={argSchema(descriptor, entity)}
+            value={matchSchema(astValue, descriptor) ?
+                       typeToValue(astValue, descriptor) :
+                       undefined}
+            onChange={v => onChange(valueToType(v, descriptor))}
+        />
+    );
+}
+/**
+ * Generate an array of forms for each function's arguments
+ * @param {{arguments:{type:string}[]}} methodDescr a Wegas method descriptor
+ * @param {Object[]} args An array of AST nodes
+ * @param {function(Object[]):void} onChange Callback function receiving updated AST array
+ * @param {?=} entity An optional entity to merge into each form schema's view
+ * @returns {JSX.Element[]} An array of form elements.
+ */
+export function handleMethodArgs(methodDescr, args, onChange, entity) {
     if (!methodDescr) {
         return [];
     }
     const argDescr = methodDescr.arguments;
     const ret = argDescr.map((v, i) => args[i] || valueToType(undefined, v));
 
-    if (args.length !== argDescr.length) { // remove/create unknown arguments
-        setTimeout(() => onChange(ret), 0); // delay to let react's render end.
-        return [];
-    }
+    // if (args.length !== argDescr.length) { // remove/create unknown arguments
+    //     setTimeout(() => onChange(ret), 0); // delay to let react's render end.
+    //     return [];
+    // }
+    // let changed = false;
+    // ret.forEach((val, i) => {
+    //     if (!matchSchema(val, argDescr[i])) {
+    //         ret[i] = valueToType(undefined, argDescr[i]);
+    //         changed = true;
+    //     }
+    // });
+    // if (changed) {
+    //     setTimeout(() => onChange(ret), 0); // delay to let react's render end.
+    //     return [];
+    // }
     return argDescr.map((a, i) => {
         const val = ret[i];
-        return (
-            <Form
-                key={`arg${i}`}
-                schema={argSchema(a, entity)}
-                value={typeToValue(val, a)}
-                onChange={(v) => {
-                    ret[i] = valueToType(v, a);
-                    onChange(ret);
-                }}
-            />
-        );
+        return renderForm(val, a, (v) => {
+            ret[i] = v; onChange(ret);
+        }, entity, i);
     });
 }
-function handleArgs(variable, method, args, onChange) {
-    const methodDescr = Y.Wegas.Facade.Variable.cache.find('name', variable)
-        .getMethodCfgs()[method];
-    return handleMethodArgs(methodDescr, args, onChange, variable);
-}
-export {
-    handleArgs,
-    handleMethodArgs,
-    valueToType,
-    typeToValue
-};

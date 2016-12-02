@@ -68,3 +68,14 @@ export function handleArgs(method, args, onChange) {
     const methodDescr = IMPACT.getter[method] || IMPACT.condition[method];
     return handleMethodArgs(methodDescr, args, onChange);
 }
+
+export function methodDescriptor(member, method) {
+    return IMPACT.condition[`${member}.${method}`] || IMPACT.getter[`${member}.${method}`];
+}
+export function labelForMethod(name) {
+    const impact = IMPACT.condition[name] || IMPACT.getter[name];
+    if (impact) {
+        return impact.label;
+    }
+    return undefined;
+}

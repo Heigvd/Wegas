@@ -42,7 +42,7 @@ class TreeVariableSelect extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            search: labelForVariable(props.value),
+            search: labelForVariable(props.value) || this.labelForAdditional(props.value),
             searching: false
         };
         this.handleOnSelect = this.handleOnSelect.bind(this);
@@ -50,7 +50,7 @@ class TreeVariableSelect extends React.Component {
     handleOnSelect(v) {
         this.setState({
             searching: false,
-            search: labelForVariable(v)
+            search: labelForVariable(v) || this.labelForAdditional(v)
         }, () => this.props.onChange(v));
     }
     /**
@@ -61,12 +61,12 @@ class TreeVariableSelect extends React.Component {
             this.props.view.selectable)
             .concat(this.props.view.additional);
     }
-    labelForAdditional() {
-        const found = this.props.view.additional.find(i => i.value === this.props.value);
+    labelForAdditional(value) {
+        const found = this.props.view.additional.find(i => i.value === value);
         if (found) {
-            return found.label || this.props.value;
+            return found.label || value;
         }
-        return undefined;
+        return '';
     }
     renderSearch() {
         if (this.state.searching) {
@@ -107,7 +107,7 @@ class TreeVariableSelect extends React.Component {
                 >
                     <div style={{ fontSize: '75%', opacity: 0.5 }}>
                         {buildPath(this.props.value)} </div>
-                    {labelForVariable(this.props.value) || this.labelForAdditional() || 'select...'}
+                    {labelForVariable(this.props.value) || this.labelForAdditional(this.props.value) || 'select...'}
                 </a>
                 {this.renderSearch()}
             </div>);

@@ -1,7 +1,15 @@
 import React, { PropTypes } from 'react';
+import { types } from 'recast';
+import isMatch from 'lodash/fp/isMatch';
 import SelectView from '../../Views/select';
 import { getY } from '../../index';
+import { isVariable, extractVar, build } from './Variable';
+import { handleMethodArgs } from './args';
 
+const {
+    builders: b,
+    visit
+} = types;
 const Y = getY();
 function methodDescriptor(variable, method) {
     try {
@@ -27,7 +35,11 @@ function genChoices(variable, type) {
             label: methods[v].label || v
         }));
 }
-
+function handleArgs(variable, method, args, onChange) {
+    const methodDescr = Y.Wegas.Facade.Variable.cache.find('name', variable)
+        .getMethodCfgs()[method];
+    return handleMethodArgs(methodDescr, args, onChange, variable);
+}
 // Replace with select with if it stays in this shape
 function MethodView({
         value,
@@ -63,5 +75,60 @@ const methodSchema = (view, variable, type) => {
         })
     };
 };
+const buildMethod = (v, type) => {
+    if (type === 'getter') {
+        return b.expressionStatement(
+            buildMethod(v)
+        );
+    }
+    return b.callExpression(
+        b.memberExpression(
+            v.variable ? build(v.variable) : b.identifier(v.member),
+            b.identifier(v.method)
+        ),
+        v.args
+    );
+};
+const isGlobalMethod = node => isMatch({
+    type: 'CallExpression',
+    callee: {
+        type: 'MemberExpression'
+    }
+}, node);
+const isVarMethod = node => isMatch({
+    type: 'CallExpression',
+    callee: {
+        type: 'MemberExpression'
+    }
+}, node) &&
+    isVariable(node.callee.object);
+const extractMethod = (node) => {
+    const ret = {
+        global: false,
+        variable: undefined,
+        method: undefined,
+        member: undefined,
+        args: []
+    };
+    visit(node, {
+        visitCallExpression: function visitCallExpression(path) {
+            const nod = path.node;
+            if (isVarMethod(nod)) {
+                ret.method = nod.callee.property.value || nod.callee.property.name;
+                ret.args = nod.arguments;
+                ret.variable = extractVar(nod.callee.object);
+                return false;
+            } else if (isGlobalMethod(nod)) {
+                ret.global = true;
+                ret.method = nod.callee.property.value || nod.callee.property.name;
+                ret.args = nod.arguments;
+                ret.member = nod.callee.object.name;
+                return false;
+            }
+            return this.traverse(path);
+        }
+    });
+    return ret;
+};
 
-export { methodSchema, methodDescriptor, genChoices };
+export { methodSchema, methodDescriptor, genChoices, extractMethod, buildMethod, handleArgs };

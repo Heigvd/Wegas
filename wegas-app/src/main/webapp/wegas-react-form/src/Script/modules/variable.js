@@ -38,6 +38,7 @@ export const extractVar = (node) => {
     });
     return ret;
 };
+
 export const build = v => (
 b.callExpression(
     b.memberExpression(
