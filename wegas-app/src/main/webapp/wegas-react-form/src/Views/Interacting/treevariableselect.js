@@ -117,7 +117,7 @@ class TreeVariableSelect extends React.Component {
 TreeVariableSelect.propTypes = {
     view: PropTypes.shape({
         selectable: PropTypes.func,
-        additional: PropTypes.arrayOf(PropTypes.shape(TreeSelect.propTypes))
+        additional: PropTypes.arrayOf(PropTypes.shape(TreeSelect.propTypes.items))
     // maxLevel: PropTypes.number,
     // root: PropTypes.string,
     // classFilter: PropTypes.oneOfType([
