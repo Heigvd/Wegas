@@ -3,6 +3,10 @@ import { visit, types } from 'recast';
 import isMatch from 'lodash/fp/isMatch';
 
 const AND = '&&';
+/**
+ * Join multiple statements into AND condition 2 by 2
+ * @param {Object[]} ast Array of statements
+ */
 function join(ast) {
     let st;
     switch (ast.length) {

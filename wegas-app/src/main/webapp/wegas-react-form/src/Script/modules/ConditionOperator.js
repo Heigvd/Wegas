@@ -21,6 +21,9 @@ const NUMBERBINARYOPERATORS = BINARYOPERATORS.concat([{
     value: '<=',
     label: 'is smaller or equal to'
 }]);
+/**
+ * Binary operator form.
+ */
 function ConditionOperator({ type, operator, onChange }) {
     const choices = type === 'number' ? NUMBERBINARYOPERATORS : BINARYOPERATORS;
     const schema = {

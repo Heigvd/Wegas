@@ -12,8 +12,16 @@ function collector(coll) {
         return false;
     };
 }
+/**
+ * HOC split multiple statements.
+ * @param {React.Component} Comp Component to augment.
+ */
 function multipleStatement(Comp) {
     const RemovableComp = removeStatement(Comp);
+    /**
+     * split code into expression chunk.
+     * @param {{code:Object, onChange:(AST:Object)=>void, type:string}} props Component props
+     */
     function MultipleStatement(props) {
         const { code, onChange, type, ...restProps } = props;
         const rootExpression = [];

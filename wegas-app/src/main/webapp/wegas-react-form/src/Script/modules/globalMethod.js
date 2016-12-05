@@ -1,5 +1,7 @@
 import { handleMethodArgs } from './args';
-
+/**
+ * hold Global Methods
+ */
 const IMPACT = {
     getter: {
         'RequestManager.sendCustomEvent': {
@@ -55,6 +57,15 @@ const IMPACT = {
         }
     }
 };
+/**
+ * create a choice config for a given type.
+ * @param {string=} type global method type (getter, condition)
+ * @returns {{
+        label: string;
+        value: string;
+        className: string;
+    }[]} array of choices
+ */
 export function genChoices(type = 'getter') {
     const impacts = IMPACT[type];
     return Object.keys(impacts).map(k => ({
@@ -63,23 +74,39 @@ export function genChoices(type = 'getter') {
         className: impacts[k].className
     }));
 }
-
-export function handleArgs(method, args, onChange) {
-    const methodDescr = IMPACT.getter[method] || IMPACT.condition[method];
-    return handleMethodArgs(methodDescr, args, onChange);
-}
-
+/**
+ * Get a schema for a given method.
+ * @param {string} member
+ * @param {string} method
+ * @returns {{label:string,
+            arguments:[],
+            className:string=,
+            returns:string=}} the schema
+ */
 export function methodDescriptor(member, method) {
     return IMPACT.condition[`${member}.${method}`] || IMPACT.getter[`${member}.${method}`];
 }
-export function labelForMethod(name) {
-    const impact = IMPACT.condition[name] || IMPACT.getter[name];
-    if (impact) {
-        return impact.label;
-    }
-    return undefined;
+/**
+ * get argument's form for given method.
+ * @param {string} member global member
+ * @param {string} method global method.
+ * @param {Object[]} args Current arguments' value, AST nodes
+ * @param {function(Object[]):void} onChange receive updated arguments. AST nodes
+ */
+export function handleArgs(member, method, args, onChange) {
+    const methodDescr = methodDescriptor(member, method);
+    return handleMethodArgs(methodDescr, args, onChange);
 }
-
+/**
+ * register new global method under given type.
+ * @param {string} type Global type (getter, condition)
+ * @param {{key:{label:string,
+            arguments:[],
+            className:string=,
+            returns:string=}
+        }} methodsObject a key value config. Key is a global method ("member.method")
+ * @returns {void}
+ */
 export function register(type, methodsObject) {
     IMPACT[type] = {
         ...IMPACT[type],

@@ -1,7 +1,13 @@
 import React, { PropTypes } from 'react';
 import { types } from 'recast';
-
+/**
+ * HOC single statement builder
+ */
 function singleStatement(Comp) {
+    /**
+     * Component
+     * @param {{code:Object[], onChange:(AST:Object[])=>void}} props  Component's props
+     */
     function SingleStatement(props) {
         const { code, onChange } = props;
         const stmt = code[0] || types.builders.emptyStatement();

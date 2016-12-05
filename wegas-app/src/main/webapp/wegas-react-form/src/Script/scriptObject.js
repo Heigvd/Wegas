@@ -1,6 +1,13 @@
 import React, { PropTypes } from 'react';
-
+/**
+ * HOC Handle Wegas's script object
+ * @param {React.Component} Comp Component to augment
+ */
 function scriptObject(Comp) {
+    /**
+     * @template Script
+     * @param {{value:Script,onChange:(script:Script)=>void, view:Object}} props Component's props
+     */
     function ScriptObject(props) {
         const { value, onChange, view } = props;
         const val = value || {};

@@ -123,7 +123,7 @@ class Impact extends React.Component {
         }
         if (this.state.member && this.state.method) {
             child = child.concat(
-                handleGlobalArgs(`${this.state.member}.${this.state.method}`, this.state.args, (v) => {
+                handleGlobalArgs(this.state.member, this.state.method, this.state.args, (v) => {
                     this.setState({
                         args: v
                     }, this.checkGlobalMethod);

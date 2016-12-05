@@ -2,7 +2,9 @@ import React, { PropTypes } from 'react';
 import { parse, print, types } from 'recast';
 import classNames from 'classnames';
 import styles from '../css/string.css';
-
+/**
+ * Toggle view between parsed and code
+ */
 class ViewSrc extends React.Component {
     constructor(props) {
         super(props);
@@ -42,8 +44,14 @@ ViewSrc.propTypes = {
     children: PropTypes.element.isRequired,
     error: PropTypes.string
 };
-
+/**
+ * HOC Parse code into AST and reverse onChange
+ * @param {React.Component} Comp Component to augment
+ */
 function parsed(Comp) {
+    /**
+     * @param {{value:string, onChange:(code:string)=>void}} props Component props
+     */
     function Parsed(props) {
         const { value, onChange, ...restProps } = props;
         let error = '';

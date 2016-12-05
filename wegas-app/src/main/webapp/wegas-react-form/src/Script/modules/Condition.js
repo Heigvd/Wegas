@@ -24,8 +24,13 @@ function defaultValue(type) {
         throw new Error(`Default value for 'returns' property '${type}' is not implemented`);
     }
 }
-function getMethodDescriptor(left) {
-    const { global, method, variable, member } = extractMethod(left);
+/**
+ * Find method's schema. Delegate to different method if it's a global method or a variable method.
+ * @param {Object} node ast left node
+ * @returns {Object} schema for given ast node
+ */
+function getMethodDescriptor(node) {
+    const { global, method, variable, member } = extractMethod(node);
     return global ? globalMethodDescriptor(member, method) : methodDescriptor(variable, method);
 }
 class Condition extends React.Component {
