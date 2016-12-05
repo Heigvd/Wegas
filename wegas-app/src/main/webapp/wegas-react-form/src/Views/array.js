@@ -4,6 +4,8 @@ import styles from '../css/array.css';
 import IconButton from '../Components/IconButton';
 
 function ArrayWidget(props) {
+    const valueLength = props.value ? props.value.length : 0;
+    const { maxItems = Infinity, minItems = 0 } = props.schema;
     function renderChild(child, index) {
         return (
             <div
@@ -13,36 +15,30 @@ function ArrayWidget(props) {
                 <div
                     className={styles.liste2}
                 >
-                    <span
-                        style={{ marginRight: '5px' }}
-                    >
+                    <span>
                         {child}
                     </span>
                     <div
                         className={styles.opacity}
                     >
-                        <IconButton
+                        {minItems < valueLength ? <IconButton
                             icon="fa fa-trash"
                             tooltip="remove"
                             onClick={props.onChildRemove(index)}
                             grey
-                        />
+                        /> : null}
                     </div>
                 </div>
             </div>);
     }
 
     const children = React.Children.map(props.children, renderChild);
-    const valueLength = props.value ? props.value.length : 0;
     return (
 
         <div
             className={styles.label}
         >
-            <span>
-                {props.view.label}
-            </span>
-            {props.schema.maxItems > valueLength ? <IconButton
+            {maxItems > valueLength ? <IconButton
                 icon="fa fa-plus"
                 onClick={props.onChildAdd}
                 tooltip="add"
