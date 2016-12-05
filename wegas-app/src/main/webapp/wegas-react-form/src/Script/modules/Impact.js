@@ -1,8 +1,9 @@
 import React, { PropTypes } from 'react';
 import Form from 'jsoninput';
-import { schema as variableSchema } from './Variable';
+import { print, parse } from 'recast';
+import { schema as variableSchema, varExist } from './Variable';
 import { methodSchema, genChoices, extractMethod, buildMethod, handleArgs } from './method';
-import { genChoices as genGlobalChoices, handleArgs as handleGlobalArgs } from './globalMethod';
+import { genChoices as genGlobalChoices, handleArgs as handleGlobalArgs, methodDescriptor } from './globalMethod';
 
 
 const upgradeSchema = (varSchema, methodType = 'getter') => {
@@ -46,6 +47,22 @@ class Impact extends React.Component {
             this.setState(extractMethod(nextProps.node));
         }
     }
+    checkHandled() {
+        if (this.props.node && this.props.node.type !== 'EmptyStatement') {
+            if (!this.state.global && !this.state.variable) {
+                return 'Not handled';
+            }
+            if (this.state.global) {
+                if (!methodDescriptor(this.state.member, this.state.method)) {
+                    return `No global ${this.state.member}.${this.state.method}`;
+                }
+            }
+            if (this.state.variable && !varExist(this.state.variable)) {
+                return `No variable ${this.state.variable}`;
+            }
+        }
+        return '';
+    }
     checkVariableMethod() {
         const schema = methodSchema(this.props.view.method, this.state.variable, this.props.type);
         if (!schema || !schema.view.choices.some(c => c.value === this.state.method)) {
@@ -84,23 +101,37 @@ class Impact extends React.Component {
     }
     render() {
         const {
-            view
+            view,
+            type,
+            node
         } = this.props;
+        const error = this.checkHandled();
+        if (error) {
+            return (<div>
+                <input
+                    defaultValue={print(node).code}
+                    onChange={ev => this.setState(extractMethod(parse(ev.target.value)),
+                        () => this.props.onChange(buildMethod(this.state, type)))
+                }
+                />
+                <div>{error}</div>
+            </div>);
+        }
         let child = [(
             <Form
                 key="variable"
-                schema={upgradeSchema(variableSchema(view.variable), this.props.type)}
+                schema={upgradeSchema(variableSchema(view.variable), type)}
                 value={this.state.global ? `${this.state.member}.${this.state.method}` : this.state.variable}
                 onChange={this.handleVariableChange}
             />
-            )];
+        )];
         if (this.state.variable) {
-            const schema = methodSchema(view.method, this.state.variable, this.props.type);
+            const schema = methodSchema(view.method, this.state.variable, type);
             if (schema) {
                 child.push(
                     <Form
                         key="method"
-                        schema={methodSchema(view.method, this.state.variable, this.props.type)}
+                        schema={methodSchema(view.method, this.state.variable, type)}
                         value={this.state.method}
                         onChange={v => this.setState({
                             method: v

@@ -2,6 +2,7 @@ import { types } from 'recast';
 import React, { PropTypes } from 'react';
 import Form from 'jsoninput';
 import isMatch from 'lodash/fp/isMatch';
+import { getY } from '../../index';
 
 const {
     builders: b,
@@ -21,7 +22,7 @@ export const isVariable = node => isMatch({
         }
     }
 }, node);
-
+export const varExist = name => Boolean(getY().Wegas.Facade.Variable.cache.find('name', name));
 export const extractVar = (node) => {
     let ret;
     visit(node, {
