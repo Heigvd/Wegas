@@ -79,3 +79,10 @@ export function labelForMethod(name) {
     }
     return undefined;
 }
+
+export function register(type, methodsObject) {
+    IMPACT[type] = {
+        ...IMPACT[type],
+        ...methodsObject
+    };
+}

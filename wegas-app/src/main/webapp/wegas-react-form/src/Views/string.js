@@ -1,5 +1,4 @@
 import React, { PropTypes } from 'react';
-import classNames from 'classnames';
 import debounce from '../HOC/callbackDebounce';
 import commonView from '../HOC/commonView';
 import styles from '../css/string.css';

@@ -5,6 +5,7 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import './defaultViews';
+import { register } from './Script/index';
 import { getY } from './index';
 
 injectTapEventPlugin();
@@ -184,6 +185,7 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
             }
         }
     });
+Form.register = register;
 
 /* Add relevant plugin*/
 // Wegas.Form.ATTRS.plugins = Y.clone(Wegas.Widget.ATTRS.plugins);
