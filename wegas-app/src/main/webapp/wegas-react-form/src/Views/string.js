@@ -20,6 +20,7 @@ function StringView(props) {
 
                 }}
                 defaultValue={props.value}
+                disabled={props.view.disabled}
             />
         );
     }
@@ -28,6 +29,7 @@ function StringView(props) {
         type="text"
         defaultValue={props.value}
         onChange={ev => props.onChange(ev.target.value)}
+        disabled={props.view.disabled}
     />
     );
 }
@@ -36,7 +38,8 @@ StringView.propTypes = {
     onChange: PropTypes.func.isRequired,
     value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     view: PropTypes.shape({
-        rows: PropTypes.number
+        rows: PropTypes.number,
+        disabled: PropTypes.bool
     })
 };
 
