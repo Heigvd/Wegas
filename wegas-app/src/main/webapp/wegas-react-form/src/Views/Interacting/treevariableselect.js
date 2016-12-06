@@ -69,7 +69,7 @@ class TreeVariableSelect extends React.Component {
         return '';
     }
     renderSearch() {
-        if (this.state.searching) {
+        if (this.state.searching || !this.props.value) {
             return (
                 <div style={{ position: 'absolute', top: 0, zIndex: 1000, backgroundColor: 'white', boxShadow: '0 2px 5px black', borderRadius: '3px' }}>
                     <input
