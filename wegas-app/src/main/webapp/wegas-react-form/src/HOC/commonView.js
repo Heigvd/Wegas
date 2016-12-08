@@ -23,7 +23,6 @@ export default function commonView(Comp) {
                         [styles.borderTop]: props.view.borderTop
                     })
                 }
-                style={{ marginTop: '20px' }}
             >
                 <div
                     className={styles.label}

@@ -1,5 +1,10 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 
+function visibleSelector(from = document, selector) {
+    // get visible elements
+    return Array.prototype.filter.call(
+        from.querySelectorAll(selector), n => n.offsetParent);
+}
 class HandleUpDown extends React.Component {
     constructor(props) {
         super(props);
@@ -22,8 +27,7 @@ class HandleUpDown extends React.Component {
             return;
         }
         const curr = document.activeElement;
-        const heads = Array.prototype.filter.call(
-            this.root.querySelectorAll(this.props.selector), n => n.offsetParent);
+        const heads = visibleSelector(this.root, this.props.selector);
         const i = heads.indexOf(curr) + dir;
         if (heads[i]) {
             heads[i].focus();
@@ -42,5 +46,9 @@ class HandleUpDown extends React.Component {
             </div>);
     }
 }
+HandleUpDown.propTypes = {
+    children: PropTypes.node.isRequired,
+    selector: PropTypes.string.isRequired
+};
 
 export default HandleUpDown;

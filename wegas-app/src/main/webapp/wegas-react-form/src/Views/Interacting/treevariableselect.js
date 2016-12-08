@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react';
+import Popover from '../../Components/Popover';
 import TreeSelect from '../../Components/tree/TreeSelect';
 import { getY } from '../../index';
 
@@ -43,7 +44,7 @@ class TreeVariableSelect extends React.Component {
         super(props);
         this.state = {
             search: labelForVariable(props.value) || this.labelForAdditional(props.value),
-            searching: false
+            searching: !props.value
         };
         this.handleOnSelect = this.handleOnSelect.bind(this);
     }
@@ -68,10 +69,13 @@ class TreeVariableSelect extends React.Component {
         }
         return '';
     }
-    renderSearch() {
-        if (this.state.searching || !this.props.value) {
-            return (
-                <div style={{ position: 'absolute', top: 0, zIndex: 1000, backgroundColor: 'white', boxShadow: '0 2px 5px black', borderRadius: '3px' }}>
+    render() {
+        return (
+            <div>
+                <Popover
+                    show={this.state.searching}
+                    onClickOutside={() => this.setState({ searching: false })}
+                >
                     <input
                         ref={(n) => {
                             if (n) {
@@ -84,21 +88,23 @@ class TreeVariableSelect extends React.Component {
                             search: ev.target.value
                         })}
                     />
-                    <TreeSelect
-                        match={match}
-                        selected={this.props.value}
-                        items={this.genItems()}
-                        search={this.state.search}
-                        onSelect={this.handleOnSelect}
-                    />
-                </div>
-            );
-        }
-        return null;
-    }
-    render() {
-        return (
-            <div style={{ position: 'relative' }}>
+                    <div
+                        style={{
+                            padding: '5px 10px',
+                            backgroundColor: 'white',
+                            boxShadow: '0 2px 5px black',
+                            borderRadius: '3px'
+                        }}
+                    >
+                        <TreeSelect
+                            match={match}
+                            selected={this.props.value}
+                            items={this.genItems()}
+                            search={this.state.search}
+                            onSelect={this.handleOnSelect}
+                        />
+                    </div>
+                </Popover>
                 <a
                     tabIndex="0"
                     onFocus={() => this.setState({
@@ -109,8 +115,8 @@ class TreeVariableSelect extends React.Component {
                         {buildPath(this.props.value)} </div>
                     {labelForVariable(this.props.value) || this.labelForAdditional(this.props.value) || 'select...'}
                 </a>
-                {this.renderSearch()}
-            </div>);
+            </div>
+        );
     }
 }
 
@@ -118,13 +124,13 @@ TreeVariableSelect.propTypes = {
     view: PropTypes.shape({
         selectable: PropTypes.func,
         additional: PropTypes.arrayOf(PropTypes.shape(TreeSelect.propTypes.items))
-    // maxLevel: PropTypes.number,
-    // root: PropTypes.string,
-    // classFilter: PropTypes.oneOfType([
-    //     PropTypes.arrayOf(PropTypes.string),
-    //     PropTypes.string
-    // ]),
-    // selectableLevels: PropTypes.arrayOf(PropTypes.number)
+        // maxLevel: PropTypes.number,
+        // root: PropTypes.string,
+        // classFilter: PropTypes.oneOfType([
+        //     PropTypes.arrayOf(PropTypes.string),
+        //     PropTypes.string
+        // ]),
+        // selectableLevels: PropTypes.arrayOf(PropTypes.number)
     }),
     value: PropTypes.string,
     onChange: PropTypes.func.isRequired
