@@ -195,6 +195,11 @@ public class UpdateController {
     private void updateScope(VariableDescriptor vd) {
         if (!(vd.getScope() instanceof GameModelScope)) {
             EntityManager em = this.getEntityManager();
+
+            Collection<VariableInstance> values = vd.getScope().getVariableInstancesByKeyId().values();
+            for (VariableInstance vi : values) {
+                em.remove(vi);
+            }
             GameModelScope scope = new GameModelScope();
             scope.setBroadcastScope("GameScope");
             scope.setVariableDescscriptor(vd);
@@ -251,6 +256,43 @@ public class UpdateController {
         sb.append("]");
 
         return sb.toString();
+    }
+
+    private void updateListDescriptorScope(GameModel gameModel) {
+        List<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
+
+        for (VariableDescriptor vd : variableDescriptors) {
+            if (vd instanceof ListDescriptor) {
+                this.updateScope(vd);
+            }
+        }
+
+    }
+
+    private String lawUpdateScope(GameModel gameModel) {
+        this.updateListDescriptorScope(gameModel);
+        StringBuilder sb = new StringBuilder();
+        try {
+            sb.append("[");
+
+            ListDescriptor etapes = (ListDescriptor) VariableDescriptorFacade.lookup().find(gameModel, "etapes");
+            for (VariableDescriptor item : etapes.getItems()) {
+                this.updateScope(item);
+            }
+
+            sb.append("]");
+
+        } catch (WegasNoResultException ex) {
+            java.util.logging.Logger.getLogger(UpdateController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return sb.toString();
+    }
+
+    @GET
+    @Path("UpdateLawScope/{gameModelId : ([1-9][0-9]*)}")
+    public String lawScopeUpdate(@PathParam("gameModelId") Long gameModelId) {
+        GameModel find = gameModelFacade.find(gameModelId);
+        return lawUpdateScope(find);
     }
 
     @GET
