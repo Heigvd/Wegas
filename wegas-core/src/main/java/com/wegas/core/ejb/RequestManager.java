@@ -473,6 +473,10 @@ public class RequestManager {
         this.markProcessingStartTime();
     }
 
+    public void clear() {
+        this.getEntityManager().clear();
+    }
+
     @PreDestroy
     public void preDestroy() {
         while (!lockedToken.isEmpty()) {
@@ -487,7 +491,7 @@ public class RequestManager {
         this.logRequest();
 
         //this.getEntityManager().flush();
-        this.getEntityManager().clear();
+        this.clear();
     }
 
     /**

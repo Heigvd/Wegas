@@ -117,7 +117,7 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
          */
         getEntityManager().flush();
         if (playerAction.getClear()) {
-            getEntityManager().clear();
+            requestManager.clear();
         }
     }
 

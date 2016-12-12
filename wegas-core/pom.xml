@@ -81,10 +81,10 @@
             <artifactId>json-patch</artifactId>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>net.sf.ehcache</groupId>
             <artifactId>ehcache</artifactId>
-        </dependency>
+        </dependency> -->
         <!--<dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-jaxb-annotations</artifactId>
@@ -130,7 +130,7 @@
         </dependency>-->
         <dependency>
             <groupId>fish.payara.extras</groupId>
-            <artifactId>payara-embedded-all</artifactId>
+            <artifactId>payara-micro</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>

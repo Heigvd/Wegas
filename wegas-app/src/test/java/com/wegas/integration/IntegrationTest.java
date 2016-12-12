@@ -9,11 +9,10 @@ package com.wegas.integration;
 
 import com.wegas.core.Helper;
 import com.wegas.utils.TestHelper;
+import fish.payara.micro.PayaraMicro;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import junit.framework.Assert;
 import net.sourceforge.jwebunit.junit.JWebUnit;
 import static net.sourceforge.jwebunit.junit.JWebUnit.*;
@@ -32,16 +31,13 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.glassfish.embeddable.BootstrapProperties;
-import org.glassfish.embeddable.Deployer;
-import org.glassfish.embeddable.GlassFish;
 import org.glassfish.embeddable.GlassFishException;
-import org.glassfish.embeddable.GlassFishProperties;
-import org.glassfish.embeddable.GlassFishRuntime;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -49,33 +45,39 @@ import org.junit.Test;
  */
 public class IntegrationTest {
 
-    private static GlassFish glassfish;
+    //private static GlassFish glassfish;
+    private static PayaraMicro payara;
     private static String appName;
+    private static int port = 5454;
     private HttpClient client;
 
     private String cookie;
     private String baseURL;
+
     private Long artosId;
+
+    private static Logger logger = LoggerFactory.getLogger(IntegrationTest.class);
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        BootstrapProperties bootstrapProperties = new BootstrapProperties();
 
-        GlassFishProperties glassfishProperties = new GlassFishProperties();
-        glassfishProperties.setPort("http-listener-1", 5454);
-        glassfishProperties.setPort("http-listener-2", 5353);
-        //glassfishProperties.setInstanceRoot("./src/test/glassfish/domains/domain1");
-        glassfishProperties.setConfigFileURI((new File("./src/test/glassfish/domains/domain1/config/domain.xml")).toURI().toString());
-        //glassfishProperties.setConfigFileReadOnly(false);
+        File domainConfig = new File("./src/test/glassfish/microdomain.xml");
+        File theWar = new File("./target/Wegas.war");
+        //File rootDir = new File("./src/test/glassfish/domains/domain1");
+
+        payara = PayaraMicro.getInstance();
+
+        payara.setAlternateDomainXML(domainConfig);
+        payara.setHzClusterName("hz-WegasIntegrationTest-" + Helper.genToken(10));
+
+        payara.setHttpPort(port);
+
         TestHelper.resetTestDB();
-        glassfish = GlassFishRuntime.bootstrap(bootstrapProperties).newGlassFish(glassfishProperties);
-        Logger.getLogger("javax.enterprise.system.tools.deployment").setLevel(Level.OFF);
-        Logger.getLogger("javax.enterprise.system").setLevel(Level.OFF);
-        glassfish.start();
 
-        File war = new File("./target/Wegas.war");
-        Deployer deployer = glassfish.getDeployer();
-        appName = deployer.deploy(war);
+        payara.bootStrap();
+        port = payara.getHttpPort();
+        payara.getRuntime().deploy(theWar);
+        appName = payara.getRuntime().getDeployedApplicationNames().iterator().next();
 
         File appDirectory = new File("target/Wegas/");
         Helper.setWegasRootDirectory(appDirectory.getAbsolutePath());
@@ -83,19 +85,16 @@ public class IntegrationTest {
 
     @AfterClass
     public static void tearDownClass() throws Exception {
-        if (glassfish != null) {
-            Deployer deployer = glassfish.getDeployer();
-            if (deployer != null) {
-                deployer.undeploy(appName);
-            }
-            glassfish.dispose();
+        if (payara != null) {
+            payara.getRuntime().undeploy(appName);
+            payara.shutdown();
         }
     }
 
     @Before
     public void setUp() throws IOException, JSONException {
         client = HttpClientBuilder.create().build();
-        baseURL = "http://localhost:5454/Wegas";
+        baseURL = "http://localhost:" + port + "/" + appName;
         setBaseUrl(baseURL);
 
         login();

@@ -87,9 +87,14 @@
                 <property value="${com.sun.aas.installRoot}/lib/install/applications/admingui.war" name="adminConsoleDownloadLocation" />
                 <property value="${com.sun.aas.installRoot}/.." name="ipsRoot" />
             </admin-service>
-            <jms-service default-jms-host="default_JMS_host" type="EMBEDDED">
+
+            <hazelcast-runtime-configuration cluster-group-name="wegas-test_${user.name}" enabled="true"></hazelcast-runtime-configuration>
+            <ejb-container>
+                <ejb-timer-service ejb-timer-service="Hazelcast"></ejb-timer-service>
+            </ejb-container>
+            <!--<jms-service default-jms-host="default_JMS_host" type="EMBEDDED">
                 <jms-host port="${JMS_PROVIDER_PORT}" name="default_JMS_host" host="localhost"></jms-host>
-            </jms-service>
+            </jms-service>-->
             <connector-service shutdown-timeout-in-seconds="30">
             </connector-service>
             <transaction-service tx-log-dir="${com.sun.aas.instanceRoot}/logs" />

@@ -7,6 +7,7 @@
  */
 package com.wegas.core;
 
+import com.hazelcast.core.HazelcastInstance;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.NamedEntity;
@@ -33,6 +34,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -838,6 +840,18 @@ public class Helper {
         @Override
         protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
             return this.size() >= this.cacheSize;
+        }
+    }
+
+    public static HazelcastInstance getHazelcastInstance() {
+        HazelcastInstance instance;
+        try {
+            Context ctx = new InitialContext();
+            instance = (HazelcastInstance) ctx.lookup("payara/Hazelcast");
+            return instance;
+        } catch (NamingException ex) {
+            logger.error("No Hazelcast instance", ex);
+            return null;
         }
     }
 }
