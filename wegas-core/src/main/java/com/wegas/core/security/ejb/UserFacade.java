@@ -7,6 +7,7 @@
  */
 package com.wegas.core.security.ejb;
 
+import com.hazelcast.core.ILock;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.GameFacade;
@@ -608,23 +609,32 @@ public class UserFacade extends BaseFacade<User> {
      */
     @Schedule(hour = "4", minute = "12")
     public void removeIdleGuests() {
-        logger.info("removeIdleGuests(): unused guest accounts will be removed");
-        TypedQuery<GuestJpaAccount> findIdleGuests = getEntityManager().createQuery("SELECT DISTINCT account FROM GuestJpaAccount account "
-                + "WHERE account.createdTime < :idletime", GuestJpaAccount.class);
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - 3);
-        findIdleGuests.setParameter("idletime", calendar.getTime(), TemporalType.DATE);
+        ILock lock = Helper.getHazelcastInstance().getLock("UserFacade.Schedule");
+        if (lock.tryLock()) {
+            try {
+                logger.info("removeIdleGuests(): unused guest accounts will be removed");
+                TypedQuery<GuestJpaAccount> findIdleGuests = getEntityManager().createQuery("SELECT DISTINCT account FROM GuestJpaAccount account "
+                        + "WHERE account.createdTime < :idletime", GuestJpaAccount.class);
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - 3);
+                findIdleGuests.setParameter("idletime", calendar.getTime(), TemporalType.DATE);
 
-        List<GuestJpaAccount> resultList = findIdleGuests.getResultList();
+                List<GuestJpaAccount> resultList = findIdleGuests.getResultList();
 
-        for (GuestJpaAccount account : resultList) {
-            this.remove(account.getUser());
+                for (GuestJpaAccount account : resultList) {
+                    this.remove(account.getUser());
+                }
+
+                //Force flush before closing RequestManager !
+                getEntityManager().flush();
+
+                logger.info("removeIdleGuests(): " + resultList.size() + " unused guest accounts removed (idle since: " + calendar.getTime() + ")");
+
+            } finally {
+                lock.unlock();
+                lock.destroy();
+            }
         }
-
-        //Force flush before closing RequestManager !
-        getEntityManager().flush();
-
-        logger.info("removeIdleGuests(): " + resultList.size() + " unused guest accounts removed (idle since: " + calendar.getTime() + ")");
     }
 
     /**
