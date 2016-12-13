@@ -7,6 +7,7 @@
  */
 package com.wegas.core.jcr;
 
+import com.hazelcast.core.ILock;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.persistence.game.GameModel;
@@ -19,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
@@ -107,10 +107,10 @@ public class JackrabbitConnector {
                         try {
                             /* DROP TABLES */
                             String dropQuery = "DROP table IF EXISTS "
-                                + workspaceName + "_binval, "
-                                + workspaceName + "_refs, "
-                                + workspaceName + "_bundle, "
-                                + workspaceName + "_names CASCADE";
+                                    + workspaceName + "_binval, "
+                                    + workspaceName + "_refs, "
+                                    + workspaceName + "_bundle, "
+                                    + workspaceName + "_names CASCADE";
 
                             statement.execute(dropQuery);
                             con.commit();
@@ -144,34 +144,40 @@ public class JackrabbitConnector {
         return JackrabbitConnector.repo;
     }
 
-    @PreDestroy
-    private void close() {
-        try {
-            //Build a list of workspace which have no more dependant gameModel
-            Session admin = SessionHolder.getSession(null);
-            String[] workspaces = admin.getWorkspace().getAccessibleWorkspaceNames();
-            SessionHolder.closeSession(admin);
-            List<GameModel> gameModels = gmf.findAll();
-            List<String> fakeworkspaces = new ArrayList<>();
-            final List<String> toDelete = new ArrayList<>();
-            for (GameModel gameModel : gameModels) {
-                fakeworkspaces.add("GM_" + gameModel.getId());
-            }
-            for (String workspace : workspaces) {
-                if (workspace.startsWith("GM_") && !workspace.equals("GM_0")) {
-                    if (!fakeworkspaces.contains(workspace)) {
-                        toDelete.add(workspace);
-                        logger.info("Marked for deletion : {}", workspace);
+    @Schedule(hour = "2", minute = "14")
+    public void close() {
+        ILock lock = Helper.getHazelcastInstance().getLock("JackRabbitConnector.Schedule");
+        if (lock.tryLock()) {
+            try {
+                //Build a list of workspace which have no more dependant gameModel
+                Session admin = SessionHolder.getSession(null);
+                String[] workspaces = admin.getWorkspace().getAccessibleWorkspaceNames();
+                SessionHolder.closeSession(admin);
+                List<GameModel> gameModels = gmf.findAll();
+                List<String> fakeworkspaces = new ArrayList<>();
+                final List<String> toDelete = new ArrayList<>();
+                for (GameModel gameModel : gameModels) {
+                    fakeworkspaces.add("GM_" + gameModel.getId());
+                }
+                for (String workspace : workspaces) {
+                    if (workspace.startsWith("GM_") && !workspace.equals("GM_0")) {
+                        if (!fakeworkspaces.contains(workspace)) {
+                            toDelete.add(workspace);
+                            logger.info("Marked for deletion : {}", workspace);
+                        }
                     }
                 }
+                //run garbage collector
+                this.runGC();
+                JackrabbitConnector.repo.shutdown();
+                // delete marked for deletion
+                deleteWorkspaces(toDelete);
+            } catch (RepositoryException ex) {
+                logger.warn("Unable to close repository: " + ex.getMessage());
+            } finally {
+                lock.unlock();
+                lock.destroy();
             }
-            //run garbage collector
-            this.runGC();
-            JackrabbitConnector.repo.shutdown();
-            // delete marked for deletion
-            deleteWorkspaces(toDelete);
-        } catch (RepositoryException ex) {
-            logger.warn("Unable to close repository: " + ex.getMessage());
         }
     }
 }
