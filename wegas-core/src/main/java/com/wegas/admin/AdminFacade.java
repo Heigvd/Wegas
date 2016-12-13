@@ -7,7 +7,9 @@
  */
 package com.wegas.admin;
 
+import com.hazelcast.core.ILock;
 import com.wegas.admin.persistence.GameAdmin;
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
@@ -33,6 +35,7 @@ import org.slf4j.LoggerFactory;
 @Stateless
 @LocalBean
 public class AdminFacade extends BaseFacade<GameAdmin> {
+
     private final Logger logger = LoggerFactory.getLogger(AdminFacade.class);
 
     @EJB
@@ -145,13 +148,21 @@ public class AdminFacade extends BaseFacade<GameAdmin> {
 
     @Schedule(hour = "4", dayOfMonth = "Last Sun")
     public void deleteGames() {
-        TypedQuery<GameAdmin> query = getEntityManager().createNamedQuery("GameAdmin.GamesToDelete", GameAdmin.class);
-        final List<GameAdmin> resultList = query.getResultList();
-        for(GameAdmin ga : resultList){
-            this.deleteGame(ga);
+        ILock lock = Helper.getHazelcastInstance().getLock("AdminFacade.Schedule");
+        if (lock.tryLock()) {
+            try {
+                TypedQuery<GameAdmin> query = getEntityManager().createNamedQuery("GameAdmin.GamesToDelete", GameAdmin.class);
+                final List<GameAdmin> resultList = query.getResultList();
+                for (GameAdmin ga : resultList) {
+                    this.deleteGame(ga);
+                }
+                // Flush to trigger EntityListener events before loosing RequestManager !
+                getEntityManager().flush();
+            } finally {
+                lock.unlock();
+                lock.destroy();
+            }
         }
-        // Flush to trigger EntityListener events before loosing RequestManager !
-        getEntityManager().flush();
     }
 
     @Override
