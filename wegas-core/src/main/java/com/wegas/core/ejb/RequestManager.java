@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.ejb.DependsOn;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -38,13 +37,11 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 //import javax.annotation.PostConstruct;
-
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Named("RequestManager")
 @RequestScoped
-@DependsOn("MutexSingleton")
 public class RequestManager {
 
     @PersistenceContext(unitName = "wegasPU")
@@ -65,7 +62,7 @@ public class RequestManager {
     private TransactionSynchronizationRegistry txReg;
      */
     @Inject
-    MutexSingleton mutexSingleton;
+    ConcurrentHelper concurrentHelper;
 
     @EJB
     private PlayerFacade playerFacade;
@@ -337,7 +334,7 @@ public class RequestManager {
     }
 
     public boolean tryLock(String token) {
-        boolean tryLock = mutexSingleton.tryLock(token);
+        boolean tryLock = concurrentHelper.tryLock(token);
         if (tryLock) {
             // Only register token if successfully locked
             lockedToken.add(token);
@@ -346,12 +343,12 @@ public class RequestManager {
     }
 
     public void lock(String token) {
-        mutexSingleton.lock(token);
+        concurrentHelper.lock(token);
         lockedToken.add(token);
     }
 
     public void unlock(String token) {
-        mutexSingleton.unlock(token);
+        concurrentHelper.unlock(token);
         if (lockedToken.contains(token)) {
             lockedToken.remove(token);
         }
@@ -481,7 +478,7 @@ public class RequestManager {
     public void preDestroy() {
         while (!lockedToken.isEmpty()) {
             String remove = lockedToken.remove(0);
-            mutexSingleton.unlockFull(remove);
+            concurrentHelper.unlockFull(remove);
         }
         if (this.currentScriptContext != null) {
             this.currentScriptContext.getBindings(ScriptContext.ENGINE_SCOPE).clear();
