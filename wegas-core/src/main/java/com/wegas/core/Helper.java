@@ -114,6 +114,18 @@ public class Helper {
         return lookupBy(type, type);
     }
 
+    public static HazelcastInstance getHazelcastInstance() {
+        HazelcastInstance instance;
+        try {
+            Context ctx = new InitialContext();
+            instance = (HazelcastInstance) ctx.lookup("payara/Hazelcast");
+            return instance;
+        } catch (NamingException ex) {
+            logger.error("No Hazelcast instance", ex);
+            return null;
+        }
+    }
+
     /**
      * Check if the given string is null or empty (without trimming)
      *
@@ -840,18 +852,6 @@ public class Helper {
         @Override
         protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
             return this.size() >= this.cacheSize;
-        }
-    }
-
-    public static HazelcastInstance getHazelcastInstance() {
-        HazelcastInstance instance;
-        try {
-            Context ctx = new InitialContext();
-            instance = (HazelcastInstance) ctx.lookup("payara/Hazelcast");
-            return instance;
-        } catch (NamingException ex) {
-            logger.error("No Hazelcast instance", ex);
-            return null;
         }
     }
 }
