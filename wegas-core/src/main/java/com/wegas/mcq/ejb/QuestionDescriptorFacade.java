@@ -198,7 +198,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         reply.setResult(result);
         result.addReply(reply);
         questionInstance.addReply(reply);
-        //em.persist(reply);
+        this.getEntityManager().persist(reply);
 //        em.flush();
         return reply;
     }
