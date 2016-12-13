@@ -38,7 +38,6 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 //import javax.annotation.PostConstruct;
-
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
@@ -70,8 +69,8 @@ public class RequestManager {
     @EJB
     private PlayerFacade playerFacade;
 
-    @EJB
-    private UserFacade userFacade;
+    @Inject
+    private RequestFacade requestFacade;
 
     private static Logger logger = LoggerFactory.getLogger(RequestManager.class);
 
@@ -488,6 +487,14 @@ public class RequestManager {
 
         //this.getEntityManager().flush();
         this.getEntityManager().clear();
+    }
+
+    public void commit(Player player) {
+        this.requestFacade.commit(player, true);
+    }
+
+    public void commit() {
+        this.requestFacade.commit(this.getPlayer(), true);
     }
 
     /**
