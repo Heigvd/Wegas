@@ -20,6 +20,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.statemachine.*;
 import org.slf4j.LoggerFactory;
 
@@ -130,6 +131,7 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
         for (Player player : resetEvent.getConcernedPlayers()) {
             this.runForPlayer(player);
         }
+        getEntityManager().flush();
     }
 
     private List<StateMachineDescriptor> getAllStateMachines(final GameModel gameModel) {

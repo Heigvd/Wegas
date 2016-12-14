@@ -16,7 +16,6 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.Views;
-import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import jdk.nashorn.api.scripting.ScriptUtils;
 import jdk.nashorn.internal.runtime.ScriptObject;
@@ -487,6 +486,10 @@ public class RequestManager {
 
         //this.getEntityManager().flush();
         this.getEntityManager().clear();
+    }
+
+    public void commit(Player player, boolean clear) {
+        this.requestFacade.commit(player, clear);
     }
 
     public void commit(Player player) {
