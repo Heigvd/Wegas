@@ -13,20 +13,6 @@
       <property name="eclipselink.jdbc.batch-writing.size" value="1000"/>
       <property name="eclipselink.weaving" value="static"/>
 
-
-      <!--
-      <property name="eclipselink.cache.coordination.protocol" value="rmi" />
-      <property name="eclipselink.cache.coordination.naming-service" value="jndi" />
-      -->
-      
-      <property name="eclipselink.cache.coordination.protocol" value="jms" />
-      <property name="eclipselink.cache.coordination.jms.topic" value="jms/WegasTopic" />
-      <property name="eclipselink.cache.coordination.jms.factory" value="jms/WegasTopicConnectionFactory2" />
-
-
-      <!--<property name="eclipselink.target-server" value="Glassfish" />
-      <property name="eclipselink.target-database" value="PostgreSQL" />-->
-
       <!-- Enable logging -->
       <!--<property name="eclipselink.logging.level" value="FINE"/>-->
       <!--<property name="eclipselink.logging.parameters" value="true"/>-->
