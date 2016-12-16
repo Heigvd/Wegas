@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.ejb.statemachine.StateMachineEventCounter;
 import com.wegas.core.event.client.ClientEvent;
 import com.wegas.core.event.client.CustomEvent;
 import com.wegas.core.event.client.ExceptionEvent;
@@ -127,6 +128,8 @@ public class RequestManager {
      */
     private ScriptContext currentScriptContext = null;
 
+    private final StateMachineEventCounter eventCounter = new StateMachineEventCounter();
+
     public RequestEnvironment getEnv() {
         return env;
     }
@@ -216,6 +219,10 @@ public class RequestManager {
      */
     public void setCurrentScriptContext(ScriptContext currentScriptContext) {
         this.currentScriptContext = currentScriptContext;
+    }
+
+    public StateMachineEventCounter getEventCounter() {
+        return eventCounter;
     }
 
     /**
