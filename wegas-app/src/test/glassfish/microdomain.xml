@@ -20,7 +20,7 @@
       <property name="password" value="1234"></property>
       <property name="portNumber" value="5432"></property>
       <property name="databaseName" value="wegas_test"></property>
-      <property name="serverName" value="kriuk"></property>
+      <property name="serverName" value="localhost"></property>
       <property name="User" value="user"></property>
       <property name="URL" value="jdbc:postgresql://localhost:5432/wegas_test"></property>
       <property name="DatabaseName" value="wegas_test"></property>
