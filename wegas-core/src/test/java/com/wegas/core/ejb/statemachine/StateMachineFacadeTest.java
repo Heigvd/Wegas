@@ -238,10 +238,10 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         sm.setName("testSM");
         State state0 = new State();
         State state1 = new State();
-        state1.setOnEnterEvent(new Script("Variable.findByName(gameModel, 'testnumber').setValue(self, Variable.findByName(gameModel, 'testnumber').getValue(self) + 5)"));
+        state1.setOnEnterEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 5)"));
         State state2 = new State();
         //Second state will read an object parameter
-        state2.setOnEnterEvent(new Script("Variable.findByName(gameModel, 'testnumber').setValue(self, Variable.findByName(gameModel, 'testnumber').getValue(self) + 10)"));
+        state2.setOnEnterEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 10)"));
         sm.setStates(toMap(toList(1L, 2L, 3L), toList(state0, state1, state2)));
 
         Transition t1 = new Transition();
@@ -304,10 +304,10 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         sm.setName("testSM");
         State state0 = new State();
         State state1 = new State();
-        state1.setOnEnterEvent(new Script("Variable.findByName(gameModel, 'testnumber').setValue(self, Variable.findByName(gameModel, 'testnumber').getValue(self) + 1)"));
+        state1.setOnEnterEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 1)"));
         State state2 = new State();
         //Second state will read an object parameter
-        state2.setOnEnterEvent(new Script("Variable.findByName(gameModel, 'testnumber').setValue(self, Variable.findByName(gameModel, 'testnumber').getValue(self) + 10)"));
+        state2.setOnEnterEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 10)"));
         sm.setStates(toMap(toList(1L, 2L, 3L), toList(state0, state1, state2)));
 
         Transition t1 = new Transition();
@@ -382,13 +382,13 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         State state1 = new State();
 
         State state2 = new State();
-        state2.setOnEnterEvent(new Script("Variable.findByName(gameModel, 'testnumber').setValue(self, Variable.findByName(gameModel, 'testnumber').getValue(self) + 1)"));
+        state2.setOnEnterEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 1)"));
 
         State state3 = new State();
-        state3.setOnEnterEvent(new Script("Variable.findByName(gameModel, 'testnumber').setValue(self, Variable.findByName(gameModel, 'testnumber').getValue(self) + 10)"));
+        state3.setOnEnterEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 10)"));
 
         State state4 = new State();
-        state4.setOnEnterEvent(new Script("Variable.findByName(gameModel, 'testnumber').setValue(self, Variable.findByName(gameModel, 'testnumber').getValue(self) + 100)"));
+        state4.setOnEnterEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 100)"));
 
         sm.setStates(toMap(toList(1L, 2L, 3L, 4L), toList(state1, state2, state3, state4)));
 
@@ -476,13 +476,13 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         State state1 = new State();
 
         State state2 = new State();
-        state2.setOnEnterEvent(new Script("Variable.findByName(gameModel, 'testnumber').setValue(self, Variable.findByName(gameModel, 'testnumber').getValue(self) + 1)"));
+        state2.setOnEnterEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 1)"));
 
         State state3 = new State();
-        state3.setOnEnterEvent(new Script("Variable.findByName(gameModel, 'testnumber').setValue(self, Variable.findByName(gameModel, 'testnumber').getValue(self) + 10)"));
+        state3.setOnEnterEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 10)"));
 
         State state4 = new State();
-        state4.setOnEnterEvent(new Script("Variable.findByName(gameModel, 'testnumber').setValue(self, Variable.findByName(gameModel, 'testnumber').getValue(self) + 100)"));
+        state4.setOnEnterEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 100)"));
 
         sm.setStates(toMap(toList(1L, 2L, 3L, 4L), toList(state1, state2, state3, state4)));
 
