@@ -35,8 +35,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Run state machines.
@@ -85,8 +83,7 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
     /**
      * Manage internal event transition.
      */
-    private InternalStateMachineEventCounter stateMachineEventsCounter;
-
+    //private InternalStateMachineEventCounter stateMachineEventsCounter;
     /**
      *
      */
@@ -235,6 +232,7 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
             player = concernedPlayers.get(0);
         }
         this.runForPlayers(player);
+        getEntityManager().flush();
     }
 
     private List<StateMachineDescriptor> getAllStateMachines(final GameModel gameModel) {
@@ -252,8 +250,6 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
         List<StateMachineDescriptor> statemachines = this.getAllStateMachines(preferredPlayer.getGameModel());
         List<String> passed = new ArrayList<>();
 
-        stateMachineEventsCounter = new InternalStateMachineEventCounter();
-
         Map<StateMachineInstance, Player> instances;
 
         int step = 0;
@@ -266,7 +262,6 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
             logger.info("#steps[" + step + "] - Player triggered transition(s):{}", passed);
         } while (!requestManager.getJustUpdatedEntities().isEmpty());
 
-        stateMachineEventsCounter = null;
     }
 
     private static final class SelectedTransition {
@@ -311,6 +306,7 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
             transitions = smi.getCurrentState().getTransitions();
             for (Transition transition : transitions) {
                 String transitionUID = smi.getId() + "-" + transition.getId();
+                requestManager.getEventCounter().clearCurrents();
                 if (validTransition) {
                     break; // already have a valid transition
                 }
@@ -320,25 +316,24 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
                     continue;
                 } else if (this.isNotDefined(transition.getTriggerCondition())) {
                     validTransition = true;
-                } else if (transition.getTriggerCondition().getContent().contains("Event.fired")) { //TODO: better way to find out which are event transition.
-                    if (passedTransitions.contains(transitionUID)) {
-                        /*
-                         * Loop prevention : that player already passed through
-                         * this transiton
-                         */
-                        logger.debug("Loop detected, already marked {} IN {}", transition, passedTransitions);
-                    } else {
-                        try {
-                            if (this.eventTransition(player, transition, sm, smi)) {
-                                validTransition = true;
-                            }
-                        } catch (WegasScriptException ex) {
-                            ex.setScript("Variable " + sm.getLabel());
-                            requestManager.addException(ex);
-                            //validTransition still false
-                        }
-                    }
-
+                //} else if (transition.getTriggerCondition().getContent().contains("Event.fired")) { //TODO: better way to find out which are event transition.
+                    //if (passedTransitions.contains(transitionUID)) {
+                    ///*
+                    //* Loop prevention : that player already passed through
+                    //* this transiton
+                    //*/
+                    //logger.debug("Loop detected, already marked {} IN {}", transition, passedTransitions);
+                    //} else {
+                    //try {
+                    //if (this.eventTransition(player, transition, sm, smi)) {
+                    //validTransition = true;
+                    //}
+                    //} catch (WegasScriptException ex) {
+                    //ex.setScript("Variable " + sm.getLabel());
+                    //requestManager.addException(ex);
+                    ////validTransition still false
+                    //}
+                    //}
                 } else {
                     try {
                         validTransition = (Boolean) scriptManager.eval(player, transition.getTriggerCondition(), sm);
@@ -363,6 +358,7 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
                          */
                         logger.debug("Loop detected, already marked {} IN {}", transition, passedTransitions);
                     } else {
+                        requestManager.getEventCounter().acceptCurrent(smi);
                         passedTransitions.add(transitionUID);
                         smi.setCurrentStateId(transition.getNextStateId());
 
@@ -407,39 +403,6 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
                     logger.warn("Script failed ", ex);
                 }
             }
-        }
-    }
-
-    /**
-     * Manage event transition
-     *
-     * @param player     current {@link Player}
-     * @param transition the event transition
-     * @param smi        current {@link StateMachineInstance} passing transition
-     * @return
-     */
-    private Boolean eventTransition(Player player, Transition transition, StateMachineDescriptor sm, StateMachineInstance smi) throws WegasScriptException {
-        String script = transition.getTriggerCondition().getContent();
-        Pattern pattern = Pattern.compile("Event\\.fired\\([ ]*(['\"])(.+?)\\1[ ]*\\)");
-        Matcher matcher = pattern.matcher(script);
-        String event;
-        if (matcher.find()) {
-            event = matcher.group(2);
-        } else {
-            return false;
-        }
-        Object[] firedParams = scriptEvent.getFiredParameters(event);
-        /* events and more ? */
-        if (!(Boolean) scriptManager.eval(player, transition.getTriggerCondition(), sm)) {
-            return false;
-        }
-        final Integer instanceEventCount = stateMachineEventsCounter.count(smi, event);
-        if (firedParams.length > instanceEventCount) {
-            smi.setCurrentStateId(transition.getNextStateId());
-            stateMachineEventsCounter.increase(smi, event);
-            return true;
-        } else {
-            return false;
         }
     }
 
@@ -520,39 +483,6 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
             this.from = from;
             this.to = to;
         }
-    }
-
-    /**
-     * Used to store Events during run. Prevent passing multiple event
-     * transitions with same event if less events where thrown.
-     * StateMachineInstance dependant.
-     */
-    private static class InternalStateMachineEventCounter {
-
-        private final Map<StateMachineInstance, Map<String, Integer>> smEvents;
-
-        private InternalStateMachineEventCounter() {
-            this.smEvents = new HashMap<>();
-        }
-
-        private Integer count(StateMachineInstance instance, String event) {
-            if (!smEvents.containsKey(instance)) {
-                smEvents.put(instance, new HashMap<>());
-            }
-            if (smEvents.get(instance).containsKey(event)) {
-                return smEvents.get(instance).get(event);
-            } else {
-                return 0;
-            }
-        }
-
-        private void increase(StateMachineInstance instance, String event) {
-            if (!smEvents.containsKey(instance)) {
-                smEvents.put(instance, new HashMap<>());
-            }
-            smEvents.get(instance).put(event, this.count(instance, event) + 1);
-        }
-
     }
 
     public long countValidTransition(DialogueDescriptor dialogueDescriptor, Player currentPlayer) {

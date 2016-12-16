@@ -7,6 +7,9 @@
  */
 package com.wegas.core.ejb;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.pusher.rest.Pusher;
 import com.pusher.rest.data.PresenceUser;
 import com.pusher.rest.data.Result;
@@ -17,6 +20,8 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.rest.util.JacksonMapperProvider;
+import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.SecurityHelper;
@@ -32,6 +37,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.zip.GZIPOutputStream;
 
 /**
@@ -203,8 +209,8 @@ public class WebsocketFacade {
      * @param outdatedEntities
      */
     public void onRequestCommit(final Map<String, List<AbstractEntity>> dispatchedEntities,
-                                final Map<String, List<AbstractEntity>> destroyedEntities,
-                                final Map<String, List<AbstractEntity>> outdatedEntities) {
+            final Map<String, List<AbstractEntity>> destroyedEntities,
+            final Map<String, List<AbstractEntity>> outdatedEntities) {
         this.onRequestCommit(dispatchedEntities, destroyedEntities, outdatedEntities, null);
     }
 
@@ -218,9 +224,9 @@ public class WebsocketFacade {
      *                           client to receive this particular message
      */
     public void onRequestCommit(final Map<String, List<AbstractEntity>> dispatchedEntities,
-                                final Map<String, List<AbstractEntity>> destroyedEntities,
-                                final Map<String, List<AbstractEntity>> outdatedEntities,
-                                final String socketId) {
+            final Map<String, List<AbstractEntity>> destroyedEntities,
+            final Map<String, List<AbstractEntity>> outdatedEntities,
+            final String socketId) {
         if (this.pusher == null) {
             return;
         }
@@ -273,7 +279,7 @@ public class WebsocketFacade {
      * @return gzipped data
      * @throws IOException
      */
-    private GzContent gzip(String data) throws IOException {
+    private GzContent gzip(String channel, String name, String data, String socketId) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         GZIPOutputStream gzos = new GZIPOutputStream(baos);
         OutputStreamWriter osw = new OutputStreamWriter(gzos, "UTF-8");
@@ -292,27 +298,55 @@ public class WebsocketFacade {
              */
             sb.append(Character.toString((char) Byte.toUnsignedInt(ba[i])));
         }
-        return new GzContent(sb.toString(), ba.length);
+        return new GzContent(channel, name, sb.toString(), socketId);
     }
 
     private static class GzContent {
 
-        private final int length;
-        private final String content;
+        private final String name;
+        private final String[] channels = {""};
+        private final String data;
+        private final String socketId;
 
-        public GzContent(String content, int length) {
-            this.length = length;
-            this.content = content;
+        public GzContent(String channel, String name, String data, String socketId) {
+            this.data = data;
+            this.socketId = socketId;
+            this.channels[0] = channel;
+            this.name = name;
+
         }
 
-        public int getLength() {
-            return length;
+        public String getName() {
+            return name;
         }
 
-        public String getContent() {
-            return content;
+        public String[] getChannels() {
+            return channels;
+        }
+
+        public String getData() {
+            return data;
+        }
+
+        public String getSocketId() {
+            return socketId;
         }
     };
+
+    private int computeLength(GzContent gzip) {
+
+        try {
+            ObjectMapper mapper = JacksonMapperProvider.getMapper();
+            String writeValueAsString = mapper.writeValueAsString(gzip);
+            logger.error(writeValueAsString);
+            logger.error("LENGTH SHOULD BE: " + writeValueAsString.length());
+
+            return writeValueAsString.length();
+        } catch (JsonProcessingException ex) {
+            logger.error("FAILS TO COMPUTE LENGTH");
+            return 0;
+        }
+    }
 
     /**
      * Send data through pusher
@@ -325,28 +359,37 @@ public class WebsocketFacade {
         try {
             String eventName = clientEvent.getClass().getSimpleName() + ".gz";
             //if (eventName.matches(".*\\.gz$")) {
-            GzContent gzip = gzip(clientEvent.toJson());
-            String content = gzip.getContent();
+            GzContent gzip = gzip(audience, eventName, clientEvent.toJson(), socketId);
+            String content = gzip.getData();
+            //int computedLength = computeLength(gzip);
 
-            if (gzip.length > 1048576) {
+            //if (computedLength > 10240) {
+            //    logger.error("413 MESSAGE TOO BIG");
+            // wooops pusher error (too big)
+            //    this.fallback(clientEvent, audience, socketId);
+            //} else {
+            Result result = pusher.trigger(audience, eventName, content, socketId);
+
+            if (result.getHttpStatus() == 403) {
+                logger.error("403 QUOTA REACHED");
+            } else if (result.getHttpStatus() == 413) {
                 logger.error("413 MESSAGE TOO BIG");
-                // wooops pusher error (too big)
-                if (clientEvent instanceof EntityUpdatedEvent) {
-                    this.propagate(new OutdatedEntitiesEvent(((EntityUpdatedEvent) clientEvent).getUpdatedEntities()),
-                            audience, socketId);
-                    //this.outdateEntities(audience, ((EntityUpdatedEvent) clientEvent), socketId);
-                } else {
-                    logger.error("  -> OUTDATE");
-                    this.sendLifeCycleEvent(audience, WegasStatus.OUTDATED, socketId);
-                }
-            } else {
-                Result result = pusher.trigger(audience, eventName, content, socketId);
-                if (result.getHttpStatus() == 403) {
-                    logger.error("403 QUOTA REACHED");
-                }
+                this.fallback(clientEvent, audience, socketId);
             }
+            //}
         } catch (IOException ex) {
             logger.error("     IOEX <----------------------", ex);
+        }
+    }
+
+    private void fallback(ClientEvent clientEvent, String audience, final String socketId) {
+        if (clientEvent instanceof EntityUpdatedEvent) {
+            this.propagate(new OutdatedEntitiesEvent(((EntityUpdatedEvent) clientEvent).getUpdatedEntities()),
+                    audience, socketId);
+            //this.outdateEntities(audience, ((EntityUpdatedEvent) clientEvent), socketId);
+        } else {
+            logger.error("  -> OUTDATE");
+            this.sendLifeCycleEvent(audience, WegasStatus.OUTDATED, socketId);
         }
     }
 

@@ -1409,18 +1409,22 @@ YUI.add("wegas-review-widgets", function(Y) {
             }
         },
         save: function() {
-            this._sendRequest("SaveReview", false, function(e) {
-                if (!this.get("destroyed")) {
-                    this.submitButton.set("disabled", false);
-                    this.setStatus("saved");
-                    this.syncSavedValues();
-                }
-            });
+            if (!this._submitted) {
+                this._sendRequest("SaveReview", false, function(e) {
+                    if (!this.get("destroyed")) {
+                        this.submitButton.set("disabled", false);
+                        this.setStatus("saved");
+                        this.syncSavedValues();
+                    }
+                });
+            }
         },
         submit: function() {
             Wegas.Panel.confirm(I18n.t("review.global.confirmation").capitalize(), Y.bind(function() {
                 Wegas.Panel.confirmPlayerAction(Y.bind(function(e) {
-                    this._sendRequest("SubmitReview", true);
+                    this._submitted = true;
+                    this._sendRequest("SubmitReview", true, function(e) {
+                    });
                     this.syncSavedValues();
                 }, this));
             }, this));

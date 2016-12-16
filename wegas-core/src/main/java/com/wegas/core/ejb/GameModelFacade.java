@@ -143,8 +143,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         if (!gameModel.hasDebugGame()) {
             DebugGame debugGame = new DebugGame();
             this.addGame(gameModel, debugGame);
-            getEntityManager().persist(debugGame);
-            gameModel.propagateDefaultInstance(debugGame, true);
 
             gameFacade.addDebugTeam(debugGame);
 
@@ -221,8 +219,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      */
     public void addGame(final GameModel gameModel, final Game game) {
         gameModel.addGame(game);
-        // Should reset the new game only? nope ?  -> gameFacade.reset(game.getId());
-        //this.reset(gameModel);
+        getEntityManager().persist(game);
         gameModel.propagateDefaultInstance(game, true);
     }
 
