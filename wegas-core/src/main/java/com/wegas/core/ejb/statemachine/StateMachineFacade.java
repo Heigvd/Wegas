@@ -31,6 +31,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -248,7 +249,7 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
 
     private void runForPlayers(Player preferredPlayer) throws WegasScriptException {
         List<StateMachineDescriptor> statemachines = this.getAllStateMachines(preferredPlayer.getGameModel());
-        List<String> passed = new ArrayList<>();
+        HashSet<String> passed = new HashSet<>();
 
         Map<StateMachineInstance, Player> instances;
 
@@ -282,7 +283,7 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
         }
     };
 
-    private void run(Map<StateMachineInstance, Player> instances, List<String> passedTransitions) throws WegasScriptException {
+    private void run(Map<StateMachineInstance, Player> instances, HashSet<String> passedTransitions) throws WegasScriptException {
 
         List<SelectedTransition> selectedTransitions = new ArrayList<>();
 
@@ -307,57 +308,33 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
             for (Transition transition : transitions) {
                 String transitionUID = smi.getId() + "-" + transition.getId();
                 requestManager.getEventCounter().clearCurrents();
-                if (validTransition) {
-                    break; // already have a valid transition
-                }
-                if (transition instanceof DialogueTransition
-                        && ((DialogueTransition) transition).getActionText() != null
-                        && !((DialogueTransition) transition).getActionText().isEmpty()) {                 // Dialogue, don't eval if not null or empty
-                    continue;
-                } else if (this.isNotDefined(transition.getTriggerCondition())) {
-                    validTransition = true;
-                //} else if (transition.getTriggerCondition().getContent().contains("Event.fired")) { //TODO: better way to find out which are event transition.
-                    //if (passedTransitions.contains(transitionUID)) {
-                    ///*
-                    //* Loop prevention : that player already passed through
-                    //* this transiton
-                    //*/
-                    //logger.debug("Loop detected, already marked {} IN {}", transition, passedTransitions);
-                    //} else {
-                    //try {
-                    //if (this.eventTransition(player, transition, sm, smi)) {
-                    //validTransition = true;
-                    //}
-                    //} catch (WegasScriptException ex) {
-                    //ex.setScript("Variable " + sm.getLabel());
-                    //requestManager.addException(ex);
-                    ////validTransition still false
-                    //}
-                    //}
-                } else {
-                    try {
-                        validTransition = (Boolean) scriptManager.eval(player, transition.getTriggerCondition(), sm);
-                    } catch (EJBException ex) {
-                        logger.error("Transition eval exception: FSM " + sm.getName() + ":" + sm.getId() + ":" + transition.getTriggerCondition().getContent());
-                        throw ex;
-                    } catch (WegasScriptException ex) {
-                        ex.setScript("Variable " + sm.getLabel());
-                        requestManager.addException(ex);
-                        //validTransition still false
-                    }
-                }
 
-                if (validTransition == null) {
-                    throw WegasErrorMessage.error("Please review condition [" + sm.getLabel() + "]:\n"
-                            + transition.getTriggerCondition().getContent());
-                } else if (validTransition) {
-                    if (passedTransitions.contains(transitionUID)) {
-                        /*
-                         * Loop prevention : that player already passed through
-                         * this transiton
-                         */
-                        logger.debug("Loop detected, already marked {} IN {}", transition, passedTransitions);
+                if (passedTransitions.contains(transitionUID)) {
+                    logger.debug("Loop detected, already marked {} IN {}", transition, passedTransitions);
+                } else {
+                    if (transition instanceof DialogueTransition
+                            && ((DialogueTransition) transition).getActionText() != null
+                            && !((DialogueTransition) transition).getActionText().isEmpty()) {                 // Dialogue, don't eval if not null or empty
+                        continue;
+                    } else if (this.isNotDefined(transition.getTriggerCondition())) {
+                        validTransition = true;
                     } else {
+                        try {
+                            validTransition = (Boolean) scriptManager.eval(player, transition.getTriggerCondition(), sm);
+                        } catch (EJBException ex) {
+                            logger.error("Transition eval exception: FSM " + sm.getName() + ":" + sm.getId() + ":" + transition.getTriggerCondition().getContent());
+                            throw ex;
+                        } catch (WegasScriptException ex) {
+                            ex.setScript("Variable " + sm.getLabel());
+                            requestManager.addException(ex);
+                            //validTransition still false
+                        }
+                    }
+
+                    if (validTransition == null) {
+                        throw WegasErrorMessage.error("Please review condition [" + sm.getLabel() + "]:\n"
+                                + transition.getTriggerCondition().getContent());
+                    } else if (validTransition) {
                         requestManager.getEventCounter().acceptCurrent(smi);
                         passedTransitions.add(transitionUID);
                         smi.setCurrentStateId(transition.getNextStateId());
@@ -372,6 +349,7 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
                                 smi.setEnabled(false);
                             }
                         }
+                        break;// We have a transition for this state machine, let's process the next FSM
                     }
                 }
             }
