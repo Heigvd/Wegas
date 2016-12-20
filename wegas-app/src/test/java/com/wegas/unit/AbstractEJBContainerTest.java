@@ -8,7 +8,11 @@
 package com.wegas.unit;
 
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.core.ejb.RequestFacade;
+import com.wegas.core.ejb.ScriptFacade;
+import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.rest.ScriptController;
 import com.wegas.core.security.ejb.UserFacade;
@@ -37,6 +41,18 @@ public abstract class AbstractEJBContainerTest extends AbstractTest {
 
     private static GameModelFacade gmFacade;
 
+    protected static GameFacade gameFacade;
+
+    protected static TeamFacade teamFacade;
+
+    protected static UserFacade userFacade;
+
+    protected static ScriptFacade scriptFacade;
+
+    protected static RequestFacade requestFacade;
+
+    protected static VariableDescriptorFacade variableDescriptorFacade;
+
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(AbstractEJBContainerTest.class);
 
     @BeforeClass
@@ -57,10 +73,19 @@ public abstract class AbstractEJBContainerTest extends AbstractTest {
             org.glassfish.ejb.LogFacade.getLogger().setLevel(Level.SEVERE);
 
             logger.error("CREATE CONTAINER");
-            container = EJBContainer.createEJBContainer(properties);
-            Helper.lookupBy(container.getContext(), UserFacade.class, UserFacade.class).guestLogin(); //login as guest
 
-            gmFacade = Helper.lookupBy(container.getContext(), GameModelFacade.class, GameModelFacade.class);
+            container = EJBContainer.createEJBContainer(properties);
+
+            gameFacade = GameFacade.lookup();
+            gmFacade = GameModelFacade.lookup();
+            teamFacade = TeamFacade.lookup();
+            userFacade = UserFacade.lookup();
+            requestFacade = RequestFacade.lookup();
+            scriptFacade = ScriptFacade.lookup();
+
+            variableDescriptorFacade = VariableDescriptorFacade.lookup();
+
+            userFacade.guestLogin();
         }
     }
 
