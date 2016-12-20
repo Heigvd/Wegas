@@ -35,6 +35,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.Map.Entry;
+import javax.naming.NamingException;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -392,5 +393,18 @@ public class ScriptFacade {
         Map<String, AbstractEntity> arguments = new HashMap<>();
         arguments.put(ScriptFacade.CONTEXT, context);
         return this.eval(playerFacade.find(playerId), s, arguments);
+    }
+
+    /**
+     *
+     * @return Looked-up EJB
+     */
+    public static ScriptFacade lookup() {
+        try {
+            return Helper.lookupBy(ScriptFacade.class);
+        } catch (NamingException ex) {
+            logger.error("Error retrieving requestmanager", ex);
+            return null;
+        }
     }
 }
