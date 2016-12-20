@@ -82,6 +82,35 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
     }
 
     /**
+     * Test of entityUpdateListener method, of class StateMachineFacade.
+     *
+     * @throws javax.naming.NamingException
+     */
+    @Test
+    public void testErroneousCondition() throws NamingException {
+
+        // Lookup Ejb's
+        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+
+        // Create a trigger
+        TriggerDescriptor trigger = new TriggerDescriptor();
+        trigger.setDefaultInstance(new TriggerInstance());
+        // trigger.setTriggerEvent(new Script("\"I'm kind of erroneous condition'\""));
+        trigger.setTriggerEvent(new Script("true"));
+        trigger.setPostTriggerEvent(new Script(""));
+        vdf.create(gameModel.getId(), trigger);
+
+        RequestFacade rf = RequestFacade.lookup();
+        ScriptFacade sf = ScriptFacade.lookup();
+
+        sf.eval(player, new Script("JavaScript", "Event.fire('event');"), null);
+        rf.commit(true);
+
+        // Clean up
+        vdf.remove(trigger.getId());
+    }
+
+    /**
      * Same as above, but with a different script
      *
      * @throws NamingException
@@ -344,14 +373,12 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         assertEquals(0, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
 
         gmf.reset(gameModel.getId());
-        rf.getRequestManager().getEventCounter().clear();
         /* player fire event and event2 */
         sf.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event');"), null);
         rf.commit(true);
         assertEquals(1, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
 
         gmf.reset(gameModel.getId());
-        rf.getRequestManager().getEventCounter().clear();
         /* player fire event twice and event2 */
         sf.eval(player, new Script("JavaScript", "Event.fire('event'); Event.fire('event'); Event.fire('event');"), null);
         rf.commit(true);
@@ -431,21 +458,18 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         assertEquals(0, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
 
         gmf.reset(gameModel.getId());
-        rf.getRequestManager().getEventCounter().clear();
         /* player fire event and event2 */
         sf.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event2');"), null);
         rf.commit(true);
         assertEquals(1, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
 
         gmf.reset(gameModel.getId());
-        rf.getRequestManager().getEventCounter().clear();
         /* player fire event twice and event2 */
         sf.eval(player, new Script("JavaScript", "Event.fire('event'); Event.fire('event'); Event.fire('event2');"), null);
         rf.commit(true);
         assertEquals(11, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
 
         gmf.reset(gameModel.getId());
-        rf.getRequestManager().getEventCounter().clear();
         /* player fire event and event2 twice*/
         sf.eval(player, new Script("JavaScript", "Event.fire('event'); Event.fire('event2'); Event.fire('event2');"), null);
         rf.commit(true);
@@ -478,13 +502,13 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         State state1 = new State();
 
         State state2 = new State();
-        state2.setOnEnterEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 1)"));
+        state2.setOnEnterEvent(new Script("print('+1');Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 1)"));
 
         State state3 = new State();
-        state3.setOnEnterEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 10)"));
+        state3.setOnEnterEvent(new Script("print('+10');Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 10)"));
 
         State state4 = new State();
-        state4.setOnEnterEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 100)"));
+        state4.setOnEnterEvent(new Script("print('+100');Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 100)"));
 
         sm.setStates(toMap(toList(1L, 2L, 3L, 4L), toList(state1, state2, state3, state4)));
 
@@ -523,21 +547,18 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         assertEquals(1, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
 
         gmf.reset(gameModel.getId());
-        rf.getRequestManager().getEventCounter().clear();
-        /* player fire event and event2 */
+        /* player fire event2 */
         sf.eval(player, new Script("JavaScript", "Event.fire('event2');"), null);
         rf.commit(true);
         assertEquals(1, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
 
         gmf.reset(gameModel.getId());
-        rf.getRequestManager().getEventCounter().clear();
         /* player fire event and event2 */
         sf.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event');"), null);
         rf.commit(true);
         assertEquals(11, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
 
         gmf.reset(gameModel.getId());
-        rf.getRequestManager().getEventCounter().clear();
         /* player fire event and event2 */
         sf.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event2');"), null);
         rf.commit(true);

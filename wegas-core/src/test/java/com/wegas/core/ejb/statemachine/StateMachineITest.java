@@ -102,6 +102,10 @@ public class StateMachineITest extends AbstractEJBTest {
         logger.error(" * * * *  * * * * * * * * * * * * CREATE TRIGGER2 TESTNUMBER");
         descriptorFacade.create(gameModel.getId(), trigger2);
 
+        /*
+         * Team: player
+         * Team2: player21, player22
+         */
         Team team3 = new Team("test-team3");
         Team team4 = new Team("test-team4");
 
@@ -114,12 +118,32 @@ public class StateMachineITest extends AbstractEJBTest {
         logger.error(" * * * *  * * * * * * * * * * * * CREATE TEAM4");
         teamFacade.create(game.getId(), team4);
 
+        /*
+         * Team: player
+         * Team2: player21, player22
+         * team3:
+         * team4:
+         */
         Player testPlayer0 = new Player("TestPlayer0");
         Player testPlayer1 = new Player("TestPlayer1");
 
         logger.error(" * * * *  * * * * * * * * * * * * CREATE testPlayer0");
+        /*
+         * Team: player, testPlayer0
+         * Team2: player21, player22
+         * team3:
+         * team4:
+         */
         playerFacade.create(team.getId(), testPlayer0);
+
         logger.error(" * * * *  * * * * * * * * * * * * CREATE testPlayer1");
+
+        /*
+         * Team: player, testPlayer0
+         * Team2: player21, player22
+         * team3:
+         * team4: testPlayer1
+         */
         playerFacade.create(team4.getId(), testPlayer1);
 
         NumberDescriptor number = (NumberDescriptor) descriptorFacade.find(testNumber.getId());
@@ -136,14 +160,24 @@ public class StateMachineITest extends AbstractEJBTest {
          */
         Assert.assertEquals(1.0, ((NumberInstance) instanceFacade.find(testNumber.getId(), player2)).getValue(), 0.0);
         /*
-         * Game Scope trigger increase for each player added after trigger creation
+         * trigger2 is triggered 3 times, one time for each non-empty team.
+         * Since we're simulation one big request, walking through the same transition twice is forbidden
+         * Three non-empty teams -> number2 = 3
          */
-        Assert.assertEquals(5, ((NumberInstance) instanceFacade.find(testNumber2.getId(), testPlayer0)).getValue(), 0.0);
+        Assert.assertEquals(3, ((NumberInstance) instanceFacade.find(testNumber2.getId(), testPlayer0)).getValue(), 0.0);
         /*
          * add a player in not empty team then Reset, trigger will execute
          */
         logger.error(" * * * *  * * * * * * * * * * * * CREATE testPlayer5");
+
+        /*
+         * Team: player, testPlayer0
+         * Team2: player21, player22
+         * team3: 
+         * team4: testPlayer1, testPlayer5
+         */
         playerFacade.create(team4.getId(), new Player("TestPlayer5"));
+
         logger.error(" * * * *  * * * * * * * * * * * * RESET");
         gameModelFacade.reset(gameModel.getId());
         Assert.assertEquals(FINAL_VALUE, ((NumberInstance) instanceFacade.find(testNumber.getId(), testPlayer0)).getValue(), 0.0);
@@ -156,11 +190,19 @@ public class StateMachineITest extends AbstractEJBTest {
         Assert.assertEquals(3, ((NumberInstance) instanceFacade.find(testNumber2.getId(), testPlayer0)).getValue(), 0.0);
 
         logger.error(" * * * *  * * * * * * * * * * * * CREATE testPlayer6");
+
+        /*
+         * Team: player, testPlayer0
+         * Team2: player21, player22
+         * team3: 
+         * team4: testPlayer1, testPlayer5, testPlayer6
+         */
         playerFacade.create(team4.getId(), new Player("TestPlayer6"));
         /**
-         * Trigger triggers one time for each non empty team -> + 3
+         * nothing to do, all transitions have already been walked since last
+         * reset
          */
-        Assert.assertEquals(6, ((NumberInstance) instanceFacade.find(testNumber2.getId(), testPlayer0)).getValue(), 0.0);
+        Assert.assertEquals(3, ((NumberInstance) instanceFacade.find(testNumber2.getId(), testPlayer0)).getValue(), 0.0);
 
         gameModelFacade.reset(gameModel.getId());
         /**
@@ -172,27 +214,24 @@ public class StateMachineITest extends AbstractEJBTest {
          */
         playerFacade.create(team3.getId(), new Player("TestPlayer7"));
         /**
-         * += 4
+         * += 1
          */
-        Assert.assertEquals(7, ((NumberInstance) instanceFacade.find(testNumber2.getId(), testPlayer0)).getValue(), 0.0);
+        Assert.assertEquals(4, ((NumberInstance) instanceFacade.find(testNumber2.getId(), testPlayer0)).getValue(), 0.0);
 
-        
         gameModelFacade.reset(gameModel.getId());
 
-        
         Assert.assertEquals(4, ((NumberInstance) instanceFacade.find(testNumber2.getId(), testPlayer0)).getValue(), 0.0);
-        // +4
         playerFacade.create(team3.getId(), new Player("TestPlayer8"));
-        // +4
         playerFacade.create(team3.getId(), new Player("TestPlayer9"));
-        // +4
         playerFacade.create(team3.getId(), new Player("TestPlayer10"));
-        
-        Assert.assertEquals(4 + 3*4, ((NumberInstance) instanceFacade.find(testNumber2.getId(), testPlayer0)).getValue(), 0.0);
+
+        Assert.assertEquals(4, ((NumberInstance) instanceFacade.find(testNumber2.getId(), testPlayer0)).getValue(), 0.0);
     }
 
     @Test
     public void editorUpdate() throws NamingException {
+        RequestFacade rf = lookupBy(RequestFacade.class);
+
         NumberDescriptor testNumber;
         testNumber = new NumberDescriptor("numberTest");
         testNumber.setDefaultInstance(new NumberInstance(0));
@@ -200,7 +239,7 @@ public class StateMachineITest extends AbstractEJBTest {
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new TriggerInstance());
         trigger.setTriggerEvent(new Script("1===1"));
-        trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, \"numberTest\").setValue(self, " + FINAL_VALUE + ");"));
+        trigger.setPostTriggerEvent(new Script("print('hit');Variable.find(gameModel, \"numberTest\").setValue(self, " + FINAL_VALUE + ");"));
         trigger.setOneShot(Boolean.FALSE);
         trigger.setDisableSelf(Boolean.FALSE);
         descriptorFacade.create(gameModel.getId(), trigger);
@@ -210,8 +249,14 @@ public class StateMachineITest extends AbstractEJBTest {
         Assert.assertEquals(FINAL_VALUE, ((NumberInstance) instanceFacade.find(testNumber.getId(), testPlayer)).getValue(), 0.0);
         NumberInstance p0Instance = (NumberInstance) instanceFacade.find(testNumber.getId(), testPlayer);
         p0Instance.setValue(50);
-        RequestFacade rf = lookupBy(RequestFacade.class);
+
+        /*
+         *  Simulate new request, otherwise, trigger will not be retriggered
+         */
+        rf.getRequestManager().clear();
         rf.getRequestManager().setPlayer(null);
+        logger.error("CLEAR");
+
         instanceFacade.update(p0Instance.getId(), p0Instance); // Triggers rf.commit -> StateMachine check
 
         Assert.assertEquals(FINAL_VALUE, ((NumberInstance) instanceFacade.find(testNumber.getId(), testPlayer)).getValue(), 0.0);
