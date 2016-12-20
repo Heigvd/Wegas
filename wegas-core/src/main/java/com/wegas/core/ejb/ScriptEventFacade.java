@@ -7,7 +7,7 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.ejb.statemachine.StateMachineEventCounter;
+import com.wegas.core.ejb.statemachine.StateMachineCounter;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.game.Player;
@@ -173,7 +173,7 @@ public class ScriptEventFacade {
         if (currentDescriptor instanceof StateMachineDescriptor) {
             int count;
             StateMachineInstance smi = ((StateMachineDescriptor) currentDescriptor).getInstance(requestManager.getPlayer());
-            StateMachineEventCounter eventCounter = this.requestManager.getEventCounter();
+            StateMachineCounter eventCounter = this.requestManager.getStateMachineCounter();
             count = eventCounter.count(smi, eventName);
             count += eventCounter.countCurrent(eventName);
 

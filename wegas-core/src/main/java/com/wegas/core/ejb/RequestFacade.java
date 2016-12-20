@@ -124,6 +124,10 @@ public class RequestFacade {
         playerActionEvent.fire(new PlayerAction(player, clear));
     }
 
+    public ScriptEventFacade getScriptEventFacade() {
+        return scriptEvent;
+    }
+
     /**
      *
      * @param player

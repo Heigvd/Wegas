@@ -7,7 +7,7 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.ejb.statemachine.StateMachineEventCounter;
+import com.wegas.core.ejb.statemachine.StateMachineCounter;
 import com.wegas.core.event.client.ClientEvent;
 import com.wegas.core.event.client.CustomEvent;
 import com.wegas.core.event.client.ExceptionEvent;
@@ -35,7 +35,6 @@ import javax.persistence.PersistenceContext;
 import javax.script.ScriptContext;
 import javax.ws.rs.core.Response;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 //import javax.annotation.PostConstruct;
@@ -131,7 +130,7 @@ public class RequestManager {
      */
     private ScriptContext currentScriptContext = null;
 
-    private final StateMachineEventCounter eventCounter = new StateMachineEventCounter();
+    private final StateMachineCounter fsmCounter = new StateMachineCounter();
 
     public RequestEnvironment getEnv() {
         return env;
@@ -224,8 +223,8 @@ public class RequestManager {
         this.currentScriptContext = currentScriptContext;
     }
 
-    public StateMachineEventCounter getEventCounter() {
-        return eventCounter;
+    public StateMachineCounter getStateMachineCounter() {
+        return fsmCounter;
     }
 
     /**
@@ -534,6 +533,11 @@ public class RequestManager {
 
     public void commit() {
         this.requestFacade.commit(this.getPlayer(), true);
+    }
+
+    public void clear() {
+        this.requestFacade.getScriptEventFacade().detachAll();
+        this.getStateMachineCounter().clear();
     }
 
     /**

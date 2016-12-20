@@ -9,6 +9,7 @@ package com.wegas.core.ejb.statemachine;
 
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -20,14 +21,16 @@ import java.util.Map.Entry;
  * Used to store Events during run. Prevent passing multiple event transitions
  * with same event if less events where thrown. StateMachineInstance dependant.
  */
-public class StateMachineEventCounter {
+public class StateMachineCounter {
 
     private final Map<StateMachineInstance, Map<String, Integer>> smEvents;
     private final Map<String, Integer> currentEventsCounter;
+    private final HashSet<String> walkedTransitions;
 
-    public StateMachineEventCounter() {
+    public StateMachineCounter() {
         this.smEvents = new HashMap<>();
         this.currentEventsCounter = new HashMap<>();
+        this.walkedTransitions = new HashSet<>();
     }
 
     public int count(StateMachineInstance instance, String event) {
@@ -41,7 +44,7 @@ public class StateMachineEventCounter {
         }
     }
 
-    public void increase(StateMachineInstance instance, String event) {
+    private void increase(StateMachineInstance instance, String event) {
         if (!smEvents.containsKey(instance)) {
             smEvents.put(instance, new HashMap<>());
         }
@@ -49,15 +52,22 @@ public class StateMachineEventCounter {
     }
 
     public void clear() {
-        clearCurrents();
+        this.clearCurrents();
         this.smEvents.clear();
+        this.walkedTransitions.clear();
     }
 
     public void clearCurrents() {
         this.currentEventsCounter.clear();
     }
 
-    public void acceptCurrent(StateMachineInstance instance) {
+    /**
+     * Effectively counts pre-registered events for this state machine
+     *
+     * @see registerEvent
+     * @param instance
+     */
+    private void acceptCurrent(StateMachineInstance instance) {
         for (Entry<String, Integer> entry : currentEventsCounter.entrySet()) {
             Integer count = entry.getValue();
             while (count > 0) {
@@ -84,5 +94,14 @@ public class StateMachineEventCounter {
         } else {
             return 0;
         }
+    }
+
+    public boolean hasAlreadyBeenWalked(String transitionUID) {
+        return this.walkedTransitions.contains(transitionUID);
+    }
+
+    public void walk(StateMachineInstance smi, String transitionUID) {
+        this.acceptCurrent(smi);
+        this.walkedTransitions.add(transitionUID);
     }
 }
