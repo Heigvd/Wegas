@@ -32,11 +32,14 @@ function buildPath(name) {
 }
 
 function genVarItems(items, selectableFn = defaultTrue) {
-    return items.map(i => ({
-        label: i.get('label'),
-        value: selectableFn(i) ? i.get('name') : undefined,
-        items: i.get('items') && genVarItems(i.get('items'), selectableFn)
-    }));
+    function mapItem(item) {
+        return {
+            label: item.get('label'),
+            value: selectableFn(item) ? item.get('name') : undefined,
+            items: item.get('items') && genVarItems(item.get('items'), selectableFn)
+        };
+    }
+    return items.map(mapItem);
 }
 
 class TreeVariableSelect extends React.Component {
@@ -47,6 +50,7 @@ class TreeVariableSelect extends React.Component {
             searching: !props.value
         };
         this.handleOnSelect = this.handleOnSelect.bind(this);
+        this.items = this.genItems();
     }
     handleOnSelect(v) {
         this.setState({
@@ -99,7 +103,7 @@ class TreeVariableSelect extends React.Component {
                         <TreeSelect
                             match={match}
                             selected={this.props.value}
-                            items={this.genItems()}
+                            items={this.items}
                             search={this.state.search}
                             onSelect={this.handleOnSelect}
                         />
