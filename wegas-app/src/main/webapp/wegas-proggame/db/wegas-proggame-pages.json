@@ -119,7 +119,7 @@
       "type" : "ProgGameLevel",
       "@name" : "Level 1.4 (not used)",
       "maxTurns" : 2,
-      "onWin" : "currentLevel.value=7;money.value+=500;",
+      "onWin" : "Variable.find(gameModel, \"currentLevel\").setValue(self, 7);Variable.find(gameModel, \"money\").add(self, 500);",
       "intro" : "Utilisez les fonctions de l'API pour dÃ©placer votre avatar jusqu'au personnage en jaune.",
       "@index" : 22,
       "map" : [
@@ -603,7 +603,7 @@
       ],
       "@index" : 8,
       "intro" : "<p>Cette fois, le mot de passe est&nbsp;la somme des nombres&nbsp;inscrits sur les deux panneaux.</p>\n<p>Bonne chance !</p>\n<p>&nbsp;</p>\n<p>Indice: stocker dans des variables&nbsp;les valeurs &eacute;crites sur les panneaux.</p>",
-      "onWin" : "currentLevel.value=24",
+      "onWin" : "Variable.find(gameModel, \"currentLevel\").setValue(self, 24)",
       "onAction" : "if(said === (panelValue1 + panelValue2) && find('Player').x === 3) {\n        doOpen(find('Door'));\n}",
       "maxTurns" : "1",
       "@name" : "Level 2.3",
@@ -702,7 +702,7 @@
       "label" : "Level 3.2",
       "invites" : [],
       "onAction" : "",
-      "onWin" : "currentLevel.value=33",
+      "onWin" : "Variable.find(gameModel, \"currentLevel\").setValue(self, 33)",
       "intro" : "<p>Cette fois le pi&egrave;ge du haut est&nbsp;activ&eacute; si la valeur &eacute;crite sur le panneau est paire, sinon c'est le pi&egrave;ge du bas.</p>\n<p>&nbsp;</p>\n<p>Blanc&nbsp;a d&eacute;j&agrave; essay&eacute; de trouver la solution en utilisant l'op&eacute;rateur <strong>modulo (%)</strong>, mais il s'est arr&ecirc;t&eacute; au millieu. A toi de corriger son code!</p>",
       "@index" : 12,
       "map" : [
@@ -1032,7 +1032,7 @@
          "move"
       ],
       "intro" : "<p>&nbsp;</p>\n<p>&nbsp;&nbsp;</p>\n<p>Aidez votre personnage blanc &agrave; rejoindre son ami jaune.</p>\n<p>&nbsp;</p>\n<p>Votre seul moyen pour le d&eacute;placer&nbsp;est de programmer la s&eacute;quence d'instructions n&eacute;cessaire dans le langage <strong>Javascript</strong>!</p>",
-      "onWin" : "currentLevel.value=12",
+      "onWin" : "Variable.find(gameModel, \"currentLevel\").setValue(self, 12)",
       "onAction" : "",
       "invites" : []
    },
@@ -1338,7 +1338,7 @@
       "defaultCode" : "//Put your code here...\n",
       "plugins" : [],
       "onAction" : "",
-      "onWin" : "currentLevel.value=13",
+      "onWin" : "Variable.find(gameModel, \"currentLevel\").setValue(self, 13)",
       "intro" : "<p>Le parcours a chang&eacute;.</p>\n<p>&nbsp;</p>\n<p>Deux nouvelles fonctions<em> right()</em> et <em>left()</em> vous permettent maintenant de faire tourner votre personnage.</p>\n<p>&nbsp;</p>\n<p>Rejoignez votre ami avec ces nouvelles fonctions.</p>",
       "map" : [
          [
@@ -2259,7 +2259,7 @@
          ]
       ],
       "intro" : "<p>L'API poss&egrave;de maintenant sa premi&egrave;re fonction math&eacute;matique: la&nbsp;fonction <span style=\"font-family: 'courier new', courier;\">Math.round(x:Number):Number</span><em><span style=\"font-family: 'courier new', courier;\">,</span> </em>qui&nbsp;permet d'arrondir un nombre au&nbsp;nombre entier le plus proche.</p>\n<p>&nbsp;</p>\n<p>Cette fonction poss&egrave;de donc un param&egrave;tre d'entr&eacute;e x (le nombre &agrave; arrondir) et retourne un nombre.</p>\n<p>&nbsp;</p>\n<p>Sur le panneau est inscrit un nombre avec 2 d&eacute;cimales. Le mot de passe pour ouvrir la porte est le nombre&nbsp;entier le plus proche.</p>",
-      "onWin" : "currentLevel.value=31",
+      "onWin" : "Variable.find(gameModel, \"currentLevel\").setValue(self, 31)",
       "onAction" : "if(said === Math.round(panelValue1) && find('Player').x === 3) {\n        doOpen(find('Door'));\n}",
       "plugins" : [],
       "defaultCode" : "",
@@ -2497,7 +2497,7 @@
          "Math.round"
       ],
       "onAction" : "",
-      "onWin" : "currentLevel.value=32"
+      "onWin" : "Variable.find(gameModel, \"currentLevel\").setValue(self, 32)"
    },
    "34" : {
       "maxTurns" : "1",
@@ -2904,7 +2904,7 @@
          ]
       ],
       "onAction" : "",
-      "onWin" : "currentLevel.value=41"
+      "onWin" : "Variable.find(gameModel, \"currentLevel\").setValue(self, 41)"
    },
    "13" : {
       "onStart" : "",
@@ -3091,7 +3091,7 @@
       ],
       "@index" : 4,
       "onAction" : "",
-      "onWin" : "currentLevel.value=21",
+      "onWin" : "Variable.find(gameModel, \"currentLevel\").setValue(self, 21)",
       "defaultCode" : "\n",
       "plugins" : [],
       "invites" : []
@@ -3339,7 +3339,7 @@
       ],
       "@index" : 13,
       "intro" : "<p>Cette fois, blanc doit prendre le chemin du haut si la valeur du panneau est plus grande que 10, celui du millieu si elle est comprise entre 5 et 10 et celui du bas si elle est inf&eacute;rieure &agrave; 10.</p>",
-      "onWin" : "currentLevel.value=34",
+      "onWin" : "Variable.find(gameModel, \"currentLevel\").setValue(self, 34)",
       "onAction" : "",
       "invites" : [],
       "objects" : [
@@ -3701,7 +3701,7 @@
    "41" : {
       "invites" : [],
       "onAction" : " if (lastCommand().type === \"say\") {\r\n     find('Trap').enabled = pannelValue1 < 10\r\n     pannelValue1 = Math.round(Math.random()*15);\r\n}",
-      "onWin" : "currentLevel.value=42",
+      "onWin" : "Variable.find(gameModel, \"currentLevel\").setValue(self, 42)",
       "intro" : "",
       "api" : [
          "move",
@@ -4145,7 +4145,7 @@
          "say"
       ],
       "onAction" : "\nif((\"\"+said).indexOf(\"1234\")>=0 && find(\"Player\").x === 1) {\n    doOpen(find('Door'));\n}",
-      "onWin" : "currentLevel.value=22",
+      "onWin" : "Variable.find(gameModel, \"currentLevel\").setValue(self, 22)",
       "defaultCode" : "",
       "plugins" : [],
       "invites" : [
@@ -4336,7 +4336,7 @@
          ]
       ],
       "onAction" : "if(said === panelValue && find('Player').x ===3) {\n    doOpen(find('Door'));\n}",
-      "onWin" : "currentLevel.value=23",
+      "onWin" : "Variable.find(gameModel, \"currentLevel\").setValue(self, 23)",
       "defaultCode" : "",
       "plugins" : [],
       "invites" : []
@@ -4344,7 +4344,7 @@
    "7" : {
       "23" : {
          "invites" : [],
-         "onWin" : "currentLevel.value=24",
+         "onWin" : "Variable.find(gameModel, \"currentLevel\").setValue(self, 24)",
          "onAction" : "if(said === (panelValue1 + panelValue2) && find('Player').x === 3) {\n        doOpen(find('Door'));\n}",
          "api" : [
             "move",
@@ -4538,7 +4538,7 @@
          "label" : "Level 2.3"
       },
       "32" : {
-         "onWin" : "currentLevel.value=33",
+         "onWin" : "Variable.find(gameModel, \"currentLevel\").setValue(self, 33)",
          "onAction" : "",
          "map" : [
             [
@@ -5037,7 +5037,7 @@
          "invites" : [],
          "plugins" : [],
          "defaultCode" : "// Ecrivez votre code ici ",
-         "onWin" : "currentLevel.value=12",
+         "onWin" : "Variable.find(gameModel, \"currentLevel\").setValue(self, 12)",
          "onAction" : "",
          "api" : [
             "move"
@@ -5651,7 +5651,7 @@
          ],
          "winningCondition" : "level.objects[0].life===0",
          "intro" : "Utilisez les fonctions de l'API pour dÃ©placer votre avatar jusqu'au personnage en jaune.",
-         "onWin" : "currentLevel.value=7;money.value+=500;",
+         "onWin" : "Variable.find(gameModel, \"currentLevel\").setValue(self, 7);Variable.find(gameModel, \"money\").add(self, 500);",
          "maxTurns" : 2,
          "@name" : "Level 1.4 (not used)",
          "type" : "ProgGameLevel"
@@ -5981,7 +5981,7 @@
          "invites" : [],
          "plugins" : [],
          "defaultCode" : "//Put your code here...\n",
-         "onWin" : "currentLevel.value=13",
+         "onWin" : "Variable.find(gameModel, \"currentLevel\").setValue(self, 13)",
          "onAction" : "",
          "@index" : 0,
          "map" : [
@@ -7009,7 +7009,7 @@
          ],
          "@index" : 0,
          "onAction" : " if (lastCommand().type === \"say\") {\r\n     find('Trap').enabled = pannelValue1 < 10\r\n     pannelValue1 = Math.round(Math.random()*15);\r\n}",
-         "onWin" : "currentLevel.value=42",
+         "onWin" : "Variable.find(gameModel, \"currentLevel\").setValue(self, 42)",
          "invites" : []
       },
       "21" : {
@@ -7185,7 +7185,7 @@
          ],
          "@index" : 0,
          "intro" : "<p>Une porte vous emp&ecirc;che de rejoindre votre ami. Mais la porte&nbsp;s'ouvrira si vous lui annoncez le&nbsp;bon mot de passe, qui&nbsp;est \"1234\".</p>\n<p>&nbsp;</p>\n<p>Utilisez votre nouvelle fonction&nbsp;<span style=\"font-family: 'courier new', courier;\">say(text)</span><span style=\"font-family: 'courier new', courier;\"><em>.</em></span> Cette fonction&nbsp;poss&egrave;de un <strong>param&egrave;tre </strong><em>text</em>, qui&nbsp;repr&eacute;sente ce que va dire votre avatar. Placez vous devant la porte et utilisez cette fonction&nbsp;pour dire le mot de passe.</p>",
-         "onWin" : "currentLevel.value=22",
+         "onWin" : "Variable.find(gameModel, \"currentLevel\").setValue(self, 22)",
          "onAction" : "\nif((\"\"+said).indexOf(\"1234\")>=0 && find(\"Player\").x === 1) {\n    doOpen(find('Door'));\n}",
          "maxTurns" : "1",
          "@name" : "Level 2.1",
@@ -7401,7 +7401,7 @@
             "read"
          ],
          "intro" : "<p>Dans ce niveau, la mot de passe est &eacute;crit sur le panneau. D&eacute;placez votre personnage&nbsp;jusqu'au panneau, lisez ce qui est &eacute;crit&nbsp;avec la fonction <span style=\"font-family: 'courier new', courier;\">read():Number</span> et stockez l'information dans une variable. D&eacute;placez-vous ensuite jusqu'&agrave; la porte et dites&nbsp;le mot de passe pour ouvrir la porte.</p>\n<p>&nbsp;</p>\n<p>Si vous n'arrivez pas &agrave; r&eacute;soudre cette &eacute;nigme, n'h&eacute;sitez pas &agrave; consulter la th&eacute;orie.</p>\n<p>&nbsp;</p>",
-         "onWin" : "currentLevel.value=23",
+         "onWin" : "Variable.find(gameModel, \"currentLevel\").setValue(self, 23)",
          "onAction" : "if(said === panelValue && find('Player').x ===3) {\n    doOpen(find('Door'));\n}",
          "plugins" : [],
          "defaultCode" : "",
@@ -7551,7 +7551,7 @@
             "Math.round"
          ],
          "intro" : "<p>L'API poss&egrave;de maintenant sa premi&egrave;re fonction math&eacute;matique: la&nbsp;fonction <span style=\"font-family: 'courier new', courier;\">Math.round(x:Number):Number</span><em><span style=\"font-family: 'courier new', courier;\">,</span> </em>qui&nbsp;permet d'arrondir un nombre au&nbsp;nombre entier le plus proche.</p>\n<p>&nbsp;</p>\n<p>Cette fonction poss&egrave;de donc un param&egrave;tre d'entr&eacute;e x (le nombre &agrave; arrondir) et retourne un nombre.</p>\n<p>&nbsp;</p>\n<p>Sur le panneau est inscrit un nombre avec 2 d&eacute;cimales. Le mot de passe pour ouvrir la porte est le nombre&nbsp;entier le plus proche.</p>",
-         "onWin" : "currentLevel.value=31",
+         "onWin" : "Variable.find(gameModel, \"currentLevel\").setValue(self, 31)",
          "onAction" : "if(said === Math.round(panelValue1) && find('Player').x === 3) {\n        doOpen(find('Door'));\n}",
          "plugins" : [],
          "defaultCode" : "",
@@ -7645,7 +7645,7 @@
          "defaultCode" : "//Put your code here...\n",
          "plugins" : [],
          "onAction" : "",
-         "onWin" : "currentLevel.value=32",
+         "onWin" : "Variable.find(gameModel, \"currentLevel\").setValue(self, 32)",
          "intro" : "<p>Deux chemins s'offrent &agrave; vous, mais un des deux est pi&eacute;g&eacute;.</p>\n<p>&nbsp;</p>\n<p>Lisez la valeur contenue sur le panneau et si elle est sup&eacute;rieure &agrave; 1, cela signifie c'est&nbsp;le chemin du haut qui est pi&eacute;g&eacute;. Sinon c'est le chemin du bas qui l'est.</p>\n<p>&nbsp;</p>\n<p>Vous allez donc devoir faire un choix. Les informations relatives aux choix se trouve dans la th&eacute;orie.</p>",
          "api" : [
             "move",
@@ -8108,7 +8108,7 @@
          ],
          "@index" : 0,
          "intro" : "<p>Blanc devra emprunter le chemin du haut si la valeur du premier panneau est plus grande&nbsp;que celle du deuxi&egrave;me.</p>\n<p>&nbsp;</p>\n<p>Pour le second embranchement, il devra comparer la valeur du troisi&egrave;me panneau &agrave; la moyenne des deux premi&egrave;res. Si la troisi&egrave;me valeur est plus grande il passera en haut, sinon en bas.</p>\n<p>&nbsp;</p>\n<p>&nbsp;</p>",
-         "onWin" : "currentLevel.value=41",
+         "onWin" : "Variable.find(gameModel, \"currentLevel\").setValue(self, 41)",
          "onAction" : "",
          "plugins" : [],
          "defaultCode" : "//Put your code here...\n",
@@ -8254,7 +8254,7 @@
          "invites" : [],
          "plugins" : [],
          "defaultCode" : "//Put your code here...\n",
-         "onWin" : "currentLevel.value=34",
+         "onWin" : "Variable.find(gameModel, \"currentLevel\").setValue(self, 34)",
          "onAction" : "",
          "map" : [
             [
@@ -8658,7 +8658,7 @@
             "right"
          ],
          "intro" : "<p>Pas de nouvelles fonctions dans l'API pour cette fois.</p>\n<p>&nbsp;</p>\n<p>Confirmez seulement votre ma&icirc;trise&nbsp;avec cette s&eacute;quence un peu plus longue.</p>",
-         "onWin" : "currentLevel.value=21",
+         "onWin" : "Variable.find(gameModel, \"currentLevel\").setValue(self, 21)",
          "onAction" : "",
          "plugins" : [],
          "defaultCode" : "\n",
@@ -9727,7 +9727,7 @@
                ],
                "variable" : "",
                "page" : {
-                  "content" : "\"40\"+(Math.floor(maxLevel.value/10))",
+                  "content" : "\"40\"+(Math.floor(Variable.find(gameModel, \"maxLevel\").getValue(self)/10))",
                   "@class" : "Script"
                },
                "defaultPageId" : "1",
