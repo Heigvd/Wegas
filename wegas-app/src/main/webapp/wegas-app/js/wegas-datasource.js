@@ -10,7 +10,7 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 /*global YUI, window, Function*/
-YUI.add('wegas-datasource', function(Y) {
+YUI.add('wegas-datasource', function (Y) {
     "use strict";
 
     var HOST = "host",
@@ -42,11 +42,11 @@ YUI.add('wegas-datasource', function(Y) {
          * @function
          * @private
          */
-        initializer: function() {
+        initializer: function () {
             //            this.after("sourceChange", this.sendInitialRequest); // When the source changes, resend
             // initial request
             this.queue = new Y.Queue();
-            this.after("response", function(e) { // Add request queue consumption logic
+            this.after("response", function (e) { // Add request queue consumption logic
                 if (e.tId === this.queuetid) {
                     Y.Wegas.app.postSendRequest();
                     this.queuetid = null;
@@ -54,7 +54,7 @@ YUI.add('wegas-datasource', function(Y) {
                 }
             });
         },
-        _sendInitialRequest: function(queue, cfg) {
+        _sendInitialRequest: function (queue, cfg) {
             var uri = queue.shift();
             if (!Y.Lang.isUndefined(uri)) {
                 this.sendRequest(Y.mix(cfg || {}, {
@@ -72,7 +72,7 @@ YUI.add('wegas-datasource', function(Y) {
          * @function
          * @private
          */
-        sendInitialRequest: function(cfg) {
+        sendInitialRequest: function (cfg) {
             //            this.cache && this.cache.clear();
             var queue, uri;
             if (!Y.Lang.isUndefined(this.get("initialRequest"))) { // Use this condition to allow empty strings (e.g. ")
@@ -93,11 +93,11 @@ YUI.add('wegas-datasource', function(Y) {
                 }));
             }
         },
-        hasInitialRequest: function() {
+        hasInitialRequest: function () {
             return !Y.Lang.isUndefined(this.get("initialRequest")) ||
                 !Y.Lang.isUndefined(this.get("initialFullRequest"));
         },
-        getInitialRequestsCount: function() {
+        getInitialRequestsCount: function () {
             if (!Y.Lang.isUndefined(this.get("initialRequest"))) {
                 if (Y.Lang.isArray(this.get("initialRequest"))) {
                     return this.get("initialRequest").length;
@@ -113,7 +113,7 @@ YUI.add('wegas-datasource', function(Y) {
          *
          * @function
          */
-        sendRequest: function(request) {
+        sendRequest: function (request) {
             request.cfg = request.cfg || {};
             request.cfg.headers = request.cfg.headers || {};
             request.on = request.on || {};
@@ -127,14 +127,14 @@ YUI.add('wegas-datasource', function(Y) {
             }
             return Wegas.DataSource.superclass.sendRequest.call(this, request);
         },
-        sendQueuedRequest: function(request) {
+        sendQueuedRequest: function (request) {
             Y.Wegas.app.preSendRequest();
             this.queue.add(Y.bind(this.sendRequest, this, request)); // Push the request in the queue
             if (!this.queuetid) { // If a request from the queue is not already running
                 this.processQueue(); // process the request
             }
         },
-        processQueue: function() {
+        processQueue: function () {
             if (this.queue.size()) { // If the request queue isn't empty,
                 this.queuetid = this.queue.next()(); // run next request in the queue
             }
@@ -142,7 +142,7 @@ YUI.add('wegas-datasource', function(Y) {
         /**
          * @hack
          */
-        get: function(name) {
+        get: function (name) {
             var val = Wegas.DataSource.superclass.get.apply(this, arguments);
             if (Y.Lang.isUndefined(val) && this.cache) {
                 return this.cache.get(name);
@@ -153,7 +153,7 @@ YUI.add('wegas-datasource', function(Y) {
         /*
          * @hack Allow  hack on yui api
          */
-        _defRequestFn: function(e) {
+        _defRequestFn: function (e) {
             var uri = this.get("source"),
                 io = this.get("io"),
                 defIOConfig = this.get("ioConfig"),
@@ -185,7 +185,7 @@ YUI.add('wegas-datasource', function(Y) {
          * @hack Override so plugin host accepts string definition of classes and
          * look it up in the Y.Wegas.* package.
          */
-        plug: function(Plugin, config) {
+        plug: function (Plugin, config) {
             if (!Lang.isArray(Plugin)) {
                 if (Plugin && !Lang.isFunction(Plugin)) {
                     config = Plugin.cfg;
@@ -197,29 +197,29 @@ YUI.add('wegas-datasource', function(Y) {
             }
             Wegas.DataSource.superclass.plug.call(this, Plugin, config);
         },
-        sendUpdateEvent: function() {
+        sendUpdateEvent: function () {
             this.fire(GLOBAL_UPDATE_EVENT);
         },
-        forceUpdateEvent: function() {
+        forceUpdateEvent: function () {
             this.sendUpdateEvent();
         }
     }, {
-        /** @lends Y.Wegas.DataSource */
-        /**
-         * @field
-         * @static
-         */
-        ATTRS: {
-            initialRequest: {},
-            initialFullRequest: {}
-        },
-        abort: function(tId) {
-            if (DataSource.Local.transactions[tId]) {
-                DataSource.Local.transactions[tId].abort();
-                DataSource.Local.transactions[tId] = null; // @hack Remove reference since YUI won't do it
+            /** @lends Y.Wegas.DataSource */
+            /**
+             * @field
+             * @static
+             */
+            ATTRS: {
+                initialRequest: {},
+                initialFullRequest: {}
+            },
+            abort: function (tId) {
+                if (DataSource.Local.transactions[tId]) {
+                    DataSource.Local.transactions[tId].abort();
+                    DataSource.Local.transactions[tId] = null; // @hack Remove reference since YUI won't do it
+                }
             }
-        }
-    });
+        });
     /**
      *  @name Y.Plugin.WegasCache
      *  @class Plugin that add cache management for entities from wegas server.
@@ -232,7 +232,7 @@ YUI.add('wegas-datasource', function(Y) {
          * @function
          * @private
          */
-        initializer: function() {
+        initializer: function () {
             var host = this.get(HOST), indexes, i, indexOn;
             host.data = [];
             this._indexes = {
@@ -249,7 +249,7 @@ YUI.add('wegas-datasource', function(Y) {
             });
             this.doBefore("_defDataFn", this._beforeDefDataFn); // When the host receives some data, we parse the result
 
-            this.on("ExceptionEvent", function(e) {
+            this.on("ExceptionEvent", function (e) {
                 var type = e.type.split(":").pop(),
                     val, min, max, msg, level;
 
@@ -300,7 +300,7 @@ YUI.add('wegas-datasource', function(Y) {
             });
 
             // Handle Websocket updated entities
-            this.on("EntityUpdatedEvent", function(e) {
+            this.on("EntityUpdatedEvent", function (e) {
                 var i, entities = e.updatedEntities, ds, updatedDs = [];
                 for (i = 0; i < entities.length; i += 1) { // Update the cache with the entities contained in the reply
                     //this.updated = this.updateCache(POST, entities[i]) || this.updated;
@@ -317,7 +317,7 @@ YUI.add('wegas-datasource', function(Y) {
                 }
             });
         },
-        __showMessage: function(level, message) {
+        __showMessage: function (level, message) {
             var node;
             if (Y.Widget) {
                 node = Y.Widget.getByNode(".wegas-login-page") ||
@@ -336,7 +336,7 @@ YUI.add('wegas-datasource', function(Y) {
                 }
             }
         },
-        _beforeDefDataFn: function(e) {
+        _beforeDefDataFn: function (e) {
             var response, data = e.data && (e.data.responseText || e.data),
                 host = this.get(HOST),
                 payload = e.details[0];
@@ -350,7 +350,7 @@ YUI.add('wegas-datasource', function(Y) {
                 Y.log("Response received: " + host.get('source') /* + e.cfg.request*/, "log", "Wegas.DataSource");
 
                 Wegas.Editable.use(payload.response.results, // Lookup dependencies
-                    Y.bind(function(payload) {
+                    Y.bind(function (payload) {
                         payload.serverResponse = Wegas.Editable.revive(payload.response.results); // Revive
                         if (payload.serverResponse.get && payload.serverResponse.get("updatedEntities")) {
                             payload.response.entities = payload.serverResponse.get("updatedEntities");
@@ -370,7 +370,7 @@ YUI.add('wegas-datasource', function(Y) {
          *
          * @function
          */
-        sendRequest: function(request) {
+        sendRequest: function (request) {
             //Y.log("sendRequest is deprecated, use host.sendrequest instead", "warn");
             return this.get(HOST).sendRequest(request);
         },
@@ -378,7 +378,7 @@ YUI.add('wegas-datasource', function(Y) {
          * @function
          * @private
          */
-        onResponseRevived: function(e) {
+        onResponseRevived: function (e) {
             var i, entity, method, evtPayload, response = e.serverResponse,
                 toUpdate = !e.cfg || e.cfg.updateCache !== false, ds, updatedDs = [];
 
@@ -444,7 +444,7 @@ YUI.add('wegas-datasource', function(Y) {
                 }
             }
         },
-        _insertIntoIndexes: function(entity) {
+        _insertIntoIndexes: function (entity) {
             var indexedKey, index, key;
             for (indexedKey in this._indexes) {
                 if (this._indexes.hasOwnProperty(indexedKey)) {
@@ -456,18 +456,17 @@ YUI.add('wegas-datasource', function(Y) {
                 }
             }
         },
-        insertIntoIndexes: function(entity) {
-            var insert = function(stack) {
-                return Y.Array.each(stack, function(item) {
-                    this._insertIntoIndexes(item);
-                    this.walkEntity(item, insert);
-                    return false;
-                }, this);
-            };
-
-            insert.call(this, [entity]);
+        insertIntoIndexes: function (entity) {
+            this.insert([entity]);
         },
-        _deleteFromIndexes: function(entity) {
+        insert: function insert(stack) {
+            return Y.Array.each(stack, function (item) {
+                this._insertIntoIndexes(item);
+                this.walkEntity(item, this.insert);
+                return false;
+            }, this);
+        },
+        _deleteFromIndexes: function (entity) {
             var indexedKey, index, key;
             for (indexedKey in this._indexes) {
                 if (this._indexes.hasOwnProperty(indexedKey)) {
@@ -479,21 +478,22 @@ YUI.add('wegas-datasource', function(Y) {
                 }
             }
         },
-        deleteFromIndexes: function(entity) {
-            var drop = function(stack) {
-                return Y.Array.each(stack, function(item) {
-                    this._deleteFromIndexes(item);
-                    this.walkEntity(item, drop);
-                }, this);
-            };
-
-            drop.call(this, [entity]);
+        deleteFromIndexes: function (entity) {
+            this.drop([entity]);
         },
-        _updateIndexes: function(oldAtts, newAttrs) {
+        drop: function drop(stack) {
+            return Y.Array.each(stack, function (item) {
+                this._deleteFromIndexes(item);
+                this.walkEntity(item, this.drop);
+            }, this);
+        },
+        _updateIndexes: function (oldAtts, newAttrs) {
 
         },
-        updateIndexes: function(oldAttrs, newAttrs) {
+        updateIndexes: function (oldAttrs, newAttrs) {
             var indexedKey, index, oldKey, newKey;
+            this.drop(this.getChildren(oldAttrs) || [])
+            this.insert(this.getChildren(newAttrs) || []);
             for (indexedKey in this._indexes) {
                 if (this._indexes.hasOwnProperty(indexedKey)) {
                     index = this._indexes[indexedKey];
@@ -513,11 +513,11 @@ YUI.add('wegas-datasource', function(Y) {
          *  @param {page} entity The entity to update in the cache
          *  @return {Boolean} `true` if object could be located and method applied
          */
-        updateCache: function(method, entity, updateEvent) {
+        updateCache: function (method, entity, updateEvent) {
             var ds = this.get(HOST);
             //Y.log("updateCache(" + method + ", " + entity + ")", "log", "Y.Wegas.WegasCache");
             if (method === DELETE) {
-                if (this.find(ID, entity.get("id"), Y.bind(function(entity, needle) {
+                if (this.find(ID, entity.get("id"), Y.bind(function (entity, needle) {
                     var parent = this.findParentDescriptor(entity), // VD only !!!!!!!!!
                         children, index;
                     if (parent) {
@@ -530,7 +530,7 @@ YUI.add('wegas-datasource', function(Y) {
                     if (index >= 0) {
                         children.splice(index, 1);
                         this.deleteFromIndexes(entity);
-                        ds.fire("delete", {"entity": entity});
+                        ds.fire("delete", { "entity": entity });
                     }
                     return true;
                 }, this))) {
@@ -539,7 +539,7 @@ YUI.add('wegas-datasource', function(Y) {
                     return null;
                 }
             } else {
-                if (this.find(ID, entity, Y.bind(function(entity, needle) {
+                if (this.find(ID, entity, Y.bind(function (entity, needle) {
                     var oldAttrs, newAttrs, newEntity;
                     oldAttrs = entity.getAttrs();
                     newAttrs = needle.getAttrs();
@@ -562,7 +562,7 @@ YUI.add('wegas-datasource', function(Y) {
                             // Since return entity is not the new one but its parent,
                             // this statement search an entity with an unknown id (ie not in oldIds) within
                             // the parent items (ie children).
-                            newEntity = Y.Array.find(entity.get("items"), function(i) {
+                            newEntity = Y.Array.find(entity.get("items"), function (i) {
                                 return Y.Array.indexOf(this.oldIds, i.get("id")) < 0;
                             }, this);
 
@@ -609,7 +609,7 @@ YUI.add('wegas-datasource', function(Y) {
          * @function
          * @private
          */
-        addToCache: function(entity) {
+        addToCache: function (entity) {
             this.getCache().push(entity);
         },
         /// *** Cache methods *** //
@@ -618,14 +618,14 @@ YUI.add('wegas-datasource', function(Y) {
          * @function
          * @private
          */
-        getCache: function() {
+        getCache: function () {
             return this.get(HOST).data;
         },
         /**
          * @function
          * @private
          */
-        clear: function(sendUpdateEvent) {
+        clear: function (sendUpdateEvent) {
             var i, cache = this.getCache();
             for (i = 0; i < cache.length; i = i + 1) {
                 cache[i].destroy();
@@ -639,14 +639,14 @@ YUI.add('wegas-datasource', function(Y) {
         /**
          *
          */
-        findAll: function(key, needle) {
+        findAll: function (key, needle) {
             if (!key) {
                 return this.getCache();
             } else {
                 // Y.log("doFind(" + needle + ")", 'log', 'Y.Wegas.WegasCache');
                 var ret = [],
-                    doFind = function(stack) {
-                        return Y.Array.find(stack, function(item, index, array) {
+                    doFind = function (stack) {
+                        return Y.Array.find(stack, function (item, index, array) {
                             if (this.testEntity(item, key, needle)) { // We check the current element if it's a match
                                 ret.push(item);
                             }
@@ -664,7 +664,7 @@ YUI.add('wegas-datasource', function(Y) {
          * @function
          * @private
          */
-        find: function(key, val, onFindFn) {
+        find: function (key, val, onFindFn) {
             var found, needleValue;
 
             if (this._indexes[key]) {
@@ -686,7 +686,7 @@ YUI.add('wegas-datasource', function(Y) {
          * @function
          * @private
          */
-        findById: function(id) {
+        findById: function (id) {
             return this.find(ID, +id); // Cast to number
         },
         /**
@@ -695,19 +695,18 @@ YUI.add('wegas-datasource', function(Y) {
          * @param event || list<event> val
          * @returns a list of events
          */
-        findEvent: function(key, val) {
+        findEvent: function (key, val) {
             val = val.response.results.events || val;
 
-            return Y.Array.map(Y.Array.each(val, function(i) {
+            return Y.Array.map(Y.Array.each(val, function (i) {
                 return i.get("val.type") === key;
-            }), function(i) {
+            }), function (i) {
                 return i.get("val.payload");
             });
         },
         /**
          *
-         *  Recursively walk the provided stack, looking for an object with an
-         *  id corresponding to needle's and apply an operation based method.
+         *  Find an entity in the cache with a key's value correspongin to neelde or needle's value
          *
          *  @function
          *  @private
@@ -715,24 +714,20 @@ YUI.add('wegas-datasource', function(Y) {
          *  @param {page} The entity to update in the cache
          *  @return {Boolean} `true` if object could be located and method applied
          */
-        doFind: function(key, needle, onFindFn) {
-            // Y.log("doFind(" + needle + ")", 'log', 'Y.Wegas.WegasCache');
-            var ret, doFind = function(stack) { // @fixme speedup
-                return Y.Array.find(stack, function(item, index, array) { // @fixme speedup
-                    if (this.testEntity(item, key, needle)) { // We check the current element if it's a match
-                        ret = item;
+        doFind: function doFind(key, needle, onFindFn) {
+                            ret = item;
                         if (onFindFn) {
                             onFindFn(item, needle);
                         }
-                        return item;
-                    }
+                            return item;
+                        }
                     return this.walkEntity(item, doFind);
                 }, this);
             };
             doFind.call(this, this.getCache());
             return ret;
         },
-        getChildren: function(entity) {
+        getChildren: function (entity) {
             return null;
         },
         /**
@@ -742,7 +737,7 @@ YUI.add('wegas-datasource', function(Y) {
          * @function
          * @private
          */
-        walkEntity: function(entity, callback) {
+        walkEntity: function (entity, callback) {
             var children = this.getChildren(entity);
             if (children) {
                 return callback.call(this, children);
@@ -753,21 +748,21 @@ YUI.add('wegas-datasource', function(Y) {
          * @function
          * @private
          */
-        testEntity: function(entity, key, needle) {
+        testEntity: function (entity, key, needle) {
             return this.get("testFn")(entity, key, needle);
         },
         /**
          * @function
          * @private
          */
-        generateRequest: function(data) {
+        generateRequest: function (data) {
             return "/" + data.id;
         },
         /**
          * @function
          * @private
          */
-        post: function(data, parent, callback) {
+        post: function (data, parent, callback) {
             var request = parent ? "/" + parent.get(ID) + "/" + data[CLASS] : "/";
 
             this.sendRequest({
@@ -783,10 +778,10 @@ YUI.add('wegas-datasource', function(Y) {
          * @function
          * @private
          */
-        getObject: function(data, cfg) {
+        getObject: function (data, cfg) {
             this.sendRequest(this.generateRequest(data), cfg);
         },
-        getWithView: function(entity, view, cfg) {
+        getWithView: function (entity, view, cfg) {
             cfg.request = this.generateRequest(entity.toObject()) + "?view=" + (view || "Editor");
             cfg.cfg = {
                 updateCache: false
@@ -801,7 +796,7 @@ YUI.add('wegas-datasource', function(Y) {
          * @param {type} cfg
          * @returns {undefined}
          */
-        put: function(data, cfg) {
+        put: function (data, cfg) {
             cfg = cfg || {};
             this.sendRequest(Y.mix({
                 request: this.generateRequest(data),
@@ -819,7 +814,7 @@ YUI.add('wegas-datasource', function(Y) {
          * @param {type} cfg
          * @returns {undefined}
          */
-        duplicateObject: function(entity, cfg) {
+        duplicateObject: function (entity, cfg) {
             this.sendRequest(Y.mix({
                 request: this.generateRequest(entity.toObject()) + "/Duplicate/",
                 cfg: {
@@ -827,7 +822,7 @@ YUI.add('wegas-datasource', function(Y) {
                 }
             }, cfg));
         },
-        sortList: function(entity, cfg) {
+        sortList: function (entity, cfg) {
             this.sendRequest(Y.mix({
                 request: this.generateRequest(entity.toObject()) + "/Sort",
                 cfg: {
@@ -843,7 +838,7 @@ YUI.add('wegas-datasource', function(Y) {
          * @param {type} cfg
          * @returns {undefined}
          */
-        deleteObject: function(entity, cfg) {
+        deleteObject: function (entity, cfg) {
             this.sendRequest(Y.mix({
                 request: this.generateRequest(entity.toObject()),
                 cfg: Y.mix({
@@ -855,32 +850,32 @@ YUI.add('wegas-datasource', function(Y) {
          * @function
          * @private
          */
-        clone: function(id, parentData, callbacks) {
+        clone: function (id, parentData, callbacks) {
             var entity = this.findById(id).clone();
             this.post(entity, parentData, callbacks);
         }
     }, {
-        NS: "cache",
-        /** @lends Y.Plugin.WegasCache */
-        ATTRS: {
-            testFn: {
-                value: function(entity, key, needle) {
-                    var value = (entity.get) ? entity.get(key) : entity[key], // Normalize item and needle values
-                        needleValue = (needle && needle.get) ? needle.get(key) :
-                        (Y.Lang.isObject(needle)) ? needle[key] : needle;
+            NS: "cache",
+            /** @lends Y.Plugin.WegasCache */
+            ATTRS: {
+                testFn: {
+                    value: function (entity, key, needle) {
+                        var value = (entity.get) ? entity.get(key) : entity[key], // Normalize item and needle values
+                            needleValue = (needle && needle.get) ? needle.get(key) :
+                                (Y.Lang.isObject(needle)) ? needle[key] : needle;
 
-                    return value === needleValue &&
-                        (!needle._classes || entity instanceof needle._classes[0]);
+                        return value === needleValue &&
+                            (!needle._classes || entity instanceof needle._classes[0]);
+                    }
+                },
+                indexes: {
+                    type: "array",
+                    value: [],
+                    optional: true
                 }
-            },
-            indexes: {
-                type: "array",
-                value: [],
-                optional: true
-            }
 
-        }
-    });
+            }
+        });
     Plugin.WegasCache = WegasCache;
 
     /**
@@ -895,33 +890,30 @@ YUI.add('wegas-datasource', function(Y) {
          * @function
          * @private
          */
-        initializer: function() {
+        initializer: function () {
             // Server event, triggered through the managed-mode response events.
             //this._indexes.name = {};
             //this._indexes.id = {};
 
 
-            this.on("CustomEvent", function(e) { // TODO MOVE SOMEWHERE...
+            this.on("CustomEvent", function (e) { // TODO MOVE SOMEWHERE...
                 this.get(HOST).fire(e.serverEvent.get("val.type"), e.serverEvent.get("val.payload"));
             });
         },
-        generateRequest: function(data) {
+        generateRequest: function (data) {
             if (data[CLASS].indexOf("Instance") > -1) {
                 return '/' + data.descriptorId + '/VariableInstance/' + data.id;
             } else {
                 return "/" + data.id;
             }
         },
-        getChildren: function(entity) {
-            if (entity.get && entity.get(ITEMS)) {
-                return entity.get(ITEMS);
-            }
-            return null;
+        getChildren: function (entity) {
+            return (entity.get && entity.get(ITEMS)) || entity[ITEMS] || null;
         },
         /**
          * @function
          */
-        updateCache: function(method, entity) {
+        updateCache: function (method, entity) {
             if (entity instanceof Wegas.persistence.VariableInstance) {
                 return Y.Wegas.Facade.Instance.cache.updateCache(method, entity);
             } else if (entity instanceof Wegas.persistence.VariableDescriptor) {
@@ -932,17 +924,17 @@ YUI.add('wegas-datasource', function(Y) {
         /**
          * @function
          */
-        put: function(data, cfg) {
+        put: function (data, cfg) {
             if (data[CLASS].indexOf("Instance") !== -1) {
                 Y.Wegas.Facade.Instance.cache.put(data, cfg);
             } else {
                 VariableDescriptorCache.superclass.put.call(this, data, cfg);
             }
         },
-        duplicateObject: function(entity, cfg) {
+        duplicateObject: function (entity, cfg) {
             var parent = this.findParentDescriptor(entity);
             if (parent) {
-                this.oldIds = Y.Array.map(parent.get(ITEMS), function(i) {
+                this.oldIds = Y.Array.map(parent.get(ITEMS), function (i) {
                     return i.get(ID);
                 });
             }
@@ -953,10 +945,10 @@ YUI.add('wegas-datasource', function(Y) {
                 }
             }, cfg));
         },
-        post: function(data, parent, callback) {
+        post: function (data, parent, callback) {
             var request = "";
             if (parent) {
-                this.oldIds = Y.Array.map(parent.get(ITEMS), function(i) {
+                this.oldIds = Y.Array.map(parent.get(ITEMS), function (i) {
                     return i.get(ID);
                 });
                 request = "/" + parent.get(ID);
@@ -970,10 +962,10 @@ YUI.add('wegas-datasource', function(Y) {
                 on: callback
             });
         },
-        findParentDescriptor: function(entity) {
+        findParentDescriptor: function (entity) {
             return this.find("id", entity.get("parentDescriptorId"));
         },
-        move: function(entity, parentEntity, index) {
+        move: function (entity, parentEntity, index) {
             var request,
                 host = this.get(HOST),
                 oParentEntity = this.findParentDescriptor(entity),
@@ -1009,19 +1001,19 @@ YUI.add('wegas-datasource', function(Y) {
                     method: PUT
                 },
                 on: {
-                    success: Y.bind(function(tId, e) {
+                    success: Y.bind(function (tId, e) {
                         Y.log("Item moved", "info", "Wegas.VariableTreeView");
                         this.get(HOST).fire(GLOBAL_UPDATE_EVENT);
                         // TODO -> Send  updatedDescriptor events
                     }, this),
-                    failure: function(tId, e) {
+                    failure: function (tId, e) {
                         //@todo Reset the whole treeview
                         Y.log("Error moving item", "error");
                     }
                 }
             });
         },
-        remoteSearch: function(query, callback, containsAll) {
+        remoteSearch: function (query, callback, containsAll) {
             return this.sendRequest({
                 request: containsAll ? "/containsAll" : "/contains",
                 cfg: {
@@ -1033,18 +1025,18 @@ YUI.add('wegas-datasource', function(Y) {
                     }
                 },
                 on: {
-                    success: function(e) {
+                    success: function (e) {
                         callback(e.response.results);
                     }
                 }
             });
         }
     }, {
-        NS: "cache",
-        NAME: "VariableDescriptorCache",
-        ATTRS: {
-        }
-    });
+            NS: "cache",
+            NAME: "VariableDescriptorCache",
+            ATTRS: {
+            }
+        });
     Plugin.VariableDescriptorCache = VariableDescriptorCache;
 
     /**
@@ -1059,7 +1051,7 @@ YUI.add('wegas-datasource', function(Y) {
          * @function
          * @private
          */
-        initializer: function() {
+        initializer: function () {
             // Server event, triggered through the managed-mode response events.
             //this._indexes.name = {};
             //this._indexes.id = {};
@@ -1082,15 +1074,15 @@ YUI.add('wegas-datasource', function(Y) {
              * 
              * -> PLEASE USE updatedDescriptor and instanceDescriptor events when applicable
              */
-            this.get(HOST).on(GLOBAL_UPDATE_EVENT, function(e) {
+            this.get(HOST).on(GLOBAL_UPDATE_EVENT, function (e) {
                 Y.Wegas.Facade.Variable.fire(GLOBAL_UPDATE_EVENT, e);
             });
 
-            this.on("CustomEvent", function(e) { // TODO MOVE SOMEWHERE...
+            this.on("CustomEvent", function (e) { // TODO MOVE SOMEWHERE...
                 Y.Wegas.Facade.Variable.fire(e.serverEvent.get("val.type"), e.serverEvent.get("val.payload"));
             });
         },
-        getChildren: function(entity) {
+        getChildren: function (entity) {
             if (entity["@class"] === "Scope") {
                 var k, values = [];
                 for (k in entity.variableInstances) {
@@ -1102,36 +1094,36 @@ YUI.add('wegas-datasource', function(Y) {
             }
             return null;
         },
-        sortList: function(entity, cfg) {
+        sortList: function (entity, cfg) {
             Y.log("Sorting VariableInstances is forbidden");
             debugger;
         },
-        close: function(id, parentData, callbacks) {
+        close: function (id, parentData, callbacks) {
             Y.log("Cloning VariableInstance is forbidden");
             debugger;
         },
-        deleteObject: function(entity, cfg) {
+        deleteObject: function (entity, cfg) {
             Y.log("Deleting VariableInstance is forbidden");
             debugger;
         },
-        duplicateObject: function(entity, cfg) {
+        duplicateObject: function (entity, cfg) {
             Y.log("duplicating VariableInstance is forbidden");
             debugger;
         },
-        post: function() {
+        post: function () {
             Y.log("posting VariableInstance is forbidden");
             debugger;
         },
         /*put: function (data, cfg) {
          VariableInstanceCache.superclass.put.call(this, data, cfg);
          },*/
-        generateRequest: function(data) {
+        generateRequest: function (data) {
             return "/" + data.descriptorId + "/VariableInstance/" + data.id;
         },
         /**
          * @function
          */
-        updateCache: function(method, entity) {
+        updateCache: function (method, entity) {
             var scope, scopeKey, descriptorId, index;
             descriptorId = +entity.get("descriptorId");
             scopeKey = +entity.get("scopeKey");
@@ -1191,16 +1183,16 @@ YUI.add('wegas-datasource', function(Y) {
             return false;
         }
     }, {
-        NS: "cache",
-        NAME: "VariableInstanceCache",
-        ATTRS: {
-            indexes: {
-                type: "array",
-                value: [],
-                optional: true
+            NS: "cache",
+            NAME: "VariableInstanceCache",
+            ATTRS: {
+                indexes: {
+                    type: "array",
+                    value: [],
+                    optional: true
+                }
             }
-        }
-    });
+        });
     Plugin.VariableInstanceCache = VariableInstanceCache;
 
 
@@ -1215,13 +1207,13 @@ YUI.add('wegas-datasource', function(Y) {
         /*
          *  @fixme so we can delect scriptlibrary elemnt and still treat the reply as an gamemodel updated event
          */
-        onData: function(e) {
+        onData: function (e) {
             if (e.request.indexOf("/Library/") !== -1) {
                 e.cfg.method = POST;
             }
             GameModelCache.superclass.onData.call(this, e);
         },
-        post: function(data, parentData, callback) {
+        post: function (data, parentData, callback) {
             if (data.templateId) {
                 this.sendRequest({
                     request: "/" + data.templateId,
@@ -1235,15 +1227,15 @@ YUI.add('wegas-datasource', function(Y) {
                 GameModelCache.superclass.post.apply(this, arguments);
             }
         },
-        getCurrentGameModel: function() {
+        getCurrentGameModel: function () {
             return this.findById(this.get('currentGameModelId'));
         }
     }, {
-        NS: "cache",
-        ATTRS: {
-            currentGameModelId: {}
-        }
-    });
+            NS: "cache",
+            ATTRS: {
+                currentGameModelId: {}
+            }
+        });
     Plugin.GameModelCache = GameModelCache;
 
     /**
@@ -1254,7 +1246,7 @@ YUI.add('wegas-datasource', function(Y) {
      */
 
     GameCache = Y.Base.create("wegas-gamecache", WegasCache, [], {
-        getChildren: function(entity) {
+        getChildren: function (entity) {
             if (entity instanceof Wegas.persistence.Game) {
                 return entity.get("teams");
             }
@@ -1267,7 +1259,7 @@ YUI.add('wegas-datasource', function(Y) {
             }
             return null;
         },
-        addToCache: function(entity) {
+        addToCache: function (entity) {
             if (entity instanceof Wegas.persistence.Team) {
                 var game = this.findById(entity.get("gameId"));
                 if (game) {
@@ -1283,7 +1275,7 @@ YUI.add('wegas-datasource', function(Y) {
         /**
          * @deprecated
          */
-        generateRequest: function(data) {
+        generateRequest: function (data) {
             if (data[CLASS] === 'Team') {
                 return '/' + data.gameId + '/Team/' + data.id;
             } else if (data[CLASS] === 'Player') {
@@ -1292,7 +1284,7 @@ YUI.add('wegas-datasource', function(Y) {
                 return "/" + data.id;
             }
         },
-        post: function(entity, parentData, callback) {
+        post: function (entity, parentData, callback) {
             if (entity[CLASS] === "Player") {
                 this.sendRequest({
                     request: "/" + this.getGameByTeamId(parentData.id).get(ID) + "/Team/" + parentData.id + "/Player",
@@ -1316,25 +1308,25 @@ YUI.add('wegas-datasource', function(Y) {
             }
         },
         /* Util methods */
-        getCurrentGame: function() {
+        getCurrentGame: function () {
             return this.findById(this.get('currentGameId'));
         },
-        getCurrentPlayer: function() {
+        getCurrentPlayer: function () {
             return this.getPlayerById(this.get('currentPlayerId'));
         },
-        getCurrentTeam: function() {
+        getCurrentTeam: function () {
             return this.getTeamById(this.get('currentTeamId'));
         },
-        getTeamById: function(teamId) {
+        getTeamById: function (teamId) {
             return this.find(ID, +teamId);
         },
-        getPlayerById: function(playerId) {
+        getPlayerById: function (playerId) {
             return this.find(ID, +playerId);
         },
         /**
          *
          */
-        getGameByTeamId: function(teamId) {
+        getGameByTeamId: function (teamId) {
             var i, j, data = this.getCache();
             teamId = +teamId; // Convert to number
 
@@ -1350,7 +1342,7 @@ YUI.add('wegas-datasource', function(Y) {
         /**
          *
          */
-        getTeamByPlayerId: function(playerId) {
+        getTeamByPlayerId: function (playerId) {
             var i, j, k, cTeam, data = this.getCache();
             for (i = 0; i < data.length; i += 1) {
                 for (j = 0; j < data[i].get("teams").length; j += 1) {
@@ -1365,16 +1357,16 @@ YUI.add('wegas-datasource', function(Y) {
             return null;
         }
     }, {
-        NS: "cache",
-        ATTRS: {
-            currentGameId: {},
-            currentTeamId: {},
-            currentPlayerId: {},
-            currentPlayer: {
-                getter: "getCurrentPlayer"
+            NS: "cache",
+            ATTRS: {
+                currentGameId: {},
+                currentTeamId: {},
+                currentPlayerId: {},
+                currentPlayer: {
+                    getter: "getCurrentPlayer"
+                }
             }
-        }
-    });
+        });
     Plugin.GameCache = GameCache;
 
     /**
@@ -1384,20 +1376,20 @@ YUI.add('wegas-datasource', function(Y) {
      *  @constructor
      */
     UserCache = Y.Base.create("wegas-cache", WegasCache, [], {
-        getChildren: function(entity) {
+        getChildren: function (entity) {
             if (entity.get("accounts")) {
                 return entity.get("accounts");
             }
             return null;
         },
-        generateRequest: function(data) {
+        generateRequest: function (data) {
             if (data[CLASS] === 'JpaAccount') {
                 return "/Account/" + data.id;
             } else {
                 return "/" + data.id;
             }
         },
-        post: function(data, parentData, callback) {
+        post: function (data, parentData, callback) {
             if (data[CLASS] === "JpaAccount") { // Allow user creation based on a Jpa Account
                 data = {
                     "@class": "User",
@@ -1414,7 +1406,7 @@ YUI.add('wegas-datasource', function(Y) {
                 on: callback
             });
         },
-        deleteAllRolePermissions: function(roleId, entityId) {
+        deleteAllRolePermissions: function (roleId, entityId) {
             this.sendRequest({
                 request: "/DeleteAllRolePermissions/" + roleId + "/" + entityId,
                 cfg: {
@@ -1423,16 +1415,16 @@ YUI.add('wegas-datasource', function(Y) {
             });
         }
     }, {
-        NS: "cache",
-        ATTRS: {
-            currentUserId: {},
-            currentUser: {
-                getter: function() {
-                    return this.findById(this.get("currentUserId"));
+            NS: "cache",
+            ATTRS: {
+                currentUserId: {},
+                currentUser: {
+                    getter: function () {
+                        return this.findById(this.get("currentUserId"));
+                    }
                 }
             }
-        }
-    });
+        });
     Plugin.UserCache = UserCache;
 
     /**
@@ -1441,7 +1433,7 @@ YUI.add('wegas-datasource', function(Y) {
      * @class
      * @constructor
      */
-    PageCache = function() {
+    PageCache = function () {
         PageCache.superclass.constructor.apply(this, arguments);
     };
     Y.extend(PageCache, Plugin.Base, {
@@ -1451,8 +1443,8 @@ YUI.add('wegas-datasource', function(Y) {
          * @function
          * @private
          */
-        initializer: function() {
-            var endsWith = function(str, suffix) {
+        initializer: function () {
+            var endsWith = function (str, suffix) {
                 return str.indexOf(suffix, str.length - suffix.length) !== -1;
             };
             this.get(HOST).data = {};
@@ -1471,7 +1463,7 @@ YUI.add('wegas-datasource', function(Y) {
          *
          * @function
          */
-        sendRequest: function(requestCfg) {
+        sendRequest: function (requestCfg) {
             requestCfg.on = requestCfg.on || {};
             requestCfg.on.success = requestCfg.on.success || this._successHandler;
             requestCfg.on.failure = requestCfg.on.failure || this._failureHandler;
@@ -1488,7 +1480,7 @@ YUI.add('wegas-datasource', function(Y) {
          * @function
          * @private
          */
-        beforeResponse: function(e) {
+        beforeResponse: function (e) {
             if (e.error) {
                 return;
             }
@@ -1515,7 +1507,7 @@ YUI.add('wegas-datasource', function(Y) {
          * @function
          * @private
          */
-        setCache: function(pageId, object) {
+        setCache: function (pageId, object) {
             var old = Y.JSON.stringify(this.getCache(pageId)),
                 page;
             if (Y.Lang.isObject(object)) {
@@ -1534,19 +1526,19 @@ YUI.add('wegas-datasource', function(Y) {
         /**
          * @function
          */
-        getCache: function(pageId) {
+        getCache: function (pageId) {
             return this.get(HOST).data["" + pageId] || null;
         },
         /**
          * @function
          */
-        clear: function() {
+        clear: function () {
             this.get(HOST).data = {};
         },
         /**
          * @function
          */
-        put: function(page, callback) {
+        put: function (page, callback) {
             var pageId = page["@pageId"],
                 pe = Y.clone(page);
             delete pe["@pageId"];
@@ -1557,7 +1549,7 @@ YUI.add('wegas-datasource', function(Y) {
                     data: Y.JSON.stringify(pe)
                 },
                 on: {
-                    success: Y.bind(function(e) {
+                    success: Y.bind(function (e) {
                         if (callback instanceof Function) {
                             callback(e.response.results);
                         }
@@ -1571,7 +1563,7 @@ YUI.add('wegas-datasource', function(Y) {
          * @param {Function} (optional) callback, parameters (page created, page's id, index);
          * @returns {undefined}
          */
-        createPage: function(entity, callback) {
+        createPage: function (entity, callback) {
             var pe = Y.clone(entity);
             delete pe["@pageId"];
             this.index = null;
@@ -1582,7 +1574,7 @@ YUI.add('wegas-datasource', function(Y) {
                     data: Y.JSON.stringify(pe)
                 },
                 on: {
-                    success: Y.bind(function(e) {
+                    success: Y.bind(function (e) {
 
                         if (callback instanceof Function) {
                             this.getIndex(Y.bind(callback,
@@ -1599,7 +1591,7 @@ YUI.add('wegas-datasource', function(Y) {
         /**
          * @function
          */
-        patch: function(o, callback) {
+        patch: function (o, callback) {
             /*global diff_match_patch*/
             // var dmp = new diff_match_patch(),
             var oldPage = this.getCache(o["@pageId"]),
@@ -1625,7 +1617,7 @@ YUI.add('wegas-datasource', function(Y) {
                     data: patch
                 },
                 on: {
-                    success: Y.bind(function(e) {
+                    success: Y.bind(function (e) {
                         if (callback instanceof Function) {
                             callback(e.response.results);
                         }
@@ -1633,7 +1625,7 @@ YUI.add('wegas-datasource', function(Y) {
                 }
             });
         },
-        editMeta: function(pageId, meta, callback) {
+        editMeta: function (pageId, meta, callback) {
             this.index = null;
             return this.sendRequest({
                 request: "" + pageId + "/meta",
@@ -1642,7 +1634,7 @@ YUI.add('wegas-datasource', function(Y) {
                     data: meta
                 },
                 on: {
-                    success: Y.bind(function(e) {
+                    success: Y.bind(function (e) {
                         if (callback instanceof Function) {
                             callback(e.response.results);
                         }
@@ -1650,12 +1642,12 @@ YUI.add('wegas-datasource', function(Y) {
                 }
             });
         },
-        duplicate: function(pageId, callback) {
+        duplicate: function (pageId, callback) {
             this.index = null;
             return this.sendRequest({
                 request: "" + pageId + "/duplicate",
                 on: {
-                    success: Y.bind(function(e) {
+                    success: Y.bind(function (e) {
                         if (callback instanceof Function) {
                             this.getIndex(Y.bind(callback,
                                 callback,
@@ -1674,7 +1666,7 @@ YUI.add('wegas-datasource', function(Y) {
          * @param {Function} callback,  param (page's index)
          * @returns {undefined}
          */
-        deletePage: function(pageId, callback) {
+        deletePage: function (pageId, callback) {
             this.index = null;
             return this.sendRequest({
                 request: "" + pageId,
@@ -1682,7 +1674,7 @@ YUI.add('wegas-datasource', function(Y) {
                     method: 'DELETE'
                 },
                 on: {
-                    success: Y.bind(function(e) {
+                    success: Y.bind(function (e) {
                         delete this.get(HOST).data[pageId];
                         if (callback instanceof Function) {
                             callback(e.response.results);
@@ -1697,7 +1689,7 @@ YUI.add('wegas-datasource', function(Y) {
          * @param {Function} callback async calling function with page as first param
          * @returns {Page} or null if page missing in cache.
          */
-        getPage: function(pageId, callback) {
+        getPage: function (pageId, callback) {
             var page = null;
             if (pageId === "default" && !this.editable) {
                 pageId = 1;
@@ -1713,7 +1705,7 @@ YUI.add('wegas-datasource', function(Y) {
                 return this.sendRequest({
                     request: "" + pageId,
                     on: {
-                        success: Y.bind(function(e) {
+                        success: Y.bind(function (e) {
                             var page;
                             this.pageQuery[pageId] = false;
                             if (callback instanceof Function) {
@@ -1725,7 +1717,7 @@ YUI.add('wegas-datasource', function(Y) {
                                 }
                             }
                         }, this),
-                        failure: Y.bind(function(e) {
+                        failure: Y.bind(function (e) {
                             this.pageQuery[pageId] = false;
                             if (Y.Lang.isFunction(callback)) {
                                 callback(null);
@@ -1735,8 +1727,8 @@ YUI.add('wegas-datasource', function(Y) {
                 });
             }
         },
-        move: function(pageId, pos, callback) {
-            this.getMeta(pageId, Y.bind(function(meta) {
+        move: function (pageId, pos, callback) {
+            this.getMeta(pageId, Y.bind(function (meta) {
                 if (+meta.index === pos) {
                     //Same pos. return old index
                     this.getIndex(callback);
@@ -1749,7 +1741,7 @@ YUI.add('wegas-datasource', function(Y) {
                             method: PUT
                         },
                         on: {
-                            success: function(e) {
+                            success: function (e) {
                                 if (callback instanceof Function) {
                                     callback(e.response.results);
                                 }
@@ -1759,11 +1751,11 @@ YUI.add('wegas-datasource', function(Y) {
                 }
             }, this));
         },
-        getMeta: function(pageId, callback) {
-            this.getIndex(function(index) {
+        getMeta: function (pageId, callback) {
+            this.getIndex(function (index) {
                 if (Y.Lang.isFunction(callback)) {
                     if (Y.Lang.isArray(index)) {
-                        callback(Y.clone(Y.Array.find(index, function(i) {
+                        callback(Y.clone(Y.Array.find(index, function (i) {
                             return "" + i.id === "" + pageId;
                         })));
                     } else {
@@ -1772,7 +1764,7 @@ YUI.add('wegas-datasource', function(Y) {
                 }
             });
         },
-        getIndex: function(callback) {
+        getIndex: function (callback) {
             var cfg = {
                 request: "index",
                 on: {}
@@ -1781,22 +1773,22 @@ YUI.add('wegas-datasource', function(Y) {
                 callback(this.index);
             } else {
                 if (callback instanceof Function) {
-                    cfg.on.success = function(e) {
+                    cfg.on.success = function (e) {
                         callback(e.response.results);
                     };
                 }
                 return this.sendRequest(cfg);
             }
         },
-        _successHandler: function(e) {
+        _successHandler: function (e) {
             Y.log("PageDatasource reply:" + e.response, "log", "Y.Plugin.PageCache");
         },
-        _failureHandler: function(e) {
+        _failureHandler: function (e) {
         }
     }, {
-        NS: "cache",
-        NAME: "PageCache"
-    });
+            NS: "cache",
+            NAME: "PageCache"
+        });
     Plugin.PageCache = PageCache;
 
     /*
@@ -1809,11 +1801,11 @@ YUI.add('wegas-datasource', function(Y) {
          * @method initializer
          * @private
          */
-        initializer: function() {
+        initializer: function () {
             this.doBefore("_defDataFn", this._beforeDefDataFn);
             this.get(HOST).getPath = this.getPath; // @hack For file library
         },
-        _beforeDefDataFn: function(e) {
+        _beforeDefDataFn: function (e) {
             var data = e.data && (e.data.responseText || e.data),
                 payload = e.details[0];
             if (e.error) {
@@ -1833,28 +1825,28 @@ YUI.add('wegas-datasource', function(Y) {
         /**
          *  @hack For file library
          */
-        getPath: function() {
+        getPath: function () {
             return this.get("source") + "read";
         }
     }, {
-        NS: "jsonschema"
-    });
+            NS: "jsonschema"
+        });
 
     /**
      *
      */
     Y.namespace("Plugin").ServerLog = Y.Base.create("ServerLog", Y.Plugin.Base, [], {
-        initializer: function() {
+        initializer: function () {
             this.timer = null;
             this.logs = [];
-            this.onHostEvent(["*:log", "*:warn", "*:info", "*:error", "*:debug"], function(e) {
+            this.onHostEvent(["*:log", "*:warn", "*:info", "*:error", "*:debug"], function (e) {
                 this.logs.push({
                     type: e.type.split(":").pop(),
                     val: e.details[0]
                 });
                 this._out();
             });
-            this.onHostEvent("ExceptionEvent", function(e) {
+            this.onHostEvent("ExceptionEvent", function (e) {
                 var type = e.type.split(":").pop();
                 // Y.Widget.getByNode("#centerTabView").get("selection")
                 // .showMessage(type, "Server error: " + e.message);
@@ -1866,39 +1858,39 @@ YUI.add('wegas-datasource', function(Y) {
                 this._out();
             });
         },
-        _out: function() {
+        _out: function () {
             if (this.timer) {
                 this.timer.cancel();
             }
-            this.timer = Y.later(20, this, function() {
+            this.timer = Y.later(20, this, function () {
                 Y.Plugin.ServerLog.output(this.logs);
                 this.logs.length = 0;
             });
         },
-        destructor: function() {
+        destructor: function () {
             if (this.timer) {
                 this.timer.cancel();
                 this.logs.length = 0;
             }
         }
     }, {
-        output: function(logs) {
-            var cur;
-            if (window.console) {
-                if (window.console.groupCollapsed) {
-                    window.console.groupCollapsed("Server logs");
-                }
-                while (logs.length) {
-                    cur = logs.shift();
-                    if (window.console[cur.type]) {
-                        window.console[cur.type](cur.val);
+            output: function (logs) {
+                var cur;
+                if (window.console) {
+                    if (window.console.groupCollapsed) {
+                        window.console.groupCollapsed("Server logs");
+                    }
+                    while (logs.length) {
+                        cur = logs.shift();
+                        if (window.console[cur.type]) {
+                            window.console[cur.type](cur.val);
+                        }
+                    }
+                    if (window.console.groupEnd) {
+                        window.console.groupEnd();
                     }
                 }
-                if (window.console.groupEnd) {
-                    window.console.groupEnd();
-                }
-            }
-        },
-        NS: "serverlog"
-    });
+            },
+            NS: "serverlog"
+        });
 });
