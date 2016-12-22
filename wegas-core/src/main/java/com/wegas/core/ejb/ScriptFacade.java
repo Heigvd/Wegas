@@ -76,10 +76,12 @@ public class ScriptFacade {
                     + "Object.defineProperty(global, '__noSuchProperty__', {"
                     + "value: function(prop){"
                     + "try{"
+                    + "print(\"noSuchProperty: \" + prop);"
                     + "var ret = Variable.find(gameModel, prop).getInstance(self);"
-                    + "print('SCRIPT_ALIAS_CALL: [GM]' + gameModel.getId() + ' [alias]' + prop);" // log usage if var exists
+                    + "print('SCRIPT_ALIAS_CALL: [GM]' + gameModel.getId() + ' [alias] ' + prop);" // log usage if var exists
                     + "return ret;" // Try to find a VariableDescriptor's instance for that given prop
                     + "}catch(e){"
+                    + "print(\"default call \" + prop);"
                     + "return defaultNoSuchProperty.call(global, prop);" // Use default implementation if no VariableDescriptor
                     + "}}"
                     + "})"
@@ -133,38 +135,57 @@ public class ScriptFacade {
     Event<EngineInvocationEvent> engineInvocationEvent;
 
     public ScriptContext instantiateScriptContext(Player player, String language) {
-        final ScriptContext currentContext = requestManager.getCurrentScriptContext();
+        ScriptContext currentContext = requestManager.getCurrentScriptContext();
+
         if (currentContext == null) {
-            final ScriptContext scriptContext = this.populate(player);
-            requestManager.setCurrentScriptContext(scriptContext);
-            return scriptContext;
+            currentContext = this.populate(player);
+            requestManager.setCurrentScriptContext(currentContext);
+        } else {
+            Bindings eBindings = currentContext.getBindings(ScriptContext.ENGINE_SCOPE);
+            GameModel gameModel = (GameModel) eBindings.get("gameModel");
+
+            if (gameModel.equals(player.getGameModel())) {
+                Player self = (Player) eBindings.get("self");
+
+                if (!player.equals(self)) {
+                    this.injectPlayer(currentContext, player);
+
+                    /*
+                     * To create EngineScope bindings for new user
+                     * /
+                    Bindings newB = engine.createBindings();
+                    newB.put("Variable", eBindings.get("Variable"));
+                    newB.put("gameModel", gameModel);
+
+                    currentContext.setBindings(newB, ScriptContext.ENGINE_SCOPE);
+                    this.injectPlayer(currentContext, player);
+
+                    this.injectNoSuchPropertyResolver(newB);
+                    // */
+                }
+            } else {
+                //GameModel change, rebuild all
+                currentContext = this.populate(player);
+                requestManager.setCurrentScriptContext(currentContext);
+            }
         }
         return currentContext;
-
     }
 
-    private ScriptContext populate(Player player) {
-        final Bindings bindings = engine.createBindings();
-        bindings.put("self", player);                           // Inject current player
-        bindings.put("gameModel", player.getGameModel());       // Inject current gameModel
-        bindings.put("Variable", variableDescriptorFacade);              // Inject the variabledescriptor facade
-        bindings.put("VariableDescriptorFacade", variableDescriptorFacade);// @backwardcompatibility
-        bindings.put("RequestManager", requestManager);                  // Inject the request manager
-        bindings.put("Event", event);                                    // Inject the Event manager
-        bindings.put("DelayedEvent", delayedEvent);
-        bindings.put("ErrorManager", new WegasErrorMessageManager());    // Inject the MessageErrorManager
+    private void injectPlayer(ScriptContext ctx, Player player) {
+        Bindings eBindings = ctx.getBindings(ScriptContext.ENGINE_SCOPE);
+        eBindings.put("self", player);
         event.detachAll();
-        ScriptContext ctx = new SimpleScriptContext();
-        ctx.setBindings(bindings, ScriptContext.ENGINE_SCOPE);
-        try {
-            noSuchProperty.eval(bindings);
-        } catch (ScriptException e) {
-            logger.error("noSuchProperty injection", e);
-        }
-        this.injectStaticScript(ctx, player.getGameModel());
+    }
+
+    private void injectGameModel(ScriptContext ctx, GameModel gameModel) {
+        Bindings eBindings = ctx.getBindings(ScriptContext.ENGINE_SCOPE);
+
+        eBindings.put("gameModel", gameModel);       // Inject current gameModel
+        this.injectStaticScript(ctx, gameModel);
 
         for (Entry<String, GameModelContent> arg
-                : player.getGameModel().getScriptLibrary().entrySet()) { // Inject the script library
+                : gameModel.getScriptLibrary().entrySet()) { // Inject the script library
             ctx.setAttribute(ScriptEngine.FILENAME, "Server script " + arg.getKey(), ScriptContext.ENGINE_SCOPE);
             try {
                 engine.eval(arg.getValue().getContent(), ctx);
@@ -174,6 +195,58 @@ public class ScriptFacade {
                 throw new WegasScriptException("Server script " + arg.getKey(), ex.getMessage());
             }
         }
+    }
+
+    private void injectNoSuchPropertyResolver(Bindings bindings) {
+        try {
+            noSuchProperty.eval(bindings);
+        } catch (ScriptException e) {
+            logger.error("noSuchProperty injection", e);
+        }
+    }
+
+    private ScriptContext populate(Player player) {
+        final Bindings gBindings = engine.createBindings();
+        final Bindings eBindings = engine.createBindings();
+
+        ScriptContext ctx = new SimpleScriptContext();
+
+        ctx.setBindings(gBindings, ScriptContext.GLOBAL_SCOPE);
+        ctx.setBindings(eBindings, ScriptContext.ENGINE_SCOPE);
+
+        this.injectPlayer(ctx, player);
+        eBindings.put("gameModel", player.getGameModel());       // Inject current gameModel
+        eBindings.put("Variable", variableDescriptorFacade);              // Inject the variabledescriptor facade
+
+        eBindings.put("VariableDescriptorFacade", variableDescriptorFacade);// @backwardcompatibility
+        eBindings.put("RequestManager", requestManager);                  // Inject the request manager
+        eBindings.put("Event", event);                                    // Inject the Event manager
+        eBindings.put("DelayedEvent", delayedEvent);
+        eBindings.put("ErrorManager", new WegasErrorMessageManager());    // Inject the MessageErrorManager
+
+        this.injectNoSuchPropertyResolver(eBindings);
+
+        this.injectGameModel(ctx, player.getGameModel());
+
+        /*
+         * Switch context to set all "static" bindings global
+         * /
+        ScriptContext effectiveCtx = new SimpleScriptContext();
+        effectiveCtx.setBindings(eBindings, ScriptContext.GLOBAL_SCOPE);
+        Bindings newEBindings = engine.createBindings();
+
+        // NoSuchProperty method needs Variable, self and gameModel to resolve
+        // undefined properties
+        newEBindings.put("self", player);
+        newEBindings.put("Variable", variableDescriptorFacade);
+        newEBindings.put("gameModel", player.getGameModel());
+
+        effectiveCtx.setBindings(newEBindings, ScriptContext.ENGINE_SCOPE);
+
+        this.injectNoSuchPropertyResolver(newEBindings);
+
+        ctx = effectiveCtx;
+         // */
         return ctx;
     }
 

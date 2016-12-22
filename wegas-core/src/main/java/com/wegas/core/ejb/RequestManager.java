@@ -37,7 +37,6 @@ import javax.ws.rs.core.Response;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-//import javax.annotation.PostConstruct;
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
@@ -72,7 +71,7 @@ public class RequestManager {
     @Inject
     private RequestFacade requestFacade;
 
-    private static Logger logger = LoggerFactory.getLogger(RequestManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(RequestManager.class);
 
     private RequestEnvironment env = RequestEnvironment.STD;
 
@@ -102,23 +101,23 @@ public class RequestManager {
     /**
      * Contains all updated entities
      */
-    private Map<String, List<AbstractEntity>> updatedEntities = new HashMap<>();
+    private final Map<String, List<AbstractEntity>> updatedEntities = new HashMap<>();
 
-    private Map<String, List<AbstractEntity>> justUpdatedEntities = new HashMap<>();
+    private final Map<String, List<AbstractEntity>> justUpdatedEntities = new HashMap<>();
 
-    private Map<String, List<AbstractEntity>> outdatedEntities = new HashMap<>();
+    private final Map<String, List<AbstractEntity>> outdatedEntities = new HashMap<>();
 
-    private Map<String, List<AbstractEntity>> destroyedEntities = new HashMap<>();
-
-    /**
-     *
-     */
-    private List<String> lockedToken = new ArrayList<>();
+    private final Map<String, List<AbstractEntity>> destroyedEntities = new HashMap<>();
 
     /**
      *
      */
-    private List<ClientEvent> events = new ArrayList<>();
+    private final List<String> lockedToken = new ArrayList<>();
+
+    /**
+     *
+     */
+    private final List<ClientEvent> events = new ArrayList<>();
 
     /**
      *
