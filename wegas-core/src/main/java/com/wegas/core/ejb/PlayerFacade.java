@@ -11,6 +11,7 @@ import com.wegas.core.Helper;
 import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.DebugGame;
+import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -307,6 +308,25 @@ public class PlayerFacade extends BaseFacade<Player> {
         for (Team t : game.getTeams()) {
             if (t.getPlayers().size() > 0) {
                 return t.getPlayers().get(0);
+            }
+        }
+        throw new WegasNoResultException("No player");
+    }
+
+    /**
+     * Returns the first available player in the target game.
+     *
+     * @param gameId
+     * @return a player from the game
+     * @throws com.wegas.core.exception.internal.WegasNoResultException
+     */
+    public Player findDebugPlayerByGameId(Long gameId) throws WegasNoResultException {
+        Game game = gameFacade.find(gameId);
+        for (Team t : game.getTeams()) {
+            if (t instanceof DebugTeam) {
+                if (t.getPlayers().size() > 0) {
+                    return t.getPlayers().get(0);
+                }
             }
         }
         throw new WegasNoResultException("No player");
