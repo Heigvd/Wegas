@@ -710,21 +710,28 @@ YUI.add('wegas-datasource', function (Y) {
          *
          *  @function
          *  @private
-         *  @param {String} method Possible values for method are: POST, PUT, DELETE, default being PUT.
-         *  @param {page} The entity to update in the cache
-         *  @return {Boolean} `true` if object could be located and method applied
+         *  @param {String} key the Key to match
+         *  @param {Object|String|Number|Boolean} needle needle to search for
+         *  @param {function(Object, any):void} onFindFn callback function with found entity and needle
+         *  @return {Object} Found entity if any
          */
         doFind: function doFind(key, needle, onFindFn) {
+            var ret,
+                testFn = this.get("testFn"),
+                walkEntity = this.walkEntity.bind(this),
+                findFn = function findFn(stack) {
+                    stack.find(function find(item) { // @fixme speedup
+                        if (testFn(item, key, needle)) { // We check the current element if it's a match
                             ret = item;
-                        if (onFindFn) {
-                            onFindFn(item, needle);
-                        }
                             return item;
                         }
-                    return this.walkEntity(item, doFind);
-                }, this);
-            };
-            doFind.call(this, this.getCache());
+                        return walkEntity(item, findFn);
+                    });
+                }
+            findFn(this.getCache());
+            if (ret !== undefined && onFindFn) {
+                onFindFn(ret, needle);
+            }
             return ret;
         },
         getChildren: function (entity) {
