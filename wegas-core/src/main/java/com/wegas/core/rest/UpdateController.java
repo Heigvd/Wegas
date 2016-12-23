@@ -18,8 +18,13 @@ import com.wegas.core.persistence.game.*;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.primitive.BooleanInstance;
+import com.wegas.core.persistence.variable.primitive.NumberInstance;
+import com.wegas.core.persistence.variable.primitive.ObjectInstance;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
+import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
+import com.wegas.core.persistence.variable.scope.GameScope;
 import com.wegas.core.persistence.variable.statemachine.State;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.Transition;
@@ -56,6 +61,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import javax.inject.Inject;
+import javax.persistence.Query;
+import org.eclipse.persistence.config.CacheUsage;
+import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.config.QueryType;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -195,6 +204,11 @@ public class UpdateController {
     private void updateScope(VariableDescriptor vd) {
         if (!(vd.getScope() instanceof GameModelScope)) {
             EntityManager em = this.getEntityManager();
+
+            Collection<VariableInstance> values = vd.getScope().getVariableInstancesByKeyId().values();
+            for (VariableInstance vi : values) {
+                em.remove(vi);
+            }
             GameModelScope scope = new GameModelScope();
             scope.setBroadcastScope("GameScope");
             scope.setVariableDescscriptor(vd);
@@ -251,6 +265,43 @@ public class UpdateController {
         sb.append("]");
 
         return sb.toString();
+    }
+
+    private void updateListDescriptorScope(GameModel gameModel) {
+        List<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
+
+        for (VariableDescriptor vd : variableDescriptors) {
+            if (vd instanceof ListDescriptor) {
+                this.updateScope(vd);
+            }
+        }
+
+    }
+
+    private String lawUpdateScope(GameModel gameModel) {
+        this.updateListDescriptorScope(gameModel);
+        StringBuilder sb = new StringBuilder();
+        try {
+            sb.append("[");
+
+            ListDescriptor etapes = (ListDescriptor) VariableDescriptorFacade.lookup().find(gameModel, "etapes");
+            for (VariableDescriptor item : etapes.getItems()) {
+                this.updateScope(item);
+            }
+
+            sb.append("]");
+
+        } catch (WegasNoResultException ex) {
+            java.util.logging.Logger.getLogger(UpdateController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return sb.toString();
+    }
+
+    @GET
+    @Path("UpdateLawScope/{gameModelId : ([1-9][0-9]*)}")
+    public String lawScopeUpdate(@PathParam("gameModelId") Long gameModelId) {
+        GameModel find = gameModelFacade.find(gameModelId);
+        return lawUpdateScope(find);
     }
 
     @GET
@@ -530,6 +581,80 @@ public class UpdateController {
             }
         }
         return noDebugTeamGames;
+    }
+
+    @GET
+    @Path("Duplicata")
+    public String getDuplicata() {
+        return this.deleteDuplicata();
+    }
+
+    private String deleteDuplicata() {
+
+        StringBuilder sb = new StringBuilder();
+
+        String sql = "SELECT vi.gameScope, vi.game FROM VariableInstance vi WHERE vi.gameScope IS NOT NULL GROUP BY vi.gameScope.id, vi.game.id HAVING count(vi) > 1";
+        Query createQuery = this.getEntityManager().createQuery(sql);
+
+        List resultList = createQuery.getResultList();
+        int i = 0;
+        for (Object o : resultList) {
+            Object[] array = (Object[]) o;
+            GameScope scope = (GameScope) array[0];
+            Game game = (Game) array[1];
+            //VariableInstance variableInstance = scope.getVariableInstance(game);
+            //System.out.println("DELETE: " + variableInstance);
+
+            sb.append("DELETE: ");
+            sb.append(i++);
+            sb.append(". ");
+
+            String sql2 = "SELECT vi from VariableInstance vi WHERE vi.gameScope.id = :scopeId and vi.game.id = :gameId";
+
+            TypedQuery<VariableInstance> query2 = this.getEntityManager().createQuery(sql2, VariableInstance.class);
+            query2.setHint(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
+            //@QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
+
+            query2.setParameter("scopeId", scope.getId());
+            query2.setParameter("gameId", game.getId());
+
+            List<VariableInstance> list = query2.getResultList();
+
+            sb.append(list.get(0));
+            sb.append(" SCOPE - TEAM " + scope.getId() + "   " + game.getId());
+
+            sb.append(("<br />"));
+
+            if (list.size() != 2) {
+                sb.append("   -> NOT 2 but " + list.size());
+            } else {
+
+                VariableInstance get = list.get(0);
+                VariableInstance get2 = list.get(1);
+                if (get instanceof BooleanInstance) {
+                    if (((BooleanInstance) get).getValue() != ((BooleanInstance) get2).getValue()) {
+                        sb.append(("   -> NOT EQUALS"));
+                    } else {
+                        this.getEntityManager().remove(get2);
+                    }
+                } else if (get instanceof NumberInstance) {
+                    if (((NumberInstance) get).getValue() != ((NumberInstance) get2).getValue()) {
+                        sb.append(("   -> NOT EQUALS"));
+                    } else {
+                        this.getEntityManager().remove(get2);
+                    }
+                } else if (get instanceof StringInstance) {
+                    if (!((StringInstance) get).getValue().equals(((StringInstance) get2).getValue())) {
+                        sb.append(("   -> NOT EQUALS"));
+                    } else {
+                        this.getEntityManager().remove(get2);
+                    }
+                }
+
+            }
+            sb.append(("<br />"));
+        }
+        return sb.toString();
     }
 
     private Long countOrphans() {

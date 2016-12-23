@@ -238,10 +238,10 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         sm.setName("testSM");
         State state0 = new State();
         State state1 = new State();
-        state1.setOnEnterEvent(new Script("VariableDescriptorFacade.findByName(gameModel, 'testnumber').setValue(self, VariableDescriptorFacade.findByName(gameModel, 'testnumber').getValue(self) + 5)"));
+        state1.setOnEnterEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 5)"));
         State state2 = new State();
         //Second state will read an object parameter
-        state2.setOnEnterEvent(new Script("VariableDescriptorFacade.findByName(gameModel, 'testnumber').setValue(self, VariableDescriptorFacade.findByName(gameModel, 'testnumber').getValue(self) + 10)"));
+        state2.setOnEnterEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 10)"));
         sm.setStates(toMap(toList(1L, 2L, 3L), toList(state0, state1, state2)));
 
         Transition t1 = new Transition();
@@ -270,13 +270,277 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
 
         /* player fire event twice */
         sf.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event')"), null);
-        lookupBy(RequestFacade.class).commit(true);
+        RequestFacade rf = RequestFacade.lookup();
+        rf.commit(true);
         assertEquals(INITIALVALUE + 5 + 10, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
 
         /* player21 fire event only once */
         sf.eval(player21, new Script("JavaScript", "Event.fire('event');"), null);
-        lookupBy(RequestFacade.class).commit(true);
+        rf.commit(true);
         assertEquals(INITIALVALUE + 5, ((NumberInstance) vif.find(number.getId(), player21)).getValue(), .1);
+        // Clean up
+        vdf.remove(number.getId());
+        vdf.remove(sm.getId());
+    }
+
+    @Test
+    public void testMultipleEventTransition_oneEvent() throws NamingException, WegasScriptException {
+        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
+        final GameModelFacade gmf = lookupBy(GameModelFacade.class);
+        final ScriptFacade sf = lookupBy(ScriptFacade.class);
+        Integer INITIALVALUE = 0;
+        NumberDescriptor number = new NumberDescriptor();
+        number.setName("testnumber");
+        number.setDefaultInstance(new NumberInstance(INITIALVALUE));
+        number.setScope(new PlayerScope());
+        vdf.create(gameModel.getId(), number);
+
+        StateMachineDescriptor sm = new StateMachineDescriptor();
+        StateMachineInstance smi = new StateMachineInstance();
+        smi.setCurrentStateId(1L);
+        sm.setDefaultInstance(smi);
+        sm.setScope(new PlayerScope());
+        sm.setName("testSM");
+        State state0 = new State();
+        State state1 = new State();
+        state1.setOnEnterEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 1)"));
+        State state2 = new State();
+        //Second state will read an object parameter
+        state2.setOnEnterEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 10)"));
+        sm.setStates(toMap(toList(1L, 2L, 3L), toList(state0, state1, state2)));
+
+        Transition t1 = new Transition();
+        t1.setTriggerCondition(new Script("Event.fired('event') && Event.fired('event')"));
+        t1.setNextStateId(2L);
+        state0.setTransitions(toList(t1));
+
+        Transition t2 = new Transition();
+        t2.setTriggerCondition(new Script("Event.fired('event')"));
+        t2.setNextStateId(3L);
+        List<Transition> at2 = new ArrayList<>();
+        at2.add(t2);
+        state1.setTransitions(at2);
+
+        vdf.create(gameModel.getId(), sm);
+        gmf.reset(gameModel.getId());
+        //Test for all players, nothing should change.
+        for (Game g : gameModel.getGames()) {
+            for (Team t : g.getTeams()) {
+                for (Player p : t.getPlayers()) {
+                    assertEquals(INITIALVALUE, ((NumberInstance) vif.find(number.getId(), p)).getValue(), .1);
+                    assertEquals(1L, ((StateMachineInstance) vif.find(sm.getId(), p)).getCurrentStateId(), .1);
+                }
+            }
+        }
+
+        RequestFacade rf = RequestFacade.lookup();
+
+        /* player fire event  -> NO MOVE */
+        sf.eval(player, new Script("JavaScript", "Event.fire('event');"), null);
+        rf.commit(true);
+        assertEquals(0, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
+
+        gmf.reset(gameModel.getId());
+        rf.getRequestManager().getEventCounter().clear();
+        /* player fire event and event2 */
+        sf.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event');"), null);
+        rf.commit(true);
+        assertEquals(1, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
+
+        gmf.reset(gameModel.getId());
+        rf.getRequestManager().getEventCounter().clear();
+        /* player fire event twice and event2 */
+        sf.eval(player, new Script("JavaScript", "Event.fire('event'); Event.fire('event'); Event.fire('event');"), null);
+        rf.commit(true);
+        assertEquals(11, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
+
+        // Clean up
+        vdf.remove(number.getId());
+        vdf.remove(sm.getId());
+    }
+
+    @Test
+    public void testMultipleEventTransition_twoEvents() throws NamingException, WegasScriptException {
+        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
+        final GameModelFacade gmf = lookupBy(GameModelFacade.class);
+        final ScriptFacade sf = lookupBy(ScriptFacade.class);
+        NumberDescriptor number = new NumberDescriptor();
+        number.setName("testnumber");
+        number.setDefaultInstance(new NumberInstance(0));
+        number.setScope(new PlayerScope());
+        vdf.create(gameModel.getId(), number);
+
+        StateMachineDescriptor sm = new StateMachineDescriptor();
+        StateMachineInstance smi = new StateMachineInstance();
+        smi.setCurrentStateId(1L);
+        sm.setDefaultInstance(smi);
+        sm.setScope(new PlayerScope());
+        sm.setName("testSM");
+
+        State state1 = new State();
+
+        State state2 = new State();
+        state2.setOnEnterEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 1)"));
+
+        State state3 = new State();
+        state3.setOnEnterEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 10)"));
+
+        State state4 = new State();
+        state4.setOnEnterEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 100)"));
+
+        sm.setStates(toMap(toList(1L, 2L, 3L, 4L), toList(state1, state2, state3, state4)));
+
+        Transition t1 = new Transition();
+        t1.setTriggerCondition(new Script("Event.fired('event') && Event.fired('event2')"));
+        t1.setNextStateId(2L);
+        state1.setTransitions(toList(t1));
+
+        Transition t2 = new Transition();
+        t2.setTriggerCondition(new Script("Event.fired('event')"));
+        t2.setIndex(1);
+        t2.setNextStateId(3L);
+
+        Transition t3 = new Transition();
+        t3.setTriggerCondition(new Script("Event.fired('event2')"));
+        t2.setIndex(99);
+        t3.setNextStateId(4L);
+
+        state2.setTransitions(toList(t2, t3));
+
+        vdf.create(gameModel.getId(), sm);
+        gmf.reset(gameModel.getId());
+        //Test for all players, nothing should change.
+        for (Game g : gameModel.getGames()) {
+            for (Team t : g.getTeams()) {
+                for (Player p : t.getPlayers()) {
+                    assertEquals(0, ((NumberInstance) vif.find(number.getId(), p)).getValue(), .1);
+                    assertEquals(1L, ((StateMachineInstance) vif.find(sm.getId(), p)).getCurrentStateId(), .1);
+                }
+            }
+        }
+
+        RequestFacade rf = RequestFacade.lookup();
+
+        /* player fire event  -> NO MOVE */
+        sf.eval(player, new Script("JavaScript", "Event.fire('event');"), null);
+        rf.commit(true);
+        assertEquals(0, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
+
+        gmf.reset(gameModel.getId());
+        rf.getRequestManager().getEventCounter().clear();
+        /* player fire event and event2 */
+        sf.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event2');"), null);
+        rf.commit(true);
+        assertEquals(1, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
+
+        gmf.reset(gameModel.getId());
+        rf.getRequestManager().getEventCounter().clear();
+        /* player fire event twice and event2 */
+        sf.eval(player, new Script("JavaScript", "Event.fire('event'); Event.fire('event'); Event.fire('event2');"), null);
+        rf.commit(true);
+        assertEquals(11, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
+
+        gmf.reset(gameModel.getId());
+        rf.getRequestManager().getEventCounter().clear();
+        /* player fire event and event2 twice*/
+        sf.eval(player, new Script("JavaScript", "Event.fire('event'); Event.fire('event2'); Event.fire('event2');"), null);
+        rf.commit(true);
+        assertEquals(101, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
+
+        // Clean up
+        vdf.remove(number.getId());
+        vdf.remove(sm.getId());
+    }
+
+    @Test
+    public void testMultipleEventTransition_twoEvents_OR() throws NamingException, WegasScriptException {
+        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
+        final GameModelFacade gmf = lookupBy(GameModelFacade.class);
+        final ScriptFacade sf = lookupBy(ScriptFacade.class);
+        NumberDescriptor number = new NumberDescriptor();
+        number.setName("testnumber");
+        number.setDefaultInstance(new NumberInstance(0));
+        number.setScope(new PlayerScope());
+        vdf.create(gameModel.getId(), number);
+
+        StateMachineDescriptor sm = new StateMachineDescriptor();
+        StateMachineInstance smi = new StateMachineInstance();
+        smi.setCurrentStateId(1L);
+        sm.setDefaultInstance(smi);
+        sm.setScope(new PlayerScope());
+        sm.setName("testSM");
+
+        State state1 = new State();
+
+        State state2 = new State();
+        state2.setOnEnterEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 1)"));
+
+        State state3 = new State();
+        state3.setOnEnterEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 10)"));
+
+        State state4 = new State();
+        state4.setOnEnterEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 100)"));
+
+        sm.setStates(toMap(toList(1L, 2L, 3L, 4L), toList(state1, state2, state3, state4)));
+
+        Transition t1 = new Transition();
+        t1.setTriggerCondition(new Script("Event.fired('event') || Event.fired('event2')"));
+        t1.setNextStateId(2L);
+        state1.setTransitions(toList(t1));
+
+        Transition t2 = new Transition();
+        t2.setTriggerCondition(new Script("Event.fired('event')"));
+        t2.setNextStateId(3L);
+
+        Transition t3 = new Transition();
+        t3.setTriggerCondition(new Script("Event.fired('event2')"));
+        t3.setNextStateId(4L);
+
+        state2.setTransitions(toList(t2, t3));
+
+        vdf.create(gameModel.getId(), sm);
+        gmf.reset(gameModel.getId());
+        //Test for all players, nothing should change.
+        for (Game g : gameModel.getGames()) {
+            for (Team t : g.getTeams()) {
+                for (Player p : t.getPlayers()) {
+                    assertEquals(0, ((NumberInstance) vif.find(number.getId(), p)).getValue(), .1);
+                    assertEquals(1L, ((StateMachineInstance) vif.find(sm.getId(), p)).getCurrentStateId(), .1);
+                }
+            }
+        }
+
+        RequestFacade rf = RequestFacade.lookup();
+
+        /* player fire event  -> NO MOVE */
+        sf.eval(player, new Script("JavaScript", "Event.fire('event');"), null);
+        rf.commit(true);
+        assertEquals(1, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
+
+        gmf.reset(gameModel.getId());
+        rf.getRequestManager().getEventCounter().clear();
+        /* player fire event and event2 */
+        sf.eval(player, new Script("JavaScript", "Event.fire('event2');"), null);
+        rf.commit(true);
+        assertEquals(1, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
+
+        gmf.reset(gameModel.getId());
+        rf.getRequestManager().getEventCounter().clear();
+        /* player fire event and event2 */
+        sf.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event');"), null);
+        rf.commit(true);
+        assertEquals(11, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
+
+        gmf.reset(gameModel.getId());
+        rf.getRequestManager().getEventCounter().clear();
+        /* player fire event and event2 */
+        sf.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event2');"), null);
+        rf.commit(true);
+        assertEquals(101, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
+
         // Clean up
         vdf.remove(number.getId());
         vdf.remove(sm.getId());

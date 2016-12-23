@@ -170,6 +170,8 @@ public class GameFacade extends BaseFacade<Game> {
             DebugTeam debugTeam = new DebugTeam();
             debugTeam.setGame(game);
             teamFacade.create(debugTeam);
+            //Player get = debugTeam.getPlayers().get(0);
+            //requestFacade.commit(get, false);
             //game.addTeam(new DebugTeam());
             return true;
         } else {

@@ -128,7 +128,14 @@ angular.module("wegas.directive.permission.edit", [])
                         id: "",
                         type: "GameModel"
                     };
-
+                    try {
+                        scope.perm = parsePerm(scope.permission.value);
+                    } catch (e) {
+                        //ERROR stays unmodified
+                    }
+                    getOptions(scope.perm.type).then(function (opt) {
+                        scope.options = opt;
+                    });
                     scope.update = function (val) {
                         var permString;
                         var availabaleValues;
@@ -162,19 +169,15 @@ angular.module("wegas.directive.permission.edit", [])
                         scope.update(scope.perm);
                     };
                     /* Update available id options base on type (Game / GameModel / User) */
-                    scope.$watch("perm.type", function (v) {
-                        getOptions(v).then(function (opt) {
-                            scope.options = opt;
-                        });
-                    });
-                    scope.$watchCollection('perm', function (value) {
+                    scope.$watchCollection('perm', function (value, oldValue) {
                         scope.update(value);
+                        if (value.perm !== oldValue.perm) {
+                            getOptions(v).then(function (opt) {
+                                scope.options = opt;
+                            });
+                        }
                     });
-                    try {
-                        scope.perm = parsePerm(scope.permission.value);
-                    } catch (e) {
-                        //ERROR stays unmodified
-                    }
+
                 }
 
             };

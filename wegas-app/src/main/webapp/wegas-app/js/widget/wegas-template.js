@@ -168,7 +168,7 @@ YUI.add("wegas-template", function (Y) {
     Wegas.BoxTemplate = Y.Base.create("wegas-template", AbstractTemplate, [], {
         TEMPLATE: Micro.compile("<div class='wegas-template-box'><% if(this.label){ %><label><%= this.label %></label><br/><% } %>"
             + "<div class='wegas-template-box-units'><% for(var i=0; i < this.value; i+=1){%>" +
-            "<div class='wegas-template-box-unit'></div><% } %></div>" +
+            "<div class='wegas-template-box-unit <%= 1+i == +this.value ? ' wegas-template-box-selected' : (2+i == +this.value ? ' wegas-template-box-pred' : '') %>' value='<%= 1+i %>'></div><% } %></div>" +
             "<span class='wegas-template-box-value'>"
             + "(<%= this.value || '{value}' %>"
             //+ "<% if(this.defaultValue != ''){ %><%= '/' + (this.defaultValue || '{defaultValue}') %><% } %>"

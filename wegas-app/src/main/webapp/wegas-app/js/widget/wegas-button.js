@@ -275,7 +275,14 @@ YUI.add("wegas-button", function(Y) {
                 } else {
                     if (this._counters[klass]) {
                         promises.push(new Y.Promise(function(resolve, reject) {
-                            context._counters[klass](descriptor, descriptor.getInstance(), function(count) {
+                            var fcn;
+                            if (context._counters[klass] instanceof  Function) {
+                                fcn = context._counters[klass]
+                            } else {
+                                fcn = eval("(" + context._counters[klass] + ")");
+                            }
+
+                            fcn.call(context, descriptor, descriptor.getInstance(), function(count) {
                                 resolve(count);
                             });
                         }));
