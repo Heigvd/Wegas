@@ -195,6 +195,19 @@ angular.module('private.scenarist.directives', [
                 search: '=',
                 duplicate: '=',
                 duplicating: '='
+            },
+            link: function(scope, element, attrs) {
+                var searchField = document.getElementById('searchField').getElementsByClassName('tool__input')[0];
+                scope.searchFn = function (value, index, array) { // filter: {name: search, canView: true, canEdit: true}
+                    if (value.canView === false || value.canEdit === false) return false;
+                    var needle = searchField.value.toLowerCase();
+                    if (needle.length === 0 || value.name.toLowerCase().indexOf(needle) >= 0) return true;
+                    // Advanced search criteria (could be reserved to admins in the future):
+                    return (value.createdByName.toLowerCase().indexOf(needle) >= 0 ||
+                    (value.comments && value.comments.toLowerCase().indexOf(needle) >= 0) ||
+                    // If searching for a number, the id has to start with the given pattern:
+                    value.id.toString().indexOf(needle) === 0);
+                };
             }
         };
     })
