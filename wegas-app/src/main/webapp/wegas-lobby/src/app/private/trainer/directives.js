@@ -211,8 +211,8 @@ angular.module('private.trainer.directives', [
                     var needle = searchField.value.toLowerCase();
                     if (needle.length === 0 || value.name.toLowerCase().indexOf(needle) >= 0) return true;
                     // Advanced search criteria (could be reserved to admins in the future):
-                    return (value.createdByName.toLowerCase().indexOf(needle) >= 0 ||
-                            value.gameModelName.toLowerCase().indexOf(needle) >= 0 ||
+                    return ((value.createdByName && value.createdByName.toLowerCase().indexOf(needle) >= 0) ||
+                            (value.gameModelName && value.gameModelName.toLowerCase().indexOf(needle) >= 0) ||
                             (value.gameModel.comments && value.gameModel.comments.toLowerCase().indexOf(needle) >= 0) ||
                             // If searching for a number, the id has to start with the given pattern:
                             value.id.toString().indexOf(needle) === 0 ||
