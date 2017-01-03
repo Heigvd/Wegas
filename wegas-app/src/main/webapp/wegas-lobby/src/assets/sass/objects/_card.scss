@@ -22,8 +22,22 @@
     .card__illustration{
         display:block;
         float:left;
+        .icon-users {
+            position: relative;
+            left: -4px;
+        }
     }
-
+    .card__description.illustration--details {
+        padding-top: 6px;
+    }
+    .card__description.illustration--details.card__description--two-lines {
+        padding-top: 14px;
+    }
+    .card__description.illustration--details * {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        line-height: 1.4em !important;
+    }
     .card__description{
         float:left;
         padding:0px ($card-base-padding*3);
@@ -53,6 +67,16 @@
                 font-style:italic;
             }
         }
+
+        .show-game-details {
+            display: block;
+            line-height: 1.4em !important;
+        }
+
+        .show-game-details.ng-hide {
+            display: none;
+        }
+
         @each $description in $card-description{
             $description-type: nth($description, 1);
             $description-padding-top: nth($description, 2);
@@ -239,6 +263,23 @@
     }
 
     &.card--trainer-session{
+        .card__illustration{
+            cursor: pointer;
+        }
+        .card__illustration:hover {
+            background: #eeeeee;
+            * {
+                color: #666666 !important;
+            }
+        }
+
+        .card__illustration.illustration--details {
+            height: 160px !important;
+            * {
+                line-height: 160px;
+            }
+        }
+
         .card__description{
             width:calc(100% - 540px); /* was 542px */
             box-sizing:border-box;
@@ -387,6 +428,23 @@
     }
 
     &.card--scenarist-scenario{
+        .card__illustration{
+            cursor: pointer;
+        }
+        .card__illustration:hover {
+            background: #eeeeee;
+            * {
+                color: #666666 !important;
+            }
+        }
+
+        .card__illustration.illustration--details {
+            height: 106px !important;
+            * {
+                line-height: 106px;
+            }
+        }
+
         .card__description{
             width:calc(100% - 426px);  /* was 362px then 412px */
             box-sizing:border-box;
