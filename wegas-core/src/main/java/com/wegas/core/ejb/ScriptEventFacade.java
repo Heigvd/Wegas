@@ -167,24 +167,29 @@ public class ScriptEventFacade {
      */
     public boolean fired(String eventName) {
         ScriptContext scriptContext = requestManager.getCurrentScriptContext();
-
-        Object currentDescriptor = scriptContext.getBindings(ScriptContext.ENGINE_SCOPE).get(ScriptFacade.CONTEXT);
-
-        if (currentDescriptor instanceof StateMachineDescriptor) {
-            int count;
-            StateMachineInstance smi = ((StateMachineDescriptor) currentDescriptor).getInstance(requestManager.getPlayer());
-            StateMachineEventCounter eventCounter = this.requestManager.getEventCounter();
-            count = eventCounter.count(smi, eventName);
-            count += eventCounter.countCurrent(eventName);
-
-            if (this.firedCount(eventName) > count) {
-                eventCounter.registerEvent(eventName);
-                return true;
-            } else {
-                return false;
-            }
+        if (requestManager.isTestEnv()) {
+            // mark event as watched !!
+            return true;
         } else {
-            return this.firedCount(eventName) > 0;
+
+            Object currentDescriptor = scriptContext.getBindings(ScriptContext.ENGINE_SCOPE).get(ScriptFacade.CONTEXT);
+
+            if (currentDescriptor instanceof StateMachineDescriptor) {
+                int count;
+                StateMachineInstance smi = ((StateMachineDescriptor) currentDescriptor).getInstance(requestManager.getPlayer());
+                StateMachineEventCounter eventCounter = this.requestManager.getEventCounter();
+                count = eventCounter.count(smi, eventName);
+                count += eventCounter.countCurrent(eventName);
+
+                if (this.firedCount(eventName) > count) {
+                    eventCounter.registerEvent(eventName);
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return this.firedCount(eventName) > 0;
+            }
         }
     }
 
