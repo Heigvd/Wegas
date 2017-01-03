@@ -139,6 +139,10 @@ public class RequestManager {
         this.env = env;
     }
 
+    public boolean isTestEnv() {
+        return this.env == RequestEnvironment.TEST;
+    }
+
     public void addUpdatedEntities(Map<String, List<AbstractEntity>> entities) {
         this.addEntities(entities, justUpdatedEntities);
     }

@@ -19,10 +19,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
@@ -76,6 +72,9 @@ public class ScriptCheck {
 
         try {
             utx.begin();
+            RequestManager requestManager = requestFacade.getRequestManager();
+            RequestManager.RequestEnvironment previousEnv = requestManager.getEnv();
+            requestManager.setEnv(RequestManager.RequestEnvironment.TEST);
             try {
                 //ctx.getBindings(ScriptContext.ENGINE_SCOPE).put(ScriptFacade.CONTEXT, context);
                 scriptFacade.eval(player, script, context);
@@ -85,6 +84,8 @@ public class ScriptCheck {
             } catch (WegasRuntimeException ex) {                                // "Expected" Exception
                 return null;
             } finally {
+                // restore env
+                requestManager.setEnv(previousEnv);
                 utx.rollback();
             }
         } catch (NotSupportedException | SystemException ex) {

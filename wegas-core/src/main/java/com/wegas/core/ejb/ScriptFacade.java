@@ -84,7 +84,8 @@ public class ScriptFacade {
                     + "print(\"default call \" + prop);"
                     + "return defaultNoSuchProperty.call(global, prop);" // Use default implementation if no VariableDescriptor
                     + "}}"
-                    + "})"
+                    + "});"
+                    + "if (!Math._random) { Math._random = Math.random; Math.random = function random(){if (RequestManager.isTestEnv()) {return 0} else {return Math._random()} }}"
                     + "})(this);"); // Run on Bindings
         } catch (ScriptException e) {
             logger.error("noSuchProperty script compilation failed", e);
