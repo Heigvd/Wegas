@@ -8,6 +8,7 @@
 package com.wegas.core.ejb.statemachine;
 
 import com.wegas.core.ejb.*;
+import com.wegas.core.event.internal.DescriptorRevivedEvent;
 import com.wegas.core.event.internal.PlayerAction;
 import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -34,6 +35,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import javax.script.ScriptException;
 
 /**
  * Run state machines.
@@ -75,6 +77,12 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
 
     @Inject
     private RequestManager requestManager;
+
+    @Inject
+    ScriptCheck scriptCheck;
+
+    @Inject
+    ScriptFacade scriptFacade;
 
     @Inject
     private ScriptEventFacade scriptEvent;
@@ -490,4 +498,26 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
         }
         return valid;
     }
+
+    /**
+     *
+     * @param event
+     * @throws com.wegas.core.exception.internal.WegasNoResultException
+     */
+    public void descriptorRevivedEvent(@Observes DescriptorRevivedEvent event) throws ScriptException {
+        logger.error("Received DescriptorRevivedEvent event");
+        if (event.getEntity() instanceof StateMachineDescriptor) {
+            StateMachineDescriptor fsmD = (StateMachineDescriptor) event.getEntity();
+
+            Player player = fsmD.getGameModel().getGames().get(0).getTeams().get(0).getPlayers().get(0);
+
+            for (State state : fsmD.getStates().values()) {
+                for (Transition transition : state.getTransitions()) {
+                    Script triggerCondition = transition.getTriggerCondition();
+                    scriptCheck.validate(triggerCondition, player, fsmD);
+                }
+            }
+        }
+    }
+
 }
