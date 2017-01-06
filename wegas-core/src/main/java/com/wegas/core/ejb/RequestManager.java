@@ -35,6 +35,7 @@ import javax.persistence.PersistenceContext;
 import javax.script.ScriptContext;
 import javax.ws.rs.core.Response;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 //import javax.annotation.PostConstruct;
@@ -88,6 +89,7 @@ public class RequestManager {
     private User currentUser;
 
     private String requestId;
+    private String socketId;
     private String method;
     private String path;
     private Long startTimestamp;
@@ -109,9 +111,9 @@ public class RequestManager {
     private Map<String, List<AbstractEntity>> destroyedEntities = new HashMap<>();
 
     /**
-     *
+     * Map TOKEN -> Audience
      */
-    private List<String> lockedToken = new ArrayList<>();
+    private final Map<String, List<String>> lockedToken = new HashMap<>();
 
     /**
      *
@@ -346,24 +348,58 @@ public class RequestManager {
     }
 
     public boolean tryLock(String token) {
-        boolean tryLock = mutexSingleton.tryLock(token);
+        return tryLock(token, null);
+    }
+
+    private String getEffectiveAudience(String audience) {
+        if (audience != null && !audience.isEmpty()) {
+            return audience;
+        } else {
+            return "internal";
+        }
+    }
+
+    public boolean tryLock(String token, String audience) {
+        boolean tryLock = mutexSingleton.tryLock(token, audience);
         if (tryLock) {
             // Only register token if successfully locked
-            lockedToken.add(token);
+            if (!lockedToken.containsKey(token)) {
+                lockedToken.put(token, new ArrayList());
+            }
+            lockedToken.get(token).add(getEffectiveAudience(audience));
         }
         return tryLock;
     }
 
     public void lock(String token) {
-        mutexSingleton.lock(token);
-        lockedToken.add(token);
+        this.lock(token, null);
+    }
+
+    public void lock(String token, String audience) {
+        mutexSingleton.lock(token, audience);
+        if (!lockedToken.containsKey(token)) {
+            lockedToken.put(token, new ArrayList());
+        }
+        lockedToken.get(token).add(getEffectiveAudience(audience));
     }
 
     public void unlock(String token) {
-        mutexSingleton.unlock(token);
-        if (lockedToken.contains(token)) {
-            lockedToken.remove(token);
+        this.unlock(token, null);
+    }
+
+    public void unlock(String token, String audience) {
+        mutexSingleton.unlock(token, audience);
+        if (lockedToken.containsKey(token)) {
+            List<String> audiences = lockedToken.get(token);
+            audiences.remove(getEffectiveAudience(audience));
+            if (audiences.isEmpty()) {
+                lockedToken.remove(token);
+            }
         }
+    }
+
+    public Collection<String> getTokensByAudiences(List<String> audiences) {
+        return mutexSingleton.getTokensByAudiences(audiences);
     }
 
     public void setStatus(Response.StatusType statusInfo) {
@@ -408,6 +444,14 @@ public class RequestManager {
 
     public String getRequestId() {
         return requestId;
+    }
+
+    public String getSocketId() {
+        return socketId;
+    }
+
+    public void setSocketId(String socketId) {
+        this.socketId = socketId;
     }
 
     public String getMethod() {
@@ -484,9 +528,10 @@ public class RequestManager {
 
     @PreDestroy
     public void preDestroy() {
-        while (!lockedToken.isEmpty()) {
-            String remove = lockedToken.remove(0);
-            mutexSingleton.unlockFull(remove);
+        for (Entry<String, List<String>> entry : lockedToken.entrySet()) {
+            for (String audience : entry.getValue()) {
+                mutexSingleton.unlockFull(entry.getKey(), audience);
+            }
         }
         if (this.currentScriptContext != null) {
             this.currentScriptContext.getBindings(ScriptContext.ENGINE_SCOPE).clear();
@@ -522,4 +567,5 @@ public class RequestManager {
             }
         }
     }
+
 }

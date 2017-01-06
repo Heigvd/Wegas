@@ -7,7 +7,11 @@
  */
 package com.wegas.core.ejb;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import javax.ejb.LocalBean;
@@ -15,6 +19,7 @@ import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,12 +35,19 @@ import org.slf4j.LoggerFactory;
 @Startup
 public class MutexSingleton {
 
+    @Inject
+    WebsocketFacade websocketFacade;
+
     public static class RefCounterLock {
 
         public int counter;
         public ReentrantLock sem;
+        public String token;
+        public String audience;
 
-        public RefCounterLock() {
+        public RefCounterLock(String token, String audience) {
+            this.token = token;
+            this.audience = audience;
             counter = 0;
             sem = new ReentrantLock(false); // true will favorize long-waiting threads
         }
@@ -46,6 +58,14 @@ public class MutexSingleton {
     Map<String, RefCounterLock> locks = new ConcurrentHashMap<>();
 
     public ReentrantLock _lock = new ReentrantLock();
+
+    private String getEffectiveToken(String token, String audience) {
+        if (audience != null && !audience.isEmpty()) {
+            return audience + "::" + token;
+        } else {
+            return "internal::" + token;
+        }
+    }
 
     /**
      * Acquire the lock only if it's not held by another thread at invocation
@@ -58,17 +78,21 @@ public class MutexSingleton {
      * @return true if the lock has been successfully acquired, false otherwise
      */
     @Lock(LockType.READ)
-    public boolean tryLock(String token) {
+    public boolean tryLock(String token, String audience) {
+        String effectiveToken = getEffectiveToken(token, audience);
         //logger.error("try to lock " + token);
 
         RefCounterLock lock;
         boolean r = false;
 
         synchronized (this) {
-            locks.putIfAbsent(token, new RefCounterLock());
-            lock = locks.get(token);
+            locks.putIfAbsent(effectiveToken, new RefCounterLock(token, audience));
+            lock = locks.get(effectiveToken);
 
             if (lock.sem.tryLock()) {
+                if (audience != null) {
+                    websocketFacade.sendLock(audience, token);
+                }
                 r = true; // Successful
                 lock.counter++;
                 /*} else if (lock.counter == 0) {
@@ -88,14 +112,18 @@ public class MutexSingleton {
      * @param token lock identifier
      */
     @Lock(LockType.READ)
-    public void lock(String token) {
+    public void lock(String token, String audience) {
+        String effectiveToken = getEffectiveToken(token, audience);
         //logger.error("try to lock " + token);
 
         RefCounterLock lock;
 
         synchronized (this) {
-            locks.putIfAbsent(token, new RefCounterLock());
-            lock = locks.get(token);
+            if (audience != null) {
+                websocketFacade.sendLock(audience, token);
+            }
+            locks.putIfAbsent(effectiveToken, new RefCounterLock(token, audience));
+            lock = locks.get(effectiveToken);
             lock.counter++;
         }
 
@@ -106,14 +134,18 @@ public class MutexSingleton {
     /**
      * Some internal method to cleanly unlock the lock
      *
-     * @param lock the lock to unlock
+     * @param lock  the lock to unlock
      * @param token lock identifier
      */
-    private void unlock(RefCounterLock lock, String token) {
+    private void unlock(RefCounterLock lock, String token, String audience) {
+        String effectiveToken = getEffectiveToken(token, audience);
         lock.sem.unlock();
         lock.counter--;
         if (lock.counter == 0) {
-            locks.remove(token);
+            if (audience != null && !audience.equals("internal")) {
+                websocketFacade.sendUnLock(audience, token);
+            }
+            locks.remove(effectiveToken);
             //logger.error("CLEAN LOCK LIST");
         }
 
@@ -125,12 +157,12 @@ public class MutexSingleton {
      * @param token lock identifier
      */
     @javax.ejb.Lock(LockType.READ)
-    public void unlock(String token) {
-        //logger.error("unlock " + token);
-        RefCounterLock lock = locks.getOrDefault(token, null);
+    public void unlock(String token, String audience) {
+        String effectiveToken = getEffectiveToken(token, audience);
+        RefCounterLock lock = locks.getOrDefault(effectiveToken, null);
         if (lock != null) {
             synchronized (this) {
-                this.unlock(lock, token);
+                this.unlock(lock, token, audience);
             }
         }
     }
@@ -141,14 +173,28 @@ public class MutexSingleton {
      * @param token lock identifier
      */
     @javax.ejb.Lock(LockType.READ)
-    public void unlockFull(String token) {
-        RefCounterLock lock = locks.getOrDefault(token, null);
+    public void unlockFull(String token, String audience) {
+        String effectiveToken = getEffectiveToken(token, audience);
+        RefCounterLock lock = locks.getOrDefault(effectiveToken, null);
         if (lock != null) {
             synchronized (this) {
                 while (lock.sem.getHoldCount() > 0) {
-                    this.unlock(lock, token);
+                    this.unlock(lock, token, audience);
                 }
             }
         }
     }
+
+    @javax.ejb.Lock(LockType.READ)
+    public Collection<String> getTokensByAudiences(List<String> audiences) {
+        Collection<String> tokens = new ArrayList<>();
+        for (Entry<String, RefCounterLock> entry : this.locks.entrySet()) {
+            if (audiences.contains(entry.getValue().audience)) {
+                tokens.add(entry.getValue().token);
+            }
+        }
+        return tokens;
+
+    }
+
 }

@@ -71,6 +71,7 @@ public class ScriptFacadeTest extends AbstractEJBTest {
 
         Script rnd100 = new Script("JavaScript", "var sum = 0, i; for (i=0;i<100;i++){sum+= Math.random();} sum;");
 
+        requestFacade.getRequestManager().setEnv(RequestManager.RequestEnvironment.STD);
         Double rnd1 = (Double) sf.eval(player, rnd100, null);
 
         requestFacade.getRequestManager().setEnv(RequestManager.RequestEnvironment.TEST);
