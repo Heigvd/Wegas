@@ -108,7 +108,7 @@ public class GameFacade extends BaseFacade<Game> {
         GameModel gm = gameModelFacade.duplicate(gameModelId);
         gm.setName(gameModelFacade.find(gameModelId).getName());// @HACK Set name back to the original
         gm.setComments(""); // Clear comments
-        gm.setTemplate(false);
+        gm.setStatus(GameModel.Status.PLAY);
         this.create(gm, game);
     }
 
@@ -145,7 +145,6 @@ public class GameFacade extends BaseFacade<Game> {
         this.addDebugTeam(game);
 
         //gameModelFacade.reset(gameModel);                                       // Reset the game so the default player will have instances
-
         userFacade.addUserPermission(currentUser,
                 "Game:View,Edit:g" + game.getId());                             // Grant permission to creator
         userFacade.addUserPermission(currentUser,

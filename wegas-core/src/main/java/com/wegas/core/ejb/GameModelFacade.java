@@ -19,7 +19,6 @@ import com.wegas.core.jcr.content.AbstractContentDescriptor;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.ContentConnectorFactory;
 import com.wegas.core.persistence.game.DebugGame;
-import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel.Status;
@@ -354,22 +353,11 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     /**
      * Template gameModels are editable scenrios
      *
-     * @return all template GameModels
+     * @return all template GameModels public List<GameModel>
+     * findTemplateGameModels() { final TypedQuery<GameModel> query =
+     * getEntityManager().createNamedQuery("GameModel.findTemplate",
+     * GameModel.class); return query.getResultList(); }
      */
-    public List<GameModel> findTemplateGameModels() {
-        final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findTemplate", GameModel.class);
-        return query.getResultList();
-    }
-
-    /**
-     * @return all teamplate gameModel matching the given status
-     */
-    public List<GameModel> findTemplateGameModelsByStatus(final GameModel.Status status) {
-        final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findTemplateByStatus", GameModel.class);
-        query.setParameter("status", status);
-        return query.getResultList();
-    }
-
     /**
      * @param name
      * @return the gameModel with the given name
@@ -438,7 +426,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      */
     //@Schedule(hour = "2")
     public void automaticVersionCreation() throws IOException, RepositoryException {
-        for (GameModel model : this.findTemplateGameModels()) {
+        for (GameModel model : this.findByStatus(Status.LIVE)) {
 
             String serialized = model.toJson(Views.Export.class);
             String hash = Integer.toHexString(serialized.hashCode());
