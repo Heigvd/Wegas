@@ -267,6 +267,12 @@ public class GameModelController {
     @GET
     @Path("status/{status: [A-Z]*}")
     public Collection<GameModel> findByStatus(@PathParam("status") final GameModel.Status status) {
+        return gameModelFacade.findByStatusAndUser(status);
+    }
+
+    @GET
+    @Path("status_old/{status: [A-Z]*}")
+    public Collection<GameModel> findByStatus2(@PathParam("status") final GameModel.Status status) {
         return filterGameModels(gameModelFacade.findByStatus(status));
     }
 

@@ -35,7 +35,9 @@ import javax.persistence.TypedQuery;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -85,6 +87,9 @@ public class GameFacade extends BaseFacade<Game> {
      */
     @EJB
     private UserFacade userFacade;
+
+    @Inject
+    private RequestManager requestManager;
 
     /**
      *
@@ -358,6 +363,69 @@ public class GameFacade extends BaseFacade<Game> {
         } catch (WegasNoResultException ex) {
             logger.error("FindPublicGamesByRole: " + roleName + " role not found");
         }
+        return games;
+    }
+
+    /**
+     * Filter out the debug team
+     *
+     * @param game
+     * @return the game without the debug team
+     */
+    public Game getGameWithoutDebugTeam(Game game) {
+        if (game != null) {
+            this.detach(game);
+            List<Team> withoutDebugTeam = new ArrayList<>();
+            for (Team teamToCheck : game.getTeams()) {
+                if (!(teamToCheck instanceof DebugTeam)) {
+                    withoutDebugTeam.add(teamToCheck);
+                }
+            }
+            game.setTeams(withoutDebugTeam);
+        }
+        return game;
+    }
+
+    public Collection<Game> findByStatusAndUser(Game.Status status) {
+        ArrayList<Game> games = new ArrayList<>();
+        Map<Long, List<String>> gMatrix = new HashMap<>();
+        Map<Long, List<String>> gmMatrix = new HashMap<>();
+
+        String roleQuery = "SELECT p FROM Permission p WHERE "
+                + "(p.role.id in "
+                + "    (SELECT r.id FROM User u JOIN u.roles r WHERE u.id = :userId)"
+                + ")";
+
+        String userQuery = "SELECT p FROM Permission p WHERE p.user.id = :userId";
+
+        gameModelFacade.processQuery(userQuery, gmMatrix, gMatrix, GameModel.Status.PLAY, status);
+        gameModelFacade.processQuery(roleQuery, gmMatrix, gMatrix, GameModel.Status.PLAY, status);
+
+        for (Map.Entry<Long, List<String>> entry : gMatrix.entrySet()) {
+            Long id = entry.getKey();
+            Game g = this.find(id);
+            if (g != null && g.getStatus() == status) {
+                List<String> perm = entry.getValue();
+                if (perm.contains("Edit") || perm.contains("*")) {
+                    Game dg = this.getGameWithoutDebugTeam(g);
+                    GameModel dgm = dg.getGameModel();
+                    List<String> gmPerm = gmMatrix.get(dgm.getId());
+                    if (gmPerm != null) {
+                        dgm.setCanView(gmPerm.contains("View") || gmPerm.contains("*"));
+                        dgm.setCanEdit(gmPerm.contains("Edit") || gmPerm.contains("*"));
+                        dgm.setCanDuplicate(gmPerm.contains("Duplicate") || gmPerm.contains("*"));
+                        dgm.setCanInstantiate(gmPerm.contains("Instantiate") || gmPerm.contains("*"));
+                    } else {
+                        dgm.setCanView(Boolean.FALSE);
+                        dgm.setCanEdit(Boolean.FALSE);
+                        dgm.setCanDuplicate(Boolean.FALSE);
+                        dgm.setCanInstantiate(Boolean.FALSE);
+                    }
+                    games.add(dg);
+                }
+            }
+        }
+
         return games;
     }
 
