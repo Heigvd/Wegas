@@ -224,10 +224,20 @@
 .wegas-mcqview .mcq-question button:disabled {
     visibility: hidden;
 }
+
+.wegas-mcqview.locked .mcq-question button:disabled {
+    visibility: visible;
+}
+
 .wegas-mcqview .mcq-question button:hover {
     background:#4f8c5f;
     color: rgb(255, 255, 204);
 }
+.wegas-mcqview.locked .mcq-question button:hover {
+    background: #69bd7f;
+    color: white;
+}
+
 .wegas-mcqview .mcq-choices-vertical-submit .numberOfReplies {
     color: #999;
     padding: 0 5px 7px;

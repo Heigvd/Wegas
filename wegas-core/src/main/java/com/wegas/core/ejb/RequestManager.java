@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.ejb.statemachine.StateMachineEventCounter;
 import com.wegas.core.event.client.ClientEvent;
 import com.wegas.core.event.client.CustomEvent;
 import com.wegas.core.event.client.ExceptionEvent;
@@ -16,7 +17,6 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.Views;
-import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import jdk.nashorn.api.scripting.ScriptUtils;
 import jdk.nashorn.internal.runtime.ScriptObject;
@@ -34,6 +34,7 @@ import javax.persistence.PersistenceContext;
 import javax.script.ScriptContext;
 import javax.ws.rs.core.Response;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 //import javax.annotation.PostConstruct;
@@ -67,8 +68,8 @@ public class RequestManager {
     @EJB
     private PlayerFacade playerFacade;
 
-    @EJB
-    private UserFacade userFacade;
+    @Inject
+    private RequestFacade requestFacade;
 
     private static Logger logger = LoggerFactory.getLogger(RequestManager.class);
 
@@ -86,6 +87,7 @@ public class RequestManager {
     private User currentUser;
 
     private String requestId;
+    private String socketId;
     private String method;
     private String path;
     private Long startTimestamp;
@@ -107,9 +109,9 @@ public class RequestManager {
     private Map<String, List<AbstractEntity>> destroyedEntities = new HashMap<>();
 
     /**
-     *
+     * Map TOKEN -> Audience
      */
-    private List<String> lockedToken = new ArrayList<>();
+    private final Map<String, List<String>> lockedToken = new HashMap<>();
 
     /**
      *
@@ -126,12 +128,18 @@ public class RequestManager {
      */
     private ScriptContext currentScriptContext = null;
 
+    private final StateMachineEventCounter eventCounter = new StateMachineEventCounter();
+
     public RequestEnvironment getEnv() {
         return env;
     }
 
     public void setEnv(RequestEnvironment env) {
         this.env = env;
+    }
+
+    public boolean isTestEnv() {
+        return this.env == RequestEnvironment.TEST;
     }
 
     public void addUpdatedEntities(Map<String, List<AbstractEntity>> entities) {
@@ -215,6 +223,10 @@ public class RequestManager {
      */
     public void setCurrentScriptContext(ScriptContext currentScriptContext) {
         this.currentScriptContext = currentScriptContext;
+    }
+
+    public StateMachineEventCounter getEventCounter() {
+        return eventCounter;
     }
 
     /**
@@ -334,24 +346,58 @@ public class RequestManager {
     }
 
     public boolean tryLock(String token) {
-        boolean tryLock = concurrentHelper.tryLock(token);
+        return tryLock(token, null);
+    }
+
+    private String getEffectiveAudience(String audience) {
+        if (audience != null && !audience.isEmpty()) {
+            return audience;
+        } else {
+            return "internal";
+        }
+    }
+
+    public boolean tryLock(String token, String audience) {
+        boolean tryLock = concurrentHelper.tryLock(token, audience);
         if (tryLock) {
             // Only register token if successfully locked
-            lockedToken.add(token);
+            if (!lockedToken.containsKey(token)) {
+                lockedToken.put(token, new ArrayList());
+            }
+            lockedToken.get(token).add(getEffectiveAudience(audience));
         }
         return tryLock;
     }
 
     public void lock(String token) {
-        concurrentHelper.lock(token);
-        lockedToken.add(token);
+        this.lock(token, null);
+    }
+
+    public void lock(String token, String audience) {
+        concurrentHelper.lock(token, audience);
+        if (!lockedToken.containsKey(token)) {
+            lockedToken.put(token, new ArrayList());
+        }
+        lockedToken.get(token).add(getEffectiveAudience(audience));
     }
 
     public void unlock(String token) {
-        concurrentHelper.unlock(token);
-        if (lockedToken.contains(token)) {
-            lockedToken.remove(token);
+        this.unlock(token, null);
+    }
+
+    public void unlock(String token, String audience) {
+        concurrentHelper.unlock(token, audience);
+        if (lockedToken.containsKey(token)) {
+            List<String> audiences = lockedToken.get(token);
+            audiences.remove(getEffectiveAudience(audience));
+            if (audiences.isEmpty()) {
+                lockedToken.remove(token);
+            }
         }
+    }
+
+    public Collection<String> getTokensByAudiences(List<String> audiences) {
+        return concurrentHelper.getTokensByAudiences(audiences);
     }
 
     public void setStatus(Response.StatusType statusInfo) {
@@ -396,6 +442,14 @@ public class RequestManager {
 
     public String getRequestId() {
         return requestId;
+    }
+
+    public String getSocketId() {
+        return socketId;
+    }
+
+    public void setSocketId(String socketId) {
+        this.socketId = socketId;
     }
 
     public String getMethod() {
@@ -476,9 +530,10 @@ public class RequestManager {
 
     @PreDestroy
     public void preDestroy() {
-        while (!lockedToken.isEmpty()) {
-            String remove = lockedToken.remove(0);
-            concurrentHelper.unlockFull(remove);
+        for (Entry<String, List<String>> entry : lockedToken.entrySet()) {
+            for (String audience : entry.getValue()) {
+                concurrentHelper.unlockFull(entry.getKey(), audience);
+            }
         }
         if (this.currentScriptContext != null) {
             this.currentScriptContext.getBindings(ScriptContext.ENGINE_SCOPE).clear();
@@ -489,6 +544,18 @@ public class RequestManager {
 
         //this.getEntityManager().flush();
         this.clear();
+    }
+
+    public void commit(Player player, boolean clear) {
+        this.requestFacade.commit(player, clear);
+    }
+
+    public void commit(Player player) {
+        this.requestFacade.commit(player, true);
+    }
+
+    public void commit() {
+        this.requestFacade.commit(this.getPlayer(), true);
     }
 
     /**
@@ -502,4 +569,5 @@ public class RequestManager {
             }
         }
     }
+
 }

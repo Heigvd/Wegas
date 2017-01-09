@@ -7,10 +7,13 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.ejb.statemachine.StateMachineEventCounter;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
+import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.lang3.ArrayUtils;
@@ -19,6 +22,7 @@ import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import java.util.Collection;
+import javax.script.ScriptContext;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -139,7 +143,7 @@ public class ScriptEventFacade {
     /**
      * @param eventName
      * @return Object[] array of corresponding parameters fired. Length
-     * correspond to number of times eventName has been fired.
+     *         correspond to number of times eventName has been fired.
      */
     public Object[] getFiredParameters(String eventName) {
         if (this.eventsFired.containsKey(eventName)) {
@@ -162,7 +166,31 @@ public class ScriptEventFacade {
      * @return
      */
     public boolean fired(String eventName) {
-        return this.firedCount(eventName) > 0;
+        ScriptContext scriptContext = requestManager.getCurrentScriptContext();
+        if (requestManager.isTestEnv()) {
+            // mark event as watched !!
+            return true;
+        } else {
+
+            Object currentDescriptor = scriptContext.getBindings(ScriptContext.ENGINE_SCOPE).get(ScriptFacade.CONTEXT);
+
+            if (currentDescriptor instanceof StateMachineDescriptor) {
+                int count;
+                StateMachineInstance smi = ((StateMachineDescriptor) currentDescriptor).getInstance(requestManager.getPlayer());
+                StateMachineEventCounter eventCounter = this.requestManager.getEventCounter();
+                count = eventCounter.count(smi, eventName);
+                count += eventCounter.countCurrent(eventName);
+
+                if (this.firedCount(eventName) > count) {
+                    eventCounter.registerEvent(eventName);
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return this.firedCount(eventName) > 0;
+            }
+        }
     }
 
     /**

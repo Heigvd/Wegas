@@ -15,6 +15,7 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.Role;
+import com.wegas.core.security.persistence.User;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -44,6 +45,7 @@ public class AbstractEJBTest {
     protected static Team team2;
     protected static Player player2;
     protected static Player player21;
+    protected static User guest;
     // *** Constants *** //
     final static private String GAMENAME = "test-game";
     final static private String GAMETOKEN = "test-game-token";
@@ -55,7 +57,8 @@ public class AbstractEJBTest {
         descriptorFacade = lookupBy(VariableDescriptorFacade.class);
         roleFacade = lookupBy(RoleFacade.class);
 
-        lookupBy(UserFacade.class).guestLogin();
+        guest = lookupBy(UserFacade.class).guestLogin();
+        RequestFacade.lookup().getRequestManager().setCurrentUser(guest);
     }
 
     @AfterClass

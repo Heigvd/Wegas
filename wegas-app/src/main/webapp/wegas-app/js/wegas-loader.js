@@ -51,7 +51,7 @@ YUI().use(function(Y) {
             "wegas-app": {
                 requires: ["base", "plugin", "array-extras", "timers",
                     "wegas-helper", "wegas-entity", "wegas-datasource", "font-awesome", "template-micro", "wegas-i18n",
-                    "wegas-keyframescss"]
+                    "wegas-keyframescss", "wegas-lockmanager"]
             },
             "wegas-keyframescss": {
                 type: CSS
@@ -338,6 +338,11 @@ YUI().use(function(Y) {
             "wegas-injector": {
                 path: "js/plugin/wegas-injector-min.js",
                 ws_provides: "Injector"
+            },
+            "wegas-lockmanager": {
+                path: "js/plugin/wegas-lockmanager-min.js",
+                requires: "wegas-plugin",
+                ws_provides: ["LockManager", "Lockable"]
             },
             "wegas-cssloader": {
                 path: "js/plugin/wegas-cssloader-min.js",

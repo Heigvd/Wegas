@@ -210,12 +210,12 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      */
     private Reply internalCancelReply(Long replyId) {
         final Reply reply = this.getEntityManager().find(Reply.class, replyId);
-        // requestFacade.getRequestManager().lock("MCQ-" + reply.getQuestionInstance().getId());
+        QuestionInstance questionInstance = reply.getQuestionInstance();
+        requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getAudience());
         return this.internalCancelReply(reply);
     }
 
     private Reply internalCancelReply(Reply reply) {
-        reply.getQuestionInstance().getReplies().remove(reply);
         this.getEntityManager().remove(reply);
         return reply;
     }
@@ -258,7 +258,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         QuestionDescriptor questionDescriptor = choice.getQuestion();
         QuestionInstance questionInstance = questionDescriptor.getInstance(player);
 
-        // requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId());
+        requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getAudience());
         //getEntityManager().refresh(questionInstance);
         //requestFacade.getRequestManager().lock("MCQ-" + reply.getQuestionInstance().getId());
         // Verify if mutually exclusive replies must be cancelled:
@@ -323,15 +323,15 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     public Reply selectAndValidateChoice(Long choiceId, Long playerId) {
         Player player = playerFacade.find(playerId);
         Reply reply = this.selectChoice(choiceId, player, (long) 0);
-        try {
-            //this.validateReply(player, reply.getId());
-            this.validateReply(player, reply);
-        } catch (WegasRuntimeException e) {
-            logger.error("CANCEL REPLY", e);
-            //this.cancelReplyTransactional(player, reply.getId());
-            this.cancelReplyTransactional(player, reply);
-            throw e;
-        }
+        //try {
+        //this.validateReply(player, reply.getId());
+        this.validateReply(player, reply);
+        //} catch (WegasRuntimeException e) {
+        //logger.error("CANCEL REPLY", e);
+        //this.cancelReplyTransactional(player, reply.getId());
+        //this.cancelReplyTransactional(player, reply);
+        //  throw e;
+        //}
         return reply;
     }
 
@@ -486,8 +486,9 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      * @param player
      */
     public void validateQuestion(Long questionInstanceId, Player player) {
-        // requestFacade.getRequestManager().lock("MCQ-" + questionInstanceId);
-        this.validateQuestion(getEntityManager().find(QuestionInstance.class, questionInstanceId), player);
+        QuestionInstance questionInstance = getEntityManager().find(QuestionInstance.class, questionInstanceId);
+        requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getAudience());
+        this.validateQuestion(questionInstance, player);
     }
 
     /**
