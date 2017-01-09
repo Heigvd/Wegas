@@ -4,7 +4,7 @@
     ng-class="{true:'card__description--three-lines', false:'card__description--four-lines'}[session.gameModel.comments == null || session.gameModel.comments == '']" >
     <div class="line line--primary">{{session.name}}</div>
     <div class="line">{{'COMMONS-DATE' | translate: {date: session.createdTime} }}</div>
-    <div class="line">{{'SCENARIST-CARD-DETAILS-SCENARIO' | translate}} :&nbsp; {{session.gameModelName}}.&nbsp;</div>
+    <div class="line">{{'TRAINER-CARD-DETAILS-SCENARIO' | translate}}:&nbsp;{{session.gameModelName}}</div>
     <div ng-if="!((session.gameModel.comments == null) || (session.gameModel.comments == ''))" class="line line--optionnal">{{session.gameModel.comments}}</div>
 </div>
 <div class="card__actions">

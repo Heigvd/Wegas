@@ -590,15 +590,6 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "This is not a " + keywords.session.singular.en,
                             'fr': "Ce n'est pas une " + keywords.session.singular.fr
                         },
-                        'COMMONS-SESSIONS-MODIFIED-ON': {
-                            'en': "Modified on",
-                            'fr': "Modifié le"
-                        },
-                        'COMMONS-SESSIONS-CREATED-BY': {
-                            'en': "Created by",
-                            'fr': "Créé par"
-                        },
-
 
                         // Commons Scenarios Model
 
@@ -1252,9 +1243,9 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "No current " + keywords.session.singular.en + " corresponds to search string ",
                             'fr': "Aucune " + keywords.session.singular.fr + " en cours répondant au critère "
                         },
-                        'TRAINER-CARD-DETAILS-SESSION-ID': {
-                            'en': startSentence(keywords.session.singular.en) + " No",
-                            'fr': startSentence(keywords.session.singular.fr) + " nº"
+                        'TRAINER-CARD-DETAILS-SCENARIO': {
+                            'en': startSentence(keywords.scenario.singular.en),
+                            'fr': startSentence(keywords.scenario.singular.fr)
                         },
                         'TRAINER-CARD-ACCESS-CLOSE': {
                             'en': "Closed to new " + keywords.player.plural.en,
@@ -1421,14 +1412,6 @@ angular.module('wegas.service.wegasTranslations', [])
                         'SCENARIST-MODALE-ARCHIVE-NO-SCENARIO': {
                             'en': "No archived " + keywords.scenario.singular.en + " with the name ",
                             'fr': "Aucun " + keywords.scenario.singular.fr + " archivé avec le nom "
-                        },
-                        'SCENARIST-CARD-DETAILS-SCENARIO': {
-                            'en': startSentence(keywords.scenario.singular.en),
-                            'fr': startSentence(keywords.scenario.singular.fr)
-                        },
-                        'SCENARIST-CARD-DETAILS-SCENARIO-ID': {
-                            'en': startSentence(keywords.scenario.singular.en) + " No",
-                            'fr': startSentence(keywords.scenario.singular.fr) + " nº"
                         },
                         'SCENARIST-CARD-SETTINGS-BTN': {
                             'en': "Settings",
