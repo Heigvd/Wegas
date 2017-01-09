@@ -74,6 +74,7 @@ angular.module('private.scenarist.archives.directives', [])
     .directive('scenaristScenariosArchivesList', function() {
         "use strict";
         return {
+            templateUrl: 'app/private/scenarist/archives/directives.tmpl/list.html',
             scope: {
                 scenarios: "=",
                 unarchive: "=",
@@ -81,6 +82,22 @@ angular.module('private.scenarist.archives.directives', [])
                 search: "=",
                 loading: "="
             },
-            templateUrl: 'app/private/scenarist/archives/directives.tmpl/list.html'
+            link: function(scope, element, attrs) {
+                var searchField = undefined;
+                scope.searchFn = function (value, index, array) { // filter: {name: search, canView: true, canEdit: true}
+                    if (value.canView === false || value.canEdit === false) return false;
+                    if (!searchField){  // The archives pop-up must be visible
+                        searchField = document.getElementById('searchFieldArchives').getElementsByClassName('tool__input')[0];
+                    }
+                    if (searchField.value.length === 0) return true;
+                    var needle = searchField.value.toLowerCase();
+                    if (value.name.toLowerCase().indexOf(needle) >= 0) return true;
+                    // Advanced search criteria:
+                    return ((value.createdByName && value.createdByName.toLowerCase().indexOf(needle) >= 0) ||
+                    (value.comments && value.comments.toLowerCase().indexOf(needle) >= 0) ||
+                    // If searching for a number, the id has to start with the given pattern:
+                    value.id.toString().indexOf(needle) === 0);
+                };
+            }
         };
     });
