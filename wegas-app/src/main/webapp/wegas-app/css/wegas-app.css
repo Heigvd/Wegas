@@ -688,3 +688,7 @@ font {
     animation: rotate .7s linear infinite;
     border-color: rgba(255, 255, 255, 0.95) transparent transparent transparent;
 }
+
+.locked {
+    /*background-color: hotpink !important;*/
+}

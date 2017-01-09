@@ -19,7 +19,6 @@ import com.wegas.core.jcr.content.AbstractContentDescriptor;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.ContentConnectorFactory;
 import com.wegas.core.persistence.game.DebugGame;
-import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel.Status;
@@ -31,6 +30,7 @@ import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
+import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.User;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
@@ -51,8 +51,12 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -109,6 +113,9 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
     @EJB
     private GameFacade gameFacade;
+
+    @Inject
+    private RequestManager requestManager;
 
     /**
      *
@@ -354,22 +361,11 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     /**
      * Template gameModels are editable scenrios
      *
-     * @return all template GameModels
+     * @return all template GameModels public List<GameModel>
+     * findTemplateGameModels() { final TypedQuery<GameModel> query =
+     * getEntityManager().createNamedQuery("GameModel.findTemplate",
+     * GameModel.class); return query.getResultList(); }
      */
-    public List<GameModel> findTemplateGameModels() {
-        final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findTemplate", GameModel.class);
-        return query.getResultList();
-    }
-
-    /**
-     * @return all teamplate gameModel matching the given status
-     */
-    public List<GameModel> findTemplateGameModelsByStatus(final GameModel.Status status) {
-        final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findTemplateByStatus", GameModel.class);
-        query.setParameter("status", status);
-        return query.getResultList();
-    }
-
     /**
      * @param name
      * @return the gameModel with the given name
@@ -438,7 +434,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      */
     //@Schedule(hour = "2")
     public void automaticVersionCreation() throws IOException, RepositoryException {
-        for (GameModel model : this.findTemplateGameModels()) {
+        for (GameModel model : this.findByStatus(Status.LIVE)) {
 
             String serialized = model.toJson(Views.Export.class);
             String hash = Integer.toHexString(serialized.hashCode());
@@ -490,6 +486,109 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
         this.createWithDebugGame(gm);
         return gm;
+    }
+
+    public Collection<GameModel> findByStatusAndUser(GameModel.Status status) {
+        ArrayList<GameModel> gameModels = new ArrayList<>();
+        Map<Long, List<String>> pMatrix = new HashMap<>();
+
+        String roleQuery = "SELECT p FROM Permission p WHERE "
+                + "(p.role.id in "
+                + "    (SELECT r.id FROM User u JOIN u.roles r WHERE u.id = :userId)"
+                + ")";
+
+        String userQuery = "SELECT p FROM Permission p WHERE p.user.id = :userId ";
+
+        this.processQuery(userQuery, pMatrix, null, status, null);
+        this.processQuery(roleQuery, pMatrix, null, status, null);
+
+        for (Map.Entry<Long, List<String>> entry : pMatrix.entrySet()) {
+            Long id = entry.getKey();
+            GameModel gm = this.find(id);
+            if (gm != null && gm.getStatus() == status) {
+                List<String> perm = entry.getValue();
+                this.detach(gm);
+                gm.setCanView(perm.contains("View") || perm.contains("*"));
+                gm.setCanEdit(perm.contains("Edit") || perm.contains("*"));
+                gm.setCanDuplicate(perm.contains("Duplicate") || perm.contains("*"));
+                gm.setCanInstantiate(perm.contains("Instantiate") || perm.contains("*"));
+                gameModels.add(gm);
+            }
+        }
+
+        return gameModels;
+    }
+
+    public void processQuery(String sqlQuery, Map<Long, List<String>> gmMatrix, Map<Long, List<String>> gMatrix, GameModel.Status gmStatus, Game.Status gStatus) {
+        TypedQuery<Permission> query = this.getEntityManager().createQuery(sqlQuery, Permission.class);
+        User user = requestManager.getCurrentUser();
+        query.setParameter("userId", user.getId());
+        List<Permission> resultList = query.getResultList();
+
+        for (Permission p : resultList) {
+            processPermission(p.getValue(), gmMatrix, gMatrix, gmStatus, gStatus);
+            processPermission(p.getInducedPermission(), gmMatrix, gMatrix, gmStatus, gStatus);
+        }
+    }
+
+    private void processPermission(String permission, Map<Long, List<String>> gmMatrix, Map<Long, List<String>> gMatrix, GameModel.Status gmStatus, Game.Status gStatus) {
+        if (permission != null && !permission.isEmpty()) {
+            String[] split = permission.split(":");
+            if (split.length == 3) {
+                String type = null;
+                String idPrefix = null;
+                Map<Long, List<String>> pMatrix;
+
+                if (split[0].equals("GameModel") && gmStatus != null) {
+                    type = "GameModel";
+                    idPrefix = "gm";
+                    pMatrix = gmMatrix;
+                } else if (split[0].equals("Game") && gStatus != null) {
+                    type = "Game";
+                    idPrefix = "g";
+                    pMatrix = gMatrix;
+                } else {
+                    return;
+                }
+
+                String pId = split[2].replaceAll(idPrefix, "");
+                ArrayList<Long> ids = new ArrayList<>();
+                if (!pId.isEmpty()) {
+                    if (pId.equals("*")) {
+                        if (type.equals("GameModel")) {
+                            for (GameModel gm : this.findByStatus(gmStatus)) {
+                                ids.add(gm.getId());
+                            }
+                        } else { //ie Game
+                            for (Game g : gameFacade.findAll(gStatus)) {
+                                ids.add(g.getId());
+                            }
+                        }
+                    } else {
+                        ids.add(Long.parseLong(pId.replace(idPrefix, "")));
+                    }
+
+                    String[] split1 = split[1].split(",");
+
+                    List<String> ps;
+
+                    for (Long id : ids) {
+                        if (pMatrix.containsKey(id)) {
+                            ps = pMatrix.get(id);
+                        } else {
+                            ps = new ArrayList();
+                            pMatrix.put(id, ps);
+                        }
+
+                        for (String perm : split1) {
+                            if (!ps.contains(perm)) {
+                                ps.add(perm);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**

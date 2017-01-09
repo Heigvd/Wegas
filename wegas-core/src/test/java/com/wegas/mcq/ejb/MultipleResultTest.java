@@ -8,7 +8,6 @@
 package com.wegas.mcq.ejb;
 
 import com.wegas.core.ejb.AbstractEJBTest;
-import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
@@ -21,8 +20,6 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
-import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
 import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
 
 /**
@@ -47,7 +44,8 @@ public class MultipleResultTest extends AbstractEJBTest {
         public void run() {
             try {
                 qdf.selectAndValidateChoice(choice.getId(), player.getId());            // Do reply
-                RequestFacade.lookup().getRequestManager().unlock("MCQ-" + choice.getQuestion().getInstance(player).getId());
+                QuestionInstance instance = choice.getQuestion().getInstance(player);
+                RequestFacade.lookup().getRequestManager().unlock("MCQ-" + instance.getId(), instance.getAudience());
             } catch (WegasScriptException ex) {
                 java.util.logging.Logger.getLogger(MultipleResultTest.class.getName()).log(Level.SEVERE, null, ex);
             }

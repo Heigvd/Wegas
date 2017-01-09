@@ -9,7 +9,6 @@ package com.wegas.core.ejb;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.pusher.rest.Pusher;
 import com.pusher.rest.data.PresenceUser;
 import com.pusher.rest.data.Result;
@@ -21,7 +20,6 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.JacksonMapperProvider;
-import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.SecurityHelper;
@@ -37,8 +35,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.zip.GZIPOutputStream;
+import javax.inject.Inject;
 
 /**
  * @author Yannick Lagger (lagger.yannick.com)
@@ -53,7 +51,6 @@ public class WebsocketFacade {
     private final static String GLOBAL_CHANNEL = "presence-global";
 
     public enum WegasStatus {
-
         DOWN,
         READY,
         OUTDATED
@@ -79,6 +76,9 @@ public class WebsocketFacade {
 
     @EJB
     private PlayerFacade playerFacade;
+
+    @Inject
+    private RequestFacade requestFacade;
 
     /**
      * Initialize Pusher Connection
@@ -137,6 +137,22 @@ public class WebsocketFacade {
             }
         }
         return channels;
+    }
+
+    public void sendLock(String channel, String token) {
+        if (this.pusher != null) {
+            logger.error("send lock " + token + " to " + channel);
+            pusher.trigger(channel, "LockEvent",
+                    "{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"lock\"}", null);
+        }
+    }
+
+    public void sendUnLock(String channel, String token) {
+        if (this.pusher != null) {
+            logger.error("send lock " + token + " to " + channel);
+            pusher.trigger(channel, "LockEvent",
+                    "{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"unlock\"}", null);
+        }
     }
 
     /**

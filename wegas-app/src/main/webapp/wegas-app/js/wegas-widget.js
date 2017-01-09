@@ -66,7 +66,7 @@ YUI.add("wegas-widget", function (Y) {
          */
         showOverlay: function (klass) {
             this.fire("wegas:showOverlay", klass);
-            if (this.overlayCounter === undefined || this.overlayCounter<=0){
+            if (this.overlayCounter === undefined || this.overlayCounter <= 0) {
                 this.overlayCounter = 1;
             } else {
                 this.overlayCounter += 1;
@@ -80,7 +80,7 @@ YUI.add("wegas-widget", function (Y) {
          */
         hideOverlay: function (klass) {
             this.fire("wegas:hideOverlay", klass);
-            if (this.overlayCounter === undefined || this.overlayCounter<=0){
+            if (this.overlayCounter === undefined || this.overlayCounter <= 0) {
                 this.overlayCounter = 0;
             } else {
                 this.overlayCounter -= 1;
@@ -138,6 +138,22 @@ YUI.add("wegas-widget", function (Y) {
         },
         isEditable: function () {
             return this.get("editable") || !!(this.get(PARENT) && this.get(PARENT).isEditable && this.get(PARENT).isEditable());
+        },
+        enable: function() {
+            if (this.disableCounter === undefined || this.disableCounter <= 1) {
+                this.disableCounter = 0;
+                this.constructor.superclass.enable.call(this);
+            } else {
+                this.disableCounter -= 1;
+            }
+        },
+        disable: function() {
+            if (this.disableCounter === undefined || this.disableCounter <= 0) {
+                this.disableCounter = 1;
+                this.constructor.superclass.disable.call(this);
+            } else {
+                this.disableCounter += 1;
+            }
         }
     });
     Y.mix(Widget, {
@@ -501,6 +517,9 @@ YUI.add("wegas-widget", function (Y) {
                                     }, {
                                         label: "Unread count",
                                         value: "UnreadCount"
+                                    }, {
+                                        label: "Lock",
+                                        data: "Lockable"
                                     }
                                 ]
                             }

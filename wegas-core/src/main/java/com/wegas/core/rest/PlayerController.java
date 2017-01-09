@@ -173,4 +173,10 @@ public class PlayerController {
         playerFacade.reset(p);
         return Response.ok().build();
     }
+
+    @GET
+    @Path("{playerId : [1-9][0-9]*}/Locks")
+    public Collection<String> getLocks(@PathParam("playerId") Long playerId) {
+        return playerFacade.getLocks(playerId);
+    }
 }

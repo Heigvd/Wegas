@@ -472,6 +472,21 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
     }
 
     /**
+     *
+     * @param vd
+     * @param newScope
+     */
+    public void updateScope(VariableDescriptor vd, AbstractScope newScope) {
+        Collection<VariableInstance> values = vd.getScope().getVariableInstancesByKeyId().values();
+        for (VariableInstance vi : values) {
+            variableInstanceFacade.remove(vi);
+        }
+        vd.setScope(newScope);
+        this.getEntityManager().persist(vd);
+        vd.propagateDefaultInstance(null, true);
+    }
+
+    /**
      * @return Looked-up EJB
      */
     public static VariableDescriptorFacade lookup() {

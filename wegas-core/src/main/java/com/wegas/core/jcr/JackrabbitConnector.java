@@ -10,6 +10,7 @@ package com.wegas.core.jcr;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.persistence.game.GameModel;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
@@ -28,7 +29,10 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
+
 import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.apache.jackrabbit.api.JackrabbitRepositoryFactory;
 import org.apache.jackrabbit.api.management.DataStoreGarbageCollector;
@@ -50,8 +54,8 @@ public class JackrabbitConnector {
     private static JackrabbitRepository repo;
     final private JackrabbitRepositoryFactory rf = new RepositoryFactoryImpl();
 
-    @EJB
-    private GameModelFacade gmf;
+    @PersistenceContext(name = "wegasPU")
+    private EntityManager em;
 
     @PostConstruct
     protected void init() {
@@ -107,10 +111,10 @@ public class JackrabbitConnector {
                         try {
                             /* DROP TABLES */
                             String dropQuery = "DROP table IF EXISTS "
-                                + workspaceName + "_binval, "
-                                + workspaceName + "_refs, "
-                                + workspaceName + "_bundle, "
-                                + workspaceName + "_names CASCADE";
+                                    + workspaceName + "_binval, "
+                                    + workspaceName + "_refs, "
+                                    + workspaceName + "_bundle, "
+                                    + workspaceName + "_names CASCADE";
 
                             statement.execute(dropQuery);
                             con.commit();
@@ -137,7 +141,6 @@ public class JackrabbitConnector {
     }
 
     /**
-     *
      * @return
      */
     protected javax.jcr.Repository getRepo() {
@@ -151,15 +154,15 @@ public class JackrabbitConnector {
             Session admin = SessionHolder.getSession(null);
             String[] workspaces = admin.getWorkspace().getAccessibleWorkspaceNames();
             SessionHolder.closeSession(admin);
-            List<GameModel> gameModels = gmf.findAll();
-            List<String> fakeworkspaces = new ArrayList<>();
+            final List<GameModel> gameModels = em.createNamedQuery("GameModel.findAll", GameModel.class).getResultList();
+            final List<String> fakeWorkspaces = new ArrayList<>();
             final List<String> toDelete = new ArrayList<>();
             for (GameModel gameModel : gameModels) {
-                fakeworkspaces.add("GM_" + gameModel.getId());
+                fakeWorkspaces.add("GM_" + gameModel.getId());
             }
             for (String workspace : workspaces) {
                 if (workspace.startsWith("GM_") && !workspace.equals("GM_0")) {
-                    if (!fakeworkspaces.contains(workspace)) {
+                    if (!fakeWorkspaces.contains(workspace)) {
                         toDelete.add(workspace);
                         logger.info("Marked for deletion : {}", workspace);
                     }
