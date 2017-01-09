@@ -47,6 +47,9 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
                 ), this.get('contentBox').getDOMNode());
             }
         },
+        getValue() {
+            return this.get(FORM) && this.get(FORM).getValue();
+        },
         syncUI() {
             this.set('cfg', this.get('cfg'));
         },
