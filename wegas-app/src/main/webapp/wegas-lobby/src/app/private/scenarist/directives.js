@@ -27,7 +27,7 @@ angular.module('private.scenarist.directives', [
         ctrl.loading = true;
         ctrl.duplicating = false;
         ctrl.scenarios = [];
-        ctrl.nbArchives = [];
+        ctrl.nbArchives = 0;
         ctrl.search = '';
         ctrl.maxScenariosDisplayed = null;
 
@@ -46,14 +46,9 @@ angular.module('private.scenarist.directives', [
                 if (hideScrollbarDuringInitialRender) {
                     $timeout(function() {
                         $('#scenarist-scenarios-list').css('overflow-y', 'auto');
-                    }, 1000);
+                    }, 2000);
                 }
             });
-            /*if (updateDisplay) {
-             ScenariosModel.countArchivedScenarios().then(function(response) {
-             ctrl.nbArchives = response.data;
-             });
-             }*/
         };
 
         ctrl.archiveScenario = function(scenario) {
