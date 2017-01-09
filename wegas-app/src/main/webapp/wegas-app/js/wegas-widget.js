@@ -142,7 +142,7 @@ YUI.add("wegas-widget", function(Y) {
         enable: function() {
             if (this.disableCounter === undefined || this.disableCounter <= 1) {
                 this.disableCounter = 0;
-                this.constructor.superclass.enable.call(this);
+                this.set("disabled", false);
             } else {
                 this.disableCounter -= 1;
             }
@@ -150,7 +150,7 @@ YUI.add("wegas-widget", function(Y) {
         disable: function() {
             if (this.disableCounter === undefined || this.disableCounter <= 0) {
                 this.disableCounter = 1;
-                this.constructor.superclass.disable.call(this);
+                this.set("disabled", true);
             } else {
                 this.disableCounter += 1;
             }
