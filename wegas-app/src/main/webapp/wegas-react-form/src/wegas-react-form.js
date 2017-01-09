@@ -1,14 +1,15 @@
+// polyfill injection point
+import 'core-js';
+// end polyfill injection point
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 import RForm from 'jsoninput';
-import injectTapEventPlugin from 'react-tap-event-plugin';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+// import getMuiTheme from 'material-ui/styles/getMuiTheme';
+// import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import './defaultViews';
 import { register } from './Script/index';
 import { getY } from './index';
 
-injectTapEventPlugin();
 const Y = getY(); // Current YUI instance
 const Wegas = Y.Wegas;
 const inputEx = Y.inputEx;
@@ -37,16 +38,12 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
                     this.fire('updated', val);
                 };
                 render((
-                    <MuiThemeProvider
-                        muiTheme={getMuiTheme()}
-                    >
-                        <RForm
-                            ref={form => this.set(FORM, form)}
-                            schema={schema}
-                            value={value}
-                            onChange={boundFire}
-                        />
-                    </MuiThemeProvider>
+                    <RForm
+                        ref={form => this.set(FORM, form)}
+                        schema={schema}
+                        value={value}
+                        onChange={boundFire}
+                    />
                 ), this.get('contentBox').getDOMNode());
             }
         },
