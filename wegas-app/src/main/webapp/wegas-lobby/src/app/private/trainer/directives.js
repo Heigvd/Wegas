@@ -53,14 +53,9 @@ angular.module('private.trainer.directives', [
                 if (hideScrollbarDuringInitialRender) {
                     $timeout(function() {
                         $('#trainer-sessions-list').css('overflow-y', 'auto');
-                    }, 1000);
+                    }, 2000);
                 }
             });
-            /*if (updateDisplay) {
-                SessionsModel.countArchivedSessions().then(function(response) {
-                    ctrl.nbArchives = response.data;
-                });
-            }*/
         };
 
         ctrl.editAccess = function(sessionToSet) {
