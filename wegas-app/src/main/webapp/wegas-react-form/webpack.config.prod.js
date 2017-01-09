@@ -1,20 +1,36 @@
 const path = require('path');
 const webpack = require('webpack');
 
+const packages = [
+    'classnames',
+    // 'core-js',
+    // 'jsoninput',
+    // 'lodash',
+    // 'material-ui',
+    'react',
+    'react-dom',
+    // 'react-tinymce',
+    // 'recast',
+];
+
+
 module.exports = {
     devtool: 'source-map',
-    entry: ['babel-polyfill', './src/index.js'],
+    entry: {
+        bundle: './src/index.js',
+     //   vendor: packages
+    },
     output: {
         path: path.join(__dirname, 'dist'),
-        filename: 'bundle.js',
-        library: 'JSONInput',
-        libraryTarget: 'umd'
+        filename: '[name].js'
     },
     resolve: {
         mainFields: ['module', 'jsnext:main', 'browser', 'main']
     },
     plugins: [
-        new webpack.optimize.OccurrenceOrderPlugin(),
+        // new webpack.optimize.CommonsChunkPlugin({
+        //     names: ['vendor', 'manifest']
+        // }),
         new webpack.DefinePlugin({
             'process.env': {
                 NODE_ENV: JSON.stringify('production')

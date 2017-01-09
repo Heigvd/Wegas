@@ -1,10 +1,9 @@
 const path = require('path');
 const webpack = require('webpack');
-const cssnext = require('postcss-cssnext');
 
 module.exports = {
     devtool: 'inline-source-map',
-    entry: ['babel-polyfill', './src/index.js'],
+    entry: ['./src/index.js'],
     output: {
         path: path.join(__dirname, 'dist'),
         filename: 'bundle.js',
@@ -18,7 +17,7 @@ module.exports = {
         new webpack.NoErrorsPlugin()
     ],
     module: {
-         rules: [{
+        rules: [{
             test: /\.jsx?$/,
             loaders: ['babel-loader'],
             exclude: /node_modules/

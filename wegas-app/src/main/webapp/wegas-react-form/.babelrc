@@ -2,9 +2,18 @@
     "presets": [
         "react",
         [
-            "es2015",
+            "env",
             {
-                "modules": false
+                "useBuiltIns": true,
+                "debug": true,
+                "modules": false,
+                "loose": true,
+                "targets": {
+                    "browsers": [
+                        "last 2 versions"
+                    ]
+                },
+                "exclude": ["transform-regenerator"]
             }
         ]
     ],
