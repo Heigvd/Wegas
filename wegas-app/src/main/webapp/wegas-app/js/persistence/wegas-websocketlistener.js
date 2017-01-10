@@ -48,10 +48,8 @@ YUI.add('wegas-websocketlistener', function(Y) {
             if (Y.Wegas.app.lockmanager) {
                 var payload = Y.JSON.parse(data);
                 if (payload.status === "lock") {
-                    Y.log("LOCK " + payload.token);
                     Y.Wegas.app.lockmanager.lock(payload.token);
                 } else {
-                    Y.log("UNLOCK " + payload.token);
                     Y.Wegas.app.lockmanager.unlock(payload.token);
                 }
             }

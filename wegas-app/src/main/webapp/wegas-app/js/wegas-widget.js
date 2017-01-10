@@ -141,9 +141,7 @@ YUI.add("wegas-widget", function(Y) {
         },
         _enable: function(token) {
             this.disableCounter = this.disableCounter || {};
-            Y.log("eKEYS: " + Object.keys(this.disableCounter));
             delete this.disableCounter[token];
-            Y.log("eKEYS: " + Object.keys(this.disableCounter));
             if (Object.keys(this.disableCounter).length === 0) {
                 this.enable();
             }
@@ -151,7 +149,6 @@ YUI.add("wegas-widget", function(Y) {
         _disable: function(token) {
             this.disableCounter = this.disableCounter || {};
             this.disableCounter[token] = true;
-            Y.log("dKEYS: " + Object.keys(this.disableCounter));
             this.disable();
         }
     });
