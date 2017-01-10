@@ -1350,8 +1350,8 @@ angular.module('wegas.service.wegasTranslations', [])
                                 " ? Cette action est irréversible."
                         },
                         'TRAINER-MODALE-ARCHIVE-NO-SESSION': {
-                            'en': "No archived " + keywords.session.singular.en + " with the name ",
-                            'fr': "Aucune " + keywords.session.singular.fr + " archivée avec le nom "
+                            'en': "No archived " + keywords.session.singular.en + " corresponds to search string ",
+                            'fr': "Aucune " + keywords.session.singular.fr + " archivée répondant au critère "
                         },
 
                         // Private Scenarist
@@ -1410,8 +1410,8 @@ angular.module('wegas.service.wegasTranslations', [])
                                 " ? Cette action est irréversible."
                         },
                         'SCENARIST-MODALE-ARCHIVE-NO-SCENARIO': {
-                            'en': "No archived " + keywords.scenario.singular.en + " with the name ",
-                            'fr': "Aucun " + keywords.scenario.singular.fr + " archivé avec le nom "
+                            'en': "No archived " + keywords.scenario.singular.en + " corresponds to search string ",
+                            'fr': "Aucun " + keywords.scenario.singular.fr + " archivé répondant au critère "
                         },
                         'SCENARIST-CARD-SETTINGS-BTN': {
                             'en': "Settings",
