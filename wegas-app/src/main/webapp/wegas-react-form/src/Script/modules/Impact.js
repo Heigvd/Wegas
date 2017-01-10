@@ -112,7 +112,7 @@ class Impact extends React.Component {
                     defaultValue={print(node).code}
                     onChange={ev => this.setState(extractMethod(parse(ev.target.value)),
                         () => this.props.onChange(buildMethod(this.state, type)))
-                }
+                    }
                 />
                 <div>{error}</div>
             </div>);
@@ -173,5 +173,10 @@ Impact.propTypes = {
     onChange: PropTypes.func.isRequired,
     view: PropTypes.object,
     type: PropTypes.oneOf(['getter', 'condition'])
+};
+Impact.defaultProps = {
+    node: undefined,
+    view: {},
+    type: 'getter'
 };
 export default Impact;

@@ -78,12 +78,16 @@ class TreeVariableSelect extends React.Component {
             <div>
                 <Popover
                     show={this.state.searching}
-                    onClickOutside={() => this.setState({ searching: false })}
+                    onClickOutside={() => this.setState({
+                        searching: false,
+                        search: labelForVariable(this.props.value) ||
+                        this.labelForAdditional(this.props.value) // Reset search
+                    })}
                 >
                     <input
                         ref={(n) => {
                             if (n) {
-                                n.focus();
+                                setTimeout(() => n.focus(), 50);
                             }
                         }}
                         value={this.state.search}
@@ -142,6 +146,7 @@ TreeVariableSelect.propTypes = {
 TreeVariableSelect.defaultProps = {
     view: {
         additional: []
-    }
+    },
+    value: ''
 };
 export default TreeVariableSelect;
