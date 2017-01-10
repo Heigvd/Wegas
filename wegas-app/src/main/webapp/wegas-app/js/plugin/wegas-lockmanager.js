@@ -100,8 +100,8 @@ YUI.add('wegas-lockmanager', function(Y) {
             if (this._counter === 0) {
                 var host = this.get("host");
                 host.get("contentBox").addClass("locked");
-                if (host.enable && host.disable) {
-                    host.disable();
+                if (host._enable && host._disable) {
+                    host._disable("LOCK");
                 } else {
                     host.set("disabled", true);
                 }
@@ -113,8 +113,8 @@ YUI.add('wegas-lockmanager', function(Y) {
             this._counter--;
             if (this._counter === 0) {
                 host.get("contentBox").removeClass("locked");
-                if (host.enable && host.disable) {
-                    host.enable();
+                if (host._enable && host._disable) {
+                    host._enable("LOCK");
                 } else {
                     host.set("disabled", false);
                 }
@@ -125,6 +125,7 @@ YUI.add('wegas-lockmanager', function(Y) {
         ATTRS: {
             token: {
                 type: "string",
+                label: "Lock name",
                 value: "myToken"
             }
         }
