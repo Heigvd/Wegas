@@ -10,7 +10,6 @@ function scriptObject(Comp) {
      */
     function ScriptObject(props) {
         const { value, onChange, view } = props;
-        const val = value || {};
         return (
             <div
                 style={{
@@ -32,7 +31,7 @@ function scriptObject(Comp) {
                 </span>
                 <Comp
                     {...props}
-                    value={val.content}
+                    value={value.content}
                     onChange={v => onChange({
                         '@class': 'Script',
                         content: v
@@ -49,7 +48,8 @@ function scriptObject(Comp) {
         view: PropTypes.object
     };
     ScriptObject.defaultProps = {
-        value: { content: '' }
+        value: { content: '' },
+        view: {}
     };
     return ScriptObject;
 }

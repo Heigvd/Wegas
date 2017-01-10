@@ -1,3 +1,5 @@
+import React from 'react';
+import { render, unmountComponentAtNode } from 'react-dom';
 import parsed from './parser';
 import scriptObject from './scriptObject';
 import singleStatement from './singleStatement';
@@ -7,6 +9,7 @@ import Condition from './modules/Condition';
 import Variable from './modules/Variable';
 import condition from './condition';
 import { register } from './modules/globalMethod';
+import statefullScript from './statefullScript';
 
 const VariableStatement = scriptObject(parsed(singleStatement(Variable)));
 const MultiVariableMethod = scriptObject(parsed(multipleStatement(Impact)));
@@ -17,10 +20,30 @@ const MultiVariableCondition = scriptObject(
         )
     )
 );
+// Using Script edition outside form.
+function scriptRenderer(Component) {
+    return (props, container) => {
+        const comp = render(<Component {...props} />, container);
+        return {
+            validate: function validate() { return comp.validate(); },
+            getValue: function getValue() { return comp.state.value; },
+            destroy: function destroy() {
+                unmountComponentAtNode(container);
+            }
+        };
+    };
+}
+
+const IndependantMultiVariableMethod = scriptRenderer(statefullScript(MultiVariableMethod));
+const IndependantMultiVariableCondition = scriptRenderer(statefullScript(MultiVariableCondition));
+const IndependantVariableStatement = scriptRenderer(statefullScript(VariableStatement));
 
 export {
     VariableStatement,
     MultiVariableMethod,
     MultiVariableCondition,
-    register
+    register,
+    IndependantMultiVariableCondition,
+    IndependantMultiVariableMethod,
+    IndependantVariableStatement
 };

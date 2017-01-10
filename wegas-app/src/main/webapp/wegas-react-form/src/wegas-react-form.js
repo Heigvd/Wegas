@@ -4,10 +4,8 @@ import 'core-js';
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 import RForm from 'jsoninput';
-// import getMuiTheme from 'material-ui/styles/getMuiTheme';
-// import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import './defaultViews';
-import { register } from './Script/index';
+import { register, IndependantVariableStatement, IndependantMultiVariableMethod, IndependantMultiVariableCondition } from './Script/index';
 import { getY } from './index';
 
 const Y = getY(); // Current YUI instance
@@ -43,7 +41,7 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
                         schema={schema}
                         value={value}
                         onChange={boundFire}
-                    />
+                        />
                 ), this.get('contentBox').getDOMNode());
             }
         },
@@ -60,18 +58,18 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
         addButton(b) {
             const btn = b;
             switch (b.action) {
-            case 'submit':
-                btn.on = {
-                    click: Y.bind(this.save, this)
-                };
-                break;
-            default:
-                btn.on = {
-                    click: Y.bind(function click(action) {
-                        this.fire(action);
-                    }, this, b.action)
-                };
-                break;
+                case 'submit':
+                    btn.on = {
+                        click: Y.bind(this.save, this)
+                    };
+                    break;
+                default:
+                    btn.on = {
+                        click: Y.bind(function click(action) {
+                            this.fire(action);
+                        }, this, b.action)
+                    };
+                    break;
             }
             this.toolbar.add(new Wegas.Button(btn));
         },
@@ -185,7 +183,12 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
             }
         }
     });
-Form.register = register;
+Form.Script = {
+    register, // Register Global script methods
+    MultiVariableMethod: IndependantMultiVariableMethod,
+    MultiVariableCondition: IndependantMultiVariableCondition,
+    VariableStatement: IndependantVariableStatement
+};
 
 /* Add relevant plugin*/
 // Wegas.Form.ATTRS.plugins = Y.clone(Wegas.Widget.ATTRS.plugins);
