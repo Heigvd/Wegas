@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
@@ -54,7 +55,7 @@ import org.eclipse.persistence.config.QueryType;
             + "(vi.player.id = :playerId AND vi.playerScope.id = :scopeId)",
             hints = {
                 @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject)//,
-                //@QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
+            //@QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
             }
     ),
     @NamedQuery(name = "VariableInstance.findTeamInstance",
@@ -62,7 +63,7 @@ import org.eclipse.persistence.config.QueryType;
             + "(vi.team.id = :teamId AND vi.teamScope.id = :scopeId)",
             hints = {
                 @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject)//,
-                //@QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
+            //@QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
             }
     ),
     @NamedQuery(name = "VariableInstance.findGameInstance",
@@ -70,7 +71,7 @@ import org.eclipse.persistence.config.QueryType;
             + "(vi.game.id = :gameId AND vi.gameScope.id = :scopeId)",
             hints = {
                 @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject)//,
-                //@QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
+            //@QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
             }
     ),
     @NamedQuery(name = "VariableInstance.findAllPlayerInstances",
@@ -234,25 +235,41 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     @JsonIgnore
+    public BroadcastTarget getBroadcastTarget() {
+        if (this.getTeam() != null) {
+            return this.getTeam();
+        }
+        if (this.getPlayer() != null) {
+            return this.getPlayer();
+        }
+        if (this.getGame() != null) {
+            return this.getGame();
+        } else {
+            return this.findDescriptor().getGameModel();
+        }
+    }
+
+    @JsonIgnore
     public String getAudience() {
         if (this.getTeam() != null) {
             if (this.getTeamScope().getBroadcastScope().equals("GameScope")) {
-                return Helper.getAudienceTokenForGame(this.getTeam().getGame().getId());
+                return this.getTeam().getGame().getChannel();
             } else {
-                return Helper.getAudienceTokenForTeam(this.getTeam().getId());
+                return this.getTeam().getChannel();
             }
         } else if (this.getPlayer() != null) {
             if (this.getPlayerScope().getBroadcastScope().equals("TeamScope")) {
-                return Helper.getAudienceTokenForTeam(this.getPlayer().getTeam().getId());
+
+                return this.getPlayer().getTeam().getChannel();
             } else if (this.getPlayerScope().getBroadcastScope().equals("GameScope")) {
-                return Helper.getAudienceTokenForGame(this.getPlayer().getGameId());
+                return this.getPlayer().getGame().getChannel();
             } else {
-                return Helper.getAudienceTokenForPlayer(this.getPlayer().getId());
+                return this.getPlayer().getChannel();
             }
         } else if (this.getGame() != null) {
-            return Helper.getAudienceTokenForGame(this.getGame().getId());
+            return this.getGame().getChannel();
         } else if (this.gameModelScope != null) {
-            return Helper.getAudienceTokenForGameModel(this.getGameModelScope().getVariableDescriptor().getGameModelId());
+            return this.getGameModelScope().getVariableDescriptor().getGameModel().getChannel();
         } else {
             // Default instance
             return null;
@@ -302,8 +319,8 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
             return null;
         }
     }
-
     //@JsonView(Views.ExtendedI.class)
+
     public Long getScopeKey() {
         if (this.getTeamScope() != null) {
             return this.getTeam().getId();
