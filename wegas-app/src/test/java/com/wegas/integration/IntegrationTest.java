@@ -16,6 +16,7 @@ import java.io.IOException;
 import junit.framework.Assert;
 import net.sourceforge.jwebunit.junit.JWebUnit;
 import static net.sourceforge.jwebunit.junit.JWebUnit.*;
+import org.apache.commons.io.FileUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpMessage;
@@ -55,6 +56,7 @@ public class IntegrationTest {
     private String baseURL;
 
     private Long artosId;
+    private static File tmpDomainConfig;
 
     private static Logger logger = LoggerFactory.getLogger(IntegrationTest.class);
 
@@ -63,11 +65,15 @@ public class IntegrationTest {
 
         File domainConfig = new File("./src/test/glassfish/microdomain.xml");
         File theWar = new File("./target/Wegas.war");
-        //File rootDir = new File("./src/test/glassfish/domains/domain1");
 
+        // PayaraMicro will rewrite the domain.xml file, we do not want such a behaviour so let make a temp copy
+        tmpDomainConfig = File.createTempFile("microdomain", "xml");
+        FileUtils.copyFile(domainConfig, tmpDomainConfig);
+
+        //File rootDir = new File("./src/test/glassfish/domains/domain1");
         payara = PayaraMicro.getInstance();
 
-        payara.setAlternateDomainXML(domainConfig);
+        payara.setAlternateDomainXML(tmpDomainConfig);
         payara.setHzClusterName("hz-WegasIntegrationTest-" + Helper.genToken(10));
 
         payara.setHttpPort(port);
@@ -89,6 +95,7 @@ public class IntegrationTest {
             payara.getRuntime().undeploy(appName);
             payara.shutdown();
         }
+        tmpDomainConfig.delete();
     }
 
     @Before
