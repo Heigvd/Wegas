@@ -8,22 +8,7 @@
   </security-configurations>
   <managed-job-config></managed-job-config>
   <system-applications></system-applications>
-  <applications>
-    <application context-root="/Wegas" object-type="user" name="Wegas" location="${com.sun.aas.instanceRootURI}/applications/Wegas/" availability-enabled="true">
-      <property name="archiveType" value="war"></property>
-      <property name="appLocation" value="${com.sun.aas.instanceRootURI}/applications/__internal/Wegas/Wegas.war"></property>
-      <property name="org.glassfish.ejb.container.application_unique_id" value="97263521703854080"></property>
-      <property name="org.glassfish.persistence.app_name_property" value="Wegas"></property>
-      <property name="defaultAppName" value="Wegas"></property>
-      <module name="Wegas">
-        <engine sniffer="ejb"></engine>
-        <engine sniffer="security"></engine>
-        <engine sniffer="weld"></engine>
-        <engine sniffer="jpa"></engine>
-        <engine sniffer="web"></engine>
-      </module>
-    </application>
-  </applications>
+  <applications></applications>
   <resources>
     <jdbc-resource pool-name="DerbyPool" object-type="system-all" jndi-name="jdbc/__default"></jdbc-resource>
     <jdbc-connection-pool is-isolation-level-guaranteed="false" datasource-classname="org.apache.derby.jdbc.EmbeddedDataSource" name="DerbyPool" res-type="javax.sql.DataSource">
@@ -52,7 +37,6 @@
   </resources>
   <servers>
     <server config-ref="server-config" name="server">
-      <application-ref ref="Wegas" virtual-servers="server"></application-ref>
       <resource-ref ref="jdbc/__default"></resource-ref>
       <resource-ref ref="jdbc/wegas_dev"></resource-ref>
     </server>
