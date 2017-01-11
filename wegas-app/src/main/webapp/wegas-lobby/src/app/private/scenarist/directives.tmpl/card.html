@@ -1,16 +1,9 @@
-<div class="card__illustration illustration illustration--icon" illustration="{{scenario.properties.iconUri}}"
-     ng-class="{true:'illustration--details', false: ''}[hoverDetails]"
-     ng-mouseover="hoverDetails = true" ng-mouseleave="hoverDetails = false">
-</div>
+<div class="card__illustration illustration illustration--icon" illustration="{{scenario.properties.iconUri}}"></div>
 <div class="card__description"
-      ng-class="{'illustration--details': hoverDetails, 'card__description--two-lines': (scenario.comments == null || scenario.comments == ''), 'card__description--three-lines': (scenario.comments != null && scenario.comments != '')}">
+      ng-class="{true:'card__description--two-lines', false:'card__description--three-lines'}[scenario.comments == null || scenario.comments == '']" >
     <div class="line line--primary">{{scenario.name}}</div>
     <div class="line">{{'COMMONS-DATE' | translate: {date: scenario.createdTime} }}</div>
     <div ng-if="!((scenario.comments == null) || (scenario.comments == ''))" class="line line--optional">{{scenario.comments}}</div>
-    <div ng-show="hoverDetails" class="show-game-details line" style="">
-        {{'SCENARIST-CARD-DETAILS-SCENARIO-ID' | translate}} :&nbsp; {{scenario.id}}<br />
-        {{'COMMONS-SESSIONS-CREATED-BY' | translate}} :&nbsp; {{scenario.createdByName}}
-    </div>
 </div>
 <div class="card__actions">
   <a class="button button--small button--round button--default-reverse button--label-off button--settings" title="{{'SCENARIST-CARD-SETTINGS-BTN' | translate}}" ui-sref=".settings({scenarioId: scenario.id})">

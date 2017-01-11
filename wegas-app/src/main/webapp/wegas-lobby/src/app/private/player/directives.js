@@ -11,28 +11,28 @@ angular.module('private.player.directives', [])
         "use strict";
         var ctrl = this,
 
-        // Method used to update sessions:
-        updateTeams = function() {
+            // Method used to update sessions:
+            updateTeams = function() {
             var hideScrollbarDuringInitialRender = (ctrl.teams.length===0);
-            if (hideScrollbarDuringInitialRender) {
-                $('#player-teams-list').css('overflow-y', 'hidden');
-            }
-            ctrl.loading = true;
-            TeamsModel.getTeams().then(function(response) {
-                ctrl.loading = false;
-                if (!response.isErroneous()) {
-                    ctrl.teams = response.data || [];
-                    if (ctrl.teams.length<1) {
-                        $scope.$emit('expand');
-                    }
-                } else {
-                    ctrl.teams = [];
-                }
                 if (hideScrollbarDuringInitialRender) {
-                    $timeout(function () { $('#player-teams-list').css('overflow-y', 'auto'); }, 1000);
+                    $('#player-teams-list').css('overflow-y', 'hidden');
                 }
-            });
-        };
+                ctrl.loading = true;
+                TeamsModel.getTeams().then(function(response) {
+                    ctrl.loading = false;
+                    if (!response.isErroneous()) {
+                        ctrl.teams = response.data || [];
+                    if (ctrl.teams.length<1) {
+                            $scope.$emit('expand');
+                        }
+                    } else {
+                        ctrl.teams = [];
+                    }
+                    if (hideScrollbarDuringInitialRender) {
+                    $timeout(function () { $('#player-teams-list').css('overflow-y', 'auto'); }, 1000);
+                    }
+                });
+            };
 
         $rootScope.currentRole = "PLAYER";
         /* Container for datas. */

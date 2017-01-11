@@ -53,14 +53,9 @@ angular.module('private.trainer.directives', [
                 if (hideScrollbarDuringInitialRender) {
                     $timeout(function() {
                         $('#trainer-sessions-list').css('overflow-y', 'auto');
-                    }, 1000);
+                    }, 2000);
                 }
             });
-            /*if (updateDisplay) {
-                SessionsModel.countArchivedSessions().then(function(response) {
-                    ctrl.nbArchives = response.data;
-                });
-            }*/
         };
 
         ctrl.editAccess = function(sessionToSet) {
@@ -208,9 +203,10 @@ angular.module('private.trainer.directives', [
                 var searchField = document.getElementById('searchField').getElementsByClassName('tool__input')[0];
                 scope.searchFn = function (value, index, array) { // filter: { name: search, gameModel:{canView: true}}
                     if (value.gameModel.canView === false) return false;
+                    if (searchField.value.length === 0) return true;
                     var needle = searchField.value.toLowerCase();
-                    if (needle.length === 0 || value.name.toLowerCase().indexOf(needle) >= 0) return true;
-                    // Advanced search criteria (could be reserved to admins in the future):
+                    if (value.name.toLowerCase().indexOf(needle) >= 0) return true;
+                    // Advanced search criteria:
                     return ((value.createdByName && value.createdByName.toLowerCase().indexOf(needle) >= 0) ||
                             (value.gameModelName && value.gameModelName.toLowerCase().indexOf(needle) >= 0) ||
                             (value.gameModel.comments && value.gameModel.comments.toLowerCase().indexOf(needle) >= 0) ||

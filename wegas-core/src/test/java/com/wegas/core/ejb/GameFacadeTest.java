@@ -73,6 +73,45 @@ public class GameFacadeTest extends AbstractEJBTest {
     }
 
     @Test
+    public void testNames() throws Exception {
+        String[] names = {"MyGame", ""};
+        String[] expected = {"MyGame", null};
+        int i;
+
+        for (i = 0; i < names.length; i++) {
+            final Game g = new Game(names[i]);
+            g.setGameModel(gameModel);
+            String result;
+
+            try {
+                gameFacade.create(g);
+                result = g.getName();
+                gameFacade.remove(g.getId());
+            } catch (Exception ex) {
+                result = null;
+            }
+
+            assertEquals(expected[i], result);
+        }
+    }
+
+    @Test
+    public void testTokenGen() throws Exception {
+        String[] names = {"MyGame", "../", "éàè", "hello, world", "hello!"};
+        String[] expected = {"mygame", "___", "eae", "hello__worl", "hello_"};
+        int i;
+
+        for (i = 0; i < names.length; i++) {
+            final Game g = new Game(names[i]);
+            g.setGameModel(gameModel);
+            gameFacade.create(g);
+
+            assertTrue("Token " + g.getToken() + " not match " + expected[i], g.getToken().matches(expected[i] + "-.."));
+            gameFacade.remove(g.getId());
+        }
+    }
+
+    @Test
     public void testGameCreation() throws IOException {
         VariableDescriptorFacade vdf = VariableDescriptorFacade.lookup();
         Game newGame = new Game("newGame");

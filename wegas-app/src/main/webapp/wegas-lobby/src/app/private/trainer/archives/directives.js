@@ -107,6 +107,7 @@ angular.module('private.trainer.archives.directives', [])
     .directive('trainerSessionsArchivesList', function() {
         "use strict";
         return {
+            templateUrl: 'app/private/trainer/archives/directives.tmpl/list.html',
             scope: {
                 sessions: "=",
                 delete: "=",
@@ -115,8 +116,25 @@ angular.module('private.trainer.archives.directives', [])
                 details: "=",
                 users: "=",
                 loading: "="
-
             },
-            templateUrl: 'app/private/trainer/archives/directives.tmpl/list.html'
+            link: function(scope, element, attrs) {
+                var searchField = undefined;
+                scope.searchFn = function (value, index, array) { // filter: { name: search }
+                    if (value.gameModel.canView === false) return false;
+                    if (!searchField){  // The archives pop-up must be visible
+                        searchField = document.getElementById('searchFieldArchives').getElementsByClassName('tool__input')[0];
+                    }
+                    if (searchField.value.length === 0) return true;
+                    var needle = searchField.value.toLowerCase();
+                    if (value.name.toLowerCase().indexOf(needle) >= 0) return true;
+                    // Advanced search criteria:
+                    return ((value.createdByName && value.createdByName.toLowerCase().indexOf(needle) >= 0) ||
+                    (value.gameModelName && value.gameModelName.toLowerCase().indexOf(needle) >= 0) ||
+                    (value.gameModel.comments && value.gameModel.comments.toLowerCase().indexOf(needle) >= 0) ||
+                    // If searching for a number, the id has to start with the given pattern:
+                    value.id.toString().indexOf(needle) === 0 ||
+                    value.gameModelId.toString().indexOf(needle) === 0);
+                };
+            }
         };
     });

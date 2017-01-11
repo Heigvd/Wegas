@@ -139,21 +139,17 @@ YUI.add("wegas-widget", function(Y) {
         isEditable: function() {
             return this.get("editable") || !!(this.get(PARENT) && this.get(PARENT).isEditable && this.get(PARENT).isEditable());
         },
-        enable: function() {
-            if (this.disableCounter === undefined || this.disableCounter <= 1) {
-                this.disableCounter = 0;
-                this.constructor.superclass.enable.call(this);
-            } else {
-                this.disableCounter -= 1;
+        _enable: function(token) {
+            this.disableCounter = this.disableCounter || {};
+            delete this.disableCounter[token];
+            if (Object.keys(this.disableCounter).length === 0) {
+                this.enable();
             }
         },
-        disable: function() {
-            if (this.disableCounter === undefined || this.disableCounter <= 0) {
-                this.disableCounter = 1;
-                this.constructor.superclass.disable.call(this);
-            } else {
-                this.disableCounter += 1;
-            }
+        _disable: function(token) {
+            this.disableCounter = this.disableCounter || {};
+            this.disableCounter[token] = true;
+            this.disable();
         }
     });
     Y.mix(Widget, {

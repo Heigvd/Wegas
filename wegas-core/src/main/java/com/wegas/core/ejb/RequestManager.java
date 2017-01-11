@@ -11,12 +11,15 @@ import com.wegas.core.ejb.statemachine.StateMachineEventCounter;
 import com.wegas.core.event.client.ClientEvent;
 import com.wegas.core.event.client.CustomEvent;
 import com.wegas.core.event.client.ExceptionEvent;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import jdk.nashorn.api.scripting.ScriptUtils;
 import jdk.nashorn.internal.runtime.ScriptObject;
@@ -64,6 +67,9 @@ public class RequestManager {
      */
     @Inject
     ConcurrentHelper concurrentHelper;
+
+    @Inject
+    private UserFacade userFacade;
 
     @EJB
     private PlayerFacade playerFacade;
@@ -345,8 +351,16 @@ public class RequestManager {
         this.locale = local;
     }
 
-    public boolean tryLock(String token) {
-        return tryLock(token, null);
+    private String getAudience(BroadcastTarget target) {
+        if (target != null) {
+            String channel = target.getChannel();
+            if (userFacade.hasPermission(channel)) {
+                return channel;
+            } else {
+                throw WegasErrorMessage.error("You don't have the right to lock " + channel);
+            }
+        }
+        return null;
     }
 
     private String getEffectiveAudience(String audience) {
@@ -357,7 +371,25 @@ public class RequestManager {
         }
     }
 
-    public boolean tryLock(String token, String audience) {
+    /**
+     * Try to Lock the token. Non-blocking. Return true if token has been
+     * locked, false otherwise
+     *
+     * @param token
+     * @return
+     */
+    public boolean tryLock(String token) {
+        return tryLock(token, null);
+    }
+
+    /**
+     *
+     * @param token  token to tryLock
+     * @param target scope to inform about the lock
+     * @return
+     */
+    public boolean tryLock(String token, BroadcastTarget target) {
+        String audience = getAudience(target);
         boolean tryLock = concurrentHelper.tryLock(token, audience);
         if (tryLock) {
             // Only register token if successfully locked
@@ -369,11 +401,21 @@ public class RequestManager {
         return tryLock;
     }
 
+    /**
+     *
+     * @param token token to lock
+     */
     public void lock(String token) {
         this.lock(token, null);
     }
 
-    public void lock(String token, String audience) {
+    /**
+     *
+     * @param token  token to lock
+     * @param target scope to inform about the lock
+     */
+    public void lock(String token, BroadcastTarget target) {
+        String audience = getAudience(target);
         concurrentHelper.lock(token, audience);
         if (!lockedToken.containsKey(token)) {
             lockedToken.put(token, new ArrayList());
@@ -381,11 +423,21 @@ public class RequestManager {
         lockedToken.get(token).add(getEffectiveAudience(audience));
     }
 
+    /**
+     *
+     * @param token token to release
+     */
     public void unlock(String token) {
         this.unlock(token, null);
     }
 
-    public void unlock(String token, String audience) {
+    /**
+     *
+     * @param token  token to release
+     * @param target scope to inform about the lock
+     */
+    public void unlock(String token, BroadcastTarget target) {
+        String audience = getAudience(target);
         concurrentHelper.unlock(token, audience);
         if (lockedToken.containsKey(token)) {
             List<String> audiences = lockedToken.get(token);
