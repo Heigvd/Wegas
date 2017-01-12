@@ -1,14 +1,14 @@
 import { types } from 'recast';
 import React, { PropTypes } from 'react';
 import Form from 'jsoninput';
-import isMatch from 'lodash/fp/isMatch';
+import isMatch from 'lodash/isMatch';
 import { getY } from '../../index';
 
 const {
     builders: b,
     visit
 } = types;
-export const isVariable = node => isMatch({
+export const isVariable = node => isMatch(node, {
     type: 'CallExpression',
     callee: {
         type: 'MemberExpression',
@@ -21,7 +21,7 @@ export const isVariable = node => isMatch({
             name: 'find'
         }
     }
-}, node);
+});
 export const varExist = name => Boolean(getY().Wegas.Facade.Variable.cache.find('name', name));
 export const extractVar = (node) => {
     let ret;
