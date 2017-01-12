@@ -10,13 +10,15 @@ function scriptObject(Comp) {
      */
     function ScriptObject(props) {
         const { value, onChange, view } = props;
+        const val = value || { content: '' };
         return (
             <div
                 style={{
                     marginTop: '15px',
                     maxWidth: '30.3em',
                     borderTop: 'solid 2px #4A8C9C',
-                    marginLeft: '50px' }}
+                    marginLeft: '50px'
+                }}
             >
                 <span
                     style={{
@@ -25,13 +27,14 @@ function scriptObject(Comp) {
                         color: '#6A95B6',
                         marginTop: '8px',
                         marginRight: '10px',
-                        display: 'inline-block' }}
+                        display: 'inline-block'
+                    }}
                 >
                     {view.label}
                 </span>
                 <Comp
                     {...props}
-                    value={value.content}
+                    value={val.content}
                     onChange={v => onChange({
                         '@class': 'Script',
                         content: v
