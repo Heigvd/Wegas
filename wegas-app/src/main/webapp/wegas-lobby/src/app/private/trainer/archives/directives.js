@@ -116,7 +116,6 @@ angular.module('private.trainer.archives.directives', [])
                 details: "=",
                 users: "=",
                 loading: "="
-            },
             link: function(scope, element, attrs) {
                 var searchField = undefined;
                 scope.searchFn = function (value, index, array) { // filter: { name: search }

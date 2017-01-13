@@ -72,6 +72,12 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     private ScriptEventFacade scriptEvent;
 
     /**
+     *
+     */
+    @Inject
+    private VariableInstanceFacade variableInstanceFacade;
+
+    /**
      * Find a result identified by the given name belonging to the given
      * descriptor
      *
@@ -211,7 +217,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     private Reply internalCancelReply(Long replyId) {
         final Reply reply = this.getEntityManager().find(Reply.class, replyId);
         QuestionInstance questionInstance = reply.getQuestionInstance();
-        requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getAudience());
+        requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getBroadcastTarget());
         return this.internalCancelReply(reply);
     }
 
@@ -258,7 +264,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         QuestionDescriptor questionDescriptor = choice.getQuestion();
         QuestionInstance questionInstance = questionDescriptor.getInstance(player);
 
-        requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getAudience());
+        requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getBroadcastTarget());
         //getEntityManager().refresh(questionInstance);
         //requestFacade.getRequestManager().lock("MCQ-" + reply.getQuestionInstance().getId());
         // Verify if mutually exclusive replies must be cancelled:
@@ -487,7 +493,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      */
     public void validateQuestion(Long questionInstanceId, Player player) {
         QuestionInstance questionInstance = getEntityManager().find(QuestionInstance.class, questionInstanceId);
-        requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getAudience());
+        requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getBroadcastTarget());
         this.validateQuestion(questionInstance, player);
     }
 

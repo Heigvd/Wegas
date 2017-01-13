@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add("wegas-widget", function (Y) {
+YUI.add("wegas-widget", function(Y) {
     "use strict";
     var Lang = Y.Lang,
         Wegas = Y.Wegas,
@@ -24,10 +24,10 @@ YUI.add("wegas-widget", function (Y) {
     function Widget() {
         this.before("destroy", this.hideAllOverlay);
         /* When a child is going to be removed, hide its overlay */
-        this.on("removeChild", function (e) {
+        this.on("removeChild", function(e) {
             e.child.hideAllOverlay && e.child.hideAllOverlay();
         });
-        this.after("render", function () {
+        this.after("render", function() {
             this.overlayCounter = 0;
             this.get(BOUNDING_BOX)
                 .addClass("wegas-widget")
@@ -48,7 +48,7 @@ YUI.add("wegas-widget", function (Y) {
         });
         this.publish("AttributesChange", {
             bubbles: false,
-            defaultFn: function () {
+            defaultFn: function() {
                 var widget = this.rebuild();
                 if (Y.Plugin.EditEntityAction.currentEntity === this) { // @FIXME @fx wtf?
                     Y.Plugin.EditEntityAction.currentEntity = widget;
@@ -64,7 +64,7 @@ YUI.add("wegas-widget", function (Y) {
          * @private
          * @description show an loading - overlay on all the screen.
          */
-        showOverlay: function (klass) {
+        showOverlay: function(klass) {
             this.fire("wegas:showOverlay", klass);
             if (this.overlayCounter === undefined || this.overlayCounter <= 0) {
                 this.overlayCounter = 1;
@@ -78,7 +78,7 @@ YUI.add("wegas-widget", function (Y) {
          * @private
          * @description hide overlay (see function showOverlay).
          */
-        hideOverlay: function (klass) {
+        hideOverlay: function(klass) {
             this.fire("wegas:hideOverlay", klass);
             if (this.overlayCounter === undefined || this.overlayCounter <= 0) {
                 this.overlayCounter = 0;
@@ -87,16 +87,16 @@ YUI.add("wegas-widget", function (Y) {
             }
             return this;
         },
-        hideAllOverlay: function () {
+        hideAllOverlay: function() {
             while (this.overlayCounter > 0) {
                 this.hideOverlay();
             }
             // If this is a Wegas.Parent, hide its children overlay too
             this.hideAllChildrenOverlay();
         },
-        hideAllChildrenOverlay: function () {
+        hideAllChildrenOverlay: function() {
             if (this.each) {
-                this.each(function (child) {
+                this.each(function(child) {
                     child.hideAllOverlay && child.hideAllOverlay();
                 });
             }
@@ -114,7 +114,7 @@ YUI.add("wegas-widget", function (Y) {
          * @description
          *
          */
-        showMessage: function (level, txt, timeout) {
+        showMessage: function(level, txt, timeout) {
             this.fire("wegas:message", {
                 level: level,
                 content: txt,
@@ -122,7 +122,7 @@ YUI.add("wegas-widget", function (Y) {
             });
             return this;
         },
-        rebuild: function () {
+        rebuild: function() {
             var parent, index, cfg;
             if (this.isRoot()) {
                 parent = Y.Widget.getByNode(this.get(BOUNDING_BOX).get("parentNode"));
@@ -136,24 +136,20 @@ YUI.add("wegas-widget", function (Y) {
             this.destroy();
             return parent.add(cfg, index).item(0);
         },
-        isEditable: function () {
+        isEditable: function() {
             return this.get("editable") || !!(this.get(PARENT) && this.get(PARENT).isEditable && this.get(PARENT).isEditable());
         },
-        enable: function() {
-            if (this.disableCounter === undefined || this.disableCounter <= 1) {
-                this.disableCounter = 0;
-                this.set("disabled", false);
-            } else {
-                this.disableCounter -= 1;
+        _enable: function(token) {
+            this.disableCounter = this.disableCounter || {};
+            delete this.disableCounter[token];
+            if (Object.keys(this.disableCounter).length === 0) {
+                this.enable();
             }
         },
-        disable: function() {
-            if (this.disableCounter === undefined || this.disableCounter <= 0) {
-                this.disableCounter = 1;
-                this.set("disabled", true);
-            } else {
-                this.disableCounter += 1;
-            }
+        _disable: function(token) {
+            this.disableCounter = this.disableCounter || {};
+            this.disableCounter[token] = true;
+            this.disable();
         }
     });
     Y.mix(Widget, {
@@ -162,23 +158,23 @@ YUI.add("wegas-widget", function (Y) {
          *  Defines edition menu to be used in editor
          */
         EDITMENU: [{
-            type: BUTTON,
-            label: "Edit",
-            plugins: [{
-                fn: "EditWidgetAction"
-            }]
-        }, {
+                type: BUTTON,
+                label: "Edit",
+                plugins: [{
+                        fn: "EditWidgetAction"
+                    }]
+            }, {
                 type: BUTTON,
                 label: "Copy",
                 plugins: [{
-                    fn: "DuplicateWidgetAction"
-                }]
+                        fn: "DuplicateWidgetAction"
+                    }]
             }, {
                 type: BUTTON,
                 label: "Delete",
                 plugins: [{
-                    fn: "DeleteWidgetAction"
-                }]
+                        fn: "DeleteWidgetAction"
+                    }]
             }],
         /**
          * @field
@@ -236,7 +232,7 @@ YUI.add("wegas-widget", function (Y) {
                 view: {
                     type: "hidden"
                 },
-                validator: function (s) {
+                validator: function(s) {
                     return (s === undefined || (Y.Lang.isString(s) && s.length > 0) || Y.Lang.isNumber(s));
                 }
             },
@@ -283,7 +279,7 @@ YUI.add("wegas-widget", function (Y) {
                 value: undefined,
                 optional: true,
                 type: "string",
-                getter: function (v) {
+                getter: function(v) {
                     if (v === "" || ("" + v).indexOf("yui") === 0) {
                         return undefined;
                     } else {
@@ -418,7 +414,7 @@ YUI.add("wegas-widget", function (Y) {
              * Plugins attached to the widget
              */
             plugins: {//For serialization purpose, get plugin configs
-                getter: function () {
+                getter: function() {
                     var i,
                         p = [], plg;
                     for (i in this._plugins) {
@@ -436,17 +432,17 @@ YUI.add("wegas-widget", function (Y) {
                 type: "array",
                 value: [],
                 "transient": false,
-                index: 10,
+                    index: 10,
                 items: {
                     type: "object",
                     properties: {
                         fn: {
                             type: "string"
                         },
-                        cfg: {
+                                    cfg: {
                             type: "object"
                         }
-                    },
+                                        },
                     view: {
                         type: "pluginlist",
                         choices: [
@@ -454,78 +450,78 @@ YUI.add("wegas-widget", function (Y) {
                                 label: "On click",
                                 children: [
                                     {
-                                        label: "Open page",
+                                                label: "Open page",
                                         value: "OpenPageAction"
                                     },
                                     {
-                                        label: "Open url",
+                                                label: "Open url",
                                         value: "OpenUrlAction"
-                                    }, {
-                                        label: "Impact variables",
+                                            }, {
+                                                label: "Impact variables",
                                         value: "ExecuteScriptAction"
-                                    }, {
-                                        label: "Open Popup page",
+                                            }, {
+                                                label: "Open Popup page",
                                         value: "OpenPanelPageloader"
-                                    }, {
-                                        label: "Play sound",
+                                            }, {
+                                                label: "Play sound",
                                         value: "PlaySoundAction"
-                                    }, {
-                                        label: "Print Variables",
+                                            }, {
+                                                label: "Print Variables",
                                         value: "PrintActionPlugin"
-                                    }
-                                ]
-                            }, {
-                                label: "Styles",
+                                            }
+                                        ]
+                        }, {
+                            label: "Styles",
                                 children: [
                                     {
-                                        label: "Tooltip",
+                                                label: "Tooltip",
                                         value: "Tooltip"
-                                    }, {
-                                        label: "Background",
+                                            }, {
+                                                label: "Background",
                                         value: "CSSBackground"
-                                    }, {
-                                        label: "Position",
+                                            }, {
+                                                label: "Position",
                                         value: "CSSPosition"
-                                    }, {
-                                        label: "Size",
+                                            }, {
+                                                label: "Size",
                                         value: "CSSSize"
-                                    }, {
-                                        label: "Text",
+                                            }, {
+                                                label: "Text",
                                         value: "CSSText"
-                                    }, {
-                                        label: "Other styles",
+                                            }, {
+                                                label: "Other styles",
                                         value: "CSSStyles"
                                     }
                                 ]
-                            }, {
-                                label: "Animations",
+                        }, {
+                            label: "Animations",
                                 children: [
                                     {
-                                        label: "Show after",
+                                                label: "Show after",
                                         value: "ShowAfter"
-                                    }, {
-                                        label: "Hide after",
+                                            }, {
+                                                label: "Hide after",
                                         value: "HideAfter"
                                     }
                                 ]
-                            }, {
-                                label: "Variables",
+                        }, {
+                            label: "Variables",
                                 children: [
                                     {
-                                        label: "Conditional disable",
+                                                label: "Conditional disable",
                                         value: "ConditionalDisable"
-                                    }, {
-                                        label: "Unread count",
+                                            }, {
+                                                label: "Unread count",
                                         value: "UnreadCount"
-                                    }, {
-                                        label: "Lock",
-                                        data: "Lockable"
+                                            }, {
+                                                label: "Lock",
+                                                data: "Lockable"
+                                            }
+                                        ]
                                     }
-                                ]
-                            }
                         ]
-                    }
                 }
+            }
             }
         },
         /**
@@ -536,7 +532,7 @@ YUI.add("wegas-widget", function (Y) {
          * @description function to create and return a widget with the given
          *  configuration. Log an exception if creation isn't possible.
          */
-        create: function (config) {
+        create: function(config) {
             var child, Fn,
                 type = config.childType || config.type;
             if (type) {
@@ -558,7 +554,7 @@ YUI.add("wegas-widget", function (Y) {
          * @param {function} cb
          * @description Load the modules from an Wegas widget definition
          */
-        use: function (cfg, cb) {
+        use: function(cfg, cb) {
             Wegas.Editable.use(cfg, cb);
         },
         /**
@@ -576,7 +572,7 @@ YUI.add("wegas-widget", function (Y) {
          *  that references a VariableDescriptor and has either an name, id
          *  or expr parameter.
          */
-        VARIABLEDESCRIPTORGETTER: function (val, fullName) {
+        VARIABLEDESCRIPTORGETTER: function(val, fullName) {
             var ds = Wegas.Facade.Variable, toEval;
             if (val && fullName.split(".")[1] === "evaluated") { // If evaluated value is required
 
@@ -621,7 +617,7 @@ YUI.add("wegas-widget", function (Y) {
      * @hack We override this function so widget are looked for in Wegas ns.
      */
     Y.WidgetParent.prototype.o_createChild = Y.WidgetParent.prototype._createChild;
-    Y.WidgetParent.prototype._createChild = function (config) {
+    Y.WidgetParent.prototype._createChild = function(config) {
         var altType = config.childType || config.type;
         if (altType) {
             config.childType = Y.Lang.isString(altType) ? Wegas[altType] || Y[altType] : altType;
@@ -632,7 +628,7 @@ YUI.add("wegas-widget", function (Y) {
      *
      */
     Y.WidgetParent.ATTRS.defaultChildType = {
-        setter: function (val) {
+        setter: function(val) {
             var returnVal = Y.Attribute.INVALID_VALUE,
                 FnConstructor = Lang.isString(val) ? Wegas[val] || Y[val] : val;
             if (Lang.isFunction(FnConstructor)) {
@@ -644,9 +640,9 @@ YUI.add("wegas-widget", function (Y) {
     /**
      *
      */
-    Y.WidgetParent.prototype.destroyAll = function () {
+    Y.WidgetParent.prototype.destroyAll = function() {
         this.deselectAll();
-        this.removeAll().each(function () {
+        this.removeAll().each(function() {
             this.destroy();
         });
         // Optim delay object destruction
@@ -660,7 +656,7 @@ YUI.add("wegas-widget", function (Y) {
      * @hack
      */
     Y.Widget.prototype.oPlug = Y.Widget.prototype.plug;
-    Y.Widget.prototype.plug = function (Plugin, config) {
+    Y.Widget.prototype.plug = function(Plugin, config) {
         if (!Lang.isArray(Plugin)) {
             if (Plugin && !Lang.isFunction(Plugin)) {
                 config = Plugin.cfg;
@@ -675,7 +671,7 @@ YUI.add("wegas-widget", function (Y) {
     /**
      *
      */
-    Widget.prototype.renderer = function () {
+    Widget.prototype.renderer = function() {
         try {
             Y.Widget.prototype.renderer.call(this, arguments);
         } catch (e) {

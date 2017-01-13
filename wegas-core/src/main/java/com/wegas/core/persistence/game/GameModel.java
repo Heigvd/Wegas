@@ -13,6 +13,7 @@ import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -23,6 +24,7 @@ import javax.jcr.RepositoryException;
 import javax.persistence.*;
 import java.util.*;
 import java.util.Map.Entry;
+import javax.validation.constraints.Pattern;
 import org.apache.shiro.SecurityUtils;
 
 /**
@@ -37,7 +39,7 @@ import org.apache.shiro.SecurityUtils;
     @NamedQuery(name = "GameModel.findDistinctChildrenLabels", query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.rootGameModel.id = :containerId"),
     @NamedQuery(name = "GameModel.findByName", query = "SELECT a FROM GameModel a WHERE a.name = :name"),
     @NamedQuery(name = "GameModel.findAll", query = "SELECT gm FROM GameModel gm")})
-public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor> /*, Broadcastable */ {
+public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor>, BroadcastTarget {
 
     private static final long serialVersionUID = 1L;
 
@@ -63,8 +65,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      */
     @Basic(optional = false)
-    //@Pattern(regexp = "^\\w+$")
-    //@XmlID
+    @Pattern(regexp = "^.*\\S+.*$", message = "GameModel name cannot be empty")// must at least contains one non-whitespace character
     private String name;
 
     /**
@@ -695,12 +696,18 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         return false;
     }
 
+    @Override
+    @JsonIgnore
+    public String getChannel() {
+        return "GameModel-" + getId();
+    }
+
     /*@Override
     public Map<String, List<AbstractEntity>> getEntities() {
         Map<String, List<AbstractEntity>> map = new HashMap<>();
         ArrayList<AbstractEntity> entities = new ArrayList<>();
         entities.add(this);
-        map.put(Helper.getAudienceToken(this), entities);
+        map.put(this.getChannel(), entities);
         return map;
     }*/
     public enum Status {

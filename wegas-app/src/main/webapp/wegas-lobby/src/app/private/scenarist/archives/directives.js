@@ -81,7 +81,6 @@ angular.module('private.scenarist.archives.directives', [])
                 delete: "=",
                 search: "=",
                 loading: "="
-            },
             link: function(scope, element, attrs) {
                 var searchField = undefined;
                 scope.searchFn = function (value, index, array) { // filter: {name: search, canView: true, canEdit: true}

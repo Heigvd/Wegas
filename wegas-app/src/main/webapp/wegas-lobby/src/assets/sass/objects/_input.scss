@@ -57,6 +57,9 @@
         background-color:lighten($border, 5%);
         color:#777777;
     }
+    &.ng-invalid{
+        border-color: red;
+    }
 }
 
 .input--group{

@@ -36,11 +36,11 @@ YUI.add('wegas-conditionaldisable', function (Y) {
                     if (attr === "cssClass") {
                         host.get("boundingBox").toggleClass(this.get("value"), result);
                     } else {
-                        if (this.get("attribute") === "disabled" && host.enable && host.disable) {
+                        if (this.get("attribute") === "disabled" && host._enable && host._disable) {
                             if (result) {
-                                host.disable();
+                                host._disable("ConditionalDisable");
                             } else {
-                                host.enable();
+                                host._enable("ConditionalDisable");
                             }
                         } else {
                             this.get('host').set(this.get("attribute"), result);
