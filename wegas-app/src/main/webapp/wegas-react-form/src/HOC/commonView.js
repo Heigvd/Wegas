@@ -3,10 +3,10 @@ import classNames from 'classnames';
 import styles from '../css/commonView.css';
 
 export default function commonView(Comp) {
-    function CommonComp(props) {
+    function CommonView(props) {
         const errors = props.errorMessage && props.errorMessage.map(
-            (v, errorId) => (
-                <span key={errorId}>
+            v => (
+                <span key={v}>
                     {v}
                 </span>
 
@@ -23,6 +23,7 @@ export default function commonView(Comp) {
                         [styles.borderTop]: props.view.borderTop
                     })
                 }
+                style={props.view.style}
             >
                 <div
                     className={styles.label}
@@ -46,14 +47,16 @@ export default function commonView(Comp) {
             </div>
         );
     }
-    CommonComp.propTypes = {
+    CommonView.propTypes = {
         errorMessage: PropTypes.arrayOf(PropTypes.string),
         view: PropTypes.shape({
             label: PropTypes.string,
             description: PropTypes.string,
             className: PropTypes.string,
-            borderTop: PropTypes.bool
-        }).isRequired
+            borderTop: PropTypes.bool,
+            style: PropTypes.object
+        })
     };
-    return CommonComp;
+    CommonView.defaultProps = { errorMessage: [], view: {} };
+    return CommonView;
 }

@@ -703,7 +703,7 @@ YUI().use(function(Y) {
             },
             "wegas-console-custom": {
                 path: "js/widget/wegas-console-custom-min.js",
-                requires: ["wegas-inputex-wysiwygscript", "wegas-formcss"],
+                requires: ["wegas-react-form", "wegas-formcss"],
                 provides: "CustomConsole"
             },
             "wegas-editor-treeview": {

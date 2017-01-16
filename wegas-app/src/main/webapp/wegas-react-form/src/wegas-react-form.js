@@ -31,7 +31,7 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
             this.get('contentBox').on('key', this.save, 'down:83+ctrl', this);
         },
         renderForm(value, schema) {
-            if (value && schema) {
+            if (schema) {
                 const boundFire = (val) => {
                     this.fire('updated', val);
                 };
@@ -118,7 +118,7 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
              */
             values: {
                 transient: true,
-                value: {},
+                value: undefined,
                 setter(val) {
                     this.renderForm(val, this.get('cfg'));
                     return val;
@@ -137,25 +137,59 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
                 type: 'object',
                 validator: Y.Lang.isObject,
                 properties: {
-                    fields: {
-                        type: 'array',
-                        items: {
+                    type: {
+                        type: 'string',
+                        value: 'object',
+                        view: { type: 'hidden' }
+                    },
+                    properties: {
+                        type: 'object',
+                        required: true,
+                        value: {},
+                        defaultProperties: {
                             type: 'object',
-                            required: true,
-                            value: {},
                             properties: {
                                 type: {
                                     type: 'string',
-                                    required: true
+                                    value: 'string',
+                                    view: {
+                                        label: 'Type',
+                                        type: 'select',
+                                        choices: [
+                                            { value: 'string' },
+                                            { value: 'number' },
+                                            { value: 'boolean' }
+                                        ]
+                                    }
                                 },
-                                name: {
-                                    type: 'string',
-                                    required: true
+                                required: {
+                                    type: 'boolean',
+                                    view: { label: 'Required' }
                                 },
-                                label: {
-                                    type: 'string'
+                                view: {
+                                    type: 'object',
+                                    value: {},
+                                    properties: {
+                                        label: {
+                                            errored: function requiredString(v) {
+                                                if (v && v.trim()) {
+                                                    return '';
+                                                }
+                                                return 'is required';
+                                            },
+                                            view: {
+                                                label: 'Label'
+                                            },
+                                            type: 'string'
+                                        }
+                                    }
                                 }
                             }
+                        },
+                        view: {
+                            type: 'hashlist',
+                            label: 'Fields',
+                            keyLabel: 'Name'
                         }
                     }
                 },
@@ -164,11 +198,7 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
                     // this.setCfg(val);
                     return cfg;
                 },
-                index: 8,
-                view: {
-                    label: 'Fields',
-                    fields: inputEx.Group.groupOptions
-                }
+                index: 8
             },
             buttons: {
                 type: 'array',
@@ -176,10 +206,8 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
                     type: 'Button',
                     action: 'submit',
                     label: '<span class="wegas-icon wegas-icon-save" ></span>Save'
-                }]
-            },
-            view: {
-                type: 'hidden'
+                }],
+                view: { type: 'hidden' }
             }
         }
     });
