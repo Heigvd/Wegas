@@ -28,7 +28,7 @@ class StringView extends React.Component {
                 <textarea
                     rows={this.props.view.rows}
                     onChange={ev => this.handleChange(ev)}
-                    placeholder={props.view.placeholder}
+                    placeholder={this.props.view.placeholder}
                     style={{
                         fontSize: '14px',
                         color: 'darkgrey',
@@ -42,7 +42,7 @@ class StringView extends React.Component {
         return (<input
             className={styles.input}
             type="text"
-            placeholder={props.view.placeholder}
+            placeholder={this.props.view.placeholder}
             value={this.state.value}
             onChange={ev => this.handleChange(ev)}
             disabled={this.props.view.disabled}
@@ -53,6 +53,7 @@ class StringView extends React.Component {
 
 StringView.propTypes = {
     onChange: PropTypes.func.isRequired,
+    // eslint-disable-next-line react/require-default-props
     value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     view: PropTypes.shape({
         rows: PropTypes.number,
