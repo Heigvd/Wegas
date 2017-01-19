@@ -162,9 +162,9 @@ class Impact extends React.Component {
             );
         }
         return (
-            <div>
+            <span>
                 {child}
-            </div>
+            </span>
         );
     }
 }

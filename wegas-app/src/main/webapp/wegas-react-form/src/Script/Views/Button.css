@@ -1,0 +1,22 @@
+.removeStatement{
+    width:22px;
+	height:22px;
+	border-radius:50%;
+	color:#fff;
+	line-height: 2em;
+	font-size:11.6px;
+	margin-left:5px;
+	text-align: center;
+	display:inline-block;
+	vertical-align:middle;
+	cursor: pointer;
+	background-color: grey;
+}
+
+.removeStatement:hover{
+    background-color: indianred;
+}
+
+.addStatement:hover{
+    background-color: limegreen;
+}

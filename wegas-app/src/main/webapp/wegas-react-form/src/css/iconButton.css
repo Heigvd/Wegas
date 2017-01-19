@@ -1,20 +1,24 @@
 .shape{
-    width:15px;
-	height:15px;
+    width:25px;
+	height:25px;
 	border-radius:50%;
 	color:#fff;
 	line-height: 2em;
-	font-size:7.6px;
-	margin-left:5px;
+	font-size:13.6px;
+	margin-left:175px;
 	text-align: center;
 	display:inline-block;
 	cursor: pointer;
 	background-color: grey;
 }
-
-.shape:hover{
+.add:hover{
 	cursor: pointer;
 	background-color: #9DC06F;
+}
+
+.remove:hover{
+	cursor: pointer;
+	background-color:darkred;
 }
 
 .disabled{
