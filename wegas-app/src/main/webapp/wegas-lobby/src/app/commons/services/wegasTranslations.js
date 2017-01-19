@@ -1240,8 +1240,8 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': startSentence(keywords.session.plural.fr) + " en cours"
                         },
                         'TRAINER-INDEX-LIST-NO-SESSION': {
-                            'en': "No current " + keywords.session.singular.en + " corresponds to search string ",
-                            'fr': "Aucune " + keywords.session.singular.fr + " en cours répondant au critère "
+                            'en': "No current " + keywords.session.singular.en + " corresponds to your search string ",
+                            'fr': "Aucune " + keywords.session.singular.fr + " en cours répondant à votre critère de recherche "
                         },
                         'TRAINER-CARD-DETAILS-SCENARIO': {
                             'en': startSentence(keywords.scenario.singular.en),
@@ -1384,8 +1384,8 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': startSentence(keywords.scenario.plural.fr)
                         },
                         'SCENARIST-INDEX-LIST-NO-SCENARIO': {
-                            'en': "No current " + keywords.scenario.singular.en + " corresponds to search string ",
-                            'fr': "Aucun " + keywords.scenario.singular.fr + " en cours répondant au critère "
+                            'en': "No current " + keywords.scenario.singular.en + " corresponds to your search string ",
+                            'fr': "Aucun " + keywords.scenario.singular.fr + " en cours répondant à votre critère de recherche "
                         },
                         'SCENARIST-MODALE-ARCHIVE-TITLE': {
                             'en': "Archived " + keywords.scenario.plural.en,
