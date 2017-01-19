@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 import Popover from '../../Components/Popover';
 import TreeSelect from '../../Components/tree/TreeSelect';
 import { getY } from '../../index';
+import styles from './css/treevariableselect.css';
 
 const variableFacade = getY().Wegas.Facade.Variable;
 function defaultTrue() {
@@ -120,7 +121,8 @@ class TreeVariableSelect extends React.Component {
                     })}
                 >
                     <div style={{ fontSize: '75%', opacity: 0.5 }}>
-                        {buildPath(this.props.value)} </div>
+                        {buildPath(this.props.value)}
+                    </div>
                     {labelForVariable(this.props.value) || this.labelForAdditional(this.props.value) || 'select...'}
                 </a>
             </div>

@@ -39,7 +39,7 @@ function onFileBrowserClick(fieldName, url, type, win) {
 }
 
 const TINYCONFIG = {
-    inline: true,
+    inline: false,
     plugins: [
         'autolink link image lists code media table contextmenu',
         'paste advlist textcolor dynamic_toolbar'

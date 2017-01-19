@@ -12,7 +12,7 @@ function StringView(props) {
             <textarea
                 rows={props.view.rows}
                 onChange={ev => props.onChange(ev.target.value)}
-                placeholder="key in!"
+                placeholder={props.view.placeholder}
                 style={{
                     fontSize: '14px',
                     color: 'darkgrey',
@@ -26,6 +26,7 @@ function StringView(props) {
     return (<input
         className={styles.input}
         type="text"
+        placeholder={props.view.placeholder}
         defaultValue={props.value}
         onChange={ev => props.onChange(ev.target.value)}
         disabled={props.view.disabled}
@@ -38,8 +39,13 @@ StringView.propTypes = {
     value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     view: PropTypes.shape({
         rows: PropTypes.number,
-        disabled: PropTypes.bool
+        disabled: PropTypes.bool,
+        placeholder: PropTypes.string
     })
+};
+StringView.defaultProps = {
+    value: '',
+    view: {}
 };
 
 export default commonView(debounceOnChange(StringView));
