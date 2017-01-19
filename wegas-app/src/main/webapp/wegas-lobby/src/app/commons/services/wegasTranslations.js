@@ -990,6 +990,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': startSentence(keywords.token.singular.en) + " is required",
                             'fr': "La " + keywords.token.singular.fr + " est obligatoire"
                         },
+                        'PRIVATE-SESSIONS-ACCESS-KEY-ERROR-INPUT': {
+                            'en': "Syntax error: please don't use special characters !",
+                            'fr': "Erreur de syntaxe : veuillez éviter les caractères spéciaux !"
+                        },
                         'PRIVATE-SCENARIOS-NAME-LABEL-INPUT': {
                             'en': "Name",
                             'fr': "Nom"
