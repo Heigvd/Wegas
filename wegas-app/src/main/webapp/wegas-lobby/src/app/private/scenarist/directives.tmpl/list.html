@@ -1,13 +1,12 @@
 <div class="card card--scenarist-scenario"
-      ng-repeat="scenario in scenarios | orderBy: 'createdTime':true | filter: searchFn | limitTo: maximum"
+      ng-repeat="scenario in scenarios | orderBy: 'createdTime':true | filterBy: ['name', 'createdByName', 'comments', 'id']: search | filter: {canView: true, canEdit: true} | limitTo: maximum"
       scenario="scenario"
       archive="archive"
       duplicate="duplicate"
       duplicating="duplicating"
       isDuplicated="isDuplicated"
-      searchFn="searchFn"
       scenario-card >
 </div>
-<div ng-if="(search !== '') && (scenarios | filter: searchFn).length == 0">
+<div ng-if="(search !== '') && (scenarios | filterBy: ['name', 'createdByName', 'comments', 'id']: search).length == 0">
     {{'SCENARIST-INDEX-LIST-NO-SCENARIO' | translate}}"{{search}}"
 </div>

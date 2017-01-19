@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import debounce from 'lodash/debounce';
 
 function debounced(wait) {
@@ -16,6 +16,9 @@ function debounced(wait) {
                 return <Comp {...newProps} />;
             }
         }
+        Debounced.propTypes = {
+            [key]: PropTypes.func.isRequired // eslint-disable-line react/no-unused-prop-types
+        };
         return Debounced;
     };
 }

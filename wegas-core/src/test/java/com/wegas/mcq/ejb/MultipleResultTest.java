@@ -34,6 +34,7 @@ public class MultipleResultTest extends AbstractEJBTest {
 
         private final QuestionDescriptorFacade qdf;
         private final ChoiceDescriptor choice;
+        VariableInstanceFacade vif = VariableInstanceFacade.lookup();
 
         public SelectChoiceThread(ChoiceDescriptor choice) throws NamingException {
             qdf = lookupBy(QuestionDescriptorFacade.class);
@@ -45,7 +46,7 @@ public class MultipleResultTest extends AbstractEJBTest {
             try {
                 qdf.selectAndValidateChoice(choice.getId(), player.getId());            // Do reply
                 QuestionInstance instance = choice.getQuestion().getInstance(player);
-                RequestFacade.lookup().getRequestManager().unlock("MCQ-" + instance.getId(), instance.getAudience());
+                RequestFacade.lookup().getRequestManager().unlock("MCQ-" + instance.getId(), instance.getBroadcastTarget());
             } catch (WegasScriptException ex) {
                 java.util.logging.Logger.getLogger(MultipleResultTest.class.getName()).log(Level.SEVERE, null, ex);
             }

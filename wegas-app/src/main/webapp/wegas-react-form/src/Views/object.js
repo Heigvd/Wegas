@@ -14,8 +14,12 @@ function ObjectView(props) {
             </legend>
             {props.children}
             {props.errorMessage.map(message => <div
+                key={message}
                 className={styles.error}
-            >{message}</div>)}
+            >
+                {message}
+            </div>
+            )}
         </fieldset>
     );
 }
@@ -24,9 +28,9 @@ ObjectView.propTypes = {
     children: PropTypes.node,
     view: PropTypes.shape({
         className: PropTypes.string,
-        label: PropTypes.string
+        label: PropTypes.string,
     }),
     errorMessage: PropTypes.array,
-    editKey: PropTypes.string
+    editKey: PropTypes.string,
 };
 export default ObjectView;

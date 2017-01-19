@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import TextField from 'material-ui/TextField';
+import TextField from './string';
 import commonView from '../HOC/commonView';
 import ObjectView from './object';
 import IconButton from '../Components/IconButton';
@@ -23,13 +23,13 @@ class HashlistView extends React.Component {
         this.addChild = this.addChild.bind(this);
         this.onAdderChange = this.onAdderChange.bind(this);
     }
-    onAdderChange(event) {
+    onAdderChange(value) {
         this.setState({
-            newInputValue: event.target.value
+            newInputValue: value
         });
     }
     addChild() {
-        const newInputValue = this.newInput.getValue();
+        const newInputValue = this.state.newInputValue;
         this.setState({
             newInputValue: ''
         });
@@ -45,22 +45,21 @@ class HashlistView extends React.Component {
                 removeKey(child.props.editKey);
             }
 
-            function onKeyChange(event) {
-                alterKey(child.props.editKey, event.target.value);
+            function onKeyChange(value) {
+                alterKey(child.props.editKey, value);
             }
 
-            return (<div>
+            return (<div key={child.props.editKey}>
                 <IconButton
                     icon="fa fa-minus"
                     tooltip="remove"
                     onClick={remove}
                 />
-                <div style={{ marginLeft: '48px', position: 'relative' }}>
+                <div style={{ position: 'relative' }}>
                     <TextField
-                        defaultValue={child.props.editKey}
-                        style={halfWidth}
-                        onBlur={onKeyChange}
-                        floatingLabelText={this.props.view.keyLabel || 'Name'}
+                        value={child.props.editKey}
+                        onChange={onKeyChange}
+                        view={{ label: this.props.view.keyLabel || 'Key', style: halfWidth }}
                     />
                     <div
                         style={halfWidth}
@@ -75,13 +74,13 @@ class HashlistView extends React.Component {
         return (<ObjectView {...restProps}>
             {newChildren}
             <TextField
-                style={halfWidth}
+                key="newkeyinput"
                 value={this.state.newInputValue}
                 onChange={this.onAdderChange}
-                floatingLabelText={this.props.view.keyLabel || 'Name'}
-                ref={(node) => { this.newInput = node; }}
+                view={{ label: this.props.view.keyLabel || 'Key', style: halfWidth }}
             />
             <IconButton
+                key="newkeyadd"
                 icon="fa fa-plus"
                 tooltip="add"
                 onClick={this.addChild}

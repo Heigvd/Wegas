@@ -22,6 +22,9 @@
     .card__illustration{
         display:block;
         float:left;
+        .icon-users {
+            padding-right: 8px;
+        }
     }
     .card__description{
         float:left;

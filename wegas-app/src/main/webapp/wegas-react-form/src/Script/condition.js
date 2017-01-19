@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { visit, types } from 'recast';
-import isMatch from 'lodash/fp/isMatch';
+import isMatch from 'lodash/isMatch';
 
 const AND = '&&';
 /**
@@ -38,12 +38,12 @@ function condition(Comp) {
             visitLogicalExpression(path) {
                 expr.splice(0, 0, path.node.right);
                 this.traverse(path);
-                if (!isMatch({ type: 'LogicalExpression' }, path.node.left)) {
+                if (!isMatch(path.node.left, { type: 'LogicalExpression' })) {
                     expr.splice(0, 0, path.node.left);
                 }
             },
             visitExpressionStatement(path) {
-                if (isMatch({ type: 'LogicalExpression' }, path.node.expression)) {
+                if (isMatch(path.node.expression, { type: 'LogicalExpression' })) {
                     this.traverse(path);
                     return undefined;
                 }

@@ -5,33 +5,50 @@ import styles from '../css/string.css';
 
 
 const debounceOnChange = debounce('onChange');
+function fromNotToEmpty(value) {
+    if (value === null || value === undefined) {
+        return '';
+    }
+    return value;
+}
+class StringView extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { value: fromNotToEmpty(props.value) };
+    }
+    componentWillReceiveProps(nextProps) {
+        this.setState({ value: fromNotToEmpty(nextProps.value) });
+    }
+    handleChange(event) {
+        this.setState({ value: event.target.value }, this.props.onChange(event.target.value));
+    }
+    render() {
+        if (typeof this.props.view.rows === 'number') {
+            return (
+                <textarea
+                    rows={this.props.view.rows}
+                    onChange={ev => this.handleChange(ev)}
+                    placeholder={props.view.placeholder}
+                    style={{
+                        fontSize: '14px',
+                        color: 'darkgrey',
 
-function StringView(props) {
-    if (typeof props.view.rows === 'number') {
-        return (
-            <textarea
-                rows={props.view.rows}
-                onChange={ev => props.onChange(ev.target.value)}
-                placeholder={props.view.placeholder}
-                style={{
-                    fontSize: '14px',
-                    color: 'darkgrey',
-
-                }}
-                defaultValue={props.value}
-                disabled={props.view.disabled}
-            />
+                    }}
+                    value={this.state.value}
+                    disabled={this.props.view.disabled}
+                />
+            );
+        }
+        return (<input
+            className={styles.input}
+            type="text"
+            placeholder={props.view.placeholder}
+            value={this.state.value}
+            onChange={ev => this.handleChange(ev)}
+            disabled={this.props.view.disabled}
+        />
         );
     }
-    return (<input
-        className={styles.input}
-        type="text"
-        placeholder={props.view.placeholder}
-        defaultValue={props.value}
-        onChange={ev => props.onChange(ev.target.value)}
-        disabled={props.view.disabled}
-    />
-    );
 }
 
 StringView.propTypes = {
@@ -41,11 +58,7 @@ StringView.propTypes = {
         rows: PropTypes.number,
         disabled: PropTypes.bool,
         placeholder: PropTypes.string
-    })
-};
-StringView.defaultProps = {
-    value: '',
-    view: {}
+    }).isRequired
 };
 
 export default commonView(debounceOnChange(StringView));

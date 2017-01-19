@@ -9,6 +9,7 @@ package com.wegas.core.persistence.game;
 
 import com.fasterxml.jackson.annotation.*;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
@@ -37,7 +38,7 @@ import java.util.Map;
 })
 @NamedQueries({
     @NamedQuery(name = "Team.findByGameIdAndName", query = "SELECT a FROM Team a WHERE a.name = :name AND a.game.id = :gameId")})
-public class Team extends AbstractEntity implements Broadcastable {
+public class Team extends AbstractEntity implements Broadcastable, BroadcastTarget {
 
     private static final long serialVersionUID = 1L;
 
@@ -300,5 +301,11 @@ public class Team extends AbstractEntity implements Broadcastable {
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
         return this.getGame().getEntities();
+    }
+
+    @Override
+    @JsonIgnore
+    public String getChannel() {
+        return "Team-" + this.getId();
     }
 }

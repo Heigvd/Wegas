@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { types } from 'recast';
-import isMatch from 'lodash/fp/isMatch';
+import isMatch from 'lodash/isMatch';
 import SelectView from '../../Views/select';
 import { getY } from '../../index';
 import { isVariable, extractVar, build } from './Variable';
@@ -42,10 +42,10 @@ function handleArgs(variable, method, args, onChange) {
 }
 // Replace with select with if it stays in this shape
 function MethodView({
-        value,
-        onChange,
-        view
-    }) {
+    value,
+    onChange,
+    view
+}) {
     return (
         <SelectView
             value={value}
@@ -89,18 +89,18 @@ const buildMethod = (v, type) => {
         v.args
     );
 };
-const isGlobalMethod = node => isMatch({
+const isGlobalMethod = node => isMatch(node, {
     type: 'CallExpression',
     callee: {
         type: 'MemberExpression'
     }
-}, node);
-const isVarMethod = node => isMatch({
+});
+const isVarMethod = node => isMatch(node, {
     type: 'CallExpression',
     callee: {
         type: 'MemberExpression'
     }
-}, node) &&
+}) &&
     isVariable(node.callee.object);
 const extractMethod = (node) => {
     const ret = {

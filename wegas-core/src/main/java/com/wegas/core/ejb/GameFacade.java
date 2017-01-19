@@ -188,7 +188,8 @@ public class GameFacade extends BaseFacade<Game> {
      * @return
      */
     public String createUniqueToken(Game game) {
-        String prefixKey = game.getShortName().toLowerCase().replace(" ", "-");
+        //String prefixKey = game.getShortName().toLowerCase().replace(" ", "-");
+        String prefixKey = Helper.replaceSpecialCharacters(game.getShortName().toLowerCase().replace(" ", "-"));
         boolean foundUniqueKey = false;
         int counter = 0;
         String key = null;

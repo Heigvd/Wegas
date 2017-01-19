@@ -47,6 +47,8 @@ public class PlayerFacadeTest extends AbstractEJBTest {
     public void testRemovePlayer() throws Exception {
         User currentUser = userFacade.getCurrentUser();
 
+        Assert.assertEquals(1, currentUser.getPlayers().size());
+
         final Game g = new Game("game");
         g.setGameModel(gameModel);
         gameFacade.create(g);
@@ -65,8 +67,8 @@ public class PlayerFacadeTest extends AbstractEJBTest {
         currentUser = userFacade.find(currentUser.getId());
         Assert.assertEquals(2, ng.getTeams().size());
         Assert.assertEquals(2, ng.getTeams().get(1).getPlayers().size());
-        Assert.assertEquals(1, currentUser.getPlayers().size());
-
+        Assert.assertEquals(2, currentUser.getPlayers().size());
+        
         playerFacade.remove(p1.getId());
 
         ng = gameFacade.find(g.getId());
@@ -79,7 +81,7 @@ public class PlayerFacadeTest extends AbstractEJBTest {
         currentUser = userFacade.find(currentUser.getId());
         Assert.assertEquals(1, ng.getTeams().size());
 
-        Assert.assertEquals(0, currentUser.getPlayers().size());
+        Assert.assertEquals(1, currentUser.getPlayers().size());
 
         gameFacade.remove(g.getId());                                           // Clean up
     }

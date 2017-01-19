@@ -326,7 +326,7 @@ public class GameController {
      * @return game which matches the token, without its debug team
      */
     @GET
-    @Path("/FindByToken/{token : .*}/")
+    @Path("/FindByToken/{token : ([a-zA-Z0-9_-]|\\.(?!\\.))*}")
     public Game findByToken(@PathParam("token") String token) {
         return gameFacade.getGameWithoutDebugTeam(gameFacade.findByToken(token));
 
