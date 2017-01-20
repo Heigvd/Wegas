@@ -1529,6 +1529,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Users",
                             'fr': "Utilisateurs"
                         },
+                        'ADMIN-INDEX-WHO-BTN': {
+                            'en': "Who",
+                            'fr': "Qui"
+                        },
                         'ADMIN-USERS-LOADING': {
                             'en': "Loading " + keywords.user.plural.en,
                             'fr': "Chargement des " + keywords.user.plural.fr
@@ -1544,6 +1548,14 @@ angular.module('wegas.service.wegasTranslations', [])
                         'ADMIN-INDEX-UPLOAD-TITLE': {
                             'en': "Upload a " + keywords.scenario.singular.en,
                             'fr': "Télécharger un " + keywords.scenario.singular.fr
+                        },
+                        'ADMIN-WHO-SINGULAR-TITLE': {
+                            'en': "connected user",
+                            'fr': "utilisateur connecté"
+                        },
+                        'ADMIN-WHO-PLURAL-TITLE': {
+                            'en': "connected users",
+                            'fr': "utilisateurs connectés"
                         },
                         'ADMIN-USERS-TITLE': {
                             'en': "Existing users",
