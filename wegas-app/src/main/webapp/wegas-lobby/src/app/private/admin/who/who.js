@@ -18,6 +18,8 @@ angular.module('private.admin.who', ['wegas.service.pusher'])
         var ctrl = this;
         ctrl.who = [];
         ctrl.loading = true;
+        // This message is displayed as soon as it contains a non-empty string:
+        ctrl.message = "";
 
         ctrl.updateWhoList = function() {
             ctrl.who = WegasPusher.getMembers();
@@ -27,9 +29,17 @@ angular.module('private.admin.who', ['wegas.service.pusher'])
             }
         };
 
-        $rootScope.$on('update-members', function(e) {
-                ctrl.updateWhoList();
+        $rootScope.$on('wegaspusher:update-members', function(e) {
+            ctrl.message = "";
+            ctrl.updateWhoList();
         });
 
+        $rootScope.$on('wegaspusher:service-error', function(e, msg) {
+            ctrl.message = msg;
+            ctrl.updateWhoList();
+        });
+
+        // Required e.g. when closing the profile edition window:
         ctrl.updateWhoList();
+
     });

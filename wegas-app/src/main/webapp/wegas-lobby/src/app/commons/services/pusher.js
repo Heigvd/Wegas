@@ -1,4 +1,10 @@
+/*
+** This service subscribes to the default presence channel to stay informed about connected users.
+** Client modules are in turn informed via events "wegaspusher:update-members" and "wegaspusher:service-error".
+*/
+
 angular.module('wegas.service.pusher', [])
+
     .service('WegasPusher', function($http, $q, $rootScope, Auth, UsersModel) {
         "use strict";
         var service = this,
@@ -42,21 +48,31 @@ angular.module('wegas.service.pusher', [])
 
         function initListening(){
             presence.bind('pusher:subscription_succeeded', function(members) {
+                clearMemberlist();
                 members.each(function(member) {
                     addMember(member);
                 });
-                $rootScope.$emit('update-members');
+                $rootScope.$emit('wegaspusher:update-members');
+            });
+
+            presence.bind('pusher:pusher:subscription_error', function(members) {
+                clearMemberlist();
+                $rootScope.$emit('wegaspusher:service-error', "Connection error - please try again later ...");
             });
 
             presence.bind('pusher:member_added', function(member) {
                 addMember(member);
-                $rootScope.$emit('update-members');
+                $rootScope.$emit('wegaspusher:update-members');
             });
 
             presence.bind('pusher:member_removed', function(member) {
                 removeMember(member);
-                $rootScope.$emit('update-members');
+                $rootScope.$emit('wegaspusher:update-members');
             });
+        }
+
+        function clearMemberlist(){
+            memberlist = [];
         }
 
         function addMember(m) { // m = { m.id, m.info }
@@ -97,6 +113,7 @@ angular.module('wegas.service.pusher', [])
                     console.log("WegasPusher: could not get details for user " + m.id + " " + m.fullname);
                 }
             });
+            member.connectionDate = Date.now();
             memberlist.push(member);
         }
 

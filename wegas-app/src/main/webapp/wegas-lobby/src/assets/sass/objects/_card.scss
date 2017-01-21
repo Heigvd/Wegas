@@ -538,6 +538,10 @@
             }
         }
 
+        .card__description * {
+            font-weight: normal;
+        }
+
         @media screen and (max-width: 850px) {
             .card__description {
                 .card-fullname {
