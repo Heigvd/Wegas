@@ -1,6 +1,4 @@
-angular.module('private.trainer.directives', [
-    'wegas.behaviours.repeat.autoload'
-])
+angular.module('private.trainer.directives', [])
     .directive('trainerSessionsIndex', function(Auth) {
         "use strict";
         return {
@@ -8,59 +6,73 @@ angular.module('private.trainer.directives', [
             controller: "TrainerIndexController as trainerIndexCtrl"
         }
     })
-    .controller("TrainerIndexController", function TrainerIndexController($rootScope, $scope, $translate, SessionsModel, Flash, $timeout) {
+    .controller("TrainerIndexController", function TrainerIndexController($rootScope, $scope, $translate, SessionsModel, Flash, $timeout, $filter) {
         "use strict";
-        var ctrl = this,
-            initMaxSessionsDisplayed = function() {
-                /*if (ctrl.sessions.length > 22) {
-                 ctrl.maxSessionsDisplayed = 20;
-                 } else {
-                 ctrl.maxSessionsDisplayed = ctrl.sessions.length;
-                 }*/
-                ctrl.maxSessionsDisplayed = ctrl.sessions.length;
-            },
-            updateDisplaySessions = function() {
-                if (ctrl.maxSessionsDisplayed === null) {
-                    initMaxSessionsDisplayed();
-                } else {
-                    if (ctrl.maxSessionsDisplayed >= ctrl.sessions.length) {
-                        ctrl.maxSessionsDisplayed = ctrl.sessions.length;
-                    } else {
-                        ctrl.maxSessionsDisplayed = ctrl.maxSessionsDisplayed + 100;
-                    }
-                }
-            };
+        var ctrl = this;
         $rootScope.currentRole = "TRAINER";
         ctrl.loading = true;
         ctrl.search = "";
+        ctrl.rawSessions = [];
         ctrl.sessions = [];
         ctrl.nbArchives = 0;
-        ctrl.maxSessionsDisplayed = null;
+        //ctrl.scenariomenu = [];
 
+        /*
+        ** Filters ctrl.rawSessions according to the given search string and puts the result in ctrl.sessions.
+        ** Hypothesis: input array ctrl.rawSessions is already ordered according to the 'createdTime' attribute,
+        ** so that the output automatically follows the same ordering.
+         */
+        ctrl.filterSessions = function(search){
+            if (!search || search.length === 0){
+                ctrl.sessions = ctrl.rawSessions;
+                return;
+            }
+            var res = [],
+                len = ctrl.rawSessions.length,
+                i;
+            for (i=0; i<len; i++){
+                var session = ctrl.rawSessions[i];
+                if (!session.gameModel || session.gameModel.canView === false) continue;
+                var needle = search.toLowerCase();
+                if ((session.name && session.name.toLowerCase().indexOf(needle) >= 0) ||
+                    (session.createdByName && session.createdByName.toLowerCase().indexOf(needle) >= 0) ||
+                    (session.gameModelName && session.gameModelName.toLowerCase().indexOf(needle) >= 0) ||
+                    (session.gameModel.comments && session.gameModel.comments.toLowerCase().indexOf(needle) >= 0) ||
+                    // If searching for a number, the id has to start with the given pattern:
+                    session.id.toString().indexOf(needle) === 0 ||
+                    session.gameModelId.toString().indexOf(needle) === 0){
+                    res.push(session);
+                }
+            }
+            ctrl.sessions = res; // $filter('limitTo')(res, 20);
+            if (ctrl.search != search){
+                ctrl.search = search;
+            }
+        };
+
+        // Called when a session is modified, added or removed:
         ctrl.updateSessions = function(updateDisplay) {
-            var hideScrollbarDuringInitialRender = (ctrl.sessions.length === 0);
+            var hideScrollbarDuringInitialRender = (ctrl.rawSessions.length === 0);
             if (hideScrollbarDuringInitialRender) {
                 $('#trainer-sessions-list').css('overflow-y', 'hidden');
             }
-            ctrl.sessions = [];
+            ctrl.sessions = ctrl.rawSessions = [];
             ctrl.loading = true;
             SessionsModel.getSessions("LIVE").then(function(response) {
                 ctrl.loading = false;
-                ctrl.sessions = response.data || [];
-                if (updateDisplay) {
-                    updateDisplaySessions();
+                ctrl.rawSessions = $filter('orderBy')(response.data, 'createdTime', true) || [];
+                // At this point, the search variable is not necessarily rendered nor updated by Angular to reflect the input field:
+                var searchField = document.getElementById('searchField');
+                if (searchField) {
+                    ctrl.search = searchField.getElementsByClassName('tool__input')[0].value;
                 }
+                ctrl.filterSessions(ctrl.search);
                 if (hideScrollbarDuringInitialRender) {
                     $timeout(function() {
                         $('#trainer-sessions-list').css('overflow-y', 'auto');
-                    }, 1000);
+                    }, 5000);
                 }
             });
-            /*if (updateDisplay) {
-                SessionsModel.countArchivedSessions().then(function(response) {
-                    ctrl.nbArchives = response.data;
-                });
-            }*/
         };
 
         ctrl.editAccess = function(sessionToSet) {
@@ -104,54 +116,48 @@ angular.module('private.trainer.directives', [
         $rootScope.$on('changeSessions', function(e, hasNewData) {
             if (hasNewData) {
                 SessionsModel.getSessions("LIVE").then(function(response) {
-                    ctrl.sessions = response.data || [];
+                    ctrl.updateSessions(true);
                 });
             }
         });
 
-        $rootScope.$on('changeLimit', function(e, hasNewData) {
-            if (e.currentScope.currentRole === "TRAINER" && hasNewData) {
-                ctrl.updateSessions(true);
-            }
-        });
-
-        /* Request data. */
         ctrl.updateSessions(true);
 
         SessionsModel.countArchivedSessions().then(function(response) {
             ctrl.nbArchives = response.data;
         });
     })
-    .directive('trainerSessionsAdd', function(ScenariosModel, SessionsModel, Flash, $translate) {
+    .directive('trainerSessionsAdd', function(ScenariosModel, SessionsModel, Flash, $translate, $filter) {
         "use strict";
         return {
             templateUrl: 'app/private/trainer/directives.tmpl/add-form.html',
             scope: false,
             require: "^trainerSessionsIndex",
             link: function(scope, element, attrs, parentCtrl) {
-                scope.scenarios = [];
+                scope.scenariomenu = [];
                 scope.loadingScenarios = false;
                 var loadScenarios = function() {
-                    if (scope.scenarios.length == 0) {
+                    if (scope.scenariomenu.length == 0) {
                         scope.loadingScenarios = true;
                         ScenariosModel.getScenarios("LIVE").then(function(response) {
                             if (!response.isErroneous()) {
                                 scope.loadingScenarios = false;
-                                scope.scenarios = response.data;
+                                var expression = { canInstantiate: true },
+                                    filtered = $filter('filter')(response.data, expression) || [];
+                                scope.scenariomenu = $filter('orderBy')(filtered, 'name');
                             }
                         });
                     }
                 };
-                scope.newSession = {
-                    name: "",
-                    scenarioId: 0
-                };
-
-                scope.cancelAddSession = function() {
+                var resetNewSession = function() {
                     scope.newSession = {
                         name: "",
                         scenarioId: 0
                     };
+                };
+
+                scope.cancelAddSession = function() {
+                    resetNewSession();
                     scope.$emit('collapse');
                 };
 
@@ -168,11 +174,9 @@ angular.module('private.trainer.directives', [
                             button.addClass("button--disable button--spinner button--rotate");
                             SessionsModel.createSession(scope.newSession.name, scope.newSession.scenarioId).then(function(response) {
                                 if (!response.isErroneous()) {
-                                    scope.newSession = {
-                                        name: "",
-                                        scenarioId: 0
-                                    };
+                                    resetNewSession();
                                     scope.$emit('collapse');
+                                    scope.search = "";
                                     parentCtrl.updateSessions(true);
                                     button.removeClass("button--disable button--spinner button--rotate");
                                 } else {
@@ -188,6 +192,7 @@ angular.module('private.trainer.directives', [
                 };
 
                 scope.$on('expand', function() {
+                    resetNewSession();
                     loadScenarios();
                 });
             }
@@ -202,22 +207,8 @@ angular.module('private.trainer.directives', [
                 search: "=",
                 archive: "=",
                 editAccess: "=",
-                maximum: "="
-            },
-            link: function(scope, element, attrs) {
-                var searchField = document.getElementById('searchField').getElementsByClassName('tool__input')[0];
-                scope.searchFn = function (value, index, array) { // filter: { name: search, gameModel:{canView: true}}
-                    if (value.gameModel.canView === false) return false;
-                    var needle = searchField.value.toLowerCase();
-                    if (needle.length === 0 || value.name.toLowerCase().indexOf(needle) >= 0) return true;
-                    // Advanced search criteria (could be reserved to admins in the future):
-                    return ((value.createdByName && value.createdByName.toLowerCase().indexOf(needle) >= 0) ||
-                            (value.gameModelName && value.gameModelName.toLowerCase().indexOf(needle) >= 0) ||
-                            (value.gameModel.comments && value.gameModel.comments.toLowerCase().indexOf(needle) >= 0) ||
-                            // If searching for a number, the id has to start with the given pattern:
-                            value.id.toString().indexOf(needle) === 0 ||
-                            value.gameModelId.toString().indexOf(needle) === 0);
-                };
+                // maximum: "=",
+                filterSessions: "="
             }
     };
     })

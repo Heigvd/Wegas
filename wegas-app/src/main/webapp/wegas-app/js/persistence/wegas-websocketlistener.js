@@ -21,6 +21,7 @@ YUI.add('wegas-websocketlistener', function(Y) {
                     this._hdl.push(dataSource.on("OutdatedEntitiesEvent", this.forceEntityUpdate, this));
                     this._hdl.push(dataSource.on("EntityDestroyedEvent", this.onEntityDeletion, this));
                     this._hdl.push(dataSource.on("CustomEvent", this.onCustomEvent, this));
+                    this._hdl.push(dataSource.on("LockEvent", this.onLockEvent, this));
                     this._hdl.push(dataSource.on("LifeCycleEvent", this.onLifeCycleEvent, this));
                 }
             });
@@ -41,6 +42,16 @@ YUI.add('wegas-websocketlistener', function(Y) {
                 Y.Widget.getByNode(".wegas-playerview");
             if (Y.one("body").hasClass("wegas-advancedmode")) {
                 node.hideOverlay(token);
+            }
+        },
+        onLockEvent: function(data) {
+            if (Y.Wegas.app.lockmanager) {
+                var payload = Y.JSON.parse(data);
+                if (payload.status === "lock") {
+                    Y.Wegas.app.lockmanager.lock(payload.token);
+                } else {
+                    Y.Wegas.app.lockmanager.unlock(payload.token);
+                }
             }
         },
         onLifeCycleEvent: function(data) {

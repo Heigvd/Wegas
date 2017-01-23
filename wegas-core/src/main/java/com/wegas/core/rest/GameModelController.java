@@ -267,7 +267,13 @@ public class GameModelController {
     @GET
     @Path("status/{status: [A-Z]*}")
     public Collection<GameModel> findByStatus(@PathParam("status") final GameModel.Status status) {
-        return filterGameModels(gameModelFacade.findTemplateGameModelsByStatus(status));
+        return gameModelFacade.findByStatusAndUser(status);
+    }
+
+    @GET
+    @Path("status_old/{status: [A-Z]*}")
+    public Collection<GameModel> findByStatus2(@PathParam("status") final GameModel.Status status) {
+        return filterGameModels(gameModelFacade.findByStatus(status));
     }
 
     /**
@@ -316,7 +322,7 @@ public class GameModelController {
     public Collection<GameModel> deleteAll() {
         Collection<GameModel> games = new ArrayList<>();
         Subject s = SecurityUtils.getSubject();
-        for (GameModel gm : gameModelFacade.findTemplateGameModelsByStatus(GameModel.Status.BIN)) {
+        for (GameModel gm : gameModelFacade.findByStatus(GameModel.Status.BIN)) {
             if (s.isPermitted("GameModel:Delete:gm" + gm.getId())) {
                 gameModelFacade.delete(gm);
                 games.add(gm);
@@ -399,7 +405,7 @@ public class GameModelController {
                 + " by " + userFacade.getCurrentUser().getName());
     }
 
-/**
+    /**
      *
      * @throws IOException
      * @throws RepositoryException

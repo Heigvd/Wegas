@@ -1,11 +1,20 @@
-<div class="modal__content__search" data-search-tool="search" ></div>
-<div class="modal__content__list" ng-if="!loading && ((scenarios | filter:{name: search}).length > 0)">
-    <div class="card card--archive card--archive-scenarist" ng-repeat="scenario in scenarios | orderBy: 'createdTime':true | filter : { name: search }"">
+<div class="modal__content__search">
+    <div class="tool tool--search tool--open">
+        <a class="tool__link"></a>
+        <input id="searchFieldScenarioArchives"
+               name="searchFieldScenarioArchives"
+               class="tool__input"
+               ng-model="search"
+               type="text"
+        />
+    </div>
+</div><div class="modal__content__list" ng-if="!loading && scenarios.length > 0">
+    <div class="card card--archive card--archive-scenarist" ng-repeat="scenario in scenarios">
         <div class="card__illustration illustration illustration--icon" illustration="{{scenario.properties.iconUri}}"></div>
         <div class="card__description"
              ng-class="  {true:'card__description--two-lines', false:'card__description--three-lines'}[scenario.comments == null || scenario.comments == '']" >
             <div class="line line--primary">{{scenario.name}}</div>
-            <div class="line">{{scenario.createdTime | date:"dd.MM.yyyy"}}</div>
+            <div class="line">{{'COMMONS-DATE' | translate: {date: scenario.createdTime} }}</div>
             <div ng-if="!((scenario.comments == null) || (scenario.comments == ''))" class="line line--optionnal">{{scenario.comments}}</div>
         </div>
         <div class="card__actions">
@@ -22,8 +31,8 @@
         </div>
     </div>
 </div>
-<div class="modal__content__loading" ng-if="loading" content-loading="{{'COMMONS-SCENARIOS-LOADING' | translate}}">
 </div>
-<div class="modal__content__empty" ng-if="!loading && ((scenarios | filter:{name: search}).length == 0)">
+<div class="modal__content__empty" ng-if="!loading && scenarios.length == 0">
     {{'SCENARIST-MODALE-ARCHIVE-NO-SCENARIO' | translate}}"{{search}}"
 </div>
+<div class="modal__content__loading" ng-if="loading" content-loading="{{'COMMONS-SCENARIOS-LOADING' | translate}}">

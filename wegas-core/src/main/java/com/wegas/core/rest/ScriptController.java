@@ -183,7 +183,7 @@ public class ScriptController {
     @GET
     @Path("Test")
     public Map<Long, WegasScriptException> testGameModel(@PathParam("gameModelId") Long gameModelId) {
-        requestFacade.getRequestManager().setEnv(RequestManager.RequestEnvironment.TEST);
+        //requestFacade.getRequestManager().setEnv(RequestManager.RequestEnvironment.TEST);
         List<VariableDescriptor> findAll = variableDescriptorFacade.findAll(gameModelId);
         Player player = gmf.find(gameModelId).getPlayers().get(0);
         Map<Long, WegasScriptException> ret = new HashMap<>();

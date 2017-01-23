@@ -8,13 +8,17 @@
 package com.wegas.core.rest.exception;
 
 import com.wegas.core.exception.client.WegasConflictException;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasUniqueConstraintException;
+import java.util.Set;
 import javax.ejb.EJBException;
 import javax.enterprise.event.ObserverException;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceException;
 import javax.transaction.RollbackException;
 import javax.transaction.TransactionRolledbackException;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.ws.rs.core.Response;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -25,8 +29,6 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-
-
 public abstract class AbstractExceptionMapper {
 
     final static private Logger logger = LoggerFactory.getLogger(AbstractExceptionMapper.class);
@@ -67,6 +69,13 @@ public abstract class AbstractExceptionMapper {
         } else if (exception instanceof DatabaseException) {
             DatabaseException dbe = (DatabaseException) exception;
             return processException(dbe.getInternalException());
+        } else if (exception instanceof ConstraintViolationException) {
+            ConstraintViolationException cve = (ConstraintViolationException) exception;
+            StringBuilder sb = new StringBuilder();
+            for (ConstraintViolation<?> cv : cve.getConstraintViolations()) {
+                sb.append(cv.getMessage());
+            }
+            return Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error(sb.toString())).build();
         } else {
             logger.error(exception.getLocalizedMessage());
             return Response.status(Response.Status.BAD_REQUEST).entity(exception).build();

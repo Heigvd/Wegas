@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-app', function (Y) {
+YUI.add('wegas-app', function(Y) {
     "use strict";
 
     var Wegas = Y.namespace('Wegas'); // Create namespace
@@ -37,7 +37,7 @@ YUI.add('wegas-app', function (Y) {
          * @function
          * @private
          */
-        initializer: function () {
+        initializer: function() {
             /**
              * @name render
              * @event
@@ -50,7 +50,7 @@ YUI.add('wegas-app', function (Y) {
             this.dataSources = {};
 
             this._pendingRequests = 0;
-            window.onbeforeunload = function () {
+            window.onbeforeunload = function() {
                 Y.log("PENDINGS: " + Y.Wegas.app._pendingRequests);
                 if (Y.Wegas.app._pendingRequests > 0) {
                     return "Some requests are still pending ! Please stay on the page to avoid losing part of your work";
@@ -62,11 +62,11 @@ YUI.add('wegas-app', function (Y) {
             Wegas.app = this; // Setup global references to the app
             Wegas.Facade = this.dataSources; // and the data sources
         },
-        preSendRequest: function () {
+        preSendRequest: function() {
             this._pendingRequests += 1;
             Y.log("Pre: " + this._pendingRequests);
         },
-        postSendRequest: function () {
+        postSendRequest: function() {
             this._pendingRequests -= 1;
             Y.log("Post: " + this._pendingRequests);
         },
@@ -75,12 +75,12 @@ YUI.add('wegas-app', function (Y) {
          * @function
          * @public
          */
-        render: function () {
+        render: function() {
             var ds, dsClass, widgetCfg, totalRequests,
                 dataSources = this.get('dataSources'), // Data sources cfg objects
                 events = [], event,
                 requestCounter = 0, //                                          // Request counter 
-                onRequest = function () { // When a response to initial requests is received
+                onRequest = function() { // When a response to initial requests is received
                     requestCounter -= 1;
                     Y.one(".wegas-loading-app-current").setAttribute("style", "width:" + ((1 - requestCounter / totalRequests) * 100) + "%");
 
@@ -88,8 +88,9 @@ YUI.add('wegas-app', function (Y) {
                         while ((event = events.shift()) !== undefined) {
                             event.detach();
                         }
+                        this.plug(Y.Plugin.LockManager);
                         this.fire("preRender");
-                        Y.later(10, this, function () { // Let the loading div update
+                        Y.later(10, this, function() { // Let the loading div update
                             this.widget = Wegas.Widget.create(widgetCfg) // Instantiate the root widget
                                 .render(); // and render it
                             this.fire("render"); // Fire a render event for some eventual post processing
@@ -102,8 +103,8 @@ YUI.add('wegas-app', function (Y) {
             Y.on("io:failure", this.globalFailureHandler, this); // Set up a default failure handler
 
             // Send data sources initial requests
-            Wegas.use(Y.Object.values(dataSources), Y.bind(function (Y) { // Retrieve data sources dependencies (e.g. Pusher)
-                Y.Object.each(dataSources, function (cfg, name) { // For each data source,       
+            Wegas.use(Y.Object.values(dataSources), Y.bind(function(Y) { // Retrieve data sources dependencies (e.g. Pusher)
+                Y.Object.each(dataSources, function(cfg, name) { // For each data source,       
                     cfg.source = this.get("base") + (cfg.source || ""); // Set up datasource path
                     dsClass = Wegas[cfg.type] || Wegas.DataSource; // Determine which class to use (default is Y.Wegas.DataSource)
                     ds = new dsClass(cfg); // Instantiate the datasource
@@ -119,7 +120,7 @@ YUI.add('wegas-app', function (Y) {
                 this.dataSources.VariableDescriptor = this.dataSources.Variable; // @backward compatibility
 
                 requestCounter += 1;
-                this.dataSources.Page.once("response", function (e) { // When page data source response arrives,
+                this.dataSources.Page.once("response", function(e) { // When page data source response arrives,
                     widgetCfg = e.response.results; // store the result for later use
                     Wegas.use(widgetCfg, Y.bind(onRequest, this)); // Optim: Load pages dependencies as soon as the data is received
                 }, this);
@@ -127,8 +128,8 @@ YUI.add('wegas-app', function (Y) {
             }, this));
 
             // Post render events
-            this.on("render", function () { // When the first page is rendered,
-                Y.one("body").on("key", function (e) { // Add shortcut to activate developper mode on key '§' pressed
+            this.on("render", function() { // When the first page is rendered,
+                Y.one("body").on("key", function(e) { // Add shortcut to activate developper mode on key '§' pressed
                     e.currentTarget.toggleClass("wegas-stdmode") // Toggle stdmode class on body (hides any wegas-advancedfeature)
                         .toggleClass("wegas-advancedmode");
                     Y.config.win.Y = Y; // Allow access to Y instance
@@ -140,8 +141,8 @@ YUI.add('wegas-app', function (Y) {
          * @function
          * @public
          */
-        destructor: function () {
-            Y.Object.each(this.dataSources, function (i) {
+        destructor: function() {
+            Y.Object.each(this.dataSources, function(i) {
                 i.destroy();
             });
             this.widget.destroy();
@@ -154,7 +155,7 @@ YUI.add('wegas-app', function (Y) {
          * @param {type} e
          * @returns {undefined}
          */
-        globalFailureHandler: function (tId, req, e) { // Add a global io failure listener
+        globalFailureHandler: function(tId, req, e) { // Add a global io failure listener
             var response, msg;
             try {
                 msg = "Error sending " + e.cfg.method + " request : " + e.target.get("source") + e.request
@@ -173,7 +174,7 @@ YUI.add('wegas-app', function (Y) {
                         buttons: {
                             footer: [{
                                     label: 'Click here to reconnect',
-                                    action: function () {
+                                    action: function() {
                                         Y.config.win.location.reload();
                                     }
                                 }]
@@ -202,7 +203,7 @@ YUI.add('wegas-app', function (Y) {
              * Base url for app
              */
             base: {
-                getter: function () {
+                getter: function() {
                     return Y.config.groups.wegas.base.replace("wegas-app/", "");
                 }
             }

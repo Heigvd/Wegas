@@ -65,6 +65,8 @@ public class ViewRequestFilter implements ContainerRequestFilter {
         //RequestFacade rmf = RequestFacade.lookup();
         RequestManager requestManager = requestFacade.getRequestManager();
 
+        requestManager.setSocketId(cr.getHeaderString("managed-mode"));
+
         requestManager.setRequestId(idGenerator.getUniqueIdentifier());
         requestManager.setMethod(cr.getMethod());
         requestManager.setPath(cr.getUriInfo().getPath());

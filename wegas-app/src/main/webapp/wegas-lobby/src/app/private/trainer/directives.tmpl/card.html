@@ -1,20 +1,11 @@
-<div class="card__illustration illustration illustration--icon" illustration="{{session.properties.iconUri}}"
-     ng-class="{true:'illustration--details', false: ''}[hoverDetails]"
-     ng-mouseover="hoverDetails = true" ng-mouseleave="hoverDetails = false">
-</div>
+<div class="card__illustration illustration illustration--icon" illustration="{{session.properties.iconUri}}"></div>
 <div
     class="card__description"
-    ng-class="{'illustration--details': hoverDetails, 'card__description--two-lines':(session.gameModel.comments == null || session.gameModel.comments == ''), 'card__description--three-lines':(session.gameModel.comments != null && session.gameModel.comments != '')}" >
+    ng-class="{true:'card__description--three-lines', false:'card__description--four-lines'}[session.gameModel.comments == null || session.gameModel.comments == '']" >
     <div class="line line--primary">{{session.name}}</div>
     <div class="line">{{'COMMONS-DATE' | translate: {date: session.createdTime} }}</div>
+    <div class="line">{{'TRAINER-CARD-DETAILS-SCENARIO' | translate}}:&nbsp;{{session.gameModelName}}</div>
     <div ng-if="!((session.gameModel.comments == null) || (session.gameModel.comments == ''))" class="line line--optionnal">{{session.gameModel.comments}}</div>
-    <div ng-show="hoverDetails" class="show-game-details line" style="">
-        {{'TRAINER-CARD-DETAILS-SESSION-ID' | translate}} :&nbsp; {{session.id}}<br />
-        {{'COMMONS-SESSIONS-CREATED-BY' | translate}} :&nbsp; {{session.createdByName}}<br />
-        {{'COMMONS-SESSIONS-MODIFIED-ON' | translate}} :&nbsp; {{'COMMONS-DATE' | translate: {date:session.updatedTime} }}<br />
-        {{'SCENARIST-CARD-DETAILS-SCENARIO' | translate}} :&nbsp; {{session.gameModelName}}<br />
-        {{'SCENARIST-CARD-DETAILS-SCENARIO-ID' | translate}} :&nbsp; {{session.gameModelId}}
-    </div>
 </div>
 <div class="card__actions">
     <div class="card__actions__access"

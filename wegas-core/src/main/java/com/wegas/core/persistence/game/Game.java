@@ -11,8 +11,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -23,6 +23,7 @@ import com.wegas.core.security.persistence.User;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.*;
+import javax.validation.constraints.Pattern;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -31,19 +32,19 @@ import java.util.*;
 @Entity
 @Table(
         uniqueConstraints = {
-                //    @UniqueConstraint(columnNames = {"name"}),
-                @UniqueConstraint(columnNames = {"token"})},
+            //    @UniqueConstraint(columnNames = {"name"}),
+            @UniqueConstraint(columnNames = {"token"})},
         indexes = {
-                @Index(columnList = "gamemodelid")
+            @Index(columnList = "gamemodelid")
         }
 )
 @NamedQueries({
-        @NamedQuery(name = "Game.findByStatus", query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status = :status ORDER BY g.createdTime ASC"),
-        @NamedQuery(name = "Game.findByToken", query = "SELECT DISTINCT g FROM Game g WHERE  g.status = :status AND g.token = :token"),
-        @NamedQuery(name = "Game.findByNameLike", query = "SELECT DISTINCT g FROM Game g WHERE  g.name LIKE :name")
+    @NamedQuery(name = "Game.findByStatus", query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status = :status ORDER BY g.createdTime ASC"),
+    @NamedQuery(name = "Game.findByToken", query = "SELECT DISTINCT g FROM Game g WHERE  g.status = :status AND g.token = :token"),
+    @NamedQuery(name = "Game.findByNameLike", query = "SELECT DISTINCT g FROM Game g WHERE  g.name LIKE :name")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Game extends NamedEntity implements Broadcastable {
+public class Game extends NamedEntity implements Broadcastable, BroadcastTarget {
 
     private static final long serialVersionUID = 1L;
 
@@ -59,7 +60,7 @@ public class Game extends NamedEntity implements Broadcastable {
      *
      */
     @Basic(optional = false)
-    //@Pattern(regexp = "^\\w+$")
+    @Pattern(regexp = "^.*\\S+.*$", message = "Game name cannot be empty")// must at least contains one non-whitespace character
     private String name;
 
     /**
@@ -67,7 +68,7 @@ public class Game extends NamedEntity implements Broadcastable {
      */
     @NotNull
     @Basic(optional = false)
-    // @Pattern(regexp = "^\\w+$")
+    @Pattern(regexp = "^([a-zA-Z0-9_-]|\\.(?!\\.))*$", message = "Token shall only contains alphanumeric characters, numbers, dots, underscores or hyphens")
     private String token;
 
     /**
@@ -118,10 +119,9 @@ public class Game extends NamedEntity implements Broadcastable {
 
     /**
      *
-     @Column(name = "gamemodelid", nullable = false, insertable = false, updatable = false)
-     private Long gameModelId;
+     * @Column(name = "gamemodelid", nullable = false, insertable = false,
+     * updatable = false) private Long gameModelId;
      */
-
     /**
      *
      */
@@ -435,6 +435,12 @@ public class Game extends NamedEntity implements Broadcastable {
         return false;
     }
 
+    @Override
+    @JsonIgnore
+    public String getChannel() {
+        return "Game-" + getId();
+    }
+
     /**
      *
      */
@@ -480,7 +486,7 @@ public class Game extends NamedEntity implements Broadcastable {
      */
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
-        String audience = Helper.getAudienceTokenForGame(this.getId());
+        String audience = this.getChannel();
 
         Map<String, List<AbstractEntity>> map = new HashMap<>();
         ArrayList<AbstractEntity> entities = new ArrayList<>();

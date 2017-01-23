@@ -13,6 +13,7 @@ import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -23,6 +24,7 @@ import javax.jcr.RepositoryException;
 import javax.persistence.*;
 import java.util.*;
 import java.util.Map.Entry;
+import javax.validation.constraints.Pattern;
 import org.apache.shiro.SecurityUtils;
 
 /**
@@ -33,13 +35,11 @@ import org.apache.shiro.SecurityUtils;
 //        @UniqueConstraint(columnNames = "name"))
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NamedQueries({
-    @NamedQuery(name = "GameModel.findByStatus", query = "SELECT a FROM GameModel a WHERE a.status = :status ORDER BY a.createdTime ASC"),
+    @NamedQuery(name = "GameModel.findByStatus", query = "SELECT a FROM GameModel a WHERE a.status = :status ORDER BY a.name ASC"),
     @NamedQuery(name = "GameModel.findDistinctChildrenLabels", query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.rootGameModel.id = :containerId"),
     @NamedQuery(name = "GameModel.findByName", query = "SELECT a FROM GameModel a WHERE a.name = :name"),
-    @NamedQuery(name = "GameModel.findTemplate", query = "SELECT a FROM GameModel a WHERE a.template = TRUE"),
-    @NamedQuery(name = "GameModel.findTemplateByStatus", query = "SELECT a FROM GameModel a WHERE a.template = TRUE AND a.status = :status ORDER BY a.name"),
     @NamedQuery(name = "GameModel.findAll", query = "SELECT gm FROM GameModel gm")})
-public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor> /*, Broadcastable */ {
+public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor>, BroadcastTarget {
 
     private static final long serialVersionUID = 1L;
 
@@ -65,8 +65,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      */
     @Basic(optional = false)
-    //@Pattern(regexp = "^\\w+$")
-    //@XmlID
+    @Pattern(regexp = "^.*\\S+.*$", message = "GameModel name cannot be empty")// must at least contains one non-whitespace character
     private String name;
 
     /**
@@ -106,13 +105,12 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @JsonIgnore
     private User createdBy;
 
-    /**
+    /*
      *
+     * //@XmlTransient
+     *
+     * @JsonIgnore private Boolean template = true;
      */
-    //@XmlTransient
-    @JsonIgnore
-    private Boolean template = true;
-
     /**
      *
      */
@@ -676,16 +674,13 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      * @return the template
      */
     public Boolean getTemplate() {
-        return template;
+        return status != Status.PLAY;
     }
 
     /**
-     * @param template the template to set
+     * @param template the template to set public void setTemplate(Boolean
+     *                 template) { this.template = template; }
      */
-    public void setTemplate(Boolean template) {
-        this.template = template;
-    }
-
     /**
      * TODO: select game.* FROM GAME where dtype like 'DEBUGGAME' and
      * gamemodelid = this.getId()
@@ -701,25 +696,35 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         return false;
     }
 
+    @Override
+    @JsonIgnore
+    public String getChannel() {
+        return "GameModel-" + getId();
+    }
+
     /*@Override
     public Map<String, List<AbstractEntity>> getEntities() {
         Map<String, List<AbstractEntity>> map = new HashMap<>();
         ArrayList<AbstractEntity> entities = new ArrayList<>();
         entities.add(this);
-        map.put(Helper.getAudienceToken(this), entities);
+        map.put(this.getChannel(), entities);
         return map;
     }*/
     public enum Status {
         /**
-         * Initial value, game is playable
+         * Not a template game model but one linked to an effective game
+         */
+        PLAY,
+        /**
+         * Template GameModel
          */
         LIVE,
         /**
-         * Game in the wast bin
+         * Template GameModel in the wast bin
          */
         BIN,
         /**
-         * Schedule for deletion
+         * Template GameModel Scheduled for deletion
          */
         DELETE,
         /**

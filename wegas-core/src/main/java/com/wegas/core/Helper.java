@@ -8,15 +8,11 @@
 package com.wegas.core;
 
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.NamedEntity;
-import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.GameModel;
-import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.Result;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -717,83 +713,13 @@ public class Helper {
     }
 
     /**
-     * Generation Pusher token for a gameModel
+     * Generation Pusher token for a target
      *
-     * @param id gamemodel id
-     * @return token for the game model
+     * @param target 
+     * @return channel name
      */
-    public static String getAudienceTokenForGameModel(Long id) {
-        return "GameModel-" + id;
-    }
-
-    /**
-     * Generation Pusher token for a game
-     *
-     * @param id game id
-     * @return token for the game
-     */
-    public static String getAudienceTokenForGame(Long id) {
-        return "Game-" + id;
-    }
-
-    /**
-     * Generation Pusher token for a team
-     *
-     * @param id team id
-     * @return token for the team
-     */
-    public static String getAudienceTokenForTeam(Long id) {
-        return "Team-" + id;
-    }
-
-    /**
-     * Generation Pusher token for a player
-     *
-     * @param id player id
-     * @return token for the player
-     */
-    public static String getAudienceTokenForPlayer(Long id) {
-        return "Player-" + id;
-    }
-
-    /**
-     * Generation Pusher token for a game
-     *
-     * @param game the game
-     * @return token for the game
-     */
-    public static String getAudienceToken(Game game) {
-        return Helper.getAudienceTokenForGame(game.getId());
-    }
-
-    /**
-     * Generation Pusher token for a game model
-     *
-     * @param gameModel the game model
-     * @return token for the game model
-     */
-    public static String getAudienceToken(GameModel gameModel) {
-        return Helper.getAudienceTokenForGameModel(gameModel.getId());
-    }
-
-    /**
-     * Generation Pusher token for a team
-     *
-     * @param team the team
-     * @return token for the team
-     */
-    public static String getAudienceToken(Team team) {
-        return Helper.getAudienceTokenForTeam(team.getId());
-    }
-
-    /**
-     * Generation Pusher token for a player
-     *
-     * @param player the player
-     * @return token for the player
-     */
-    public static String getAudienceToken(Player player) {
-        return Helper.getAudienceTokenForPlayer(player.getId());
+    public static String getAudienceToken(BroadcastTarget target) {
+        return target.getChannel();
     }
 
     /**

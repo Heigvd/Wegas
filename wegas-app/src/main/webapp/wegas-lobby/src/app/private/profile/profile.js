@@ -50,6 +50,14 @@ angular
                     }
                 }
             })
+            .state('wegas.private.profile.admin.who', {
+                views: {
+                    'admin-container@wegas.private.profile.admin': {
+                        controller: 'AdminWhoCtrl as adminWhoCtrl',
+                        templateUrl: 'app/private/admin/who/who.tmpl.html'
+                    }
+                }
+            })
             .state('wegas.private.profile.admin.users', {
                 views: {
                     'admin-container@wegas.private.profile.admin': {

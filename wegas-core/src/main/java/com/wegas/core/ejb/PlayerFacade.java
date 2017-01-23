@@ -25,6 +25,7 @@ import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import java.util.ArrayList;
+import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,6 +69,9 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     @EJB
     private UserFacade userFacade;
+
+    @Inject
+    private RequestManager requestManager;
 
     @Inject
     private Event<ResetEvent> resetEvent;
@@ -443,5 +447,20 @@ public class PlayerFacade extends BaseFacade<Player> {
             logger.error("Error retrieving player facade", ex);
             return null;
         }
+    }
+
+    public Collection<String> getLocks(Long playerId) {
+        Player player = this.find(playerId);
+        Team team = player.getTeam();
+        Game game = player.getGame();
+        GameModel gameModel = game.getGameModel();
+
+        List<String> audiences = new ArrayList<>();
+        audiences.add("Player-" + player.getId());
+        audiences.add("Team-" + team.getId());
+        audiences.add("Game-" + game.getId());
+        audiences.add("GameModel-" + gameModel.getId());
+
+        return requestManager.getTokensByAudiences(audiences);
     }
 }

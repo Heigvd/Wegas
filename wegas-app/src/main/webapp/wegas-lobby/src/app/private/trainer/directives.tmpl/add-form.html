@@ -13,7 +13,7 @@
         <div ng-if="!loadingScenarios" class="form__row">
             <select class="input input--small" id="scenario-template" ng-model="newSession.scenarioId">
                 <option value="0" disabled>{{'TRAINER-INDEX-ADD-SCENARIO-INPUT' | translate}}</option>
-                <option ng-repeat="scenario in scenarios | filter: { canInstantiate: true }" value="{{scenario.id}}">{{scenario.name}}</option>
+                <option ng-repeat="scenario in scenariomenu" value="{{scenario.id}}">{{scenario.name}}</option>
             </select>
         </div>
         <div class="form__row form__row--right">

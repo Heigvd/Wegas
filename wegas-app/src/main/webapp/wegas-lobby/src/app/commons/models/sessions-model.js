@@ -93,17 +93,26 @@ angular.module('wegas.models.sessions', [])
             },
             updateGameSession = function(sessionInfos, sessionBeforeChange) {
                 var deferred = $q.defer(),
+                    k, gameToSave = {},
                     gameSetted = false;
-                if (sessionBeforeChange.name !== sessionInfos.name) {
-                    sessionBeforeChange.name = sessionInfos.name;
+                for (k in sessionBeforeChange) {
+                    if (sessionBeforeChange.hasOwnProperty(k)) {
+                        gameToSave[k] = sessionBeforeChange[k];
+                    }
+                }
+
+                if (gameToSave.name !== sessionInfos.name) {
+                    gameToSave.name = sessionInfos.name;
                     gameSetted = true;
                 }
-                if (sessionBeforeChange.token !== sessionInfos.token) {
-                    sessionBeforeChange.token = sessionInfos.token;
+                if (gameToSave.token !== sessionInfos.token) {
+                    gameToSave.token = sessionInfos.token;
                     gameSetted = true;
                 }
                 if (gameSetted) {
-                    $http.put(ServiceURL + "rest/GameModel/Game/" + sessionBeforeChange.id, sessionBeforeChange).success(function(data) {
+                    $http.put(ServiceURL + "rest/GameModel/Game/" + sessionBeforeChange.id, gameToSave).success(function(data) {
+                        sessionBeforeChange.name = data.name;
+                        sessionBeforeChange.token = data.token;
                         deferred.resolve(sessionBeforeChange);
                     }).error(function(data) {
                         deferred.resolve(false);
@@ -249,6 +258,9 @@ angular.module('wegas.models.sessions', [])
         /* Get a session form token, undefined otherwise. */
         model.findSessionToJoin = function(token) {
             var deferred = $q.defer();
+            if (!token.match(/^([a-zA-Z0-9_-]|\.(?!\.))*$/)) {
+                token = "";
+            }
             $http.get(ServiceURL + "rest/GameModel/Game/FindByToken/" + token, {
                 ignoreLoadingBar: true
             }).success(function(data) {
@@ -263,7 +275,7 @@ angular.module('wegas.models.sessions', [])
                 }
             }).error(function(data) {
                 $translate('COMMONS-SESSIONS-GET-FLASH-ERROR').then(function(message) {
-                    deferred.resolve(Responses.danger(message, data));
+                    deferred.resolve(Responses.danger(message, false));
                 });
             });
             return deferred.promise;
