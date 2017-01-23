@@ -8,7 +8,9 @@
         <div class="card__description" title="ID: {{ user.id }}  Username: {{ user.username }}">
             <div class="line line--primary" style="padding: 0px;">
                 <div class="card-number">{{ ($index+1) + "." }}</div>
-                <div class="card-fullname">{{ user.fullname }}</div>
+                <div class="card-fullname">{{ user.fullname }}
+                    <a class="card-be" ng-controller="AdminUsersCtrl as adminUsersCtrl" ng-click="adminUsersCtrl.be(user.user)"> (be!)</a>
+                </div>
                 <div ng-if="user.roles" class="card-roles">[ {{ user.roles }}]</div>
                 <div class="card-email">{{ user.email }}</div>
             </div>

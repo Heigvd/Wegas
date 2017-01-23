@@ -1,7 +1,7 @@
 /*
-** This service subscribes to the default presence channel to stay informed about connected users.
-** Client modules are in turn informed via events "wegaspusher:update-members" and "wegaspusher:service-error".
-*/
+ ** This service subscribes to the default presence channel to stay informed about connected users.
+ ** Client modules are in turn informed via events "wegaspusher:update-members" and "wegaspusher:service-error".
+ */
 
 angular.module('wegas.service.pusher', [])
 
@@ -15,10 +15,10 @@ angular.module('wegas.service.pusher', [])
             memberlist = [];
 
         /*
-            for (var j=0; j<200; j++) {
-                memberlist.push({id: j, fullname: ('dummy ' + j), email: j+"@root.com", roles: ""});
-            }
-        */
+         for (var j=0; j<200; j++) {
+         memberlist.push({id: j, fullname: ('dummy ' + j), email: j+"@root.com", roles: ""});
+         }
+         */
 
         /*global Pusher*/
         service.start = function() {
@@ -106,6 +106,7 @@ angular.module('wegas.service.pusher', [])
             var member = { id: m.id, fullname: m.info.name };
             UsersModel.getFullUser(m.id).then(function(response) {
                 if (!response.isErroneous()) {
+                    member.user = response.data;
                     member.username = response.data.account.username || "no username ???";
                     member.email = response.data.account.email || "no email ???";
                     member.roles = listRoles(response.data.roles);

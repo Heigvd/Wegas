@@ -43,6 +43,7 @@ YUI.add('wegas-chart', function(Y) {
                 },
                 axisY: {
                     type: Chartist.AutoScaleAxis,
+                    position: this.get("yLabelPosition"),
                     showLabel: this.get("showYLabels")
                 }
             };
@@ -253,6 +254,10 @@ YUI.add('wegas-chart', function(Y) {
             showYLabels: {
                 type: "boolean",
                 value: true
+            },
+            yLabelPosition: {
+                type: "string",
+                value: "start"
             },
             xLabelMapper: {
                 type: "string",
