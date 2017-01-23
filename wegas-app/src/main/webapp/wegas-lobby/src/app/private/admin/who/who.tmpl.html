@@ -1,0 +1,21 @@
+<h3 ng-if="(adminWhoCtrl.message.length == 0)">{{adminWhoCtrl.who.length}} {{(adminWhoCtrl.who.length == 1 ? 'ADMIN-WHO-SINGULAR-TITLE' : 'ADMIN-WHO-PLURAL-TITLE') | translate}}</h3>
+<h3 ng-if="(adminWhoCtrl.message.length != 0)" style="color:red;">{{adminWhoCtrl.message}}</h3>
+<div ng-if="!adminWhoCtrl.loading"
+     class="view__list" style="height: calc( 100% - 75px );">
+    <div class="card card--admin-who"
+         ng-repeat="user in adminWhoCtrl.who | orderBy:['-roles.length','-connectionDate']"
+         user="user">
+        <div class="card__description" title="ID: {{ user.id }}  Username: {{ user.username }}">
+            <div class="line line--primary" style="padding: 0px;">
+                <div class="card-number">{{ ($index+1) + "." }}</div>
+                <div class="card-fullname">{{ user.fullname }}</div>
+                <div ng-if="user.roles" class="card-roles">[ {{ user.roles }}]</div>
+                <div class="card-email">{{ user.email }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+<div ng-if="adminWhoCtrl.loading"
+     class="view__list view__list--loading"
+     content-loading="{{'ADMIN-USERS-LOADING' | translate}}">
+</div>

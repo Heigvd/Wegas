@@ -1,7 +1,8 @@
 angular.module('private.admin', [
     'wegas.models.groups',
     'private.admin.users',
-    'private.admin.groups'
+    'private.admin.groups',
+    'private.admin.who'
 
 ])
     .config(function($stateProvider) {

@@ -68,7 +68,7 @@ public class Game extends NamedEntity implements Broadcastable, BroadcastTarget 
      */
     @NotNull
     @Basic(optional = false)
-    @Pattern(regexp = "^([a-zA-Z_-]|\\.(?!\\.))*$", message = "Token shall only contains alphanumeric characters, dots, underscores or hyphens")
+    @Pattern(regexp = "^([a-zA-Z0-9_-]|\\.(?!\\.))*$", message = "Token shall only contains alphanumeric characters, numbers, dots, underscores or hyphens")
     private String token;
 
     /**
