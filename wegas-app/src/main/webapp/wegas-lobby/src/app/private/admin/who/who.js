@@ -13,13 +13,16 @@ angular.module('private.admin.who', ['wegas.service.pusher'])
             });
     })
 
-    .controller('AdminWhoCtrl', function AdminWhoCtrl($state, $scope, $rootScope, Auth, WegasPusher) {
+    .controller('AdminWhoCtrl', function AdminWhoCtrl($state, $scope, $rootScope, Auth, WegasPusher, $filter) {
         "use strict";
         var ctrl = this;
         ctrl.who = [];
         ctrl.loading = true;
         // This message is displayed as soon as it contains a non-empty string:
         ctrl.message = "";
+
+        // Each array entry has properties { id: integer, name: string }
+        ctrl.roles = WegasPusher.getRoles();
 
         ctrl.updateWhoList = function() {
             ctrl.who = WegasPusher.getMembers();

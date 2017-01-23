@@ -2,17 +2,25 @@
 <h3 ng-if="(adminWhoCtrl.message.length != 0)" style="color:red;">{{adminWhoCtrl.message}}</h3>
 <div ng-if="!adminWhoCtrl.loading"
      class="view__list" style="height: calc( 100% - 75px );">
-    <div class="card card--admin-who"
-         ng-repeat="user in adminWhoCtrl.who | orderBy:['-roles.length','-connectionDate']"
-         user="user">
-        <div class="card__description" title="ID: {{ user.id }}  Username: {{ user.username }}">
-            <div class="line line--primary" style="padding: 0px;">
-                <div class="card-number">{{ ($index+1) + "." }}</div>
-                <div class="card-fullname">{{ user.fullname }}
-                    <a class="card-be" ng-controller="AdminUsersCtrl as adminUsersCtrl" ng-click="adminUsersCtrl.be(user.user)"> (be!)</a>
+    <div ng-repeat="role in adminWhoCtrl.roles | orderBy:'id'"
+         role="role">
+        <div ng-if="(adminWhoCtrl.who | filter: {highestRole: role.id}).length != 0"
+             class="group-title">{{role.name}}&thinsp;:</div>
+        <div class="card card--admin-who"
+             ng-repeat="user in adminWhoCtrl.who | filter: {highestRole: role.id} | orderBy:'connectionDate':true"
+             user="user">
+            <div class="card__description" title="ID: {{ user.id }}  Username: {{ user.username }}">
+                <div class="line line--primary" style="padding: 0px;">
+                    <div class="card-number">{{ ($index+1) + "." }}</div>
+                    <div class="card-fullname">{{ user.fullname }}</div>
+                    <div class="card-be button button--small button--round button--default-reverse button--label-off button--play"
+                       title="Impersonate !"
+                       ng-controller="AdminUsersCtrl as adminUsersCtrl"
+                       ng-click="adminUsersCtrl.be(user.user)">
+                        <span class="button__label">{{'ADMIN-USERS-CARD-EDIT-BTN' | translate}}</span>
+                    </div>
+                    <div class="card-email">{{ user.email }}</div>
                 </div>
-                <div ng-if="user.roles" class="card-roles">[ {{ user.roles }}]</div>
-                <div class="card-email">{{ user.email }}</div>
             </div>
         </div>
     </div>

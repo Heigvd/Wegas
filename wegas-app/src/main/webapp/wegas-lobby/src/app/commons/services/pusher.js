@@ -14,11 +14,20 @@ angular.module('wegas.service.pusher', [])
             presence = null,
             memberlist = [];
 
-        /*
-         for (var j=0; j<200; j++) {
-         memberlist.push({id: j, fullname: ('dummy ' + j), email: j+"@root.com", roles: ""});
-         }
-         */
+        // Exported roles:
+        service.ADMIN_ID = 0;
+        service.SCENARIST_TRAINER_ID = 1;
+        service.PLAYER_ID = 2;
+        service.GUEST_ID = 3;
+        service.NONE_ID = 4;
+
+        var roles = [
+            { id: service.ADMIN_ID, name: "Admin" },
+            { id: service.SCENARIST_TRAINER_ID, name: "Scenarist/Trainer" },
+            { id: service.PLAYER_ID, name: "Player" },
+            { id: service.GUEST_ID, name: "Guest" },
+            { id: service.NONE_ID, name: "No role ???" }
+        ];
 
         /*global Pusher*/
         service.start = function() {
@@ -46,9 +55,30 @@ angular.module('wegas.service.pusher', [])
             return memberlist;
         }
 
+        // Public method for getting the list of roles:
+        service.getRoles = function() {
+            return roles;
+        }
+
         function initListening(){
+
             presence.bind('pusher:subscription_succeeded', function(members) {
                 clearMemberlist();
+
+                // Debugging:
+                if (false) {
+                    for (var j = 0; j < 200; j++) {
+                        memberlist.push({
+                            id: j,
+                            fullname: ('dummy ' + j),
+                            email: j + "@root.com",
+                            roles: "",
+                            highestRole: service.PLAYER_ID,
+                            connectionDate: Date.now()
+                        });
+                    }
+                }
+
                 members.each(function(member) {
                     addMember(member);
                 });
@@ -76,40 +106,50 @@ angular.module('wegas.service.pusher', [])
         }
 
         function addMember(m) { // m = { m.id, m.info }
-
-            function listRoles(roles){
-                var res = "",
-                    isAdmin = false,
+            function getHighestRole(roles){
+                var isAdmin = false,
                     isScenarist = false,
-                    isTrainer = false;
+                    isTrainer = false,
+                    isPlayer = false,
+                    isGuest = false;
+
                 // Identify the roles we want to make explicit:
                 roles.forEach(function(elem) {
                     switch (elem.name) {
-                        case "Trainer":
-                            isTrainer = true;
+                        case "Administrator":
+                            isAdmin = true;
                             break;
                         case "Scenarist":
                             isScenarist = true;
                             break;
-                        case "Administrator":
-                            isAdmin = true;
+                        case "Trainer":
+                        case "PMG-trainer":
+                            isTrainer = true;
+                            break;
+                        case "Public":
+                            isPlayer = true;
+                            break;
+                        case "Guest":
+                            isGuest = true;
                             break;
                     }
                 });
-                // Order the resulting roles:
-                if (isAdmin) res = "Admin ";
-                if (isScenarist) res += "Scenarist ";
-                if (isTrainer) res += "Trainer ";
-                return res;
+                // Return only the most privileged role:
+                if (isAdmin) return service.ADMIN_ID;
+                if (isScenarist || isTrainer) return service.SCENARIST_TRAINER_ID;
+                if (isPlayer) return service.PLAYER_ID;
+                if (isGuest) return service.GUEST_ID;
+                else return service.NONE_ID;
             }
 
             var member = { id: m.id, fullname: m.info.name };
             UsersModel.getFullUser(m.id).then(function(response) {
                 if (!response.isErroneous()) {
                     member.user = response.data;
-                    member.username = response.data.account.username || "no username ???";
-                    member.email = response.data.account.email || "no email ???";
-                    member.roles = listRoles(response.data.roles);
+                    member.username = response.data.account.username || "no username";
+                    member.email = response.data.account.email || "no email";
+                    member.roles = response.data.roles;
+                    member.highestRole = getHighestRole(response.data.roles);
                 } else {
                     console.log("WegasPusher: could not get details for user " + m.id + " " + m.fullname);
                 }

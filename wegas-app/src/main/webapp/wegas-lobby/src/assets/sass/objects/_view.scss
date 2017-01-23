@@ -275,6 +275,12 @@
             &.view__list--with-archive {
                 height: calc(100% - 160px);
             }
+
+            .group-title {
+                font-weight:bold;
+                font-size: 16px;
+                padding-top: 10px;
+            }
         }
         .view__no-group {
             @include make-xs-column(12);
