@@ -152,6 +152,11 @@
                 <artifactId>eclipselink</artifactId>
                 <version>${eclipselink.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.extension</artifactId>
+                <version>${eclipselink.version}</version>
+            </dependency>
             <!-- slf4j -->
             <dependency>
                 <groupId>org.slf4j</groupId>
