@@ -60,10 +60,13 @@ YUI.add('wegas-lockmanager', function(Y) {
         lock: function(token) {
             var i;
             this.register(token, null);
-            this._locks[token].locked = true;
+            if (!this._locks[token].locked) {
+                // avoid to relock already locked elements
+                this._locks[token].locked = true;
 
-            for (i in this._locks[token].listeners) {
-                this._locks[token].listeners[i].lock();
+                for (i in this._locks[token].listeners) {
+                    this._locks[token].listeners[i].lock();
+                }
             }
         },
         unlock: function(token) {

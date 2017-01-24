@@ -515,30 +515,25 @@
 
             .card-fullname {
                 float: left;
-                width: 260px;
+                width: 300px;
                 overflow-x: auto;
                 overflow-y: hidden;
                 margin-right:10px;
-
-                .card-be{
-                    cursor: pointer;
-                }
             }
 
             .card-email {
                 float: left;
-                width: 200px;
+                width: 300px;
                 overflow-x: auto;
                 overflow-y:hidden;
             }
 
-            .card-roles {
+            .card-be{
                 float: right;
-                width: 200px;
-                overflow-x: auto;
-                overflow-y: hidden;
-                text-align:right;
-                padding-right: 15px;
+                transform: scale(0.5);
+                padding: 0;
+                margin-top: -17px;
+                margin-bottom: -17px;
             }
         }
 
@@ -546,7 +541,7 @@
             font-weight: normal;
         }
 
-        @media screen and (max-width: 850px) {
+        @media screen and (max-width: 830px) {
             .card__description {
                 .card-fullname {
                     width: auto;

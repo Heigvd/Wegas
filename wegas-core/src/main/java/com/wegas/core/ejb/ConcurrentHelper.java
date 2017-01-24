@@ -104,11 +104,12 @@ public class ConcurrentHelper {
             lock = locks.get(effectiveToken);
 
             if (lock.getLock().tryLock()) {
-                if (audience != null) {
-                    websocketFacade.sendLock(audience, token);
-                }
                 r = true; // Successful
                 lock.counter++;
+
+                if (audience != null && lock.counter == 1) { // just locked
+                    websocketFacade.sendLock(audience, token);
+                }
                 /*} else if (lock.counter == 0) {
                 // since the lock is held by another process, the counter is always (thanks to sync(this)) >= 1)
                 locks.remove(token);*/
@@ -139,12 +140,12 @@ public class ConcurrentHelper {
         //logger.error("try to lock " + token);
         try {
             //synchronized (this) {
-            if (audience != null) {
-                websocketFacade.sendLock(audience, token);
-            }
             locks.putIfAbsent(effectiveToken, new RefCounterLock(token, audience));
             lock = locks.get(effectiveToken);
             lock.counter++;
+            if (audience != null && lock.counter == 1) { //just locked
+                websocketFacade.sendLock(audience, token);
+            }
             //}
         } finally {
             mainLock.unlock();
