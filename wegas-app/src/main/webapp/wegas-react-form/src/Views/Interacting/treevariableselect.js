@@ -76,7 +76,7 @@ class TreeVariableSelect extends React.Component {
     }
     render() {
         return (
-            <div>
+            <div className={styles.div1} >
                 <Popover
                     show={this.state.searching}
                     onClickOutside={() => this.setState({
