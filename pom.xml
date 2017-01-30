@@ -86,7 +86,7 @@
         <wegas.deploy.server>dev-site</wegas.deploy.server>
         <wegas.deploy.name>Wegas.war</wegas.deploy.name>
         <wegas.clientErrorLogging>false</wegas.clientErrorLogging>
-        <wegas.useYUICDN>true</wegas.useYUICDN>
+        <wegas.useYUICDN>false</wegas.useYUICDN>
 
         <shiro.version>1.2.3</shiro.version>
         <atmosphere.version>0.9-SNAPSHOT</atmosphere.version>
