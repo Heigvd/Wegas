@@ -530,10 +530,10 @@
 
             .card-be{
                 float: right;
-                transform: scale(0.5);
+                transform: scale(0.7);
                 padding: 0;
-                margin-top: -17px;
-                margin-bottom: -17px;
+                margin-top: -16px;
+                margin-bottom: -16px;
             }
         }
 
@@ -541,7 +541,7 @@
             font-weight: normal;
         }
 
-        @media screen and (max-width: 830px) {
+        @media screen and (max-width: 868px) {
             .card__description {
                 .card-fullname {
                     width: auto;
