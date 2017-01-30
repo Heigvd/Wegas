@@ -4,7 +4,7 @@ import styles from './Statement.css';
 export default function Statement(props) {
     return (
         <div className={styles.Statement}>
-            <div className={styles.comp}>
+            <div>
                 {props.children}
             </div>
         </div>);

@@ -69,8 +69,7 @@ class Condition extends React.Component {
         if (descr) {
             const schema = {
                 type: descr.returns,
-                value: defaultValue(descr.returns),
-                view: { label: 'value' }
+                value: defaultValue(descr.returns)
             };
             container = [(
                 <ConditionOperator
