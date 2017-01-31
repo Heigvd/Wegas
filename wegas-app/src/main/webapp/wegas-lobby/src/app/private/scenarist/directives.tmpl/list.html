@@ -1,5 +1,5 @@
 <div class="card card--scenarist-scenario"
-      ng-repeat="scenario in scenarios"
+      ng-repeat="scenario in scenarios | filter: {canEdit: true} "
       scenario="scenario"
       archive="archive"
       duplicate="duplicate"

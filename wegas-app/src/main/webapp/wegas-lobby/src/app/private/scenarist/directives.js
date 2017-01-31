@@ -26,7 +26,7 @@ angular.module('private.scenarist.directives', [])
                 i;
             for (i=0; i<len; i++){
                 var scenario = ctrl.rawScenarios[i];
-                if (scenario.canView === false || scenario.canEdit === false) continue;
+                //if (scenario.canView === false || scenario.canEdit === false) continue; // all scenrios within raw list already have canEdit=true !
                 var needle = search.toLowerCase();
                 if ((scenario.name && scenario.name.toLowerCase().indexOf(needle) >= 0) ||
                     (scenario.createdByName && scenario.createdByName.toLowerCase().indexOf(needle) >= 0) ||
