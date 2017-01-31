@@ -270,12 +270,6 @@ public class GameModelController {
         return gameModelFacade.findByStatusAndUser(status);
     }
 
-    @GET
-    @Path("status_old/{status: [A-Z]*}")
-    public Collection<GameModel> findByStatus2(@PathParam("status") final GameModel.Status status) {
-        return filterGameModels(gameModelFacade.findByStatus(status));
-    }
-
     /**
      * count gameModel with given status
      *
@@ -415,46 +409,4 @@ public class GameModelController {
     public void automaticVersionCreation() throws IOException, RepositoryException {
         gameModelFacade.automaticVersionCreation();
     }
-
-    private GameModel filterGameModel(GameModel gm, Subject s) {
-        boolean canView = s.isPermitted("GameModel:View:gm" + gm.getId());
-        boolean canDuplicate = s.isPermitted("GameModel:Duplicate:gm" + gm.getId());
-        boolean canInstantiate = s.isPermitted("GameModel:Instantiate:gm" + gm.getId());
-
-        if (canView || canDuplicate || canInstantiate || canDuplicate) {
-            boolean canEdit = s.isPermitted("GameModel:Edit:gm" + gm.getId());
-            gameModelFacade.detach(gm);
-            gm.setCanEdit(canEdit);
-            gm.setCanView(canView);
-            gm.setCanDuplicate(canDuplicate);
-            gm.setCanInstantiate(canInstantiate);
-            return gm;
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Filter out gamemodel the current user don't own any rights on.
-     *
-     * Game model are detached because of poor modelling (canEdit, canView,
-     * canDuplicate, canInstantiate fields depends on observer !)
-     *
-     * @param gameModels
-     * @return
-     */
-    private Collection<GameModel> filterGameModels(Collection<GameModel> gameModels) {
-        Collection<GameModel> games = new ArrayList<>();
-        Subject s = SecurityUtils.getSubject();
-
-        for (GameModel gm : gameModels) {
-            gm = filterGameModel(gm, s);
-            if (gm != null) {
-                games.add(gm);
-            }
-        }
-        return games;
-
-    }
-
 }
