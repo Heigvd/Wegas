@@ -26,20 +26,20 @@ YUI.add('wegas-websocketlistener', function(Y) {
                 }
             });
         },
-        _before: function(token) {
-            var node = Y.Widget.getByNode(".wegas-login-page") ||
+        _getNode: function() {
+            return Y.Widget.getByNode(".wegas-login-page") ||
                 Y.Widget.getByNode(".wegas-editview") ||
                 Y.Widget.getByNode(".wegas-trainer--app") ||
                 Y.Widget.getByNode(".wegas-playerview");
+        },
+        _before: function(token) {
+            var node = this._getNode();
             if (Y.one("body").hasClass("wegas-advancedmode")) {
                 node.showOverlay(token);
             }
         },
         _after: function(token) {
-            var node = Y.Widget.getByNode(".wegas-login-page") ||
-                Y.Widget.getByNode(".wegas-editview") ||
-                Y.Widget.getByNode(".wegas-trainer--app") ||
-                Y.Widget.getByNode(".wegas-playerview");
+            var node = this._getNode();
             if (Y.one("body").hasClass("wegas-advancedmode")) {
                 node.hideOverlay(token);
             }
@@ -56,10 +56,7 @@ YUI.add('wegas-websocketlistener', function(Y) {
         },
         onLifeCycleEvent: function(data) {
             var payload = Y.JSON.parse(data),
-                node = Y.Widget.getByNode(".wegas-login-page") ||
-                Y.Widget.getByNode(".wegas-editview") ||
-                Y.Widget.getByNode(".wegas-trainer--app") ||
-                Y.Widget.getByNode(".wegas-playerview");
+                node = this._getNode();
             /*(Y.Widget.getByNode("#centerTabView") &&
              Y.Widget.getByNode("#centerTabView").get("selection")) ||
              ;*/
@@ -99,6 +96,9 @@ YUI.add('wegas-websocketlistener', function(Y) {
             });
         },
         onCustomEvent: function(data) {
+            var payload = Y.JSON.parse(data);
+            // BEURK
+            Y.Wegas.Facade.Variable.fire(payload.type, payload.payload);
         },
         forceEntityUpdate: function(data) {
             this._before();

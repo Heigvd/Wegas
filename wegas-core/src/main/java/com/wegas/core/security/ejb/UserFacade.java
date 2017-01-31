@@ -12,6 +12,7 @@ import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
+import com.wegas.core.ejb.WebsocketFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
@@ -45,6 +46,8 @@ import javax.persistence.NoResultException;
 import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -745,7 +748,10 @@ public class UserFacade extends BaseFacade<User> {
      * @return true if current user has access to
      */
     private boolean hasPermission(String type, Long id) {
-        if ("GameModel".equals(type)) {
+        if ("User".equals(type)) {
+            User user = this.getCurrentUser();
+            return id != null && id.equals(user.getId());
+        } else if ("GameModel".equals(type)) {
             return SecurityUtils.getSubject().isPermitted("GameModel:View:gm" + id);
         } else if ("Game".equals(type)) {
             Game game = gameFacade.find(id);
@@ -771,15 +777,14 @@ public class UserFacade extends BaseFacade<User> {
      * can current user subscribe to given channel ?
      *
      * @param channel
-     * @param currentPlayer
      * @return true if access granted
      */
     public boolean hasPermission(String channel) {
-        String[] split = channel.split("-");
-        if (split.length != 2) {
-            return false;
+        if (WebsocketFacade.ADMIN_CHANNEL.equals(channel)) {
+            return SecurityUtils.getSubject().hasRole("Administrator");
         } else {
-            return hasPermission(split[0], Long.parseLong(split[1]));
+            Matcher matcher = WebsocketFacade.PRIVATE_CHANNEL_PATTERN.matcher(channel);
+            return matcher.matches() && this.hasPermission(matcher.group(1), Long.parseLong(matcher.group(2), 10));
         }
     }
 

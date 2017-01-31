@@ -108,6 +108,16 @@
                                     }
                                 ]
                             },
+                            User: {
+                                source: "rest/Extended/User",
+                                initialRequest: "/" + #{requestController.currentUser.id},
+                                plugins: [{
+                                        fn: "UserCache",
+                                        cfg: {
+                                            currentUserId: #{requestController.currentUser.id}
+                                        }
+                                    }]
+                            },
                             Pusher: {
                                 type: "PusherDataSource",
                                 source: "rest/Pusher/",
@@ -118,16 +128,6 @@
                                         fn: "WebSocketListener",
                                         cfg: {
                                             dataSource: "Pusher"
-                                        }
-                                    }]
-                            },
-                            User: {
-                                source: "rest/Extended/User",
-                                initialRequest: "/" + #{requestController.currentUser.id},
-                                plugins: [{
-                                        fn: "UserCache",
-                                        cfg: {
-                                            currentUserId: #{requestController.currentUser.id}
                                         }
                                     }]
                             },

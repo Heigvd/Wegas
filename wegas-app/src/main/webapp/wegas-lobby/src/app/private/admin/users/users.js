@@ -77,6 +77,15 @@ angular.module('private.admin.users', [
                 }
             });
         };
+
+        ctrl.beByAccountId = function(accountId) {
+            if (!window.confirm("Reload to pretend to be \"" + user.name + "\"?")) {
+                return;
+            }
+            $http.post("rest/User/Be/" + accountId).success(function(result) {
+                window.location.reload();
+            });
+        };
         ctrl.be = function(user) {
             var accID = user.accounts[0].id;
             if (!window.confirm("Reload to pretend to be \"" + user.name + "\"?")) {

@@ -9,6 +9,7 @@ package com.wegas.core.persistence.game;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
@@ -699,7 +700,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @Override
     @JsonIgnore
     public String getChannel() {
-        return "GameModel-" + getId();
+        return Helper.GAMEMODEL_CHANNEL_PREFIX + getId();
     }
 
     /*@Override

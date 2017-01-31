@@ -18,4 +18,9 @@ import javax.persistence.Entity;
 public class FacebookAccount extends AbstractAccount {
 
     private static final long serialVersionUID = 1L;
+
+    @Override
+    public String getEmail() {
+        return null;
+    }
 }
