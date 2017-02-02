@@ -4,7 +4,7 @@ import styles from './Button.css';
 
 export function RemoveStatementButton(props) {
     return (
-        <span>
+        <span style={{ display: 'inline-block', width: '22px' }}>
             <IconButton
                 icon="fa fa-trash-o"
                 onClick={props.onClick}
