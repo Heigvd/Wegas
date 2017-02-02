@@ -14,14 +14,14 @@ const b = types.builders;
  */
 function defaultValue(type) {
     switch (type) {
-    case 'string':
-        return '';
-    case 'number':
-        return 0;
-    case 'boolean':
-        return true;
-    default:
-        throw new Error(`Default value for 'returns' property '${type}' is not implemented`);
+        case 'string':
+            return '';
+        case 'number':
+            return 0;
+        case 'boolean':
+            return true;
+        default:
+            throw new Error(`Default value for 'returns' property '${type}' is not implemented`);
     }
 }
 /**
@@ -72,14 +72,18 @@ class Condition extends React.Component {
                 value: defaultValue(descr.returns)
             };
             container = [(
+               <div style={{ display: 'inline-block', width: 'auto' }}>
                 <ConditionOperator
                     key="operator"
                     operator={this.state.operator}
                     onChange={v => this.setState({ operator: v }, this.check)}
                     type={descr.returns}
-                />
-            ), (renderForm(this.state.right, schema, v => this.setState({ right: v }, this.check), undefined, 'right')
-            )];
+                    />
+                </div>
+            ),
+            (<div style={{ display: 'inline-block', width: '6em' }}>
+                {renderForm(this.state.right, schema, v => this.setState({ right: v }, this.check), undefined, 'right')}
+            </div>)];
         }
         return (
             <div>
@@ -87,7 +91,7 @@ class Condition extends React.Component {
                     {...this.props}
                     node={this.state.left}
                     onChange={v => this.setState({ left: v }, this.check)}
-                />
+                    />
                 {container}
             </div>
         );

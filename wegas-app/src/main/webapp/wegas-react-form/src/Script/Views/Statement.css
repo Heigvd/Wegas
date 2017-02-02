@@ -4,4 +4,6 @@
     display:inline-block;
     padding-top:10px;
     padding-bottom: 5px;
+    max-width:100%;
+    min-width: 468px;
     }

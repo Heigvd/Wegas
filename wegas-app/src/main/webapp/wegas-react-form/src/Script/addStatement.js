@@ -38,8 +38,8 @@ export default function addStatement(Comp) {
 export const removeStatement = (Comp) => {
     function RemoveStatement(props) {
         return (
-            <div>
-                <RemoveStatementButton onClick={props.onRemove} />
+            <div style={{ width: '100%' }}>
+                <RemoveStatementButton onClick={props.onRemove}/>
                 <Statement><Comp {...props} /></Statement>
             </div>
         );

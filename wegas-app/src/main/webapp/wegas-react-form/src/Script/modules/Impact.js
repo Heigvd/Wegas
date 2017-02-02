@@ -107,36 +107,41 @@ class Impact extends React.Component {
         } = this.props;
         const error = this.checkHandled();
         if (error) {
-            return (<div>
+            return (<div >
                 <input
                     defaultValue={print(node).code}
                     onChange={ev => this.setState(extractMethod(parse(ev.target.value)),
                         () => this.props.onChange(buildMethod(this.state, type)))
                     }
-                />
+                    />
                 <div>{error}</div>
             </div>);
         }
         let child = [(
-            <Form
-                key="variable"
-                schema={upgradeSchema(variableSchema(view.variable), type)}
-                value={this.state.global ? `${this.state.member}.${this.state.method}` : this.state.variable}
-                onChange={this.handleVariableChange}
-            />
+            <div style={{ display: 'inline-block' }}>
+                <Form
+                    key="variable"
+                    schema={upgradeSchema(variableSchema(view.variable), type)}
+                    value={this.state.global ? `${this.state.member}.${this.state.method}` : this.state.variable}
+                    onChange={this.handleVariableChange}
+                    />
+            </div>
         )];
         if (this.state.variable) {
-            const schema = methodSchema(view.method, this.state.variable, type);
+            const schema = methodSchema(view.method, this.state.
+                variable, type);
             if (schema) {
                 child.push(
-                    <Form
-                        key="method"
-                        schema={methodSchema(view.method, this.state.variable, type)}
-                        value={this.state.method}
-                        onChange={v => this.setState({
-                            method: v
-                        }, this.checkVariableMethod)}
-                    />
+                    <div style={{ display: 'inline-block' }} >
+                        <Form
+                            key="method"
+                            schema={methodSchema(view.method, this.state.variable, type)}
+                            value={this.state.method}
+                            onChange={v => this.setState({
+                                method: v
+                            }, this.checkVariableMethod)}
+                            />
+                    </div>
                 );
             }
         }
@@ -149,7 +154,7 @@ class Impact extends React.Component {
             child = child.concat(
                 handleArgs(variable, method, args, v => this.setState({
                     args: v
-                }, this.checkVariableMethod))
+                }, this.checkVariableMethod)).map(form => (<div style={{ display: 'inline-block' }}>{form}</div>))
             );
         }
         if (this.state.member && this.state.method) {
@@ -162,7 +167,7 @@ class Impact extends React.Component {
             );
         }
         return (
-            <span>
+            <span style={{ display: 'inline-block', width: 'auto' }}>
                 {child}
             </span>
         );

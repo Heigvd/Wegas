@@ -102,7 +102,8 @@ class TreeVariableSelect extends React.Component {
                             padding: '5px 10px',
                             backgroundColor: 'white',
                             boxShadow: '0 2px 5px black',
-                            borderRadius: '3px'
+                            borderRadius: '3px',
+                            width: 'auto'
                         }}
                     >
                         <TreeSelect
@@ -119,6 +120,7 @@ class TreeVariableSelect extends React.Component {
                     onFocus={() => this.setState({
                         searching: true
                     })}
+                    style={{ display: 'inline-block', width: 'auto' }}
                 >
                     <div style={{ fontSize: '75%', opacity: 0.5 }}>
                         {buildPath(this.props.value)}

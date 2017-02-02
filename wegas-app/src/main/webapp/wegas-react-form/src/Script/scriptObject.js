@@ -15,9 +15,10 @@ function scriptObject(Comp) {
             <div
                 style={{
                     marginTop: '15px',
-                    maxWidth: '30.3em',
+                    maxWidth: '100%',
                     borderTop: 'solid 2px #4A8C9C',
-                    marginLeft: '50px'
+                    marginLeft: '10px',
+                    marginRight: '10px'
                 }}
             >
                 <span

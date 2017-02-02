@@ -733,7 +733,7 @@ YUI.add("wegas-variabledescriptor-entities", function (Y) {
                         {
                             type: NUMBER,
                             required: true,
-                            view: { label: 'value' }
+                            view:  {}
                         }]
                 }, /*
                  sub: {
