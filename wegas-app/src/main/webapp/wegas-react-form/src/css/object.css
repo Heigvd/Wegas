@@ -1,6 +1,4 @@
 .root {
- /*background-color: rgba(0, 0, 0, 0.05);*/
-
   & > legend {
     text-align: center;
   }

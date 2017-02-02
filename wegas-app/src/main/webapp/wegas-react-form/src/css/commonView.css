@@ -1,6 +1,6 @@
 .short {
     max-width: 12.5em;
-    margin-left: 50px;
+    margin-left: 10px;
 }
 
 .shortInline {
@@ -11,9 +11,10 @@
 }
 
 .long {
-    max-width: 28em;
+    max-width: 100%;
     font-size: 14px;
-    margin-left: 50px;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 .infos {
@@ -34,7 +35,7 @@
     color: #6a95b6;
     font-size: 16px;
     margin-top: 8px;
-    width: 130%;
+
 }
 
 .borderTop {
