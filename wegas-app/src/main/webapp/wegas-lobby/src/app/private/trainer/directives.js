@@ -15,25 +15,25 @@ angular.module('private.trainer.directives', [])
         ctrl.rawSessions = [];
         ctrl.sessions = [];
         ctrl.nbArchives = 0;
-        //ctrl.scenariomenu = [];
 
         /*
         ** Filters ctrl.rawSessions according to the given search string and puts the result in ctrl.sessions.
-        ** Hypothesis: input array ctrl.rawSessions is already ordered according to the 'createdTime' attribute,
-        ** so that the output automatically follows the same ordering.
+        ** Hypotheses on input array ctrl.rawSessions:
+        ** 1. It contains only scenarios with attribute canView = true (and implicitly where 'gameModel' is non-null).
+        ** 2. It's already ordered according to the 'createdTime' attribute,
+        **    so that the output automatically follows the same ordering.
          */
         ctrl.filterSessions = function(search){
             if (!search || search.length === 0){
                 ctrl.sessions = ctrl.rawSessions;
                 return;
             }
-            var res = [],
+            var needle = search.toLowerCase(),
+                res = [],
                 len = ctrl.rawSessions.length,
                 i;
             for (i=0; i<len; i++){
                 var session = ctrl.rawSessions[i];
-                if (!session.gameModel || session.gameModel.canView === false) continue;
-                var needle = search.toLowerCase();
                 if ((session.name && session.name.toLowerCase().indexOf(needle) >= 0) ||
                     (session.createdByName && session.createdByName.toLowerCase().indexOf(needle) >= 0) ||
                     (session.gameModelName && session.gameModelName.toLowerCase().indexOf(needle) >= 0) ||
@@ -60,7 +60,8 @@ angular.module('private.trainer.directives', [])
             ctrl.loading = true;
             SessionsModel.getSessions("LIVE").then(function(response) {
                 ctrl.loading = false;
-                ctrl.rawSessions = $filter('orderBy')(response.data, 'createdTime', true) || [];
+                ctrl.rawSessions = $filter('filter')(response.data, { gameModel: { canView: true }} ) || [];
+                ctrl.rawSessions = $filter('orderBy')(ctrl.rawSessions, 'createdTime', true) || [];
                 // At this point, the search variable is not necessarily rendered nor updated by Angular to reflect the input field:
                 var searchField = document.getElementById('searchField');
                 if (searchField) {
