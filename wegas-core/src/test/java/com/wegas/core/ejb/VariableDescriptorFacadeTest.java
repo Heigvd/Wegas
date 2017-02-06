@@ -446,19 +446,25 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
 
         VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
 
-        ListDescriptor list1 = new ListDescriptor(LISTNAME1, new ListInstance());// Create a hierarchy of lists
+        ListDescriptor list1 = new ListDescriptor(LISTNAME1);
+        list1.setDefaultInstance(new ListInstance());
         vdf.create(gameModel.getId(), list1);
 
-        ListDescriptor list2 = new ListDescriptor(LISTNAME2, new ListInstance());
+        ListDescriptor list2 = new ListDescriptor(LISTNAME2);
+        list2.setDefaultInstance(new ListInstance());
         vdf.createChild(list1.getId(), list2);
 
-        ListDescriptor list3 = new ListDescriptor(LISTNAME3, new ListInstance());
+        ListDescriptor list3 = new ListDescriptor(LISTNAME3);
+        list3.setDefaultInstance(new ListInstance());
         vdf.createChild(list1.getId(), list3);
 
-        ListDescriptor list4 = new ListDescriptor(LISTNAME4, new ListInstance());
+        ListDescriptor list4 = new ListDescriptor(LISTNAME4);
+        list4.setDefaultInstance(new ListInstance());
         vdf.createChild(list3.getId(), list4);
 
-        NumberDescriptor nb = new NumberDescriptor(VARIABLENAME1, new NumberInstance(10));
+        NumberDescriptor nb = new NumberDescriptor(VARIABLENAME1);
+        nb.setDefaultInstance(new NumberInstance(10));
+
         vdf.createChild(list4.getId(), nb);
 
         DescriptorListI duplicate

@@ -182,4 +182,14 @@ public class Reply extends AbstractEntity /*implements Broadcastable */ {
 
         super.updateCacheOnDelete(beans);
     }
+
+    @Override
+    public String getRequieredUpdatePermission() {
+        return this.getQuestionInstance().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public String getRequieredReadPermission() {
+        return this.getQuestionInstance().getRequieredReadPermission();
+    }
 }

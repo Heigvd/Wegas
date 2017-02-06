@@ -15,8 +15,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.variable.Beanjection;
 
@@ -153,5 +151,15 @@ public class Assignment extends AbstractAssignement /*implements Broadcastable *
                 theResource.getAssignments().remove(this);
             }
         }
+    }
+
+    @Override
+    public String getRequieredUpdatePermission() {
+        return this.getResourceInstance().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public String getRequieredReadPermission() {
+        return this.getResourceInstance().getRequieredReadPermission();
     }
 }

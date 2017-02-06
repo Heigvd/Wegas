@@ -494,4 +494,25 @@ public class Game extends NamedEntity implements Broadcastable, BroadcastTarget 
         map.put(audience, entities);
         return map;
     }
+
+    @Override
+    public String getRequieredUpdatePermission() {
+        return this.getChannel();
+    }
+
+    @Override
+    public String getRequieredReadPermission() {
+        return this.getChannel();
+    }
+
+    @Override
+    public String getRequieredCreatePermission() {
+        return "Role-Trainer,Role-Scenarist";
+    }
+
+    @Override
+    public String getRequieredDeletePermission() {
+        return "W-" + this.getChannel();
+    }
+
 }

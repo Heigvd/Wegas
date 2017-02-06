@@ -213,4 +213,14 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
     public void removeInstance(EvaluationInstance instance) {
         this.evaluationInstances.remove(instance);
     }
+
+    @Override
+    public String getRequieredUpdatePermission() {
+        return this.getContainer().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public String getRequieredReadPermission() {
+        return this.getContainer().getRequieredReadPermission();
+    }
 }

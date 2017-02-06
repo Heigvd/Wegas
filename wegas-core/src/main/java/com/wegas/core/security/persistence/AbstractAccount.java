@@ -216,7 +216,7 @@ public class AbstractAccount extends AbstractEntity {
     /**
      * @return the roles
      */
-    public Set<Role> getRoles() {
+    public Collection<Role> getRoles() {
         return user.getRoles();
     }
 
@@ -263,5 +263,15 @@ public class AbstractAccount extends AbstractEntity {
      */
     public void setCreatedTime(Date createdTime) {
         this.createdTime = createdTime != null ? new Date(createdTime.getTime()) : null;
+    }
+
+    @Override
+    public String getRequieredUpdatePermission() {
+        return this.getUser().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public String getRequieredReadPermission() {
+        return this.getUser().getRequieredReadPermission();
     }
 }

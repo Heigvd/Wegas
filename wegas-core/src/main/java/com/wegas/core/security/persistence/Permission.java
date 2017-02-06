@@ -22,10 +22,10 @@ import java.util.Objects;
     @NamedQuery(name = "Permission.deleteByInstance", query = "DELETE FROM Permission p WHERE p.value LIKE :instance")
 })
 @Table(
-    indexes = {
-        @Index(columnList = "role_id"),
-        @Index(columnList = "user_id")
-    }
+        indexes = {
+            @Index(columnList = "role_id"),
+            @Index(columnList = "user_id")
+        }
 )
 public class Permission extends AbstractEntity {
 
@@ -103,8 +103,8 @@ public class Permission extends AbstractEntity {
             return true;
         } else {
             return (obj != null
-                && obj instanceof Permission
-                && this.value.equals(((Permission) obj).getValue()));
+                    && obj instanceof Permission
+                    && this.value.equals(((Permission) obj).getValue()));
         }
 
     }
@@ -192,5 +192,19 @@ public class Permission extends AbstractEntity {
      */
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    @Override
+    public String getRequieredUpdatePermission() {
+        // ->process permission: 
+        // gm1234 -> w-GameModel-1234
+        // g1234 -> w-Game-1234
+        // * -> Role-Administrator
+        return null;
+    }
+
+    @Override
+    public String getRequieredReadPermission() {
+        return null;
     }
 }

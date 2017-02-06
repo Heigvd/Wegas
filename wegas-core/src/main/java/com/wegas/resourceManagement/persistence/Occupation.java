@@ -194,4 +194,14 @@ public class Occupation extends AbstractAssignement /* implements Broadcastable 
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public String getRequieredUpdatePermission() {
+        return this.getResourceInstance().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public String getRequieredReadPermission() {
+        return this.getResourceInstance().getRequieredReadPermission();
+    }
 }

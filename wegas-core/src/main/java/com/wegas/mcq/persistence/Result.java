@@ -390,4 +390,14 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
             }
         }
     }
+
+    @Override
+    public String getRequieredUpdatePermission() {
+        return this.getChoiceDescriptor().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public String getRequieredReadPermission() {
+        return this.getChoiceDescriptor().getRequieredReadPermission();
+    }
 }

@@ -174,12 +174,9 @@ public class Player extends AbstractEntity implements Broadcastable, BroadcastTa
 
     /**
      *
-     * @param teamId
-    public void setTeamId(Long teamId) {
-        this.teamId = teamId;
-    }
+     * @param teamId public void setTeamId(Long teamId) { this.teamId = teamId;
+     *               }
      */
-
     /**
      * @return the userId
      */
@@ -320,5 +317,15 @@ public class Player extends AbstractEntity implements Broadcastable, BroadcastTa
     @Override
     public String getChannel() {
         return "Player-" + this.getId();
+    }
+
+    @Override
+    public String getRequieredCreatePermission() {
+        return null;
+    }
+    
+    @Override
+    public String getRequieredUpdatePermission() {
+        return this.getChannel();
     }
 }

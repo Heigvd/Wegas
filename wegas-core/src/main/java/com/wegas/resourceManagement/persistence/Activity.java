@@ -291,4 +291,14 @@ public class Activity extends AbstractAssignement /*implements Broadcastable */ 
             }
         }
     }
+
+    @Override
+    public String getRequieredUpdatePermission() {
+        return this.getResourceInstance().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public String getRequieredReadPermission() {
+        return this.getResourceInstance().getRequieredReadPermission();
+    }
 }

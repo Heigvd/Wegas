@@ -337,4 +337,14 @@ public class WRequirement extends AbstractEntity {
             name = work + level + quantity + Helper.genToken(4);
         }
     }
+
+    @Override
+    public String getRequieredUpdatePermission() {
+        return this.getTaskInstance().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public String getRequieredReadPermission() {
+        return this.getTaskInstance().getRequieredReadPermission();
+    }
 }

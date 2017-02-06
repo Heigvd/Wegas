@@ -244,6 +244,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      */
     public void setFeedback(EvaluationDescriptorContainer feedback) {
         this.feedback = feedback;
+        feedback.setFbPeerReviewDescriptor(this);
     }
 
     /**
@@ -263,6 +264,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      */
     public void setFbComments(EvaluationDescriptorContainer fbComments) {
         this.fbComments = fbComments;
+        this.fbComments.setCommentsPeerReviewDescriptor(this);
     }
 
     /*

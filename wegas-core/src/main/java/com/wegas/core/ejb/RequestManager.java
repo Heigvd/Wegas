@@ -68,10 +68,13 @@ public class RequestManager {
     private TransactionSynchronizationRegistry txReg;
      */
     @Inject
-    MutexSingleton mutexSingleton;
+    private MutexSingleton mutexSingleton;
 
     @Inject
     private UserFacade userFacade;
+
+    @Inject
+    private SecurityFacade securityFacade;
 
     @EJB
     private PlayerFacade playerFacade;
@@ -199,7 +202,10 @@ public class RequestManager {
     }
 
     public void setCurrentUser(User currentUser) {
-        this.currentUser = currentUser;
+        if (this.currentUser != currentUser) {
+            this.currentUser = userFacade.find(currentUser.getId());
+            securityFacade.clearPermissions();
+        }
     }
 
     /**
@@ -356,7 +362,7 @@ public class RequestManager {
     private String getAudience(BroadcastTarget target) {
         if (target != null) {
             String channel = target.getChannel();
-            if (userFacade.hasPermission(channel)) {
+            if (securityFacade.hasPermission(channel)) {
                 return channel;
             } else {
                 throw WegasErrorMessage.error("You don't have the right to lock " + channel);

@@ -72,13 +72,6 @@ public class ViewRequestFilter implements ContainerRequestFilter {
         requestManager.setPath(cr.getUriInfo().getPath());
 
         //String userAgent = cr.getHeaderString("user-agent");
-        User currentUser = null;
-        try {
-            currentUser = userFacade.getCurrentUser();
-        } catch (WegasNotFoundException e) {
-        }
-        requestManager.setCurrentUser(currentUser);
-
         Class<?> view;
 
         // Handle language parameter

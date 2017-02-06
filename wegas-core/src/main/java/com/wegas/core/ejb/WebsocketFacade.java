@@ -266,7 +266,7 @@ public class WebsocketFacade {
                 ClientEvent event;
 
                 if (eventClass == EntityDestroyedEvent.class) {
-                    List<AbstractEntity> refreshed = new ArrayList<>();
+                    List<DestroyedEntity> refreshed = new ArrayList<>();
                     /*
                      * Not possible to find an already destroyed entity, so, in 
                      * this case (and since those informations are sufficient), 

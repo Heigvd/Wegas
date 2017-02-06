@@ -581,4 +581,22 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
             return this.getClass().getSimpleName() + "( " + getId() + ") NO DESC";
         }
     }
+
+    @Override
+    public String getRequieredUpdatePermission() {
+        if (this.getScope() == null) {
+            return "W-" + this.getDefaultDescriptor().getGameModel().getChannel();
+        } else {
+            return this.getBroadcastTarget().getChannel();
+        }
+    }
+
+    @Override
+    public String getRequieredReadPermission() {
+        if (this.getScope() != null) {
+            return this.getAudience();
+        } else {
+            return this.getDefaultDescriptor().getGameModel().getChannel();
+        }
+    }
 }

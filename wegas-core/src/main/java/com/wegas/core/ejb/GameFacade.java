@@ -155,11 +155,11 @@ public class GameFacade extends BaseFacade<Game> {
         userFacade.addUserPermission(currentUser,
                 "Game:View:g" + game.getId());                                  // Grant play to creator
 
-        try {                                                                   // By default games can be join w/ token
+        /*try {
             roleFacade.findByName("Public").addPermission("Game:Token:g" + game.getId());
         } catch (WegasNoResultException ex) {
             logger.error("Unable to find Role: Public");
-        }
+        }*/
         gameCreatedEvent.fire(new EntityCreated<>(game));
     }
 

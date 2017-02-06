@@ -241,4 +241,14 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     public String toString() {
         return "State{" + "id=" + id + ", v=" + version + ", label=" + label + ", onEnterEvent=" + onEnterEvent + ", transitions=" + transitions + '}';
     }
+
+    @Override
+    public String getRequieredUpdatePermission() {
+        return this.getStateMachine().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public String getRequieredReadPermission() {
+        return this.getStateMachine().getRequieredReadPermission();
+    }
 }

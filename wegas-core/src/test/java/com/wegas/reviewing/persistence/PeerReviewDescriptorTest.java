@@ -23,6 +23,7 @@ import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptorContainer;
 import com.wegas.reviewing.persistence.evaluation.GradeDescriptor;
 import com.wegas.reviewing.persistence.evaluation.TextEvaluationDescriptor;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import javax.naming.NamingException;
 
@@ -96,7 +97,7 @@ public class PeerReviewDescriptorTest extends AbstractEJBTest {
 
         initial.setFeedback(new EvaluationDescriptorContainer());
         EvaluationDescriptorContainer feedback = initial.getFeedback();
-        List<EvaluationDescriptor> fEvaluations = feedback.getEvaluations();
+        List<EvaluationDescriptor> fEvaluations = new ArrayList<>();
 
         TextEvaluationDescriptor text = new TextEvaluationDescriptor();
         text.setName("aText");
@@ -115,16 +116,19 @@ public class PeerReviewDescriptorTest extends AbstractEJBTest {
         cEvalD.addCategory("strong");
         fEvaluations.add(cEvalD);
 
+
+        feedback.setEvaluations(fEvaluations);
+
         initial.setFbComments(new EvaluationDescriptorContainer());
         EvaluationDescriptorContainer feedbackComments = initial.getFbComments();
-        List<EvaluationDescriptor> f2evaluations = feedbackComments.getEvaluations();
+        List<EvaluationDescriptor> f2evaluations = new ArrayList<>();
 
         GradeDescriptor grade2 = new GradeDescriptor();
         grade2.setName("fevalG");
         grade2.setMinValue(0L);
 
         f2evaluations.add(grade2);
-
+        feedbackComments.setEvaluations(f2evaluations);
         descriptorFacade.create(gameModel.getId(), initial);
     }
 

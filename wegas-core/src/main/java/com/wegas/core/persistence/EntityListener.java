@@ -8,6 +8,7 @@
 package com.wegas.core.persistence;
 
 import com.wegas.core.ejb.RequestManager;
+import com.wegas.core.ejb.SecurityFacade;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
@@ -33,6 +34,8 @@ import javax.persistence.PreRemove;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.PostLoad;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 
 /**
  * @author Maxence Laurent (maxence.laurent at gmail.com)
@@ -68,6 +71,9 @@ public class EntityListener {
     @Inject
     private TeamFacade teamFacade;
 
+    @Inject
+    private SecurityFacade securityFacade;
+
     private Beanjection getBeansjection() {
         return new Beanjection(variableInstanceFacade, variableDescriptorFacade, resourceFacade, iterationFacade, reviewingFacade, userFacade, teamFacade, questionDescriptorFacade);
     }
@@ -82,6 +88,23 @@ public class EntityListener {
             } else {
                 logger.debug("Unhandled new broadcastable entity: " + b);
             }
+        }
+        if (securityFacade == null) {
+            logger.error("What?");
+        }
+    }
+
+    @PrePersist
+    void onPrePersist(Object o) {
+        if (o instanceof AbstractEntity) {
+            securityFacade.assertCreateRight((AbstractEntity) o);
+        }
+    }
+
+    @PreUpdate
+    void onPreUpdate(Object o) {
+        if (o instanceof AbstractEntity) {
+            securityFacade.assertUpdateRight((AbstractEntity) o);
         }
     }
 
@@ -122,7 +145,9 @@ public class EntityListener {
         }
 
         if (o instanceof AbstractEntity) {
-            ((AbstractEntity) o).updateCacheOnDelete(getBeansjection());
+            AbstractEntity ae = (AbstractEntity) o;
+            securityFacade.assertDeleteRight(ae);
+            ae.updateCacheOnDelete(getBeansjection());
         }
     }
 
@@ -131,6 +156,10 @@ public class EntityListener {
         if (o instanceof AcceptInjection) {
             AcceptInjection id = (AcceptInjection) o;
             id.setBeanjection(getBeansjection());
+        }
+
+        if (o instanceof AbstractEntity) {
+            securityFacade.assertReadRight((AbstractEntity) o);
         }
     }
 }

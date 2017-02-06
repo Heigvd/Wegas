@@ -8,6 +8,7 @@
 package com.wegas.core.rest;
 
 import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.SecurityFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -58,6 +59,9 @@ public class VariableInstanceController {
     @Inject
     private PlayerFacade playerFacade;
 
+    @Inject
+    private SecurityFacade securityFacade;
+
     /**
      *
      * @param entityId
@@ -100,7 +104,7 @@ public class VariableInstanceController {
         for (Long id : ids) {
             VariableInstance instance = variableInstanceFacade.find(id);
 
-            if (userFacade.hasPermission(instance.getAudience())) {
+            if (securityFacade.hasPermission(instance.getAudience())) {
                 instances.add(instance);
             }
         }

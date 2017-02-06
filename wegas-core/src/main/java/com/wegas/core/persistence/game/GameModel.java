@@ -702,6 +702,21 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         return "GameModel-" + getId();
     }
 
+    @Override
+    public String getRequieredUpdatePermission() {
+        return "W-" + this.getChannel();
+    }
+
+    @Override
+    public String getRequieredReadPermission() {
+        return this.getChannel();
+    }
+
+    @Override
+    public String getRequieredCreatePermission() {
+        return "Role-Scenarist";
+    }
+
     /*@Override
     public Map<String, List<AbstractEntity>> getEntities() {
         Map<String, List<AbstractEntity>> map = new HashMap<>();

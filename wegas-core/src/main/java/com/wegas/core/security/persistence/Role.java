@@ -29,6 +29,11 @@ public class Role extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
 
+    public static final String ADMIN_PERM = "Role-Administrator";
+    public static final String SCENARIST_PERM = "Role-Scenarist";
+    public static final String TRAINER_PERM = "Role-Trainer";
+    public static final String REGISTERED_PERM = "Role-Registered";
+
     /**
      *
      */
@@ -65,7 +70,7 @@ public class Role extends AbstractEntity {
      private Set<AbstractAccount> abstractAccounts = new HashSet<>();*/
     @JsonIgnore
     @ManyToMany(mappedBy = "roles")
-    private Set<User> users = new HashSet<>();
+    private Collection<User> users = new HashSet<>();
 
     /**
      *
@@ -217,7 +222,7 @@ public class Role extends AbstractEntity {
      *
      * @return all users which are member of this role
      */
-    public Set<User> getUsers() {
+    public Collection<User> getUsers() {
         return users;
     }
 
@@ -226,7 +231,7 @@ public class Role extends AbstractEntity {
      *
      * @param users list of member
      */
-    public void setUsers(Set<User> users) {
+    public void setUsers(Collection<User> users) {
         this.users = users;
     }
 
@@ -251,5 +256,20 @@ public class Role extends AbstractEntity {
     @Override
     public String toString() {
         return "Role(" + this.id + ", " + this.name + ")";
+    }
+
+    @Override
+    public String getRequieredCreatePermission() {
+        return null;
+    }
+
+    @Override
+    public String getRequieredUpdatePermission() {
+        return Role.ADMIN_PERM;
+    }
+
+    @Override
+    public String getRequieredReadPermission() {
+        return null;
     }
 }

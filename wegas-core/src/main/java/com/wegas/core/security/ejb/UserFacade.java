@@ -11,13 +11,13 @@ import com.wegas.core.Helper;
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.Email;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.guest.GuestToken;
@@ -26,7 +26,6 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
-import com.wegas.core.security.util.SecurityHelper;
 import com.wegas.messaging.ejb.EMailFacade;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.crypto.RandomNumberGenerator;
@@ -45,6 +44,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import java.util.*;
+import javax.inject.Inject;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -85,6 +85,9 @@ public class UserFacade extends BaseFacade<User> {
     @EJB
     private GameFacade gameFacade;
 
+    @Inject
+    private RequestManager requestManager;
+
     /**
      *
      */
@@ -100,8 +103,12 @@ public class UserFacade extends BaseFacade<User> {
      */
     public User guestLogin() {
         if (Helper.getWegasProperty("guestallowed").equals("true")) {
-            User newUser = new User(new GuestJpaAccount());                     // return a Guest user
-            this.create(newUser);                                               // Persist it
+            User newUser = new User();
+            this.create(newUser);
+            this.setCurrentUser(newUser);
+
+            newUser.addAccount(new GuestJpaAccount());
+            this.merge(newUser);
 
             Subject subject = SecurityUtils.getSubject();
             subject.login(new GuestToken(newUser.getMainAccount().getId()));
@@ -122,15 +129,19 @@ public class UserFacade extends BaseFacade<User> {
      * @return a User entity, based on the shiro login state
      */
     public User getCurrentUser() {
-        final Subject subject = SecurityUtils.getSubject();
-
-        if (subject.isRemembered() || subject.isAuthenticated()) {
-            AbstractAccount account = accountFacade.find((Long) subject.getPrincipal());
-            if (account != null) {
-                return account.getUser();
-            }
+        User currentUser = requestManager.getCurrentUser();
+        if (currentUser != null) {
+            currentUser = this.find(currentUser.getId());
         }
-        throw new WegasNotFoundException("Unable to find user");
+
+        if (currentUser == null){
+            throw new WegasNotFoundException("Unable to find user");
+        }
+        return currentUser;
+    }
+
+    public void setCurrentUser(User user) {
+        requestManager.setCurrentUser(user);
     }
 
     /**
@@ -167,12 +178,12 @@ public class UserFacade extends BaseFacade<User> {
 
         getEntityManager().persist(user);
         try {
-            this.addRole(user, roleFacade.findByName("Public"));
+            this.addRole(user.getId(), roleFacade.findByName("Public").getId());
         } catch (WegasNoResultException ex) {
             //logger.error("Unable to find Role: Public");
         }
         try {
-            this.addRole(user, roleFacade.findByName("Registered"));
+            this.addRole(user.getId(), roleFacade.findByName("Registered").getId());
         } catch (WegasNoResultException ex) {
             //logger.error("Unable to find Role: Registered", ex);
             //logger.error("Unable to find Role: Registered");
@@ -734,53 +745,6 @@ public class UserFacade extends BaseFacade<User> {
         User u = this.find(uId);
         Role r = roleFacade.find(rId);
         this.addRole(u, r);
-    }
-
-    /**
-     * Check if current user has access to type/id entity
-     *
-     * @param type
-     * @param id
-     * @param currentPlayer
-     * @return true if current user has access to
-     */
-    private boolean hasPermission(String type, Long id) {
-        if ("GameModel".equals(type)) {
-            return SecurityUtils.getSubject().isPermitted("GameModel:View:gm" + id);
-        } else if ("Game".equals(type)) {
-            Game game = gameFacade.find(id);
-            return game != null && SecurityHelper.isPermitted(game, "View");
-        } else if ("Team".equals(type)) {
-
-            Team team = teamFacade.find(id);
-            User user = this.getCurrentUser();
-
-            // Current logged User is linked to a player who's member of the team or current user has edit right one the game
-            return team != null && (playerFacade.checkExistingPlayerInTeam(team.getId(), user.getId()) != null || SecurityHelper.isPermitted(team.getGame(), "Edit"));
-        } else if ("Player".equals(type)) {
-            User user = this.getCurrentUser();
-            Player player = playerFacade.find(id);
-
-            // Current player belongs to current user || current user is the teacher or scenarist (test user)
-            return player != null && ((user != null && user.equals(player.getUser())) || SecurityHelper.isPermitted(player.getGame(), "Edit"));
-        }
-        return false;
-    }
-
-    /**
-     * can current user subscribe to given channel ?
-     *
-     * @param channel
-     * @param currentPlayer
-     * @return true if access granted
-     */
-    public boolean hasPermission(String channel) {
-        String[] split = channel.split("-");
-        if (split.length != 2) {
-            return false;
-        } else {
-            return hasPermission(split[0], Long.parseLong(split[1]));
-        }
     }
 
     /**

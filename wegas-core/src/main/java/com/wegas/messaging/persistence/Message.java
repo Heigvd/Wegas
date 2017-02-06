@@ -205,7 +205,6 @@ public class Message extends NamedEntity /*implements Broadcastable*/ {
     public Map<String, List<AbstractEntity>> getEntities() {
         return this.getInboxInstance().getEntities();
     }*/
-
     @Override
     public boolean equals(Object o) {
         if (o instanceof Message) {
@@ -389,5 +388,15 @@ public class Message extends NamedEntity /*implements Broadcastable*/ {
      */
     public void setAttachements(List<String> attachements) {
         this.attachements = attachements;
+    }
+
+    @Override
+    public String getRequieredUpdatePermission() {
+        return this.getInboxInstance().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public String getRequieredReadPermission() {
+        return this.getInboxInstance().getRequieredReadPermission();
     }
 }

@@ -262,4 +262,14 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
 
         return this.variableInstanceFacade;
     }
+
+    @Override
+    public String getRequieredUpdatePermission() {
+        return this.getVariableDescriptor().getGameModel().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public String getRequieredReadPermission() {
+        return this.getVariableDescriptor().getGameModel().getRequieredReadPermission();
+    }
 }

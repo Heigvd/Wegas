@@ -45,6 +45,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import com.wegas.core.persistence.AcceptInjection;
+import com.wegas.core.security.persistence.Role;
 import org.eclipse.persistence.annotations.CacheIndexes;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.QueryHints;
@@ -254,15 +255,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      */
     public VariableDescriptor(String name) {
         this.name = name;
-    }
-
-    /**
-     * @param name
-     * @param defaultInstance
-     */
-    public VariableDescriptor(String name, T defaultInstance) {
-        this.name = name;
-        this.defaultInstance = defaultInstance;
     }
 
     /**
@@ -601,5 +593,25 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         }
 
         return this.variableDescriptorFacade;
+    }
+
+    @Override
+    public String getRequieredUpdatePermission() {
+        return "W-" + this.getGameModel().getChannel();
+    }
+
+    @Override
+    public String getRequieredReadPermission() {
+        return this.getGameModel().getChannel();
+    }
+
+    @Override
+    public String getRequieredDeletePermission() {
+        return Role.ADMIN_PERM;
+    }
+
+    @Override
+    public String getRequieredCreatePermission() {
+        return Role.SCENARIST_PERM;
     }
 }

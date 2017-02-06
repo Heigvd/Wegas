@@ -10,6 +10,7 @@ package com.wegas.core.rest;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.SecurityFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
@@ -17,9 +18,7 @@ import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.util.SecurityHelper;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import javax.inject.Inject;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -67,6 +67,9 @@ public class VariableDescriptorController {
     @EJB
     private UserFacade userFacade;
 
+    @Inject
+    private SecurityFacade securityFacade;
+
     /**
      * @param gameModelId
      * @return all root level variable descriptors
@@ -86,7 +89,7 @@ public class VariableDescriptorController {
         Collection<VariableDescriptor> descriptors = new ArrayList<>();
         for (Long id : ids) {
             VariableDescriptor desc = variableDescriptorFacade.find(id);
-            if (userFacade.hasPermission(Helper.getAudienceToken(desc.getGameModel()))) {
+            if (securityFacade.hasPermission(Helper.getAudienceToken(desc.getGameModel()))) {
                 descriptors.add(desc);
             }
         }

@@ -8,10 +8,8 @@
 package com.wegas.reviewing.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.EntityIdComparator;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.reviewing.persistence.evaluation.EvaluationInstance;
@@ -21,9 +19,9 @@ import java.util.*;
 
 /**
  * A review is linked to two PeerReviewInstnace : the one who reviews and the
- * original reviewed 'author'
- * A review is composed of the feedback (written by reviewers) and the feedback
- * comments (written by author). Both are a list of evaluation instances
+ * original reviewed 'author' A review is composed of the feedback (written by
+ * reviewers) and the feedback comments (written by author). Both are a list of
+ * evaluation instances
  * <ol>
  * <li> dispatched: initial state, reviewer can edit feedback
  * <li> reviewed: reviewer can't edit feedback anymore, author can't read
@@ -39,8 +37,8 @@ import java.util.*;
  */
 @Entity
 @Table(indexes = {
-        @Index(columnList = "author_variableinstance_id"),
-        @Index(columnList = "reviewer_variableinstance_id")
+    @Index(columnList = "author_variableinstance_id"),
+    @Index(columnList = "reviewer_variableinstance_id")
 })
 public class Review extends AbstractEntity /* implements Broadcastable */ {
 
@@ -194,7 +192,6 @@ public class Review extends AbstractEntity /* implements Broadcastable */ {
         Helper.merge(entities, this.getReviewer().getEntities());
         return entities;
     }*/
-
     @Override
     public void merge(AbstractEntity other) {
         if (other instanceof Review) {
@@ -208,4 +205,23 @@ public class Review extends AbstractEntity /* implements Broadcastable */ {
         }
     }
 
+    @Override
+    public String getRequieredUpdatePermission() {
+        switch (this.getReviewState()) {
+            case DISPATCHED:
+                return this.getReviewer().getRequieredUpdatePermission();
+            case NOTIFIED:
+                return this.getAuthor().getRequieredUpdatePermission();
+            case REVIEWED:
+            case COMPLETED:
+            case CLOSED:
+            default:
+                return "";
+        }
+    }
+
+    @Override
+    public String getRequieredReadPermission() {
+        return this.getAuthor().getRequieredReadPermission() + "," + this.getReviewer().getRequieredReadPermission();
+    }
 }

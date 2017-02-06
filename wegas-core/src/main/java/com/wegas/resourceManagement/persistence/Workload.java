@@ -117,4 +117,14 @@ public class Workload extends AbstractEntity implements Serializable {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
         }
     }
+
+    @Override
+    public String getRequieredUpdatePermission() {
+        return this.getIteration().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public String getRequieredReadPermission() {
+        return this.getIteration().getRequieredReadPermission();
+    }
 }

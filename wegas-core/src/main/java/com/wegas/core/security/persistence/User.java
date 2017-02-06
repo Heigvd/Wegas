@@ -65,7 +65,7 @@ public class User extends AbstractEntity implements Comparable<User> {
                 @JoinColumn(name = "users_id", referencedColumnName = "id")},
             inverseJoinColumns = {
                 @JoinColumn(name = "roles_id", referencedColumnName = "id")})
-    private Set<Role> roles = new HashSet<>();
+    private Collection<Role> roles = new ArrayList<>();
 
     /**
      *
@@ -213,14 +213,14 @@ public class User extends AbstractEntity implements Comparable<User> {
     /**
      * @return the roles
      */
-    public Set<Role> getRoles() {
+    public Collection<Role> getRoles() {
         return roles;
     }
 
     /**
      * @param roles the roles to set
      */
-    public void setRoles(Set<Role> roles) {
+    public void setRoles(Collection<Role> roles) {
         this.roles = roles;
     }
 
@@ -243,5 +243,21 @@ public class User extends AbstractEntity implements Comparable<User> {
     @Override
     public int compareTo(User o) {
         return this.getName().toLowerCase(Locale.ENGLISH).compareTo(o.getName().toLowerCase(Locale.ENGLISH));
+    }
+
+    @Override
+    public String getRequieredUpdatePermission() {
+        return "User-" + this.getId();
+    }
+
+    @Override
+    public String getRequieredReadPermission() {
+        return null;
+    }
+
+    @Override
+    public String getRequieredCreatePermission() {
+        //Sign-Up
+        return null;
     }
 }

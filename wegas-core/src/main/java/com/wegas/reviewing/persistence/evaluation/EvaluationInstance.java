@@ -228,4 +228,14 @@ public abstract class EvaluationInstance extends AbstractEntity /*implements Bro
         }
         super.updateCacheOnDelete(beans);
     }
+
+    @Override
+    public String getRequieredUpdatePermission() {
+        return this.getEffectiveReview().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public String getRequieredReadPermission() {
+        return this.getEffectiveReview().getRequieredReadPermission();
+    }
 }

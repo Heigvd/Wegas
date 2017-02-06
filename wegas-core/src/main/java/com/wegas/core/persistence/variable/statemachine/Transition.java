@@ -213,4 +213,14 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
     public String toString() {
         return "Transition{" + "triggerCondition=" + triggerCondition + ", nextStateId=" + nextStateId + '}';
     }
+
+    @Override
+    public String getRequieredUpdatePermission() {
+        return this.getState().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public String getRequieredReadPermission() {
+        return this.getState().getRequieredReadPermission();
+    }
 }

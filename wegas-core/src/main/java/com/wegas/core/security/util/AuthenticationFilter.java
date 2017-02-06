@@ -8,9 +8,13 @@
 package com.wegas.core.security.util;
 
 import com.wegas.core.Helper;
+import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.persistence.AbstractAccount;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.naming.NamingException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -41,6 +45,20 @@ public class AuthenticationFilter extends PassThruAuthenticationFilter {
         // @todo It should not be authorized to do sensitive operations like pwd
         Subject subject = getSubject(request, response);
         if (subject.isAuthenticated() || subject.isRemembered()) {
+
+            AccountFacade accountFacade;
+            UserFacade userFacade;
+            try {
+                accountFacade = Helper.lookupBy(AccountFacade.class);
+                userFacade = UserFacade.lookup();
+
+                AbstractAccount account = accountFacade.find((Long) subject.getPrincipal());
+                userFacade.setCurrentUser(account.getUser());
+
+            } catch (NamingException ex) {
+                Logger.getLogger(AuthenticationFilter.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
             return true;
         } else if (request.getParameter("al") != null
                 && Helper.getWegasProperty("guestallowed").equals("true")) {    // Automatic guest login

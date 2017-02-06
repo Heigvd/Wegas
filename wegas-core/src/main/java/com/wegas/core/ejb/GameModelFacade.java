@@ -134,9 +134,9 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
         variableDescriptorFacade.reviveItems(entity, entity, true); // brand new GameModel -> revive all descriptor
         createdGameModelEvent.fire(new EntityCreated<>(entity));
-        userFacade.getCurrentUser().addPermission("GameModel:View,Edit,Delete,Duplicate,Instantiate:gm" + entity.getId());
-        userFacade.getCurrentUser().addPermission("GameModel:Duplicate:gm" + entity.getId());
-        userFacade.getCurrentUser().addPermission("GameModel:Instantiate:gm" + entity.getId());
+        currentUser.addPermission("GameModel:View,Edit,Delete,Duplicate,Instantiate:gm" + entity.getId());
+        currentUser.addPermission("GameModel:Duplicate:gm" + entity.getId());
+        currentUser.addPermission("GameModel:Instantiate:gm" + entity.getId());
     }
 
     /**

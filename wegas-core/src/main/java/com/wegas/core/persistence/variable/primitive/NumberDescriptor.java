@@ -58,15 +58,6 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
 
     /**
      *
-     * @param name
-     * @param defaultInstance
-     */
-    public NumberDescriptor(String name, NumberInstance defaultInstance) {
-        super(name, defaultInstance);
-    }
-
-    /**
-     *
      * @param a
      */
     @Override

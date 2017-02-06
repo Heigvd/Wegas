@@ -1,9 +1,11 @@
 package com.wegas.core.security.ejb;
 
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.AbstractEJBTest;
 import com.wegas.core.ejb.TestHelper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Permission;
@@ -45,6 +47,19 @@ public class UserFacadeTest {
 
     private static EJBContainer container;
 
+    public static User createUser(AbstractAccount aa) {
+        User newUser = new User();
+        userFacade.create(newUser);
+
+        newUser.addAccount(aa);
+        userFacade.merge(newUser);
+        return userFacade.find(newUser.getId());
+    }
+
+    public static User createGuest() {
+        return AbstractEJBTest.createUser(new GuestJpaAccount());
+    }
+
     @BeforeClass
     public static void setUpClass() throws Exception {
         container = TestHelper.getEJBContainer();
@@ -58,11 +73,15 @@ public class UserFacadeTest {
         roleFacade.create(roleP);
         roleR = new Role("Registered");
         roleFacade.create(roleR);
-        u = new User();
-        u.addAccount(abstractAccount);
+
+        u = UserFacadeTest.createUser(abstractAccount);
+        abstractAccount = (JpaAccount) u.getMainAccount();
+
+        /*
         u.addRole(roleP);
         u.addRole(roleR);
-        userFacade.create(u);
+        userFacade.merge(u);
+         */
     }
 
     @AfterClass

@@ -282,6 +282,11 @@ public class GameAdmin extends AbstractEntity {
         return prevName;
     }
 
+    @Override
+    public String getRequieredUpdatePermission() {
+        return "Role-Administrator";
+    }
+
     //
 //    @JsonIgnore
 //    public void setPrevPlayers(String prevPlayers) {

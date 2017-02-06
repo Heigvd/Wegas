@@ -14,7 +14,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.variable.Beanjection;
 import java.util.ArrayList;
@@ -342,4 +341,13 @@ public class Iteration extends AbstractEntity /*implements Broadcastable */ {
         this.setTasks(new ArrayList<>());
     }
 
+    @Override
+    public String getRequieredUpdatePermission() {
+        return this.getBurndownInstance().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public String getRequieredReadPermission() {
+        return this.getBurndownInstance().getRequieredReadPermission();
+    }
 }

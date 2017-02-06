@@ -199,4 +199,23 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
             return this.getClass().getSimpleName();
         }
     }
+
+    @JsonIgnore
+    public String getRequieredCreatePermission() {
+        return this.getRequieredUpdatePermission();
+    }
+
+    @JsonIgnore
+    public String getRequieredReadPermission() {
+        return this.getRequieredUpdatePermission();
+    }
+
+    @JsonIgnore
+    public abstract String getRequieredUpdatePermission();
+
+    @JsonIgnore
+    public String getRequieredDeletePermission() {
+        return this.getRequieredUpdatePermission();
+    }
+
 }

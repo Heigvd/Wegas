@@ -308,4 +308,14 @@ public class Team extends AbstractEntity implements Broadcastable, BroadcastTarg
     public String getChannel() {
         return "Team-" + this.getId();
     }
+
+    @Override
+    public String getRequieredUpdatePermission() {
+        return this.getChannel();
+    }
+
+    @Override
+    public String getRequieredCreatePermission() {
+        return this.getGame().getChannel();
+    }
 }
