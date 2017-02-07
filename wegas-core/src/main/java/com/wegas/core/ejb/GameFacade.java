@@ -143,17 +143,18 @@ public class GameFacade extends BaseFacade<Game> {
             throw WegasErrorMessage.error("This token is already in use.");
         }
         getEntityManager().persist(game);
-        gameModel.propagateDefaultInstance(game, true);
-
-        game.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
-        gameModel.addGame(game);
-        this.addDebugTeam(game);
 
         //gameModelFacade.reset(gameModel);                                       // Reset the game so the default player will have instances
         userFacade.addUserPermission(currentUser,
                 "Game:View,Edit:g" + game.getId());                             // Grant permission to creator
         userFacade.addUserPermission(currentUser,
                 "Game:View:g" + game.getId());                                  // Grant play to creator
+
+        gameModel.propagateDefaultInstance(game, true);
+
+        game.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
+        gameModel.addGame(game);
+        this.addDebugTeam(game);
 
         /*try {
             roleFacade.findByName("Public").addPermission("Game:Token:g" + game.getId());

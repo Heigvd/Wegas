@@ -253,8 +253,8 @@ public class IntegrationTest {
 
     @Test
     public void testJavascript() {
-        JWebUnit.setScriptingEnabled(true);
-        beginAt("wegas-app/tests/wegas-alltests.htm");
-        assertTitleEquals("Wegas Test Suite");
+            JWebUnit.setScriptingEnabled(true);
+            beginAt("wegas-app/tests/wegas-alltests.htm");
+            assertTitleEquals("Wegas Test Suite");
+        }
     }
-}

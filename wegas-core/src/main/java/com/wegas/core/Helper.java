@@ -715,7 +715,7 @@ public class Helper {
     /**
      * Generation Pusher token for a target
      *
-     * @param target 
+     * @param target
      * @return channel name
      */
     public static String getAudienceToken(BroadcastTarget target) {
@@ -739,6 +739,17 @@ public class Helper {
             sb.append(genRandomLetters(length - 1));
         }
         return sb.toString();
+    }
+
+    public static void printWegasStackTrace(Throwable t) {
+        StringBuilder sb = new StringBuilder(t.getClass().getName());
+        for (StackTraceElement elem : t.getStackTrace()) {
+            if (elem.getClassName().startsWith("com.wegas")) {
+                sb.append("\n\tat ");
+                sb.append(elem);
+            }
+        }
+        logger.error(sb.toString());
     }
 
     /**

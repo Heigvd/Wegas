@@ -323,6 +323,11 @@ public class Player extends AbstractEntity implements Broadcastable, BroadcastTa
     public String getRequieredCreatePermission() {
         return null;
     }
+
+    @Override
+    public String getRequieredReadPermission() {
+        return this.getTeam().getChannel();
+    }
     
     @Override
     public String getRequieredUpdatePermission() {

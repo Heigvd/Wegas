@@ -502,7 +502,7 @@ public class Game extends NamedEntity implements Broadcastable, BroadcastTarget 
 
     @Override
     public String getRequieredReadPermission() {
-        return this.getChannel();
+        return null;
     }
 
     @Override

@@ -7,47 +7,31 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.Helper;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
-import com.wegas.core.security.ejb.RoleFacade;
-import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
-import com.wegas.core.security.guest.GuestToken;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import java.util.Collection;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.embeddable.EJBContainer;
 import javax.naming.NamingException;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-public class AbstractEJBTest {
+public abstract class AbstractEJBTest extends AbstractEJBTestBase{
 
     // *** Static *** //
     private static final Logger logger = LoggerFactory.getLogger(AbstractEJBTest.class);
-    private static EJBContainer ejbContainer;
-    protected static GameModelFacade gameModelFacade;
-    protected static GameFacade gameFacade;
-    protected static TeamFacade teamFacade;
-    protected static RoleFacade roleFacade;
-    protected static UserFacade userFacade;
-    protected static VariableDescriptorFacade descriptorFacade;
-    protected static SecurityFacade securityFacade;
-    // *** Fields *** //
+
     protected static GameModel gameModel;
     protected static Game game;
     protected static Team team;
@@ -67,14 +51,6 @@ public class AbstractEJBTest {
 
     @BeforeClass
     public static void setUp() throws NamingException {
-        ejbContainer = TestHelper.getEJBContainer();
-        gameModelFacade = lookupBy(GameModelFacade.class);
-        gameFacade = GameFacade.lookup();
-        teamFacade = TeamFacade.lookup();
-        descriptorFacade = lookupBy(VariableDescriptorFacade.class);
-        roleFacade = lookupBy(RoleFacade.class);
-        userFacade = UserFacade.lookup();
-        securityFacade = RequestFacade.lookup().getSecurityFacade();
         RequestManager rm = RequestFacade.lookup().getRequestManager();
 
         Role admins = new Role("Administrator");
@@ -137,18 +113,6 @@ public class AbstractEJBTest {
         return userFacade.find(user.getId());
     }
 
-    public static void login(User user) {
-        Subject subject = SecurityUtils.getSubject();
-        userFacade.logout();
-        subject.login(new GuestToken(user.getMainAccount().getId()));
-        userFacade.setCurrentUser(user);
-    }
-
-    @AfterClass
-    public static void tearDown() {
-        TestHelper.closeContainer();
-    }
-
     /**
      * Create a GameModel and a game with two teams (test-team and test-team2),
      * with, respectively, one and two players ("Player", "Player2", and
@@ -158,7 +122,8 @@ public class AbstractEJBTest {
     @Before
     public void createGameModel() {
         login(admin);
-        //login(scenarist);
+
+        login(scenarist);
         gameModel = new GameModel();
         gameModel.setName("test-gamemodel");
         gameModelFacade.create(gameModel);
@@ -166,13 +131,14 @@ public class AbstractEJBTest {
 
         userFacade.addAccountPermission(trainer.getMainAccount().getId(), "GameModel:Instantiate:gm" + gameModel.getId());
 
-        //login(trainer);
+        login(scenarist);
         game = new Game();
         game.setName(GAMENAME);
         game.setToken(GAMETOKEN);
         game.setAccess(Game.GameAccess.OPEN);
         gameFacade.create(gameModel.getId(), game);
 
+        login(user);
         team = new Team();
         team.setName("test-team");
         teamFacade.create(game.getId(), team);
@@ -184,13 +150,17 @@ public class AbstractEJBTest {
 
         teamFacade.create(game.getId(), team2);
 
-        User user2 = new User();
-        userFacade.create(user2);
+        login(admin);
+        User user2 = AbstractEJBTest.createUser();
+        login(user2);
         player2 = gameFacade.joinTeam(team2.getId(), user2.getId());
 
-        User user21 = new User();
-        userFacade.create(user21);
+        logout();
+        User user21 = AbstractEJBTest.createUser();
+        login(user21);
         player21 = gameFacade.joinTeam(team2.getId(), user21.getId());
+
+        login(admin);
     }
 
     @After
@@ -206,13 +176,5 @@ public class AbstractEJBTest {
         securityFacade.clearPermissions();
 
         userFacade.logout();
-    }
-
-    public static <T> T lookupBy(Class<T> type, Class service) throws NamingException {
-        return Helper.lookupBy(ejbContainer.getContext(), type, service);
-    }
-
-    public static <T> T lookupBy(Class<T> type) throws NamingException {
-        return Helper.lookupBy(ejbContainer.getContext(), type, type);
     }
 }

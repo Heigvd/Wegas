@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import javax.persistence.PostLoad;
 import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 
 /**
  * @author Maxence Laurent (maxence.laurent at gmail.com)
@@ -78,8 +77,23 @@ public class EntityListener {
         return new Beanjection(variableInstanceFacade, variableDescriptorFacade, resourceFacade, iterationFacade, reviewingFacade, userFacade, teamFacade, questionDescriptorFacade);
     }
 
+    @PrePersist
+    void onPrePersist(Object o) {
+        //Do not remove this empty method nor its @PrePersist annotation !!!!
+        // Remove this method  makes CDI injection fails ...
+    }
+
     @PostPersist
     void onPostPersist(Object o) {
+        if (o instanceof AbstractEntity) {
+
+            if (securityFacade != null) {
+                securityFacade.assertCreateRight((AbstractEntity) o);
+            } else {
+                logger.error("PostPersist NO SECURITY FACADE");
+            }
+        }
+
         if (o instanceof Broadcastable) {
             Broadcastable b = (Broadcastable) o;
             Map<String, List<AbstractEntity>> entities = b.getEntities();
@@ -89,27 +103,19 @@ public class EntityListener {
                 logger.debug("Unhandled new broadcastable entity: " + b);
             }
         }
-        if (securityFacade == null) {
-            logger.error("What?");
-        }
-    }
-
-    @PrePersist
-    void onPrePersist(Object o) {
-        if (o instanceof AbstractEntity) {
-            securityFacade.assertCreateRight((AbstractEntity) o);
-        }
-    }
-
-    @PreUpdate
-    void onPreUpdate(Object o) {
-        if (o instanceof AbstractEntity) {
-            securityFacade.assertUpdateRight((AbstractEntity) o);
-        }
     }
 
     @PostUpdate
     void onPostUpdate(Object o) {
+
+        if (o instanceof AbstractEntity) {
+            if (securityFacade != null) {
+                securityFacade.assertUpdateRight((AbstractEntity) o);
+            } else {
+                logger.error("PostUpdate NO SECURITY FACADE");
+            }
+        }
+
         if (o instanceof Broadcastable) {
             Broadcastable b = (Broadcastable) o;
             if (b instanceof GameModel) {
@@ -124,10 +130,20 @@ public class EntityListener {
                 requestManager.addUpdatedEntities(entities);
             }
         }
+
     }
 
     @PreRemove
     void onPreRemove(Object o) {
+        if (o instanceof AbstractEntity) {
+            AbstractEntity ae = (AbstractEntity) o;
+            if (securityFacade != null) {
+                securityFacade.assertDeleteRight(ae);
+            } else {
+                logger.error("PreREMOVE NO SECURITY FACADE");
+            }
+        }
+
         if (o instanceof Broadcastable) {
             Broadcastable b = (Broadcastable) o;
             Map<String, List<AbstractEntity>> entities = b.getEntities();
@@ -146,20 +162,23 @@ public class EntityListener {
 
         if (o instanceof AbstractEntity) {
             AbstractEntity ae = (AbstractEntity) o;
-            securityFacade.assertDeleteRight(ae);
             ae.updateCacheOnDelete(getBeansjection());
         }
     }
 
     @PostLoad
     void onPostLoad(Object o) {
+        if (o instanceof AbstractEntity) {
+            if (securityFacade != null) {
+                securityFacade.assertReadRight((AbstractEntity) o);
+            } else {
+                logger.error("PostLOAD NO SECURITY FACADE");
+            }
+        }
+
         if (o instanceof AcceptInjection) {
             AcceptInjection id = (AcceptInjection) o;
             id.setBeanjection(getBeansjection());
-        }
-
-        if (o instanceof AbstractEntity) {
-            securityFacade.assertReadRight((AbstractEntity) o);
         }
     }
 }

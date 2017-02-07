@@ -310,12 +310,17 @@ public class Team extends AbstractEntity implements Broadcastable, BroadcastTarg
     }
 
     @Override
+    public String getRequieredReadPermission() {
+        return null;
+    }
+
+    @Override
     public String getRequieredUpdatePermission() {
         return this.getChannel();
     }
 
     @Override
     public String getRequieredCreatePermission() {
-        return this.getGame().getChannel();
+        return null;
     }
 }

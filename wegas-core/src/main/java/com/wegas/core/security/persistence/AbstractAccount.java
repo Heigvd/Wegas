@@ -37,9 +37,12 @@ import java.util.*;
     @NamedQuery(name = "AbstractAccount.findByUsername", query = "SELECT a FROM AbstractAccount a WHERE a.username = :username")
 })
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "FacebookAccount", value = FacebookAccount.class),
-    @JsonSubTypes.Type(name = "GuestJpaAccount", value = GuestJpaAccount.class),
-    @JsonSubTypes.Type(name = "JpaAccount", value = com.wegas.core.security.jparealm.JpaAccount.class),
+    @JsonSubTypes.Type(name = "FacebookAccount", value = FacebookAccount.class)
+    ,
+    @JsonSubTypes.Type(name = "GuestJpaAccount", value = GuestJpaAccount.class)
+    ,
+    @JsonSubTypes.Type(name = "JpaAccount", value = com.wegas.core.security.jparealm.JpaAccount.class)
+    ,
     @JsonSubTypes.Type(name = "GameAccount", value = com.wegas.core.security.jparealm.GameAccount.class)
 })
 @JsonIgnoreProperties({"passwordConfirm"})
@@ -263,6 +266,11 @@ public class AbstractAccount extends AbstractEntity {
      */
     public void setCreatedTime(Date createdTime) {
         this.createdTime = createdTime != null ? new Date(createdTime.getTime()) : null;
+    }
+
+    @Override
+    public String getRequieredCreatePermission() {
+        return null;
     }
 
     @Override

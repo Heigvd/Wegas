@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
@@ -15,8 +16,8 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.SecurityHelper;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collection;
+import java.util.HashSet;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -35,7 +36,7 @@ public class SecurityFacade {
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityFacade.class);
 
-    private Map<String, Boolean> permissions = new HashMap<>();
+    private Collection<String> grantedPermissions = new HashSet<>();
 
     @Inject
     private GameFacade gameFacade;
@@ -54,7 +55,7 @@ public class SecurityFacade {
     }
 
     public void clearPermissions() {
-        this.permissions.clear();
+        this.grantedPermissions.clear();
     }
 
     /**
@@ -119,8 +120,11 @@ public class SecurityFacade {
      * @return true if access granted
      */
     public boolean hasPermission(String channel) {
-        if (false && channel != null) {
-            if (!permissions.containsKey(channel)) {
+        boolean perm = false;
+        if (channel != null) {
+            if (grantedPermissions.contains(channel)) {
+                return true;
+            } else {
 
                 boolean superPermission = false;
 
@@ -129,15 +133,16 @@ public class SecurityFacade {
                     superPermission = true;
                 }
 
-                boolean perm = false;
                 String[] split = channel.split("-");
 
                 if (split.length == 2) {
                     perm = hasPermission(split[0], split[1], superPermission);
                 }
-                permissions.put(channel, perm);
+                if (perm) {
+                    grantedPermissions.add(channel);
+                }
+                return perm;
             }
-            return permissions.get(channel);
         } else {
             return true;
         }
@@ -157,8 +162,10 @@ public class SecurityFacade {
             }
 
             if (!hasPermission) {
-                new Exception().printStackTrace();
-                throw WegasErrorMessage.error(type + " Permission Denied (" + permissions + ") for user " + userFacade.getCurrentUser() + " on entity " + entity);
+                Helper.printWegasStackTrace(new Exception());
+                String msg = type + " Permission Denied (" + permissions + ") for user " + userFacade.getCurrentUser() + " on entity " + entity;
+                logger.error(msg);
+                //throw WegasErrorMessage.error(msg);
             }
         }
     }

@@ -30,8 +30,10 @@ import java.util.List;
  */
 @Entity
 @NamedQueries({
-    @NamedQuery(name = "GameAdmin.findByGame", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.game.id = :gameId"),
-    @NamedQuery(name = "GameAdmin.findByStatus", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status = :status ORDER BY ga.createdTime DESC"),
+    @NamedQuery(name = "GameAdmin.findByGame", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.game.id = :gameId")
+    ,
+    @NamedQuery(name = "GameAdmin.findByStatus", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status = :status ORDER BY ga.createdTime DESC")
+    ,
     @NamedQuery(name = "GameAdmin.GamesToDelete", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status != com.wegas.admin.persistence.GameAdmin.Status.TODO AND ga.game.status = com.wegas.core.persistence.game.Game.Status.DELETE")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -280,6 +282,11 @@ public class GameAdmin extends AbstractEntity {
 
     private String getPrevName() {
         return prevName;
+    }
+
+    @Override
+    public String getRequieredCreatePermission() {
+        return "Role-Scenarist";
     }
 
     @Override

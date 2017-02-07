@@ -35,9 +35,12 @@ import org.apache.shiro.SecurityUtils;
 //        @UniqueConstraint(columnNames = "name"))
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NamedQueries({
-    @NamedQuery(name = "GameModel.findByStatus", query = "SELECT a FROM GameModel a WHERE a.status = :status ORDER BY a.name ASC"),
-    @NamedQuery(name = "GameModel.findDistinctChildrenLabels", query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.rootGameModel.id = :containerId"),
-    @NamedQuery(name = "GameModel.findByName", query = "SELECT a FROM GameModel a WHERE a.name = :name"),
+    @NamedQuery(name = "GameModel.findByStatus", query = "SELECT a FROM GameModel a WHERE a.status = :status ORDER BY a.name ASC")
+    ,
+    @NamedQuery(name = "GameModel.findDistinctChildrenLabels", query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.rootGameModel.id = :containerId")
+    ,
+    @NamedQuery(name = "GameModel.findByName", query = "SELECT a FROM GameModel a WHERE a.name = :name")
+    ,
     @NamedQuery(name = "GameModel.findAll", query = "SELECT gm FROM GameModel gm")})
 public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor>, BroadcastTarget {
 
@@ -709,7 +712,8 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
 
     @Override
     public String getRequieredReadPermission() {
-        return this.getChannel();
+        return null;
+        //return this.getChannel();
     }
 
     @Override
