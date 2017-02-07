@@ -187,7 +187,7 @@ YUI.add("wegas-plugin", function(Y) {
             this.open(this.get("url"));
         },
         open: function(url) {
-            if (url.indexOf("http://") === -1) {
+            if (url.indexOf("http://") !== 0 && url.indexOf("https://") !== 0 && url.indexOf("//") !== 0) {
                 url = Wegas.app.get("base") + url;
             }
             if (this.get("target") === "blank") {

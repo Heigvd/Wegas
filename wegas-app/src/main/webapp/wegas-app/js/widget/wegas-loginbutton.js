@@ -287,7 +287,7 @@ YUI.add("wegas-loginbutton", function(Y) {
                 mainAccount = cUser.getMainAccount();
 
             if (mainAccount) {
-                name = "<img src=\"http://www.gravatar.com/avatar/" + mainAccount.get("hash") + "?s=28&d=mm\" />" + name;
+                name = "<img src=\"//www.gravatar.com/avatar/" + mainAccount.get("hash") + "?s=28&d=mm\" />" + name;
             }
             this.set("label", name);
         },

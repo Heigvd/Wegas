@@ -67,7 +67,8 @@
                         //loadOptional: true,
                         Wegas: {
                             base: "#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}",
-                            comboBase: "#{request.contextPath}/rest/combo/?v=#{wegasConfig.timestamp}&amp;"
+                            comboBase: "#{request.contextPath}/rest/combo/?v=#{wegasConfig.timestamp}&amp;",
+                            scheme: "#{request.scheme}"
                         }
                     };
                 </script>
