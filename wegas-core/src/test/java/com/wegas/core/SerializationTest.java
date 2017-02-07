@@ -369,7 +369,7 @@ public class SerializationTest {
         nd.setDefaultInstance(ns);
         ns.setDefaultDescriptor(nd);
 
-        nd.setMaxValue(10L);
+        nd.setMaxValue(10.0);
         //nd.setMinValue(0L);
 
         nd.getDefaultInstance().setValue(-10);
@@ -397,7 +397,7 @@ public class SerializationTest {
         WarningEvent warn = new WarningEvent("Warning Dummy Event", payload);
 
         List<WegasRuntimeException> exceptions = new ArrayList<>();
-        exceptions.add(new WegasOutOfBoundException(0L, 10L, 15.0, ndPayload.getLabel()));
+        exceptions.add(new WegasOutOfBoundException(0.0, 10.0, 15.0, ndPayload.getLabel()));
         exceptions.add(WegasErrorMessage.error("Error Message"));
         exceptions.add(new WegasScriptException("var a = truc;", 123, "OUPS"));
 
