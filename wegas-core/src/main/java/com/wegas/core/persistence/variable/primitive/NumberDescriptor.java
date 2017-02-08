@@ -30,11 +30,16 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
     /**
      *
      */
-    private Long minValue;
+    private Double minValue;
     /**
      *
      */
-    private Long maxValue;
+    private Double maxValue;
+
+    /**
+     *
+     */
+    private Integer historySize;
 
     /**
      *
@@ -69,6 +74,8 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
         NumberDescriptor other = (NumberDescriptor) a;
         this.setMinValue(other.getMinValue());
         this.setMaxValue(other.getMaxValue());
+        this.setHistorySize(other.getHistorySize());
+
         super.merge(a);
         if (!this.isValueValid(this.getDefaultValue())) {
             throw new WegasOutOfBoundException(this.getMinValue(),
@@ -79,28 +86,28 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
     /**
      * @return the minValue
      */
-    public Long getMinValue() {
+    public Double getMinValue() {
         return minValue;
     }
 
     /**
      * @param minValue the minValue to set
      */
-    public void setMinValue(Long minValue) {
+    public void setMinValue(Double minValue) {
         this.minValue = minValue;
     }
 
     /**
      * @return the maxValue
      */
-    public Long getMaxValue() {
+    public Double getMaxValue() {
         return maxValue;
     }
 
     /**
      * @param maxValue the maxValue to set
      */
-    public void setMaxValue(Long maxValue) {
+    public void setMaxValue(Double maxValue) {
         this.maxValue = maxValue;
     }
 
@@ -124,6 +131,18 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
     @Transient
     public double getMinValueD() {
         return this.minValue;
+    }
+
+    public Integer getHistorySize() {
+        return historySize;
+    }
+
+    public void setHistorySize(Integer historySize) {
+        if (historySize != null && historySize >= 0) {
+            this.historySize = historySize;
+        } else {
+            this.historySize = null;
+        }
     }
 
     // **** Sugar for scripts *** //

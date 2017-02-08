@@ -93,7 +93,7 @@ YUI.add('wegas-gamemodel-extractor', function(Y) {
                 this.setStatus("Creating...");
                 this.showOverlay();
                 Wegas.Facade.GameModel.sendRequest({
-                    request: "/" + this.get("game").get("gameModelId") + "/Create" + this.get("mode") + "FromPlayer/" + playerId,
+                    request: "/" + this.get("game").get("gameModelId") + "/" + this.get("mode") + "FromPlayer/" + playerId,
                     cfg: {
                         method: "POST",
                         updateEvent: false

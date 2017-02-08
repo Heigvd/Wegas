@@ -176,10 +176,14 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     public GameModel setDefaultInstancesFromPlayer(GameModel toUpdate, GameModel source, Player player) {
         try {
             toUpdate.propagateGameModel(); // Be sure to fetch all descriptor through gm.getVDs();
-            logger.error("to reinit: " + toUpdate.getVariableDescriptors().size());
             for (VariableDescriptor vd : toUpdate.getVariableDescriptors()) {
+                vd = variableDescriptorFacade.find(vd.getId());
+
                 VariableInstance find = variableDescriptorFacade.find(source, vd.getName()).getInstance(player);
-                logger.error("Re-Init " + vd + " to " + find);
+
+                this.getEntityManager().detach(find);
+                find.setVersion(vd.getDefaultInstance().getVersion());
+
                 vd.getDefaultInstance().merge(find);
             }
             return toUpdate;

@@ -99,7 +99,7 @@ public class GameModelController {
      * @return up to date reseted gamemodel
      * @throws IOException
      */
-    @PUT
+    @POST
     @Path("{templateGameModelId : [1-9][0-9]*}/UpdateFromPlayer/{playerId: [1-9][0-9]*}")
     public GameModel updateFromPlayer(@PathParam("templateGameModelId") Long templateGameModelId,
             @PathParam("playerId") Long playerId) throws IOException {
