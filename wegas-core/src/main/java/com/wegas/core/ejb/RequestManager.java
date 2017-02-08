@@ -203,9 +203,13 @@ public class RequestManager {
 
     public void setCurrentUser(User currentUser) {
         if (this.currentUser != currentUser) {
-            this.currentUser = userFacade.find(currentUser.getId());
-            securityFacade.clearPermissions();
+            if (currentUser != null) {
+                this.currentUser = userFacade.find(currentUser.getId());
+            } else {
+                this.currentUser = null;
+            }
         }
+        securityFacade.clearPermissions();
     }
 
     /**

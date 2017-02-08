@@ -129,14 +129,22 @@ public class UserFacade extends BaseFacade<User> {
      * @return a User entity, based on the shiro login state
      */
     public User getCurrentUser() {
+        User currentUser = this.getCurrentUserOrNull();
+        if (currentUser == null) {
+            throw new WegasNotFoundException("Unable to find user");
+        }
+        return currentUser;
+    }
+
+    /**
+     * @return a User entity, based on the shiro login state
+     */
+    public User getCurrentUserOrNull() {
         User currentUser = requestManager.getCurrentUser();
         if (currentUser != null) {
             currentUser = this.find(currentUser.getId());
         }
 
-        if (currentUser == null){
-            throw new WegasNotFoundException("Unable to find user");
-        }
         return currentUser;
     }
 

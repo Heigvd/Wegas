@@ -29,9 +29,7 @@ public class UserControllerTest extends AbstractEJBTestBase {
 
     @Test
     public void signUpTest() throws IOException {
-        String rawAccount = "{\"@class\":\"JpaAccount\",\"email\":\"test@local\",\"username\":\"test@local\",\"password\":\"qwertz\",\"firstname\":\"A\",\"lastname\":\"B\"}";
-        JpaAccount account = jsonMapper.readValue(rawAccount, JpaAccount.class);
-        userController.signup(account, null);
+        
     }
 
 }

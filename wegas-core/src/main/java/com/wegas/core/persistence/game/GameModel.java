@@ -718,7 +718,11 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
 
     @Override
     public String getRequieredCreatePermission() {
-        return "Role-Scenarist";
+        if (this.getStatus() == Status.PLAY) {
+            return "Role-Scenarist,Role-Trainer";
+        } else {
+            return "Role-Scenarist";
+        }
     }
 
     /*@Override

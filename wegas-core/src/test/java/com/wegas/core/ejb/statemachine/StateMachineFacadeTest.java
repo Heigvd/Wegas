@@ -28,6 +28,7 @@ import java.util.List;
 import static com.wegas.core.ejb.TestHelper.toList;
 import static com.wegas.core.ejb.TestHelper.toMap;
 import static org.junit.Assert.assertEquals;
+import org.junit.BeforeClass;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -43,42 +44,36 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
      */
     @Test
     public void testTrigger() throws NamingException {
-
-        // Lookup Ejb's
-        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
-        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
-        final RequestFacade rm = lookupBy(RequestFacade.class);
-
         // rm.setPlayer(player.getId());  //uncomment to make the test fail ...
         // Create a number
         NumberDescriptor number = new NumberDescriptor();
         number.setName("testnumber");
         number.setDefaultInstance(new NumberInstance(0));
-        vdf.create(gameModel.getId(), number);
+        variableDescriptorFacade.create(gameModel.getId(), number);
 
         // Create a trigger
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new TriggerInstance());
         trigger.setTriggerEvent(new Script("Variable.find(gameModel, \"testnumber\").getInstance(self).value >= 0.9"));
         trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, \"testnumber\").getInstance(self).value = 2;"));
-        vdf.create(gameModel.getId(), trigger);
+        variableDescriptorFacade.create(gameModel.getId(), trigger);
 
         // Test initial values
-        assertEquals(0.0, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
-        assertEquals(0.0, ((NumberInstance) vif.find(number.getId(), player2)).getValue(), .1);
+        assertEquals(0.0, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
+        assertEquals(0.0, ((NumberInstance) variableInstanceFacade.find(number.getId(), player2)).getValue(), .1);
 
         // Do an update
-        NumberInstance numberI = (NumberInstance) vif.find(number.getId(), player);
+        NumberInstance numberI = (NumberInstance) variableInstanceFacade.find(number.getId(), player);
         numberI.setValue(1);
-        vif.update(numberI.getId(), numberI);
+        variableInstanceFacade.update(numberI.getId(), numberI);
 
         // Test
-        assertEquals(2.0, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
-        assertEquals(0.0, ((NumberInstance) vif.find(number.getId(), player2)).getValue(), .1);
+        assertEquals(2.0, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
+        assertEquals(0.0, ((NumberInstance) variableInstanceFacade.find(number.getId(), player2)).getValue(), .1);
 
         // Clean up
-        vdf.remove(number.getId());
-        vdf.remove(trigger.getId());
+        variableDescriptorFacade.remove(number.getId());
+        variableDescriptorFacade.remove(trigger.getId());
     }
 
     /**
@@ -88,10 +83,6 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
      */
     @Test
     public void testMultipleTrigger() throws NamingException {
-
-        // Lookup Ejb's
-        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
-        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
         final double INITIALVALUE = 5.0;
         final double INTERMEDIATEVALUE = 4.0;
         final double FINALVALUE = 3.0;
@@ -100,35 +91,35 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         NumberDescriptor number = new NumberDescriptor();
         number.setName("testnumber");
         number.setDefaultInstance(new NumberInstance(INITIALVALUE));
-        vdf.create(gameModel.getId(), number);
+        variableDescriptorFacade.create(gameModel.getId(), number);
 
         // Create a resource
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new TriggerInstance());
         trigger.setTriggerEvent(new Script("true"));
         trigger.setPostTriggerEvent(
-                new Script("VariableDescriptorFacade.find(" + number.getId() + ").setValue(self, " + FINALVALUE + " )"));
-        vdf.create(gameModel.getId(), trigger);
+                new Script("Variable.find(" + number.getId() + ").setValue(self, " + FINALVALUE + " )"));
+        variableDescriptorFacade.create(gameModel.getId(), trigger);
 
         // Do an update
         NumberInstance numberI = number.getInstance(player);
         numberI.setValue(INTERMEDIATEVALUE);
-        vif.update(numberI.getId(), numberI);
+        variableInstanceFacade.update(numberI.getId(), numberI);
 
         // Test
-        assertEquals(FINALVALUE, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
-        assertEquals(INITIALVALUE, ((NumberInstance) vif.find(number.getId(), player2)).getValue(), .1);
+        assertEquals(FINALVALUE, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
+        assertEquals(INITIALVALUE, ((NumberInstance) variableInstanceFacade.find(number.getId(), player2)).getValue(), .1);
 
         // Reset
         gameModelFacade.reset(gameModel.getId());
 
         // Test
-        assertEquals(FINALVALUE, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
-        assertEquals(FINALVALUE, ((NumberInstance) vif.find(number.getId(), player2)).getValue(), .1);
+        assertEquals(FINALVALUE, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
+        assertEquals(FINALVALUE, ((NumberInstance) variableInstanceFacade.find(number.getId(), player2)).getValue(), .1);
 
         // Clean up
-        vdf.remove(number.getId());
-        vdf.remove(trigger.getId());
+        variableDescriptorFacade.remove(number.getId());
+        variableDescriptorFacade.remove(trigger.getId());
     }
 
     /**
@@ -138,15 +129,12 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
      */
     @Test
     public void testPassingTransitions() throws NamingException {
-        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
-        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
-        final GameModelFacade gmf = lookupBy(GameModelFacade.class);
         Integer INITIALVALUE = 0;
         NumberDescriptor number = new NumberDescriptor();
         number.setName("testnumber");
         number.setDefaultInstance(new NumberInstance(INITIALVALUE));
         number.setScope(new PlayerScope());
-        vdf.create(gameModel.getId(), number);
+        variableDescriptorFacade.create(gameModel.getId(), number);
 
         StateMachineDescriptor sm = new StateMachineDescriptor();
         StateMachineInstance smi = new StateMachineInstance();
@@ -169,30 +157,25 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         t2.setNextStateId(3L);
         state0.setTransitions(toList(t1));
         state1.setTransitions(toList(t2));
-        vdf.create(gameModel.getId(), sm);
-        gmf.reset(gameModel.getId());
+        variableDescriptorFacade.create(gameModel.getId(), sm);
+        gameModelFacade.reset(gameModel.getId());
         //Test for all players.
         for (Game g : gameModel.getGames()) {
             for (Team t : g.getTeams()) {
                 for (Player p : t.getPlayers()) {
-                    assertEquals(INITIALVALUE + 1 + 5 + 2 + 10, ((NumberInstance) vif.find(number.getId(), p)).getValue(), .1);
-                    assertEquals(3L, ((StateMachineInstance) vif.find(sm.getId(), p)).getCurrentStateId(), .1);
+                    assertEquals(INITIALVALUE + 1 + 5 + 2 + 10, ((NumberInstance) variableInstanceFacade.find(number.getId(), p)).getValue(), .1);
+                    assertEquals(3L, ((StateMachineInstance) variableInstanceFacade.find(sm.getId(), p)).getCurrentStateId(), .1);
                 }
             }
         }
 
         // Clean up
-        vdf.remove(number.getId());
-        vdf.remove(sm.getId());
+        variableDescriptorFacade.remove(number.getId());
+        variableDescriptorFacade.remove(sm.getId());
     }
 
     @Test
     public void testDialogue() throws NamingException {
-        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
-        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
-        final GameModelFacade gmf = lookupBy(GameModelFacade.class);
-        final StateMachineFacade stateMachineFacade = lookupBy(StateMachineFacade.class);
-
         DialogueDescriptor dial = new DialogueDescriptor();
         dial.setName("dial");
         StateMachineInstance dialI = new StateMachineInstance();
@@ -210,25 +193,21 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         s1ToS2.setNextStateId(2L);
         s1ToS2.setActionText(", ");
         ds1.setTransitions(toList(s1ToS2));
-        vdf.create(gameModel.getId(), dial);
-        gmf.reset(gameModel.getId());
-        assertEquals("Hello", (((DialogueState) ((StateMachineInstance) vif.find(dial.getId(), player.getId())).getCurrentState()).getText()));
+        variableDescriptorFacade.create(gameModel.getId(), dial);
+        gameModelFacade.reset(gameModel.getId());
+        assertEquals("Hello", (((DialogueState) ((StateMachineInstance) variableInstanceFacade.find(dial.getId(), player.getId())).getCurrentState()).getText()));
         stateMachineFacade.doTransition(gameModel.getId(), player.getId(), dial.getId(), s1ToS2.getId());
-        assertEquals("World", (((DialogueState) ((StateMachineInstance) vif.find(dial.getId(), player.getId())).getCurrentState()).getText()));
+        assertEquals("World", (((DialogueState) ((StateMachineInstance) variableInstanceFacade.find(dial.getId(), player.getId())).getCurrentState()).getText()));
     }
 
     @Test
     public void testEventTransition() throws NamingException, WegasScriptException {
-        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
-        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
-        final GameModelFacade gmf = lookupBy(GameModelFacade.class);
-        final ScriptFacade sf = lookupBy(ScriptFacade.class);
         Integer INITIALVALUE = 0;
         NumberDescriptor number = new NumberDescriptor();
         number.setName("testnumber");
         number.setDefaultInstance(new NumberInstance(INITIALVALUE));
         number.setScope(new PlayerScope());
-        vdf.create(gameModel.getId(), number);
+        variableDescriptorFacade.create(gameModel.getId(), number);
 
         StateMachineDescriptor sm = new StateMachineDescriptor();
         StateMachineInstance smi = new StateMachineInstance();
@@ -256,45 +235,41 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         at2.add(t2);
         state1.setTransitions(at2);
 
-        vdf.create(gameModel.getId(), sm);
-        gmf.reset(gameModel.getId());
+        variableDescriptorFacade.create(gameModel.getId(), sm);
+        gameModelFacade.reset(gameModel.getId());
         //Test for all players, nothing should change.
         for (Game g : gameModel.getGames()) {
             for (Team t : g.getTeams()) {
                 for (Player p : t.getPlayers()) {
-                    assertEquals(INITIALVALUE, ((NumberInstance) vif.find(number.getId(), p)).getValue(), .1);
-                    assertEquals(1L, ((StateMachineInstance) vif.find(sm.getId(), p)).getCurrentStateId(), .1);
+                    assertEquals(INITIALVALUE, ((NumberInstance) variableInstanceFacade.find(number.getId(), p)).getValue(), .1);
+                    assertEquals(1L, ((StateMachineInstance) variableInstanceFacade.find(sm.getId(), p)).getCurrentStateId(), .1);
                 }
             }
         }
 
         /* player fire event twice */
-        sf.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event')"), null);
+        scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event')"), null);
         RequestFacade rf = RequestFacade.lookup();
         rf.commit(true);
-        assertEquals(INITIALVALUE + 5 + 10, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
+        assertEquals(INITIALVALUE + 5 + 10, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
         /* player21 fire event only once */
-        sf.eval(player21, new Script("JavaScript", "Event.fire('event');"), null);
+        scriptFacade.eval(player21, new Script("JavaScript", "Event.fire('event');"), null);
         rf.commit(true);
-        assertEquals(INITIALVALUE + 5, ((NumberInstance) vif.find(number.getId(), player21)).getValue(), .1);
+        assertEquals(INITIALVALUE + 5, ((NumberInstance) variableInstanceFacade.find(number.getId(), player21)).getValue(), .1);
         // Clean up
-        vdf.remove(number.getId());
-        vdf.remove(sm.getId());
+        variableDescriptorFacade.remove(number.getId());
+        variableDescriptorFacade.remove(sm.getId());
     }
 
     @Test
     public void testMultipleEventTransition_oneEvent() throws NamingException, WegasScriptException {
-        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
-        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
-        final GameModelFacade gmf = lookupBy(GameModelFacade.class);
-        final ScriptFacade sf = lookupBy(ScriptFacade.class);
         Integer INITIALVALUE = 0;
         NumberDescriptor number = new NumberDescriptor();
         number.setName("testnumber");
         number.setDefaultInstance(new NumberInstance(INITIALVALUE));
         number.setScope(new PlayerScope());
-        vdf.create(gameModel.getId(), number);
+        variableDescriptorFacade.create(gameModel.getId(), number);
 
         StateMachineDescriptor sm = new StateMachineDescriptor();
         StateMachineInstance smi = new StateMachineInstance();
@@ -322,14 +297,14 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         at2.add(t2);
         state1.setTransitions(at2);
 
-        vdf.create(gameModel.getId(), sm);
-        gmf.reset(gameModel.getId());
+        variableDescriptorFacade.create(gameModel.getId(), sm);
+        gameModelFacade.reset(gameModel.getId());
         //Test for all players, nothing should change.
         for (Game g : gameModel.getGames()) {
             for (Team t : g.getTeams()) {
                 for (Player p : t.getPlayers()) {
-                    assertEquals(INITIALVALUE, ((NumberInstance) vif.find(number.getId(), p)).getValue(), .1);
-                    assertEquals(1L, ((StateMachineInstance) vif.find(sm.getId(), p)).getCurrentStateId(), .1);
+                    assertEquals(INITIALVALUE, ((NumberInstance) variableInstanceFacade.find(number.getId(), p)).getValue(), .1);
+                    assertEquals(1L, ((StateMachineInstance) variableInstanceFacade.find(sm.getId(), p)).getCurrentStateId(), .1);
                 }
             }
         }
@@ -337,40 +312,36 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         RequestFacade rf = RequestFacade.lookup();
 
         /* player fire event  -> NO MOVE */
-        sf.eval(player, new Script("JavaScript", "Event.fire('event');"), null);
+        scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');"), null);
         rf.commit(true);
-        assertEquals(0, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
+        assertEquals(0, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
-        gmf.reset(gameModel.getId());
+        gameModelFacade.reset(gameModel.getId());
         rf.getRequestManager().getEventCounter().clear();
         /* player fire event and event2 */
-        sf.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event');"), null);
+        scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event');"), null);
         rf.commit(true);
-        assertEquals(1, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
+        assertEquals(1, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
-        gmf.reset(gameModel.getId());
+        gameModelFacade.reset(gameModel.getId());
         rf.getRequestManager().getEventCounter().clear();
         /* player fire event twice and event2 */
-        sf.eval(player, new Script("JavaScript", "Event.fire('event'); Event.fire('event'); Event.fire('event');"), null);
+        scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event'); Event.fire('event'); Event.fire('event');"), null);
         rf.commit(true);
-        assertEquals(11, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
+        assertEquals(11, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
         // Clean up
-        vdf.remove(number.getId());
-        vdf.remove(sm.getId());
+        variableDescriptorFacade.remove(number.getId());
+        variableDescriptorFacade.remove(sm.getId());
     }
 
     @Test
     public void testMultipleEventTransition_twoEvents() throws NamingException, WegasScriptException {
-        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
-        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
-        final GameModelFacade gmf = lookupBy(GameModelFacade.class);
-        final ScriptFacade sf = lookupBy(ScriptFacade.class);
         NumberDescriptor number = new NumberDescriptor();
         number.setName("testnumber");
         number.setDefaultInstance(new NumberInstance(0));
         number.setScope(new PlayerScope());
-        vdf.create(gameModel.getId(), number);
+        variableDescriptorFacade.create(gameModel.getId(), number);
 
         StateMachineDescriptor sm = new StateMachineDescriptor();
         StateMachineInstance smi = new StateMachineInstance();
@@ -409,14 +380,14 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
 
         state2.setTransitions(toList(t2, t3));
 
-        vdf.create(gameModel.getId(), sm);
-        gmf.reset(gameModel.getId());
+        variableDescriptorFacade.create(gameModel.getId(), sm);
+        gameModelFacade.reset(gameModel.getId());
         //Test for all players, nothing should change.
         for (Game g : gameModel.getGames()) {
             for (Team t : g.getTeams()) {
                 for (Player p : t.getPlayers()) {
-                    assertEquals(0, ((NumberInstance) vif.find(number.getId(), p)).getValue(), .1);
-                    assertEquals(1L, ((StateMachineInstance) vif.find(sm.getId(), p)).getCurrentStateId(), .1);
+                    assertEquals(0, ((NumberInstance) variableInstanceFacade.find(number.getId(), p)).getValue(), .1);
+                    assertEquals(1L, ((StateMachineInstance) variableInstanceFacade.find(sm.getId(), p)).getCurrentStateId(), .1);
                 }
             }
         }
@@ -424,47 +395,43 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         RequestFacade rf = RequestFacade.lookup();
 
         /* player fire event  -> NO MOVE */
-        sf.eval(player, new Script("JavaScript", "Event.fire('event');"), null);
+        scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');"), null);
         rf.commit(true);
-        assertEquals(0, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
+        assertEquals(0, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
-        gmf.reset(gameModel.getId());
+        gameModelFacade.reset(gameModel.getId());
         rf.getRequestManager().getEventCounter().clear();
         /* player fire event and event2 */
-        sf.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event2');"), null);
+        scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event2');"), null);
         rf.commit(true);
-        assertEquals(1, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
+        assertEquals(1, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
-        gmf.reset(gameModel.getId());
+        gameModelFacade.reset(gameModel.getId());
         rf.getRequestManager().getEventCounter().clear();
         /* player fire event twice and event2 */
-        sf.eval(player, new Script("JavaScript", "Event.fire('event'); Event.fire('event'); Event.fire('event2');"), null);
+        scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event'); Event.fire('event'); Event.fire('event2');"), null);
         rf.commit(true);
-        assertEquals(11, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
+        assertEquals(11, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
-        gmf.reset(gameModel.getId());
+        gameModelFacade.reset(gameModel.getId());
         rf.getRequestManager().getEventCounter().clear();
         /* player fire event and event2 twice*/
-        sf.eval(player, new Script("JavaScript", "Event.fire('event'); Event.fire('event2'); Event.fire('event2');"), null);
+        scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event'); Event.fire('event2'); Event.fire('event2');"), null);
         rf.commit(true);
-        assertEquals(101, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
+        assertEquals(101, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
         // Clean up
-        vdf.remove(number.getId());
-        vdf.remove(sm.getId());
+        variableDescriptorFacade.remove(number.getId());
+        variableDescriptorFacade.remove(sm.getId());
     }
 
     @Test
     public void testMultipleEventTransition_twoEvents_OR() throws NamingException, WegasScriptException {
-        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
-        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
-        final GameModelFacade gmf = lookupBy(GameModelFacade.class);
-        final ScriptFacade sf = lookupBy(ScriptFacade.class);
         NumberDescriptor number = new NumberDescriptor();
         number.setName("testnumber");
         number.setDefaultInstance(new NumberInstance(0));
         number.setScope(new PlayerScope());
-        vdf.create(gameModel.getId(), number);
+        variableDescriptorFacade.create(gameModel.getId(), number);
 
         StateMachineDescriptor sm = new StateMachineDescriptor();
         StateMachineInstance smi = new StateMachineInstance();
@@ -501,14 +468,14 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
 
         state2.setTransitions(toList(t2, t3));
 
-        vdf.create(gameModel.getId(), sm);
-        gmf.reset(gameModel.getId());
+        variableDescriptorFacade.create(gameModel.getId(), sm);
+        gameModelFacade.reset(gameModel.getId());
         //Test for all players, nothing should change.
         for (Game g : gameModel.getGames()) {
             for (Team t : g.getTeams()) {
                 for (Player p : t.getPlayers()) {
-                    assertEquals(0, ((NumberInstance) vif.find(number.getId(), p)).getValue(), .1);
-                    assertEquals(1L, ((StateMachineInstance) vif.find(sm.getId(), p)).getCurrentStateId(), .1);
+                    assertEquals(0, ((NumberInstance) variableInstanceFacade.find(number.getId(), p)).getValue(), .1);
+                    assertEquals(1L, ((StateMachineInstance) variableInstanceFacade.find(sm.getId(), p)).getCurrentStateId(), .1);
                 }
             }
         }
@@ -516,33 +483,33 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         RequestFacade rf = RequestFacade.lookup();
 
         /* player fire event  -> NO MOVE */
-        sf.eval(player, new Script("JavaScript", "Event.fire('event');"), null);
+        scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');"), null);
         rf.commit(true);
-        assertEquals(1, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
+        assertEquals(1, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
-        gmf.reset(gameModel.getId());
+        gameModelFacade.reset(gameModel.getId());
         rf.getRequestManager().getEventCounter().clear();
         /* player fire event and event2 */
-        sf.eval(player, new Script("JavaScript", "Event.fire('event2');"), null);
+        scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event2');"), null);
         rf.commit(true);
-        assertEquals(1, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
+        assertEquals(1, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
-        gmf.reset(gameModel.getId());
+        gameModelFacade.reset(gameModel.getId());
         rf.getRequestManager().getEventCounter().clear();
         /* player fire event and event2 */
-        sf.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event');"), null);
+        scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event');"), null);
         rf.commit(true);
-        assertEquals(11, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
+        assertEquals(11, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
-        gmf.reset(gameModel.getId());
+        gameModelFacade.reset(gameModel.getId());
         rf.getRequestManager().getEventCounter().clear();
         /* player fire event and event2 */
-        sf.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event2');"), null);
+        scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event2');"), null);
         rf.commit(true);
-        assertEquals(101, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
+        assertEquals(101, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
         // Clean up
-        vdf.remove(number.getId());
-        vdf.remove(sm.getId());
+        variableDescriptorFacade.remove(number.getId());
+        variableDescriptorFacade.remove(sm.getId());
     }
 }

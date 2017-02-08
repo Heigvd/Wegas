@@ -9,22 +9,30 @@ package com.wegas.core.ejb;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.Helper;
-import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.GameModel;
-import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.game.Team;
+import com.wegas.core.ejb.statemachine.StateMachineFacade;
+import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.exception.client.WegasWrappedException;
+import com.wegas.core.rest.GameController;
+import com.wegas.core.rest.GameModelController;
+import com.wegas.core.rest.PlayerController;
+import com.wegas.core.rest.ScriptController;
+import com.wegas.core.rest.TeamController;
+import com.wegas.core.rest.VariableDescriptorController;
+import com.wegas.core.rest.VariableInstanceController;
 import com.wegas.core.rest.util.JacksonMapperProvider;
+import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.guest.GuestToken;
-import com.wegas.core.security.persistence.AbstractAccount;
+import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.rest.UserController;
+import com.wegas.core.security.util.AuthenticationInformation;
+import com.wegas.mcq.ejb.QuestionDescriptorFacade;
+import com.wegas.messaging.ejb.MessageFacade;
 import java.util.Collection;
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,36 +49,93 @@ public class AbstractEJBTestBase {
 
     // *** Static *** //
     private static final Logger logger = LoggerFactory.getLogger(AbstractEJBTestBase.class);
-    private static EJBContainer ejbContainer;
+    private static EJBContainer ejbContainer = null;
+
+    protected static GameModelController gameModelController;
+    protected static GameController gameController;
+    protected static TeamController teamController;
+    protected static PlayerController playerController;
+
     protected static GameModelFacade gameModelFacade;
     protected static GameFacade gameFacade;
     protected static TeamFacade teamFacade;
+    protected static PlayerFacade playerFacade;
+
     protected static RoleFacade roleFacade;
+
+    protected static UserController userController;
     protected static UserFacade userFacade;
-    protected static VariableDescriptorFacade descriptorFacade;
+    protected static AccountFacade accountFacade;
+
+    protected static VariableDescriptorFacade variableDescriptorFacade;
+    protected static VariableInstanceFacade variableInstanceFacade;
+
+    protected static VariableDescriptorController variableDescriptorController;
+    protected static VariableInstanceController variableInstanceController;
+
+    protected static ScriptFacade scriptFacade;
+    protected static ScriptController scriptController;
+    protected static ScriptCheck scriptCheck;
+    protected static StateMachineFacade stateMachineFacade;
+
+    protected static QuestionDescriptorFacade questionDescriptorFacade;
+    protected static MessageFacade messageFacade;
+
     protected static RequestFacade requestFacade;
     protected static SecurityFacade securityFacade;
     protected static RequestManager requestManager;
+
     protected static ObjectMapper jsonMapper;
 
     @BeforeClass
-    public static void setUp() throws NamingException {
+    public static void setUpFacades() throws NamingException {
         jsonMapper = JacksonMapperProvider.getMapper();
-        ejbContainer = TestHelper.getEJBContainer();
-        gameModelFacade = lookupBy(GameModelFacade.class);
-        gameFacade = GameFacade.lookup();
-        teamFacade = TeamFacade.lookup();
-        descriptorFacade = lookupBy(VariableDescriptorFacade.class);
-        roleFacade = lookupBy(RoleFacade.class);
-        userFacade = UserFacade.lookup();
-        requestFacade = RequestFacade.lookup();
-        securityFacade = requestFacade.getSecurityFacade();
-        requestManager = requestFacade.getRequestManager();
+
+        if (ejbContainer == null) {
+            ejbContainer = TestHelper.getEJBContainer();
+
+            gameModelController = lookupBy(GameModelController.class);
+            gameController = lookupBy(GameController.class);
+            teamController = lookupBy(TeamController.class);
+            playerController = lookupBy(PlayerController.class);
+
+            gameModelFacade = GameModelFacade.lookup();
+            gameFacade = GameFacade.lookup();
+            teamFacade = TeamFacade.lookup();
+            playerFacade = PlayerFacade.lookup();
+
+            roleFacade = lookupBy(RoleFacade.class);
+
+            userController = lookupBy(UserController.class);
+            userFacade = UserFacade.lookup();
+            accountFacade = lookupBy(AccountFacade.class);
+
+            variableDescriptorFacade = VariableDescriptorFacade.lookup();
+            variableInstanceFacade = VariableInstanceFacade.lookup();
+
+            variableDescriptorController = lookupBy(VariableDescriptorController.class);
+            variableInstanceController = lookupBy(VariableInstanceController.class);
+
+            scriptFacade = lookupBy(ScriptFacade.class);
+            scriptController = lookupBy(ScriptController.class);
+            scriptCheck = lookupBy(ScriptCheck.class);
+            stateMachineFacade = lookupBy(StateMachineFacade.class);
+
+            questionDescriptorFacade = QuestionDescriptorFacade.lookup();
+            messageFacade = lookupBy(MessageFacade.class);
+
+            requestFacade = RequestFacade.lookup();
+            securityFacade = requestFacade.getSecurityFacade();
+            requestManager = requestFacade.getRequestManager();
+        }
+
+        TestHelper.emptyDBTables();
     }
 
     public static void logout() {
         Subject subject = SecurityUtils.getSubject();
         subject.logout();
+        userFacade.setCurrentUser(null);
     }
 
     public static void login(User user) {
@@ -80,16 +145,46 @@ public class AbstractEJBTestBase {
         userFacade.setCurrentUser(user);
     }
 
+    public static User signup(String email) {
+        JpaAccount ja = new JpaAccount();
+        ja.setEmail(email);
+        Object entity = userController.signup(ja, null).getEntity();
+        if (entity instanceof User) {
+            return (User) entity;
+        } else if (entity instanceof RuntimeException) {
+            throw (RuntimeException) entity;
+        } else {
+            throw WegasErrorMessage.error("Error: " + entity);
+        }
+    }
+
+    public static User guestLogin() {
+        AuthenticationInformation authInfo = new AuthenticationInformation();
+        authInfo.setRemember(true);
+
+        return userController.guestLogin(authInfo);
+    }
+
+    public static User addRoles(User user, Role... roles) {
+        user = userFacade.find(user.getId());
+        Collection<Role> userRoles = user.getRoles();
+        for (Role role : roles) {
+            userRoles.add(role);
+        }
+        userFacade.merge(user);
+        return userFacade.find(user.getId());
+    }
+
     @AfterClass
     public static void tearDown() {
         TestHelper.closeContainer();
     }
 
-    public static <T> T lookupBy(Class<T> type, Class service) throws NamingException {
+    private static <T> T lookupBy(Class<T> type, Class service) throws NamingException {
         return Helper.lookupBy(ejbContainer.getContext(), type, service);
     }
 
-    public static <T> T lookupBy(Class<T> type) throws NamingException {
+    private static <T> T lookupBy(Class<T> type) throws NamingException {
         return Helper.lookupBy(ejbContainer.getContext(), type, type);
     }
 }

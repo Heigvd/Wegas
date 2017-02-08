@@ -61,10 +61,6 @@ public class GameModelFacadeTest extends AbstractEJBTest {
         final String NAME = "test-game";
         final String TOKEN = "token-for-testGame";
 
-        GameFacade gf = lookupBy(GameFacade.class);
-        TeamFacade tf = lookupBy(TeamFacade.class);
-        PlayerFacade pf = lookupBy(PlayerFacade.class);
-
         // Create a game model
         GameModel gameModel = new GameModel(GAMENAME);
         final int size = gameModelFacade.findAll().size();
@@ -77,19 +73,19 @@ public class GameModelFacadeTest extends AbstractEJBTest {
 
         // Create a game, a team and a player
         Game g = new Game(NAME, TOKEN);
-        gf.create(gameModel.getId(), g);
+        gameFacade.create(gameModel.getId(), g);
 
-        Game g2 = gf.findByToken(TOKEN);
+        Game g2 = gameFacade.findByToken(TOKEN);
         Assert.assertEquals(NAME, g2.getName());
 
         Team t = new Team();
         t.setName("test-team");
-        tf.create(g.getId(), t);
+        teamFacade.create(g.getId(), t);
         Assert.assertNotNull(t.getId());
 
         Player p = new Player();
 
-        pf.create(t.getId(), p);
+        playerFacade.create(t.getId(), p);
         Assert.assertNotNull(p.getId());
 
         gameModelFacade.remove(gameModel.getId());
@@ -105,16 +101,13 @@ public class GameModelFacadeTest extends AbstractEJBTest {
             nbFail++;
         };
 
-        GameFacade gf = lookupBy(GameFacade.class);
-        final TeamFacade teamFacade = lookupBy(TeamFacade.class);
-
         final int size = gameModelFacade.findAll().size();
 
         GameModel gameModel = new GameModel("TESTGM");
         gameModelFacade.create(gameModel);
 
         Game g = new Game("TESTGAME", "xxx");
-        gf.create(gameModel.getId(), g);
+        gameFacade.create(gameModel.getId(), g);
         Team t1 = new Team();
         Team t2 = new Team();
         t1.setName("test-team");
@@ -135,16 +128,13 @@ public class GameModelFacadeTest extends AbstractEJBTest {
 
     @Test
     public void createMultipleTeam_seq() throws NamingException, InterruptedException {
-        GameFacade gf = lookupBy(GameFacade.class);
-        final TeamFacade teamFacade = lookupBy(TeamFacade.class);
-
         final int size = gameModelFacade.findAll().size();
 
         GameModel gameModel = new GameModel("TESTGM");
         gameModelFacade.create(gameModel);
 
         Game g = new Game("TESTGAME", "xxx");
-        gf.create(gameModel.getId(), g);
+        gameFacade.create(gameModel.getId(), g);
         Team t1 = new Team();
         Team t2 = new Team();
         t1.setName("test-team");

@@ -8,11 +8,10 @@
 package com.wegas.core.security.ejb;
 
 import com.wegas.core.ejb.AbstractEJBTest;
-import com.wegas.core.exception.client.WegasNotFoundException;
-import com.wegas.core.rest.GameController;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import java.util.Calendar;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -21,20 +20,16 @@ import org.junit.Test;
  */
 public class RemoveGuestTest extends AbstractEJBTest {
 
-    @Test(expected = WegasNotFoundException.class)
+    @Test
     public void removeIdles() throws Exception {
-        final GameController gameController = lookupBy(GameController.class);
-        final UserFacade userFacade = lookupBy(UserFacade.class);
-        final AccountFacade accountFacade = lookupBy(AccountFacade.class);
-
         gameModel.getProperties().setFreeForAll(true);
         gameModelFacade.update(gameModel.getId(), gameModel);
 
-        User user = userFacade.getCurrentUser();                                // Set created time to 3 month ago
+        User oldGuest = guestLogin();
         Calendar calendar = Calendar.getInstance();
 
         calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - 13);
-        AbstractAccount account = user.getMainAccount();
+        AbstractAccount account = oldGuest.getMainAccount();
 
         account.setCreatedTime(calendar.getTime());
         accountFacade.merge(account);
@@ -43,6 +38,6 @@ public class RemoveGuestTest extends AbstractEJBTest {
 
         userFacade.removeIdleGuests();
 
-        userFacade.getCurrentUser();
+        Assert.assertNull("Guest not null", userFacade.find(oldGuest.getId()));
     }
 }

@@ -76,19 +76,21 @@ public class JpaRealm extends AuthorizingRealm {
 //                AbstractAccount account = accountFacade().find(accountId);
 //            }
 
-            AbstractAccount account = accountFacade().find((Long) principals.getPrimaryPrincipal());
-            User user = account.getUser();
             SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
-            for (Role role : user.getRoles()) {
-                info.addRole(role.getName());
+            AbstractAccount account = accountFacade().find((Long) principals.getPrimaryPrincipal());
+            if (account != null) {
+                User user = account.getUser();
+                for (Role role : user.getRoles()) {
+                    info.addRole(role.getName());
 
-                for (Permission p : role.getPermissions()) {
+                    for (Permission p : role.getPermissions()) {
+                        addPermissions(info, p);
+                    }
+                }
+
+                for (Permission p : user.getPermissions()) {
                     addPermissions(info, p);
                 }
-            }
-
-            for (Permission p : user.getPermissions()) {
-                addPermissions(info, p);
             }
             return info;
         } catch (EJBException e) {

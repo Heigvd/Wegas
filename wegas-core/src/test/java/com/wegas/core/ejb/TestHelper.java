@@ -71,11 +71,10 @@ public class TestHelper {
                 throw ex;
             }
         }
-        emptyDBTables();
         return container;
     }
 
-    private static void emptyDBTables() {
+    public static void emptyDBTables() {
         String sql = "DO\n"
                 + "$func$\n"
                 + "BEGIN \n"

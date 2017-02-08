@@ -12,13 +12,10 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.User;
 import java.util.List;
-import javax.naming.NamingException;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -26,19 +23,6 @@ import org.junit.Test;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class PlayerFacadeTest extends AbstractEJBTest {
-
-    private static GameFacade gameFacade;
-    private static TeamFacade teamFacade;
-    private static UserFacade userFacade;
-    private static PlayerFacade playerFacade;
-
-    @BeforeClass
-    public static void init() throws NamingException {
-        gameFacade = lookupBy(GameFacade.class);
-        teamFacade = lookupBy(TeamFacade.class);
-        playerFacade = lookupBy(PlayerFacade.class);
-        userFacade = lookupBy(UserFacade.class);
-    }
 
     /**
      * Test registeredGames
@@ -106,8 +90,8 @@ public class PlayerFacadeTest extends AbstractEJBTest {
         return t;
     }
 
-    private Player createPlayer(Team t) {
-        User u = PlayerFacadeTest.createUser();
+    private Player createPlayer(Team t, int i, int j) {
+        User u = PlayerFacadeTest.signup("massive_player_" + i + "_" + j + "@local");
 
         return gameFacade.joinTeam(t.getId(), u.getId());
     }
@@ -126,7 +110,7 @@ public class PlayerFacadeTest extends AbstractEJBTest {
         for (int i = 0; i < nbTeam; i++) {
             Team t = createTeam(g, "T" + i);
             for (int j = 0; j < nbPlayer; j++) {
-                createPlayer(t);
+                createPlayer(t, i, j);
             }
         }
 

@@ -40,18 +40,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PeerReviewDescriptorTest extends AbstractEJBTest {
 
-    private static TeamFacade teamFacade;
-    private static PlayerFacade playerFacade;
     private static final Logger logger = LoggerFactory.getLogger(PeerReviewDescriptorTest.class);
-
-    static {
-        try {
-            teamFacade = lookupBy(TeamFacade.class);
-            playerFacade = lookupBy(PlayerFacade.class);
-        } catch (NamingException ex) {
-            logger.error("Lookup error", ex);
-        }
-    }
 
     ObjectMapper mapper;
     ObjectWriter exportMapper;
@@ -81,7 +70,7 @@ public class PeerReviewDescriptorTest extends AbstractEJBTest {
         toBeReviewed = new NumberDescriptor(VAR_NAME);
         toBeReviewed.setDefaultInstance(new NumberInstance(0));
 
-        descriptorFacade.create(gameModel.getId(), toBeReviewed);
+        variableDescriptorFacade.create(gameModel.getId(), toBeReviewed);
 
         initial = new PeerReviewDescriptor();
         initial.setName("myReview");
@@ -129,7 +118,7 @@ public class PeerReviewDescriptorTest extends AbstractEJBTest {
 
         f2evaluations.add(grade2);
         feedbackComments.setEvaluations(f2evaluations);
-        descriptorFacade.create(gameModel.getId(), initial);
+        variableDescriptorFacade.create(gameModel.getId(), initial);
     }
 
     @After
@@ -170,7 +159,7 @@ public class PeerReviewDescriptorTest extends AbstractEJBTest {
         String json = "{ \"@class\": \"PeerReviewDescriptor\", \"id\": \"\", \"label\": \"rr\", \"toReviewName\": \"x\", \"name\": \"\", \"maxNumberOfReview\": 3, \"feedback\": { \"@class\": \"EvaluationDescriptorContainer\" }, \"fbComments\": { \"@class\": \"EvaluationDescriptorContainer\" }, \"defaultInstance\": { \"@class\": \"PeerReviewInstance\", \"id\": \"\" }, \"comments\": \"\", \"scope\": { \"@class\": \"TeamScope\", \"broadcastScope\": \"TeamScope\" } }";
 
         PeerReviewDescriptor read = mapper.readValue(json, PeerReviewDescriptor.class);
-        descriptorFacade.create(gameModel.getId(), read);
+        variableDescriptorFacade.create(gameModel.getId(), read);
 
         String json2 = exportMapper.writeValueAsString(read);
     }
@@ -184,7 +173,7 @@ public class PeerReviewDescriptorTest extends AbstractEJBTest {
         merged.setFeedback(new EvaluationDescriptorContainer());
         merged.setFbComments(new EvaluationDescriptorContainer());
 
-        descriptorFacade.create(gameModel.getId(), merged);
+        variableDescriptorFacade.create(gameModel.getId(), merged);
 
         //logger.warn("Initial: " + exportMapper.writeValueAsString(initial));
         merged.merge(initial);

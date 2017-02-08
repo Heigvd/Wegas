@@ -460,8 +460,8 @@ public class UserController {
      */
     @POST
     @Path("GuestLogin")
-    public void guestLogin(AuthenticationInformation authInfo) {
-        userFacade.guestLogin();
+    public User guestLogin(AuthenticationInformation authInfo) {
+        return userFacade.guestLogin();
     }
 
     /**
@@ -573,7 +573,7 @@ public class UserController {
                         // E-Mail not yet registered -> proceed with account creation
                         user = new User(account);
                         userFacade.create(user);
-                        r = Response.status(Response.Status.CREATED).build();
+                        r = Response.status(Response.Status.CREATED).entity(user).build();
                     }
                 }
             } else {
@@ -934,12 +934,14 @@ public class UserController {
     private String detectBrowserLocale(HttpServletRequest request) {
         String supportedLanguages = "en fr";
 
-        Enumeration locales = request.getLocales();
-        while (locales.hasMoreElements()) {
-            Locale locale = (Locale) locales.nextElement();
-            String loc = locale.getLanguage();
-            if (supportedLanguages.contains(loc)) {
-                return loc;
+        if (request != null) {
+            Enumeration locales = request.getLocales();
+            while (locales.hasMoreElements()) {
+                Locale locale = (Locale) locales.nextElement();
+                String loc = locale.getLanguage();
+                if (supportedLanguages.contains(loc)) {
+                    return loc;
+                }
             }
         }
         // No match found, return the default "en":

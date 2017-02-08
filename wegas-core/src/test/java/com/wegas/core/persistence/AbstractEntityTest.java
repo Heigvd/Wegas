@@ -49,6 +49,7 @@ public abstract class AbstractEntityTest<T extends AbstractEntity> {
     public static void initContext() throws Exception {
         System.out.println("[WeGAS Entity Test] Set up context...");
         ejbContainer = TestHelper.getEJBContainer();
+        TestHelper.emptyDBTables();
         ctx = ejbContainer.getContext();
         emf = Persistence.createEntityManagerFactory("wegasPU");
         em = emf.createEntityManager();

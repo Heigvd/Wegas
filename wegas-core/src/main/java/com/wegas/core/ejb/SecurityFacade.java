@@ -8,7 +8,6 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
-import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
@@ -94,18 +93,18 @@ public class SecurityFacade {
             } else if ("Team".equals(type)) {
 
                 Team team = teamFacade.find(id);
-                User user = userFacade.getCurrentUser();
+                User user = userFacade.getCurrentUserOrNull();
 
                 // Current logged User is linked to a player who's member of the team or current user has edit right one the game
-                return team != null && (playerFacade.checkExistingPlayerInTeam(team.getId(), user.getId()) != null || SecurityHelper.isPermitted(team.getGame(), "Edit"));
+                return user != null && team != null && (playerFacade.checkExistingPlayerInTeam(team.getId(), user.getId()) != null || SecurityHelper.isPermitted(team.getGame(), "Edit"));
             } else if ("Player".equals(type)) {
-                User user = userFacade.getCurrentUser();
+                User user = userFacade.getCurrentUserOrNull();
                 Player player = playerFacade.find(id);
 
                 // Current player belongs to current user || current user is the teacher or scenarist (test user)
                 return player != null && ((user != null && user.equals(player.getUser())) || SecurityHelper.isPermitted(player.getGame(), "Edit"));
             } else if ("User".equals(type)) {
-                User currentUser = userFacade.getCurrentUser();
+                User currentUser = userFacade.getCurrentUserOrNull();
                 User find = userFacade.find(id);
                 return currentUser != null && currentUser.equals(find);
             }
@@ -163,7 +162,7 @@ public class SecurityFacade {
 
             if (!hasPermission) {
                 Helper.printWegasStackTrace(new Exception());
-                String msg = type + " Permission Denied (" + permissions + ") for user " + userFacade.getCurrentUser() + " on entity " + entity;
+                String msg = type + " Permission Denied (" + permissions + ") for user " + userFacade.getCurrentUserOrNull() + " on entity " + entity;
                 logger.error(msg);
                 //throw WegasErrorMessage.error(msg);
             }

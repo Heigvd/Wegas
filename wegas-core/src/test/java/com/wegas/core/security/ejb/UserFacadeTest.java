@@ -1,11 +1,9 @@
 package com.wegas.core.security.ejb;
 
-import com.wegas.core.Helper;
-import com.wegas.core.ejb.AbstractEJBTest;
+import com.wegas.core.ejb.AbstractEJBTestBase;
 import com.wegas.core.ejb.TestHelper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
-import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Permission;
@@ -15,7 +13,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.EJBException;
-import javax.ejb.embeddable.EJBContainer;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,68 +24,43 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Yannick Lagger
  */
-public class UserFacadeTest {
+public class UserFacadeTest extends AbstractEJBTestBase {
 
     private static final Logger logger = LoggerFactory.getLogger(UserFacadeTest.class);
-
-    private static UserFacade userFacade;
-
-    private static RoleFacade roleFacade;
-
-    private static AccountFacade accountFacade;
 
     private static JpaAccount abstractAccount;
 
     private static User u;
 
-    private static Role roleP;
+    private static Role role1;
 
-    private static Role roleR;
+    private static Role role2;
 
-    private static EJBContainer container;
+    private static final String ROLE_1 = "Role_1";
 
-    public static User createUser(AbstractAccount aa) {
-        User newUser = new User();
-        userFacade.create(newUser);
+    private static final String ROLE_2 = "Role_2";
 
-        newUser.addAccount(aa);
-        userFacade.merge(newUser);
-        return userFacade.find(newUser.getId());
-    }
-
-    public static User createGuest() {
-        return AbstractEJBTest.createUser(new GuestJpaAccount());
-    }
+    private static final String EMAIL = "userfacadetest@local";
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        container = TestHelper.getEJBContainer();
-        userFacade = Helper.lookupBy(container.getContext(), UserFacade.class);
-        roleFacade = Helper.lookupBy(container.getContext(), RoleFacade.class);
-        accountFacade = Helper.lookupBy(container.getContext(), AccountFacade.class);
+        role1 = new Role(ROLE_1);
+        roleFacade.create(role1);
+        role2 = new Role(ROLE_2);
+        roleFacade.create(role2);
 
-        abstractAccount = new JpaAccount();
-        abstractAccount.setEmail("a@a.local");
-        roleP = new Role("Public");
-        roleFacade.create(roleP);
-        roleR = new Role("Registered");
-        roleFacade.create(roleR);
-
-        u = UserFacadeTest.createUser(abstractAccount);
+        u = AbstractEJBTestBase.signup(EMAIL);
         abstractAccount = (JpaAccount) u.getMainAccount();
 
-        /*
-        u.addRole(roleP);
-        u.addRole(roleR);
-        userFacade.merge(u);
-         */
+        userFacade.addRole(u.getId(), role1.getId());
+        userFacade.addRole(u.getId(), role2.getId());
     }
 
     @AfterClass
     public static void tearDownClass() throws Exception {
         userFacade.remove(u.getId());
-        roleFacade.remove(roleP.getId());
-        roleFacade.remove(roleR.getId());
+        roleFacade.remove(role1.getId());
+        roleFacade.remove(role2.getId());
         TestHelper.closeContainer();
     }
 
@@ -99,8 +71,8 @@ public class UserFacadeTest {
 
     @Test
     public void testSetup() throws WegasNoResultException {
-        Role publicRole = roleFacade.findByName("Public");
-        Role registered = roleFacade.findByName("Registered");
+        Role publicRole = roleFacade.findByName(ROLE_1);
+        Role registered = roleFacade.findByName(ROLE_2);
 
         Assert.assertEquals(1l, publicRole.getUsers().size());
         Assert.assertEquals(1l, registered.getUsers().size());
@@ -146,9 +118,9 @@ public class UserFacadeTest {
     public void testRoleUpdate() throws Exception {
         final String PERM = "Game:*:*";
 
-        roleP.addPermission(PERM);
-        roleFacade.update(roleP.getId(), roleP);
-        Role r = roleFacade.find(roleP.getId());
+        role1.addPermission(PERM);
+        roleFacade.update(role1.getId(), role1);
+        Role r = roleFacade.find(role1.getId());
         Assert.assertEquals(PERM, r.getPermissions().get(0).getValue());
 
         r.removePermission(PERM);
@@ -163,13 +135,13 @@ public class UserFacadeTest {
     @Test
     public void testAddAndGetPermissions() throws Exception {
         // Add permissions
-        userFacade.addRolePermission(roleP.getId(), "GameModel:Edit:gm1");
-        userFacade.addRolePermission(roleP.getId(), "GameModel:View:gm1");
-        Assert.assertFalse(userFacade.addRolePermission(roleP.getId(), "GameModel:View:gm1"));
+        userFacade.addRolePermission(role1.getId(), "GameModel:Edit:gm1");
+        userFacade.addRolePermission(role1.getId(), "GameModel:View:gm1");
+        Assert.assertFalse(userFacade.addRolePermission(role1.getId(), "GameModel:View:gm1"));
 
         // Get all GameModel permissions by GameModel id or Game permissions by Game id
         List<Map> rolePermissions = userFacade.findRolePermissionByInstance("gm1");
-        Assert.assertEquals("Public", rolePermissions.get(0).get("name"));
+        Assert.assertEquals(ROLE_1, rolePermissions.get(0).get("name"));
 
         List<String> permissions = (List<String>) rolePermissions.get(0).get("permissions");
 
@@ -178,7 +150,7 @@ public class UserFacadeTest {
         Assert.assertTrue(permissions.contains("GameModel:Edit:gm1"));
         Assert.assertTrue(permissions.contains("GameModel:View:gm1"));
 
-        userFacade.deleteRolePermissionsByIdAndInstance(roleP.getId(), "gm1");
+        userFacade.deleteRolePermissionsByIdAndInstance(role1.getId(), "gm1");
     }
 
     /**
@@ -187,14 +159,14 @@ public class UserFacadeTest {
     @Test
     public void testDeleteRolePermission() throws Exception {
         // Add permissions
-        userFacade.addRolePermission(roleP.getId(), "GameModel:Edit:gm1");
-        userFacade.addRolePermission(roleP.getId(), "GameModel:View:gm1");
+        userFacade.addRolePermission(role1.getId(), "GameModel:Edit:gm1");
+        userFacade.addRolePermission(role1.getId(), "GameModel:View:gm1");
 
-        userFacade.deleteRolePermission(roleP.getId(), "GameModel:View:gm1");
+        userFacade.deleteRolePermission(role1.getId(), "GameModel:View:gm1");
         List<Map> rolePermissions = userFacade.findRolePermissionByInstance("gm1");
         Assert.assertEquals("[GameModel:Edit:gm1]", rolePermissions.get(0).get("permissions").toString());
 
-        userFacade.deleteRolePermission(roleP.getId(), "GameModel:Edit:gm1");
+        userFacade.deleteRolePermission(role1.getId(), "GameModel:Edit:gm1");
         rolePermissions = userFacade.findRolePermissionByInstance("gm1");
         Assert.assertEquals("[]", rolePermissions.toString());
     }
@@ -204,9 +176,9 @@ public class UserFacadeTest {
      */
     @Test
     public void testDeleteRolePermissionsByIdAndInstance() throws Exception {
-        userFacade.addRolePermission(roleR.getId(), "GameModel:Edit:gm20");
-        userFacade.addRolePermission(roleR.getId(), "GameModel:View:gm20");
-        userFacade.addRolePermission(roleR.getId(), "GameModel:Token:gm20");
+        userFacade.addRolePermission(role2.getId(), "GameModel:Edit:gm20");
+        userFacade.addRolePermission(role2.getId(), "GameModel:View:gm20");
+        userFacade.addRolePermission(role2.getId(), "GameModel:Token:gm20");
 
         // Delete all permission from a role in a Game or GameModel
         List<Map> rolePermissions = userFacade.findRolePermissionByInstance("gm20");
@@ -217,8 +189,8 @@ public class UserFacadeTest {
         Assert.assertTrue(permissions.contains("GameModel:View:gm20"));
         Assert.assertTrue(permissions.contains("GameModel:Token:gm20"));
 
-        userFacade.deleteRolePermissionsByIdAndInstance(roleR.getId(), "gm20");
-        Role r = roleFacade.findByName("Registered");
+        userFacade.deleteRolePermissionsByIdAndInstance(role2.getId(), "gm20");
+        Role r = roleFacade.findByName(ROLE_2);
         Assert.assertEquals(0, r.getPermissions().size());
     }
 
@@ -227,13 +199,13 @@ public class UserFacadeTest {
      */
     @Test
     public void testDeleteRolePermissionsByInstance() throws Exception {
-        userFacade.addRolePermission(roleR.getId(), "GameModel:Edit:gm20");
-        userFacade.addRolePermission(roleR.getId(), "GameModel:View:gm20");
-        userFacade.addRolePermission(roleR.getId(), "GameModel:Token:gm20");
+        userFacade.addRolePermission(role2.getId(), "GameModel:Edit:gm20");
+        userFacade.addRolePermission(role2.getId(), "GameModel:View:gm20");
+        userFacade.addRolePermission(role2.getId(), "GameModel:Token:gm20");
 
-        userFacade.addRolePermission(roleP.getId(), "GameModel:Edit:gm20");
-        userFacade.addRolePermission(roleP.getId(), "GameModel:View:gm20");
-        userFacade.addRolePermission(roleP.getId(), "GameModel:Token:gm20");
+        userFacade.addRolePermission(role1.getId(), "GameModel:Edit:gm20");
+        userFacade.addRolePermission(role1.getId(), "GameModel:View:gm20");
+        userFacade.addRolePermission(role1.getId(), "GameModel:Token:gm20");
 
         userFacade.deleteRolePermissionsByInstance("gm20");
 
@@ -270,10 +242,10 @@ public class UserFacadeTest {
      */
     @Test
     public void testSendNewPassword() throws Exception {
-        JpaAccount acc = accountFacade.findByEmail("a@a.local");
+        JpaAccount acc = accountFacade.findByEmail(EMAIL);
         String oldPwd = acc.getPasswordHex();
-        userFacade.sendNewPassword("a@a.local");
-        acc = accountFacade.findByEmail("a@a.local");
+        userFacade.sendNewPassword(EMAIL);
+        acc = accountFacade.findByEmail(EMAIL);
         Assert.assertFalse(oldPwd.equals(acc.getPasswordHex()));
     }
 

@@ -7,21 +7,6 @@
  */
 package com.wegas.core.rest;
 
-import com.wegas.core.ejb.GameModelFacade;
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-import javax.ejb.embeddable.EJBContainer;
-import javax.naming.Context;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import static org.junit.Assert.*;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  *
  * JerseyTest Framework is not cooperative enough...
