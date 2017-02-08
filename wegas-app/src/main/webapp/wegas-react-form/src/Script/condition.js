@@ -5,9 +5,10 @@ import isMatch from 'lodash/isMatch';
 const AND = '&&';
 /**
  * Join multiple statements into AND condition 2 by 2
- * @param {Object[]} ast Array of statements
+ * @param {Object[]} statements Array of statements
  */
-function join(ast) {
+function join(statements) {
+    const ast = statements.filter(exp => !types.namedTypes.EmptyStatement.check(exp));
     let st;
     switch (ast.length) {
     case 0:
