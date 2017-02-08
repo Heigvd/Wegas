@@ -1,10 +1,10 @@
 
 .label {
-    font-family: Rockwell;
-    color:dimgrey;
-    font-size: 14px;
+    font-family: arial;
+    color:#6a95b6;
+    font-size: 15px;
     left:0;
-    margin-left: 10px;
+    margin-left: 15px;
 }
 
 .checkbox{

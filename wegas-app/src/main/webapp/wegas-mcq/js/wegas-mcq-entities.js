@@ -47,6 +47,9 @@ YUI.add('wegas-mcq-entities', function (Y) {
     persistence.QuestionDescriptor = Y.Base.create("QuestionDescriptor", persistence.VariableDescriptor, [persistence.VariableContainer], {
         getRepliesByStartTime: function (startTime) {
             return this.getInstance().getRepliesByStartTime(startTime);
+        },
+        getIconCss: function () {
+            return 'fa fa-question-circle';
         }
     }, {
         ATTRS: {

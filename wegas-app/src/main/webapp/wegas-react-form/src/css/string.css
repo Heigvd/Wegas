@@ -2,16 +2,16 @@
     border-radius: 3px;
     border:lightgrey solid 1px;
     margin-top:5px;
-    font-size: 16px;
+    font-size: 13px;
     width:100%;
     color:darkslategrey;
 }
 
 textarea{
     border-radius: 3px;
-    width:32em;
+    width:100%;
     font-style: italic;
-    font-size: 14px;
+    font-size: 15px;
     border: none;
     color:darkgrey;
 }
@@ -19,7 +19,7 @@ textarea{
 textarea:focus{
     border-radius: 3px;
     width:100%;
-    font-size: 14px;
+    font-size: 15px;
     border:lightgrey solid 1px;
     color:darkgrey;
 ;

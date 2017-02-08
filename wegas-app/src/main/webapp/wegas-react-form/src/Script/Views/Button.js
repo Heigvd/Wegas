@@ -6,7 +6,7 @@ export function RemoveStatementButton(props) {
     return (
         <span style={{ display: 'inline-block', width: '22px' }}>
             <IconButton
-                icon="fa fa-trash-o"
+                icon="fa fa-minus"
                 onClick={props.onClick}
                 tooltip="remove"
                 className={styles.removeStatement}
