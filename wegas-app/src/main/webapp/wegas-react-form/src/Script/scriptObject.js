@@ -23,8 +23,8 @@ function scriptObject(Comp) {
             >
                 <span
                     style={{
-                        fontFamily: 'Rockwell',
-                        fontSize: '16px',
+                        fontFamily: 'arial',
+                        fontSize: '15px',
                         color: '#6A95B6',
                         marginTop: '8px',
                         marginRight: '10px',

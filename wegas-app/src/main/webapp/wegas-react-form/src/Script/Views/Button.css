@@ -16,12 +16,15 @@
 }
 
 .addStatement{
+	width:16.5px;
+	height:16.5px;
 	text-align: center;
-	margin-left:170px;
+	font-size:8.9px;
+	margin-left:5px;
 	margin-top: 7px;
 	cursor: pointer;
 }
 
 .addStatement:hover{
-    background-color: limegreen;
+    background-color: darkslategrey;
 }
