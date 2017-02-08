@@ -63,15 +63,9 @@
 
 .treeHead {
     position: relative;
-
     &:focus {
         outline: none;
-
-        &::after {
-            content: "<<";
-            position: absolute;
-            bottom: 0;
-        }
+        text-decoration: underline;
     }
 }
 

@@ -35,7 +35,8 @@ class Popover extends React.Component {
     }
 }
 Popover.defaultProps = {
-    onClickOutside: function noop() { }
+    onClickOutside: function noop() { },
+    show: false
 };
 Popover.propTypes = {
     onClickOutside: PropTypes.func,
