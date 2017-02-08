@@ -673,8 +673,8 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                     type: NUMBER,
                     value: 20,
                     optional: true,
-                    _inputex: {
-                        wrapperClassName: "wegas-advanced-feature",
+                    view: {
+                        className: "wegas-advanced-feature",
                         label: "Maximum history size"
                     }
                 },
@@ -726,7 +726,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             METHODS: {
                 add: {
                     "arguments": [
-                        SELFARG,Number
+                        SELFARG,
                         {
                             type: NUMBER,
                             required: true,
