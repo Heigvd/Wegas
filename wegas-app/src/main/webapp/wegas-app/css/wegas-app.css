@@ -115,9 +115,9 @@ font {
 
 .wegas-loading-app > div {
     width: auto;
-    margin-top: 37px;
+    margin-top:47px;
     background: #b5b5b5;
-    margin-left: 6px;
+    margin-left: 10px;
     margin-right: 1px;
     height: 0.25em;
 }
@@ -125,7 +125,7 @@ font {
 .wegas-loading-app > div > div {
     height: 100%;
     width: 0%;
-    background-color: #03283A;
+    background-color: #5f5f5f;
 }
 
 

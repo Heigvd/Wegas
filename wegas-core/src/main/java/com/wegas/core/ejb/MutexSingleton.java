@@ -90,11 +90,12 @@ public class MutexSingleton {
             lock = locks.get(effectiveToken);
 
             if (lock.sem.tryLock()) {
-                if (audience != null) {
-                    websocketFacade.sendLock(audience, token);
-                }
                 r = true; // Successful
                 lock.counter++;
+
+                if (audience != null && lock.counter == 1) { // just locked
+                    websocketFacade.sendLock(audience, token);
+                }
                 /*} else if (lock.counter == 0) {
                 // since the lock is held by another process, the counter is always (thanks to sync(this)) >= 1)
                 locks.remove(token);*/
@@ -119,14 +120,15 @@ public class MutexSingleton {
         RefCounterLock lock;
 
         synchronized (this) {
-            if (audience != null) {
-                websocketFacade.sendLock(audience, token);
-            }
             locks.putIfAbsent(effectiveToken, new RefCounterLock(token, audience));
             lock = locks.get(effectiveToken);
             lock.counter++;
+            if (audience != null && lock.counter == 1) { //just locked
+                {
+                    websocketFacade.sendLock(audience, token);
+                }
+            }
         }
-
         lock.sem.lock();
         //logger.error("lock " + token + " acquired");
     }

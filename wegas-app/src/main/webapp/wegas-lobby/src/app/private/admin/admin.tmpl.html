@@ -1,11 +1,13 @@
 <div class="view view--admin-menu view--bottom" style="padding:10px;">
     <div style="float:left; margin-right:20px; padding:10px">
+        <button class="button button--success" ui-sref="wegas.private.admin.who" style="margin:2px;">{{'ADMIN-INDEX-WHO-BTN' | translate}}</button>
         <button class="button button--success" ui-sref="wegas.private.admin.users" style="margin:2px;">{{'ADMIN-INDEX-USERS-BTN' | translate}}</button>
         <button class="button button--success" ui-sref="wegas.private.admin.groups" style="margin:2px;">{{'ADMIN-INDEX-GROUPS-BTN' | translate}}</button>
         <a class="button button--success" href="{{ServiceURL}}wa.html" target="_blank" style="margin:2px;">{{'ADMIN-INDEX-SESSIONS-BTN' | translate}} &nbsp; <i class="fa fa-external-link same-color"></i></a>
         <a class="button button--success" href="{{ServiceURL}}stats.html" target="_blank" style="margin:2px;">Stats &nbsp; <i class="fa fa-external-link same-color"></i></a>
     </div>
-    <div style="float:left; padding:10px">
+    <div ng-if="!adminCtrl.loading"
+         style="float:left; padding:10px">
         <h3 style="margin-top:-5px; margin-bottom:5px">{{'ADMIN-INDEX-UPLOAD-TITLE' | translate}}</h3>
         <input id="import-json-scenario" type="file" value="upload a scenario" scenario-create-upload />
     </div>

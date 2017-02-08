@@ -9,19 +9,73 @@ angular.module('private.scenarist.archives.directives', [])
             controller: "ScenaristArchivesIndexController as scenaristArchivesIndexCtrl"
         };
     })
-    .controller("ScenaristArchivesIndexController", function ScenaristArchivesIndexController($rootScope, $scope, $translate, ScenariosModel, Flash) {
+    .controller("ScenaristArchivesIndexController", function ScenaristArchivesIndexController($rootScope, $scope, $translate, ScenariosModel, Flash, $filter) {
         "use strict";
         var ctrl = this;
+        ctrl.rawArchives = [];
         ctrl.archives = [];
         ctrl.search = "";
         ctrl.loading = true;
+
+
+        /*
+         ** Filters ctrl.rawArchives according to the given search string and puts the result in ctrl.archives.
+         ** Hypothesis: input array ctrl.rawArchives is already ordered according to the 'createdTime' attribute,
+         ** so that the output automatically follows the same ordering.
+         */
+        ctrl.filterArchives = function(search){
+            if (!search || search.length === 0){
+                ctrl.archives = ctrl.rawArchives;
+                if ( ! $rootScope.$$phase) {
+                    $scope.$apply();
+                }
+                return;
+            }
+            var res = [],
+                len = ctrl.rawArchives.length,
+                i;
+            for (i=0; i<len; i++){
+                var scenario = ctrl.rawArchives[i];
+                if (scenario.canView === false || scenario.canEdit === false) continue;
+                var needle = search.toLowerCase();
+                if ((scenario.name && scenario.name.toLowerCase().indexOf(needle) >= 0) ||
+                    (scenario.createdByName && scenario.createdByName.toLowerCase().indexOf(needle) >= 0) ||
+                    (scenario.comments && scenario.comments.toLowerCase().indexOf(needle) >= 0) ||
+                    // If searching for a number, the id has to start with the given pattern:
+                    scenario.id.toString().indexOf(needle) === 0) {
+                    res.push(scenario);
+                }
+            }
+            ctrl.archives = res;
+            if ( ! $rootScope.$$phase) {
+                $scope.$apply();
+            }
+        };
+
+        // Use jQuery input events, more reliable than Angular's:
+        $(document).off("input", '#searchFieldScenarioArchives'); // Detach any previous input handler
+        $(document).on("input", '#searchFieldScenarioArchives', function(){
+            // At this point, the search variable is not necessarily updated by Angular to reflect the real input field:
+            ctrl.search = this.value;
+            ctrl.filterArchives(ctrl.search);
+        });
 
         ctrl.updateScenarios = function() {
             ctrl.loading = true;
             ScenariosModel.getScenarios("BIN").then(function(response) {
                 ctrl.loading = false;
-                ctrl.archives = response.data || [];
-                if (ctrl.archives.length === 0) {
+                if (response.isErroneous()) {
+                    response.flash();
+                } else {
+                    ctrl.rawArchives = $filter('orderBy')(response.data, 'createdTime', true) || [];
+                    // At this point, the search variable is not yet updated by Angular to reflect the input field:
+                    var searchField = document.getElementById('searchFieldArchives');
+                    if (searchField) {
+                        ctrl.search = searchField.getElementsByClassName('tool__input')[0].value;
+                    }
+                    ctrl.filterArchives(ctrl.search);
+                }
+                if (ctrl.rawArchives.length === 0) {
                     $scope.close();
                 }
             });
@@ -51,6 +105,7 @@ angular.module('private.scenarist.archives.directives', [])
                     if (!response.isErroneous()) {
                         $rootScope.$emit('entrenchNbArchives', 1);
                         $rootScope.$emit('changeScenarios', true);
+                        ctrl.updateScenarios();
                     } else {
                         response.flash();
                     }

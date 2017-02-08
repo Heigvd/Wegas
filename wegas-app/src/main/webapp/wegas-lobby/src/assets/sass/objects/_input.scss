@@ -59,7 +59,19 @@
     }
     &.ng-invalid{
         border-color: red;
+        &.token-input + .token-error-msg{
+            display: block;
+        }
     }
+}
+
+.token-error-msg{
+    display: none;
+    color: red;
+    font-weight: bold;
+    position: absolute;
+    top: 105px;
+    left: 240px;
 }
 
 .input--group{

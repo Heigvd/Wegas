@@ -17,7 +17,6 @@ angular.module('Wegas', [
     'ngAnimate',
     'angularModalService',
     'pascalprecht.translate',
-    'angular.filter',
     'wegas.service.responses',
     'wegas.service.auth',
     'wegas.service.wegasTranslations',

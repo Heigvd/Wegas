@@ -80,13 +80,14 @@ YUI.add('wegas-console-custom', function(Y) {
                             "<div class='content-advanced-script'></div><button class='content-advanced-script-add'>Add Impact</button>").one(
                             ".content-advanced-script");
                     }
-                    this.srcField = new Y.inputEx.WysiwygScript({
-                        parentEl: contentAdvanced
-                    });
+                    // this.srcField = new Y.inputEx.WysiwygScript({
+                    //     parentEl: contentAdvanced
+                    // });
+                    this.srcField = Y.Wegas.RForm.Script.MultiVariableMethod({}, contentAdvanced.getDOMNode())
                     cb.append(
                         '<div class="wegas-status-bar wegas-status-bar-hidden"><div class="results wegas-advanced-feature"></div><div class="status"></div></div>');
                     // Remove buttons for advanced features (view source, etc).
-                    Y.one(this.srcField.getEl()).all("div > button").remove();
+                    // Y.one(this.srcField.getEl()).all("div > button").remove();
                     // Correct small scrollbar issue after rendering:
                     if (cb.one('.modal--content-tab'))
                         setTimeout(function(){ cb.one('.modal--content-tab').setStyle('overflowY','auto') }, 1000);
