@@ -267,7 +267,7 @@
                 <version>${jackson.version}</version>
                 <scope>${jackson.scope}</scope>
             </dependency>
-            
+
 
             <!-- Java Content Repository -->
             <dependency>

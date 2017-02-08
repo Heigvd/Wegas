@@ -11,7 +11,7 @@
 <div ng-if="!adminUsersCtrl.loading"
      class="view__list" style="height:calc(100% - 80px);" repeat-auto-load >
     <div class="card card--player-session"
-         ng-repeat="user in adminUsersCtrl.users | filter: adminUsersCtrl.search | limitTo: adminUsersCtrl.maxUsersDisplayed | orderBy:'account.lastname'"
+         ng-repeat="user in adminUsersCtrl.users | filter: adminUsersCtrl.search | limitTo: adminUsersCtrl.maxUsersDisplayed"
          user="user">
         <div class="card__illustration illustration illustration--icon" illustration="ICON_grey_user_wif"></div>
         <div class="card__description card__description--two-lines">

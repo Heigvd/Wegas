@@ -1,4 +1,7 @@
-angular.module('private.admin.who', ['wegas.service.pusher'])
+angular.module('private.admin.who', [
+    'wegas.service.pusher',
+    'private.admin.users.edit'
+])
     .config(function($stateProvider) {
         "use strict";
         $stateProvider
