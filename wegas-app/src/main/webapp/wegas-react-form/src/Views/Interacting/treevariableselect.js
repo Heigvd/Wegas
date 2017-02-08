@@ -122,7 +122,7 @@ class TreeVariableSelect extends React.Component {
                     })}
                     style={{ display: 'inline-block', width: 'auto' }}
                 >
-                    <div style={{ fontSize: '75%', opacity: 0.5 }}>
+                    <div style={{ fontSize: '90%', opacity: 0.5, position: 'absolute', marginTop: '-22px' }}>
                         {buildPath(this.props.value)}
                     </div>
                     {labelForVariable(this.props.value) || this.labelForAdditional(this.props.value) || 'select...'}
