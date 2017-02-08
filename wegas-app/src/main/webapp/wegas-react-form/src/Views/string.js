@@ -41,7 +41,7 @@ class StringView extends React.Component {
             );
         }
         return (
-            <div style={{ maxWidth: '20em' }}>
+            <div style={{ maxWidth: '100%' }}>
                 <input
                     className={styles.input}
                     type="text"

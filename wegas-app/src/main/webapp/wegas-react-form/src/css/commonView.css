@@ -31,7 +31,7 @@
 }
 
 .label {
-    font-family: Rockwell;
+    font-family: arial;
     color: #6a95b6;
     font-size: 16px;
     margin-top: 8px;
@@ -41,4 +41,5 @@
 .borderTop {
     border-top: solid 2px #4a8c9c;
     margin-left: 0px;
+    width:40em;
 }

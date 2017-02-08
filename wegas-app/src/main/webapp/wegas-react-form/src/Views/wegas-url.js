@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import IconButton from 'material-ui/IconButton';
+import IconButton from '../Components/IconButton';
 import StringView from './string';
 import { getY } from '..';
 
@@ -23,7 +23,7 @@ function WegasUrl(props) {
                 <StringView {...props} />
             </div>
             <IconButton
-                iconClassName="wegas-icon wegas-icon-fileexplorer"
+                className="fa fa-folder-o"
                 onClick={openPanel(props.onChange, props.view.filter)}
             />
         </div>);

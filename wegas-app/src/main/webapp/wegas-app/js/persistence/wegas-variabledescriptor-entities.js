@@ -659,14 +659,16 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                     type: ["null", NUMBER],
                     optional: true,
                     view: {
-                        label: "Minimum"
+                        label: "Minimum",
+                        layout: "shortInline"
                     }
                 },
                 maxValue: {
                     type: ["null", NUMBER],
                     optional: true,
                     view: {
-                        label: "Maximum"
+                        label: "Maximum",
+                        layout: "shortInline"
                     }
                 },
                 historySize: {
@@ -707,7 +709,8 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                         value: {
                             type: NUMBER,
                             view: {
-                                label: "Default value"
+                                label: "Default value",
+                                layout: "shortInline"
                             }
                         },
                         history: {
