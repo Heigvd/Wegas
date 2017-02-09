@@ -15,8 +15,8 @@ public class WegasOutOfBoundException extends WegasRuntimeException {
 
     private static final long serialVersionUID = 6812085119211277213L;
 
-    private final Long min;
-    private final Long max;
+    private final Double min;
+    private final Double max;
     private final Double value;
     private final String variableName;
 
@@ -27,7 +27,7 @@ public class WegasOutOfBoundException extends WegasRuntimeException {
      * @param value
      * @param variableName
      */
-    public WegasOutOfBoundException(Long min, Long max, Double value, String variableName) {
+    public WegasOutOfBoundException(Double min, Double max, Double value, String variableName) {
         super();
         this.min = min;
         this.max = max;
@@ -35,11 +35,11 @@ public class WegasOutOfBoundException extends WegasRuntimeException {
         this.variableName = variableName;
     }
 
-    public Long getMin() {
+    public Double getMin() {
         return min;
     }
 
-    public Long getMax() {
+    public Double getMax() {
         return max;
     }
 

@@ -19,6 +19,7 @@ import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.primitive.BooleanInstance;
+import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.ObjectInstance;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
@@ -189,16 +190,58 @@ public class UpdateController {
         if (scenarioOnly) {
             where = criteriaBuilder.and(
                     criteriaBuilder.equal(e.get("template"), true),
-                    criteriaBuilder.like(e.get("properties").get("clientScriptUri"), "wegas-pmg/js/wegas-pmg-loader.js%")
+                    criteriaBuilder.like(e.get("properties").get("clientScriptUri"), "wegas-private/wegas-pmg/js/wegas-pmg-loader.js%")
             );
         } else {
-            where = criteriaBuilder.like(e.get("properties").get("clientScriptUri"), "wegas-pmg/js/wegas-pmg-loader.js%");
+            where = criteriaBuilder.like(e.get("properties").get("clientScriptUri"), "wegas-private/wegas-pmg/js/wegas-pmg-loader.js%");
         }
 
         query.select(e)
                 .where(where);
 
         return em.createQuery(query).getResultList();
+    }
+
+    private String updateHistorySize(GameModel aPmg) {
+        StringBuilder sb = new StringBuilder("<ul><li><b>Update Histor Size for ");
+        sb.append(aPmg).append("</b></li>");
+
+        String[] varNames = {
+            "managementApproval",
+            "userApproval",
+            "quality",
+            "costs",
+            "delay",
+            "planedValue",
+            "earnedValue",
+            "actualCost"
+        };
+
+        int nothing = 0;
+
+        for (String varName : varNames) {
+            sb.append("<li>").append(varName);
+            try {
+                NumberDescriptor nd = (NumberDescriptor) descriptorFacade.find(aPmg, varName);
+                if (nd.getHistorySize() != null) {
+                    sb.append("  updated");
+                    nd.setHistorySize(null);
+                } else {
+                    sb.append("  nothing to do");
+                    nothing++;
+                }
+            } catch (WegasNoResultException ex) {
+                sb.append("  not found");
+                java.util.logging.Logger.getLogger(UpdateController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            sb.append("</li>");
+        }
+        sb.append("</ul>");
+        if (nothing == varNames.length) {
+            return "<ul><li>" + aPmg + "OK</li></ul>";
+        } else {
+            return sb.toString();
+        }
     }
 
     private void updateScope(VariableDescriptor vd) {
@@ -414,6 +457,18 @@ public class UpdateController {
     @GET
     @Path("PMG_UPGRADE")
     public String pmg_upgrade() {
+        List<GameModel> PMGs = this.findPMGs(false);
+        StringBuilder ret = new StringBuilder();
+
+        ret.append("<ul>");
+        for (GameModel pmg : PMGs) {
+            ret.append(this.updateHistorySize(pmg));
+        }
+        ret.append("</ul>");
+        return ret.toString();
+    }
+
+    public String pmg_upgrade_BURNDOWN() {
         List<GameModel> PMGs = this.findPMGs(false);
         StringBuilder ret = new StringBuilder();
         String status;

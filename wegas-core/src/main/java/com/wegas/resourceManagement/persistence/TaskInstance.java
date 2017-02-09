@@ -22,7 +22,6 @@ import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
@@ -96,7 +95,7 @@ public class TaskInstance extends VariableInstance {
     @JsonProperty
     public void setDuration(double duration) {
         if (duration < 0.0) {
-            throw new WegasOutOfBoundException(0L, null, duration, "duration");
+            throw new WegasOutOfBoundException(0.0, null, duration, "duration");
         } else {
             this.duration = duration;
         }

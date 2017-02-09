@@ -43,11 +43,6 @@ public class NumberInstance extends VariableInstance {
     /**
      *
      */
-    public static final int HISTORYSIZE = 20;
-
-    /**
-     *
-     */
     private double val;
 
     /**
@@ -103,7 +98,9 @@ public class NumberInstance extends VariableInstance {
      */
     public void saveHistory() {
         this.history.add(this.val);
-        if (this.history.size() > HISTORYSIZE) {
+        Integer hSize = ((NumberDescriptor) this.findDescriptor()).getHistorySize();
+
+        if (hSize != null && this.getHistory().size() > hSize) {
             this.history.remove(0);
         }
     }
