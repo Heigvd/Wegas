@@ -64,10 +64,10 @@ public class StateMachineITest extends AbstractEJBTest {
         trigger2.setOneShot(Boolean.FALSE);
         trigger2.setDisableSelf(Boolean.FALSE);
 
-        variableDescriptorFacade.create(gameModel.getId(), testNumber);
-        variableDescriptorFacade.create(gameModel.getId(), testNumber2);
-        variableDescriptorFacade.create(gameModel.getId(), trigger);
-        variableDescriptorFacade.create(gameModel.getId(), trigger2);
+        variableDescriptorFacade.create(scenario.getId(), testNumber);
+        variableDescriptorFacade.create(scenario.getId(), testNumber2);
+        variableDescriptorFacade.create(scenario.getId(), trigger);
+        variableDescriptorFacade.create(scenario.getId(), trigger2);
 
         Team team3 = new Team("test-team3");
         Team team4 = new Team("test-team4");
@@ -106,7 +106,7 @@ public class StateMachineITest extends AbstractEJBTest {
          * add a player in not empty team then Reset, trigger will execute
          */
         playerFacade.create(team4.getId(), new Player("TestPlayer5"));
-        gameModelFacade.reset(gameModel.getId());
+        gameModelFacade.reset(scenario.getId());
         Assert.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer0)).getValue(), 0.0);
         Assert.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer1)).getValue(), 0.0);
         Assert.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), player2)).getValue(), 0.0);
@@ -119,14 +119,14 @@ public class StateMachineITest extends AbstractEJBTest {
 
         playerFacade.create(team4.getId(), new Player("TestPlayer6"));
         Assert.assertEquals(playerFacade.find(testPlayer0.getId()).getGame().getPlayers().size(), ((NumberInstance) variableInstanceFacade.find(testNumber2.getId(), testPlayer0)).getValue(), 0.0);
-        gameModelFacade.reset(gameModel.getId());
+        gameModelFacade.reset(scenario.getId());
         Assert.assertEquals(playerFacade.find(testPlayer0.getId()).getGame().getPlayers().size(), ((NumberInstance) variableInstanceFacade.find(testNumber2.getId(), testPlayer0)).getValue(), 0.0);
         /*
          * Player added in empty team.
          */
         playerFacade.create(team3.getId(), new Player("TestPlayer7"));
         Assert.assertEquals(playerFacade.find(testPlayer0.getId()).getGame().getPlayers().size(), ((NumberInstance) variableInstanceFacade.find(testNumber2.getId(), testPlayer0)).getValue(), 0.0);
-        gameModelFacade.reset(gameModel.getId());
+        gameModelFacade.reset(scenario.getId());
         Assert.assertEquals(playerFacade.find(testPlayer0.getId()).getGame().getPlayers().size(), ((NumberInstance) variableInstanceFacade.find(testNumber2.getId(), testPlayer0)).getValue(), 0.0);
         playerFacade.create(team3.getId(), new Player("TestPlayer8"));
         playerFacade.create(team3.getId(), new Player("TestPlayer9"));
@@ -139,14 +139,14 @@ public class StateMachineITest extends AbstractEJBTest {
         NumberDescriptor testNumber;
         testNumber = new NumberDescriptor("numberTest");
         testNumber.setDefaultInstance(new NumberInstance(0));
-        variableDescriptorFacade.create(gameModel.getId(), testNumber);
+        variableDescriptorFacade.create(scenario.getId(), testNumber);
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new TriggerInstance());
         trigger.setTriggerEvent(new Script("1===1"));
         trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, \"numberTest\").setValue(self, " + FINAL_VALUE + ");"));
         trigger.setOneShot(Boolean.FALSE);
         trigger.setDisableSelf(Boolean.FALSE);
-        variableDescriptorFacade.create(gameModel.getId(), trigger);
+        variableDescriptorFacade.create(scenario.getId(), trigger);
 
         Player testPlayer = new Player("TestPlayer20");
         playerFacade.create(team.getId(), testPlayer);
@@ -177,10 +177,10 @@ public class StateMachineITest extends AbstractEJBTest {
         trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, 'highScore').getInstance(self).value = 10"));
         trigger.setOneShot(Boolean.FALSE);
 
-        variableDescriptorFacade.create(gameModel.getId(), trigger);
-        variableDescriptorFacade.create(gameModel.getId(), highScore);
-        variableDescriptorFacade.create(gameModel.getId(), personalScore);
-        gameModelFacade.reset(gameModel.getId());
+        variableDescriptorFacade.create(scenario.getId(), trigger);
+        variableDescriptorFacade.create(scenario.getId(), highScore);
+        variableDescriptorFacade.create(scenario.getId(), personalScore);
+        gameModelFacade.reset(scenario.getId());
 
         Assert.assertEquals(0, ((NumberInstance) variableInstanceFacade.find(highScore.getId(), player.getId())).getValue(), 0);
         requestManager.setPlayer(null);
@@ -201,14 +201,14 @@ public class StateMachineITest extends AbstractEJBTest {
         NumberDescriptor number = new NumberDescriptor();
         number.setName("testnumber");
         number.setDefaultInstance(new NumberInstance(0));
-        variableDescriptorFacade.create(gameModel.getId(), number);
+        variableDescriptorFacade.create(scenario.getId(), number);
 
         // Create a trigger
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new TriggerInstance());
         trigger.setTriggerEvent(new Script("Event.fired('testEvent')"));
         trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, " + ENDVAL + ");"));
-        variableDescriptorFacade.create(gameModel.getId(), trigger);
+        variableDescriptorFacade.create(scenario.getId(), trigger);
 
         scriptFacade.eval(player, new Script("JavaScript", "Event.on('testEvent', function(e){print('args: ' + e)});Event.fire('testEvent', " + ENDVAL + ")"), null);
         requestFacade.commit(true);
@@ -222,8 +222,8 @@ public class StateMachineITest extends AbstractEJBTest {
         trigger.setDefaultInstance(new TriggerInstance());
         trigger.setTriggerEvent(new Script("Event.fired('testEvent')"));
         trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, param);"));
-        variableDescriptorFacade.create(gameModel.getId(), trigger);
-        GameModel duplicateGm = gameModelFacade.duplicateWithDebugGame(gameModel.getId());
+        variableDescriptorFacade.create(scenario.getId(), trigger);
+        GameModel duplicateGm = gameModelFacade.duplicateWithDebugGame(scenario.getId());
         TriggerDescriptor find = (TriggerDescriptor) variableDescriptorFacade.find(duplicateGm, "trigger");
         Assert.assertEquals(find.getStates().size(), trigger.getStates().size());
     }
@@ -233,7 +233,7 @@ public class StateMachineITest extends AbstractEJBTest {
         NumberDescriptor testNumber;
         testNumber = new NumberDescriptor("number");
         testNumber.setDefaultInstance(new NumberInstance(0));
-        variableDescriptorFacade.create(gameModel.getId(), testNumber);
+        variableDescriptorFacade.create(scenario.getId(), testNumber);
 
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setName("trigger");
@@ -242,8 +242,8 @@ public class StateMachineITest extends AbstractEJBTest {
         trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, 'number').setValue(self, 5);"));
         trigger.setOneShot(Boolean.FALSE);
         trigger.setDisableSelf(Boolean.TRUE);
-        variableDescriptorFacade.create(gameModel.getId(), trigger);
-        gameModelFacade.reset(gameModel.getId());
+        variableDescriptorFacade.create(scenario.getId(), trigger);
+        gameModelFacade.reset(scenario.getId());
         Assert.assertEquals(5, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), player.getId())).getValue(), 0.001);
 
         //Set again

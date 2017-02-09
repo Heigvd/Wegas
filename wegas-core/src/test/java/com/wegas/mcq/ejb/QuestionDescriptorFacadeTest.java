@@ -40,11 +40,11 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         final NumberDescriptor myNumber = new NumberDescriptor();              // Create a number descriptor
         myNumber.setName("mynumber");
         myNumber.setDefaultInstance(new NumberInstance(0));
-        variableDescriptorFacade.create(gameModel.getId(), myNumber);
+        variableDescriptorFacade.create(scenario.getId(), myNumber);
 
         QuestionDescriptor question = new QuestionDescriptor();                 // Create a question descriptor
         question.setDefaultInstance(new QuestionInstance());
-        variableDescriptorFacade.create(gameModel.getId(), question);
+        variableDescriptorFacade.create(scenario.getId(), question);
 
         ChoiceDescriptor choice = new ChoiceDescriptor();                       // Add a choice descriptor
         choice.setDefaultInstance(new ChoiceInstance());
@@ -72,17 +72,17 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         final NumberDescriptor myNumber1 = new NumberDescriptor();              // Create a number descriptor
         myNumber1.setName("mynumber1");
         myNumber1.setDefaultInstance(new NumberInstance(0));
-        variableDescriptorFacade.create(gameModel.getId(), myNumber1);
+        variableDescriptorFacade.create(scenario.getId(), myNumber1);
 
         final NumberDescriptor myNumber2 = new NumberDescriptor();              // Create a 2nd number descriptor for ignoration impact
         myNumber2.setName("mynumber2");
         myNumber2.setDefaultInstance(new NumberInstance(0));
-        variableDescriptorFacade.create(gameModel.getId(), myNumber2);
+        variableDescriptorFacade.create(scenario.getId(), myNumber2);
 
         QuestionDescriptor question = new QuestionDescriptor();                 // Create a question descriptor
         question.setDefaultInstance(new QuestionInstance());
         question.setCbx(true);
-        variableDescriptorFacade.create(gameModel.getId(), question);
+        variableDescriptorFacade.create(scenario.getId(), question);
 
         ChoiceDescriptor choice1 = new ChoiceDescriptor();                       // Add a choice descriptor
         choice1.setDefaultInstance(new ChoiceInstance());
@@ -120,10 +120,10 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         final NumberDescriptor myNumber = new NumberDescriptor();              // Create a number descriptor
         myNumber.setName("mynumber");
         myNumber.setDefaultInstance(new NumberInstance(0));
-        variableDescriptorFacade.create(gameModel.getId(), myNumber);
+        variableDescriptorFacade.create(scenario.getId(), myNumber);
         QuestionDescriptor question = new QuestionDescriptor();                 // Create a question descriptor
         question.setDefaultInstance(new QuestionInstance());
-        variableDescriptorFacade.create(gameModel.getId(), question);
+        variableDescriptorFacade.create(scenario.getId(), question);
 
         ChoiceDescriptor choice = new ChoiceDescriptor();                       // Add a choice descriptor
         choice.setDefaultInstance(new ChoiceInstance());
@@ -155,10 +155,10 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
 
         choice.changeCurrentResult(choice.getDefaultInstance(), r);
 
-        variableDescriptorFacade.create(gameModel.getId(), question);
+        variableDescriptorFacade.create(scenario.getId(), question);
 
-        gameModelFacade.reset(gameModel.getId());
-        gameModel = gameModelFacade.find(gameModel.getId());
+        gameModelFacade.reset(scenario.getId());
+        scenario = gameModelFacade.find(scenario.getId());
 
         //variableDescriptorFacade.remove(choice.getId());
         variableDescriptorFacade.remove(question.getId());
@@ -169,7 +169,7 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         // Create a question descriptor
         QuestionDescriptor question = new QuestionDescriptor();
         question.setDefaultInstance(new QuestionInstance());
-        variableDescriptorFacade.create(gameModel.getId(), question);
+        variableDescriptorFacade.create(scenario.getId(), question);
 
         // Add a choice descriptor w/ 2 replies
         ChoiceDescriptor choice = new ChoiceDescriptor();
@@ -192,7 +192,7 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         choice = (ChoiceDescriptor) variableDescriptorFacade.update(choice.getId(), choice);
 
         // Restart to propagate default instance value change
-        gameModelFacade.reset(gameModel.getId());
+        gameModelFacade.reset(scenario.getId());
 
         // Retrieve entity
         choice = (ChoiceDescriptor) variableDescriptorFacade.find(choice.getId());
@@ -204,7 +204,7 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
 
         duplicate.getDefaultInstance().getResult().getName();
         // Restart to propagate default instance value change
-        gameModelFacade.reset(gameModel.getId());
+        gameModelFacade.reset(scenario.getId());
         // Retrieve entity
         //duplicate = (ChoiceDescriptor) variableDescriptorFacade.find(duplicate.getId());
         // And check the current result is stored
@@ -218,7 +218,7 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
     public void testRemoveResponse() throws NamingException {
         QuestionDescriptor question = new QuestionDescriptor();                 // Create a question descriptor
         question.setDefaultInstance(new QuestionInstance());
-        variableDescriptorFacade.create(gameModel.getId(), question);
+        variableDescriptorFacade.create(scenario.getId(), question);
 
         ChoiceDescriptor choice = new ChoiceDescriptor();                       // Add a choice descriptor
         choice.setDefaultInstance(new ChoiceInstance());
@@ -241,7 +241,7 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         // Create a question descriptor
         QuestionDescriptor question = new QuestionDescriptor();
         question.setDefaultInstance(new QuestionInstance());
-        variableDescriptorFacade.create(gameModel.getId(), question);
+        variableDescriptorFacade.create(scenario.getId(), question);
 
         // Add a choice descriptor and 3 replies
         ChoiceDescriptor choice = new ChoiceDescriptor();

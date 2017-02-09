@@ -55,7 +55,7 @@ public class MultipleResultTest extends AbstractEJBTest {
         QuestionDescriptor question = new QuestionDescriptor();
         question.setDefaultInstance(new QuestionInstance());
         question.setAllowMultipleReplies(false);
-        variableDescriptorFacade.create(gameModel.getId(), question);
+        variableDescriptorFacade.create(scenario.getId(), question);
 
         // With 2 choices
         ChoiceDescriptor choice1 = new ChoiceDescriptor();

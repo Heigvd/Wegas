@@ -16,14 +16,14 @@ public class GameControllerTest extends AbstractEJBTest {
 
     @Test
     public void joinIndividually() throws Exception {
-        gameModel.getProperties().setFreeForAll(true);
-        gameModelFacade.update(gameModel.getId(), gameModel);
+        scenario.getProperties().setFreeForAll(true);
+        gameModelFacade.update(scenario.getId(), scenario);
 
         TriggerDescriptor trigg = new TriggerDescriptor();
         final TriggerInstance triggerInstance = new TriggerInstance();
         trigg.setName("trigg");
         trigg.setDefaultInstance(triggerInstance);
-        variableDescriptorFacade.create(gameModel.getId(), trigg);
+        variableDescriptorFacade.create(scenario.getId(), trigg);
 
         gameController.joinIndividually(game.getId());
 

@@ -26,7 +26,7 @@ public class ScopeTest extends AbstractEJBTest {
         final NumberDescriptor myNumber = new NumberDescriptor();
         myNumber.setName("mynumber");
         myNumber.setDefaultInstance(new NumberInstance(0));
-        variableDescriptorFacade.create(gameModel.getId(), myNumber);
+        variableDescriptorFacade.create(scenario.getId(), myNumber);
 
         team = teamFacade.find(team.getId());
         team.getPrivateInstances();

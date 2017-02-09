@@ -70,7 +70,7 @@ public class PeerReviewDescriptorTest extends AbstractEJBTest {
         toBeReviewed = new NumberDescriptor(VAR_NAME);
         toBeReviewed.setDefaultInstance(new NumberInstance(0));
 
-        variableDescriptorFacade.create(gameModel.getId(), toBeReviewed);
+        variableDescriptorFacade.create(scenario.getId(), toBeReviewed);
 
         initial = new PeerReviewDescriptor();
         initial.setName("myReview");
@@ -118,7 +118,7 @@ public class PeerReviewDescriptorTest extends AbstractEJBTest {
 
         f2evaluations.add(grade2);
         feedbackComments.setEvaluations(f2evaluations);
-        variableDescriptorFacade.create(gameModel.getId(), initial);
+        variableDescriptorFacade.create(scenario.getId(), initial);
     }
 
     @After
@@ -159,7 +159,7 @@ public class PeerReviewDescriptorTest extends AbstractEJBTest {
         String json = "{ \"@class\": \"PeerReviewDescriptor\", \"id\": \"\", \"label\": \"rr\", \"toReviewName\": \"x\", \"name\": \"\", \"maxNumberOfReview\": 3, \"feedback\": { \"@class\": \"EvaluationDescriptorContainer\" }, \"fbComments\": { \"@class\": \"EvaluationDescriptorContainer\" }, \"defaultInstance\": { \"@class\": \"PeerReviewInstance\", \"id\": \"\" }, \"comments\": \"\", \"scope\": { \"@class\": \"TeamScope\", \"broadcastScope\": \"TeamScope\" } }";
 
         PeerReviewDescriptor read = mapper.readValue(json, PeerReviewDescriptor.class);
-        variableDescriptorFacade.create(gameModel.getId(), read);
+        variableDescriptorFacade.create(scenario.getId(), read);
 
         String json2 = exportMapper.writeValueAsString(read);
     }
@@ -173,7 +173,7 @@ public class PeerReviewDescriptorTest extends AbstractEJBTest {
         merged.setFeedback(new EvaluationDescriptorContainer());
         merged.setFbComments(new EvaluationDescriptorContainer());
 
-        variableDescriptorFacade.create(gameModel.getId(), merged);
+        variableDescriptorFacade.create(scenario.getId(), merged);
 
         //logger.warn("Initial: " + exportMapper.writeValueAsString(initial));
         merged.merge(initial);

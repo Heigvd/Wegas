@@ -49,13 +49,13 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
         res.setDefaultInstance(new ResourceInstance());
-        variableDescriptorFacade.create(gameModel.getId(), res);
+        variableDescriptorFacade.create(scenario.getId(), res);
 
         // Create a task
         TaskDescriptor task = new TaskDescriptor();
         task.setLabel("My task");
         task.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(gameModel.getId(), task);
+        variableDescriptorFacade.create(scenario.getId(), task);
 
         resourceFacade.assign(res.getInstance(player).getId(), task.getId());
 
@@ -85,13 +85,13 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
         res.setDefaultInstance(new ResourceInstance());
-        variableDescriptorFacade.create(gameModel.getId(), res);
+        variableDescriptorFacade.create(scenario.getId(), res);
 
         // Create a task
         TaskDescriptor task = new TaskDescriptor();
         task.setLabel("My task");
         task.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(gameModel.getId(), task);
+        variableDescriptorFacade.create(scenario.getId(), task);
 
         resourceFacade.assign(res.getInstance(player).getId(), task.getId());
 
@@ -114,13 +114,13 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
         res.setDefaultInstance(new ResourceInstance());
-        variableDescriptorFacade.create(gameModel.getId(), res);
+        variableDescriptorFacade.create(scenario.getId(), res);
 
         // Create a task
         TaskDescriptor task = new TaskDescriptor();
         task.setLabel("My task");
         task.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(gameModel.getId(), task);
+        variableDescriptorFacade.create(scenario.getId(), task);
 
         // Assign resource to task
         resourceFacade.assign(res.getInstance(player).getId(), task.getId());
@@ -144,13 +144,13 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
         res.setDefaultInstance(new ResourceInstance());
-        variableDescriptorFacade.create(gameModel.getId(), res);
+        variableDescriptorFacade.create(scenario.getId(), res);
 
         // Create a task
         TaskDescriptor task = new TaskDescriptor();
         task.setLabel("My task");
         task.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(gameModel.getId(), task);
+        variableDescriptorFacade.create(scenario.getId(), task);
 
         // Assign resource to task
         resourceFacade.assign(res.getInstance(player).getId(), task.getId());
@@ -177,13 +177,13 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
         res.setDefaultInstance(new ResourceInstance());
-        variableDescriptorFacade.create(gameModel.getId(), res);
+        variableDescriptorFacade.create(scenario.getId(), res);
 
         // Create a task
         TaskDescriptor task = new TaskDescriptor();
         task.setLabel("My task");
         task.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(gameModel.getId(), task);
+        variableDescriptorFacade.create(scenario.getId(), task);
 
         ResourceInstance defaultInstance = res.getDefaultInstance();
         Assignment assignment = new Assignment();
@@ -208,14 +208,14 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         res.setLabel("Paul");
         res.setName("paul");
         res.setDefaultInstance(new ResourceInstance());
-        variableDescriptorFacade.create(gameModel.getId(), res);
+        variableDescriptorFacade.create(scenario.getId(), res);
 
         // Create a task
         TaskDescriptor task = new TaskDescriptor();
         task.setLabel("task");
         task.setName("task");
         task.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(gameModel.getId(), task);
+        variableDescriptorFacade.create(scenario.getId(), task);
         String script = "var rF = new javax.naming.InitialContext().lookup('java:module/ResourceFacade');\n"
                 + "var paul = Variable.find(gameModel, \"paul\");\n"
                 + "var paulI = paul.getInstance(self);\n"
@@ -247,13 +247,13 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
         res.setDefaultInstance(new ResourceInstance());
-        variableDescriptorFacade.create(gameModel.getId(), res);
+        variableDescriptorFacade.create(scenario.getId(), res);
 
         // Create a task
         TaskDescriptor task = new TaskDescriptor();
         task.setLabel("My task");
         task.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(gameModel.getId(), task);
+        variableDescriptorFacade.create(scenario.getId(), task);
 
         // Create activity between resource to task
         resourceFacade.createActivity(res.getInstance(player).getId(), task.getId());
@@ -277,13 +277,13 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
         res.setDefaultInstance(new ResourceInstance());
-        variableDescriptorFacade.create(gameModel.getId(), res);
+        variableDescriptorFacade.create(scenario.getId(), res);
 
         // Create a task
         TaskDescriptor task = new TaskDescriptor();
         task.setLabel("My task");
         task.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(gameModel.getId(), task);
+        variableDescriptorFacade.create(scenario.getId(), task);
 
         // Assign activity between resource to task
         resourceFacade.createActivity(res.getInstance(player).getId(), task.getId());
@@ -307,7 +307,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
         res.setDefaultInstance(new ResourceInstance());
-        variableDescriptorFacade.create(gameModel.getId(), res);
+        variableDescriptorFacade.create(scenario.getId(), res);
 
         // Add occupation to a resource
         resourceFacade.addOccupation(res.getInstance(player).getId(), false, 1);
@@ -330,7 +330,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
         res.setDefaultInstance(new ResourceInstance());
-        variableDescriptorFacade.create(gameModel.getId(), res);
+        variableDescriptorFacade.create(scenario.getId(), res);
 
         // add occupation between to a resource
         resourceFacade.addOccupation(res.getInstance(player).getId(), true, 1);
@@ -355,7 +355,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
         res.setDefaultInstance(new ResourceInstance());
-        variableDescriptorFacade.create(gameModel.getId(), res);
+        variableDescriptorFacade.create(scenario.getId(), res);
 
         // Add occupation to a resource
         resourceFacade.addOccupation(res.getInstance(player).getId(), false, 1.0);
@@ -387,7 +387,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
         res.setDefaultInstance(new ResourceInstance());
-        variableDescriptorFacade.create(gameModel.getId(), res);
+        variableDescriptorFacade.create(scenario.getId(), res);
 
         // reserve Paul for the 1.0 period
         resourceFacade.addOccupation(res.getInstance(player).getId(), true, 1.0);
@@ -411,23 +411,23 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
         res.setDefaultInstance(new ResourceInstance());
-        variableDescriptorFacade.create(gameModel.getId(), res);
+        variableDescriptorFacade.create(scenario.getId(), res);
 
         // Create a task
         TaskDescriptor task1 = new TaskDescriptor();
         task1.setLabel("My task");
         task1.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(gameModel.getId(), task1);
+        variableDescriptorFacade.create(scenario.getId(), task1);
 
         TaskDescriptor task2 = new TaskDescriptor();
         task2.setLabel("My task");
         task2.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(gameModel.getId(), task2);
+        variableDescriptorFacade.create(scenario.getId(), task2);
 
         TaskDescriptor task3 = new TaskDescriptor();
         task3.setLabel("My task");
         task3.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(gameModel.getId(), task3);
+        variableDescriptorFacade.create(scenario.getId(), task3);
 
         // Assign resource to task
         resourceFacade.assign(res.getInstance(player).getId(), task1.getId());
@@ -467,7 +467,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         requirement.setWork("Carpenter");
         taskInstance.addRequirement(requirement);
 
-        variableDescriptorFacade.create(gameModel.getId(), task);
+        variableDescriptorFacade.create(scenario.getId(), task);
 
         //test on work variable because if it match, requierements work.
         assertEquals(((TaskInstance) variableInstanceFacade.find(task.getInstance(player).getId())).getRequirements().get(0).getWork(),
@@ -483,7 +483,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         TaskDescriptor task = new TaskDescriptor();
         task.setLabel("My task");
         task.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(gameModel.getId(), task);
+        variableDescriptorFacade.create(scenario.getId(), task);
 
         // Create a second task
         TaskDescriptor task2 = new TaskDescriptor();
@@ -494,7 +494,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         taskInstance.setRequirements(requirements);
         task2.setDefaultInstance(taskInstance);
         task2.addPredecessor(task);
-        variableDescriptorFacade.create(gameModel.getId(), task2);
+        variableDescriptorFacade.create(scenario.getId(), task2);
         assertEquals("engineer", task2.getDefaultInstance().getRequirements().get(0).getWork());
 
         // and duplicate it
@@ -514,14 +514,14 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         TaskDescriptor task = new TaskDescriptor();
         task.setLabel("My task");
         task.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(gameModel.getId(), task);
+        variableDescriptorFacade.create(scenario.getId(), task);
 
         // Create a second task
         TaskDescriptor task2 = new TaskDescriptor();
         task2.setLabel("My task2");
         task2.setDefaultInstance(new TaskInstance());
         task2.addPredecessor(task);
-        variableDescriptorFacade.create(gameModel.getId(), task2);
+        variableDescriptorFacade.create(scenario.getId(), task2);
 
         TaskDescriptor created = (TaskDescriptor) variableDescriptorFacade.find(task2.getId());
         assertEquals("My task", created.getPredecessor(0).getLabel());
@@ -531,7 +531,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         TaskDescriptor task3 = new TaskDescriptor();
         task3.setLabel("task3");
         task3.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(gameModel.getId(), task3);
+        variableDescriptorFacade.create(scenario.getId(), task3);
 
         // and duplicate it
         task2.getPredecessors().clear();
@@ -553,14 +553,14 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         TaskDescriptor task = new TaskDescriptor();
         task.setLabel("My task");
         task.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(gameModel.getId(), task);
+        variableDescriptorFacade.create(scenario.getId(), task);
 
         // Create a second task
         TaskDescriptor task2 = new TaskDescriptor();
         task2.setLabel("My task2");
         task2.setDefaultInstance(new TaskInstance());
         task2.addPredecessor(task);
-        variableDescriptorFacade.create(gameModel.getId(), task2);
+        variableDescriptorFacade.create(scenario.getId(), task2);
 
         TaskDescriptor created = (TaskDescriptor) variableDescriptorFacade.find(task2.getId());
         assertEquals("My task", created.getPredecessor(0).getLabel());
@@ -571,7 +571,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         task3.setLabel("task3");
         task3.setDefaultInstance(new TaskInstance());
         task3.addPredecessor(task2);
-        variableDescriptorFacade.create(gameModel.getId(), task3);
+        variableDescriptorFacade.create(scenario.getId(), task3);
 
         assertEquals("My task2", task3.getPredecessor(0).getLabel());
         assertEquals(1, task3.getPredecessors().size());
@@ -592,20 +592,20 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         ResourceDescriptor paul = new ResourceDescriptor();
         paul.setLabel("Paul");
         paul.setDefaultInstance(new ResourceInstance());
-        variableDescriptorFacade.create(gameModel.getId(), paul);
+        variableDescriptorFacade.create(scenario.getId(), paul);
 
         // Create a resource
         ResourceDescriptor roger = new ResourceDescriptor();
         roger.setLabel("Roger");
         roger.setDefaultInstance(new ResourceInstance());
-        variableDescriptorFacade.create(gameModel.getId(), roger);
+        variableDescriptorFacade.create(scenario.getId(), roger);
 
         // Create a task
         TaskDescriptor task1 = new TaskDescriptor();
         task1.setLabel("My task");
         task1.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(gameModel.getId(), task1);
-        gameModelFacade.reset(gameModel.getId());
+        variableDescriptorFacade.create(scenario.getId(), task1);
+        gameModelFacade.reset(scenario.getId());
 
         // Assign resource to task
         resourceFacade.assign(paul.getInstance(player).getId(), task1.getId());

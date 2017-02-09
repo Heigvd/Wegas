@@ -142,6 +142,9 @@ public class GameFacade extends BaseFacade<Game> {
         } else if (this.findByToken(game.getToken()) != null) {
             throw WegasErrorMessage.error("This token is already in use.");
         }
+
+        game.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
+        gameModel.addGame(game);
         getEntityManager().persist(game);
 
         //gameModelFacade.reset(gameModel);                                       // Reset the game so the default player will have instances
@@ -152,8 +155,6 @@ public class GameFacade extends BaseFacade<Game> {
 
         gameModel.propagateDefaultInstance(game, true);
 
-        game.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
-        gameModel.addGame(game);
         this.addDebugTeam(game);
 
         /*try {

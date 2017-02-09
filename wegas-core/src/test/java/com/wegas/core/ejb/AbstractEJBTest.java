@@ -13,6 +13,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
+import java.io.IOException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -29,7 +30,17 @@ public abstract class AbstractEJBTest extends AbstractEJBTestBase {
     // *** Static *** //
     private static final Logger logger = LoggerFactory.getLogger(AbstractEJBTest.class);
 
+    /**
+     * A LIVE gameModel
+     */
     protected static GameModel gameModel;
+    /**
+     * A PLAY gameModel
+     */
+    protected static GameModel scenario;
+    /**
+     * a game based on scenario
+     */
     protected static Game game;
     protected static Team team;
     protected static Player player;
@@ -53,10 +64,14 @@ public abstract class AbstractEJBTest extends AbstractEJBTestBase {
     @BeforeClass
     public static final void setUp() throws NamingException {
         Role admins = new Role("Administrator");
+        admins.addPermission("GameModel:*:*");
+        admins.addPermission("Game:*:*");
+        admins.addPermission("User:*:*");
 
         roleFacade.create(admins);
 
         admin = AbstractEJBTest.signup("admin@local");
+        login(admin);
 
         admin = addRoles(admin, admins);
 
@@ -99,7 +114,7 @@ public abstract class AbstractEJBTest extends AbstractEJBTestBase {
      *
      */
     @Before
-    public void createGameModel() {
+    public void createGameModel() throws IOException {
         login(admin);
 
         login(scenarist);
@@ -115,7 +130,10 @@ public abstract class AbstractEJBTest extends AbstractEJBTestBase {
         game.setName(GAMENAME);
         game.setToken(GAMETOKEN);
         game.setAccess(Game.GameAccess.OPEN);
-        gameFacade.create(gameModel.getId(), game);
+        //gameFacade.create(scenario.getId(), game);
+        gameFacade.publishAndCreate(gameModel.getId(), game);
+        scenario = gameModelFacade.find(game.getGameModelId());
+        game = gameFacade.find(game.getId());
 
         login(user);
         team = new Team();
@@ -140,6 +158,7 @@ public abstract class AbstractEJBTest extends AbstractEJBTestBase {
         player21 = gameFacade.joinTeam(team2.getId(), user21.getId());
 
         login(admin);
+        requestManager.setPlayer(player);
     }
 
     @After
@@ -148,7 +167,7 @@ public abstract class AbstractEJBTest extends AbstractEJBTestBase {
         TestHelper.wipeEmCache();
         requestManager.setPlayer(null);
         requestManager.clearUpdatedEntities();
-        gameModelFacade.remove(gameModel.getId());
+        gameModelFacade.remove(scenario.getId());
         TestHelper.wipeEmCache();
         userFacade.remove(user2.getId());
         userFacade.remove(user21.getId());

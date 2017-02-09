@@ -22,8 +22,8 @@ public class RemoveGuestTest extends AbstractEJBTest {
 
     @Test
     public void removeIdles() throws Exception {
-        gameModel.getProperties().setFreeForAll(true);
-        gameModelFacade.update(gameModel.getId(), gameModel);
+        scenario.getProperties().setFreeForAll(true);
+        gameModelFacade.update(scenario.getId(), scenario);
 
         User oldGuest = guestLogin();
         Calendar calendar = Calendar.getInstance();

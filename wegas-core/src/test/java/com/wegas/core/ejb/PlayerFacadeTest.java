@@ -34,7 +34,7 @@ public class PlayerFacadeTest extends AbstractEJBTest {
          */
         //PlayerFacadeTest.login(trainer);
         final Game g = new Game("game");
-        g.setGameModel(gameModel);
+        g.setGameModel(scenario);
         gameFacade.create(g);
 
         /**
@@ -104,7 +104,7 @@ public class PlayerFacadeTest extends AbstractEJBTest {
         int nbTeam = 100;
         int nbPlayer = 10;
         Game g = new Game("game");
-        g.setGameModel(gameModel);
+        g.setGameModel(scenario);
         gameFacade.create(g);
 
         for (int i = 0; i < nbTeam; i++) {

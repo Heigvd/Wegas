@@ -40,27 +40,27 @@ public class ScriptControllerTest extends AbstractEJBTest {
         number.setMinValue(0.0);
         number.setDefaultInstance(new NumberInstance(1));
 
-        variableDescriptorFacade.create(gameModel.getId(), number);
+        variableDescriptorFacade.create(scenario.getId(), number);
         Assert.assertEquals(1.0, ((NumberDescriptor) variableDescriptorFacade.find(number.getId())).getInstance(player).getValue(), 0.000001);
 
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new TriggerInstance());
         trigger.setTriggerEvent(new Script("false and errored"));
         trigger.setPostTriggerEvent(new Script("Variable.find(gameModel,'notavar').add(self, 2)"));
-        variableDescriptorFacade.create(gameModel.getId(), trigger);
+        variableDescriptorFacade.create(scenario.getId(), trigger);
 
         TriggerDescriptor trigger2 = new TriggerDescriptor();
         trigger2.setDefaultInstance(new TriggerInstance());
         trigger2.setTriggerEvent(new Script("true"));
         trigger2.setPostTriggerEvent(new Script("Variable.find(gameModel,'testnumber').add(self, 8)"));
-        variableDescriptorFacade.create(gameModel.getId(), trigger2);
+        variableDescriptorFacade.create(scenario.getId(), trigger2);
 
         TriggerDescriptor trigger3 = new TriggerDescriptor();
         trigger3.setDefaultInstance(new TriggerInstance());
         trigger3.setPostTriggerEvent(new Script("Variable.find(gameModel,'testnumber').add(self, -2)"));
-        variableDescriptorFacade.create(gameModel.getId(), trigger3);
+        variableDescriptorFacade.create(scenario.getId(), trigger3);
 
-        Map<Long, WegasScriptException> results = scriptController.testGameModel(gameModel.getId());
+        Map<Long, WegasScriptException> results = scriptController.testGameModel(scenario.getId());
         Assert.assertEquals("Errored scripts", EXPECTED_ERRORS, results.size());
         Assert.assertTrue(results.containsKey(trigger.getId()));
         Assert.assertFalse(results.containsKey(trigger2.getId()));

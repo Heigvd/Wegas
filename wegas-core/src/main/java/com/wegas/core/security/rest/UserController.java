@@ -743,6 +743,7 @@ public class UserController {
         checkGmOrGPermission(splitedPermission[2], "GameModel:Edit:", "Game:Edit:");
 
         return this.userFacade.addRolePermission(roleId, permission);
+
     }
 
     /**
@@ -755,6 +756,7 @@ public class UserController {
     public boolean addPermissionsByInstance(@PathParam(value = "roleName") String roleName, @PathParam(value = "permission") String permission) {
         try {
             return this.addPermissionsByInstance(roleFacade.findByName(roleName).getId(), permission);
+
         } catch (WegasNoResultException ex) {
             throw WegasErrorMessage.error("Role \"" + roleName + "\" does not exists");
         }

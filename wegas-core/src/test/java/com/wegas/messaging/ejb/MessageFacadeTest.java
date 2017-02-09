@@ -40,7 +40,7 @@ public class MessageFacadeTest extends AbstractEJBTest {
         InboxDescriptor inbox = new InboxDescriptor();
         inbox.setName("inbox");
         inbox.setDefaultInstance(new InboxInstance());
-        variableDescriptorFacade.create(gameModel.getId(), inbox);
+        variableDescriptorFacade.create(scenario.getId(), inbox);
 
         //send a message
         MessageEvent me = new MessageEvent();
@@ -68,7 +68,7 @@ public class MessageFacadeTest extends AbstractEJBTest {
         InboxDescriptor inbox = new InboxDescriptor();
         inbox.setName("inbox");
         inbox.setDefaultInstance(new InboxInstance());
-        variableDescriptorFacade.create(gameModel.getId(), inbox);
+        variableDescriptorFacade.create(scenario.getId(), inbox);
 
         //send a message
         Message msg = new Message("from", "subject", "body");
@@ -93,7 +93,7 @@ public class MessageFacadeTest extends AbstractEJBTest {
         InboxDescriptor inbox = new InboxDescriptor();
         inbox.setName("inbox");
         inbox.setDefaultInstance(new InboxInstance());
-        variableDescriptorFacade.create(gameModel.getId(), inbox);
+        variableDescriptorFacade.create(scenario.getId(), inbox);
 
         //send a message
         Message msg = messageFacade.send(player, "from", "subject", "body");
@@ -117,7 +117,7 @@ public class MessageFacadeTest extends AbstractEJBTest {
         InboxDescriptor inbox = new InboxDescriptor();
         inbox.setName("inbox");
         inbox.setDefaultInstance(new InboxInstance());
-        variableDescriptorFacade.create(gameModel.getId(), inbox);
+        variableDescriptorFacade.create(scenario.getId(), inbox);
 
         //send a message
         ArrayList<String> attachements = new ArrayList<>();
@@ -142,7 +142,7 @@ public class MessageFacadeTest extends AbstractEJBTest {
         InboxDescriptor inbox = new InboxDescriptor();
         inbox.setName("inbox");
         inbox.setDefaultInstance(new InboxInstance());
-        variableDescriptorFacade.create(gameModel.getId(), inbox);
+        variableDescriptorFacade.create(scenario.getId(), inbox);
 
         // Send a message to each player
         messageFacade.send(player, new Message("from", "subject", "body"));
@@ -172,7 +172,7 @@ public class MessageFacadeTest extends AbstractEJBTest {
         InboxDescriptor inbox = new InboxDescriptor();
         inbox.setName("inbox");
         inbox.setDefaultInstance(new InboxInstance());
-        variableDescriptorFacade.create(gameModel.getId(), inbox);
+        variableDescriptorFacade.create(scenario.getId(), inbox);
 
         // Create a trigger
         TriggerDescriptor trigger = new TriggerDescriptor();
@@ -180,10 +180,10 @@ public class MessageFacadeTest extends AbstractEJBTest {
         trigger.setTriggerEvent(new Script("true"));
         trigger.setPostTriggerEvent(
                 new Script("print(\"sending\");var inbox = Variable.find(" + inbox.getId() + "); inbox.sendMessage(self, \"test\", \"test\", \"test\");"));
-        variableDescriptorFacade.create(gameModel.getId(), trigger);
+        variableDescriptorFacade.create(scenario.getId(), trigger);
 
         // Reset
-        gameModelFacade.reset(gameModel.getId());
+        gameModelFacade.reset(scenario.getId());
 
         InboxInstance ii = ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player));
         // Test
@@ -204,7 +204,7 @@ public class MessageFacadeTest extends AbstractEJBTest {
         inbox.setName("inbox");
         inbox.setCapped(true);
         inbox.setDefaultInstance(new InboxInstance());
-        variableDescriptorFacade.create(gameModel.getId(), inbox);
+        variableDescriptorFacade.create(scenario.getId(), inbox);
 
         // Create a trigger
         TriggerDescriptor trigger = new TriggerDescriptor();
@@ -212,10 +212,10 @@ public class MessageFacadeTest extends AbstractEJBTest {
         trigger.setPostTriggerEvent(
                 new Script("Variable.find(gameModel, 'inbox').sendMessage(self, \"test\", \"test\", \"msg1\");\n"
                         + "Variable.find(gameModel, 'inbox').sendMessage(self, \"test\", \"test\", \"msg2\");\n"));
-        variableDescriptorFacade.create(gameModel.getId(), trigger);
+        variableDescriptorFacade.create(scenario.getId(), trigger);
 
         // Reset
-        gameModelFacade.reset(gameModel.getId());
+        gameModelFacade.reset(scenario.getId());
 
         InboxInstance ii = ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player));
         // Test
@@ -236,13 +236,13 @@ public class MessageFacadeTest extends AbstractEJBTest {
         number.setName("testnumber");
         number.setDefaultInstance(new NumberInstance(0));
         number.setScope(new PlayerScope());
-        variableDescriptorFacade.create(gameModel.getId(), number);
+        variableDescriptorFacade.create(scenario.getId(), number);
         // Create a inbox descriptor
         InboxDescriptor inbox = new InboxDescriptor();
         inbox.setName("inbox");
         inbox.setCapped(false);
         inbox.setDefaultInstance(new InboxInstance());
-        variableDescriptorFacade.create(gameModel.getId(), inbox);
+        variableDescriptorFacade.create(scenario.getId(), inbox);
         // Create a trigger
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new TriggerInstance());
@@ -251,7 +251,7 @@ public class MessageFacadeTest extends AbstractEJBTest {
         trigger.setDisableSelf(false);
         trigger.setPostTriggerEvent(
                 new Script("Variable.find(gameModel, 'inbox').sendDatedMessage(self, \"test\", \"now\" ,\"test\", \"msg1\", []);\n"));
-        variableDescriptorFacade.create(gameModel.getId(), trigger);
+        variableDescriptorFacade.create(scenario.getId(), trigger);
 
         TriggerDescriptor trig = new TriggerDescriptor();
         trig.setDefaultInstance(new TriggerInstance());
@@ -260,16 +260,16 @@ public class MessageFacadeTest extends AbstractEJBTest {
         trig.setDisableSelf(false);
         trig.setPostTriggerEvent(
                 new Script("Variable.find(gameModel, 'inbox').sendDatedMessage(self, \"test\", \"now\" ,\"test\", \"msg2\", []);\n"));
-        variableDescriptorFacade.create(gameModel.getId(), trig);
+        variableDescriptorFacade.create(scenario.getId(), trig);
 
-        gameModelFacade.reset(gameModel.getId());
+        gameModelFacade.reset(scenario.getId());
 
         InboxInstance ii = ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player));
         assertEquals(0, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().size());
         //This MAY Fail
-        scriptController.run(gameModel.getId(), player.getId(), null, new Script("Variable.find(gameModel,'testnumber').setValue(self,2)"));
+        scriptController.run(scenario.getId(), player.getId(), null, new Script("Variable.find(gameModel,'testnumber').setValue(self,2)"));
         // This NEVER fails
-//        scriptFacade.eval(player.getId(), new Script("Variable.find(gameModel,'testnumber').setValue(self,2)"), null);
+//        scriptFacade.eval(player.getId(), new Script("Variable.find(scenario,'testnumber').setValue(self,2)"), null);
 //        lookupBy(RequestFacade.class).commit();
         assertEquals(2, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().size());
         assertNotSame(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0).getBody(), ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(1).getBody());
@@ -282,7 +282,7 @@ public class MessageFacadeTest extends AbstractEJBTest {
         InboxDescriptor inbox = new InboxDescriptor();
         inbox.setName("inbox");
         inbox.setDefaultInstance(new InboxInstance());
-        variableDescriptorFacade.create(gameModel.getId(), inbox);
+        variableDescriptorFacade.create(scenario.getId(), inbox);
 
         variableDescriptorFacade.flush();
 
@@ -315,7 +315,7 @@ public class MessageFacadeTest extends AbstractEJBTest {
         InboxDescriptor inbox = new InboxDescriptor();
         inbox.setName("inbox");
         inbox.setDefaultInstance(new InboxInstance());
-        variableDescriptorFacade.create(gameModel.getId(), inbox);
+        variableDescriptorFacade.create(scenario.getId(), inbox);
         /*
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger("org.eclipse.persistence.logging")).setLevel(Level.TRACE);
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger("org.eclipse.persistence.logging.cache")).setLevel(Level.TRACE);
@@ -336,8 +336,8 @@ public class MessageFacadeTest extends AbstractEJBTest {
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger("org.eclipse.persistence.logging.sql")).setLevel(Level.WARN);
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger("org.eclipse.persistence.logging.default")).setLevel(Level.WARN);
          */
-        InboxDescriptor i2 = (InboxDescriptor) variableDescriptorFacade.find(gameModel, "inbox");
-        InboxInstance ii = (InboxInstance) variableDescriptorFacade.find(gameModel, "inbox").getInstance(player);
+        InboxDescriptor i2 = (InboxDescriptor) variableDescriptorFacade.find(scenario, "inbox");
+        InboxInstance ii = (InboxInstance) variableDescriptorFacade.find(scenario, "inbox").getInstance(player);
 
         //InboxInstance ii = ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player));
         // Test
@@ -361,7 +361,7 @@ public class MessageFacadeTest extends AbstractEJBTest {
         InboxDescriptor inbox = new InboxDescriptor();
         inbox.setName("inbox");
         inbox.setDefaultInstance(new InboxInstance());
-        variableDescriptorFacade.create(gameModel.getId(), inbox);
+        variableDescriptorFacade.create(scenario.getId(), inbox);
 
         Long inboxId = inbox.getId();
 

@@ -35,7 +35,7 @@ public class GameFacadeTest extends AbstractEJBTest {
     @Test
     public void testFindRegisteredGames() throws Exception {
         final Game g = new Game("game");
-        g.setGameModel(gameModel);
+        g.setGameModel(scenario);
         gameFacade.create(g);
         final Team t = new Team("team");
         t.setGame(g);
@@ -64,7 +64,7 @@ public class GameFacadeTest extends AbstractEJBTest {
 
         for (i = 0; i < names.length; i++) {
             final Game g = new Game(names[i]);
-            g.setGameModel(gameModel);
+            g.setGameModel(scenario);
             String result;
 
             try {
@@ -87,7 +87,7 @@ public class GameFacadeTest extends AbstractEJBTest {
 
         for (i = 0; i < names.length; i++) {
             final Game g = new Game(names[i]);
-            g.setGameModel(gameModel);
+            g.setGameModel(scenario);
             gameFacade.create(g);
 
             assertTrue("Token " + g.getToken() + " not match " + expected[i], g.getToken().matches(expected[i] + "-.."));
@@ -99,15 +99,15 @@ public class GameFacadeTest extends AbstractEJBTest {
     public void testGameCreation() throws IOException {
         Game newGame = new Game("newGame");
         newGame.setAccess(Game.GameAccess.OPEN);
-        newGame.setGameModel(gameModel);
-        //newGame.setGameModelId(gameModel.getId());
+        newGame.setGameModel(scenario);
+        //newGame.setGameModelId(scenario.getId());
 
         BooleanDescriptor desc = new BooleanDescriptor("Bln");
         desc.setDefaultInstance(new BooleanInstance(true));
 
-        variableDescriptorFacade.create(gameModel.getId(), desc);
+        variableDescriptorFacade.create(scenario.getId(), desc);
 
-        gameFacade.publishAndCreate(gameModel.getId(), newGame);
+        gameFacade.publishAndCreate(scenario.getId(), newGame);
 
         newGame = gameFacade.find(newGame.getId());
 
@@ -120,7 +120,7 @@ public class GameFacadeTest extends AbstractEJBTest {
         Game newGame = new Game("newGame");
         newGame.setAccess(Game.GameAccess.OPEN);
         newGame.setGameModel(gameModel);
-        //newGame.setGameModelId(gameModel.getId());
+        //newGame.setGameModelId(scenario.getId());
 
         login(trainer);
         gameController.create(gameModel.getId(), newGame);

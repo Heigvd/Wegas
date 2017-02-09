@@ -68,7 +68,9 @@ public class SecurityFacade {
     private boolean hasPermission(String type, String arg, boolean superPermission) {
         Subject subject = SecurityUtils.getSubject();
 
-        if ("Role".equals(type)) {
+        if (subject.hasRole("Administrator")) {
+            return true;
+        } else if ("Role".equals(type)) {
             return subject.hasRole(arg);
         } else {
             Long id = Long.parseLong(arg);
@@ -150,13 +152,11 @@ public class SecurityFacade {
     private void assertUserHasPermission(String permissions, String type, AbstractEntity entity) {
         if (permissions != null) {
             String perms[] = this.split(permissions);
-            boolean hasPermission = this.hasPermission("Role-Administrator");
-            if (!hasPermission) {
-                for (String perm : perms) {
-                    if (this.hasPermission(perm)) {
-                        hasPermission = true;
-                        break;
-                    }
+            boolean hasPermission = false;
+            for (String perm : perms) {
+                if (this.hasPermission(perm)) {
+                    hasPermission = true;
+                    break;
                 }
             }
 
