@@ -74,6 +74,9 @@ public class JackrabbitConnector {
 
     @Schedule(hour = "3", minute = "0")
     private void runGC() {
+    }
+
+    private void _runGC() {
         try {
             logger.info("Running Jackrabbit GarbageCollector");
             final RepositoryManager rm = rf.getRepositoryManager(JackrabbitConnector.repo);
