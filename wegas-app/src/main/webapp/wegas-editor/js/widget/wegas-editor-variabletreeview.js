@@ -374,7 +374,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         data: {
                             entity: entity
                         },
-                        iconCSS: "fa fa-question-circle",
+                        iconCSS: entity.getIconCss(),
                         cssClass: "wegas-editor-listitem wegas-editor-question " + advancedClass
                     };
                 case 'ChoiceDescriptor':

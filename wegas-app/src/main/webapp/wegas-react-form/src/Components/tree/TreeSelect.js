@@ -64,7 +64,7 @@ TreeSelect.propTypes = {
     items: PropTypes.arrayOf(PropTypes.shape({
         label: PropTypes.string,
         value: PropTypes.string
-    })),
+    })).isRequired,
     selected: PropTypes.string,
     onSelect: PropTypes.func.isRequired
 };

@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react';
+import classnames from 'classnames';
 import Popover from '../../Components/Popover';
 import TreeSelect from '../../Components/tree/TreeSelect';
 import { getY } from '../../index';
@@ -12,6 +13,14 @@ function defaultTrue() {
 function labelForVariable(name) {
     const target = getY().Wegas.Facade.Variable.cache.find('name', name);
     return target ? target.getEditorLabel() : '';
+}
+function labelIconForVariable(name) {
+    const target = getY().Wegas.Facade.Variable.cache.find('name', name);
+    if (target) {
+        return (
+            <span><span className={`${target.getIconCss()} ${styles.icon}`} /> {target.getEditorLabel()}</span>);
+    }
+    return '';
 }
 
 function match(item, search) {
@@ -65,7 +74,12 @@ class TreeVariableSelect extends React.Component {
     genItems() {
         return genVarItems(variableFacade.data.concat(),
             this.props.view.selectable)
-            .concat(this.props.view.additional);
+            .concat(
+            this.props.view.additional.map(i => ({
+                ...i,
+                className: classnames(i.className, styles.globalMethod)
+            }))
+            );
     }
     labelForAdditional(value) {
         const found = this.props.view.additional.find(i => i.value === value);
@@ -74,9 +88,16 @@ class TreeVariableSelect extends React.Component {
         }
         return '';
     }
+    labelIconForAdditional(value) {
+        const label = this.labelForAdditional(value);
+        if (label) {
+            return (<span><span className={`${styles.icon} fa fa-globe `} /> {label}</span>);
+        }
+        return '';
+    }
     render() {
         return (
-            <div className={styles.div1} >
+            <div className={styles.container} >
                 <Popover
                     show={this.state.searching}
                     onClickOutside={() => this.setState({
@@ -98,13 +119,7 @@ class TreeVariableSelect extends React.Component {
                         })}
                     />
                     <div
-                        style={{
-                            padding: '5px 10px',
-                            backgroundColor: 'white',
-                            boxShadow: '0 2px 5px black',
-                            borderRadius: '3px',
-                            width: 'auto'
-                        }}
+                        className={styles.tree}
                     >
                         <TreeSelect
                             match={match}
@@ -120,12 +135,12 @@ class TreeVariableSelect extends React.Component {
                     onFocus={() => this.setState({
                         searching: true
                     })}
-                    style={{ display: 'inline-block', width: 'auto' }}
+                    className={styles.selectorLink}
                 >
-                    <div style={{ fontSize: '90%', opacity: 0.5, position: 'absolute', marginTop: '-22px' }}>
+                    <div className={styles.path}>
                         {buildPath(this.props.value)}
                     </div>
-                    {labelForVariable(this.props.value) || this.labelForAdditional(this.props.value) || 'select...'}
+                    {labelIconForVariable(this.props.value) || this.labelIconForAdditional(this.props.value) || 'select...'}
                 </a>
             </div>
         );

@@ -113,7 +113,7 @@ class Impact extends React.Component {
                     onChange={ev => this.setState(extractMethod(parse(ev.target.value)),
                         () => this.props.onChange(buildMethod(this.state, type)))
                     }
-                    />
+                />
                 <div>{error}</div>
             </div>);
         }
@@ -124,12 +124,11 @@ class Impact extends React.Component {
                     schema={upgradeSchema(variableSchema(view.variable), type)}
                     value={this.state.global ? `${this.state.member}.${this.state.method}` : this.state.variable}
                     onChange={this.handleVariableChange}
-                    />
+                />
             </div>
         )];
         if (this.state.variable) {
-            const schema = methodSchema(view.method, this.state.
-                variable, type);
+            const schema = methodSchema(view.method, this.state.variable, type);
             if (schema) {
                 child.push(
                     <div style={{ display: 'inline-block' }} >
@@ -140,7 +139,7 @@ class Impact extends React.Component {
                             onChange={v => this.setState({
                                 method: v
                             }, this.checkVariableMethod)}
-                            />
+                        />
                     </div>
                 );
             }

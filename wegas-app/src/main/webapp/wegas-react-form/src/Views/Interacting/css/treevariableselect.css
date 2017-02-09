@@ -1,6 +1,33 @@
-.div1{
-  color: #6A95B6;
-  font-family: arial;
-  font-size:15px;
-  display: inline-block;
+.container {
+    color: #6A95B6;
+    font-family: arial;
+    font-size:15px;
+    display: inline-block;
+}
+
+.icon {
+    color: black;
+}
+
+.tree {
+    padding: 5px 10px;
+    background-color: white;
+    box-shadow: 0 2px 5px black;
+    border-radius: 3px;
+    width: auto;
+}
+
+.selectorLink {
+    position: relative;
+}
+
+.path {
+    position: absolute;
+    font-size: 75%;
+    white-space: nowrap;
+    bottom: 150%;
+}
+
+.globalMethod {
+    color:hotpink;
 }
