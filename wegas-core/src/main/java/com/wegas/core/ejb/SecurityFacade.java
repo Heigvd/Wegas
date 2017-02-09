@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 @RequestScoped
 public class SecurityFacade {
 
-    private static final Logger logger = LoggerFactory.getLogger(SecurityFacade.class);
+    private static final Logger _logger = LoggerFactory.getLogger(SecurityFacade.class);
 
     private Collection<String> grantedPermissions = new HashSet<>();
 
@@ -49,11 +49,26 @@ public class SecurityFacade {
     @Inject
     private UserFacade userFacade;
 
+    private static int logIndent = 0;
+
+    private static void log(String msg) {
+        if (false) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < logIndent; i++) {
+                sb.append("  ");
+            }
+            sb.append(msg);
+            _logger.error(sb.toString());
+        }
+    }
+
     private String[] split(String permissions) {
         return permissions.split(",");
     }
 
     public void clearPermissions() {
+        log("CLEAR PERMISSIONS");
+        log("*********************************************************");
         this.grantedPermissions.clear();
     }
 
@@ -79,7 +94,7 @@ public class SecurityFacade {
                 if (superPermission) {
                     return subject.isPermitted("GameModel:Edit:gm" + id);
                 } else {
-                    if (this.hasPermission("Role-Trainer") && subject.isPermitted("GameModel:Instantiate:gm" + id)) {
+                    if (subject.hasRole("Trainer") && subject.isPermitted("GameModel:Instantiate:gm" + id)) {
                         //For trainer, instantiate means read
                         return true;
                     }
@@ -121,9 +136,9 @@ public class SecurityFacade {
      * @return true if access granted
      */
     public boolean hasPermission(String channel) {
-        boolean perm = false;
         if (channel != null) {
             if (grantedPermissions.contains(channel)) {
+                log(" WAS ALREADY GRANTED");
                 return true;
             } else {
 
@@ -137,36 +152,46 @@ public class SecurityFacade {
                 String[] split = channel.split("-");
 
                 if (split.length == 2) {
-                    perm = hasPermission(split[0], split[1], superPermission);
+                    if (hasPermission(split[0], split[1], superPermission)) {
+                        log(" >>> GRANT: " + channel);
+                        grantedPermissions.add(channel);
+                    }
                 }
-                if (perm) {
-                    grantedPermissions.add(channel);
-                }
-                return perm;
+                return grantedPermissions.contains(channel);
             }
         } else {
+            log(" EMPTYCHANNEL");
             return true;
         }
     }
 
-    private void assertUserHasPermission(String permissions, String type, AbstractEntity entity) {
+    private boolean userHasPermission(String permissions, String type, AbstractEntity entity) {
         if (permissions != null) {
             String perms[] = this.split(permissions);
-            boolean hasPermission = false;
             for (String perm : perms) {
                 if (this.hasPermission(perm)) {
-                    hasPermission = true;
-                    break;
+                    return true;
                 }
             }
-
-            if (!hasPermission) {
-                Helper.printWegasStackTrace(new Exception());
-                String msg = type + " Permission Denied (" + permissions + ") for user " + userFacade.getCurrentUserOrNull() + " on entity " + entity;
-                logger.error(msg);
-                //throw WegasErrorMessage.error(msg);
-            }
+            return false;
         }
+        log("NO PERMISSIONS REQUIERED");
+        return true;
+    }
+
+    private void assertUserHasPermission(String permissions, String type, AbstractEntity entity) {
+        log("HAS  PERMISSION: " + type + " / " + permissions + " / " + entity);
+        logIndent++;
+        if (!userHasPermission(permissions, type, entity)) {
+            Helper.printWegasStackTrace(new Exception());
+            String msg = type + " Permission Denied (" + permissions + ") for user " + userFacade.getCurrentUserOrNull() + " on entity " + entity;
+            log(msg);
+
+            userHasPermission(permissions, type, entity);
+
+            //throw WegasErrorMessage.error(msg);
+        }
+        logIndent--;
     }
 
     public void assertCreateRight(AbstractEntity entity) {
