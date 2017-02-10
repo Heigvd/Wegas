@@ -8,6 +8,7 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
@@ -185,11 +186,8 @@ public class SecurityFacade {
         if (!userHasPermission(permissions, type, entity)) {
             Helper.printWegasStackTrace(new Exception());
             String msg = type + " Permission Denied (" + permissions + ") for user " + userFacade.getCurrentUserOrNull() + " on entity " + entity;
-            log(msg);
-
-            userHasPermission(permissions, type, entity);
-
-            //throw WegasErrorMessage.error(msg);
+            _logger.error(msg);
+            throw WegasErrorMessage.error(msg);
         }
         logIndent--;
     }
@@ -209,4 +207,5 @@ public class SecurityFacade {
     public void assertDeleteRight(AbstractEntity entity) {
         this.assertUserHasPermission(entity.getRequieredDeletePermission(), "Delete", entity);
     }
+
 }

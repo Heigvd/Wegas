@@ -125,7 +125,7 @@ public abstract class AbstractEJBTest extends AbstractEJBTestBase {
 
         userFacade.addAccountPermission(trainer.getMainAccount().getId(), "GameModel:Instantiate:gm" + gameModel.getId());
 
-        login(scenarist);
+        login(trainer);
         game = new Game();
         game.setName(GAMENAME);
         game.setToken(GAMETOKEN);

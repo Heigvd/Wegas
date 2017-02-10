@@ -185,6 +185,7 @@ public class UserFacade extends BaseFacade<User> {
          */
 
         getEntityManager().persist(user);
+        /*
         try {
             this.addRole(user.getId(), roleFacade.findByName("Public").getId());
         } catch (WegasNoResultException ex) {
@@ -196,7 +197,8 @@ public class UserFacade extends BaseFacade<User> {
             //logger.error("Unable to find Role: Registered", ex);
             //logger.error("Unable to find Role: Registered");
         }
-        /*
+         */
+ /*
          * Very strange behaviour: without this flush, RequestManager faild to be injected within others beans...
          */
         this.getEntityManager().flush();

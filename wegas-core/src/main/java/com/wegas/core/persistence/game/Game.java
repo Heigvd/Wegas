@@ -18,6 +18,7 @@ import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.jparealm.GameAccount;
+import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 
 import javax.persistence.*;
@@ -507,7 +508,7 @@ public class Game extends NamedEntity implements Broadcastable, BroadcastTarget 
 
     @Override
     public String getRequieredCreatePermission() {
-        return "Role-Trainer,Role-Scenarist";
+        return Role.TRAINER_PERM;
     }
 
     @Override

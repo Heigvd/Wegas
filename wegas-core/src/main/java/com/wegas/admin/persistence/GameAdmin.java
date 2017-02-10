@@ -17,6 +17,7 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.security.persistence.Role;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 
@@ -286,12 +287,12 @@ public class GameAdmin extends AbstractEntity {
 
     @Override
     public String getRequieredCreatePermission() {
-        return "Role-Scenarist";
+        return Role.TRAINER_PERM;
     }
 
     @Override
     public String getRequieredUpdatePermission() {
-        return "Role-Administrator";
+        return Role.ADMIN_PERM;
     }
 
     //

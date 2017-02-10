@@ -249,7 +249,7 @@ public class User extends AbstractEntity implements Comparable<User> {
 
     @Override
     public String getRequieredUpdatePermission() {
-        return "User-" + this.getId() + ",Role-Scenarist,Role-Trainer"; //can update permissions
+        return "User-" + this.getId() + "," + Role.TRAINER_PERM;
     }
 
     @Override

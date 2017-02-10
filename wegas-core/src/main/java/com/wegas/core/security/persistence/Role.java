@@ -31,8 +31,7 @@ public class Role extends AbstractEntity {
 
     public static final String ADMIN_PERM = "Role-Administrator";
     public static final String SCENARIST_PERM = "Role-Scenarist";
-    public static final String TRAINER_PERM = "Role-Trainer";
-    public static final String REGISTERED_PERM = "Role-Registered";
+    public static final String TRAINER_PERM = "Role-Trainer,Role-Scenarist";
 
     /**
      *

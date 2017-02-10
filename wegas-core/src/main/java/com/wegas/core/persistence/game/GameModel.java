@@ -18,6 +18,7 @@ import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 
 import javax.jcr.RepositoryException;
@@ -719,9 +720,9 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @Override
     public String getRequieredCreatePermission() {
         if (this.getStatus() == Status.PLAY) {
-            return "Role-Scenarist,Role-Trainer";
+            return Role.TRAINER_PERM;
         } else {
-            return "Role-Scenarist";
+            return Role.SCENARIST_PERM;
         }
     }
 
