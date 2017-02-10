@@ -1,12 +1,5 @@
-.short{
-    width:45%;
-    margin-top: 8px;
-}
-
 .select {
-    font-size: 15px;
     padding:2px;
     border-radius: 3px;
-    border:lightgrey solid 1px;
-    margin-top:5px;
+    border: lightgrey solid 1px;
 }

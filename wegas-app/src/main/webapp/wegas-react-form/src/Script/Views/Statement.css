@@ -1,9 +1,5 @@
-
-.Statement{
-    padding-left:10px; 
-    display:inline-block;
-    padding-top:10px;
+.Statement {
+    display: inline-block;
     padding-bottom: 5px;
-    max-width:100%;
-    min-width: 468px;
-    }
+    max-width: calc(100% - 22px); /* remove button width */
+}
