@@ -658,6 +658,16 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 minValue: {
                     type: ["null", NUMBER],
                     optional: true,
+                    errored: function(val,formVal){
+                        var errors=[];
+                        if (val>formVal.defaultInstance.value){
+                            errors.push("Minimum is greater than default value");
+                        }
+                        if (val>formVal.maxValue){
+                            errors.push("Minimum is greater than maximum");
+                        }
+                        return errors.join(", ");
+                    },
                     view: {
                         label: "Minimum",
                         layout: "shortInline"
@@ -666,6 +676,16 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 maxValue: {
                     type: ["null", NUMBER],
                     optional: true,
+                    errored: function(val,formVal){
+                        var errors=[];
+                        if (val<formVal.defaultInstance.value){
+                            errors.push("Maximum is less than default value");
+                        }
+                        if (val<formVal.minValue){
+                            errors.push("Maximum is less than minimum");
+                        }
+                        return errors.join(", ");
+                    },
                     view: {
                         label: "Maximum",
                         layout: "shortInline"
@@ -708,6 +728,17 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                         descriptorId: IDATTRDEF,
                         value: {
                             type: NUMBER,
+                            required: true,
+                            errored: function(val,formVal){
+                                var errors=[];
+                                if (val>formVal.maxValue){
+                                    errors.push("Default value is greater than maximum");
+                                }
+                                if (val<formVal.minValue){
+                                    errors.push("Default value is less than minimum");
+                                }
+                                return errors.join(", ");
+                            },
                             view: {
                                 label: "Default value",
                                 layout: "shortInline"
@@ -733,7 +764,9 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                         {
                             type: NUMBER,
                             required: true,
-                            view:  {}
+                            view:  {
+                                layout: "extraShort"
+                            }
                         }]
                 }, /*
                  sub: {
@@ -753,7 +786,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                         {
                             type: NUMBER,
                             required: true,
-                            view: { label: 'value' }
+                            view: { layout: "extraShort" }
                         }]
                 },
                 getValue: {
@@ -1214,7 +1247,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                         SELFARG,
                         {
                         type: STRING,
-                            view: { label: "From" }
+                            view: { label: "From", layout:'long' }
                     }, {
                         type: STRING,
                             view: { label: "Date" }
