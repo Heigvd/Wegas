@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 import { types } from 'recast';
 import { RemoveStatementButton, AddStatementButton } from './Views/Button';
 import Statement from './Views/Statement';
+import styles from './Views/addStatement.css';
 
 export default function addStatement(Comp) {
     class AddStatement extends React.Component {
@@ -25,8 +26,8 @@ export default function addStatement(Comp) {
                             this.setState({
                                 code: this.state.code.concat([types.builders.emptyStatement()])
                             });
-                        } }
-                        />
+                        }}
+                    />
                 </div>);
         }
     }
@@ -38,8 +39,12 @@ export default function addStatement(Comp) {
 export const removeStatement = (Comp) => {
     function RemoveStatement(props) {
         return (
-            <div style={{ width: '100%' }}>
-                <RemoveStatementButton onClick={props.onRemove}/>
+            <div
+                className={styles.container}
+            >
+                <div className={styles.removeButton}>
+                    <RemoveStatementButton onClick={props.onRemove} />
+                </div>
                 <Statement><Comp {...props} /></Statement>
             </div>
         );

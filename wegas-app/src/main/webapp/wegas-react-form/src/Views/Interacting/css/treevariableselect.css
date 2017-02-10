@@ -1,7 +1,5 @@
 .container {
     color: #6A95B6;
-    font-family: arial;
-    font-size:15px;
     display: inline-block;
 }
 
@@ -19,6 +17,7 @@
 
 .selectorLink {
     position: relative;
+    margin-right:1em;
 }
 
 .path {

@@ -36,12 +36,14 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
                     this.fire('updated', val);
                 };
                 render((
-                    <RForm
-                        ref={form => this.set(FORM, form)}
-                        schema={schema}
-                        value={value}
-                        onChange={boundFire}
+                    <div style={{ postion: 'relative', width: '100%', paddingLeft: '1em', boxSizing: 'border-box' }}>
+                        <RForm
+                            ref={form => this.set(FORM, form)}
+                            schema={schema}
+                            value={value}
+                            onChange={boundFire}
                         />
+                    </div>
                 ), this.get('contentBox').getDOMNode());
             }
         },

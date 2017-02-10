@@ -4,7 +4,7 @@ import { print, parse } from 'recast';
 import { schema as variableSchema, varExist } from './Variable';
 import { methodSchema, genChoices, extractMethod, buildMethod, handleArgs } from './method';
 import { genChoices as genGlobalChoices, handleArgs as handleGlobalArgs, methodDescriptor } from './globalMethod';
-
+import styles from '../Views/conditionImpact.css';
 
 const upgradeSchema = (varSchema, methodType = 'getter') => {
     const ret = {
@@ -118,7 +118,7 @@ class Impact extends React.Component {
             </div>);
         }
         let child = [(
-            <div style={{ display: 'inline-block' }}>
+            <div className={styles.container}>
                 <Form
                     key="variable"
                     schema={upgradeSchema(variableSchema(view.variable), type)}
@@ -131,7 +131,7 @@ class Impact extends React.Component {
             const schema = methodSchema(view.method, this.state.variable, type);
             if (schema) {
                 child.push(
-                    <div style={{ display: 'inline-block' }} >
+                    <div className={styles.container} >
                         <Form
                             key="method"
                             schema={methodSchema(view.method, this.state.variable, type)}
@@ -153,7 +153,7 @@ class Impact extends React.Component {
             child = child.concat(
                 handleArgs(variable, method, args, v => this.setState({
                     args: v
-                }, this.checkVariableMethod)).map(form => (<div style={{ display: 'inline-block' }}>{form}</div>))
+                }, this.checkVariableMethod)).map(form => (<div className={styles.container} >{form}</div>))
             );
         }
         if (this.state.member && this.state.method) {
@@ -166,7 +166,7 @@ class Impact extends React.Component {
             );
         }
         return (
-            <span style={{ display: 'inline-block', width: 'auto' }}>
+            <span className={styles.container}>
                 {child}
             </span>
         );
