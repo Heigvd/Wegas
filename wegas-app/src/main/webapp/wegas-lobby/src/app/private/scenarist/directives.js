@@ -13,7 +13,7 @@ angular.module('private.scenarist.directives', [])
         /*
          ** Filters ctrl.rawScenarios according to the given search string and puts the result in ctrl.scenarios.
          ** Hypotheses on input array ctrl.rawScenarios :
-         ** 1. It contains only scenarios with attribute 'canView' = true (and implicitly 'canEdit' = true).
+         ** 1. It contains only scenarios with attribute 'canEdit' = true.
          ** 2. It's already ordered according to the 'createdTime' attribute,
          **    so that the output automatically follows the same ordering.
          */
@@ -52,9 +52,9 @@ angular.module('private.scenarist.directives', [])
             ctrl.loading = true;
             ScenariosModel.getScenarios('LIVE').then(function(response) {
                 ctrl.loading = false;
-                ctrl.rawScenarios = $filter('filter')(response.data, { canView: true } ) || [];
+                ctrl.rawScenarios = $filter('filter')(response.data, { canEdit: true } ) || [];
                 ctrl.rawScenarios = $filter('orderBy')(ctrl.rawScenarios, 'createdTime', true) || [];
-                // At this point, the search variable is not necessarily rendered nor updated by Angular to reflect the input field:
+                // At this point, the search variable is not necessarily updated by Angular to reflect the input field:
                 var searchField = document.getElementById('searchField');
                 if (searchField) {
                     ctrl.search = searchField.getElementsByClassName('tool__input')[0].value;

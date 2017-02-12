@@ -62,7 +62,7 @@ angular.module('private.trainer.directives', [])
                 ctrl.loading = false;
                 ctrl.rawSessions = $filter('filter')(response.data, { gameModel: { canView: true }} ) || [];
                 ctrl.rawSessions = $filter('orderBy')(ctrl.rawSessions, 'createdTime', true) || [];
-                // At this point, the search variable is not necessarily rendered nor updated by Angular to reflect the input field:
+                // At this point, the search variable is not necessarily updated by Angular to reflect the input field:
                 var searchField = document.getElementById('searchField');
                 if (searchField) {
                     ctrl.search = searchField.getElementsByClassName('tool__input')[0].value;
