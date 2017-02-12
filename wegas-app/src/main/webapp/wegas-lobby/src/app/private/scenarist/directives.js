@@ -9,25 +9,25 @@ angular.module('private.scenarist.directives', [])
         ctrl.scenarios = [];
         ctrl.nbArchives = 0;
         ctrl.search = '';
-        //ctrl.scenariomenu = [];
 
         /*
          ** Filters ctrl.rawScenarios according to the given search string and puts the result in ctrl.scenarios.
-         ** Hypothesis: input array ctrl.rawScenarios is already ordered according to the 'createdTime' attribute,
-         ** so that the output automatically follows the same ordering.
+         ** Hypotheses on input array ctrl.rawScenarios :
+         ** 1. It contains only scenarios with attribute 'canEdit' = true.
+         ** 2. It's already ordered according to the 'createdTime' attribute,
+         **    so that the output automatically follows the same ordering.
          */
         ctrl.filterScenarios = function(search) {
             if (!search || search.length === 0){
                 ctrl.scenarios = ctrl.rawScenarios;
                 return;
             }
-            var res = [],
+            var needle = search.toLowerCase(),
+                res = [],
                 len = ctrl.rawScenarios.length,
                 i;
             for (i=0; i<len; i++){
                 var scenario = ctrl.rawScenarios[i];
-                if (scenario.canView === false || scenario.canEdit === false) continue;
-                var needle = search.toLowerCase();
                 if ((scenario.name && scenario.name.toLowerCase().indexOf(needle) >= 0) ||
                     (scenario.createdByName && scenario.createdByName.toLowerCase().indexOf(needle) >= 0) ||
                     (scenario.comments && scenario.comments.toLowerCase().indexOf(needle) >= 0) ||
@@ -52,8 +52,9 @@ angular.module('private.scenarist.directives', [])
             ctrl.loading = true;
             ScenariosModel.getScenarios('LIVE').then(function(response) {
                 ctrl.loading = false;
-                ctrl.rawScenarios = $filter('orderBy')(response.data, 'createdTime', true) || [];
-                // At this point, the search variable is not necessarily rendered nor updated by Angular to reflect the input field:
+                ctrl.rawScenarios = $filter('filter')(response.data, { canEdit: true } ) || [];
+                ctrl.rawScenarios = $filter('orderBy')(ctrl.rawScenarios, 'createdTime', true) || [];
+                // At this point, the search variable is not necessarily updated by Angular to reflect the input field:
                 var searchField = document.getElementById('searchField');
                 if (searchField) {
                     ctrl.search = searchField.getElementsByClassName('tool__input')[0].value;
@@ -223,8 +224,7 @@ angular.module('private.scenarist.directives', [])
                 scenario: '=',
                 archive: '=',
                 duplicate: '=',
-                duplicating: '=',
-                isDuplicated: '='
+                duplicating: '='
             },
             link: function(scope) {
                 scope.ServiceURL = window.ServiceURL;
