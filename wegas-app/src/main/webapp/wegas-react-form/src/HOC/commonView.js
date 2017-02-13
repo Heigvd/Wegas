@@ -16,10 +16,12 @@ export default function commonView(Comp) {
             <div
                 className={classNames(
                     props.view.className,
+                    styles.container,
                     {
                         [styles.short]: layout === 'short',
                         [styles.shortInline]: layout === 'shortInline',
                         [styles.long]: layout === 'long',
+                        [styles.extraShort]: layout === 'extraShort',
                         [styles.borderTop]: props.view.borderTop
                     })
                 }

@@ -17,13 +17,11 @@ function scriptObject(Comp) {
                     marginTop: '15px',
                     maxWidth: '100%',
                     borderTop: 'solid 2px #4A8C9C',
-                    marginLeft: '10px',
                     marginRight: '10px'
                 }}
             >
                 <span
                     style={{
-                        fontFamily: 'arial',
                         fontSize: '15px',
                         color: '#6A95B6',
                         marginTop: '8px',

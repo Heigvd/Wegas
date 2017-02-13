@@ -29,28 +29,20 @@ class StringView extends React.Component {
                     rows={this.props.view.rows}
                     onChange={ev => this.handleChange(ev)}
                     placeholder={this.props.view.placeholder}
-                    style={{
-                        fontSize: '14px',
-                        color: 'darkgrey',
-                        marginBottom: '10px'
-
-                    }}
                     value={this.state.value}
                     disabled={this.props.view.disabled}
                 />
             );
         }
         return (
-            <div style={{ maxWidth: '100%' }}>
-                <input
-                    className={styles.input}
-                    type="text"
-                    placeholder={this.props.view.placeholder}
-                    value={this.state.value}
-                    onChange={ev => this.handleChange(ev)}
-                    disabled={this.props.view.disabled}
-                />
-            </div>
+            <input
+                className={styles.input}
+                type="text"
+                placeholder={this.props.view.placeholder}
+                value={this.state.value}
+                onChange={ev => this.handleChange(ev)}
+                disabled={this.props.view.disabled}
+            />
         );
     }
 }

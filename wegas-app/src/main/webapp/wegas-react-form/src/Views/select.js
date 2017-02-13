@@ -53,8 +53,7 @@ SelectView.propTypes = {
     view: PropTypes.shape({
         label: PropTypes.string,
         className: PropTypes.string,
-        choices: PropTypes.array,
-        short: PropTypes.bool
+        choices: PropTypes.array
     }),
     editKey: PropTypes.string,
     disabled: PropTypes.bool,

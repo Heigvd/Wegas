@@ -1,10 +1,12 @@
 .input{
     border-radius: 3px;
+    box-sizing: border-box;
     border:lightgrey solid 1px;
-    margin-top:5px;
     font-size: 13px;
-    width:100%;
     color:darkslategrey;
+    width:100%;
+    max-width: 33em;
+    padding:0px;
 }
 
 textarea{

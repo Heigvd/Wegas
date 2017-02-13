@@ -1,10 +1,9 @@
 .removeStatement{
-    width:16.5px;
-	height:16.5px;
+    width:12.75px;
+	height:12.75px;
 	border-radius:50%;
 	color:#fff;
-	font-size:8.7px;
-	margin-left:5px;
+	font-size:6.5px;
 	text-align: center;
 	cursor: pointer;
 	display: inline-block;
@@ -20,7 +19,6 @@
 	height:16.5px;
 	text-align: center;
 	font-size:8.9px;
-	margin-left:5px;
 	margin-top: 7px;
 	cursor: pointer;
 }

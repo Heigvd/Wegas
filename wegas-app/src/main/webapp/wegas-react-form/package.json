@@ -16,6 +16,7 @@
   "dependencies": {
     "classnames": "^2.2.5",
     "core-js": "^2.4.1",
+    "css-toggle-switch": "^4.0.2",
     "jsoninput": "github:cigit/JSONInput",
     "lodash": "^4.17.4",
     "material-ui": "^0.16.6",

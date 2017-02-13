@@ -1,45 +1,46 @@
+.container {
+    position: relative;
+}
+
+.extraShort {
+    max-width: 5em;
+}
+
 .short {
-    max-width: 12.5em;
-    margin-left: 10px;
+    max-width: 10em;
 }
 
 .shortInline {
     composes: short;
     display: inline-block;
-    margin-right: 20px;
+    margin-right: 4em;
     vertical-align: top;
 }
 
 .long {
     max-width: 100%;
-    font-size: 14px;
-    margin-left: 10px;
-    margin-right: 10px;
 }
 
 .infos {
     color: lightslategrey;
     font-size: 10px;
-    margin-left: 5px;
     font-style: italic;
 }
 
 .errs {
     color: darkorange;
-    font-size: 10px;
+    font-size: 75%;
     font-style: italic;
+    float:left;
 }
 
 .label {
-    font-family: arial;
     color: #6a95b6;
-    font-size: 16px;
-    margin-top: 8px;
-
+    font-size: 125%;
+    max-width: 100%;
 }
 
 .borderTop {
     border-top: solid 2px #4a8c9c;
-    margin-left: 0px;
-    width:40em;
+    width: 40em;
 }

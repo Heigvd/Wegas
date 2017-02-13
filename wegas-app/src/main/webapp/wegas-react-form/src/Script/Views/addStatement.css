@@ -1,0 +1,10 @@
+.removeButton {
+    opacity: 0;
+    vertical-align: top;
+    display: inline-block;
+    transition: opacity 500ms 300ms;
+}
+
+.container:hover .removeButton {
+    opacity: 1;
+}

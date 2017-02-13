@@ -1,19 +1,21 @@
 .root {
-  & > legend {
-    text-align: center;
-  }
+    clear: both;
+
+    & > legend {
+        text-align: center;
+    }
 }
 
 .borderTop {
-  border-top: 1px solid lightgrey;
+    border-top: 1px solid lightgrey;
 }
 
 .error {
-  color: red;
-  font-size: 80%;
+    color: red;
+    font-size: 80%;
+    float: left;
 }
 
-
 .legend {
-  color:#282;
+    color: #282;
 }
