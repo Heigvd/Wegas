@@ -49,12 +49,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -143,7 +138,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      *
      * @param gameModel
      * @return true if a new debugGame has been added, false if the gameModel
-     *         already has one
+     * already has one
      */
     public boolean addDebugGame(GameModel gameModel) {
         if (!gameModel.hasDebugGame()) {
@@ -191,7 +186,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
-     *
      * @param gameModelId
      * @param playerId
      * @return the gameModel with default instance merged with player's ones
@@ -201,7 +195,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
-     *
      * @param gameModelId
      * @param playerId
      * @return a new gameModel with default instance merged with player's ones
@@ -355,7 +348,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
-     *
      * @param status
      * @return all gameModel matching the given status
      */
@@ -618,5 +610,14 @@ public class GameModelFacade extends BaseFacade<GameModel> {
             logger.error("Error retrieving gamemodelfacade", ex);
             return null;
         }
+    }
+
+    @Schedule(hour = "4", dayOfMonth = "Last Sat")
+    public void removeGameModels() {
+        List<GameModel> byStatus = this.findByStatus(Status.DELETE);
+        for (GameModel gm : byStatus) {
+            this.remove(gm);
+        }
+        this.getEntityManager().flush();
     }
 }
