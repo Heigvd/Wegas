@@ -18,6 +18,7 @@ import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.jcr.content.AbstractContentDescriptor;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.ContentConnectorFactory;
+import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
@@ -36,10 +37,7 @@ import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.Asynchronous;
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
+import javax.ejb.*;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
@@ -308,9 +306,14 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         }
         preRemovedGameModelEvent.fire(new PreEntityRemoved<>(this.find(id)));
         getEntityManager().remove(gameModel);
-        //Remove jcr repo.
+        // Remove pages.
+        try (Pages pages = new Pages(id.toString())) {
+            pages.delete();
+        } catch (RepositoryException e) {
+            logger.error("Error suppressing pages for gameModel {}, {}", id, e.getMessage());
+        }
+        // Remove jcr repo.
         // @TODO : in fact, removes all files but not the workspace.
-        // @fx Why remove files? The may be referenced in other workspaces
         try (ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(gameModel.getId())) {
             connector.deleteWorkspace();
         } catch (RepositoryException ex) {

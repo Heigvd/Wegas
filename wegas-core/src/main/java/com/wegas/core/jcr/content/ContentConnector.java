@@ -304,6 +304,7 @@ public class ContentConnector implements AutoCloseable {
     /*
      * Return content Bytes size
      */
+
     /**
      * @param absolutePath
      * @return
