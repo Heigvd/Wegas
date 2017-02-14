@@ -55,7 +55,7 @@ public class ScriptControllerTest extends AbstractEJBTest {
 
         NumberDescriptor number = new NumberDescriptor();
         number.setName("testnumber");
-        number.setMinValue(0L);
+        number.setMinValue(0.0);
         number.setDefaultInstance(new NumberInstance(1));
 
         vdf.create(gameModel.getId(), number);
