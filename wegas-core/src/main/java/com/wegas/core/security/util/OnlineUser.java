@@ -8,6 +8,8 @@
 package com.wegas.core.security.util;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wegas.core.security.guest.GuestJpaAccount;
+import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import java.util.Date;
@@ -71,22 +73,22 @@ public class OnlineUser {
     }
 
     /**
-     * 0 means Admin, 1 Scenarist or Trainer, 2 Player and 3, Guest and 4 none;
+     * 0 means Admin, 1 Scenarist or Trainer, 2 Player and 3, Guest;
      *
-     * @param user
      * @return
      */
     public int getHighestRole() {
         if (OnlineUser.hasAnyRoles(user, "Administrator")) {
             return 0;
-        } else if (OnlineUser.hasAnyRoles(user, "Scenarist", "Trainer", "PMG-trainer")) {
+        } else if (OnlineUser.hasAnyRoles(user, "Scenarist", "Trainer")) {
             return 1;
-        } else if (OnlineUser.hasAnyRoles(user, "Public")) {
-            return 2;
-        } else if (OnlineUser.hasAnyRoles(user, "Guest")) {
-            return 3;
+        } else {
+            // Registeered Player or guest ?
+            if (user.getMainAccount() instanceof GuestJpaAccount) {
+                return 3;
+            } else {
+                return 2;
+            }
         }
-        return 4;
     }
-
 }

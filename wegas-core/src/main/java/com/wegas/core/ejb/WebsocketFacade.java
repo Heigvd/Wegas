@@ -35,11 +35,9 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.security.InvalidKeyException;
-import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.logging.Level;
@@ -49,7 +47,6 @@ import java.util.zip.GZIPOutputStream;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
-import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -62,6 +59,8 @@ public class WebsocketFacade {
     private static final Logger logger = LoggerFactory.getLogger(WebsocketFacade.class);
 
     private final Pusher pusher;
+    private final Boolean maintainLocalListUpToDate;
+
     public final static String GLOBAL_CHANNEL = "global-channel";
     public final static String ADMIN_CHANNEL = "private-Admin";
 
@@ -101,15 +100,12 @@ public class WebsocketFacade {
      */
     public WebsocketFacade() {
         Pusher tmp;
-        try {
-            tmp = new Pusher(getProperty("pusher.appId"),
-                    getProperty("pusher.key"), getProperty("pusher.secret"));
-            tmp.setCluster(getProperty("pusher.cluster"));
-        } catch (Exception e) {
-            logger.warn("Pusher init failed, please check your configuration");
-            logger.debug("Pusher error details", e);
-            tmp = null;
-        }
+        maintainLocalListUpToDate = "true".equalsIgnoreCase(getProperty("pusher.onlineusers_hook"));
+
+        tmp = new Pusher(getProperty("pusher.appId"),
+                getProperty("pusher.key"), getProperty("pusher.secret"));
+        tmp.setCluster(getProperty("pusher.cluster"));
+
         pusher = tmp;
     }
 
@@ -297,9 +293,9 @@ public class WebsocketFacade {
                 }
                 propagate(event, audience, socketId);
             }
-        } catch (NoSuchMethodException | SecurityException |
-                InstantiationException | IllegalAccessException |
-                IllegalArgumentException | InvocationTargetException ex) {
+        } catch (NoSuchMethodException | SecurityException
+                | InstantiationException | IllegalAccessException
+                | IllegalArgumentException | InvocationTargetException ex) {
             logger.error("EVENT INSTANTIATION FAILS");
         }
     }
@@ -511,6 +507,8 @@ public class WebsocketFacade {
      */
     private void initOnlineUsers() {
         try {
+            this.clearOnlineUsers();
+
             Result get = pusher.get("/channels");
             String message = get.getMessage();
 
@@ -521,7 +519,10 @@ public class WebsocketFacade {
             for (String channel : channels.keySet()) {
                 this.registerUser(this.getUserFromChannel(channel));
             }
-            WebsocketFacade.onlineUsersUptodate = true;
+
+            if (maintainLocalListUpToDate) {
+                WebsocketFacade.onlineUsersUptodate = true;
+            }
 
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(WebsocketFacade.class.getName()).log(Level.SEVERE, null, ex);
