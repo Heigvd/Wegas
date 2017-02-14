@@ -261,8 +261,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
             newGameModel.setName(this.findUniqueName(srcGameModel.getName()));
             this.create(newGameModel);
 
-            try {                                                                   // Clone files and pages
-                ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(newGameModel.getId());
+            try (ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(newGameModel.getId())) {                                                                   // Clone files and pages
                 connector.cloneWorkspace(srcGameModel.getId());
                 newGameModel.setPages(srcGameModel.getPages());
             } catch (RepositoryException ex) {
