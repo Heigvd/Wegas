@@ -16,6 +16,7 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.wegas.core.Helper;
 import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.variable.Beanjection;
@@ -319,6 +320,6 @@ public class Player extends AbstractEntity implements Broadcastable, BroadcastTa
     @JsonIgnore
     @Override
     public String getChannel() {
-        return "Player-" + this.getId();
+        return Helper.PLAYER_CHANNEL_PREFIX + this.getId();
     }
 }

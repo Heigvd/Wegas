@@ -28,11 +28,16 @@ angular.module('private.admin.who', [
         ctrl.roles = WegasPusher.getRoles();
 
         ctrl.updateWhoList = function() {
-            ctrl.who = WegasPusher.getMembers();
-            ctrl.loading = false;
-            if ( ! $rootScope.$$phase) {
-                $scope.$apply();
-            }
+            var req = WegasPusher.getMembers();
+            req.success(function(onlineUsers) {
+                ctrl.who = onlineUsers;
+
+                ctrl.loading = false;
+                if (!$rootScope.$$phase) {
+                    $scope.$apply();
+                }
+            });
+
         };
 
         $rootScope.$on('wegaspusher:update-members', function(e) {

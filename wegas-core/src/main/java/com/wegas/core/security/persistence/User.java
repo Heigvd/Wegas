@@ -25,8 +25,10 @@ import java.util.*;
 @Table(name = "users")
 
 @NamedQueries({
-    @NamedQuery(name = "User.findUserPermissions", query = "SELECT DISTINCT users FROM User users JOIN users.permissions p WHERE p.value LIKE :instance"),
-    @NamedQuery(name = "User.findUsersWithRole", query = "SELECT DISTINCT users FROM User users JOIN users.roles r WHERE r.id = :role_id"),
+    @NamedQuery(name = "User.findUserPermissions", query = "SELECT DISTINCT users FROM User users JOIN users.permissions p WHERE p.value LIKE :instance")
+    ,
+    @NamedQuery(name = "User.findUsersWithRole", query = "SELECT DISTINCT users FROM User users JOIN users.roles r WHERE r.id = :role_id")
+    ,
     @NamedQuery(name = "User.findUserWithPermission", query = "SELECT DISTINCT users FROM User users JOIN users.permissions p WHERE p.value LIKE :permission AND p.user.id =:userId")
 })
 public class User extends AbstractEntity implements Comparable<User> {
@@ -173,28 +175,8 @@ public class User extends AbstractEntity implements Comparable<User> {
         }
     }
 
-    /**
-     * @param permission
-     */
-    public void removePermission(String permission) {
-        this.permissions.remove(new Permission(permission));
-    }
-
-    /**
-     * @param permission
-     * @param inducedPermission
-     * @return true id the permission has successfully been added
-     */
-    public boolean addPermission(String permission, String inducedPermission) {
-        return this.addPermission(new Permission(permission, inducedPermission));
-    }
-
-    /**
-     * @param permission
-     * @return true id the permission has successfully been added
-     */
-    public boolean addPermission(String permission) {
-        return this.addPermission(new Permission(permission));
+    public boolean removePermission(Permission permission) {
+        return this.permissions.remove(permission);
     }
 
     /**
