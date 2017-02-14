@@ -47,6 +47,12 @@ public class Helper {
 
     private static String WEGAS_ROOT_DIRECTORY;
 
+    public static final String USER_CHANNEL_PREFIX = "private-User-";
+    public static final String PLAYER_CHANNEL_PREFIX = "private-Player-";
+    public static final String TEAM_CHANNEL_PREFIX = "private-Team-";
+    public static final String GAME_CHANNEL_PREFIX = "private-Game-";
+    public static final String GAMEMODEL_CHANNEL_PREFIX = "private-GameModel-";
+
     /**
      * @param <T>
      * @param context

@@ -65,7 +65,7 @@ angular.module('wegas.models.permissions', [])
                     }
                 });
                 if (!alreadyIn) {
-                    $http.post(ServiceURL + "rest/Extended/User/addAccountPermission/Game:View,Edit:g" + session.id +
+                    $http.post(ServiceURL + "rest/Extended/User/ShareGame/" + session.id +
                         "/" + trainer.id).success(function(data) {
                         $translate('COMMONS-PERMISSIONS-SESSIONS-CREATE-FLASH-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, trainer));
@@ -92,7 +92,7 @@ angular.module('wegas.models.permissions', [])
         model.removeSessionPermission = function(session, trainers, trainer) {
             var deferred = $q.defer();
             if (session) {
-                $http.delete(ServiceURL + "rest/Extended/User/DeleteAccountPermissionByInstanceAndAccount/g" +
+                $http.delete(ServiceURL + "rest/Extended/User/ShareGame/" +
                     session.id + "/" + trainer.id).success(function(data) {
                     $translate('COMMONS-PERMISSIONS-SESSIONS-DELETE-FLASH-SUCCESS').then(function(message) {
                         deferred.resolve(Responses.success(message, trainer));
@@ -183,67 +183,58 @@ angular.module('wegas.models.permissions', [])
 
         model.updateScenarioPermissions = function(scenarioId, userId, canCreate, canDuplicate, canEdit) {
             var deferred = $q.defer();
-            // Removing all permission
-            model.deleteScenarioPermissions(scenarioId, userId).then(function(response) {
-                // Remove works ?
-                if (response.isErroneous()) {
-                    deferred.resolve(response);
+            // Calculating new permission as wegas see them
+            var permissions = "";
+            if (canEdit) {
+                permissions = "View,Edit,Delete,Duplicate,Instantiate";
+            } else {
+                if (canCreate && canDuplicate) {
+                    permissions = "Instantiate,Duplicate";
+                } else if (canCreate) {
+                    permissions = "Instantiate";
+                } else if (canDuplicate) {
+                    permissions = "Duplicate";
                 } else {
-                    // Calculating new permission as wegas see them
-                    var permissions = "";
-                    if (canEdit) {
-                        permissions = "View,Edit,Delete,Duplicate,Instantiate";
-                    } else {
-                        if (canCreate && canDuplicate) {
-                            permissions = "Instantiate,Duplicate";
-                        } else if (canCreate) {
-                            permissions = "Instantiate";
-                        } else if (canDuplicate) {
-                            permissions = "Duplicate";
-                        } else {
-                            // No permissions means ok.
-                            deferred.resolve(Responses.success("Permissions updated.", true));
-                        }
-                    }
+                    // No permissions means ok.
+                    deferred.resolve(Responses.success("Permissions updated.", true));
+                }
+            }
 
-                    var url = "rest/Extended/User/addAccountPermission/" +
-                        "GameModel:" + permissions + ":gm" + scenarioId + "/" + userId;
-                    // Updating permissions
-                    $http.post(ServiceURL + url, null, {
-                        "headers": {
-                            "managed-mode": "true"
-                        }
-                    }).success(function(data) {
-                        if (data.events !== undefined && data.events.length === 0) {
-                            $translate('COMMONS-PERMISSIONS-SCENARIOS-UPDATE-FLASH-SUCCESS').then(function(message) {
-                                deferred.resolve(Responses.success(message, true));
-                            });
-                        } else {
-                            if (data.events !== undefined) {
-                                console.log("WEGAS LOBBY : Error while updating permissions");
-                                console.log(data.events);
-                            }
-                            $translate('COMMONS-PERMISSIONS-SCENARIOS-UPDATE-FLASH-ERROR').then(function(message) {
-                                deferred.resolve(Responses.danger(message, false));
-                            });
-                        }
-                    }).error(function(data) {
-                        if (data.events !== undefined) {
-                            console.log("WEGAS LOBBY : Error while updating permissions");
-                            console.log(data.events);
-                        }
-                        $translate('COMMONS-PERMISSIONS-SCENARIOS-UPDATE-FLASH-ERROR').then(function(message) {
-                            deferred.resolve(Responses.danger(message, false));
-                        });
+            var url = "rest/Extended/User/ShareGameModel/" + scenarioId + "/" + permissions + "/" + userId;
+            // Updating permissions
+            $http.post(ServiceURL + url, null, {
+                "headers": {
+                    "managed-mode": "true"
+                }
+            }).success(function(data) {
+                if (data.events !== undefined && data.events.length === 0) {
+                    $translate('COMMONS-PERMISSIONS-SCENARIOS-UPDATE-FLASH-SUCCESS').then(function(message) {
+                        deferred.resolve(Responses.success(message, true));
+                    });
+                } else {
+                    if (data.events !== undefined) {
+                        console.log("WEGAS LOBBY : Error while updating permissions");
+                        console.log(data.events);
+                    }
+                    $translate('COMMONS-PERMISSIONS-SCENARIOS-UPDATE-FLASH-ERROR').then(function(message) {
+                        deferred.resolve(Responses.danger(message, false));
                     });
                 }
+            }).error(function(data) {
+                if (data.events !== undefined) {
+                    console.log("WEGAS LOBBY : Error while updating permissions");
+                    console.log(data.events);
+                }
+                $translate('COMMONS-PERMISSIONS-SCENARIOS-UPDATE-FLASH-ERROR').then(function(message) {
+                    deferred.resolve(Responses.danger(message, false));
+                });
             });
             return deferred.promise;
         };
 
-        model.deleteScenarioPermissions = function(scenarioId, userId) {
+        model.deleteScenarioPermissions = function(scenarioId, accountId) {
             var deferred = $q.defer(),
-                url = "rest/Extended/User/DeleteAccountPermissionByInstanceAndAccount/gm" + scenarioId + "/" + userId;
+                url = "rest/Extended/User/ShareGameModel/" + scenarioId + "/" + accountId;
 
             $http.delete(ServiceURL + url, {
                 "headers": {

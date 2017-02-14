@@ -301,10 +301,9 @@ public class ContentConnector implements AutoCloseable {
         return this.getProperty(absolutePath, WFSConfig.WFS_LAST_MODIFIED).getDate();
     }
 
-    /*
-     * Return content Bytes size
-     */
     /**
+     * Return content Bytes size
+     *
      * @param absolutePath
      * @return
      * @throws RepositoryException

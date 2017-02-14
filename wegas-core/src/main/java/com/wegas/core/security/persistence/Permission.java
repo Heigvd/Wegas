@@ -19,7 +19,8 @@ import java.util.Objects;
  */
 @Entity
 @NamedQueries({
-    @NamedQuery(name = "Permission.deleteByInstance", query = "DELETE FROM Permission p WHERE p.value LIKE :instance")
+    @NamedQuery(name = "Permission.findByPermissionAndUser", query = "SELECT p FROM Permission p WHERE p.value LIKE :permission AND p.user.id = :userId"),
+    @NamedQuery(name = "Permission.findByPermission", query = "SELECT p FROM Permission p WHERE p.value LIKE :permission")
 })
 @Table(
         indexes = {

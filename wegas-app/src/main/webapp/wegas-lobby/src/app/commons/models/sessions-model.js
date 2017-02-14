@@ -28,53 +28,53 @@ angular.module('wegas.models.sessions', [])
                     return deferred.promise;
                 }
             },
-        /* Cache all scenarios in a list */
-        cacheSessions = function(status) {
-            var deferred = $q.defer();
-            if (sessions.cache[status]) {
-                $http.get(sessions.getPath(status), {
-                    "headers": {
-                        "managed-mode": "true"
-                    }
-                }).success(function(data) {
-                    if (data.events !== undefined && data.events.length === 0) {
-                        sessions.cache[status].data = data.updatedEntities;
-                        $translate('COMMONS-SESSIONS-FIND-FLASH-SUCCESS').then(function(message) {
-                            deferred.resolve(Responses.success(message, sessions.cache[status]));
-                        });
-                    } else if (data.events !== undefined) {
+            /* Cache all scenarios in a list */
+            cacheSessions = function(status) {
+                var deferred = $q.defer();
+                if (sessions.cache[status]) {
+                    $http.get(sessions.getPath(status), {
+                        "headers": {
+                            "managed-mode": "true"
+                        }
+                    }).success(function(data) {
+                        if (data.events !== undefined && data.events.length === 0) {
+                            sessions.cache[status].data = data.updatedEntities;
+                            $translate('COMMONS-SESSIONS-FIND-FLASH-SUCCESS').then(function(message) {
+                                deferred.resolve(Responses.success(message, sessions.cache[status]));
+                            });
+                        } else if (data.events !== undefined) {
+                            sessions.cache[status].data = [];
+                            console.log("WEGAS LOBBY : Error while loading sessions : ");
+                            console.log(Responses.danger(data.events[0].exceptions));
+                            $translate('COMMONS-SESSIONS-FIND-FLASH-ERROR').then(function(message) {
+                                deferred.resolve(Responses.danger(message, false));
+                            });
+                        } else {
+                            sessions.cache[status].data = [];
+                            $translate('COMMONS-SESSIONS-FIND-FLASH-ERROR').then(function(message) {
+                                deferred.resolve(Responses.danger(message, false));
+                            });
+                        }
+                    }).error(function(data) {
                         sessions.cache[status].data = [];
-                        console.log("WEGAS LOBBY : Error while loading sessions : ");
-                        console.log(Responses.danger(data.events[0].exceptions));
-                        $translate('COMMONS-SESSIONS-FIND-FLASH-ERROR').then(function(message) {
-                            deferred.resolve(Responses.danger(message, false));
-                        });
-                    } else {
-                        sessions.cache[status].data = [];
-                        $translate('COMMONS-SESSIONS-FIND-FLASH-ERROR').then(function(message) {
-                            deferred.resolve(Responses.danger(message, false));
-                        });
-                    }
-                }).error(function(data) {
-                    sessions.cache[status].data = [];
-                    if (data.events !== undefined && data.events.length > 0) {
-                        console.log("WEGAS LOBBY : Error while loading sessions : ");
-                        console.log(Responses.danger(data.events[0].exceptions));
-                        $translate('COMMONS-SESSIONS-FIND-FLASH-ERROR').then(function(message) {
-                            deferred.resolve(Responses.danger(message, false));
-                        });
-                    } else {
-                        $translate('COMMONS-SESSIONS-FIND-FLASH-ERROR').then(function(message) {
-                            deferred.resolve(Responses.danger(message, false));
-                        });
-                    }
-                });
-            } else {
-                sessions.cache[status] = [];
-                deferred.resolve(sessions.cache[status]);
-            }
-            return deferred.promise;
-        },
+                        if (data.events !== undefined && data.events.length > 0) {
+                            console.log("WEGAS LOBBY : Error while loading sessions : ");
+                            console.log(Responses.danger(data.events[0].exceptions));
+                            $translate('COMMONS-SESSIONS-FIND-FLASH-ERROR').then(function(message) {
+                                deferred.resolve(Responses.danger(message, false));
+                            });
+                        } else {
+                            $translate('COMMONS-SESSIONS-FIND-FLASH-ERROR').then(function(message) {
+                                deferred.resolve(Responses.danger(message, false));
+                            });
+                        }
+                    });
+                } else {
+                    sessions.cache[status] = [];
+                    deferred.resolve(sessions.cache[status]);
+                }
+                return deferred.promise;
+            },
             /* Cache a session, passing the status of the session and the session to add in parameter */
             cacheSession = function(status, sessionToCache) {
                 if (status && sessionToCache && sessions.cache[status]) {
@@ -484,67 +484,6 @@ angular.module('wegas.models.sessions', [])
                     $translate('COMMONS-SESSIONS-EDIT-ACCESS-ERROR').then(function(message) {
                         deferred.resolve(Responses.danger(message, false));
                     });
-                });
-            }
-            return deferred.promise;
-        };
-
-        /* Add a new trainer to the session */
-        model.addTrainerToSession = function(session, trainer) {
-            var deferred = $q.defer();
-            if (session) {
-                var alreadyIn = false;
-                session.trainers.forEach(function(elem) {
-                    if (+elem.id === +trainer.id) {
-                        alreadyIn = true;
-                    }
-                });
-                if (!alreadyIn) {
-                    $http.post(ServiceURL + "rest/Extended/User/addAccountPermission/Game:View,Edit:g" + session.id + "/" + trainer.id).success(function(data) {
-                        session.trainers.push(trainer);
-                        $translate('COMMONS-SESSIONS-ADD-TRAINER-SUCCESS').then(function(message) {
-                            deferred.resolve(Responses.success(message, trainer));
-                        });
-                    }).error(function(data) {
-                        $translate('COMMONS-SESSIONS-ADD-TRAINER-ERROR').then(function(message) {
-                            deferred.resolve(Responses.danger(message, false));
-                        });
-                    });
-                } else {
-                    $translate('COMMONS-SESSIONS-ALREADY-TRAINER-INFO').then(function(message) {
-                        deferred.resolve(Responses.danger(message, false));
-                    });
-                }
-            } else {
-                $translate('COMMONS-SESSIONS-NO-ACCESS-ERROR').then(function(message) {
-                    deferred.resolve(Responses.danger(message, false));
-                });
-            }
-            return deferred.promise;
-        };
-
-        /* Remove a trainer from a session in cached sessions et persistant datas */
-        model.removeTrainerToSession = function(session, trainerId) {
-            var deferred = $q.defer();
-            if (session) {
-                var trainer = _.find(session.trainers, function(t) {
-                    return +t.id === +trainerId;
-                });
-                if (trainer) {
-                    $http.delete(ServiceURL + "rest/Extended/User/DeleteAccountPermissionByInstanceAndAccount/g" + session.id + "/" + trainer.id).success(function(data) {
-                        session.trainers = _.without(session.trainers, trainer);
-                        $translate('COMMONS-SESSIONS-REMOVE-TRAINER-SUCCESS').then(function(message) {
-                            deferred.resolve(Responses.success(message, trainer));
-                        });
-                    }).error(function(data) {
-                        $translate('COMMONS-SESSIONS-REMOVE-TRAINER-ERROR').then(function(message) {
-                            deferred.resolve(Responses.danger(message, false));
-                        });
-                    });
-                }
-            } else {
-                $translate('COMMONS-SESSIONS-ADD-TRAINER-ERROR').then(function(message) {
-                    deferred.resolve(Responses.danger(message, false));
                 });
             }
             return deferred.promise;

@@ -115,6 +115,9 @@ public class GameFacade extends BaseFacade<Game> {
         gm.setComments(""); // Clear comments
         gm.setStatus(GameModel.Status.PLAY);
         this.create(gm, game);
+        
+        // Since Permission on gameModel is provided through game induced permission, revice initial permission on gamemodel:
+        userFacade.deletePermissions(userFacade.getCurrentUser(), "GameModel:%:gm" +  gm.getId());
     }
 
     @Override
@@ -148,10 +151,7 @@ public class GameFacade extends BaseFacade<Game> {
         getEntityManager().persist(game);
 
         //gameModelFacade.reset(gameModel);                                       // Reset the game so the default player will have instances
-        userFacade.addUserPermission(currentUser,
-                "Game:View,Edit:g" + game.getId());                             // Grant permission to creator
-        userFacade.addUserPermission(currentUser,
-                "Game:View:g" + game.getId());                                  // Grant play to creator
+        userFacade.addTrainerToGame(currentUser.getId(), game.getId());
 
         gameModel.propagateDefaultInstance(game, true);
 
@@ -243,11 +243,7 @@ public class GameFacade extends BaseFacade<Game> {
             entity.getGameModel().getGames().remove(entity);
         }
 
-        //for (Team t : entity.getTeams()) {
-        //    teamFacade.remove(t);
-        //}
-        userFacade.deleteUserPermissionByInstance("g" + entity.getId());
-        userFacade.deleteRolePermissionsByInstance("g" + entity.getId());
+        userFacade.deletePermissions(entity);
     }
 
     /**
@@ -476,17 +472,22 @@ public class GameFacade extends BaseFacade<Game> {
      * @param userId
      * @return a new player, linked to user, who just joined the team
      */
+    @Deprecated
     public Player joinTeam(Long teamId, Long userId) {
         // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
         return this.joinTeam(teamFacade.find(teamId), userFacade.find(userId));
     }
 
     /**
+     * Player right: View on Game and GameModel Player right: View on Game and
+     * GameModel
+     *
      * @param user
      * @param game
      */
     public void addRights(User user, Game game) {
-        user.addPermission(
+        userFacade.addUserPermission(
+                user,
                 "Game:View:g" + game.getId(), // Add "View" right on game,
                 "GameModel:View:gm" + game.getGameModel().getId());             // and also "View" right on its associated game model
     }

@@ -18,6 +18,7 @@ import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.jcr.content.AbstractContentDescriptor;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.ContentConnectorFactory;
+import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
@@ -36,10 +37,7 @@ import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.Asynchronous;
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
+import javax.ejb.*;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
@@ -51,12 +49,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -134,9 +127,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
         variableDescriptorFacade.reviveItems(entity, entity, true); // brand new GameModel -> revive all descriptor
         createdGameModelEvent.fire(new EntityCreated<>(entity));
-        currentUser.addPermission("GameModel:View,Edit,Delete,Duplicate,Instantiate:gm" + entity.getId());
-        currentUser.addPermission("GameModel:Duplicate:gm" + entity.getId());
-        currentUser.addPermission("GameModel:Instantiate:gm" + entity.getId());
+        userFacade.addUserPermission(userFacade.getCurrentUser(), "GameModel:View,Edit,Delete,Duplicate,Instantiate:gm" + entity.getId());
     }
 
     /**
@@ -145,7 +136,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      *
      * @param gameModel
      * @return true if a new debugGame has been added, false if the gameModel
-     *         already has one
+     * already has one
      */
     public boolean addDebugGame(GameModel gameModel) {
         if (!gameModel.hasDebugGame()) {
@@ -193,7 +184,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
-     *
      * @param gameModelId
      * @param playerId
      * @return the gameModel with default instance merged with player's ones
@@ -203,7 +193,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
-     *
      * @param gameModelId
      * @param playerId
      * @return a new gameModel with default instance merged with player's ones
@@ -270,8 +259,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
             newGameModel.setName(this.findUniqueName(srcGameModel.getName()));
             this.create(newGameModel);
 
-            try {                                                                   // Clone files and pages
-                ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(newGameModel.getId());
+            try (ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(newGameModel.getId())) {                                                                   // Clone files and pages
                 connector.cloneWorkspace(srcGameModel.getId());
                 newGameModel.setPages(srcGameModel.getPages());
             } catch (RepositoryException ex) {
@@ -299,18 +287,21 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     @Override
     public void remove(final GameModel gameModel) {
         final Long id = gameModel.getId();
-        userFacade.deleteUserPermissionByInstance("gm" + id);
-        userFacade.deleteRolePermissionsByInstance("gm" + id);
+        userFacade.deletePermissions(gameModel);
 
         for (Game g : this.find(id).getGames()) {
-            userFacade.deleteUserPermissionByInstance("g" + g.getId());
-            userFacade.deleteRolePermissionsByInstance("g" + g.getId());
+            userFacade.deletePermissions(g);
         }
         preRemovedGameModelEvent.fire(new PreEntityRemoved<>(this.find(id)));
         getEntityManager().remove(gameModel);
-        //Remove jcr repo.
+        // Remove pages.
+        try (Pages pages = new Pages(id.toString())) {
+            pages.delete();
+        } catch (RepositoryException e) {
+            logger.error("Error suppressing pages for gameModel {}, {}", id, e.getMessage());
+        }
+        // Remove jcr repo.
         // @TODO : in fact, removes all files but not the workspace.
-        // @fx Why remove files? The may be referenced in other workspaces
         try (ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(gameModel.getId())) {
             connector.deleteWorkspace();
         } catch (RepositoryException ex) {
@@ -352,7 +343,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
-     *
      * @param status
      * @return all gameModel matching the given status
      */
@@ -615,5 +605,14 @@ public class GameModelFacade extends BaseFacade<GameModel> {
             logger.error("Error retrieving gamemodelfacade", ex);
             return null;
         }
+    }
+
+    @Schedule(hour = "4", dayOfMonth = "Last Sat")
+    public void removeGameModels() {
+        List<GameModel> byStatus = this.findByStatus(Status.DELETE);
+        for (GameModel gm : byStatus) {
+            this.remove(gm);
+        }
+        this.getEntityManager().flush();
     }
 }

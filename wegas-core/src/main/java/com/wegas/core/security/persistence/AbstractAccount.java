@@ -49,7 +49,7 @@ import java.util.*;
 @Table(indexes = {
     @Index(columnList = "user_id")
 })
-public class AbstractAccount extends AbstractEntity {
+public abstract class AbstractAccount extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -282,4 +282,10 @@ public class AbstractAccount extends AbstractEntity {
     public String getRequieredReadPermission() {
         return this.getUser().getRequieredReadPermission();
     }
+
+    /**
+     *
+     * @return
+     */
+    public abstract String getEmail();
 }

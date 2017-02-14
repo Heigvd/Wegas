@@ -10,13 +10,16 @@ package com.wegas.core.security.ejb;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.GameFacade;
+import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
+import com.wegas.core.ejb.WebsocketFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.rest.util.Email;
 import com.wegas.core.security.guest.GuestJpaAccount;
@@ -40,10 +43,10 @@ import javax.ejb.Stateless;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.naming.NamingException;
-import javax.persistence.NoResultException;
 import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import java.util.*;
+import java.util.regex.Matcher;
 import javax.inject.Inject;
 
 /**
@@ -87,6 +90,12 @@ public class UserFacade extends BaseFacade<User> {
 
     @Inject
     private RequestManager requestManager;
+
+    /**
+     *
+     */
+    @Inject
+    private GameModelFacade gameModelFacade;
 
     /**
      *
@@ -185,21 +194,9 @@ public class UserFacade extends BaseFacade<User> {
          */
 
         getEntityManager().persist(user);
+
         /*
-        try {
-            this.addRole(user.getId(), roleFacade.findByName("Public").getId());
-        } catch (WegasNoResultException ex) {
-            //logger.error("Unable to find Role: Public");
-        }
-        try {
-            this.addRole(user.getId(), roleFacade.findByName("Registered").getId());
-        } catch (WegasNoResultException ex) {
-            //logger.error("Unable to find Role: Registered", ex);
-            //logger.error("Unable to find Role: Registered");
-        }
-         */
- /*
-         * Very strange behaviour: without this flush, RequestManager faild to be injected within others beans...
+         * Very strange behaviour: without this flush, RequestManages faild to be injected within others beans...
          */
         this.getEntityManager().flush();
     }
@@ -342,31 +339,15 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     * @param abstractAccountId
+     *
+     * @param user
      * @param permission
+     * @param inducedPermission
      * @return true if the permission has successfully been added
      */
-    public boolean addAccountPermission(final Long abstractAccountId, final String permission) {
-        return this.addAccountPermission(abstractAccountId, this.generatePermisssion(permission));
-    }
-
-    /**
-     * @param abstractAccountId
-     * @param p
-     * @return true if the permission has successfully been added
-     */
-    public boolean addAccountPermission(final Long abstractAccountId, final Permission p) {
-        final AbstractAccount a = accountFacade.find(abstractAccountId);
-        return a.getUser().addPermission(p);
-    }
-
-    /**
-     * @param a
-     * @param permission
-     * @return true if the permission has successfully been added
-     */
-    public boolean addAccountPermission(final AbstractAccount a, final String permission) {
-        return a.getUser().addPermission(this.generatePermisssion(permission));
+    public boolean addUserPermission(final User user, final String permission, final String inducedPermission) {
+        Permission p = new Permission(permission, inducedPermission);
+        return user.addPermission(p);
     }
 
     /**
@@ -375,80 +356,23 @@ public class UserFacade extends BaseFacade<User> {
      * @param permissionStr string representation of the permission
      * @return the generated permission
      */
-    public Permission generatePermisssion(final String permissionStr) {
+    private Permission generatePermisssion(final String permissionStr) {
         final Permission p = new Permission(permissionStr);
         final String splitedPermission[] = permissionStr.split(":");
-        if (splitedPermission[0].equals(Game.class.getSimpleName()) // If current permission is on game
-                && !splitedPermission[1].equals("Token")) {                     // and is not a Token access
+
+        if (splitedPermission[0].equals(Game.class.getSimpleName())) {
             final Long gameId = Long.parseLong(splitedPermission[2].substring(1));
             final Game g = gameFacade.find(gameId);
             p.setInducedPermission("GameModel:View:gm" + g.getGameModelId());   // grant view access on its parent game model
-
         }
         return p;
-    }
-
-    /**
-     * Delete permission by role and permission
-     *
-     * @param roleId
-     * @param permission
-     * @return true if the permission has successfully been removed
-     */
-    public boolean deleteRolePermission(Long roleId, String permission) {
-        Role r = roleFacade.find(roleId);
-        return r.removePermission(permission);
-    }
-
-    /**
-     * Delete all permission from a role in a Game or GameModel
-     *
-     * @param roleId
-     * @param instance
-     * @return if permissions have been removed
-     */
-    public boolean deleteRolePermissionsByIdAndInstance(Long roleId, String instance) {
-        ArrayList<Permission> currentPermissions = new ArrayList<>();
-        Role r = roleFacade.find(roleId);
-        for (Permission p : r.getPermissions()) {
-            String splitedPermission[] = p.getValue().split(":");
-            if (splitedPermission[2].equals(instance)) {
-                currentPermissions.add(p);
-            }
-        }
-        return r.getPermissions().removeAll(currentPermissions);
-    }
-
-    /**
-     * Delete all role permissions by a game or gameModel id
-     *
-     * @param instance
-     */
-    public void deleteRolePermissionsByInstance(String instance) {
-        List<Role> roles = roleFacade.findAll();
-        Iterator<Role> it = roles.iterator();
-        Role role;
-        Iterator<Permission> itP;
-        while (it.hasNext()) {
-            role = it.next();
-            itP = role.getPermissions().iterator();
-            while (itP.hasNext()) {
-                String p = itP.next().getValue();
-                String splitedPermission[] = p.split(":");
-                if (splitedPermission.length >= 3) {
-                    if (splitedPermission[2].equals(instance)) {
-                        itP.remove();
-                    }
-                }
-            }
-        }
     }
 
     /**
      * @param instance
      * @return all user which have a permission related to the given instance
      */
-    public List<User> findUserPermissionByInstance(String instance) {
+    public List<User> findUserByPermissionInstance(String instance) {
         final TypedQuery<User> findByToken = getEntityManager().createNamedQuery("User.findUserPermissions", User.class);
         findByToken.setParameter("instance", "%:" + instance);
         return findByToken.getResultList();
@@ -486,86 +410,100 @@ public class UserFacade extends BaseFacade<User> {
         return findWithRole.getResultList();
     }
 
+    private void deletePermission(Permission p) {
+        if (p.getUser() != null) {
+            this.find(p.getUser().getId()).removePermission(p);
+        }
+        if (p.getRole() != null) {
+            roleFacade.find(p.getRole().getId()).removePermission(p);
+        }
+    }
+
+    private List<Permission> findUserPermissions(String permission, User user) {
+        TypedQuery<Permission> query = getEntityManager().createNamedQuery("Permission.findByPermissionAndUser", Permission.class);
+        query.setParameter("userId", user.getId());
+        query.setParameter("permission", permission);
+
+        return query.getResultList();
+    }
+
+    public void deletePermissions(User user, String permission) {
+        for (Permission p : this.findUserPermissions(permission, user)) {
+            this.deletePermission(p);
+        }
+    }
+
+    public void deletePermissions(Game game) {
+        this.deletePermissions("Game:%:g" + game.getId());
+    }
+
+    public void deletePermissions(GameModel gameModel) {
+        this.deletePermissions("GameModel:%:gm" + gameModel.getId());
+    }
+
+    private void deletePermissions(String permission) {
+        TypedQuery<Permission> query = getEntityManager().createNamedQuery("Permission.findByPermission", Permission.class);
+        query.setParameter("permission", permission);
+
+        for (Permission p : query.getResultList()) {
+            this.deletePermission(p);
+        }
+    }
+
     /**
-     * @param instance
+     *
+     * @param trainerId
+     * @param gameId
      */
-    public void deleteUserPermissionByInstance(String instance) {
-        /*
-        Query query = getEntityManager().createNamedQuery("Permission.deleteByInstance");
-        query.setParameter("instance", "%:" + instance);
-        query.executeUpdate();
+    public void addTrainerToGame(Long trainerId, Long gameId) {
+        Game game = gameFacade.find(gameId);
+        User user = this.find(trainerId);
+        this.addUserPermission(user, "Game:View,Edit:g" + gameId, "GameModel:View,Edit:gm" + game.getGameModelId());
+    }
+
+    public void removeTrainer(Long gameId, User trainer) {
+
+        if (this.getCurrentUser().equals(trainer)) {
+            throw WegasErrorMessage.error("Cannot remove yourself");
+        }
+
+        if (this.findEditors("g" + gameId).size() <= 1) {
+            throw WegasErrorMessage.error("Cannot remove last trainer");
+        } else {
+            this.deletePermissions(trainer, "Game:%Edit%:g" + gameId);
+        }
+    }
+
+    /**
+     *
+     * @param userId
+     * @param gameModelId
+     * @param permissions
+     */
+    public void grantGameModelPermissionToUser(Long userId, Long gameModelId, String permissions) {
+        User user = this.find(userId);
+
+        /* 
+         * Revoke previous permissions (do not use removeScenarist method since 
+         * this method prevents to remove one own permissions,
          */
+        this.deletePermissions(user, "GameModel:%:gm" + gameModelId);
 
-        TypedQuery<User> findByToken = getEntityManager().createNamedQuery("User.findUserPermissions", User.class);
-
-        findByToken.setParameter("instance", "%:" + instance);
-        List<User> users = findByToken.getResultList();
-        for (User user : users) {
-            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext();) {
-                Permission p = sit.next();
-                String splitedPermission[] = p.getValue().split(":");
-                if (splitedPermission.length >= 3) {
-                    if (splitedPermission[2].equals(instance)) {
-                        sit.remove();
-                    }
-                }
-            }
-        }
+        // Grant new permission
+        this.addUserPermission(user, "GameModel:" + permissions + ":gm" + gameModelId);
     }
 
-    /**
-     * @param instance
-     * @param userId
-     */
-    public void deleteUserPermissionByInstanceAndUser(String instance, Long userId) {
-        final TypedQuery<User> findByToken = getEntityManager().createNamedQuery("User.findUserWithPermission", User.class);
-        findByToken.setParameter("permission", "%:" + instance)
-                .setParameter("userId", userId);
-        try {
-            User user = findByToken.getSingleResult();
-            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext();) {
-                String p = sit.next().getValue();
-                String splitedPermission[] = p.split(":");
-                if (splitedPermission.length >= 3) {
-                    if (splitedPermission[2].equals(instance)) {
-                        if (this.checkHasLastEditPermission(p, instance)) {
-                            sit.remove();
-                        } else {
-                            throw WegasErrorMessage.warn("this is not possible because there must be at least one super user");
-                        }
-                    }
-                }
-            }
-        } catch (NoResultException e) {
-            //Gotcha
-        }
-    }
-
-    /**
-     * @param permission
-     * @param userId
-     */
-    public void deleteUserPermissionByPermissionAndAccount(String permission, Long userId) {
-        final TypedQuery<User> findByToken = getEntityManager().createNamedQuery("User.findUserWithPermission", User.class);
-        findByToken.setParameter("permission", permission)
-                .setParameter("userId", userId);
-        try {
-            User user = findByToken.getSingleResult();
-            for (Iterator<Permission> sit = user.getPermissions().iterator(); sit.hasNext();) {
-                String p = sit.next().getValue();
-                String splitedPermission[] = p.split(":");
-                if (splitedPermission.length >= 3 && p.equals(permission)) {
-                    if (this.checkHasLastEditPermission(permission, splitedPermission[2])) {
-                        sit.remove();
-                    } else {
-                        throw WegasErrorMessage.warn("this is not possible because there must be at least one super user");
-                    }
-                }
-            }
-        } catch (NoResultException e) {
-            //Gotcha
+    public void removeScenarist(Long gameModelId, User scenarist) {
+        if (this.getCurrentUser().equals(scenarist)) {
+            throw WegasErrorMessage.error("Cannot remove yourself");
         }
 
+        if (this.findEditors("gm" + gameModelId).size() <= 1) {
+            throw WegasErrorMessage.error("Cannot remove last scenarist");
+        } else {
+            //remove all permission matching  both gameModelId and userId
+            this.deletePermissions(scenarist, "GameModel:%:gm" + gameModelId);
+        }
     }
 
     /**
@@ -676,40 +614,6 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     * @param gmId
-     * @param newGmId
-     */
-    public void duplicatePermissionByInstance(String gmId, String newGmId) {
-        List<User> users = this.findUserPermissionByInstance(gmId);
-        String splitedPermission[];
-        for (User user : users) {
-            List<Permission> perm = user.getPermissions();
-            for (int ii = 0; ii < perm.size(); ii++) {
-                if (perm.get(ii).getValue().contains(gmId)) {
-                    splitedPermission = perm.get(ii).getValue().split(":");
-                    String newPerm = splitedPermission[0] + ":" + splitedPermission[1] + ":" + newGmId;
-                    this.addUserPermission(user.getId(), newPerm);
-                }
-            }
-        }
-    }
-
-    private boolean checkHasLastEditPermission(String permission, String instance) {
-        boolean isNotLastEdit = false;
-        if (permission.contains("Edit")) {
-            TypedQuery<Permission> getEditPermissions = getEntityManager().createQuery("SELECT p FROM Permission p WHERE p.value LIKE :instance", Permission.class);
-            getEditPermissions.setParameter("instance", "%Edit%:" + instance);
-            List<Permission> listEditPermissions = getEditPermissions.getResultList();
-            if (listEditPermissions.size() > 1) {
-                isNotLastEdit = true;
-            }
-        } else {
-            isNotLastEdit = true;
-        }
-        return isNotLastEdit;
-    }
-
-    /**
      * Transfer players and permission from one user to another
      *
      * @param from the player to take perm and players from
@@ -768,4 +672,5 @@ public class UserFacade extends BaseFacade<User> {
             return null;
         }
     }
+
 }

@@ -1413,14 +1413,6 @@ YUI.add('wegas-datasource', function(Y) {
                 },
                 on: callback
             });
-        },
-        deleteAllRolePermissions: function(roleId, entityId) {
-            this.sendRequest({
-                request: "/DeleteAllRolePermissions/" + roleId + "/" + entityId,
-                cfg: {
-                    method: POST
-                }
-            });
         }
     }, {
         NS: "cache",
