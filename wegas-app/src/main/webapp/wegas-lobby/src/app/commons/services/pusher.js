@@ -22,11 +22,11 @@ angular.module('wegas.service.pusher', [])
         service.NONE_ID = 4;
 
         var roles = [
-            { id: service.ADMIN_ID, name: "Admin" },
-            { id: service.SCENARIST_TRAINER_ID, name: "Scenarist/Trainer" },
-            { id: service.PLAYER_ID, name: "Player" },
-            { id: service.GUEST_ID, name: "Guest" },
-            { id: service.NONE_ID, name: "No role ???" }
+            {id: service.ADMIN_ID, name: "Admin"},
+            {id: service.SCENARIST_TRAINER_ID, name: "Scenarist/Trainer"},
+            {id: service.PLAYER_ID, name: "Player"},
+            {id: service.GUEST_ID, name: "Guest"},
+            {id: service.NONE_ID, name: "No role ???"}
         ];
 
         /*global Pusher*/
@@ -60,7 +60,7 @@ angular.module('wegas.service.pusher', [])
             return roles;
         }
 
-        function initListening(){
+        function initListening() {
 
             presence.bind('pusher:subscription_succeeded', function(members) {
                 clearMemberlist();
@@ -101,17 +101,15 @@ angular.module('wegas.service.pusher', [])
             });
         }
 
-        function clearMemberlist(){
+        function clearMemberlist() {
             memberlist = [];
         }
 
         function addMember(m) { // m = { m.id, m.info }
-            function getHighestRole(roles){
+            function getHighestRole(roles) {
                 var isAdmin = false,
                     isScenarist = false,
-                    isTrainer = false,
-                    isPlayer = false,
-                    isGuest = false;
+                    isTrainer = false;
 
                 // Identify the roles we want to make explicit:
                 roles.forEach(function(elem) {
@@ -123,26 +121,22 @@ angular.module('wegas.service.pusher', [])
                             isScenarist = true;
                             break;
                         case "Trainer":
-                        case "PMG-trainer":
+                            //case "PMG-trainer":
                             isTrainer = true;
-                            break;
-                        case "Public":
-                            isPlayer = true;
-                            break;
-                        case "Guest":
-                            isGuest = true;
                             break;
                     }
                 });
                 // Return only the most privileged role:
-                if (isAdmin) return service.ADMIN_ID;
-                if (isScenarist || isTrainer) return service.SCENARIST_TRAINER_ID;
-                if (isPlayer) return service.PLAYER_ID;
-                if (isGuest) return service.GUEST_ID;
-                else return service.NONE_ID;
+                if (isAdmin) {
+                    return service.ADMIN_ID;
+                } else if (isScenarist || isTrainer) {
+                    return service.SCENARIST_TRAINER_ID;
+                } else {
+                    return service.PLAYER_ID;
+                }
             }
 
-            var member = { id: m.id, fullname: m.info.name };
+            var member = {id: m.id, fullname: m.info.name};
             UsersModel.getFullUser(m.id).then(function(response) {
                 if (!response.isErroneous()) {
                     member.user = response.data;
@@ -162,8 +156,8 @@ angular.module('wegas.service.pusher', [])
             var id = m.id,
                 len = memberlist.length,
                 i;
-            for (i=0; i<len; i++){
-                if (memberlist[i].id == id){
+            for (i = 0; i < len; i++) {
+                if (memberlist[i].id == id) {
                     memberlist.splice(i, 1);
                     return;
                 }

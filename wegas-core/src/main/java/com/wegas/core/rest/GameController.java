@@ -81,7 +81,7 @@ public class GameController {
     @Path("{entityId : [1-9][0-9]*}")
     public Game find(@PathParam("entityId") Long entityId) {
         Game g = gameFacade.find(entityId);
-        SecurityHelper.checkAnyPermission(g, Arrays.asList("View", "Token", "TeamToken"));
+        SecurityHelper.checkAnyPermission(g, Arrays.asList("View"));
 
         return g; // was: gameFacade.find(entityId);
     }
@@ -137,6 +137,7 @@ public class GameController {
      */
     @POST
     @Path("ShadowCreate")
+    @Deprecated
     public Game shadowCreate(@PathParam("gameModelId") Long gameModelId, Game entity) throws IOException {
         SecurityUtils.getSubject().checkPermission("GameModel:Instantiate:gm" + gameModelId);
 
