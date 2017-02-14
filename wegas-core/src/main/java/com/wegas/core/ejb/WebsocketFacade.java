@@ -442,7 +442,7 @@ public class WebsocketFacade {
             return pusher.authenticate(socketId, channel, new PresenceUser(user.getId(), userInfo));
         }
         if (channel.startsWith("private")) {
-            boolean hasPermission = userFacade.hasPermission(channel);
+            boolean hasPermission = requestFacade.getSecurityFacade().hasPermission(channel);
             if (hasPermission) {
                 return pusher.authenticate(socketId, channel);
             }

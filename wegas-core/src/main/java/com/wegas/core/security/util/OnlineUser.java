@@ -9,12 +9,11 @@ package com.wegas.core.security.util;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.security.guest.GuestJpaAccount;
-import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Set;
 
 /**
  *
@@ -59,7 +58,7 @@ public class OnlineUser {
      * @return true if user is member of at least on of the listed roles
      */
     private static boolean hasAnyRoles(User user, String... compareRoles) {
-        Set<Role> roles = user.getRoles();
+        Collection<Role> roles = user.getRoles();
         Iterator<Role> rIt = roles.iterator();
         while (rIt.hasNext()) {
             Role role = rIt.next();

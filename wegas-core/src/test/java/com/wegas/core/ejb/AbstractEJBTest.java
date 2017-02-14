@@ -123,7 +123,7 @@ public abstract class AbstractEJBTest extends AbstractEJBTestBase {
         gameModelFacade.create(gameModel);
         gameModel = gameModelFacade.find(gameModel.getId());
 
-        userFacade.addAccountPermission(trainer.getMainAccount().getId(), "GameModel:Instantiate:gm" + gameModel.getId());
+        userController.shareGameModel(gameModel.getId(), "Instantiate", trainer.getMainAccount().getId());
 
         login(trainer);
         game = new Game();
