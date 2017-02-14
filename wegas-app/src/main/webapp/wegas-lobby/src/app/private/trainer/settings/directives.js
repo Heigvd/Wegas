@@ -11,7 +11,7 @@ angular.module('private.trainer.settings.directives', [
             controller: "TrainerSettingsIndexController as settingsIndexCtrl"
         };
     })
-    .controller("TrainerSettingsIndexController", function TrainerSettingsIndexController($rootScope, $scope, $state, $stateParams, SessionsModel, Flash) {
+    .controller("TrainerSettingsIndexController", function TrainerSettingsIndexController($rootScope, $scope, $location, $state, $stateParams, SessionsModel, Flash) {
         "use strict";
         var ctrl = this,
             initTabs = function() {
@@ -34,6 +34,7 @@ angular.module('private.trainer.settings.directives', [
             logID: false
         };
         ctrl.infos = {
+            baseUrl: $location.protocol() + "://" + location.host + location.pathname,
             name: "",
             token: "",
             comments: "",
