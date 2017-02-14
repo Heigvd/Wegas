@@ -7,7 +7,7 @@
  */
 package com.wegas.core.jcr.content;
 
-import com.wegas.core.jcr.SessionHolder;
+import com.wegas.core.jcr.SessionManager;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -54,7 +54,7 @@ public class ContentConnector implements AutoCloseable {
      */
     protected ContentConnector(Long gameModelId) throws RepositoryException {
         String workspace = "GM_" + gameModelId;
-        this.session = SessionHolder.getSession(workspace);
+        this.session = SessionManager.getSession(workspace);
         this.initializeNamespaces();
 
     }
@@ -63,7 +63,7 @@ public class ContentConnector implements AutoCloseable {
      * @throws RepositoryException
      */
     protected ContentConnector() throws RepositoryException {
-        this.session = SessionHolder.getSession(null);
+        this.session = SessionManager.getSession(null);
         this.initializeNamespaces();
     }
 
@@ -358,14 +358,15 @@ public class ContentConnector implements AutoCloseable {
     public void deleteWorkspace() throws RepositoryException {
         //throw new UnsupportedOperationException("Jackrabbit: There is currently no programmatic way to delete workspaces. You can delete a workspace by manually removing the workspace directory when the repository instance is not running.");
         String name = session.getWorkspace().getName();
-        Session adminSession = SessionHolder.getSession(null);
+        Session adminSession = SessionManager.getSession(null);
         try {
             adminSession.getWorkspace().deleteWorkspace(name);
         } catch (UnsupportedRepositoryOperationException ex) {
-            logger.warn("UnsupportedRepositoryOperationException : fallback to clear workspace.");
+            logger.warn("UnsupportedRepositoryOperationException : fallback to clear workspace. Try workspace directory removal");
             this.clearWorkspace();
+            this.removeWorkspace();
         } finally {
-            SessionHolder.closeSession(adminSession);
+            SessionManager.closeSession(adminSession);
         }
     }
 
@@ -395,7 +396,7 @@ public class ContentConnector implements AutoCloseable {
     /**
      * @throws RepositoryException
      */
-    public void clearWorkspace() throws RepositoryException {
+    private void clearWorkspace() throws RepositoryException {
         NodeIterator it = session.getRootNode().getNodes("*");
         while (it.hasNext()) {
             Node node = it.nextNode();
@@ -411,6 +412,10 @@ public class ContentConnector implements AutoCloseable {
             }
         }
         this.save();
+    }
+
+    private void removeWorkspace() {
+        SessionManager.removeWorkspace(session);
     }
 
     /**
@@ -493,7 +498,6 @@ public class ContentConnector implements AutoCloseable {
     @Override
     public void close() {
         this.save();
-        SessionHolder.closeSession(session);
-
+        SessionManager.closeSession(session);
     }
 }

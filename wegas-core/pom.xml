@@ -77,6 +77,10 @@
             <artifactId>jackrabbit-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.jackrabbit</groupId>
+            <artifactId>jackrabbit-jcr2dav</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.github.fge</groupId>
             <artifactId>json-patch</artifactId>
         </dependency>

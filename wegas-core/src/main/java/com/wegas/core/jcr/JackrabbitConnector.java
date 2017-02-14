@@ -7,177 +7,56 @@
  */
 package com.wegas.core.jcr;
 
-import com.hazelcast.core.ILock;
 import com.wegas.core.Helper;
-import com.wegas.core.persistence.game.GameModel;
-import org.apache.jackrabbit.api.JackrabbitRepository;
-import org.apache.jackrabbit.api.JackrabbitRepositoryFactory;
-import org.apache.jackrabbit.api.management.DataStoreGarbageCollector;
-import org.apache.jackrabbit.api.management.RepositoryManager;
-import org.apache.jackrabbit.core.RepositoryFactoryImpl;
+import org.apache.jackrabbit.commons.JcrUtils;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
-import javax.ejb.Schedule;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Implementation specific garbageCollector
+ * Jackrabbit repository init
  *
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-@Startup
-@Singleton
-public class JackrabbitConnector {
+class JackrabbitConnector {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(JackrabbitConnector.class);
     final private static String DIR = Helper.getWegasProperty("jcr.repository.basedir");
-    private static JackrabbitRepository repo;
-    final private JackrabbitRepositoryFactory rf = new RepositoryFactoryImpl();
+    private static Repository repo;
+    private static Boolean isLocal = false;
 
-    @PersistenceContext(name = "wegasPU")
-    private EntityManager em;
-
-    @PostConstruct
-    protected void init() {
-        Properties prop = new Properties();
-        prop.setProperty("org.apache.jackrabbit.repository.home", DIR);
-        prop.setProperty("org.apache.jackrabbit.repository.conf", DIR + "/repository.xml");
+    private static void init() {
         try {
-            repo = (JackrabbitRepository) rf.getRepository(prop);
-            logger.info("Jackrabbit will read setup from {}", DIR);
+            try {
+                new URL(DIR);
+                repo = JcrUtils.getRepository(DIR + "/server");
+            } catch (MalformedURLException e) {
+                Map<String, String> prop = new HashMap<>();
+                prop.put("org.apache.jackrabbit.repository.home", DIR);
+                prop.put("org.apache.jackrabbit.repository.conf", DIR + "/repository.xml");
+                repo = JcrUtils.getRepository(prop);
+                isLocal = true;
+            }
         } catch (RepositoryException ex) {
             logger.error("Check your repository setup {}", DIR);
         }
-        //Enable GC on startup
-        //this.runGC();
-    }
-
-    @Schedule(hour = "3", minute = "0")
-    private void runGC() {
-    }
-
-    private void _runGC() {
-        try {
-            logger.info("Running Jackrabbit GarbageCollector");
-            final RepositoryManager rm = rf.getRepositoryManager(JackrabbitConnector.repo);
-            final Session session = SessionHolder.getSession(null);
-            Integer countDeleted = 0;
-            DataStoreGarbageCollector gc = rm.createDataStoreGarbageCollector();
-            try {
-                gc.mark();
-                countDeleted = gc.sweep();
-            } finally {
-                gc.close();
-            }
-
-            SessionHolder.closeSession(session);
-            rm.stop();
-            logger.info("Jackrabbit GarbageCollector ended, {} items removed", countDeleted);
-        } catch (RepositoryException ex) {
-            logger.error("Jackrabbit garbage collector failed. Check repository configuration");
-        }
     }
 
     /**
-     * Project specific, remove database's table and jcr filesystem workspace
-     *
-     * @param toDelete
+     * @return Repository
      */
-    private static void deleteWorkspaces(List<String> toDelete) {
-        String dbName = Helper.getWegasProperty("jcr.jdbc.resource-name");
-        try {
-            DataSource ds = (DataSource) new InitialContext().lookup(dbName);
-            try (Connection con = ds.getConnection()) {
-                for (String workspaceName : toDelete) {
-                    logger.warn("Delete " + workspaceName);
-                    try (Statement statement = con.createStatement()) {
-                        try {
-                            /* DROP TABLES */
-                            String dropQuery = "DROP table IF EXISTS "
-                                    + workspaceName + "_binval, "
-                                    + workspaceName + "_refs, "
-                                    + workspaceName + "_bundle, "
-                                    + workspaceName + "_names CASCADE";
-
-                            statement.execute(dropQuery);
-                            con.commit();
-                            deleteWorkspaceDirectory(workspaceName);
-                        } catch (SQLException ex) {
-                            logger.warn("Delete workspace failed", ex);
-                            statement.cancel();
-                            con.rollback();
-                        }
-                    }
-                }
-
-            } catch (SQLException ex) {
-                logger.warn("Delete workspace failed: getConnection failed");
-            }
-        } catch (NamingException ex) {
-            logger.warn("Delete workspace failed: no \"" + dbName + "\" resource found");
+    protected static Repository getRepo() {
+        if (JackrabbitConnector.repo == null) {
+            JackrabbitConnector.init();
         }
-    }
-
-    /**
-     * @return
-     */
-    protected javax.jcr.Repository getRepo() {
         return JackrabbitConnector.repo;
-    }
-
-    @Schedule(hour = "2", minute = "14")
-    public void close() {
-        ILock lock = Helper.getHazelcastInstance().getLock("JackRabbitConnector.Schedule");
-        if (lock.tryLock()) {
-            try {
-                //Build a list of workspace which have no more dependant gameModel
-                Session admin = SessionHolder.getSession(null);
-                String[] workspaces = admin.getWorkspace().getAccessibleWorkspaceNames();
-                SessionHolder.closeSession(admin);
-                final List<GameModel> gameModels = em.createNamedQuery("GameModel.findAll", GameModel.class).getResultList();
-                final List<String> workspacesToKeep = new ArrayList<>();
-                final List<String> toDelete = new ArrayList<>();
-                // Workspaces which have an associated gameModel.
-                for (GameModel gameModel : gameModels) {
-                    workspacesToKeep.add("GM_" + gameModel.getId());
-                }
-                for (String workspace : workspaces) {
-                    if (workspace.startsWith("GM_") && !workspace.equals("GM_0")) {
-                        if (!workspacesToKeep.contains(workspace)) {
-                            toDelete.add(workspace);
-                            logger.info("Marked for deletion : {}", workspace);
-                        }
-                    }
-                }
-                //run garbage collector
-                this.runGC();
-                JackrabbitConnector.repo.shutdown();
-                // delete marked for deletion
-                deleteWorkspaces(toDelete);
-            } catch (RepositoryException ex) {
-                logger.warn("Unable to close repository: " + ex.getMessage());
-            } finally {
-                lock.unlock();
-                lock.destroy();
-            }
-        }
     }
 
     /**
@@ -186,11 +65,13 @@ public class JackrabbitConnector {
      * @param workspaceName directory to delete.
      */
 
-    private static void deleteWorkspaceDirectory(String workspaceName) {
-        try {
-            Helper.recursiveDelete(new File(DIR + "/workspaces/" + workspaceName));
-        } catch (IOException ex) {
-            logger.warn("Delete workspace files failed", ex);
+    static void deleteWorkspaceDirectory(String workspaceName) {
+        if (isLocal) {
+            try {
+                Helper.recursiveDelete(new File(DIR + "/workspaces/" + workspaceName));
+            } catch (IOException ex) {
+                logger.warn("Delete workspace files failed", ex);
+            }
         }
     }
 }
