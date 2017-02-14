@@ -361,12 +361,12 @@ public class ContentConnector implements AutoCloseable {
         Session adminSession = SessionManager.getSession(null);
         try {
             adminSession.getWorkspace().deleteWorkspace(name);
+            SessionManager.closeSession(adminSession);
         } catch (UnsupportedRepositoryOperationException ex) {
+            SessionManager.closeSession(adminSession);
             logger.warn("UnsupportedRepositoryOperationException : fallback to clear workspace. Try workspace directory removal");
             this.clearWorkspace();
             this.removeWorkspace();
-        } finally {
-            SessionManager.closeSession(adminSession);
         }
     }
 
