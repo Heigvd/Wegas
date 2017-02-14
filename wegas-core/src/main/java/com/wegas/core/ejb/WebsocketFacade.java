@@ -100,13 +100,19 @@ public class WebsocketFacade {
      */
     public WebsocketFacade() {
         Pusher tmp;
+        String appId = getProperty("pusher.appId");
+        String key = getProperty("pusher.key");
+        String secret = getProperty("pusher.secret");
         maintainLocalListUpToDate = "true".equalsIgnoreCase(getProperty("pusher.onlineusers_hook"));
 
-        tmp = new Pusher(getProperty("pusher.appId"),
-                getProperty("pusher.key"), getProperty("pusher.secret"));
-        tmp.setCluster(getProperty("pusher.cluster"));
-
-        pusher = tmp;
+        if (!Helper.isNullOrEmpty(appId) && !Helper.isNullOrEmpty(key) && !Helper.isNullOrEmpty(secret)) {
+            tmp = new Pusher(getProperty("pusher.appId"),
+                    getProperty("pusher.key"), getProperty("pusher.secret"));
+            tmp.setCluster(getProperty("pusher.cluster"));
+            pusher = tmp;
+        } else {
+            pusher = null;
+        }
     }
 
     /**
