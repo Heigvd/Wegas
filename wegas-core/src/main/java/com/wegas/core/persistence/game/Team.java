@@ -8,6 +8,7 @@
 package com.wegas.core.persistence.game;
 
 import com.fasterxml.jackson.annotation.*;
+import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.Broadcastable;
@@ -306,6 +307,6 @@ public class Team extends AbstractEntity implements Broadcastable, BroadcastTarg
     @Override
     @JsonIgnore
     public String getChannel() {
-        return "Team-" + this.getId();
+        return Helper.TEAM_CHANNEL_PREFIX + this.getId();
     }
 }

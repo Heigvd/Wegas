@@ -33,6 +33,15 @@ YUI.add('wegas-pusher-connector', function(Y) {
          * @returns {undefined}
          */
         initializer: function(cfg) {
+            this.channel_prefix = {
+                "Admin": "private-Admin",
+                "Global": "global-channel",
+                "User": "private-User-",
+                "Player": "private-Player-",
+                "Team": "private-Team-",
+                "Game": "private-Game-",
+                "GameModel": "private-GameModel-"
+            };
             this.pusherInit(cfg);
             //this.pusher = new Pusher('732a1df75d93d028e4f9');
         },
@@ -61,19 +70,22 @@ YUI.add('wegas-pusher-connector', function(Y) {
             }, this);
             this._set("status", pusherInstance.connection.state);
 
-            pusherInstance.subscribe('GameModel-' +
+            pusherInstance.subscribe(this.channel_prefix.GameModel +
                 Wegas.Facade.GameModel.get("currentGameModelId")).bind_all(Y.bind(this.eventReceived, this));
-            pusherInstance.subscribe('Game-' +
+            pusherInstance.subscribe(this.channel_prefix.Game +
                 Wegas.Facade.Game.get("currentGameId")).bind_all(Y.bind(this.eventReceived, this));
 
             if (this.get("mode") === "FULL") {
-                pusherInstance.subscribe('Team-' +
+                pusherInstance.subscribe(this.channel_prefix.Team +
                     Wegas.Facade.Game.get("currentTeamId")).bind_all(Y.bind(this.eventReceived, this));
-                pusherInstance.subscribe('Player-' +
+                pusherInstance.subscribe(this.channel_prefix.Player +
                     Wegas.Facade.Game.get("currentPlayerId")).bind_all(Y.bind(this.eventReceived, this));
             }
 
-            pusherInstance.subscribe('presence-global').bind_all(Y.bind(this.eventReceived, this));
+            pusherInstance.subscribe(this.channel_prefix.Global).bind_all(Y.bind(this.eventReceived, this));
+
+            pusherInstance.subscribe(this.channel_prefix.User +
+                Y.Wegas.Facade.User.get("currentUserId")).bind_all(Y.bind(this.eventReceived, this));
         },
         Utf8ArrayToStr: function(array) {
             // http://www.onicos.com/staff/iz/amuse/javascript/expert/utf.txt

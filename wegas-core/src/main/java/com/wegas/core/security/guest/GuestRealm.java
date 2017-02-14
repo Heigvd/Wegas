@@ -53,6 +53,8 @@ public class GuestRealm extends AuthorizingRealm {
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
+        return new SimpleAuthorizationInfo();
+        /*
         try {
             Role role;
             try {
@@ -75,6 +77,7 @@ public class GuestRealm extends AuthorizingRealm {
         } catch (EJBException e) {
             return null;
         }
+        */
     }
 
     /**

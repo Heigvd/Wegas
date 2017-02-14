@@ -247,7 +247,6 @@ public class UserController {
 
     /**
      * @param value
-     * @param value search token
      * @return list of JpaAccount matching the token
      */
     @GET
@@ -710,93 +709,6 @@ public class UserController {
     }
 
     /**
-     * Delete permission by role and permission
-     *
-     * @param roleId
-     * @param permission
-     * @return true a permission has been removed
-     */
-    @POST
-    @Path("DeletePermission/{roleId : [1-9][0-9]*}/{permission}")
-    public boolean deletePermissionByInstance(@PathParam(value = "roleId") Long roleId, @PathParam(value = "permission") String permission) {
-
-        String splitedPermission[] = permission.split(":");
-
-        checkGmOrGPermission(splitedPermission[2], "GameModel:Edit:", "Game:Edit:");
-
-        return this.userFacade.deleteRolePermission(roleId, permission);
-    }
-
-    /**
-     * Create role_permissions
-     *
-     * @param roleId
-     * @param permission
-     * @return true if permission has been created
-     */
-    @POST
-    @Path("AddPermission/{roleId : [1-9][0-9]*}/{permission}")
-    public boolean addPermissionsByInstance(@PathParam(value = "roleId") Long roleId, @PathParam(value = "permission") String permission) {
-
-        String splitedPermission[] = permission.split(":");
-
-        checkGmOrGPermission(splitedPermission[2], "GameModel:Edit:", "Game:Edit:");
-
-        return this.userFacade.addRolePermission(roleId, permission);
-    }
-
-    /**
-     * @param roleName
-     * @param permission
-     * @return true if permission has been created
-     */
-    @POST
-    @Path("AddPermission/{roleName}/{permission}")
-    public boolean addPermissionsByInstance(@PathParam(value = "roleName") String roleName, @PathParam(value = "permission") String permission) {
-        try {
-            return this.addPermissionsByInstance(roleFacade.findByName(roleName).getId(), permission);
-        } catch (WegasNoResultException ex) {
-            throw WegasErrorMessage.error("Role \"" + roleName + "\" does not exists");
-        }
-    }
-
-    /**
-     * Delete all permission from a role in a Game or GameModel
-     *
-     * @param roleId
-     * @param id
-     * @return if permissions have been removed
-     */
-    @POST
-    @Path("DeleteAllRolePermissions/{roleId : [1-9][0-9]*}/{gameModelId}")
-    public boolean deleteAllRolePermissions(@PathParam("roleId") Long roleId,
-            @PathParam("gameModelId") String id) {
-
-        checkGmOrGPermission(id, "GameModel:Edit:", "Game:Edit:");
-
-        return this.userFacade.deleteRolePermissionsByIdAndInstance(roleId, id);
-    }
-
-    /**
-     * Delete all role permission related to gameModel identified by the given
-     * id
-     *
-     * @param roleName name of the role to remove permissions from
-     * @param id       id of the gameModel
-     * @return if permissions have been removed
-     */
-    @POST
-    @Path("DeleteAllRolePermissions/{roleName}/{gameModelId}")
-    public boolean deleteAllRolePermissions(@PathParam("roleName") String roleName,
-            @PathParam("gameModelId") String id) {
-        try {
-            return this.deleteAllRolePermissions(roleFacade.findByName(roleName).getId(), id);
-        } catch (WegasNoResultException ex) {
-            throw WegasErrorMessage.error("Role \"" + roleName + "\" does not exists");
-        }
-    }
-
-    /**
      * @param entityId
      * @return all users having any permissions related to game or gameModel
      *         identified by entityId
@@ -807,7 +719,7 @@ public class UserController {
 
         checkGmOrGPermission(entityId, "GameModel:Edit:", "Game:Edit:");
 
-        return userFacade.findUserPermissionByInstance(entityId);
+        return userFacade.findUserByPermissionInstance(entityId);
     }
 
     /**
@@ -835,52 +747,71 @@ public class UserController {
         return userFacade.findUsersWithRole(roleId);
     }
 
+    @POST
+    @Path("ShareGame/{gameId : [1-9][0-9]*}/{accountId : [1-9][0-9]*}")
+    public void shareGame(@PathParam("gameId") Long gameId,
+            @PathParam("accountId") Long accountId) {
+
+        User coTrainer = accountFacade.find(accountId).getUser();
+        //TODO assert coTrainer is a Trainer...
+
+        String thePermission = "Game:Edit:g" + gameId;
+        // Assert current user has edit right on the game
+        SecurityUtils.getSubject().checkPermission(thePermission);
+
+        userFacade.addTrainerToGame(coTrainer.getId(), gameId);
+    }
+
+    @DELETE
+    @Path("ShareGame/{gameId : [1-9][0-9]*}/{accountId : [1-9][0-9]*}")
+    public void unshareGame(@PathParam("gameId") Long gameId,
+            @PathParam("accountId") Long accountId) {
+
+        User coTrainer = accountFacade.find(accountId).getUser();
+
+        String thePermission = "Game:Edit:g" + gameId;
+        // Assert current user has edit right on the game
+        SecurityUtils.getSubject().checkPermission(thePermission);
+        userFacade.removeTrainer(gameId, coTrainer); // TODO
+    }
+
     /**
-     * @param permission
-     * @param accountId
+     * Grant given permission to the given user to the specified gameModel.
+     * Previous user permissions to gameModel will be revoked
+     *
+     * @param gameModelId
+     * @param permission  (View|Edit|Delete|Duplicate|Instantiate), comma
+     *                    separated
+     * @param accountId   user accountId
      */
     @POST
-    @Path("addAccountPermission/{permission}/{accountId : [1-9][0-9]*}")
-    public void addAccountPermission(@PathParam("permission") String permission,
+    @Path("ShareGameModel/{gameModelId : [1-9][0-9]*}/{permission: (View|Edit|Delete|Duplicate|Instantiate|,)*}/{accountId : [1-9][0-9]*}")
+    public void shareGameModel(@PathParam("gameModelId") Long gameModelId,
+            @PathParam("permission") String permission,
             @PathParam("accountId") Long accountId) {
 
-        String splitedPermission[] = permission.split(":");
+        User user = accountFacade.find(accountId).getUser();
 
-        checkGmOrGPermission(splitedPermission[2], "GameModel:Edit:", "Game:Edit:");
+        String editPermission = "GameModel:Edit:gm" + gameModelId;
 
-        userFacade.addAccountPermission(accountId, permission);
+        // Assert current user has edit right on the gameModel
+        SecurityUtils.getSubject().checkPermission(editPermission);
+
+        userFacade.grantGameModelPermissionToUser(user.getId(), gameModelId, permission);
     }
 
-    /**
-     * @param entityId
-     * @param accountId
-     */
     @DELETE
-    @Path("DeleteAccountPermissionByInstanceAndAccount/{entityId}/{accountId : [1-9][0-9]*}")
-    public void deleteAccountPermissionByInstanceAndAccount(@PathParam("entityId") String entityId,
+    @Path("ShareGameModel/{gameModelId : [1-9][0-9]*}/{accountId : [1-9][0-9]*}")
+    public void unshareGameModel(@PathParam("gameModelId") Long gameModelId,
             @PathParam("accountId") Long accountId) {
 
-        checkGmOrGPermission(entityId, "GameModel:Edit:", "Game:Edit:");
-        AbstractAccount account = accountFacade.find(accountId);
+        User coScenarist = accountFacade.find(accountId).getUser();
 
-        userFacade.deleteUserPermissionByInstanceAndUser(entityId, account.getUser().getId());
-    }
+        String editPermission = "GameModel:Edit:gm" + gameModelId;
 
-    /**
-     * @param permission
-     * @param accountId
-     */
-    @DELETE
-    @Path("DeleteAccountPermissionByPermissionAndAccount/{permission}/{accountId : [1-9][0-9]*}")
-    public void deleteAccountPermissionByPermissionAndAccount(@PathParam("permission") String permission,
-            @PathParam("accountId") Long accountId) {
-
-        String splitedPermission[] = permission.split(":");
-
-        checkGmOrGPermission(splitedPermission[2], "GameModel:Edit:", "Game:Edit:");
-        AbstractAccount account = accountFacade.find(accountId);
-
-        userFacade.deleteUserPermissionByPermissionAndAccount(permission, account.getUser().getId());
+        // Assert current user has edit right on the gameModel
+        SecurityUtils.getSubject().checkPermission(editPermission);
+        userFacade.removeScenarist(gameModelId, coScenarist);
     }
 
     /**

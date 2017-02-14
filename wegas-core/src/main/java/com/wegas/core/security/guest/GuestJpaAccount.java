@@ -27,4 +27,9 @@ public class GuestJpaAccount extends AbstractAccount {
     public String getName() {
         return "Guest";
     }
+
+    @Override
+    public String getEmail() {
+        return null;
+    }
 }
