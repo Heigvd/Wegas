@@ -9,6 +9,9 @@ package com.wegas.core.ejb;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IAtomicLong;
+import com.hazelcast.core.ILock;
 import com.pusher.rest.Pusher;
 import com.pusher.rest.data.PresenceUser;
 import com.pusher.rest.data.Result;
@@ -44,6 +47,7 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
+import javax.cache.Cache;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
@@ -67,9 +71,17 @@ public class WebsocketFacade {
     public static final Pattern USER_CHANNEL_PATTERN = Pattern.compile(Helper.USER_CHANNEL_PREFIX + "(\\d+)");
     public static final Pattern PRIVATE_CHANNEL_PATTERN = Pattern.compile("private-(User|Player|Team|Game|GameModel)-(\\d+)");
 
-    private static boolean onlineUsersUptodate = false;
+    @Inject
+    private Cache<Long, OnlineUser> onlineUsers;
 
-    private static final Map<Long, OnlineUser> onlineUsers = new HashMap<>();
+    private static final HazelcastInstance hazelcastInstance = Helper.getHazelcastInstance();
+
+    /**
+     * Just an old school boolean (0 means false, other values true)
+     */
+    private IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong("onlineUsersUpTpDate");
+
+    private final ILock onlineUsersLock = hazelcastInstance.getLock("WebsocketFacade.onlineUsersLock");
 
     public enum WegasStatus {
         DOWN,
@@ -467,8 +479,9 @@ public class WebsocketFacade {
      * @param hook
      */
     public void pusherChannelExistenceWebhook(PusherChannelExistenceWebhook hook) {
-        synchronized (onlineUsers) {
-            if (!WebsocketFacade.onlineUsersUptodate) {
+        onlineUsersLock.lock();
+        try {
+            if (onlineUsersUpToDate.get() == 0) {
                 initOnlineUsers();
             }
             User user = this.getUserFromChannel(hook.getChannel());
@@ -480,6 +493,8 @@ public class WebsocketFacade {
                 }
                 this.propagateOnlineUsers();
             }
+        } finally {
+            onlineUsersLock.unlock();
         }
     }
 
@@ -489,12 +504,24 @@ public class WebsocketFacade {
      * @return list a users who are online
      */
     public Collection<OnlineUser> getOnlineUsers() {
-        synchronized (onlineUsers) {
-            if (!WebsocketFacade.onlineUsersUptodate) {
+        onlineUsersLock.lock();
+        try {
+            if (onlineUsersUpToDate.get() == 0) {
                 initOnlineUsers();
             }
+            return this.getLocalOnlineUsers();
+        } finally {
+            onlineUsersLock.unlock();
         }
-        return onlineUsers.values();
+    }
+
+    public Collection<OnlineUser> getLocalOnlineUsers() {
+        Collection<OnlineUser> ou = new ArrayList<>();
+        Iterator<Cache.Entry<Long, OnlineUser>> iterator = onlineUsers.iterator();
+        while (iterator.hasNext()) {
+            ou.add(iterator.next().getValue());
+        }
+        return ou;
     }
 
     /**
@@ -527,7 +554,7 @@ public class WebsocketFacade {
             }
 
             if (maintainLocalListUpToDate) {
-                WebsocketFacade.onlineUsersUptodate = true;
+                onlineUsersUpToDate.set(1);
             }
 
         } catch (IOException ex) {
@@ -542,7 +569,7 @@ public class WebsocketFacade {
     private void propagateOnlineUsers() {
         try {
             ObjectMapper mapper = JacksonMapperProvider.getMapper();
-            String users = mapper.writeValueAsString(onlineUsers.values());
+            String users = mapper.writeValueAsString(getLocalOnlineUsers());
             pusher.trigger("private-Admin", "online-users", users);
         } catch (JsonProcessingException ex) {
             java.util.logging.Logger.getLogger(WebsocketFacade.class.getName()).log(Level.SEVERE, null, ex);
@@ -550,9 +577,12 @@ public class WebsocketFacade {
     }
 
     public void clearOnlineUsers() {
-        synchronized (onlineUsers) {
+        onlineUsersLock.lock();
+        try {
             onlineUsers.clear();
-            onlineUsersUptodate = false;
+            onlineUsersUpToDate.set(0);
+        } finally {
+            onlineUsersLock.unlock();
         }
     }
 
