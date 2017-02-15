@@ -16,12 +16,12 @@
                     <div class="card-be button button--small button--round button--default-reverse button--label-off button--play"
                        title="Impersonate !"
                        ng-controller="AdminUsersCtrl as adminUsersCtrl"
-                       ng-click="adminUsersCtrl.beByAccountId(user.user.accounts[0].id)">
+                       ng-click="adminUsersCtrl.beByAccountId(user.mainAccountId)">
                         <span class="button__label">{{'ADMIN-USERS-CARD-EDIT-BTN' | translate}}</span>
                     </div>
                     <div class="card-be button button--small button--round button--default-reverse button--label-off button--customize"
                        title="{{'ADMIN-USERS-CARD-EDIT-BTN' | translate}}"
-                       ui-sref="wegas.private.admin.users.edit({id: user.id})">
+                       ui-sref="wegas.private.admin.users.edit({id: user.userId})">
                         <span class="button__label">{{'ADMIN-USERS-CARD-EDIT-BTN' | translate}}</span>
                     </div>
                     <div class="card-email">{{ user.email }}</div>
