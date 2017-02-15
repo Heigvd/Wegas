@@ -82,6 +82,6 @@ FlatVariableSelect.propTypes = {
             PropTypes.string
         ]),
         selectableLevels: PropTypes.arrayOf(PropTypes.number)
-    })
+    }).isRequired
 };
 export default FlatVariableSelect;

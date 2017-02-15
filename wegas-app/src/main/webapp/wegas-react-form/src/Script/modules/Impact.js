@@ -118,9 +118,8 @@ class Impact extends React.Component {
             </div>);
         }
         let child = [(
-            <div className={styles.container}>
+            <div key="variable" className={styles.container}>
                 <Form
-                    key="variable"
                     schema={upgradeSchema(variableSchema(view.variable), type)}
                     value={this.state.global ? `${this.state.member}.${this.state.method}` : this.state.variable}
                     onChange={this.handleVariableChange}
@@ -131,9 +130,8 @@ class Impact extends React.Component {
             const schema = methodSchema(view.method, this.state.variable, type);
             if (schema) {
                 child.push(
-                    <div className={styles.container} >
+                    <div key="method" className={styles.container} >
                         <Form
-                            key="method"
                             schema={methodSchema(view.method, this.state.variable, type)}
                             value={this.state.method}
                             onChange={v => this.setState({
@@ -153,16 +151,17 @@ class Impact extends React.Component {
             child = child.concat(
                 handleArgs(variable, method, args, v => this.setState({
                     args: v
-                }, this.checkVariableMethod)).map(form => (<div className={styles.container} >{form}</div>))
+                }, this.checkVariableMethod))
+                    .map((form, i) => (<div key={i} className={styles.container} >{form}</div>))
             );
         }
         if (this.state.member && this.state.method) {
             child = child.concat(
-                handleGlobalArgs(this.state.member, this.state.method, this.state.args, (v) => {
+                handleGlobalArgs(this.state.member, this.state.method, this.state.args, v =>
                     this.setState({
                         args: v
-                    }, this.checkGlobalMethod);
-                })
+                    }, this.checkGlobalMethod)
+                )
             );
         }
         return (

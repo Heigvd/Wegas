@@ -24,25 +24,24 @@ const argSchema = (schema, entity) => {
  * Convert a value to an AST node base on a type
  * @template T
  * @param {T=} value the optional value
- * @param {{type: string, value: T=}} schema the schema containing the type
- * and an optional default value
+ * @param {{type: string}} schema the schema containing the type
+ * and
  * @returns {Object} AST node
  */
 export function valueToType(value, schema) {
-    const val = value;
-    if (val === undefined) {
+    if (value === undefined) {
         return b.identifier('undefined');
     }
     switch (schema.type) {
     case 'string':
     case 'number':
     case 'boolean':
-        return b.literal(val);
+        return b.literal(value);
     case 'identifier':
-        return b.identifier(val);
+        return b.identifier(value);
     case 'array':
     case 'object': {
-        const x = parse(JSON.stringify(val)).program.body[0].expression;
+        const x = parse(JSON.stringify(value)).program.body[0].expression;
         return x;
     }
     default:
@@ -58,6 +57,7 @@ export function valueToType(value, schema) {
  */
 export function typeToValue(value, schema) {
     const tmp = [];
+    let tmpNum;
     if (!value || value.name === 'undefined') {
         return undefined;
     }
@@ -66,7 +66,7 @@ export function typeToValue(value, schema) {
     case 'boolean':
         return value.value;
     case 'number':
-        // handle negative values.
+            // handle negative values.
         visit(value, {
             visitUnaryExpression: function visitUnaryExpression(path) {
                 tmp.push(path.node.operator);
@@ -77,12 +77,13 @@ export function typeToValue(value, schema) {
                 return false;
             }
         });
-        return Number(tmp.join(''));
+        tmpNum = tmp.join('');
+        return isNaN(tmpNum) ? tmpNum : Number(tmpNum);
     case 'identifier':
         return value.name;
     case 'array':
     case 'object':
-        return Function(`return ${print(value).code};`)(); // eslint-disable-line no-new-func
+        return Function(`"use strict";return ${print(value).code};`)(); // eslint-disable-line no-new-func
     default:
         throw Error(`implement me ${schema.type}`);
     }
@@ -115,8 +116,8 @@ export function renderForm(astValue, descriptor, onChange, entity, key) {
             key={key}
             schema={argSchema(descriptor, entity)}
             value={matchSchema(astValue, descriptor) ?
-                       typeToValue(astValue, descriptor) :
-                       undefined}
+                typeToValue(astValue, descriptor) :
+                undefined}
             onChange={v => onChange(valueToType(v, descriptor))}
         />
     );

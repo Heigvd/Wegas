@@ -4,21 +4,21 @@ import Impact from './Impact';
 import { methodDescriptor, extractMethod } from './method';
 import { methodDescriptor as globalMethodDescriptor } from './globalMethod';
 import ConditionOperator from './ConditionOperator';
-import { renderForm } from './args';
+import { renderForm, valueToType } from './args';
 import styles from '../Views/conditionImpact.css';
 
 const b = types.builders;
 /**
  * return a default value for the given type
  * @param {string} type the type for which a default value is required
- * @returns {string|number|boolean} the default value
+ * @returns {string|undefined|boolean} the default value
  */
 function defaultValue(type) {
     switch (type) {
         case 'string':
             return '';
         case 'number':
-            return 0;
+            return undefined;
         case 'boolean':
             return true;
         default:
@@ -54,14 +54,23 @@ class Condition extends React.Component {
     }
     check() {
         const descr = getMethodDescriptor(this.state.left);
+        const sendUpdate = () => {
+            if (this.state.operator && this.state.left) {
+                const node = b.binaryExpression(
+                    this.state.operator,
+                    this.state.left,
+                    this.state.right
+                );
+                this.props.onChange(node);
+            }
+        };
         if (!descr) {
             this.setState({ right: undefined });
         } else if (this.returns !== descr.returns) {
-            this.setState({ operator: '===', right: undefined });
+            this.setState({ operator: '===', right: valueToType(defaultValue(descr.returns), { type: descr.returns }) }, sendUpdate);
             this.returns = descr.returns;
-        } else if (this.state.operator && this.state.left && this.state.right) {
-            const node = b.binaryExpression(this.state.operator, this.state.left, this.state.right);
-            this.props.onChange(node);
+        } else {
+            sendUpdate();
         }
     }
     render() {
@@ -70,19 +79,19 @@ class Condition extends React.Component {
         if (descr) {
             const schema = {
                 type: descr.returns,
-                value: defaultValue(descr.returns)
+                value: defaultValue(descr.returns),
+                required: true
             };
             container = [(
-                <div className={styles.container} >
+                <div key="operator" className={styles.container} >
                     <ConditionOperator
-                        key="operator"
                         operator={this.state.operator}
                         onChange={v => this.setState({ operator: v }, this.check)}
                         type={descr.returns}
                     />
                 </div>
             ),
-            (<div className={styles.container} >
+            (<div key="right" className={styles.container} >
                 {renderForm(this.state.right, schema, v => this.setState({ right: v }, this.check), undefined, 'right')}
             </div>)];
         }
@@ -100,6 +109,6 @@ class Condition extends React.Component {
 }
 Condition.propTypes = {
     onChange: PropTypes.func.isRequired,
-    node: PropTypes.object
+    node: PropTypes.object.isRequired
 };
 export default Condition;

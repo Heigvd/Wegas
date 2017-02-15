@@ -3,7 +3,6 @@ import debounce from '../HOC/callbackDebounce';
 import commonView from '../HOC/commonView';
 import styles from '../css/string.css';
 
-
 const debounceOnChange = debounce('onChange');
 function fromNotToEmpty(value) {
     if (value === null || value === undefined) {
@@ -20,7 +19,10 @@ class StringView extends React.Component {
         this.setState({ value: fromNotToEmpty(nextProps.value) });
     }
     handleChange(event) {
-        this.setState({ value: event.target.value }, this.props.onChange(event.target.value));
+        this.setState(
+            { value: event.target.value },
+            this.props.onChange(event.target.value)
+        );
     }
     render() {
         if (typeof this.props.view.rows === 'number') {

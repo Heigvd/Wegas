@@ -54,7 +54,12 @@ function condition(Comp) {
         });
 
         return (
-            <Comp {...props} code={expr} onChange={ast => onChange(join(ast))} type="condition" />
+            <Comp
+                {...props}
+                code={expr}
+                onChange={ast => onChange(join(ast))}
+                type="condition"
+            />
         );
     }
     Condition.propTypes = {
