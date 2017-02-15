@@ -78,8 +78,8 @@ angular.module('private.admin.users', [
             });
         };
 
-        ctrl.beByAccountId = function(accountId) {
-            if (!window.confirm("Reload to pretend to be \"" + user.name + "\"?")) {
+        ctrl.beByAccountId = function(accountId, name) {
+            if (!window.confirm("Reload to pretend to be \"" + name + "\"?")) {
                 return;
             }
             $http.post("rest/User/Be/" + accountId).success(function(result) {

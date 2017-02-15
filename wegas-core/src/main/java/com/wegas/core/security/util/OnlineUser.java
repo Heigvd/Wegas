@@ -9,7 +9,6 @@ package com.wegas.core.security.util;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.security.guest.GuestJpaAccount;
-import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import java.util.Date;
@@ -27,6 +26,7 @@ public class OnlineUser {
 
     private final String fullname;
     private final String email;
+    private final String username;
     private final Date connectionDate;
     private final Long userId;
     private final Long mainAccountId;
@@ -34,6 +34,7 @@ public class OnlineUser {
     public OnlineUser(User user) {
         this.user = user;
         this.fullname = user.getName();
+        this.username = user.getMainAccount().getUsername();
         this.email = user.getMainAccount().getEmail();
         this.connectionDate = new Date();
         this.userId = user.getId();
@@ -48,6 +49,10 @@ public class OnlineUser {
         return email;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
     public Date getConnectionDate() {
         return connectionDate;
     }
@@ -55,7 +60,7 @@ public class OnlineUser {
     public Long getUserId() {
         return userId;
     }
-    
+
     public Long getMainAccountId() {
         return mainAccountId;
     }
