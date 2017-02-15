@@ -24,9 +24,11 @@ public class OnlineUser {
 
     @JsonIgnore
     private final User user;
+
     private final String fullname;
     private final String email;
     private final Date connectionDate;
+    private final Long userId;
     private final Long mainAccountId;
 
     public OnlineUser(User user) {
@@ -34,6 +36,7 @@ public class OnlineUser {
         this.fullname = user.getName();
         this.email = user.getMainAccount().getEmail();
         this.connectionDate = new Date();
+        this.userId = user.getId();
         this.mainAccountId = user.getMainAccount().getId();
     }
 
@@ -49,6 +52,10 @@ public class OnlineUser {
         return connectionDate;
     }
 
+    public Long getUserId() {
+        return userId;
+    }
+    
     public Long getMainAccountId() {
         return mainAccountId;
     }
