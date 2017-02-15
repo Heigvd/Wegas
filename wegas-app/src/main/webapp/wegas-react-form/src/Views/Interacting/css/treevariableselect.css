@@ -1,6 +1,7 @@
 .container {
     color: #6A95B6;
     display: inline-block;
+    margin-top: 1.5em;
 }
 
 .icon {
@@ -17,7 +18,7 @@
 
 .selectorLink {
     position: relative;
-    margin-right:1em;
+    margin-right: 1em;
 }
 
 .path {
@@ -28,5 +29,5 @@
 }
 
 .globalMethod {
-    color:hotpink;
+    color: hotpink;
 }
