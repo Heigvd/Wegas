@@ -19,7 +19,8 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.Views;
-import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.ejb.AccountFacade;
+import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import jdk.nashorn.api.scripting.ScriptUtils;
 import jdk.nashorn.internal.runtime.ScriptObject;
@@ -40,6 +41,8 @@ import javax.ws.rs.core.Response;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 
 //import javax.annotation.PostConstruct;
 /**
@@ -71,13 +74,13 @@ public class RequestManager {
     private MutexSingleton mutexSingleton;
 
     @Inject
-    private UserFacade userFacade;
-
-    @Inject
     private SecurityFacade securityFacade;
 
     @EJB
     private PlayerFacade playerFacade;
+
+    @Inject
+    private AccountFacade accountFacade;
 
     @Inject
     private RequestFacade requestFacade;
@@ -197,19 +200,28 @@ public class RequestManager {
         return currentPlayer;
     }
 
+    /**
+     * @return a User entity, based on the shiro login state
+     */
     public User getCurrentUser() {
-        return currentUser;
-    }
-
-    public void setCurrentUser(User currentUser) {
-        if (this.currentUser != currentUser) {
-            if (currentUser != null) {
-                this.currentUser = userFacade.find(currentUser.getId());
-            } else {
-                this.currentUser = null;
+        if (this.currentUser == null) {
+            try {
+                final Subject subject = SecurityUtils.getSubject();
+                if (subject.isRemembered() || subject.isAuthenticated()) {
+                    AbstractAccount account = accountFacade.find((Long) subject.getPrincipal());
+                    if (account != null) {
+                        this.currentUser = account.getUser();
+                    }
+                }
+            } catch (Exception ex) {
+                logger.error("FAILS TO FETCH CURRENT USER", ex);
             }
         }
-        securityFacade.clearPermissions();
+        return this.currentUser;
+    }
+
+    public User getLocalCurrentUser() {
+        return this.currentUser;
     }
 
     /**

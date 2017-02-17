@@ -11,6 +11,7 @@ import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
+import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.*;
@@ -48,6 +49,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Level;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -404,40 +406,7 @@ public class UserController {
     public User login(AuthenticationInformation authInfo,
             @Context HttpServletRequest request,
             @Context HttpServletResponse response) throws ServletException, IOException {
-
-        Subject subject = SecurityUtils.getSubject();
-
-        User guest = null;
-        if (subject.isAuthenticated()) {
-            AbstractAccount gAccount = accountFacade.find((Long) subject.getPrincipal());
-            if (gAccount instanceof GuestJpaAccount) {
-                logger.error("Logged as guest");
-                guest = gAccount.getUser();
-                subject.logout();
-            }
-        }
-
-        //if (!currentUser.isAuthenticated()) {
-        UsernamePasswordToken token = new UsernamePasswordToken(authInfo.getLogin(), authInfo.getPassword());
-        token.setRememberMe(authInfo.isRemember());
-        try {
-            subject.login(token);
-            if (authInfo.isAgreed()) {
-                AbstractAccount account = accountFacade.find((Long) subject.getPrincipal());
-                if (account instanceof JpaAccount) {
-                    ((JpaAccount) account).setAgreedTime(new Date());
-                }
-            }
-
-            User user = userFacade.getCurrentUser();
-
-            if (guest != null) {
-                userFacade.transferPlayers(guest, user);
-            }
-            return user;
-        } catch (AuthenticationException aex) {
-            throw WegasErrorMessage.error("Email/password combination not found");
-        }
+        return userFacade.authenticate(authInfo);
     }
 
     /**
@@ -550,40 +519,26 @@ public class UserController {
     @Path("Signup")
     public Response signup(JpaAccount account,
             @Context HttpServletRequest request) {
-        Response r;
-        if (this.checkEmailString(account.getEmail())) {
-            if (account.getUsername().equals("") || !this.checkExistingUsername(account.getUsername())) {
-                User user;
-                Subject subject = SecurityUtils.getSubject();
 
-                if (subject.isAuthenticated() && accountFacade.find((Long) subject.getPrincipal()) instanceof GuestJpaAccount) {
-                    GuestJpaAccount from = (GuestJpaAccount) accountFacade.find((Long) subject.getPrincipal());
-                    subject.logout();
-                    userFacade.upgradeGuest(from, account);
-                    r = Response.status(Response.Status.CREATED).build();
-                } else {
-                    // Check if e-mail is already taken and if yes return a localized error message:
-                    try {
-                        accountFacade.findByEmail(account.getEmail());
-                        String msg = detectBrowserLocale(request).equals("fr") ? "Cette adresse e-mail est déjà prise." : "This email address is already taken.";
-                        r = Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error(msg)).build();
-                    } catch (WegasNoResultException e) {
-                        // GOTCHA
-                        // E-Mail not yet registered -> proceed with account creation
-                        user = new User(account);
-                        userFacade.create(user);
-                        r = Response.status(Response.Status.CREATED).entity(user).build();
-                    }
-                }
-            } else {
-                String msg = detectBrowserLocale(request).equals("fr") ? "Ce nom d'utilisateur est déjà pris." : "This username is already taken.";
-                r = Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error(msg)).build();
-            }
-        } else {
+        try {
+            return Response.status(Response.Status.CREATED).entity(userFacade.signup(account)).build();
+        } catch (AddressException ex) {
             String msg = detectBrowserLocale(request).equals("fr") ? "Cette adresse e-mail n'est pas valide." : "This e-mail address is not valid.";
-            r = Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error(msg)).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error(msg)).build();
+        } catch (WegasConflictException ex) {
+            String msg;
+            switch (ex.getMessage()) {
+                case "email":
+                    msg = detectBrowserLocale(request).equals("fr") ? "Cette adresse e-mail est déjà prise." : "This email address is already taken.";
+                    break;
+                case "username":
+                    msg = detectBrowserLocale(request).equals("fr") ? "Ce nom d'utilisateur est déjà pris." : "This username is already taken.";
+                    break;
+                default:
+                    msg = "unknown error";
+            }
+            return Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error(msg)).build();
         }
-        return r;
     }
 
     /**
@@ -825,38 +780,6 @@ public class UserController {
         } else {
             SecurityUtils.getSubject().checkPermission(gPermission + entityId);
         }
-    }
-
-    /**
-     * Check if email is valid. (Only a string test)
-     *
-     * @param email
-     * @return true if given address is valid
-     */
-    private boolean checkEmailString(String email) {
-        boolean validEmail = true;
-        try {
-            InternetAddress emailAddr = new InternetAddress(email);
-            emailAddr.validate();
-        } catch (AddressException ex) {
-            validEmail = false;
-        }
-        return validEmail;
-    }
-
-    /**
-     * Check is username is already in use
-     *
-     * @param username username to check
-     * @return true is username is already in use
-     */
-    private boolean checkExistingUsername(String username) {
-        boolean existingUsername = false;
-        User user = userFacade.getUserByUsername(username);
-        if (user != null) {
-            existingUsername = true;
-        }
-        return existingUsername;
     }
 
     /*

@@ -34,8 +34,10 @@ import java.util.Date;
     @JsonSubTypes.Type(name = "GameAccount", value = com.wegas.core.security.jparealm.GameAccount.class)
 })
 @NamedQueries({
-    @NamedQuery(name = "JpaAccount.findExactClass", query = "SELECT a FROM JpaAccount a WHERE TYPE(a) = :accountClass"),
-    @NamedQuery(name = "JpaAccount.findByEmail", query = "SELECT a FROM JpaAccount a WHERE LOWER(a.email) LIKE LOWER(:email)"),
+    @NamedQuery(name = "JpaAccount.findExactClass", query = "SELECT a FROM JpaAccount a WHERE TYPE(a) = :accountClass")
+    ,
+    @NamedQuery(name = "JpaAccount.findByEmail", query = "SELECT a FROM JpaAccount a WHERE LOWER(a.email) LIKE LOWER(:email)")
+    ,
     @NamedQuery(name = "JpaAccount.findByFullName", query = "SELECT a FROM JpaAccount a WHERE LOWER(a.firstname) LIKE LOWER(:firstname) AND  LOWER(a.lastname) LIKE LOWER(:lastname)")
 })
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -65,7 +67,8 @@ public class JpaAccount extends AbstractAccount {
     private String salt;
 
     /**
-     * When the terms of use have been agreed to (usually at signup, except for guests and long time users)
+     * When the terms of use have been agreed to (usually at signup, except for
+     * guests and long time users)
      */
     @Temporal(TemporalType.TIMESTAMP)
     private Date agreedTime = new Date();
@@ -164,6 +167,8 @@ public class JpaAccount extends AbstractAccount {
     /**
      * @return md5 address hash
      */
+    @Deprecated
+    @JsonIgnore
     public String getHash() {
         if (email != null) {
             return Helper.md5Hex(email);
@@ -179,7 +184,6 @@ public class JpaAccount extends AbstractAccount {
     public void setEmail(String email) {
         this.email = email;
     }
-
 
     public Date getAgreedTime() {
         return agreedTime != null ? new Date(agreedTime.getTime()) : null;

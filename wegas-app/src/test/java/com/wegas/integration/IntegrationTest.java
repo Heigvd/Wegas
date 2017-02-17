@@ -7,28 +7,25 @@
  */
 package com.wegas.integration;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.wegas.core.Helper;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.security.persistence.Role;
+import com.wegas.core.security.persistence.User;
 import com.wegas.utils.TestHelper;
-import java.io.ByteArrayOutputStream;
+import com.wegas.utils.WegasRESTClient;
+import com.wegas.utils.WegasRESTClient.TestAuthenticationInformation;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import junit.framework.Assert;
+import net.sourceforge.jwebunit.api.IElement;
 import net.sourceforge.jwebunit.junit.JWebUnit;
 import static net.sourceforge.jwebunit.junit.JWebUnit.*;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpMessage;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.entity.FileEntity;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -42,6 +39,8 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -49,13 +48,19 @@ import org.junit.Test;
  */
 public class IntegrationTest {
 
+    private static final Logger logger = LoggerFactory.getLogger(IntegrationTest.class);
+
     private static GlassFish glassfish;
     private static String appName;
-    private HttpClient client;
 
-    private String cookie;
-    private String baseURL;
-    private Long artosId;
+    private static WegasRESTClient client;
+
+    private static TestAuthenticationInformation root;
+    private static TestAuthenticationInformation scenarist;
+    private static TestAuthenticationInformation trainer;
+    private static TestAuthenticationInformation user;
+
+    private GameModel artos;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -69,8 +74,8 @@ public class IntegrationTest {
         //glassfishProperties.setConfigFileReadOnly(false);
         TestHelper.resetTestDB();
         glassfish = GlassFishRuntime.bootstrap(bootstrapProperties).newGlassFish(glassfishProperties);
-        Logger.getLogger("javax.enterprise.system.tools.deployment").setLevel(Level.OFF);
-        Logger.getLogger("javax.enterprise.system").setLevel(Level.OFF);
+        //Logger.getLogger("javax.enterprise.system.tools.deployment").setLevel(Level.OFF);
+        //Logger.getLogger("javax.enterprise.system").setLevel(Level.OFF);
         glassfish.start();
 
         File war = new File("./target/Wegas.war");
@@ -79,6 +84,19 @@ public class IntegrationTest {
 
         File appDirectory = new File("target/Wegas/");
         Helper.setWegasRootDirectory(appDirectory.getAbsolutePath());
+
+        client = new WegasRESTClient("http://localhost:5454/Wegas");
+
+        scenarist = client.signup("scenarist@local", "1234");
+        trainer = client.signup("trainer@local", "1234");
+        user = client.signup("user@local", "1234");
+
+        root = client.getAuthInfo("root@root.com", "1234");
+        root.setUserId(1l);
+
+        client.login(root);
+        grantRights();
+        logger.error("SETUP COMPLETED");
     }
 
     @AfterClass
@@ -94,141 +112,69 @@ public class IntegrationTest {
 
     @Before
     public void setUp() throws IOException, JSONException {
-        client = HttpClientBuilder.create().build();
-        baseURL = "http://localhost:5454/Wegas";
-        setBaseUrl(baseURL);
-
-        login();
         loadArtos();
     }
 
-    public void login() throws IOException {
-        HttpPost post = new HttpPost(baseURL + "/rest/User/Authenticate");
-        String content = "{\"@class\" : \"AuthenticationInformation\","
-                + "\"login\": \"root@root.com\","
-                + "\"password\": \"1234\","
-                + "\"remember\": \"true\""
-                + "}";
+    private static void grantRights() throws IOException {
+        Map<String, Role> roles = client.getRoles();
 
-        StringEntity strEntity = new StringEntity(content);
-        strEntity.setContentType("application/json");
-        post.setEntity(strEntity);
-
-        HttpResponse loginResponse = client.execute(post);
-
-        Assert.assertEquals(HttpStatus.SC_OK, loginResponse.getStatusLine().getStatusCode());
-
-        Header[] headers = loginResponse.getHeaders("Set-Cookie");
-        if (headers.length > 0) {
-            cookie = headers[0].getValue();
+        logger.error("ROLES: ");
+        for (Entry<String, Role> entry : roles.entrySet()) {
+            logger.error(entry.getKey());
         }
+
+        User scenUser = client.get("/rest/User/" + scenarist.getUserId(), User.class);
+        scenUser.getRoles().add(roles.get("Scenarist"));
+        scenUser.getRoles().add(roles.get("Trainer"));
+
+        client.put("/rest/User/Account/" + scenUser.getMainAccount().getId(), scenUser.getMainAccount());
+
+        User trainerUser = client.get("/rest/User/" + trainer.getUserId(), User.class);
+        trainerUser.getRoles().add(roles.get("Trainer"));
+
+        client.put("/rest/User/Account/" + trainerUser.getMainAccount().getId(), trainerUser.getMainAccount());
     }
 
     private void loadArtos() throws IOException, JSONException {
-        String postJSONFromFile = postJSONFromFile("/rest/GameModel", "src/main/webapp/wegas-private/wegas-pmg/db/wegas-pmg-gamemodel-Artos.json");
-        JSONObject jsonObject = new JSONObject(postJSONFromFile);
-        JSONArray jsonArray = jsonObject.getJSONArray("updatedEntities");
-        this.artosId = jsonArray.getJSONObject(0).getLong("id");
-    }
-
-    private void setHeaders(HttpMessage msg) {
-        msg.setHeader("Content-Type", "application/json");
-        msg.setHeader("Accept", "*/*");
-        msg.setHeader("Cookie", cookie);
-        msg.setHeader("Managed-Mode", "true");
-    }
-
-    private String getEntityAsString(HttpEntity entity) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        entity.writeTo(baos);
-        return baos.toString("UTF-8");
-    }
-
-    private String httpGetAsJSON(String url) throws IOException {
-        HttpUriRequest get = new HttpGet(baseURL + url);
-        setHeaders(get);
-
-        HttpResponse response = client.execute(get);
-
-        Assert.assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
-
-        return getEntityAsString(response.getEntity());
-    }
-
-    /**
-     *
-     * @return
-     */
-    private String postJSON(String url, String jsonContent) throws IOException {
-        HttpPost post = new HttpPost(baseURL + url);
-        setHeaders(post);
-
-        StringEntity strEntity = new StringEntity(jsonContent);
-        strEntity.setContentType("application/json");
-        post.setEntity(strEntity);
-
-        HttpResponse response = client.execute(post);
-        Assert.assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
-
-        return getEntityAsString(response.getEntity());
-    }
-
-    private String postJSONFromFile(String url, String jsonFile) throws IOException {
-        HttpPost post = new HttpPost(baseURL + url);
-        setHeaders(post);
-
-        FileEntity fileEntity = new FileEntity(new File(jsonFile));
-        fileEntity.setContentType("application/json");
-        post.setEntity(fileEntity);
-
-        HttpResponse response = client.execute(post);
-        Assert.assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
-
-        return getEntityAsString(response.getEntity());
-
+        artos = client.postJSONFromFile("/rest/GameModel", "src/main/webapp/wegas-private/wegas-pmg/db/wegas-pmg-gamemodel-Artos.json", GameModel.class);
     }
 
     @Test
     public void testUpdateAndCreateGame() throws IOException, JSONException {
-        String postJSONFromFile = postJSONFromFile("/rest/GameModel", "src/test/resources/gmScope.json");
-        JSONObject jsonObject = new JSONObject(postJSONFromFile);
-        JSONArray jsonArray = jsonObject.getJSONArray("updatedEntities");
-        Long gmId = jsonArray.getJSONObject(0).getLong("id");
 
-        postJSON("/rest/GameModel/" + gmId + "/Game", "{\"@class\":\"Game\",\"gameModelId\":\"" + gmId + "\",\"access\":\"OPEN\",\"name\":\"My Test Game\"}");
+        GameModel myGameModel = client.postJSONFromFile("/rest/GameModel", "src/test/resources/gmScope.json", GameModel.class);
+
+        Game myGame = client.postJSON_asString("/rest/GameModel/" + myGameModel.getId() + "/Game", "{\"@class\":\"Game\",\"gameModelId\":\"" + myGameModel.getId() + "\",\"access\":\"OPEN\",\"name\":\"My Test Game\"}", Game.class);
+        myGame.getId();
     }
 
     @Test
     public void createGameTest() throws IOException, JSONException {
-        String postJSON = postJSON("/rest/GameModel/" + this.artosId + "/Game", "{\"@class\":\"Game\",\"gameModelId\":\"" + this.artosId + "\",\"access\":\"OPEN\",\"name\":\"My Artos Game\"}");
-        JSONObject response = new JSONObject(postJSON);
-        JSONArray entities = response.getJSONArray("updatedEntities");
-        Long gameId = entities.getJSONObject(0).getLong("id");
+        Game myGame = client.postJSON_asString("/rest/GameModel/" + this.artos.getId() + "/Game", "{\"@class\":\"Game\",\"gameModelId\":\"" + this.artos.getId() + "\",\"access\":\"OPEN\",\"name\":\"My Artos Game\"}", Game.class);
 
-        String httpGetAsJSON = httpGetAsJSON("/rest/GameModel/Game/" + gameId);
-
-        response = new JSONObject(httpGetAsJSON);
-        entities = response.getJSONArray("updatedEntities");
-
-        JSONArray teams = (JSONArray) entities.getJSONObject(0).get("teams");
+        Game myGameFromGet = client.get("/rest/GameModel/Game/" + myGame.getId(), Game.class);
 
         /* Is the debug team present */
-        Assert.assertEquals(1, teams.length());
-        JSONArray players = teams.getJSONObject(0).getJSONArray("players");
-
-        Assert.assertEquals(1, players.length());
+        Assert.assertEquals(1, myGameFromGet.getTeams().size());
+        Assert.assertEquals(1, myGameFromGet.getTeams().get(0).getPlayers().size());
     }
 
     @Test
-    public void abstractAssignTest() throws IOException, JSONException {
-        JSONObject artosJson = new JSONObject(httpGetAsJSON("/rest/GameModel/" + this.artosId + "/VariableDescriptor"));
-        artosJson.getJSONArray("updatedEntities");
+    public void getVariableDescriptor() throws IOException, JSONException {
+        List<VariableDescriptor> descs;
+
+        descs = (List<VariableDescriptor>) (client.get("/rest/GameModel/" + this.artos.getId() + "/VariableDescriptor", new TypeReference<List<VariableDescriptor>>() {
+        }));
+        for (VariableDescriptor vd : descs) {
+            logger.error("NAME: " + vd.getLabel());
+        }
     }
 
     @Test
     public void manageModeTest() throws IOException, JSONException {
-        JSONObject json = new JSONObject(httpGetAsJSON("/rest/GameModel"));
-        json.get("@class");
+        List<GameModel> get = (List<GameModel>) client.get("/rest/GameModel", new TypeReference<List<GameModel>>() {
+        });
+        get.size();
     }
 
     @Test
@@ -253,8 +199,19 @@ public class IntegrationTest {
 
     @Test
     public void testJavascript() {
-            JWebUnit.setScriptingEnabled(true);
-            beginAt("wegas-app/tests/wegas-alltests.htm");
-            assertTitleEquals("Wegas Test Suite");
-        }
+        JWebUnit.setScriptingEnabled(true);
+        beginAt("wegas-app/tests/wegas-alltests.htm");
+        assertTitleEquals("Wegas Test Suite");
+
+        String pageSource = JWebUnit.getPageSource();
+
+        IElement passed = JWebUnit.getElementByXPath("//span[@class='passed']");
+        IElement total = JWebUnit.getElementByXPath("//span[@class='total']");
+
+        String pContent = passed.getTextContent();
+
+        String tContent = total.getTextContent();
+
+        logger.error("TESTS:  " + pContent + "/" + tContent);
     }
+}

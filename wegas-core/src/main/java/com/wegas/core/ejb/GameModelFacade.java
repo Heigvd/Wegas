@@ -136,7 +136,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      *
      * @param gameModel
      * @return true if a new debugGame has been added, false if the gameModel
-     * already has one
+     *         already has one
      */
     public boolean addDebugGame(GameModel gameModel) {
         if (!gameModel.hasDebugGame()) {
@@ -515,7 +515,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
     public void processQuery(String sqlQuery, Map<Long, List<String>> gmMatrix, Map<Long, List<String>> gMatrix, GameModel.Status gmStatus, Game.Status gStatus) {
         TypedQuery<Permission> query = this.getEntityManager().createQuery(sqlQuery, Permission.class);
-        User user = requestManager.getCurrentUser();
+        User user = userFacade.getCurrentUser();
         query.setParameter("userId", user.getId());
         List<Permission> resultList = query.getResultList();
 

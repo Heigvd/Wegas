@@ -36,6 +36,7 @@ public class RemoveGuestTest extends AbstractEJBTest {
 
         gameController.joinIndividually(game.getId());
 
+        login(admin);
         userFacade.removeIdleGuests();
 
         Assert.assertNull("Guest not null", userFacade.find(oldGuest.getId()));

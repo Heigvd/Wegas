@@ -8,7 +8,7 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
-import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.exception.client.WegasAccessDenied;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
@@ -50,10 +50,13 @@ public class SecurityFacade {
     @Inject
     private UserFacade userFacade;
 
+    @Inject
+    private RequestManager requestManager;
+
     private static int logIndent = 0;
 
-    private static void log(String msg) {
-        if (false) {
+    private static void log(String msg, int level) {
+        if (level < 5) {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < logIndent; i++) {
                 sb.append("  ");
@@ -68,8 +71,8 @@ public class SecurityFacade {
     }
 
     public void clearPermissions() {
-        log("CLEAR PERMISSIONS");
-        log("*********************************************************");
+        log("CLEAR PERMISSIONS", 5);
+        log("*********************************************************", 5);
         this.grantedPermissions.clear();
     }
 
@@ -83,6 +86,7 @@ public class SecurityFacade {
      */
     private boolean hasPermission(String type, String arg, boolean superPermission) {
         Subject subject = SecurityUtils.getSubject();
+        User currentUser = requestManager.getCurrentUser();
 
         if (subject.hasRole("Administrator")) {
             return true;
@@ -111,18 +115,15 @@ public class SecurityFacade {
             } else if ("Team".equals(type)) {
 
                 Team team = teamFacade.find(id);
-                User user = userFacade.getCurrentUserOrNull();
 
                 // Current logged User is linked to a player who's member of the team or current user has edit right one the game
-                return user != null && team != null && (playerFacade.checkExistingPlayerInTeam(team.getId(), user.getId()) != null || SecurityHelper.isPermitted(team.getGame(), "Edit"));
+                return currentUser != null && team != null && (playerFacade.checkExistingPlayerInTeam(team.getId(), currentUser.getId()) != null || SecurityHelper.isPermitted(team.getGame(), "Edit"));
             } else if ("Player".equals(type)) {
-                User user = userFacade.getCurrentUserOrNull();
                 Player player = playerFacade.find(id);
 
                 // Current player belongs to current user || current user is the teacher or scenarist (test user)
-                return player != null && ((user != null && user.equals(player.getUser())) || SecurityHelper.isPermitted(player.getGame(), "Edit"));
+                return player != null && ((currentUser != null && currentUser.equals(player.getUser())) || SecurityHelper.isPermitted(player.getGame(), "Edit"));
             } else if ("User".equals(type)) {
-                User currentUser = userFacade.getCurrentUserOrNull();
                 User find = userFacade.find(id);
                 return currentUser != null && currentUser.equals(find);
             }
@@ -138,8 +139,11 @@ public class SecurityFacade {
      */
     public boolean hasPermission(String channel) {
         if (channel != null) {
+            // remove "private-" from channel name if exists
+            channel = channel.replaceFirst("private-", "");
+
             if (grantedPermissions.contains(channel)) {
-                log(" WAS ALREADY GRANTED");
+                log(" WAS ALREADY GRANTED", 5);
                 return true;
             } else {
 
@@ -154,14 +158,14 @@ public class SecurityFacade {
 
                 if (split.length == 2) {
                     if (hasPermission(split[0], split[1], superPermission)) {
-                        log(" >>> GRANT: " + channel);
+                        log(" >>> GRANT: " + channel, 5);
                         grantedPermissions.add(channel);
                     }
                 }
                 return grantedPermissions.contains(channel);
             }
         } else {
-            log(" EMPTYCHANNEL");
+            log(" EMPTYCHANNEL", 5);
             return true;
         }
     }
@@ -176,18 +180,18 @@ public class SecurityFacade {
             }
             return false;
         }
-        log("NO PERMISSIONS REQUIERED");
+        log("NO PERMISSIONS REQUIERED", 5);
         return true;
     }
 
     private void assertUserHasPermission(String permissions, String type, AbstractEntity entity) {
-        log("HAS  PERMISSION: " + type + " / " + permissions + " / " + entity);
+        log("HAS  PERMISSION: " + type + " / " + permissions + " / " + entity, 5);
         logIndent++;
         if (!userHasPermission(permissions, type, entity)) {
-            Helper.printWegasStackTrace(new Exception());
-            String msg = type + " Permission Denied (" + permissions + ") for user " + userFacade.getCurrentUserOrNull() + " on entity " + entity;
-            _logger.error(msg);
-            throw WegasErrorMessage.error(msg);
+            String msg = type + " Permission Denied (" + permissions + ") for user " + requestManager.getCurrentUser() + " on entity " + entity;
+            Helper.printWegasStackTrace(new Exception(msg));
+            log(msg, 5);
+            throw new WegasAccessDenied(entity, type, permissions, requestManager.getCurrentUser());
         }
         logIndent--;
     }

@@ -44,7 +44,7 @@ angular.module('wegas.service.pusher', [])
                         if (user) {
                             userChannel = channels["user"] = pusher.subscribe('private-User-' + user.id);
                             if (user.isAdmin) {
-                                adminChannel = channels["admin"] = pusher.subscribe('private-Admin');
+                                adminChannel = channels["admin"] = pusher.subscribe('private-Role-Admin');
                                 initListening();
                             }
                         }

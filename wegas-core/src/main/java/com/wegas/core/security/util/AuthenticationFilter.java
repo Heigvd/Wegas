@@ -8,13 +8,9 @@
 package com.wegas.core.security.util;
 
 import com.wegas.core.Helper;
-import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.persistence.AbstractAccount;
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.naming.NamingException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -22,12 +18,16 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.PassThruAuthenticationFilter;
 import org.apache.shiro.web.util.WebUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class AuthenticationFilter extends PassThruAuthenticationFilter {
+
+    private static Logger logger = LoggerFactory.getLogger(AuthenticationFilter.class);
 
     /**
      * Extend to authorize remembered login
@@ -44,21 +44,19 @@ public class AuthenticationFilter extends PassThruAuthenticationFilter {
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
         // @todo It should not be authorized to do sensitive operations like pwd
         Subject subject = getSubject(request, response);
+        logger.error("SUBJECT:  " + subject);
         if (subject.isAuthenticated() || subject.isRemembered()) {
 
-            AccountFacade accountFacade;
-            UserFacade userFacade;
-            try {
-                accountFacade = Helper.lookupBy(AccountFacade.class);
-                userFacade = UserFacade.lookup();
-
-                AbstractAccount account = accountFacade.find((Long) subject.getPrincipal());
-                userFacade.setCurrentUser(account.getUser());
-
-            } catch (NamingException ex) {
-                Logger.getLogger(AuthenticationFilter.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
+            //AccountFacade accountFacade;
+            //UserFacade userFacade;
+            //try {
+            //accountFacade = Helper.lookupBy(AccountFacade.class);
+            //userFacade = UserFacade.lookup();
+            //AbstractAccount account = accountFacade.find((Long) subject.getPrincipal());
+            //userFacade.setCurrentUser(account.getUser());
+            //} catch (NamingException ex) {
+            //    Logger.getLogger(AuthenticationFilter.class.getName()).log(Level.SEVERE, null, ex);
+            //}
             return true;
         } else if (request.getParameter("al") != null
                 && Helper.getWegasProperty("guestallowed").equals("true")) {    // Automatic guest login

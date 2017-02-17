@@ -7,11 +7,13 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.persistence.AbstractEntity;
 import java.io.IOException;
 import java.util.List;
 import javax.inject.Inject;
+import javax.naming.NamingException;
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -41,7 +43,7 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
     protected EntityManager getEntityManager() {
         return requestManager.getEntityManager();
     }
-    
+
     /**
      * the Class the facade manage
      */
@@ -81,7 +83,6 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
     public void detach(final T entity) {
         getEntityManager().detach(entity);
     }
-
 
 //    /**
 //     *

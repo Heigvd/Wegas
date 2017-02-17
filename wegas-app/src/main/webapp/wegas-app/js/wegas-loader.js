@@ -835,6 +835,7 @@ YUI().use(function(Y) {
         root: "/wegas-mcq/",
         modules: {
             "wegas-mcq-entities": {
+                requires: "wegas-variabledescriptor-entities",
                 ws_provides: ["QuestionDescriptor", "QuestionInstance"]
             },
             "wegas-mcq-tabview": {

@@ -14,7 +14,7 @@ import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
-import com.wegas.core.ejb.WebsocketFacade;
+import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
@@ -29,6 +29,7 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.util.AuthenticationInformation;
 import com.wegas.messaging.ejb.EMailFacade;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.crypto.RandomNumberGenerator;
@@ -46,8 +47,10 @@ import javax.naming.NamingException;
 import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import java.util.*;
-import java.util.regex.Matcher;
 import javax.inject.Inject;
+import javax.mail.internet.AddressException;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.UsernamePasswordToken;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -114,7 +117,7 @@ public class UserFacade extends BaseFacade<User> {
         if (Helper.getWegasProperty("guestallowed").equals("true")) {
             User newUser = new User();
             this.create(newUser);
-            this.setCurrentUser(newUser);
+            //this.setCurrentUser(newUser);
 
             newUser.addAccount(new GuestJpaAccount());
             this.merge(newUser);
@@ -128,6 +131,85 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
+     * Check is username is already in use
+     *
+     * @param username username to check
+     * @return true is username is already in use
+     */
+    public boolean checkExistingUsername(String username) {
+        return this.getUserByUsername(username) != null;
+    }
+
+    public User authenticate(AuthenticationInformation authInfo) {
+        Subject subject = SecurityUtils.getSubject();
+
+        User guest = null;
+        if (subject.isAuthenticated()) {
+            AbstractAccount gAccount = accountFacade.find((Long) subject.getPrincipal());
+            if (gAccount instanceof GuestJpaAccount) {
+                logger.error("Logged as guest");
+                guest = gAccount.getUser();
+                subject.logout();
+            }
+        }
+
+        //if (!currentUser.isAuthenticated()) {
+        UsernamePasswordToken token = new UsernamePasswordToken(authInfo.getLogin(), authInfo.getPassword());
+        token.setRememberMe(authInfo.isRemember());
+        try {
+            subject.login(token);
+            if (authInfo.isAgreed()) {
+                AbstractAccount account = accountFacade.find((Long) subject.getPrincipal());
+                if (account instanceof JpaAccount) {
+                    ((JpaAccount) account).setAgreedTime(new Date());
+                }
+            }
+
+            User user = this.getCurrentUser();
+
+            if (guest != null) {
+                this.transferPlayers(guest, user);
+            }
+            return user;
+        } catch (AuthenticationException aex) {
+            throw WegasErrorMessage.error("Email/password combination not found");
+        }
+    }
+
+    public User signup(JpaAccount account) throws AddressException, WegasConflictException {
+        Helper.assertEmailPattern(account.getEmail());
+
+        if (account.getUsername().equals("") || !this.checkExistingUsername(account.getUsername())) {
+            User user;
+            Subject subject = SecurityUtils.getSubject();
+
+            if (subject.isAuthenticated() && accountFacade.find((Long) subject.getPrincipal()) instanceof GuestJpaAccount) {
+                /**
+                 * Subject is authenticated as guest but try to signup with a
+                 * full account -> let's upgrade
+                 */
+                GuestJpaAccount from = (GuestJpaAccount) accountFacade.find((Long) subject.getPrincipal());
+                subject.logout();
+                return this.upgradeGuest(from, account);
+            } else {
+                // Check if e-mail is already taken and if yes return a localized error message:
+                try {
+                    accountFacade.findByEmail(account.getEmail());
+                    throw new WegasConflictException("email");
+                } catch (WegasNoResultException e) {
+                    // GOTCHA
+                    // E-Mail not yet registered -> proceed with account creation
+                    user = new User(account);
+                    this.create(user);
+                    return user;
+                }
+            }
+        } else {
+            throw new WegasConflictException("username");
+        }
+    }
+
+    /**
      * logout current user
      */
     public void logout() {
@@ -135,32 +217,36 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     * @return a User entity, based on the shiro login state
+     * @return a User entity, based on the shiro login state public User
+     *         getCurrentUser() { User currentUser =
+     *         this.getCurrentUserOrNull(); if (currentUser == null) { throw new
+     *         WegasNotFoundException("Unable to find user"); } return
+     *         currentUser; }
      */
-    public User getCurrentUser() {
-        User currentUser = this.getCurrentUserOrNull();
-        if (currentUser == null) {
-            throw new WegasNotFoundException("Unable to find user");
-        }
-        return currentUser;
-    }
-
+    /**
+     * @return a User entity, based on the shiro login state public User
+     *         getCurrentUserOrNull() { User currentUser =
+     *         requestManager.getCurrentUser(); if (currentUser != null) {
+     *         currentUser = this.find(currentUser.getId()); }
+     *
+     * return currentUser; }
+     */
     /**
      * @return a User entity, based on the shiro login state
      */
-    public User getCurrentUserOrNull() {
+    public User getCurrentUser() {
         User currentUser = requestManager.getCurrentUser();
         if (currentUser != null) {
-            currentUser = this.find(currentUser.getId());
+            return currentUser;
+        } else {
+            throw new WegasNotFoundException("Unable to find user");
         }
-
-        return currentUser;
     }
 
-    public void setCurrentUser(User user) {
+
+    /*private void setCurrentUser(User user) {
         requestManager.setCurrentUser(user);
-    }
-
+    }*/
     /**
      * @param username String representing the username
      * @return a User entity, based on the username
@@ -419,6 +505,28 @@ public class UserFacade extends BaseFacade<User> {
         }
     }
 
+    public List<Role> findRoles(User user) {
+        TypedQuery<Role> queryRoles = getEntityManager().createNamedQuery("Roles.findByUser", Role.class);
+        queryRoles.setParameter("userId", user.getId());
+        return queryRoles.getResultList();
+    }
+
+    public List<Permission> findAllUserPermissions(User user) {
+        List<Permission> perms = new ArrayList<>();
+
+        for (Role role : this.findRoles(user)) {
+            TypedQuery<Permission> queryRolePermission = getEntityManager().createNamedQuery("Permission.findByRole", Permission.class);
+            queryRolePermission.setParameter("roleId", role.getId());
+            perms.addAll(queryRolePermission.getResultList());
+        }
+
+        TypedQuery<Permission> queryUserPermissions = getEntityManager().createNamedQuery("Permission.findByUser", Permission.class);
+        queryUserPermissions.setParameter("userId", user.getId());
+        perms.addAll(queryUserPermissions.getResultList());
+
+        return perms;
+    }
+
     private List<Permission> findUserPermissions(String permission, User user) {
         TypedQuery<Permission> query = getEntityManager().createNamedQuery("Permission.findByPermissionAndUser", Permission.class);
         query.setParameter("userId", user.getId());
@@ -635,7 +743,7 @@ public class UserFacade extends BaseFacade<User> {
         }
     }
 
-    public void upgradeGuest(GuestJpaAccount guest, JpaAccount account) {
+    public User upgradeGuest(GuestJpaAccount guest, JpaAccount account) {
         User user = guest.getUser();
         user.addAccount(account);
 
@@ -647,7 +755,7 @@ public class UserFacade extends BaseFacade<User> {
         for (Player p : user.getPlayers()) {
             p.setName(user.getName());
         }
-
+        return user;
     }
 
     public void addRole(User u, Role r) {
@@ -672,5 +780,4 @@ public class UserFacade extends BaseFacade<User> {
             return null;
         }
     }
-
 }

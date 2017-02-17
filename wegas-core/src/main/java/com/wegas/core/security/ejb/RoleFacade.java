@@ -7,6 +7,7 @@
  */
 package com.wegas.core.security.ejb;
 
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.security.persistence.Role;
@@ -14,6 +15,7 @@ import com.wegas.core.security.persistence.User;
 import java.util.Collection;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.naming.NamingException;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import org.slf4j.Logger;
@@ -65,6 +67,18 @@ public class RoleFacade extends BaseFacade<Role> {
             return query.getSingleResult();
         } catch (NoResultException ex) {
             throw new WegasNoResultException(ex);
+        }
+    }
+
+    /**
+     * @return looked-up EJB
+     */
+    public static RoleFacade lookup() {
+        try {
+            return Helper.lookupBy(RoleFacade.class);
+        } catch (NamingException ex) {
+            logger.error("Error retrieving role facade", ex);
+            return null;
         }
     }
 }

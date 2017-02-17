@@ -3,7 +3,6 @@ package com.wegas.core.security.ejb;
 import com.wegas.core.ejb.AbstractEJBTestBase;
 import com.wegas.core.ejb.TestHelper;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Permission;
@@ -12,10 +11,8 @@ import com.wegas.core.security.persistence.User;
 import java.util.Calendar;
 import java.util.List;
 import javax.ejb.EJBException;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,44 +38,21 @@ public class UserFacadeTest extends AbstractEJBTestBase {
 
     private static final String EMAIL = "userfacadetest@local";
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
+    @Before
+    public void setUp() throws Exception {
+        login(admin);
         role1 = new Role(ROLE_1);
         roleFacade.create(role1);
+
         role2 = new Role(ROLE_2);
         roleFacade.create(role2);
 
         u = AbstractEJBTestBase.signup(EMAIL);
+        login(u);
         abstractAccount = (JpaAccount) u.getMainAccount();
 
-        userFacade.addRole(u.getId(), role1.getId());
-        userFacade.addRole(u.getId(), role2.getId());
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        userFacade.remove(u.getId());
-        roleFacade.remove(role1.getId());
-        roleFacade.remove(role2.getId());
-        TestHelper.closeContainer();
-    }
-
-    /*private GameModel gameModel;
-    private Game game;
-     */
-    @Before
-    public void setUp() {
-        /*
-        gameModel = new GameModel();
-        gameModelFacade.create(gameModel);
-
-    @Test
-    public void testSetup() throws WegasNoResultException {
-        Role publicRole = roleFacade.findByName(ROLE_1);
-        Role registered = roleFacade.findByName(ROLE_2);
-
-        gameFacade.create(gameModel.getId(), game);
-         */
+        login(admin);
+        addRoles(u, role1, role2);
     }
 
     /**
@@ -89,10 +63,14 @@ public class UserFacadeTest extends AbstractEJBTestBase {
 
         // findAll()
         List<User> users = userFacade.findAll();
-        Assert.assertEquals(u, users.get(0));
+        Assert.assertTrue(users.contains(u));
+        Assert.assertTrue(users.contains(admin));
+
+        Assert.assertEquals(2l, users.size());
 
         // find
         Assert.assertEquals(u, userFacade.find(u.getId()));
+        Assert.assertEquals(admin, userFacade.find(admin.getId()));
     }
 
     @Test
@@ -121,9 +99,9 @@ public class UserFacadeTest extends AbstractEJBTestBase {
     public void testRoleUpdate() throws Exception {
         final String PERM = "Game:*:*";
 
-        role1.addPermission(PERM);
-        roleFacade.update(role1.getId(), role1);
-        Role r = roleFacade.find(role1.getId());
+        role2.addPermission(PERM);
+        roleFacade.update(role2.getId(), role2);
+        Role r = roleFacade.find(role2.getId());
         Assert.assertEquals(PERM, r.getPermissions().get(0).getValue());
 
         r.removePermission(PERM);
@@ -176,7 +154,7 @@ public class UserFacadeTest extends AbstractEJBTestBase {
     public void testIdleGuestRemoval() {
         userFacade.guestLogin();                                                // Log in as guest
 
-        Assert.assertEquals(2, userFacade.findAll().size());                    // Assert creation
+        Assert.assertEquals(3, userFacade.findAll().size()); // Admin, u and currentGuest
 
         User user = userFacade.getCurrentUser();                                // Set created time to 3 month ago
         Calendar calendar = Calendar.getInstance();
@@ -187,11 +165,13 @@ public class UserFacadeTest extends AbstractEJBTestBase {
 
         userFacade.removeIdleGuests();                                          // Run idle guest account removal
 
-        Assert.assertEquals(1, userFacade.findAll().size());                    // Assert removal succes
+        Assert.assertEquals(2, userFacade.findAll().size());                    // Assert removal succes
     }
 
     @Test
     public void testRemoveRole() {
+
+        int numRole = userFacade.find(u.getId()).getRoles().size();
 
         Role r = new Role("Test");
         roleFacade.create(r);
@@ -199,12 +179,13 @@ public class UserFacadeTest extends AbstractEJBTestBase {
 
         Assert.assertEquals("Test", roleFacade.find(r.getId()).getName());
 
-        userFacade.addRole(u.getId(), r.getId());
+        addRoles(u, r);
 
         //roleFacade.merge(r);
         //accountFacade.merge(abstractAccount);
-        Assert.assertEquals(1, accountFacade.find(abstractAccount.getId()).getRoles().size());
+        Assert.assertEquals(numRole + 1, userFacade.find(u.getId()).getRoles().size());
         Assert.assertEquals(1, roleFacade.find(r.getId()).getNumberOfMember());
+
         roleFacade.remove(r.getId());
 
         Assert.assertNull(roleFacade.find(r.getId()));                                             // A not NoResultException should be thrown here

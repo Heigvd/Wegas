@@ -188,6 +188,9 @@ public abstract class AbstractAccount extends AbstractEntity {
         }
     }
 
+    public void setName(String name) {
+    }
+
     /**
      * @return the first name
      */
@@ -220,7 +223,11 @@ public abstract class AbstractAccount extends AbstractEntity {
      * @return the roles
      */
     public Collection<Role> getRoles() {
-        return user.getRoles();
+        if (this.user != null) {
+            return user.getRoles();
+        } else {
+            return null;
+        }
     }
 
     @JsonIgnore
@@ -239,7 +246,11 @@ public abstract class AbstractAccount extends AbstractEntity {
      * @return the permissions
      */
     public List<Permission> getPermissions() {
-        return this.user.getPermissions();
+        if (this.user != null) {
+            return this.user.getPermissions();
+        } else {
+            return null;
+        }
     }
 
     @JsonIgnore

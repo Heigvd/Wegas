@@ -7,16 +7,15 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
-import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import java.io.IOException;
-import org.junit.After;
+import java.sql.SQLException;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +27,7 @@ import javax.naming.NamingException;
 public abstract class AbstractEJBTest extends AbstractEJBTestBase {
 
     // *** Static *** //
-    private static final Logger logger = LoggerFactory.getLogger(AbstractEJBTest.class);
+    protected static final Logger logger = LoggerFactory.getLogger(AbstractEJBTest.class);
 
     /**
      * A LIVE gameModel
@@ -48,7 +47,6 @@ public abstract class AbstractEJBTest extends AbstractEJBTestBase {
     protected static Player player2;
     protected static Player player21;
 
-    protected static User admin;
     protected static User scenarist;
     protected static User trainer;
     protected static User user;
@@ -61,31 +59,9 @@ public abstract class AbstractEJBTest extends AbstractEJBTestBase {
     final static private String GAMENAME = "test-game";
     final static private String GAMETOKEN = "test-game-token";
 
-    @BeforeClass
-    public static final void setUp() throws NamingException {
-        Role admins = new Role("Administrator");
-        admins.addPermission("GameModel:*:*");
-        admins.addPermission("Game:*:*");
-        admins.addPermission("User:*:*");
-
-        roleFacade.create(admins);
-
-        admin = AbstractEJBTest.signup("admin@local");
+    @Before
+    public final void setUp() throws NamingException, WegasNoResultException, SQLException, IOException {
         login(admin);
-
-        admin = addRoles(admin, admins);
-
-        //Role guests = new Role("Guest");
-        Role registered = new Role("Registered");
-        Role scenarists = new Role("Scenarist");
-        Role trainers = new Role("Trainer");
-        Role publicRole = new Role("Public");
-
-        roleFacade.create(scenarists);
-        roleFacade.create(trainers);
-        //roleFacade.create(registered);
-        //roleFacade.create(publicRole);
-        //roleFacade.create(guests);
 
         //rm.getEntityManager().getEntityManagerFactory().getCache().evictAll();
         securityFacade.clearPermissions();
@@ -97,24 +73,8 @@ public abstract class AbstractEJBTest extends AbstractEJBTestBase {
         scenarist = addRoles(scenarist, scenarists);
         trainer = addRoles(trainer, trainers);
 
-        /*
-        scenarist = addRoles(scenarist, scenarists, registered, publicRole);
-        trainer = addRoles(trainer, trainers, registered, publicRole);
-        user = addRoles(user, registered, publicRole);
-         */
-        userFacade.logout();
-
         guest = AbstractEJBTest.guestLogin();
-    }
 
-    /**
-     * Create a GameModel and a game with two teams (test-team and test-team2),
-     * with, respectively, one and two players ("Player", "Player2", and
-     * "Player21").
-     *
-     */
-    @Before
-    public void createGameModel() throws IOException {
         login(admin);
 
         login(scenarist);
@@ -161,19 +121,8 @@ public abstract class AbstractEJBTest extends AbstractEJBTestBase {
         requestManager.setPlayer(player);
     }
 
-    @After
-    public void clear() throws NamingException {
-        login(admin);
-        TestHelper.wipeEmCache();
-        requestManager.setPlayer(null);
-        requestManager.clearUpdatedEntities();
-        gameModelFacade.remove(scenario.getId());
-        TestHelper.wipeEmCache();
-        userFacade.remove(user2.getId());
-        userFacade.remove(user21.getId());
-
-        securityFacade.clearPermissions();
-
-        userFacade.logout();
+    public void reseAndSetUpDB() throws NamingException, WegasNoResultException, WegasNoResultException, SQLException, IOException {
+        this.resetDb();
+        this.setUp();
     }
 }

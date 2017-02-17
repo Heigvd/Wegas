@@ -305,8 +305,7 @@ public class GameController {
                 r = Response.status(Response.Status.CONFLICT).build();
                 if (game.getAccess() == Game.GameAccess.OPEN) {
                     if (requestManager.tryLock("join-" + gameId + "-" + currentUser.getId())) {
-                        Player player = playerFacade.checkExistingPlayer(game.getId(), currentUser.getId());
-                        if (player == null) {
+                        if (!playerFacade.isInGame(game.getId(), currentUser.getId())) {
                             if (game.getGameModel().getProperties().getFreeForAll()) {
                                 Team team = new Team("Ind-" + Helper.genToken(12), 1);
                                 teamFacade.create(game.getId(), team); // return managed team

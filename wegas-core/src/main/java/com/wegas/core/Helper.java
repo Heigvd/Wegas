@@ -31,6 +31,8 @@ import java.security.SecureRandom;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -749,6 +751,7 @@ public class Helper {
 
     public static void printWegasStackTrace(Throwable t) {
         StringBuilder sb = new StringBuilder(t.getClass().getName());
+        sb.append(" - ").append(t.getMessage());
         for (StackTraceElement elem : t.getStackTrace()) {
             if (elem.getClassName().startsWith("com.wegas")) {
                 sb.append("\n\tat ");
@@ -756,6 +759,17 @@ public class Helper {
             }
         }
         logger.error(sb.toString());
+    }
+
+    /**
+     * Check if email is valid. (Only a string test)
+     *
+     * @param email
+     * @throws javax.mail.internet.AddressException
+     */
+    public static void assertEmailPattern(String email) throws AddressException {
+        InternetAddress emailAddr = new InternetAddress(email);
+        emailAddr.validate();
     }
 
     /**

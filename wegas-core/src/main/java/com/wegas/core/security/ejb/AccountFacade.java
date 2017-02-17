@@ -316,17 +316,13 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
 
     public List<JpaAccount> getAutoCompleteFull(String value, Long gameId) {
         List<JpaAccount> accounts = this.getAutoComplete(value);
-        for (int i = 0; i < accounts.size(); i++) {
-            JpaAccount ja = accounts.get(i);
-            getEntityManager().detach(ja);
-            ja.setEmail(ja.getEmail().replaceFirst("([^@]{1,4})[^@]*(@.*)", "$1****$2"));
-            try {
-                Player p = playerFacade.findByGameIdAndUserId(gameId, ja.getUser().getId());
-                if (ja.getUser() == p.getUser()) {
-                    accounts.remove(i);
-                }
-            } catch (WegasNoResultException e) {
-                //Gotcha
+        for (Iterator<JpaAccount> it = accounts.iterator(); it.hasNext();) {
+            JpaAccount ja = it.next();
+            if (playerFacade.isInGame(gameId, ja.getUser().getId())) {
+                it.remove();
+            } else {
+                getEntityManager().detach(ja);
+                ja.setEmail(ja.getEmail().replaceFirst("([^@]{1,4})[^@]*(@.*)", "$1****$2"));
             }
         }
         return accounts;

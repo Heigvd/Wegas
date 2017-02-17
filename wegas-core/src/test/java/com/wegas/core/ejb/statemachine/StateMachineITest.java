@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import javax.naming.NamingException;
 import java.io.IOException;
+import java.sql.SQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -255,31 +256,22 @@ public class StateMachineITest extends AbstractEJBTest {
 
     }
 
-    public void testChose() throws NamingException, NoSuchMethodException, IOException, WegasNoResultException {
+    public void testChose() throws NamingException, NoSuchMethodException, IOException, WegasNoResultException, SQLException {
         this.testEvent();
 
-        this.clear();
-        this.createGameModel();
-
-        this.PlayerJoinTest();
-
-        this.clear();
-        this.createGameModel();
+        this.reseAndSetUpDB();
 
         this.editorUpdate();
 
-        this.clear();
-        this.createGameModel();
+        this.reseAndSetUpDB();
 
         this.highScore();
 
-        this.clear();
-        this.createGameModel();
+        this.reseAndSetUpDB();
 
         this.duplicate();
 
-        this.clear();
-        this.createGameModel();
+        this.reseAndSetUpDB();
 
         this.disable();
     }

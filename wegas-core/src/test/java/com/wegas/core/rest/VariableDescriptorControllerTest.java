@@ -21,7 +21,6 @@ import com.wegas.mcq.persistence.Result;
 import java.util.Arrays;
 import javax.naming.NamingException;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -36,15 +35,15 @@ public class VariableDescriptorControllerTest extends AbstractEJBTest {
         NumberDescriptor number = new NumberDescriptor();
         number.setName("testnumber");
         number.setDefaultInstance(new NumberInstance(1));
-        variableDescriptorFacade.create(scenario.getId(), number);
-        Assert.assertTrue(variableDescriptorController.idsContains(scenario.getId(), "testnum").contains(number.getId()));
+        variableDescriptorFacade.create(gameModel.getId(), number);
+        Assert.assertTrue(variableDescriptorController.idsContains(gameModel.getId(), "testnum").contains(number.getId()));
 
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new TriggerInstance());
         trigger.setTriggerEvent(new Script("true"));
         trigger.setPostTriggerEvent(new Script("var imascriptcontent"));
-        variableDescriptorFacade.create(scenario.getId(), trigger);
-        Assert.assertTrue(variableDescriptorController.idsContains(scenario.getId(), "imascriptcontent").contains(trigger.getId()));
+        variableDescriptorFacade.create(gameModel.getId(), trigger);
+        Assert.assertTrue(variableDescriptorController.idsContains(gameModel.getId(), "imascriptcontent").contains(trigger.getId()));
     }
 
     @Test
@@ -53,23 +52,23 @@ public class VariableDescriptorControllerTest extends AbstractEJBTest {
         NumberDescriptor number = new NumberDescriptor();
         number.setName("testnumber");
         number.setDefaultInstance(new NumberInstance(1));
-        variableDescriptorFacade.create(scenario.getId(), number);
-        Assert.assertTrue(variableDescriptorController.idsContainsAll(scenario.getId(), "testnum").contains(number.getId()));
-        Assert.assertTrue(!variableDescriptorController.idsContainsAll(scenario.getId(), "testnumber2").contains(number.getId()));
+        variableDescriptorFacade.create(gameModel.getId(), number);
+        Assert.assertTrue(variableDescriptorController.idsContainsAll(gameModel.getId(), "testnum").contains(number.getId()));
+        Assert.assertTrue(!variableDescriptorController.idsContainsAll(gameModel.getId(), "testnumber2").contains(number.getId()));
 
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new TriggerInstance());
         trigger.setTriggerEvent(new Script("true"));
         trigger.setPostTriggerEvent(new Script("var imascriptcontent"));
-        variableDescriptorFacade.create(scenario.getId(), trigger);
-        Assert.assertTrue(variableDescriptorController.idsContainsAll(scenario.getId(), "imascriptcontent").contains(trigger.getId()));
+        variableDescriptorFacade.create(gameModel.getId(), trigger);
+        Assert.assertTrue(variableDescriptorController.idsContainsAll(gameModel.getId(), "imascriptcontent").contains(trigger.getId()));
 
         /* TEST MCQ */
         System.out.println("MCQ");
         QuestionDescriptor question = new QuestionDescriptor();
         question.setDefaultInstance(new QuestionInstance());
         question.setDescription("Find me");
-        variableDescriptorFacade.create(scenario.getId(), question);
+        variableDescriptorFacade.create(gameModel.getId(), question);
 
         ChoiceDescriptor choice = new ChoiceDescriptor();
         choice.setDefaultInstance(new ChoiceInstance());
@@ -80,8 +79,8 @@ public class VariableDescriptorControllerTest extends AbstractEJBTest {
         r2.setImpact(new Script("var imascript"));
         choice.addResult(r2);
         variableDescriptorFacade.createChild(question.getId(), choice);
-        Assert.assertTrue(variableDescriptorController.idsContainsAll(scenario.getId(), "me, find").containsAll(Arrays.asList(question.getId(), choice.getId())));
-        Assert.assertTrue(variableDescriptorController.idsContainsAll(scenario.getId(), "script ima").contains(choice.getId()));
+        Assert.assertTrue(variableDescriptorController.idsContainsAll(gameModel.getId(), "me, find").containsAll(Arrays.asList(question.getId(), choice.getId())));
+        Assert.assertTrue(variableDescriptorController.idsContainsAll(gameModel.getId(), "script ima").contains(choice.getId()));
     }
 
 }

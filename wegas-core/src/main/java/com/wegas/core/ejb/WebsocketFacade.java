@@ -62,7 +62,7 @@ public class WebsocketFacade {
     private final Boolean maintainLocalListUpToDate;
 
     public final static String GLOBAL_CHANNEL = "global-channel";
-    public final static String ADMIN_CHANNEL = "private-Admin";
+    public final static String ADMIN_CHANNEL = "private-Role-Admin";
 
     public static final Pattern USER_CHANNEL_PATTERN = Pattern.compile(Helper.USER_CHANNEL_PREFIX + "(\\d+)");
     public static final Pattern PRIVATE_CHANNEL_PATTERN = Pattern.compile("private-(User|Player|Team|Game|GameModel)-(\\d+)");
@@ -543,7 +543,7 @@ public class WebsocketFacade {
         try {
             ObjectMapper mapper = JacksonMapperProvider.getMapper();
             String users = mapper.writeValueAsString(onlineUsers.values());
-            pusher.trigger("private-Admin", "online-users", users);
+            pusher.trigger(WebsocketFacade.ADMIN_CHANNEL, "online-users", users);
         } catch (JsonProcessingException ex) {
             java.util.logging.Logger.getLogger(WebsocketFacade.class.getName()).log(Level.SEVERE, null, ex);
         }

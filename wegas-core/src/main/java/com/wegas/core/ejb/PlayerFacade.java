@@ -74,6 +74,9 @@ public class PlayerFacade extends BaseFacade<Player> {
     private RequestManager requestManager;
 
     @Inject
+    private SecurityFacade securityFacade;
+
+    @Inject
     private Event<ResetEvent> resetEvent;
 
     /**
@@ -102,7 +105,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      * @throws WegasNoResultException if not player was found
      */
     public Player findByGameIdAndUserId(final Long gameId, final Long userId) throws WegasNoResultException {
-        Player p = this.checkExistingPlayer(gameId, userId);
+        Player p = this.findPlayer(gameId, userId);
         if (p != null) {
             return p;
         } else {
@@ -115,7 +118,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      * @param userId
      * @return the player owned by user linked to the game or null if not found
      */
-    public Player checkExistingPlayer(final Long gameId, final Long userId) {
+    public Player check_ExistingPlayer(final Long gameId, final Long userId) {
         if (userId != null) {
             for (Team t : gameFacade.find(gameId).getTeams()) {
                 for (Player p : t.getPlayers()) {
@@ -126,6 +129,39 @@ public class PlayerFacade extends BaseFacade<Player> {
             }
         }
         return null;
+    }
+
+    /**
+     * @param gameId
+     * @param userId
+     * @return
+     */
+    public Player findPlayer(final Long gameId, final Long userId) {
+        try {
+            final TypedQuery<Player> findByGameIdAndUserId = getEntityManager().createNamedQuery("Player.findPlayerByGameIdAndUserId", Player.class);
+            findByGameIdAndUserId.setParameter("gameId", gameId);
+            findByGameIdAndUserId.setParameter("userId", userId);
+            return findByGameIdAndUserId.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    /**
+     * @param gameId
+     * @param userId
+     * @return
+     */
+    public boolean isInGame(final Long gameId, final Long userId) {
+        try {
+            final TypedQuery<Player> findByGameIdAndUserId = getEntityManager().createNamedQuery("Player.findPlayerByGameIdAndUserId", Player.class);
+            findByGameIdAndUserId.setParameter("gameId", gameId);
+            findByGameIdAndUserId.setParameter("userId", userId);
+            findByGameIdAndUserId.getSingleResult();
+            return true;
+        } catch (NoResultException e) {
+            return false;
+        }
     }
 
     /**

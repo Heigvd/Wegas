@@ -12,6 +12,8 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import java.util.Objects;
+import org.eclipse.persistence.config.CacheUsage;
+import org.eclipse.persistence.config.QueryHints;
 
 /**
  *
@@ -19,12 +21,24 @@ import java.util.Objects;
  */
 @Entity
 @NamedQueries({
-    @NamedQuery(name = "Permission.findByPermissionAndUser", query = "SELECT p FROM Permission p WHERE p.value LIKE :permission AND p.user.id = :userId"),
     @NamedQuery(name = "Permission.findByPermission", query = "SELECT p FROM Permission p WHERE p.value LIKE :permission")
+    ,
+    @NamedQuery(name = "Permission.findByPermissionAndUser", query = "SELECT p FROM Permission p WHERE p.value LIKE :permission AND p.user.id = :userId")
+    ,
+    @NamedQuery(name = "Permission.findByRole", query = "SELECT p FROM Permission p WHERE p.role.id = :roleId",
+            hints = {
+                @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.DoNotCheckCache)
+            })
+    ,
+    @NamedQuery(name = "Permission.findByUser", query = "SELECT p FROM Permission p WHERE p.user.id = :userId",
+            hints = {
+                @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.DoNotCheckCache)
+            })
 })
 @Table(
         indexes = {
-            @Index(columnList = "role_id"),
+            @Index(columnList = "role_id")
+            ,
             @Index(columnList = "user_id")
         }
 )

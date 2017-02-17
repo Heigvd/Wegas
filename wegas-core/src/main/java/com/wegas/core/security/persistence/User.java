@@ -158,6 +158,9 @@ public class User extends AbstractEntity implements Comparable<User> {
         }
     }
 
+    public void setName(String name) {
+    }
+
     /**
      * @return the permissions
      */

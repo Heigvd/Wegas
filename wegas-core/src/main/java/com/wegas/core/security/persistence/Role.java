@@ -14,6 +14,8 @@ import com.wegas.core.persistence.ListUtils;
 
 import javax.persistence.*;
 import java.util.*;
+import org.eclipse.persistence.config.CacheUsage;
+import org.eclipse.persistence.config.QueryHints;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -24,7 +26,13 @@ import java.util.*;
 })
 @Cacheable(true)
 @NamedQueries({
-    @NamedQuery(name = "Role.findByName", query = "SELECT a FROM Role a WHERE a.name = :name")})
+    @NamedQuery(name = "Role.findByName", query = "SELECT a FROM Role a WHERE a.name = :name")
+    ,
+    @NamedQuery(name = "Roles.findByUser", query = "SELECT role FROM Role role JOIN role.users user WHERE user.id = :userId",
+            hints = {
+                @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.DoNotCheckCache)
+            })
+})
 public class Role extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
@@ -187,7 +195,6 @@ public class Role extends AbstractEntity {
     public boolean removePermission(String permission) {
         return this.removePermission(new Permission(permission));
     }
-
 
     public boolean removePermission(Permission permission) {
         Permission currPerm;

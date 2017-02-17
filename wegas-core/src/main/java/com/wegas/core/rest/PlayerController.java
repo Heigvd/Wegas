@@ -103,9 +103,7 @@ public class PlayerController {
                     && teamToJoin.getGame().getAccess() == Game.GameAccess.OPEN
                     && !teamToJoin.getGame().getProperties().getFreeForAll()) {
                 if (requestManager.tryLock("join-" + teamToJoin.getGameId() + "-" + currentUser.getId())) {
-                    Player existingPlayer = playerFacade.checkExistingPlayer(teamToJoin.getGameId(), currentUser.getId());
-
-                    if (existingPlayer == null) {
+                    if (!playerFacade.isInGame(teamToJoin.getGameId(), currentUser.getId())) {
                         playerFacade.create(teamToJoin, currentUser);
 
                         return Response.status(Response.Status.CREATED).entity(teamToJoin).build();

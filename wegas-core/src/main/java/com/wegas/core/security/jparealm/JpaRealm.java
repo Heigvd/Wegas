@@ -10,6 +10,7 @@ package com.wegas.core.security.jparealm;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.security.ejb.AccountFacade;
+import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
@@ -71,24 +72,17 @@ public class JpaRealm extends AuthorizingRealm {
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         try {
-//            if (principals.fromRealm(this.getName()).size() > 0) {
-//                Long accountId = (Long) principals.fromRealm(getName()).iterator().next();
-//                AbstractAccount account = accountFacade().find(accountId);
-//            }
-
             SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
+
             AbstractAccount account = accountFacade().find((Long) principals.getPrimaryPrincipal());
             if (account != null) {
+                UserFacade userFacade = UserFacade.lookup();
                 User user = account.getUser();
-                for (Role role : user.getRoles()) {
+                for (Role role : userFacade.findRoles(user)) {
                     info.addRole(role.getName());
-
-                    for (Permission p : role.getPermissions()) {
-                        addPermissions(info, p);
-                    }
                 }
 
-                for (Permission p : user.getPermissions()) {
+                for (Permission p : userFacade.findAllUserPermissions(user)) {
                     addPermissions(info, p);
                 }
             }

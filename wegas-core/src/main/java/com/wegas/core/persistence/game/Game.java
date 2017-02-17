@@ -41,8 +41,10 @@ import javax.validation.constraints.Pattern;
         }
 )
 @NamedQueries({
-    @NamedQuery(name = "Game.findByStatus", query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status = :status ORDER BY g.createdTime ASC"),
-    @NamedQuery(name = "Game.findByToken", query = "SELECT DISTINCT g FROM Game g WHERE  g.status = :status AND g.token = :token"),
+    @NamedQuery(name = "Game.findByStatus", query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status = :status ORDER BY g.createdTime ASC")
+    ,
+    @NamedQuery(name = "Game.findByToken", query = "SELECT DISTINCT g FROM Game g WHERE  g.status = :status AND g.token = :token")
+    ,
     @NamedQuery(name = "Game.findByNameLike", query = "SELECT DISTINCT g FROM Game g WHERE  g.name LIKE :name")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -499,21 +501,34 @@ public class Game extends NamedEntity implements Broadcastable, BroadcastTarget 
 
     @Override
     public String getRequieredUpdatePermission() {
-        return this.getChannel();
+        if (this.getAccess() == GameAccess.OPEN) {
+            // Everybody can create a team and add it to the game
+            return null;
+        } else {
+            return "W-" + this.getChannel();
+        }
     }
 
     @Override
     public String getRequieredReadPermission() {
-        return null;
+        if (this.getAccess() == GameAccess.OPEN) {
+            // Everybody can read an open game
+            return null;
+        } else {
+            // Only authorised people can read this game
+            return this.getChannel();
+        }
     }
 
     @Override
     public String getRequieredCreatePermission() {
+        // Only trainer can create games
         return Role.TRAINER_PERM;
     }
 
     @Override
     public String getRequieredDeletePermission() {
+        // Game owner only
         return "W-" + this.getChannel();
     }
 
