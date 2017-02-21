@@ -761,6 +761,7 @@ public class UserFacade extends BaseFacade<User> {
     public void addRole(User u, Role r) {
         u.addRole(r);
         r.addUser(u);
+        //this.merge(u);
     }
 
     public void addRole(Long uId, Long rId) {

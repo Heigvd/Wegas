@@ -143,14 +143,7 @@ public class PlayerController {
         if (!userFacade.getCurrentUser().equals(p.getUser())) {
             SecurityHelper.checkPermission(p.getGame(), "Edit");
         }
-        Team team = teamFacade.find(p.getTeamId());
-        if (!(team instanceof DebugTeam)) {
-            if (team.getPlayers().size() == 1) {
-                teamFacade.remove(team);
-            } else {
-                playerFacade.remove(playerId);
-            }
-        }
+        playerFacade.remove(p);
         return p;
     }
 

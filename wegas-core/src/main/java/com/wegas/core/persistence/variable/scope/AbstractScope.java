@@ -38,9 +38,12 @@ import org.slf4j.LoggerFactory;
  */
 @Entity                                                                         // Database serialization
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "GameModelScope", value = GameModelScope.class),
-    @JsonSubTypes.Type(name = "GameScope", value = GameScope.class),
-    @JsonSubTypes.Type(name = "TeamScope", value = TeamScope.class),
+    @JsonSubTypes.Type(name = "GameModelScope", value = GameModelScope.class)
+    ,
+    @JsonSubTypes.Type(name = "GameScope", value = GameScope.class)
+    ,
+    @JsonSubTypes.Type(name = "TeamScope", value = TeamScope.class)
+    ,
     @JsonSubTypes.Type(name = "PlayerScope", value = PlayerScope.class)
 })
 @Table(indexes = {
@@ -261,6 +264,11 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
         }
 
         return this.variableInstanceFacade;
+    }
+
+    @Override
+    public String getRequieredCreatePermission() {
+        return this.getVariableDescriptor().getRequieredCreatePermission();
     }
 
     @Override

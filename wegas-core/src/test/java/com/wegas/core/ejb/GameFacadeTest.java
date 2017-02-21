@@ -97,17 +97,19 @@ public class GameFacadeTest extends AbstractEJBTest {
 
     @Test
     public void testGameCreation() throws IOException {
+        //Update the gameModel
+        login(scenarist);
         Game newGame = new Game("newGame");
         newGame.setAccess(Game.GameAccess.OPEN);
-        newGame.setGameModel(scenario);
-        //newGame.setGameModelId(scenario.getId());
+        newGame.setGameModel(gameModel);
 
         BooleanDescriptor desc = new BooleanDescriptor("Bln");
         desc.setDefaultInstance(new BooleanInstance(true));
 
-        variableDescriptorFacade.create(scenario.getId(), desc);
+        variableDescriptorFacade.create(gameModel.getId(), desc);
 
-        gameFacade.publishAndCreate(scenario.getId(), newGame);
+        login(trainer);
+        gameFacade.publishAndCreate(gameModel.getId(), newGame);
 
         newGame = gameFacade.find(newGame.getId());
 

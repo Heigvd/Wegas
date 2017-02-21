@@ -157,7 +157,7 @@ public class AbstractEJBTestBase {
         requestManager.clearDestroyedEntities();
         requestManager.clearOutdatedEntities();
 
-        requestManager.clearPermissions();
+        //requestManager.clearPermissions();
 
         TestHelper.wipeEmCache();
         userFacade.logout();
@@ -218,12 +218,10 @@ public class AbstractEJBTestBase {
 
     public static User addRoles(User user, Role... roles) {
         user = userFacade.find(user.getId());
-        Collection<Role> userRoles = user.getRoles();
         for (Role role : roles) {
             userFacade.addRole(user.getId(), role.getId());
-            userRoles.add(role);
         }
-        userFacade.merge(user);
+        //userFacade.merge(user);
         return userFacade.find(user.getId());
     }
 

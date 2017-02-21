@@ -220,7 +220,7 @@ public class WegasRESTClient {
 
     public String postJSON_asString(String url, String jsonContent) throws IOException {
         HttpResponse response = this.sendRequest(url, "POST", jsonContent);
-        Assert.assertTrue(response.getStatusLine().getStatusCode() < 300);
+
         return getEntityAsString(response.getEntity());
     }
 

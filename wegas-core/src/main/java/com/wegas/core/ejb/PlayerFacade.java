@@ -305,16 +305,21 @@ public class PlayerFacade extends BaseFacade<Player> {
     @Override
     public void remove(final Player player) {
         //List<VariableInstance> instances = this.getAssociatedInstances(player);
-        player.getTeam().getPlayers().remove(player);
-        if (player.getUser() != null) {
-            player.getUser().getPlayers().remove(player);
+        Team team = teamFacade.find(player.getTeam().getId());
+
+        if (team instanceof DebugTeam == false) {
+            if (team.getPlayers().size() == 1) {
+                // Last player -> remove the whole team
+                teamFacade.remove(team);
+            } else {
+                // Only remove the player
+                team.getPlayers().remove(player);
+                if (player.getUser() != null) {
+                    player.getUser().getPlayers().remove(player);
+                }
+                this.getEntityManager().remove(player);
+            }
         }
-
-        this.getEntityManager().remove(player);
-
-        //for (VariableInstance i : instances) {
-        //    this.getEntityManager().remove(i);
-        //}
     }
 
     /**

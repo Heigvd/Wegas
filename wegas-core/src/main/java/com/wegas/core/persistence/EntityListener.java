@@ -165,6 +165,7 @@ public class EntityListener {
     @PostLoad
     void onPostLoad(Object o) {
         if (o instanceof AbstractEntity) {
+            ((AbstractEntity) o).setPersisted(true);
             if (requestManager != null) {
                 requestManager.assertReadRight((AbstractEntity) o);
             } else {

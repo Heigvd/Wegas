@@ -612,6 +612,12 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     @Override
     public String getRequieredCreatePermission() {
-        return Role.SCENARIST_PERM;
+        if (gameModel.isPersisted()) {
+            return "W-" + this.getGameModel().getChannel();
+        } else {
+            //Means the gameModel is created during the same request
+            //no permission to check since permissions for the gamemodel have not been persisted yet
+            return null;
+        }
     }
 }

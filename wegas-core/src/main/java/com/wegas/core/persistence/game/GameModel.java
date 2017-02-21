@@ -710,7 +710,11 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
 
     @Override
     public String getRequieredUpdatePermission() {
-        return "W-" + this.getChannel();
+        if (this.isPersisted()) {
+            return "W-" + this.getChannel();
+        } else {
+            return null;
+        }
     }
 
     @Override

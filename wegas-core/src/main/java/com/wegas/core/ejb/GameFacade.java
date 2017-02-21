@@ -469,7 +469,6 @@ public class GameFacade extends BaseFacade<Game> {
      * @param userId
      * @return a new player, linked to user, who just joined the team
      */
-    @Deprecated
     public Player joinTeam(Long teamId, Long userId) {
         // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
         return this.joinTeam(teamFacade.find(teamId), userFacade.find(userId));

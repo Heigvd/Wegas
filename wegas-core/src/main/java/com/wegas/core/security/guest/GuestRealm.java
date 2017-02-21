@@ -9,12 +9,8 @@ package com.wegas.core.security.guest;
 
 import com.wegas.core.security.jparealm.*;
 import com.wegas.core.Helper;
-import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.RoleFacade;
-import com.wegas.core.security.persistence.Permission;
-import com.wegas.core.security.persistence.Role;
-import javax.ejb.EJBException;
 import javax.naming.NamingException;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;

@@ -27,54 +27,51 @@ public class PlayerFacadeTest extends AbstractEJBTest {
     /**
      * Test registeredGames
      */
-    //@Test
+    @Test
     public void testRemovePlayer() throws Exception {
         /**
          * Create a game as trainer
          */
-        //PlayerFacadeTest.login(trainer);
+        login(trainer);
         final Game g = new Game("game");
-        g.setGameModel(scenario);
-        gameFacade.create(g);
+        g.setAccess(Game.GameAccess.OPEN);
+        g.setGameModel(gameModel);
+        gameFacade.publishAndCreate(gameModel.getId(), g);
 
         /**
          * Login as user
          */
-        //PlayerFacadeTest.login(user);
-        User currentUser = userFacade.getCurrentUser();
-        Assert.assertEquals(0, currentUser.getPlayers().size());
+        login(user);
+        Assert.assertEquals(1, userFacade.getCurrentUser().getPlayers().size()); // user plays to game as player !
+        Assert.assertEquals(1, gameFacade.find(g.getId()).getTeams().size()); // debugTeam 
 
         Team t = new Team("team");
         t.setGame(g);
         teamFacade.create(t);
-        final Player p1 = new Player("player");
-        p1.setTeam(t);
-        p1.setUser(currentUser);
-        playerFacade.create(p1);
-        final Player p2 = new Player("player1");
-        p2.setTeam(t);
-        playerFacade.create(p2);
+        Assert.assertEquals(2, gameFacade.find(g.getId()).getTeams().size()); // debugTeam and team
 
-        Game ng = gameFacade.find(g.getId());
-        currentUser = userFacade.find(currentUser.getId());
-        Assert.assertEquals(2, ng.getTeams().size());
-        Assert.assertEquals(2, ng.getTeams().get(1).getPlayers().size());
-        Assert.assertEquals(1, currentUser.getPlayers().size());
+        Player p1 = gameFacade.joinTeam(t.getId(), user.getId());
+        Assert.assertEquals(1, gameFacade.find(g.getId()).getTeams().get(1).getPlayers().size()); // p1
 
+        login(user2);
+        Player p2 = gameFacade.joinTeam(t.getId(), user2.getId());
+        Assert.assertEquals(2, gameFacade.find(g.getId()).getTeams().get(1).getPlayers().size()); // p1 and p2
+        Assert.assertEquals(2, userFacade.getCurrentUser().getPlayers().size()); //user plays to game as player2 and to g as p2
+
+        login(user);
         playerFacade.remove(p1.getId());
 
-        ng = gameFacade.find(g.getId());
-        Assert.assertEquals(2, ng.getTeams().size());
-        Assert.assertEquals(1, ng.getTeams().get(1).getPlayers().size());
+        Assert.assertEquals(2, gameFacade.find(g.getId()).getTeams().size()); // debugTeam and team
+        Assert.assertEquals(1, gameFacade.find(g.getId()).getTeams().get(1).getPlayers().size()); // p2 only
 
-        teamFacade.remove(t.getId());
+        login(user2);
+        playerFacade.remove(p2.getId()); //removing the last player in team leads to team deletion
 
-        ng = gameFacade.find(g.getId());
-        currentUser = userFacade.find(currentUser.getId());
-        Assert.assertEquals(1, ng.getTeams().size());
+        Assert.assertEquals(1, gameFacade.find(g.getId()).getTeams().size()); // debugTeam
 
-        Assert.assertEquals(0, currentUser.getPlayers().size());
+        Assert.assertEquals(1, userFacade.getCurrentUser().getPlayers().size());
 
+        login(admin);
         gameFacade.remove(g.getId());                                           // Clean up
     }
 
@@ -103,9 +100,11 @@ public class PlayerFacadeTest extends AbstractEJBTest {
     public void testMassiveJoin() throws Exception {
         int nbTeam = 100;
         int nbPlayer = 10;
+
+        login(trainer);
         Game g = new Game("game");
-        g.setGameModel(scenario);
-        gameFacade.create(g);
+        g.setGameModel(gameModel);
+        gameFacade.publishAndCreate(gameModel.getId(), g);
 
         for (int i = 0; i < nbTeam; i++) {
             Team t = createTeam(g, "T" + i);

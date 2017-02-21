@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.persistence.variable.Beanjection;
+import javax.persistence.Transient;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -34,11 +35,16 @@ import org.slf4j.LoggerFactory;
 //@XmlAccessorType(XmlAccessType.FIELD)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "GameModel", value = GameModel.class),
-    @JsonSubTypes.Type(name = "Game", value = Game.class),
-    @JsonSubTypes.Type(name = "Player", value = Player.class),
-    @JsonSubTypes.Type(name = "Team", value = Team.class),
-    @JsonSubTypes.Type(name = "VariableDescriptor", value = VariableDescriptor.class),
+    @JsonSubTypes.Type(name = "GameModel", value = GameModel.class)
+    ,
+    @JsonSubTypes.Type(name = "Game", value = Game.class)
+    ,
+    @JsonSubTypes.Type(name = "Player", value = Player.class)
+    ,
+    @JsonSubTypes.Type(name = "Team", value = Team.class)
+    ,
+    @JsonSubTypes.Type(name = "VariableDescriptor", value = VariableDescriptor.class)
+    ,
     @JsonSubTypes.Type(name = "VariableInstance", value = VariableInstance.class)
 })
 public abstract class AbstractEntity implements Serializable, Cloneable {
@@ -58,6 +64,10 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      * @param other the entity to copy values from
      */
     public abstract void merge(AbstractEntity other);
+
+    @Transient
+    @JsonIgnore
+    private boolean persisted = false;
 
     /**
      * this hashCode is base on id and class hashcode
@@ -218,4 +228,11 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
         return this.getRequieredUpdatePermission();
     }
 
+    public boolean isPersisted() {
+        return persisted;
+    }
+
+    void setPersisted(boolean persisted) {
+        this.persisted = persisted;
+    }
 }

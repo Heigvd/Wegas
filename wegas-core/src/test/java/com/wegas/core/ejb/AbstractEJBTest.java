@@ -22,6 +22,10 @@ import org.slf4j.LoggerFactory;
 import javax.naming.NamingException;
 
 /**
+ *
+ * Admin is root Scenarist owns gameModel; Trainer can instantiate gameModel.
+ * game is a game based on gameModel, scenario is the gameModel copy
+ *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public abstract class AbstractEJBTest extends AbstractEJBTestBase {
@@ -64,8 +68,7 @@ public abstract class AbstractEJBTest extends AbstractEJBTestBase {
         login(admin);
 
         //rm.getEntityManager().getEntityManagerFactory().getCache().evictAll();
-        requestManager.clearPermissions();
-
+        //requestManager.clearPermissions();
         scenarist = AbstractEJBTest.signup("scenarist@local");
         trainer = AbstractEJBTest.signup("trainer@local");
         user = AbstractEJBTest.signup("user@local");

@@ -233,6 +233,7 @@ public class RequestManager {
         final Subject subject = SecurityUtils.getSubject();
         Long principal = (Long) subject.getPrincipal();
         if (this.currentUser == null || currentPrincipal == null || !currentPrincipal.equals(principal)) {
+            this.clearPermissions();
             try {
                 if (subject.isRemembered() || subject.isAuthenticated()) {
                     AbstractAccount account = accountFacade.find(principal);
@@ -247,6 +248,7 @@ public class RequestManager {
                 this.currentPrincipal = null;
             }
         }
+
         if (this.currentUser != null) {
             return userFacade.find(this.currentUser.getId());
         } else {
