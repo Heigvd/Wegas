@@ -16,8 +16,8 @@
     </head>
 
     <body class="yui3-skin-sam">
-        <span class="passed"></span>
-        <span class="total"></span>
+        <span id="passed"></span>
+        <span id="total"></span>
 
         <script type="text/javascript" src="https://yui-s.yahooapis.com/3.17.2/build/yui/yui-min.js"></script>
         <!--<script type="text/javascript" src="../../lib/yui3/build/yui/yui.js"></script>-->
@@ -76,8 +76,8 @@
                     }).render();
                     Y.Test.Runner.setName('Wegas');
                     Y.Test.Runner.on("complete", function(e) {
-                        Y.one(".passed").setContent(e.results.passed);
-                        Y.one(".total").setContent(e.results.total);
+                        Y.one("#passed").setContent(e.results.passed);
+                        Y.one("#total").setContent(e.results.total);
                     });
                     Y.Test.Runner.run();
                 });

@@ -250,6 +250,35 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         }
     }
 
+    private void duplicateRepository(GameModel newGameModel, GameModel srcGameModel) {
+        try (ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(newGameModel.getId())) {                                                                   // Clone files and pages
+            connector.cloneWorkspace(srcGameModel.getId());
+            newGameModel.setPages(srcGameModel.getPages());
+        } catch (RepositoryException ex) {
+            logger.error("Duplicating repository {} failure, {}", srcGameModel.getId(), ex.getMessage());
+        }
+    }
+
+    public GameModel createGameGameModel(final Long entityId) throws IOException {
+        final GameModel srcGameModel = this.find(entityId);                     // Retrieve the entity to duplicate
+        if (srcGameModel != null) {
+            final GameModel newGameModel = (GameModel) srcGameModel.duplicate();
+
+            // Clear comments
+            newGameModel.setComments("");
+            // to right restriction for trainer, status PLAY must be set before persisting the gameModel
+            newGameModel.setStatus(GameModel.Status.PLAY);
+
+            this.create(newGameModel);
+
+            this.duplicateRepository(newGameModel, srcGameModel);
+
+            return newGameModel;
+        } else {
+            throw new WegasNotFoundException("GameModel not found");
+        }
+    }
+
     @Override
     public GameModel duplicate(final Long entityId) throws IOException {
         final GameModel srcGameModel = this.find(entityId);                     // Retrieve the entity to duplicate
@@ -259,12 +288,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
             newGameModel.setName(this.findUniqueName(srcGameModel.getName()));
             this.create(newGameModel);
 
-            try (ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(newGameModel.getId())) {                                                                   // Clone files and pages
-                connector.cloneWorkspace(srcGameModel.getId());
-                newGameModel.setPages(srcGameModel.getPages());
-            } catch (RepositoryException ex) {
-                logger.error("Duplicating repository {} failure, {}", entityId, ex.getMessage());
-            }
+            this.duplicateRepository(newGameModel, srcGameModel);
 
             return newGameModel;
         } else {

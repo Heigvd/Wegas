@@ -8,9 +8,15 @@
 package com.wegas.integration;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
+import com.gargoylesoftware.htmlunit.Page;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.DomElement;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
@@ -23,12 +29,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import junit.framework.Assert;
-import net.sourceforge.jwebunit.api.IElement;
-import net.sourceforge.jwebunit.junit.JWebUnit;
-import static net.sourceforge.jwebunit.junit.JWebUnit.*;
-import org.codehaus.jettison.json.JSONArray;
+//import net.sourceforge.jwebunit.api.IElement;
+//import net.sourceforge.jwebunit.junit.JWebUnit;
+//import static net.sourceforge.jwebunit.junit.JWebUnit.*;
 import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
 import org.glassfish.embeddable.BootstrapProperties;
 import org.glassfish.embeddable.Deployer;
 import org.glassfish.embeddable.GlassFish;
@@ -52,6 +56,7 @@ public class IntegrationTest {
 
     private static GlassFish glassfish;
     private static String appName;
+    private static String base;
 
     private static WegasRESTClient client;
 
@@ -85,7 +90,8 @@ public class IntegrationTest {
         File appDirectory = new File("target/Wegas/");
         Helper.setWegasRootDirectory(appDirectory.getAbsolutePath());
 
-        client = new WegasRESTClient("http://localhost:5454/Wegas");
+        base = "http://localhost:5454/Wegas";
+        client = new WegasRESTClient(base);
 
         scenarist = client.signup("scenarist@local", "1234");
         trainer = client.signup("trainer@local", "1234");
@@ -112,6 +118,8 @@ public class IntegrationTest {
 
     @Before
     public void setUp() throws IOException, JSONException {
+        logger.error("LOGIN as root");
+        client.login(root);
         loadArtos();
     }
 
@@ -136,7 +144,51 @@ public class IntegrationTest {
     }
 
     private void loadArtos() throws IOException, JSONException {
+        logger.error("LOAD ARTOS");
         artos = client.postJSONFromFile("/rest/GameModel", "src/main/webapp/wegas-private/wegas-pmg/db/wegas-pmg-gamemodel-Artos.json", GameModel.class);
+    }
+
+    @Test
+    public void testStandardProcess() throws IOException {
+        logger.error("root share to Scenarist");
+        client.login(root);
+        client.post("/rest/User/ShareGameModel/" + artos.getId() + "/View,Edit,Delete,Instantiate,Duplicate/" + scenarist.getAccountId(), null);
+
+        logger.error("scenarist share to trainer");
+        client.login(scenarist);
+        List<GameModel> gameModels = client.get("/rest/GameModel/status/LIVE", new TypeReference<List<GameModel>>() {
+        });
+
+        logger.error("# gamemodels scen:" + gameModels.size());
+        Assert.assertEquals(2, gameModels.size()); // Artos  + _empty
+        client.post("/rest/User/ShareGameModel/" + artos.getId() + "/Instantiate/" + trainer.getAccountId(), null);
+
+        client.login(trainer);
+
+        gameModels = client.get("/rest/GameModel/status/LIVE", new TypeReference<List<GameModel>>() {
+        });
+        logger.error("# gamemodels trainer:" + gameModels.size());
+        // Get
+        Assert.assertEquals(2, gameModels.size()); // artos +empty
+
+        //create a game 
+        Game myGame = client.postJSON_asString("/rest/GameModel/" + artos.getId() + "/Game", "{\"@class\":\"Game\",\"gameModelId\":\"" + artos.getId() + "\",\"access\":\"OPEN\",\"name\":\"ArtosGame\"}", Game.class);
+        String token = myGame.getToken();
+
+        List<Game> games = client.get("/rest/GameModel/Game/status/LIVE", new TypeReference<List<Game>>() {
+        });
+        Assert.assertEquals(1, games.size()); // artos +empty
+
+        client.login(user);
+
+        Game gameToJoin = client.get("/rest/GameModel/Game/FindByToken/" + token, Game.class);
+
+        Team newTeam = client.post("/rest/GameModel/Game/" + gameToJoin.getId() + "/Player", null, Team.class);
+
+        List<Team> userTeams = client.get("/rest/User/Current/Team", new TypeReference<List<Team>>() {
+        });
+        
+        Assert.assertEquals(1, userTeams.size()); // artos +empty
     }
 
     @Test
@@ -179,38 +231,34 @@ public class IntegrationTest {
 
     @Test
     public void hello() throws GlassFishException, IOException {
-        //java.lang.System.setProperty("org.apache.commons.logging.simplelog.defaultlog", "debug");
-        //beginAt("test.htm");
-        //assertTitleEquals("My Page");
-        try {
-            beginAt("login.html?debug=true");
-        } catch (NullPointerException e) {  //@fixme error using xmlhttprequest from jwebunit
-            System.out.println("Jweb unit encountered an exception");
-            // e.printStackTrace();
-        }
-        assertResponseCode(200);
-        assertTitleEquals("Web Game Authoring System - Wegas");
+        WebClient webClient = new WebClient();
+        final HtmlPage page = webClient.getPage(base + "/login.html?debug=true");
+
+        Assert.assertEquals(200, page.getWebResponse().getStatusCode());
+
+        Assert.assertEquals("Web Game Authoring System - Wegas", page.getTitleText());
 
         //tester.setTextField("username", "root@root.com");
-        //tester.setTextField("password", "test123");
+        //tester.setTextField("password", "1234");
         //tester.clickLink("login");
         //tester.submit();
     }
 
     @Test
-    public void testJavascript() {
-        JWebUnit.setScriptingEnabled(true);
-        beginAt("wegas-app/tests/wegas-alltests.htm");
-        assertTitleEquals("Wegas Test Suite");
+    public void testJavascript() throws IOException {
+        WebClient webClient = new WebClient();
+        webClient.getOptions().setJavaScriptEnabled(true);
 
-        String pageSource = JWebUnit.getPageSource();
+        //webClient.setAjaxController(new NicelyResynchronizingAjaxController());
+        HtmlPage page = webClient.getPage(base + "/wegas-app/tests/wegas-alltests.htm");
+        //webClient.waitForBackgroundJavaScriptStartingBefore(30000);
 
-        IElement passed = JWebUnit.getElementByXPath("//span[@class='passed']");
-        IElement total = JWebUnit.getElementByXPath("//span[@class='total']");
+        Assert.assertEquals("Wegas Test Suite", page.getTitleText());
+        DomElement domPassed = page.getElementById("passed");
+        DomElement domTotal = page.getElementById("total");
 
-        String pContent = passed.getTextContent();
-
-        String tContent = total.getTextContent();
+        String pContent = domPassed.getTextContent();
+        String tContent = domTotal.getTextContent();
 
         logger.error("TESTS:  " + pContent + "/" + tContent);
     }

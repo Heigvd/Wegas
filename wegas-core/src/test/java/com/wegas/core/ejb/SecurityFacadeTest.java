@@ -21,8 +21,11 @@ public class SecurityFacadeTest extends AbstractEJBTest {
     @Test(expected = EJBException.class)
     public void testPrivilegeEscalation_autoGrantAdmin() throws WegasNoResultException {
         User guestLogin = guestLogin();
+        
         userFacade.addRole(guestLogin.getId(), roleFacade.findByName("Administrator").getId());
+        
         gameModelFacade.findAll();
+        User find = userFacade.find(guestLogin.getId());
     }
 
     @Test(expected = EJBException.class)

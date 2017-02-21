@@ -9,8 +9,7 @@ package com.wegas.core.rest;
 
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
-import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.ejb.SecurityFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
@@ -18,7 +17,6 @@ import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.core.security.ejb.UserFacade;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,17 +56,8 @@ public class VariableDescriptorController {
     @EJB
     private GameModelFacade gameModelFacade;
 
-    @EJB
-    private PlayerFacade playerFacade;
-
-    /**
-     *
-     */
-    @EJB
-    private UserFacade userFacade;
-
     @Inject
-    private SecurityFacade securityFacade;
+    private RequestManager requestManager;
 
     /**
      * @param gameModelId
@@ -89,7 +78,7 @@ public class VariableDescriptorController {
         Collection<VariableDescriptor> descriptors = new ArrayList<>();
         for (Long id : ids) {
             VariableDescriptor desc = variableDescriptorFacade.find(id);
-            if (securityFacade.hasPermission(Helper.getAudienceToken(desc.getGameModel()))) {
+            if (requestManager.hasPermission(Helper.getAudienceToken(desc.getGameModel()))) {
                 descriptors.add(desc);
             }
         }

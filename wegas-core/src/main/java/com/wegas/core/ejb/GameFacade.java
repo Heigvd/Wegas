@@ -110,10 +110,7 @@ public class GameFacade extends BaseFacade<Game> {
      * @throws IOException
      */
     public void publishAndCreate(final Long gameModelId, final Game game) throws IOException {
-        GameModel gm = gameModelFacade.duplicate(gameModelId);
-        gm.setName(gameModelFacade.find(gameModelId).getName());// @HACK Set name back to the original
-        gm.setComments(""); // Clear comments
-        gm.setStatus(GameModel.Status.PLAY);
+        GameModel gm = gameModelFacade.createGameGameModel(gameModelId);
         this.create(gm, game);
         
         // Since Permission on gameModel is provided through game induced permission, revice initial permission on gamemodel:

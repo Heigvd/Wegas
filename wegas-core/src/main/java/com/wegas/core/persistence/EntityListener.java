@@ -8,7 +8,6 @@
 package com.wegas.core.persistence;
 
 import com.wegas.core.ejb.RequestManager;
-import com.wegas.core.ejb.SecurityFacade;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
@@ -70,9 +69,6 @@ public class EntityListener {
     @Inject
     private TeamFacade teamFacade;
 
-    @Inject
-    private SecurityFacade securityFacade;
-
     private Beanjection getBeansjection() {
         return new Beanjection(variableInstanceFacade, variableDescriptorFacade, resourceFacade, iterationFacade, reviewingFacade, userFacade, teamFacade, questionDescriptorFacade);
     }
@@ -87,8 +83,8 @@ public class EntityListener {
     void onPostPersist(Object o) {
         if (o instanceof AbstractEntity) {
 
-            if (securityFacade != null) {
-                securityFacade.assertCreateRight((AbstractEntity) o);
+            if (requestManager != null) {
+                requestManager.assertCreateRight((AbstractEntity) o);
             } else {
                 logger.error("PostPersist NO SECURITY FACADE");
             }
@@ -109,8 +105,8 @@ public class EntityListener {
     void onPostUpdate(Object o) {
 
         if (o instanceof AbstractEntity) {
-            if (securityFacade != null) {
-                securityFacade.assertUpdateRight((AbstractEntity) o);
+            if (requestManager != null) {
+                requestManager.assertUpdateRight((AbstractEntity) o);
             } else {
                 logger.error("PostUpdate NO SECURITY FACADE");
             }
@@ -137,8 +133,8 @@ public class EntityListener {
     void onPreRemove(Object o) {
         if (o instanceof AbstractEntity) {
             AbstractEntity ae = (AbstractEntity) o;
-            if (securityFacade != null) {
-                securityFacade.assertDeleteRight(ae);
+            if (requestManager != null) {
+                requestManager.assertDeleteRight(ae);
             } else {
                 logger.error("PreREMOVE NO SECURITY FACADE");
             }
@@ -169,8 +165,8 @@ public class EntityListener {
     @PostLoad
     void onPostLoad(Object o) {
         if (o instanceof AbstractEntity) {
-            if (securityFacade != null) {
-                securityFacade.assertReadRight((AbstractEntity) o);
+            if (requestManager != null) {
+                requestManager.assertReadRight((AbstractEntity) o);
             } else {
                 logger.error("PostLOAD NO SECURITY FACADE");
             }

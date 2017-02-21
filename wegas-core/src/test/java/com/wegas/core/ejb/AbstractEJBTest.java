@@ -64,7 +64,7 @@ public abstract class AbstractEJBTest extends AbstractEJBTestBase {
         login(admin);
 
         //rm.getEntityManager().getEntityManagerFactory().getCache().evictAll();
-        securityFacade.clearPermissions();
+        requestManager.clearPermissions();
 
         scenarist = AbstractEJBTest.signup("scenarist@local");
         trainer = AbstractEJBTest.signup("trainer@local");

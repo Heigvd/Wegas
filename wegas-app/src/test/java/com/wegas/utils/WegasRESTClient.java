@@ -9,7 +9,6 @@ package com.wegas.utils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -25,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import junit.framework.Assert;
-import net.sourceforge.jwebunit.junit.JWebUnit;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpMessage;
@@ -40,6 +38,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +62,6 @@ public class WegasRESTClient {
     public WegasRESTClient(String baseURL) {
         this.client = HttpClientBuilder.create().build();
         this.baseURL = baseURL;
-        JWebUnit.setBaseUrl(this.baseURL);
     }
 
     public Map<String, Role> getRoles() throws IOException {
@@ -86,7 +84,9 @@ public class WegasRESTClient {
 
         String post_asString = this.post_asString("/rest/User/Signup", ja);
         TestAuthenticationInformation authInfo = getAuthInfo(email, password);
-        authInfo.setUserId(getObjectMapper().readValue(post_asString, User.class).getId());
+        User user = getObjectMapper().readValue(post_asString, User.class);
+        authInfo.setUserId(user.getId());
+        authInfo.setAccountId(user.getMainAccount().getId());
 
         return authInfo;
     }
@@ -103,6 +103,8 @@ public class WegasRESTClient {
 
     public void login(AuthenticationInformation authInfo) throws IOException {
         HttpResponse loginResponse = this._post("/rest/User/Authenticate", authInfo);
+        HttpEntity entity = loginResponse.getEntity();
+        EntityUtils.consume(entity);
 
         Assert.assertEquals(HttpStatus.SC_OK, loginResponse.getStatusLine().getStatusCode());
 
@@ -121,9 +123,13 @@ public class WegasRESTClient {
     }
 
     private String getEntityAsString(HttpEntity entity) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        entity.writeTo(baos);
-        return baos.toString("UTF-8");
+        if (entity != null) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            entity.writeTo(baos);
+            return baos.toString("UTF-8");
+        } else {
+            return "";
+        }
     }
 
     public <T> T get(String url, TypeReference valueTypeRef) throws IOException {
@@ -151,7 +157,7 @@ public class WegasRESTClient {
     }
 
     private HttpResponse _put(String url, Object object) throws IOException {
-        return this.sendRequest(url, "PUT", getObjectMapper().writeValueAsString(object));
+        return this.sendRequest(url, "PUT", (object != null ? getObjectMapper().writeValueAsString(object) : null));
     }
 
     public String post(String url, Object object) throws IOException {
@@ -159,8 +165,18 @@ public class WegasRESTClient {
         return this.getEntityAsString(response.getEntity());
     }
 
+    public <T> T post(String url, Object object, TypeReference valueType) throws IOException {
+        String post = this.post(url, object);
+        return getObjectMapper().readValue(post, valueType);
+    }
+
+    public <T> T post(String url, Object object, Class<T> valueType) throws IOException {
+        String post = this.post(url, object);
+        return getObjectMapper().readValue(post, valueType);
+    }
+
     private HttpResponse _post(String url, Object object) throws IOException {
-        return this.sendRequest(url, "POST", getObjectMapper().writeValueAsString(object));
+        return this.sendRequest(url, "POST", (object != null ? getObjectMapper().writeValueAsString(object) : null));
     }
 
     private String post_asString(String url, Object object) throws IOException {
@@ -234,6 +250,9 @@ public class WegasRESTClient {
         @JsonIgnore
         private Long userId;
 
+        @JsonIgnore
+        private Long accountId;
+
         public Long getUserId() {
             return userId;
         }
@@ -241,5 +260,14 @@ public class WegasRESTClient {
         public void setUserId(Long userId) {
             this.userId = userId;
         }
+
+        public Long getAccountId() {
+            return accountId;
+        }
+
+        public void setAccountId(Long accountId) {
+            this.accountId = accountId;
+        }
+
     }
 }

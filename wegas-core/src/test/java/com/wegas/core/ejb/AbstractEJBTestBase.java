@@ -88,7 +88,6 @@ public class AbstractEJBTestBase {
     protected static MessageFacade messageFacade;
 
     protected static RequestFacade requestFacade;
-    protected static SecurityFacade securityFacade;
     protected static RequestManager requestManager;
 
     protected static ObjectMapper jsonMapper;
@@ -140,7 +139,6 @@ public class AbstractEJBTestBase {
             messageFacade = lookupBy(MessageFacade.class);
 
             requestFacade = RequestFacade.lookup();
-            securityFacade = requestFacade.getSecurityFacade();
             requestManager = requestFacade.getRequestManager();
         }
 
@@ -159,7 +157,7 @@ public class AbstractEJBTestBase {
         requestManager.clearDestroyedEntities();
         requestManager.clearOutdatedEntities();
 
-        securityFacade.clearPermissions();
+        requestManager.clearPermissions();
 
         TestHelper.wipeEmCache();
         userFacade.logout();

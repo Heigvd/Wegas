@@ -44,11 +44,6 @@ public class RequestFacade {
      *
      */
     @Inject
-    private SecurityFacade securityFacade;
-    /**
-     *
-     */
-    @Inject
     private ScriptEventFacade scriptEvent;
     /**
      *
@@ -71,10 +66,6 @@ public class RequestFacade {
      */
     public RequestManager getRequestManager() {
         return requestManager;
-    }
-
-    public SecurityFacade getSecurityFacade() {
-        return securityFacade;
     }
 
     /**

@@ -74,9 +74,6 @@ public class PlayerFacade extends BaseFacade<Player> {
     private RequestManager requestManager;
 
     @Inject
-    private SecurityFacade securityFacade;
-
-    @Inject
     private Event<ResetEvent> resetEvent;
 
     /**

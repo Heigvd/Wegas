@@ -7,21 +7,26 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.statemachine.StateMachineEventCounter;
 import com.wegas.core.event.client.ClientEvent;
 import com.wegas.core.event.client.CustomEvent;
 import com.wegas.core.event.client.ExceptionEvent;
+import com.wegas.core.exception.client.WegasAccessDenied;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.BroadcastTarget;
+import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.ejb.AccountFacade;
+import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.util.SecurityHelper;
 import jdk.nashorn.api.scripting.ScriptUtils;
 import jdk.nashorn.internal.runtime.ScriptObject;
 import org.slf4j.Logger;
@@ -30,7 +35,6 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.DependsOn;
-import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -74,10 +78,16 @@ public class RequestManager {
     private MutexSingleton mutexSingleton;
 
     @Inject
-    private SecurityFacade securityFacade;
+    private GameFacade gameFacade;
 
-    @EJB
+    @Inject
+    private TeamFacade teamFacade;
+
+    @Inject
     private PlayerFacade playerFacade;
+
+    @Inject
+    private UserFacade userFacade;
 
     @Inject
     private AccountFacade accountFacade;
@@ -99,6 +109,7 @@ public class RequestManager {
      */
     private Player currentPlayer;
     private User currentUser;
+    private Long currentPrincipal;
 
     private String requestId;
     private String socketId;
@@ -122,6 +133,8 @@ public class RequestManager {
 
     private Map<String, List<AbstractEntity>> destroyedEntities = new HashMap<>();
 
+    private Collection<String> grantedPermissions = new HashSet<>();
+
     /**
      * Map TOKEN -> Audience
      */
@@ -141,6 +154,19 @@ public class RequestManager {
      *
      */
     private ScriptContext currentScriptContext = null;
+
+    private static int logIndent = 0;
+
+    private static void log(String msg, int level) {
+        if (level < 5) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < logIndent; i++) {
+                sb.append("  ");
+            }
+            sb.append(msg);
+            logger.error(sb.toString());
+        }
+    }
 
     private final StateMachineEventCounter eventCounter = new StateMachineEventCounter();
 
@@ -204,20 +230,28 @@ public class RequestManager {
      * @return a User entity, based on the shiro login state
      */
     public User getCurrentUser() {
-        if (this.currentUser == null) {
+        final Subject subject = SecurityUtils.getSubject();
+        Long principal = (Long) subject.getPrincipal();
+        if (this.currentUser == null || currentPrincipal == null || !currentPrincipal.equals(principal)) {
             try {
-                final Subject subject = SecurityUtils.getSubject();
                 if (subject.isRemembered() || subject.isAuthenticated()) {
-                    AbstractAccount account = accountFacade.find((Long) subject.getPrincipal());
+                    AbstractAccount account = accountFacade.find(principal);
                     if (account != null) {
                         this.currentUser = account.getUser();
+                        this.currentPrincipal = principal;
                     }
                 }
             } catch (Exception ex) {
                 logger.error("FAILS TO FETCH CURRENT USER", ex);
+                this.currentUser = null;
+                this.currentPrincipal = null;
             }
         }
-        return this.currentUser;
+        if (this.currentUser != null) {
+            return userFacade.find(this.currentUser.getId());
+        } else {
+            return null;
+        }
     }
 
     public User getLocalCurrentUser() {
@@ -375,10 +409,10 @@ public class RequestManager {
         this.locale = local;
     }
 
-    private String getAudience(BroadcastTarget target) {
+    private String getAudienceToLock(BroadcastTarget target) {
         if (target != null) {
             String channel = target.getChannel();
-            if (securityFacade.hasPermission(channel)) {
+            if (this.hasPermission(channel)) {
                 return channel;
             } else {
                 throw WegasErrorMessage.error("You don't have the right to lock " + channel);
@@ -413,7 +447,7 @@ public class RequestManager {
      * @return
      */
     public boolean tryLock(String token, BroadcastTarget target) {
-        String audience = getAudience(target);
+        String audience = getAudienceToLock(target);
         boolean tryLock = mutexSingleton.tryLock(token, audience);
         if (tryLock) {
             // Only register token if successfully locked
@@ -439,7 +473,7 @@ public class RequestManager {
      * @param target scope to inform about the lock
      */
     public void lock(String token, BroadcastTarget target) {
-        String audience = getAudience(target);
+        String audience = getAudienceToLock(target);
         mutexSingleton.lock(token, audience);
         if (!lockedToken.containsKey(token)) {
             lockedToken.put(token, new ArrayList());
@@ -461,7 +495,7 @@ public class RequestManager {
      * @param target scope to inform about the lock
      */
     public void unlock(String token, BroadcastTarget target) {
-        String audience = getAudience(target);
+        String audience = getAudienceToLock(target);
         mutexSingleton.unlock(token, audience);
         if (lockedToken.containsKey(token)) {
             List<String> audiences = lockedToken.get(token);
@@ -640,6 +674,156 @@ public class RequestManager {
             } catch (InterruptedException ex) {
             }
         }
+    }
+
+    /**
+     * Security
+     */
+    private String[] split(String permissions) {
+        return permissions.split(",");
+    }
+
+    public void clearPermissions() {
+        log("CLEAR PERMISSIONS", 5);
+        log("*********************************************************", 5);
+        this.grantedPermissions.clear();
+    }
+
+    /**
+     * Check if current user has access to type/id entity
+     *
+     * @param type
+     * @param id
+     * @param currentPlayer
+     * @return true if current user has access to
+     */
+    private boolean hasPermission(String type, String arg, boolean superPermission) {
+        Subject subject = SecurityUtils.getSubject();
+        //Make sure to have up to date user
+        this.getCurrentUser();
+
+        if (subject.hasRole("Administrator")) {
+            return true;
+        } else if ("Role".equals(type)) {
+            return subject.hasRole(arg);
+        } else {
+            Long id = Long.parseLong(arg);
+            if ("GameModel".equals(type)) {
+
+                if (superPermission) {
+                    return subject.isPermitted("GameModel:Edit:gm" + id);
+                } else {
+                    if (subject.hasRole("Trainer") && subject.isPermitted("GameModel:Instantiate:gm" + id)) {
+                        //For trainer, instantiate means read
+                        return true;
+                    }
+                    return subject.isPermitted("GameModel:View:gm" + id);
+                }
+            } else if ("Game".equals(type)) {
+                Game game = gameFacade.find(id);
+                if (superPermission) {
+                    return game != null && SecurityHelper.isPermitted(game, "Edit");
+                } else {
+                    return game != null && SecurityHelper.isPermitted(game, "View");
+                }
+            } else if ("Team".equals(type)) {
+
+                Team team = teamFacade.find(id);
+
+                // Current logged User is linked to a player who's member of the team or current user has edit right one the game
+                return currentUser != null && team != null && (playerFacade.checkExistingPlayerInTeam(team.getId(), currentUser.getId()) != null || SecurityHelper.isPermitted(team.getGame(), "Edit"));
+            } else if ("Player".equals(type)) {
+                Player player = playerFacade.find(id);
+
+                // Current player belongs to current user || current user is the teacher or scenarist (test user)
+                return player != null && ((currentUser != null && currentUser.equals(player.getUser())) || SecurityHelper.isPermitted(player.getGame(), "Edit"));
+            } else if ("User".equals(type)) {
+                User find = userFacade.find(id);
+                return currentUser != null && currentUser.equals(find);
+            }
+        }
+        return false;
+    }
+
+    /**
+     * can current user subscribe to given channel ?
+     *
+     * @param channel
+     * @return true if access granted
+     */
+    public boolean hasPermission(String channel) {
+        if (channel != null) {
+            // remove "private-" from channel name if exists
+            channel = channel.replaceFirst("private-", "");
+
+            if (grantedPermissions.contains(channel)) {
+                log(" WAS ALREADY GRANTED", 5);
+                return true;
+            } else {
+
+                boolean superPermission = false;
+
+                if (channel.startsWith("W-")) {
+                    channel = channel.replaceFirst("W-", "");
+                    superPermission = true;
+                }
+
+                String[] split = channel.split("-");
+
+                if (split.length == 2) {
+                    if (hasPermission(split[0], split[1], superPermission)) {
+                        log(" >>> GRANT: " + channel, 5);
+                        grantedPermissions.add(channel);
+                    }
+                }
+                return grantedPermissions.contains(channel);
+            }
+        } else {
+            log(" EMPTYCHANNEL", 5);
+            return true;
+        }
+    }
+
+    private boolean userHasPermission(String permissions, String type, AbstractEntity entity) {
+        if (permissions != null) {
+            String perms[] = this.split(permissions);
+            for (String perm : perms) {
+                if (this.hasPermission(perm)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        log("NO PERMISSIONS REQUIERED", 5);
+        return true;
+    }
+
+    private void assertUserHasPermission(String permissions, String type, AbstractEntity entity) {
+        log("HAS  PERMISSION: " + type + " / " + permissions + " / " + entity, 5);
+        logIndent++;
+        if (!userHasPermission(permissions, type, entity)) {
+            String msg = type + " Permission Denied (" + permissions + ") for user " + this.getCurrentUser() + " on entity " + entity;
+            Helper.printWegasStackTrace(new Exception(msg));
+            log(msg, 5);
+            throw new WegasAccessDenied(entity, type, permissions, this.getCurrentUser());
+        }
+        logIndent--;
+    }
+
+    public void assertCreateRight(AbstractEntity entity) {
+        this.assertUserHasPermission(entity.getRequieredCreatePermission(), "Create", entity);
+    }
+
+    public void assertReadRight(AbstractEntity entity) {
+        this.assertUserHasPermission(entity.getRequieredReadPermission(), "Read", entity);
+    }
+
+    public void assertUpdateRight(AbstractEntity entity) {
+        this.assertUserHasPermission(entity.getRequieredUpdatePermission(), "Update", entity);
+    }
+
+    public void assertDeleteRight(AbstractEntity entity) {
+        this.assertUserHasPermission(entity.getRequieredDeletePermission(), "Delete", entity);
     }
 
 }

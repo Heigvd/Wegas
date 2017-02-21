@@ -77,23 +77,17 @@ public class WebsocketFacade {
         OUTDATED
     }
 
-    @EJB
-    GameFacade gameFacade;
-
-    @EJB
-    TeamFacade teamFacade;
-
     /**
      *
      */
-    @EJB
+    @Inject
     private UserFacade userFacade;
 
-    @EJB
+    @Inject
     private PlayerFacade playerFacade;
 
     @Inject
-    private RequestFacade requestFacade;
+    private RequestManager requestManager;
 
     /**
      * Initialize Pusher Connection
@@ -442,7 +436,7 @@ public class WebsocketFacade {
             return pusher.authenticate(socketId, channel, new PresenceUser(user.getId(), userInfo));
         }
         if (channel.startsWith("private")) {
-            boolean hasPermission = requestFacade.getSecurityFacade().hasPermission(channel);
+            boolean hasPermission = requestManager.hasPermission(channel);
             if (hasPermission) {
                 return pusher.authenticate(socketId, channel);
             }
