@@ -7,7 +7,6 @@
  */
 package com.wegas.core;
 
-import com.hazelcast.core.HazelcastInstance;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.LabelledEntity;
@@ -30,7 +29,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -116,6 +114,7 @@ public class Helper {
         return lookupBy(type, type);
     }
 
+    /*
     public static HazelcastInstance getHazelcastInstance() {
         HazelcastInstance instance;
         try {
@@ -127,7 +126,7 @@ public class Helper {
             return null;
         }
     }
-
+     */
     /**
      * Check if the given string is null or empty (without trimming)
      *

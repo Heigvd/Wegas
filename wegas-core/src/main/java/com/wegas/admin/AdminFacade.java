@@ -7,9 +7,9 @@
  */
 package com.wegas.admin;
 
+import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ILock;
 import com.wegas.admin.persistence.GameAdmin;
-import com.wegas.core.Helper;
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
@@ -26,6 +26,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +41,9 @@ public class AdminFacade extends BaseFacade<GameAdmin> {
 
     @EJB
     private GameFacade gameFacade;
+
+    @Inject
+    private HazelcastInstance hzInstance;
 
     public AdminFacade() {
         super(GameAdmin.class);
@@ -148,7 +152,7 @@ public class AdminFacade extends BaseFacade<GameAdmin> {
 
     @Schedule(hour = "4", dayOfMonth = "Last Sun")
     public void deleteGames() {
-        ILock lock = Helper.getHazelcastInstance().getLock("AdminFacade.Schedule");
+        ILock lock = hzInstance.getLock("AdminFacade.Schedule");
         if (lock.tryLock()) {
             try {
                 TypedQuery<GameAdmin> query = getEntityManager().createNamedQuery("GameAdmin.GamesToDelete", GameAdmin.class);

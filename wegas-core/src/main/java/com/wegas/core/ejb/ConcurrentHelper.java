@@ -9,7 +9,6 @@ package com.wegas.core.ejb;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ILock;
-import com.wegas.core.Helper;
 import java.io.Serializable;
 import javax.cache.Cache;
 import javax.ejb.Stateless;
@@ -17,9 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 import javax.ejb.LocalBean;
-import javax.ejb.LockType;
 import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +36,10 @@ public class ConcurrentHelper {
 
     private static final Logger logger = LoggerFactory.getLogger(ConcurrentHelper.class);
 
-    private static final HazelcastInstance hazelcastInstance = Helper.getHazelcastInstance();
-    private final ILock mainLock = hazelcastInstance.getLock("ConcurrentHelper.lock");
+    @Inject
+    private HazelcastInstance hzInstance;
+
+    private static final String MAIN_LOCK_NAME = "ConcurrentHelper.lock";
 
     @Inject
     private Cache<String, RefCounterLock> locks;
@@ -64,8 +63,9 @@ public class ConcurrentHelper {
             counter = 0;
         }
 
-        public ILock getLock() {
-            return hazelcastInstance.getLock(token);
+        public String getLockName() {
+            return token;
+            //return hzInstance.getLock(token);
         }
     }
 
@@ -75,6 +75,18 @@ public class ConcurrentHelper {
         } else {
             return "internal::" + token;
         }
+    }
+
+    private ILock getLock(RefCounterLock lock) {
+        return hzInstance.getLock(lock.getLockName());
+    }
+
+    private void mainLock() {
+        hzInstance.getLock(MAIN_LOCK_NAME).lock();
+    }
+
+    private void mainUnlock() {
+        hzInstance.getLock(MAIN_LOCK_NAME).unlock();
     }
 
     /**
@@ -93,7 +105,7 @@ public class ConcurrentHelper {
         //logger.error("try to lock " + token);
 
         boolean r = false;
-        mainLock.lock();
+        this.mainLock();
 
         try {
             //logger.error("try to lock " + token);
@@ -103,7 +115,7 @@ public class ConcurrentHelper {
             locks.putIfAbsent(effectiveToken, new RefCounterLock(token, audience));
             lock = locks.get(effectiveToken);
 
-            if (lock.getLock().tryLock()) {
+            if (this.getLock(lock).tryLock()) {
                 r = true; // Successful
                 lock.counter++;
 
@@ -116,7 +128,7 @@ public class ConcurrentHelper {
             }
             //}
         } finally {
-            mainLock.unlock();
+            this.mainUnlock();
         }
         return r;
     }
@@ -135,7 +147,7 @@ public class ConcurrentHelper {
         //logger.error("try to lock " + token);
 
         RefCounterLock lock;
-        mainLock.lock();
+        this.mainLock();
 
         //logger.error("try to lock " + token);
         try {
@@ -148,10 +160,10 @@ public class ConcurrentHelper {
             }
             //}
         } finally {
-            mainLock.unlock();
+            this.mainUnlock();
         }
 
-        lock.getLock().lock();
+        this.getLock(lock).lock();
         //logger.error("lock " + token + " acquired");
     }
 
@@ -163,13 +175,13 @@ public class ConcurrentHelper {
      */
     private void unlock(RefCounterLock lock, String token, String audience) {
         String effectiveToken = getEffectiveToken(token, audience);
-        lock.getLock().unlock();
+        this.getLock(lock).unlock();
         lock.counter--;
         if (lock.counter == 0) {
             if (audience != null && !audience.equals("internal")) {
                 websocketFacade.sendUnLock(audience, token);
             }
-            lock.getLock().destroy();
+            this.getLock(lock).destroy();
             locks.remove(effectiveToken);
             //logger.error("CLEAN LOCK LIST");
         }
@@ -184,7 +196,7 @@ public class ConcurrentHelper {
     //@javax.ejb.Lock(LockType.READ)
     public void unlock(String token, String audience) {
         String effectiveToken = getEffectiveToken(token, audience);
-        mainLock.lock();
+        this.mainLock();
         try {
             //logger.error("unlock " + token);
             RefCounterLock lock = locks.get(effectiveToken);
@@ -195,7 +207,7 @@ public class ConcurrentHelper {
                 //}
             }
         } finally {
-            mainLock.unlock();
+            this.mainUnlock();
         }
     }
 
@@ -207,18 +219,18 @@ public class ConcurrentHelper {
     //@javax.ejb.Lock(LockType.READ)
     public void unlockFull(String token, String audience) {
         String effectiveToken = getEffectiveToken(token, audience);
-        mainLock.lock();
+        this.mainLock();
         try {
             RefCounterLock lock = locks.get(effectiveToken);
             //RefCounterLock lock = locks.getOrDefault(token, null);
             if (lock != null) {
-                while (lock.getLock().isLockedByCurrentThread()) {
+                while (this.getLock(lock).isLockedByCurrentThread()) {
                     //while (lock.sem.getHoldCount() > 0) {
                     this.unlock(lock, token, audience);
                 }
             }
         } finally {
-            mainLock.unlock();
+            this.mainUnlock();
         }
     }
 

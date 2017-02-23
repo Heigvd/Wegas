@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonpatch.JsonPatchException;
+import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ILock;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -28,6 +29,7 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
+import javax.inject.Inject;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -41,6 +43,9 @@ public class PageController {
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(PageController.class);
 
     static final private String ADMIN_REPO_ID = "0";
+
+    @Inject
+    private HazelcastInstance hzInstance;
 
     /**
      * Retrieves all GameModel's page.
@@ -71,7 +76,7 @@ public class PageController {
     @GET
     @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}")
     public Response getPage(@PathParam("gameModelId") final String gameModelId,
-                            @PathParam("pageId") String pageId)
+            @PathParam("pageId") String pageId)
             throws RepositoryException {
         try (final Pages pages = new Pages(gameModelId)) {
             Page page;
@@ -129,8 +134,8 @@ public class PageController {
     @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response setPage(@PathParam("gameModelId") String gameModelId,
-                            @PathParam("pageId") String pageId,
-                            JsonNode content) throws RepositoryException, IOException {
+            @PathParam("pageId") String pageId,
+            JsonNode content) throws RepositoryException, IOException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
@@ -152,8 +157,8 @@ public class PageController {
     @PUT
     @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}/meta")
     public Response setMeta(@PathParam("gameModelId") String gameModelId,
-                            @PathParam("pageId") String pageId,
-                            Page page) throws RepositoryException {
+            @PathParam("pageId") String pageId,
+            Page page) throws RepositoryException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
@@ -168,8 +173,8 @@ public class PageController {
     @PUT
     @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}/move/{pos: ([0-9]+)}")
     public Response move(@PathParam("gameModelId") String gameModelId,
-                         @PathParam("pageId") String pageId,
-                         @PathParam("pos") int pos) throws RepositoryException {
+            @PathParam("pageId") String pageId,
+            @PathParam("pos") int pos) throws RepositoryException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
@@ -208,7 +213,7 @@ public class PageController {
     private Response createPage(String gameModelId, JsonNode content, String name)
             throws RepositoryException, IOException {
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
-        final ILock gameModelLock = Helper.getHazelcastInstance().getLock("page-" + gameModelId);
+        final ILock gameModelLock = hzInstance.getLock("page-" + gameModelId);
         gameModelLock.lock();
         try (final Pages pages = new Pages(gameModelId)) {
             if (name == null || name.equals("")) {
@@ -238,7 +243,7 @@ public class PageController {
     @GET
     @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}/duplicate")
     public Response duplicate(@PathParam("gameModelId") String gameModelId,
-                              @PathParam("pageId") String pageId) throws RepositoryException, IOException {
+            @PathParam("pageId") String pageId) throws RepositoryException, IOException {
         try (final Pages pages = new Pages(gameModelId)) {
             Page page = pages.getPage(pageId);
             String pageName = null;
@@ -309,7 +314,7 @@ public class PageController {
     @DELETE
     @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}")
     public Response deletePage(@PathParam("gameModelId") String gameModelId,
-                               @PathParam("pageId") String pageId)
+            @PathParam("pageId") String pageId)
             throws RepositoryException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
@@ -335,8 +340,8 @@ public class PageController {
     @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}")
     @Consumes(MediaType.TEXT_PLAIN)
     public Response patch(@PathParam("gameModelId") String gameModelId,
-                          @PathParam("pageId") String pageId,
-                          String patch) throws RepositoryException, JSONException, IOException, JsonPatchException {
+            @PathParam("pageId") String pageId,
+            String patch) throws RepositoryException, JSONException, IOException, JsonPatchException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 

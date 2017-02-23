@@ -7,6 +7,7 @@
  */
 package com.wegas.core.security.ejb;
 
+import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ILock;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.BaseFacade;
@@ -59,6 +60,9 @@ import javax.inject.Inject;
 public class UserFacade extends BaseFacade<User> {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(UserFacade.class);
+
+    @Inject
+    private HazelcastInstance hzInstance;
 
     /**
      *
@@ -550,7 +554,8 @@ public class UserFacade extends BaseFacade<User> {
      */
     @Schedule(hour = "4", minute = "12")
     public void removeIdleGuests() {
-        ILock lock = Helper.getHazelcastInstance().getLock("UserFacade.Schedule");
+        ILock lock = hzInstance.getLock("UserFacade.Schedule");
+
         if (lock.tryLock()) {
             try {
                 logger.info("removeIdleGuests(): unused guest accounts will be removed");
