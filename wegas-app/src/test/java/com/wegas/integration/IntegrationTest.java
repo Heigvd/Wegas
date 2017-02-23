@@ -61,7 +61,7 @@ public class IntegrationTest {
     private static Logger logger = LoggerFactory.getLogger(IntegrationTest.class);
 
     private static final String WEGAS_DB_NAME_KEY = "wegas.db.name";
-    private static final String WEGAS_DB_NAME_DEFAULTVALUE = "wegas_dev";
+    private static final String WEGAS_DB_NAME_DEFAULTVALUE = "wegas_test";
 
     private static final String WEGAS_DB_HOST_KEY = "wegas.db.host";
     private static final String WEGAS_DB_HOST_DEFAULTVALUE = "localhost";
