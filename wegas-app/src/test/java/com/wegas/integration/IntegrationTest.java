@@ -60,10 +60,22 @@ public class IntegrationTest {
 
     private static Logger logger = LoggerFactory.getLogger(IntegrationTest.class);
 
+    private static final String WEGAS_DB_NAME_KEY = "wegas.db.name";
+    private static final String WEGAS_DB_NAME_DEFAULTVALUE = "wegas_dev";
+
+    private static final String WEGAS_DB_HOST_KEY = "wegas.db.host";
+    private static final String WEGAS_DB_HOST_DEFAULTVALUE = "localhost";
+
+    private static final String WEGAS_HTTP_THREADS_KEY = "wegas.http.threads";
+    private static final String WEGAS_HTTP_THREADS_DEFAULTVALUE = "5";
+
     @BeforeClass
     public static void setUpClass() throws Exception {
+        System.setProperty(WEGAS_DB_HOST_KEY, WEGAS_DB_HOST_DEFAULTVALUE);
+        System.setProperty(WEGAS_DB_NAME_KEY, WEGAS_DB_NAME_DEFAULTVALUE);
+        System.setProperty(WEGAS_HTTP_THREADS_KEY, WEGAS_HTTP_THREADS_DEFAULTVALUE);
 
-        File domainConfig = new File("./src/test/glassfish/microdomain.xml");
+        File domainConfig = new File("./src/test/resources/microdomain.xml");
         File theWar = new File("./target/Wegas.war");
 
         // PayaraMicro will rewrite the domain.xml file, we do not want such a behaviour so let make a temp copy
