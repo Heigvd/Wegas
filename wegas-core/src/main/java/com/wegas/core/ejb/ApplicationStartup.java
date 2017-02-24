@@ -1,4 +1,4 @@
- /*
+/*
  * Wegas
  * http://wegas.albasim.ch
  *
@@ -17,10 +17,11 @@ import org.slf4j.LoggerFactory;
 
 /**
  * LifeCycle Dedicated HttpServlet
+ *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
-@WebServlet(name = "application-startup", loadOnStartup = 2)
-public class ApplicationStartup extends HttpServlet {
+//@WebServlet(name = "application-startup", loadOnStartup = 2)
+public class ApplicationStartup /*extends HttpServlet*/ {
 
     private static final long serialVersionUID = 1627669174708657546L;
 
@@ -29,13 +30,13 @@ public class ApplicationStartup extends HttpServlet {
     @EJB
     WebsocketFacade websocketFacade;
 
-    @Override
+    //@Override
     public void init(ServletConfig config) throws ServletException {
         websocketFacade.sendLifeCycleEvent(WebsocketFacade.WegasStatus.READY, null);
-        super.init(config);
+        //super.init(config);
     }
 
-    @Override
+    //@Override
     public void destroy() {
         websocketFacade.sendLifeCycleEvent(WebsocketFacade.WegasStatus.DOWN, null);
     }
