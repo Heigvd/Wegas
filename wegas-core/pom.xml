@@ -134,7 +134,9 @@
         </dependency>-->
         <dependency>
             <groupId>fish.payara.extras</groupId>
-            <artifactId>payara-micro</artifactId>
+            <artifactId>payara-embedded-all</artifactId>
+            <version>4.1.1.171.0.1</version>
+            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>

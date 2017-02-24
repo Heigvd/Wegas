@@ -173,16 +173,10 @@
             <type>jar</type>
         </dependency>
 
-        <!-- TEST 
-        <dependency>
-            <groupId>org.glassfish.main.extras</groupId>
-            <artifactId>glassfish-embedded-all</artifactId>
-            <scope>provided</scope>
-        </dependency>-->
-
+        <!-- TEST -->
         <dependency>
             <groupId>fish.payara.extras</groupId>
-            <artifactId>payara-micro</artifactId>
+            <artifactId>payara-embedded-all</artifactId>
         </dependency>
 
         <!-- Postgresql Driver -->
@@ -227,11 +221,6 @@
             <artifactId>eclipselink</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <type>jar</type>
-        </dependency>
     </dependencies>
 
     <build>
@@ -266,25 +255,25 @@
                         </configuration>
                     </execution>
                     <!--<execution>-->
-                        <!--<id>unpack-resources</id>-->
-                        <!--<phase>pre-integration-test</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>unpack</goal>-->
-                        <!--</goals>-->
-                        <!--<configuration>-->
-                            <!--<artifactItems>-->
-                                <!--<artifactItem>-->
-                                    <!--<groupId>${project.groupId}</groupId>-->
-                                    <!--<artifactId>${project.artifactId}</artifactId>-->
-                                    <!--<version>${project.version}</version>-->
-                                    <!--<type>war</type>-->
-                                    <!--<outputDirectory>${project.build.directory}/embed-war</outputDirectory>-->
-                                    <!--<excludes>WEB-INF,META-INF</excludes>-->
-                                <!--</artifactItem>-->
-                            <!--</artifactItems>-->
-                            <!--<overWriteSnapshots>true</overWriteSnapshots>-->
-                            <!--<overWriteIfNewer>true</overWriteIfNewer>-->
-                        <!--</configuration>-->
+                    <!--<id>unpack-resources</id>-->
+                    <!--<phase>pre-integration-test</phase>-->
+                    <!--<goals>-->
+                    <!--<goal>unpack</goal>-->
+                    <!--</goals>-->
+                    <!--<configuration>-->
+                    <!--<artifactItems>-->
+                    <!--<artifactItem>-->
+                    <!--<groupId>${project.groupId}</groupId>-->
+                    <!--<artifactId>${project.artifactId}</artifactId>-->
+                    <!--<version>${project.version}</version>-->
+                    <!--<type>war</type>-->
+                    <!--<outputDirectory>${project.build.directory}/embed-war</outputDirectory>-->
+                    <!--<excludes>WEB-INF,META-INF</excludes>-->
+                    <!--</artifactItem>-->
+                    <!--</artifactItems>-->
+                    <!--<overWriteSnapshots>true</overWriteSnapshots>-->
+                    <!--<overWriteIfNewer>true</overWriteIfNewer>-->
+                    <!--</configuration>-->
                     <!--</execution>-->
                 </executions>
             </plugin>
@@ -317,17 +306,17 @@
                         </goals>
                         <phase>prepare-package</phase>
                         <!--<configuration>-->
-                            <!--<overlays>-->
-                                <!--<overlay>-->
-                                    <!--<id>wegaslibs</id>-->
-                                    <!--<groupId>com.wegas</groupId>-->
-                                    <!--<artifactId>wegas-resources</artifactId>-->
-                                    <!--<type>war</type>-->
-                                    <!--<includes>-->
-                                        <!--<include>lib/**</include>-->
-                                    <!--</includes>-->
-                                <!--</overlay>-->
-                            <!--</overlays>-->
+                        <!--<overlays>-->
+                        <!--<overlay>-->
+                        <!--<id>wegaslibs</id>-->
+                        <!--<groupId>com.wegas</groupId>-->
+                        <!--<artifactId>wegas-resources</artifactId>-->
+                        <!--<type>war</type>-->
+                        <!--<includes>-->
+                        <!--<include>lib/**</include>-->
+                        <!--</includes>-->
+                        <!--</overlay>-->
+                        <!--</overlays>-->
                         <!--</configuration>-->
                     </execution>
                     <execution>
@@ -497,49 +486,49 @@
             
             <!-- Copy classes to test classes directory, for ejbcontainer to use -->
             <!--<plugin>-->
-                <!--<artifactId>maven-resources-plugin</artifactId>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>copy-webapp-to-embedded</id>-->
-                        <!--<phase>process-test-classes</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>copy-resources</goal>-->
-                        <!--</goals>-->
-                        <!--<configuration>-->
-                            <!--<outputDirectory>target/embed-war</outputDirectory>-->
-                            <!--<overwrite>true</overwrite>-->
-                            <!--<resources>-->
-                                <!--<resource>-->
-                                    <!--<directory>target/${project.build.finalName}</directory>-->
-                                    <!--<includes>-->
-                                        <!--<include>**/*.js</include>-->
-                                    <!--</includes>-->
-                                <!--</resource>-->
-                                <!--<resource>-->
-                                    <!--&lt;!&ndash; <directory>src/test/resources</directory>&ndash;&gt;-->
-                                    <!--<directory>src/main/webapp</directory>-->
-                                <!--</resource>-->
-                            <!--</resources>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                    <!--<execution>-->
-                        <!--<id>copy-wegas-resources-to-embedded</id>-->
-                        <!--<phase>process-test-classes</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>copy-resources</goal>-->
-                        <!--</goals>-->
-                        <!--<configuration>-->
-                            <!--<outputDirectory>target/embed-war</outputDirectory>-->
-                            <!--<overwrite>false</overwrite>-->
-                            <!--<resources>-->
-                                <!--<resource>-->
-                                    <!--&lt;!&ndash; <directory>src/test/resources</directory>&ndash;&gt;-->
-                                    <!--<directory>../wegas-resources/target/Wegas-resources</directory>-->
-                                <!--</resource>-->
-                            <!--</resources>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                <!--</executions>-->
+            <!--<artifactId>maven-resources-plugin</artifactId>-->
+            <!--<executions>-->
+            <!--<execution>-->
+            <!--<id>copy-webapp-to-embedded</id>-->
+            <!--<phase>process-test-classes</phase>-->
+            <!--<goals>-->
+            <!--<goal>copy-resources</goal>-->
+            <!--</goals>-->
+            <!--<configuration>-->
+            <!--<outputDirectory>target/embed-war</outputDirectory>-->
+            <!--<overwrite>true</overwrite>-->
+            <!--<resources>-->
+            <!--<resource>-->
+            <!--<directory>target/${project.build.finalName}</directory>-->
+            <!--<includes>-->
+            <!--<include>**/*.js</include>-->
+            <!--</includes>-->
+            <!--</resource>-->
+            <!--<resource>-->
+            <!--&lt;!&ndash; <directory>src/test/resources</directory>&ndash;&gt;-->
+            <!--<directory>src/main/webapp</directory>-->
+            <!--</resource>-->
+            <!--</resources>-->
+            <!--</configuration>-->
+            <!--</execution>-->
+            <!--<execution>-->
+            <!--<id>copy-wegas-resources-to-embedded</id>-->
+            <!--<phase>process-test-classes</phase>-->
+            <!--<goals>-->
+            <!--<goal>copy-resources</goal>-->
+            <!--</goals>-->
+            <!--<configuration>-->
+            <!--<outputDirectory>target/embed-war</outputDirectory>-->
+            <!--<overwrite>false</overwrite>-->
+            <!--<resources>-->
+            <!--<resource>-->
+            <!--&lt;!&ndash; <directory>src/test/resources</directory>&ndash;&gt;-->
+            <!--<directory>../wegas-resources/target/Wegas-resources</directory>-->
+            <!--</resource>-->
+            <!--</resources>-->
+            <!--</configuration>-->
+            <!--</execution>-->
+            <!--</executions>-->
             <!--</plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

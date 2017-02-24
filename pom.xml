@@ -16,6 +16,7 @@
         <module>wegas-app</module>
         <module>wegas-resources</module>
         <!--<module>wegas-mcq</module>-->
+        <module>wegas-runtime</module>
     </modules>
 
     <developers>
@@ -92,8 +93,7 @@
         <atmosphere.version>0.9-SNAPSHOT</atmosphere.version>
         <!--<jersey.version>2.10</jersey.version>-->
         <jdk.version>1.8</jdk.version>
-        <!--<payara.version>4.1.1.164</payara.version>-->
-        <payara.version>4.1.1.164</payara.version>
+        <payara.version>4.1.1.171.0.1</payara.version>
         <junit.version>4.10</junit.version>
         <exec.plugin.version>1.2</exec.plugin.version>
         <jar.plugin.version>2.3.1</jar.plugin.version>
@@ -106,16 +106,16 @@
         <logback.version>1.0.9</logback.version>-->
 
         <slf4j.version>1.7.18</slf4j.version>
-        <logback.version>1.1.5</logback.version>
+        <logback.version>1.1.8</logback.version>
 
         <httpcomponents.version>4.3.4</httpcomponents.version>
         <liquibase.version>2.0.5</liquibase.version>
-        <eclipselink.version>2.6.3</eclipselink.version>
+        <eclipselink.version>2.6.4</eclipselink.version>
         <jcr.version>2.0</jcr.version>
         <jackrabbit.version>2.12.6</jackrabbit.version>
 
         <jackson.scope>provided</jackson.scope>
-        <jackson.version>2.8.1</jackson.version>
+        <jackson.version>2.8.5</jackson.version>
 
         <netbeans.hint.j2eeVersion>1.7</netbeans.hint.j2eeVersion>
         <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
@@ -459,16 +459,16 @@
             -->
 
             <dependency>
-                <groupId>commons-io</groupId>
-                <artifactId>commons-io</artifactId>
-                <version>2.2</version>
-                <type>jar</type>
+                <groupId>fish.payara.extras</groupId>
+                <artifactId>payara-micro</artifactId>
+                <version>${payara.version}</version>
+                <scope>provided</scope>
             </dependency>
 
             <dependency>
                 <groupId>fish.payara.extras</groupId>
-                <artifactId>payara-micro</artifactId>
-                <version>4.1.1.164</version>
+                <artifactId>payara-embedded-all</artifactId>
+                <version>${payara.version}</version>
                 <scope>provided</scope>
             </dependency>
 
