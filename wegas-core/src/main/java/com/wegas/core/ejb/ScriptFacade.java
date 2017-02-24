@@ -198,7 +198,7 @@ public class ScriptFacade {
             // smells like such an integration test
             root = Helper.getWegasRootDirectory();
             if (root == null) {
-                logger.error("Wegas Lost In The Sky... [Static Script Injection Not Available]");
+                logger.error("Wegas Lost In The Sky... [Static Script Injection Not Available] ->  " + currentPath);
                 return;
             }
         } else {
