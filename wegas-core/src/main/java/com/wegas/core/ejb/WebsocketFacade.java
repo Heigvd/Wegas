@@ -121,6 +121,7 @@ public class WebsocketFacade {
         }
     }
 
+
     /**
      * Get all channels based on entites
      *
@@ -134,30 +135,30 @@ public class WebsocketFacade {
         for (AbstractEntity entity : entities) {
             if (entity instanceof GameModel) {
                 if (SecurityUtils.getSubject().isPermitted("GameModel:View:gm" + entity.getId())) {
-                    channel = "GameModel";
+                    channel = ((GameModel) entity).getChannel();
                 }
             } else if (entity instanceof Game) {
                 if (SecurityHelper.isPermitted((Game) entity, "View")) {
-                    channel = "Game";
+                    channel = ((Game) entity).getChannel();
                 }
             } else if (entity instanceof Team) {
                 Team team = (Team) entity;
                 User user = userFacade.getCurrentUser();
                 if (SecurityHelper.isPermitted(team.getGame(), "Edit") // Trainer and scenarist 
                         || playerFacade.checkExistingPlayerInTeam(team.getId(), user.getId()) != null) { // or member of team
-                    channel = "Team";
+                    channel = ((Team) entity).getChannel();
                 }
             } else if (entity instanceof Player) {
                 Player player = (Player) entity;
                 User user = userFacade.getCurrentUser();
                 if (SecurityHelper.isPermitted(player.getGame(), "Edit") // Trainer and scenarist 
                         || player.getUser() == user) { // is the player
-                    channel = "Player";
+                    channel = ((Player) entity).getChannel();
                 }
             }
 
             if (channel != null) {
-                channels.add(channel + "-" + entity.getId());
+                channels.add(channel);
             }
         }
         return channels;

@@ -107,6 +107,7 @@ public class JpaAccount extends AbstractAccount {
         if (this.password != null && !this.password.isEmpty()) {
             this.passwordHex = new Sha256Hash(this.password,
                     (new SimpleByteSource(this.getSalt())).getBytes()).toHex();
+            this.password = null;
         }
     }
 

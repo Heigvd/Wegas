@@ -26,12 +26,14 @@ public class OnlineUser implements Serializable {
 
     private final String fullname;
     private final String email;
+    private final String username;
     private final Date connectionDate;
     private final Long userId;
     private final Long mainAccountId;
 
     public OnlineUser(User user) {
         this.fullname = user.getName();
+        this.username = user.getMainAccount().getUsername();
         this.email = user.getMainAccount().getEmail();
         this.connectionDate = new Date();
         this.userId = user.getId();
@@ -44,6 +46,10 @@ public class OnlineUser implements Serializable {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public Date getConnectionDate() {
