@@ -9,12 +9,6 @@
     <system-applications></system-applications>
     <applications></applications>
     <resources>
-        <jdbc-resource pool-name="DerbyPool" object-type="system-all" jndi-name="jdbc/__default"></jdbc-resource>
-        <jdbc-connection-pool is-isolation-level-guaranteed="false" datasource-classname="org.apache.derby.jdbc.EmbeddedDataSource" name="DerbyPool" res-type="javax.sql.DataSource">
-            <property name="databaseName" value="${com.sun.aas.instanceRoot}/lib/databases/embedded_default"></property>
-            <property name="connectionAttributes" value=";create=true"></property>
-        </jdbc-connection-pool>
-
         <jdbc-connection-pool max-pool-size="200" datasource-classname="org.postgresql.xa.PGXADataSource" name="jdbc/wegas_dev_pool" res-type="javax.sql.XADataSource">
             <property name="DatabaseName" value="${wegas.db.name}"></property>
             <property name="PortNumber" value="5432"></property>
@@ -32,7 +26,6 @@
     </resources>
     <servers>
         <server config-ref="server-config" name="server">
-            <resource-ref ref="jdbc/__default"></resource-ref>
             <resource-ref ref="jdbc/wegas_dev"></resource-ref>
         </server>
     </servers>
