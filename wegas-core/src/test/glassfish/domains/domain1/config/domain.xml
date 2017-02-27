@@ -91,6 +91,7 @@
             <hazelcast-runtime-configuration cluster-group-name="${wegas.hazelcast.clustername}" enabled="true"></hazelcast-runtime-configuration>
             <ejb-container max-pool-size="128">
                 <ejb-timer-service></ejb-timer-service>
+                <!--<ejb-timer-service ejb-timer-service="Hazelcast"></ejb-timer-service>-->
             </ejb-container>
             <!--<asadmin-recorder-configuration></asadmin-recorder-configuration>-->
             <request-tracing-service-configuration>
