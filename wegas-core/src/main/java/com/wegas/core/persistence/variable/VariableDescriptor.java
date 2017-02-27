@@ -596,11 +596,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     @Override
-    public String getRequieredUpdatePermission() {
-        return "W-" + this.getGameModel().getChannel();
-    }
-
-    @Override
     public String getRequieredReadPermission() {
         return this.getGameModel().getChannel();
     }
@@ -611,7 +606,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     @Override
-    public String getRequieredCreatePermission() {
+    public String getRequieredUpdatePermission() {
         if (gameModel.isPersisted()) {
             return "W-" + this.getGameModel().getChannel();
         } else {

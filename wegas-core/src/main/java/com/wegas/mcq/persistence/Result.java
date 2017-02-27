@@ -36,7 +36,8 @@ import java.util.List;
 @Table(
         name = "MCQResult",
         uniqueConstraints = {
-            @UniqueConstraint(columnNames = {"choicedescriptor_id", "name"}),
+            @UniqueConstraint(columnNames = {"choicedescriptor_id", "name"})
+            ,
             @UniqueConstraint(columnNames = {"choicedescriptor_id", "label"}),},
         indexes = {
             @Index(columnList = "choicedescriptor_id")
@@ -109,7 +110,8 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     @Embedded
     @AttributeOverrides({
         @AttributeOverride(name = "content", column
-                = @Column(name = "ignoration_content")),
+                = @Column(name = "ignoration_content"))
+        ,
         @AttributeOverride(name = "lang", column
                 = @Column(name = "ignoration_language"))
     })
@@ -393,7 +395,13 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
 
     @Override
     public String getRequieredUpdatePermission() {
-        return this.getChoiceDescriptor().getRequieredUpdatePermission();
+        /**
+         * frontier-land entity... Modifing fields requires return
+         * this.getChoiceDescriptor().getRequieredUpdatePermission(); but
+         * updating replied or choiceInstance should be allow for player too...
+         *
+         */
+        return null;
     }
 
     @Override

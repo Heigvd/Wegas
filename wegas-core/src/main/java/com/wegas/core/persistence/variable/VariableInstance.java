@@ -632,7 +632,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     @Override
     public String getRequieredUpdatePermission() {
         if (this.getScope() == null) {
-            return "W-" + this.getDefaultDescriptor().getGameModel().getChannel();
+            return this.getDefaultDescriptor().getRequieredUpdatePermission();
         } else {
             return this.getBroadcastTarget().getChannel();
         }

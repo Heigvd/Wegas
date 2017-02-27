@@ -166,11 +166,11 @@ public class EntityListener {
     void onPostLoad(Object o) {
         if (o instanceof AbstractEntity) {
             ((AbstractEntity) o).setPersisted(true);
-            if (requestManager != null) {
+            /*if (requestManager != null) {
                 requestManager.assertReadRight((AbstractEntity) o);
             } else {
                 logger.error("PostLOAD NO SECURITY FACADE");
-            }
+            }*/
         }
 
         if (o instanceof AcceptInjection) {
