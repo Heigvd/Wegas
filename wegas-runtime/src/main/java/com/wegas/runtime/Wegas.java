@@ -1,4 +1,4 @@
-package com.wegas.wegas.runtime;
+package com.wegas.runtime;
 
 //import com.wegas.core.Helper;
 import fish.payara.appserver.micro.services.data.InstanceDescriptor;

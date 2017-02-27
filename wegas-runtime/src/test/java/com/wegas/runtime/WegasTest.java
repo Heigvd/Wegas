@@ -1,12 +1,8 @@
-package com.wegas.wegas.runtime;
+package com.wegas.runtime;
 
-import fish.payara.appserver.micro.services.data.InstanceDescriptor;
-import fish.payara.micro.PayaraMicro;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
 import net.sourceforge.jwebunit.junit.JWebUnit;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
