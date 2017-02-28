@@ -10,11 +10,11 @@ package com.wegas.core.persistence.variable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.primitive.*;
@@ -39,7 +39,6 @@ import java.util.Map;
 import org.eclipse.persistence.annotations.CacheIndex;
 import org.eclipse.persistence.annotations.CacheIndexes;
 import org.eclipse.persistence.annotations.OptimisticLocking;
-import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.QueryType;
 
@@ -216,6 +215,12 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     @ManyToOne
     @JsonIgnore
     private Game game;
+
+    @JoinColumn(name = "gamemodelvariableinstances_key")
+    @ManyToOne
+    @JsonIgnore
+    private GameModel gameModel;
+
     /**
      *
      * @Column(name = "teamvariableinstances_key", insertable = false, updatable
@@ -329,7 +334,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
         } else if (this.getGameScope() != null) {
             return this.getGame().getId();
         } else if (this.getGameModelScope() != null) {
-            return 0l;
+            return 0l; // hack -> see datasource instance cache mechanism
         } else {
             return null;
         }
@@ -392,6 +397,14 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      */
     public Game getGame() {
         return game;
+    }
+
+    public GameModel getGameModel() {
+        return gameModel;
+    }
+
+    public void setGameModel(GameModel gameModel) {
+        this.gameModel = gameModel;
     }
 
     /**

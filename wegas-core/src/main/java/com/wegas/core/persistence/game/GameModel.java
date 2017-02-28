@@ -18,6 +18,7 @@ import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
 
@@ -25,7 +26,6 @@ import javax.jcr.RepositoryException;
 import javax.persistence.*;
 import java.util.*;
 import java.util.Map.Entry;
-import javax.annotation.PreDestroy;
 import javax.validation.constraints.Pattern;
 import org.apache.shiro.SecurityUtils;
 
@@ -135,6 +135,13 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @JsonView(Views.Export.class)
     //@JsonManagedReference
     private List<VariableDescriptor> childVariableDescriptors = new ArrayList<>();
+
+    /**
+     * All gameModelScoped instances
+     */
+    @JsonIgnore
+    @OneToMany(mappedBy = "gameModel", cascade = CascadeType.ALL)
+    private List<VariableInstance> privateInstances = new ArrayList<>();
 
     /**
      *
@@ -400,6 +407,14 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         for (VariableDescriptor vd : variableDescriptors) {
             this.addToVariableDescriptors(vd);
         }
+    }
+
+    public List<VariableInstance> getPrivateInstances() {
+        return privateInstances;
+    }
+
+    public void setPrivateInstances(List<VariableInstance> privateInstances) {
+        this.privateInstances = privateInstances;
     }
 
     /**
