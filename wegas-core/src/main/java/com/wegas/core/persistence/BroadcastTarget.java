@@ -7,6 +7,10 @@
  */
 package com.wegas.core.persistence;
 
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.variable.VariableInstance;
+import java.util.List;
+
 /**
  *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
@@ -14,4 +18,20 @@ package com.wegas.core.persistence;
 public interface BroadcastTarget {
 
     public String getChannel();
+
+    public List<Player> getPlayers();
+
+    /**
+     * Return instances that belongs to this target
+     *
+     * @return
+     */
+    public List<VariableInstance> getPrivateInstances();
+
+    /**
+     * return instances that belongs to this target and its children
+     *
+     * @return
+     */
+    public List<VariableInstance> getAllInstances();
 }

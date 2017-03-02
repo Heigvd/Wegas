@@ -87,21 +87,9 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      *
      */
     @Transient
-    private List<String> predecessorNames/* = new ArrayList<>()*/;
-
-    @OneToMany(mappedBy = "taskDescriptor", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @JsonManagedReference
-    @JsonIgnore
-    private List<Activity> activities = new ArrayList<>();
-
-    @OneToMany(mappedBy = "taskDescriptor", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @JsonManagedReference
-    @JsonIgnore
-    private List<Assignment> assignments = new ArrayList<>();
-
-    @ManyToMany(mappedBy = "tasks")
-    @JsonView(Views.ExtendedI.class)
-    private List<Iteration> iterations;
+    private List<String> predecessorNames/*
+             * = new ArrayList<>()
+             */;
 
     /**
      *
@@ -168,6 +156,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
 
     /**
      * @param index
+     *
      * @return the predecessors
      */
     public TaskDescriptor getPredecessor(Integer index) {
@@ -209,24 +198,6 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     }
 
     /**
-     *
-     * @return get all iterations this task is part of
-     */
-    @JsonIgnore
-    public List<Iteration> getIterations() {
-        return iterations;
-    }
-
-    /**
-     *
-     * @param iterations
-     */
-    @JsonIgnore
-    public void setIterations(List<Iteration> iterations) {
-        this.iterations = iterations;
-    }
-
-    /**
      * @return the properties
      */
     public Map<String, String> getProperties() {
@@ -252,6 +223,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     /**
      *
      * @param key
+     *
      * @return get descriptor property
      */
     public String getProperty(String key) {
@@ -261,6 +233,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     /**
      *
      * @param key
+     *
      * @return property mapped by given key, double casted
      */
     public double getPropertyD(String key) {
@@ -273,6 +246,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      *
      * @param p
      * @param key
+     *
      * @return double castes player instance property
      */
     public double getNumberInstanceProperty(Player p, String key) {
@@ -290,6 +264,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      *
      * @param p
      * @param key
+     *
      * @return player instance string property
      */
     public String getStringInstanceProperty(Player p, String key) {
@@ -301,6 +276,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      *
      * @param p
      * @param key
+     *
      * @return player instance string property
      */
     public String getInstanceProperty(Player p, String key) {
@@ -338,6 +314,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      *
      * @deprecated moved as property
      * @param p
+     *
      * @return player instance task duration
      */
     public double getDuration(Player p) {
@@ -401,6 +378,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     /**
      *
      * @param p
+     *
      * @return true if the player instance is active
      */
     public boolean getActive(Player p) {
@@ -462,64 +440,6 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
         this.predecessorNames = exportedPredecessors;
     }
 
-    /**
-     * @return the activities
-     */
-    public List<Activity> getActivities() {
-        return activities;
-    }
-
-    /**
-     * @param activities
-     */
-    public void setActivities(List<Activity> activities) {
-        this.activities = activities;
-    }
-
-    /**
-     *
-     * @param activity
-     */
-    public void addActivity(Activity activity) {
-        this.activities.add(activity);
-        activity.setTaskDescriptor(this);
-    }
-
-    /**
-     *
-     * @param activity
-     */
-    public void removeActivity(Activity activity) {
-        this.activities.remove(activity);
-    }
-
-    /**
-     * @return the assignments
-     */
-    public List<Assignment> getAssignments() {
-        return assignments;
-    }
-
-    /**
-     * @param assignments
-     */
-    public void setAssignments(List<Assignment> assignments) {
-        this.assignments = assignments;
-    }
-
-    /**
-     *
-     * @param assignment
-     */
-    public void addAssignment(Assignment assignment) {
-        assignments.add(assignment);
-        assignment.setTaskDescriptor(this);
-    }
-
-    public void removeAssignment(Assignment assignment) {
-        assignments.remove(assignment);
-    }
-
     @Override
     public Boolean containsAll(List<String> criterias) {
         return Helper.insensitiveContainsAll(this.getDescription(), criterias)
@@ -547,14 +467,29 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
         }
         this.setPredecessors(new ArrayList<>());
 
-        for (Iteration iteration : this.getIterations()) {
-            iteration = iteF.find(iteration.getId());
-            if (iteration != null) {
-                iteration.removeTask(this);
-            }
-        }
-        this.setIterations(new ArrayList<>());
-
         super.updateCacheOnDelete(beans);
+    }
+
+    /*
+     * BACKWARD COMPAT
+     */
+    /**
+     * @param iterations
+     */
+    public void setIterations(List<Iteration> iterations) {
+        /*
+         * if (this.getDefaultInstance().getIterations() == null ||
+         * this.getDefaultInstance().getIterations().isEmpty()) {
+         * this.getDefaultInstance().setIterations(iterations);
+         * }
+         */
+    }
+
+    public void setActivities(List<Activity> iterations) {
+
+    }
+
+    public void setAssignments(List<Assignment> iterations) {
+
     }
 }

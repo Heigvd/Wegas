@@ -85,15 +85,15 @@ public class Iteration extends AbstractEntity /*implements Broadcastable */ {
      */
     @JsonIgnore
     @ManyToMany
-    @JoinTable(name = "iteration_taskdescriptor",
+    @JoinTable(name = "iteration_taskinstance",
             joinColumns = {
                 @JoinColumn(name = "iteration_id", referencedColumnName = "id")
             },
             inverseJoinColumns = {
-                @JoinColumn(name = "tasks_variabledescriptor_id", referencedColumnName = "variabledescriptor_id")
+                @JoinColumn(name = "tasks_variableinstance_id", referencedColumnName = "variableinstance_id")
             }
     )
-    private List<TaskDescriptor> tasks;
+    private List<TaskInstance> tasks;
 
     /**
      * parent BurndownInstance
@@ -244,7 +244,7 @@ public class Iteration extends AbstractEntity /*implements Broadcastable */ {
      *
      * @return get all tasks
      */
-    public List<TaskDescriptor> getTasks() {
+    public List<TaskInstance> getTasks() {
         return tasks;
     }
 
@@ -253,27 +253,27 @@ public class Iteration extends AbstractEntity /*implements Broadcastable */ {
      *
      * @param tasks tasks composing the iteration
      */
-    public void setTasks(List<TaskDescriptor> tasks) {
+    public void setTasks(List<TaskInstance> tasks) {
         this.tasks = tasks;
     }
 
-    public void addTask(TaskDescriptor taskD) {
+    public void addTask(TaskInstance taskD) {
         this.tasks.add(taskD);
     }
 
-    public void removeTask(TaskDescriptor task) {
+    public void removeTask(TaskInstance task) {
         this.tasks.remove(task);
     }
 
-    public List<Long> getTaskDescriptorsId() {
+    public List<Long> getTaskInstancesId() {
         List<Long> ids = new ArrayList<>();
-        for (TaskDescriptor td : getTasks()) {
+        for (TaskInstance td : getTasks()) {
             ids.add(td.getId());
         }
         return ids;
     }
 
-    public void setTaskDescriptorsId(List<Long> taskDescriptorsId) {
+    public void setTaskInstancesId(List<Long> taskInstancesId) {
         // NOPE 
     }
 
@@ -324,7 +324,7 @@ public class Iteration extends AbstractEntity /*implements Broadcastable */ {
     }*/
     @Override
     public void updateCacheOnDelete(Beanjection beans) {
-        VariableDescriptorFacade vdf = beans.getVariableDescriptorFacade();
+        VariableInstanceFacade vif = VariableInstanceFacade.lookup();
         BurndownInstance theBdI = this.getBurndownInstance();
 
         if (theBdI != null) {
@@ -333,8 +333,8 @@ public class Iteration extends AbstractEntity /*implements Broadcastable */ {
                 theBdI.getIterations().remove(this);
             }
         }
-        for (TaskDescriptor task : this.getTasks()) {
-            task = (TaskDescriptor) vdf.find(task.getId());
+        for (TaskInstance task : this.getTasks()) {
+            task = (TaskInstance) vif.find(task.getId());
             if (task != null) {
                 task.getIterations().remove(this);
             }

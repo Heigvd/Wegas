@@ -12,13 +12,15 @@ import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.core.event.internal.InstanceRevivedEvent;
 import com.wegas.resourceManagement.persistence.BurndownDescriptor;
 import com.wegas.resourceManagement.persistence.BurndownInstance;
 import com.wegas.resourceManagement.persistence.Iteration;
-import com.wegas.resourceManagement.persistence.TaskDescriptor;
+import com.wegas.resourceManagement.persistence.TaskInstance;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.enterprise.event.Observes;
 import javax.naming.NamingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,12 +78,12 @@ public class IterationFacade extends BaseFacade<Iteration> {
         getEntityManager().remove(findIteration);
     }
 
-    public void addTaskToIteration(TaskDescriptor task, Iteration iteration) {
+    public void addTaskToIteration(TaskInstance task, Iteration iteration) {
         iteration.addTask(task);
         task.getIterations().add(iteration);
     }
 
-    public void removeTaskFromIteration(TaskDescriptor task, Iteration iteration) {
+    public void removeTaskFromIteration(TaskInstance task, Iteration iteration) {
         iteration.removeTask(task);
         task.getIterations().remove(iteration);
     }
@@ -94,6 +96,17 @@ public class IterationFacade extends BaseFacade<Iteration> {
     @Override
     public void remove(Iteration entity) {
         getEntityManager().remove(entity);
+    }
+
+    public void instanceRevivedListener(@Observes InstanceRevivedEvent event) {
+        if (event.getEntity() instanceof BurndownInstance) {
+            this.reviveResourceInstance((BurndownInstance) event.getEntity());
+        }
+    }
+
+    public void reviveResourceInstance(BurndownInstance burndownInstance) {
+        // TODO revive iteration
+        logger.error("NEED TO REVIVE ITERATIONS'S TASKS");
     }
 
     /**

@@ -355,10 +355,10 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      */
     @JsonIgnore
     public VariableDescriptor getDescriptor() {
-        if (this.getScope() != null) {
-            return this.getScope().getVariableDescriptor();
-        } else {
+        if (this.isDefaultInstance()) {
             return null;
+        } else {
+            return this.getScope().getVariableDescriptor();
         }
     }
 
@@ -369,10 +369,10 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      */
     @JsonView(Views.IndexI.class)
     public Long getDescriptorId() {
-        if (this.getScope() != null) {
-            return this.getDescriptor().getId();
-        } else {
+        if (this.isDefaultInstance()) {
             return -1L;
+        } else {
+            return this.getDescriptor().getId();
         }
     }
 
@@ -535,6 +535,12 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
         return defaultDescriptor;
     }
 
+    @JsonIgnore
+    public boolean isDefaultInstance() {
+        //instance without scope meads default instance
+        return this.getScope() == null;
+    }
+
     /**
      * return instance descriptor equals the instance is a default or effective
      * one
@@ -542,10 +548,10 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      * @return instance descriptor
      */
     public VariableDescriptor findDescriptor() {
-        if (this.getScope() != null) {
-            return this.getDescriptor();
-        } else {
+        if (this.isDefaultInstance()) {
             return this.getDefaultDescriptor();
+        } else {
+            return this.getDescriptor();
         }
     }
 

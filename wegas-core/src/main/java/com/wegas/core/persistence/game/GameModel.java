@@ -409,8 +409,19 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         }
     }
 
+    @Override
     public List<VariableInstance> getPrivateInstances() {
         return privateInstances;
+    }
+
+    @Override
+    public List<VariableInstance> getAllInstances() {
+        List<VariableInstance> instances = new ArrayList<>();
+        instances.addAll(getPrivateInstances());
+        for (Game g : getGames()) {
+            instances.addAll(g.getAllInstances());
+        }
+        return instances;
     }
 
     public void setPrivateInstances(List<VariableInstance> privateInstances) {

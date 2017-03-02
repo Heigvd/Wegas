@@ -13,7 +13,7 @@ import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
-import com.wegas.core.event.internal.DescriptorRevivedEvent;
+import com.wegas.core.event.internal.EntityRevivedEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.exception.internal.WegasNoResultException;
@@ -527,11 +527,11 @@ public class ReviewingFacade {
      * whole GameModel) when the PeerReviewDescriptor is created, we'll have to
      * wait to resolve such identifier.
      *
-     * This is done by listening to DescriptorRevivedEvent
+     * This is done by listening to EntityRevivedEvent
      *
      * @param event
      */
-    public void descriptorRevivedEvent(@Observes DescriptorRevivedEvent event) {
+    public void descriptorRevivedEvent(@Observes EntityRevivedEvent event) {
         if (event.getEntity() instanceof PeerReviewDescriptor) {
             logger.debug("Received DescriptorRevivedEvent event");
             PeerReviewDescriptor reviewD = (PeerReviewDescriptor) event.getEntity();

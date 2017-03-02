@@ -40,8 +40,10 @@ import javax.validation.constraints.Pattern;
         }
 )
 @NamedQueries({
-    @NamedQuery(name = "Game.findByStatus", query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status = :status ORDER BY g.createdTime ASC"),
-    @NamedQuery(name = "Game.findByToken", query = "SELECT DISTINCT g FROM Game g WHERE  g.status = :status AND g.token = :token"),
+    @NamedQuery(name = "Game.findByStatus", query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status = :status ORDER BY g.createdTime ASC")
+    ,
+    @NamedQuery(name = "Game.findByToken", query = "SELECT DISTINCT g FROM Game g WHERE  g.status = :status AND g.token = :token")
+    ,
     @NamedQuery(name = "Game.findByNameLike", query = "SELECT DISTINCT g FROM Game g WHERE  g.name LIKE :name")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -165,9 +167,9 @@ public class Game extends NamedEntity implements Broadcastable, BroadcastTarget 
     public void prePersist() {
         this.setCreatedTime(new Date());
         /*
-        if (this.getTeams().isEmpty()) {
-            this.addTeam(new DebugTeam());
-        }
+         * if (this.getTeams().isEmpty()) {
+         * this.addTeam(new DebugTeam());
+         * }
          */
         this.preUpdate();
     }
@@ -413,8 +415,19 @@ public class Game extends NamedEntity implements Broadcastable, BroadcastTarget 
      *
      * @return all game gameScoped instances
      */
+    @Override
     public List<VariableInstance> getPrivateInstances() {
         return privateInstances;
+    }
+
+    @Override
+    public List<VariableInstance> getAllInstances() {
+        List<VariableInstance> instances = new ArrayList<>();
+        instances.addAll(getPrivateInstances());
+        for (Team t : getTeams()) {
+            instances.addAll(t.getAllInstances());
+        }
+        return instances;
     }
 
     /**

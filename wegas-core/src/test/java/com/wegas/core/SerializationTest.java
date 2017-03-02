@@ -342,9 +342,10 @@ public class SerializationTest {
         assertPropertyEquals(mapper.writeValueAsString(resourceI), "@class", "ResourceInstance");
 
         Activity activity = new Activity();
-        taskD.addActivity(activity);
+        taskI.addActivity(activity);
 
-        Assignment assignment = new Assignment(taskD);
+        Assignment assignment = new Assignment();
+        assignment.setTaskInstance(taskI);
         assignment.setResourceInstance(resourceI);
 
         Occupation occupation = new Occupation(2.0);

@@ -286,8 +286,19 @@ public class Team extends AbstractEntity implements Broadcastable, BroadcastTarg
      *
      * @return all team's teamScoped instances
      */
+    @Override
     public List<VariableInstance> getPrivateInstances() {
         return privateInstances;
+    }
+
+    @Override
+    public List<VariableInstance> getAllInstances() {
+        List<VariableInstance> instances = new ArrayList<>();
+        instances.addAll(getPrivateInstances());
+        for (Player p : getPlayers()) {
+            instances.addAll(p.getAllInstances());
+        }
+        return instances;
     }
 
     /**
