@@ -7,9 +7,7 @@ export function getLogIds() {
 }
 
 export function getGameForLogId(logId) {
-    return Axios.post(BASE + 'query',
-        `MATCH n WHERE n.logID='${logId}' RETURN DISTINCT n.gameId`
-    ).then(res => res.data);
+    return Axios.get(BASE + 'queryGames/' + logId).then(res => res.data);
 }
 
 export function getQuestionData(logID, name, ...games) {

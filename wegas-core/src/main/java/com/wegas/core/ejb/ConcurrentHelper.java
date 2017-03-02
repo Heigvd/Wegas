@@ -9,17 +9,18 @@ package com.wegas.core.ejb;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ILock;
-import java.io.Serializable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.cache.Cache;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import javax.ejb.LocalBean;
-import javax.inject.Inject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Internal Mechanism
@@ -118,7 +119,7 @@ public class ConcurrentHelper {
             if (this.getLock(lock).tryLock()) {
                 r = true; // Successful
                 lock.counter++;
-
+                locks.put(effectiveToken, lock);
                 if (audience != null && lock.counter == 1) { // just locked
                     websocketFacade.sendLock(audience, token);
                 }
@@ -155,6 +156,7 @@ public class ConcurrentHelper {
             locks.putIfAbsent(effectiveToken, new RefCounterLock(token, audience));
             lock = locks.get(effectiveToken);
             lock.counter++;
+            locks.put(effectiveToken, lock);
             if (audience != null && lock.counter == 1) { //just locked
                 websocketFacade.sendLock(audience, token);
             }
@@ -184,6 +186,8 @@ public class ConcurrentHelper {
             this.getLock(lock).destroy();
             locks.remove(effectiveToken);
             //logger.error("CLEAN LOCK LIST");
+        } else {
+            locks.put(effectiveToken, lock);
         }
 
     }

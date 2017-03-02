@@ -11,12 +11,18 @@ package com.wegas.log.neo4j;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.neo4j.driver.v1.StatementResult;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * This class contains the methods used to access the Wegas statistics. It uses
@@ -47,60 +53,47 @@ public class Neo4jStatistics {
 
     @GET
     @Path("LogId/{logid: [^/]+}/Question/{questName: [^/]+}")
-    public Object showQuestion(@PathParam("logid") String logid,
-                               @PathParam("questName") String qName, @QueryParam("gid") String gameIds) {
-        if (!Neo4jUtils.checkDataBaseIsRunning()) {
+    public List<Map<String, Object>> showQuestion(@PathParam("logid") String logid,
+                                                  @PathParam("questName") String qName,
+                                                  @QueryParam("gid") String gameIds) {
+        if (!Neo4jUtils.checkDatabaseExists()) {
             return null;
         }
-        String query;
-        if (gameIds == null) {
-            query = "MATCH (n) WHERE n.logID = \"" + logid + "\" AND n.question = \"" + qName + "\" RETURN n";
-        } else {
-            query = "MATCH (n) WHERE n.logID = \"" + logid + "\" AND n.question = \"" + qName + "\" AND n.gameId IN [" + gameIds + "] RETURN n";
+        final String query = "MATCH (n) WHERE n.logID = {logID} AND n.question = {qName} AND n.gameId IN {games} RETURN n";
+        List<Long> games = new ArrayList<>();
+        if (gameIds != null) {
+            games = (Arrays.asList(gameIds.split((",")))).stream().map(Long::valueOf).collect(Collectors.toList());
         }
-        String result = Neo4jUtils.queryDBString(query);
-        if (Neo4jUtils.extractErrorData(result) != null) {
-            logger.warn("Warning in Neo4jStatistics.showQuestion", "Query: " + query + " has no data.");
-            return null;
-        }
-        return Neo4jUtils.extractListData(result);
+        return Neo4jUtils.queryDBString(query, "logID", logid, "qName", qName, "games", games).list(r -> r.get("n").asMap());
     }
 
     @GET
     @Path("LogId/{logid: [^/]+}/Number/{varName : [^/]+}")
-    public Object showNumber(@PathParam("logid") String logid,
-                             @PathParam("varName") String vName, @QueryParam("gid") String gameIds) {
-        if (!Neo4jCommunication.isDBUp()) {
+    public List<Map<String, Object>> showNumber(@PathParam("logid") String logid,
+                                                @PathParam("varName") String vName,
+                                                @QueryParam("gid") String gameIds) {
+        if (!Neo4jUtils.checkDatabaseExists()) {
             return null;
         }
-        String query;
-        if (gameIds == null) {
-            query = "MATCH (n) WHERE n.logID = \"" + logid + "\" AND n.variable = \"" + vName + "\" RETURN n";
-        } else {
-            query = "MATCH (n) WHERE n.logID = \"" + logid + "\" AND n.variable = \"" + vName + "\" AND n.gameId IN [" + gameIds + "] RETURN n";
+        final String query = "MATCH (n) WHERE n.logID ={logID} AND n.variable = {vName} AND n.gameId IN {games} RETURN n";
+        List<Long> games = new ArrayList<>();
+        if (gameIds != null) {
+            games = (Arrays.asList(gameIds.split((",")))).stream().map(Long::valueOf).collect(Collectors.toList());
         }
-        String result = Neo4jUtils.queryDBString(query);
-        if (Neo4jUtils.extractErrorData(result) != null) {
-            logger.warn("Warning in Neo4jStatistics.showQuestion", "Query: " + query + " has no data.");
-            return null;
-        }
-        return Neo4jUtils.extractListData(result);
+        StatementResult result = Neo4jUtils.queryDBString(query, "logID", logid, "vName", vName, "games", games);
+        return result.list(r -> r.get(("n")).asMap());
     }
 
     @GET
     @Path("LogId")
     @RequiresRoles("Administrator")
-    public Object getLogIds() {
-        if (!Neo4jCommunication.isDBUp()) {
+    public List<String> getLogIds() {
+        if (!Neo4jUtils.checkDatabaseExists()) {
             return null;
         }
-        final String query = "MATCH n RETURN DISTINCT n.logID";
-        final String result = Neo4jUtils.queryDBString(query);
-        if (Neo4jUtils.extractErrorData(result) != null) {
-            logger.warn("Warning in Neo4jStatistics.getLogIds", "Query: " + query + " has no data.");
-            return null;
-        }
-        return Neo4jUtils.extractListData(result);
+        final String query = "MATCH (n) RETURN DISTINCT n.logID";
+        final StatementResult result = Neo4jUtils.queryDBString(query);
+        return result.list(r -> r.get("n.logID").asString());
     }
 
     /**
@@ -108,17 +101,12 @@ public class Neo4jStatistics {
      *
      * @return Query result
      */
-    @POST
-    @Path("query")
+    @GET
+    @Path("queryGames/{logid: .+}")
     @RequiresRoles("Administrator")
-    public Object neo4jDirectQuery(final String query) {
-        final String result = Neo4jUtils.queryDBString(query);
-        final String err = Neo4jUtils.extractErrorData(result);
-        if (err != null) {
-            logger.warn("Warning in Neo4jStatistics.neo4jDirectQuery", "Query: " + query + " failed");
-            return err;
-        }
-        return Neo4jUtils.extractListData(result);
+    public List<Long> neo4jDirectQuery(@PathParam("logid") final String logID) {
+        final StatementResult result = Neo4jUtils.queryDBString("MATCH (n) WHERE n.logID={logID} RETURN DISTINCT n.gameId", "logID", logID);
+        return result.list(r -> r.get("n.gameId").asLong());
     }
 
 }
