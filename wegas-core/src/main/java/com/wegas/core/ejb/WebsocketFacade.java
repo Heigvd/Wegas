@@ -115,11 +115,11 @@ public class WebsocketFacade {
         }
     }
 
-
     /**
      * Get all channels based on entites
      *
      * @param entities
+     *
      * @return according to entities, all concerned channels
      */
     public List<String> getChannels(List<AbstractEntity> entities) {
@@ -210,6 +210,7 @@ public class WebsocketFacade {
 
     /**
      * @param property
+     *
      * @return the property value
      */
     private String getProperty(String property) {
@@ -226,7 +227,9 @@ public class WebsocketFacade {
      * @param entityType
      * @param entityId
      * @param data
+     *
      * @return Status
+     *
      * @throws IOException
      */
     public Integer send(String filter, String entityType, String entityId, Object data) throws IOException {
@@ -311,7 +314,9 @@ public class WebsocketFacade {
      * Gzip some string
      *
      * @param data
+     *
      * @return gzipped data
+     *
      * @throws IOException
      */
     private GzContent gzip(String channel, String name, String data, String socketId) throws IOException {
@@ -433,6 +438,7 @@ public class WebsocketFacade {
      *
      * @param socketId
      * @param channel
+     *
      * @return complete body to return to the client requesting authentication
      */
     public String pusherAuth(final String socketId, final String channel) {
@@ -451,16 +457,24 @@ public class WebsocketFacade {
         return null;
     }
 
-    private User getUserFromChannel(String channelName) {
+    private Long getUserIdFromChannel(String channelName) {
         Matcher matcher = USER_CHANNEL_PATTERN.matcher(channelName);
 
         if (matcher.matches()) {
             if (matcher.groupCount() == 1) {
-                Long userId = Long.parseLong(matcher.group(1));
-                return userFacade.find(userId);
+                return Long.parseLong(matcher.group(1));
             }
         }
         return null;
+    }
+
+    private User getUserFromChannel(String channelName) {
+        Long userId = this.getUserIdFromChannel(channelName);
+        if (userId != null) {
+            return userFacade.find(userId);
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -472,15 +486,18 @@ public class WebsocketFacade {
             if (!WebsocketFacade.onlineUsersUptodate) {
                 initOnlineUsers();
             }
-            User user = this.getUserFromChannel(hook.getChannel());
-            if (user != null) {
-                if (hook.getName().equals("channel_occupied")) {
+            if (hook.getName().equals("channel_occupied")) {
+                User user = this.getUserFromChannel(hook.getChannel());
+                if (user != null) {
                     this.registerUser(user);
-                } else if (hook.getName().equals("channel_vacated")) {
-                    onlineUsers.remove(user.getId());
                 }
-                this.propagateOnlineUsers();
+            } else if (hook.getName().equals("channel_vacated")) {
+                Long userId = this.getUserIdFromChannel(hook.getChannel());
+                if (userId != null) {
+                    onlineUsers.remove(userId);
+                }
             }
+            this.propagateOnlineUsers();
         }
     }
 
