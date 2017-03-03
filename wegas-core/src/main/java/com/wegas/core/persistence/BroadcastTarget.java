@@ -7,12 +7,14 @@
  */
 package com.wegas.core.persistence;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.List;
 
 /**
- *
+ * Kind of instances owner
+ * 
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
 public interface BroadcastTarget {
@@ -26,6 +28,7 @@ public interface BroadcastTarget {
      *
      * @return
      */
+    @JsonIgnore
     public List<VariableInstance> getPrivateInstances();
 
     /**
@@ -33,5 +36,6 @@ public interface BroadcastTarget {
      *
      * @return
      */
+    @JsonIgnore
     public List<VariableInstance> getAllInstances();
 }
