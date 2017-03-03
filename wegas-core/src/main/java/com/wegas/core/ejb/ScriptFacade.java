@@ -148,6 +148,7 @@ public class ScriptFacade {
         bindings.put("self", player);                           // Inject current player
         bindings.put("gameModel", player.getGameModel());       // Inject current gameModel
         bindings.put("Variable", variableDescriptorFacade);              // Inject the variabledescriptor facade
+        bindings.put("Instance", variableInstanceFacade);
         bindings.put("VariableDescriptorFacade", variableDescriptorFacade);// @backwardcompatibility
         bindings.put("RequestManager", requestManager);                  // Inject the request manager
         bindings.put("Event", event);                                    // Inject the Event manager
