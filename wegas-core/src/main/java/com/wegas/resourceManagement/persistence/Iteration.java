@@ -13,8 +13,9 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.Beanjection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +36,10 @@ import java.util.Map;
 public class Iteration extends AbstractEntity /*implements Broadcastable */ {
 
     private static final long serialVersionUID = 1L;
+
+    @JsonIgnore
+    @Transient
+    private List<String> deserialisedNames;
 
     /**
      *
@@ -105,6 +110,14 @@ public class Iteration extends AbstractEntity /*implements Broadcastable */ {
      *
      */
     public Iteration() {
+    }
+
+    public List<String> getDeserialisedNames() {
+        return deserialisedNames;
+    }
+
+    public void setDeserialisedNames(List<String> deserialisedNames) {
+        this.deserialisedNames = deserialisedNames;
     }
 
     @Override
@@ -253,26 +266,38 @@ public class Iteration extends AbstractEntity /*implements Broadcastable */ {
      */
     public void setTasks(List<TaskInstance> tasks) {
         this.tasks = tasks;
+        if (tasks != null) {
+            for (TaskInstance taskInstance : tasks) {
+                taskInstance.getIterations().add(this);
+            }
+            this.setDeserialisedNames(null);
+        }
     }
 
     public void addTask(TaskInstance taskD) {
         this.tasks.add(taskD);
+        this.setDeserialisedNames(null);
     }
 
     public void removeTask(TaskInstance task) {
         this.tasks.remove(task);
+        this.setDeserialisedNames(null);
     }
 
-    public List<Long> getTaskInstancesId() {
-        List<Long> ids = new ArrayList<>();
-        for (TaskInstance td : getTasks()) {
-            ids.add(td.getId());
+    public List<String> getTaskNames() {
+        if (this.getDeserialisedNames() == null || this.getDeserialisedNames().isEmpty()) {
+            List<String> names = new ArrayList<>();
+            for (TaskInstance ti : getTasks()) {
+                names.add(ti.findDescriptor().getName());
+            }
+            return names;
+        } else {
+            return this.getDeserialisedNames();
         }
-        return ids;
     }
 
-    public void setTaskInstancesId(List<Long> taskInstancesId) {
-        // NOPE 
+    public void setTaskNames(List<String> names) {
+        this.deserialisedNames = names;
     }
 
     private void internalPlan(Long periodNumber, Double workload, Map<Long, Double> planning) {
@@ -301,12 +326,17 @@ public class Iteration extends AbstractEntity /*implements Broadcastable */ {
             Iteration other = (Iteration) a;
             this.setBeginAt(other.getBeginAt());
             this.setName(other.getName());
+            this.setTotalWorkload(other.getTotalWorkload());
 
-            //ListUtils.updateList(tasks, other.getTasks());
-            //this.setPlannedWorkload(other.getPlannedWorkload());
-            //this.setReplannedWorkloads(replannedWorkloads);
-            //this.setTotalWorkload(other.getTotalWorkload());
-            //this.setWorkloads();
+            this.setPlannedWorkloads(new HashMap<>());
+            this.getPlannedWorkloads().putAll(other.getPlannedWorkloads());
+
+            this.setReplannedWorkloads(new HashMap<>());
+            this.getReplannedWorkloads().putAll(other.getReplannedWorkloads());
+
+            this.setWorkloads(ListUtils.mergeLists(this.getWorkloads(), other.getWorkloads()));
+
+            this.setDeserialisedNames(other.getTaskNames());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
@@ -322,7 +352,6 @@ public class Iteration extends AbstractEntity /*implements Broadcastable */ {
     }*/
     @Override
     public void updateCacheOnDelete(Beanjection beans) {
-        VariableInstanceFacade vif = VariableInstanceFacade.lookup();
         BurndownInstance theBdI = this.getBurndownInstance();
 
         if (theBdI != null) {
@@ -332,7 +361,7 @@ public class Iteration extends AbstractEntity /*implements Broadcastable */ {
             }
         }
         for (TaskInstance task : this.getTasks()) {
-            task = (TaskInstance) vif.find(task.getId());
+            task = (TaskInstance) beans.getVariableInstanceFacade().find(task.getId());
             if (task != null) {
                 task.getIterations().remove(this);
             }

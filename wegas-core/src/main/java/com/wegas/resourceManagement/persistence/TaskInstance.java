@@ -150,6 +150,7 @@ public class TaskInstance extends VariableInstance {
     /**
      *
      * @param key
+     *
      * @return the instance property mapped by the given key
      */
     public String getProperty(String key) {
@@ -159,6 +160,7 @@ public class TaskInstance extends VariableInstance {
     /**
      *
      * @param key
+     *
      * @return the instance property mapped by the given key, double castes
      */
     public double getPropertyD(String key) {
@@ -244,6 +246,7 @@ public class TaskInstance extends VariableInstance {
     /**
      *
      * @param index
+     *
      * @return WRequirement
      */
     public WRequirement getRequirement(Integer index) {
@@ -253,6 +256,7 @@ public class TaskInstance extends VariableInstance {
     /**
      *
      * @param id
+     *
      * @return requirement matching given id
      */
     public WRequirement getRequirementById(Long id) {
@@ -370,7 +374,7 @@ public class TaskInstance extends VariableInstance {
     @Override
     public void updateCacheOnDelete(Beanjection beans) {
         IterationFacade iteF = beans.getIterationFacade();
-        
+
         for (Iteration iteration : this.getIterations()) {
             iteration = iteF.find(iteration.getId());
             if (iteration != null) {
