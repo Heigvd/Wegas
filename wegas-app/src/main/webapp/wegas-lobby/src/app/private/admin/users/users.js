@@ -15,7 +15,7 @@ angular.module('private.admin.users', [
                 }
             });
     })
-    .controller('AdminUsersCtrl', function AdminUsersCtrl($state, $rootScope, Auth, UsersModel, $http, $timeout) {
+    .controller('AdminUsersCtrl', function AdminUsersCtrl($state, $rootScope, Auth, UsersModel, $http, $timeout, $filter) {
         "use strict";
         var ctrl = this,
             initMaxUsersDisplayed = function() {
@@ -53,7 +53,7 @@ angular.module('private.admin.users', [
                 if (response.isErroneous()) {
                     response.flash();
                 } else {
-                    ctrl.users = response.data || [];
+                    ctrl.users = $filter('orderBy')(response.data, 'account.lastname') || [];
                     if (displayUp) {
                         ctrl.updateDisplay();
                     }
@@ -75,6 +75,15 @@ angular.module('private.admin.users', [
                         ctrl.updateUsersList();
                     });
                 }
+            });
+        };
+
+        ctrl.beByAccountId = function(accountId, name) {
+            if (!window.confirm("Reload to pretend to be \"" + name + "\"?")) {
+                return;
+            }
+            $http.post("rest/User/Be/" + accountId).success(function(result) {
+                window.location.reload();
             });
         };
         ctrl.be = function(user) {

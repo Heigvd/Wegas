@@ -10,7 +10,7 @@
         <div class="form__row">
             <select class="form__row__entry input input--small" ng-model="newScenario.templateId">
                 <option value="0" disabled>{{'SCENARIST-INDEX-ADD-SCENARIO-INPUT' | translate}}</option>
-                <option ng-repeat="scenario in scenarios | filter: { canDuplicate: true }" value="{{scenario.id}}">{{scenario.name}}</option>
+                <option ng-repeat="scenario in scenariomenu" value="{{scenario.id}}">{{scenario.name}}</option>
             </select>
         </div>
         <div class="form__row form__row--right">

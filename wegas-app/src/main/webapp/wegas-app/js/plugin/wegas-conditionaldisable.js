@@ -31,11 +31,20 @@ YUI.add('wegas-conditionaldisable', function(Y) {
             if (Wegas.Facade.Variable.script) {
                 Wegas.Facade.Variable.script.eval(this.get("condition"), Y.bind(function(e) {
                     var attr = this.get("attribute"),
+                        host = this.get("host"),
                         result = e.response.entity;
                     if (attr === "cssClass") {
-                        this.get('host').get("boundingBox").toggleClass(this.get("value"), result);
+                        host.get("boundingBox").toggleClass(this.get("value"), result);
                     } else {
-                        this.get('host').set(this.get("attribute"), result);
+                        if (this.get("attribute") === "disabled" && host._enable && host._disable) {
+                            if (result) {
+                                host._disable("ConditionalDisable");
+                            } else {
+                                host._enable("ConditionalDisable");
+                            }
+                        } else {
+                            this.get('host').set(this.get("attribute"), result);
+                        }
                     }
                 }, this));
             }

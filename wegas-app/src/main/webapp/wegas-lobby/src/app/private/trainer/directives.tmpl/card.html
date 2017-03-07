@@ -1,9 +1,10 @@
 <div class="card__illustration illustration illustration--icon" illustration="{{session.properties.iconUri}}"></div>
 <div
     class="card__description"
-    ng-class="{true:'card__description--two-lines', false:'card__description--three-lines'}[session.gameModel.comments == null || session.gameModel.comments == '']" >
+    ng-class="{true:'card__description--three-lines', false:'card__description--four-lines'}[session.gameModel.comments == null || session.gameModel.comments == '']" >
     <div class="line line--primary">{{session.name}}</div>
     <div class="line">{{'COMMONS-DATE' | translate: {date: session.createdTime} }}</div>
+    <div class="line">{{'TRAINER-CARD-DETAILS-SCENARIO' | translate}}:&nbsp;{{session.gameModelName}}</div>
     <div ng-if="!((session.gameModel.comments == null) || (session.gameModel.comments == ''))" class="line line--optionnal">{{session.gameModel.comments}}</div>
 </div>
 <div class="card__actions">
@@ -16,10 +17,6 @@
                 <div class="choice__box__display"></div>
             </div>
         </label>
-<!--
-        <div class="line line--title-close">{{'TRAINER-CARD-ACCESS-CLOSE' | translate}}</div>
-        <div class="line line--title-open">{{'TRAINER-CARD-ACCESS-OPEN' | translate}}</div>
--->
         <div class="key-label" onClick="this.firstChild.select()" title="{{'TRAINER-CARD-KEY-ICON' | translate}}"><input class="key" value="{{session.token}}" readonly/></div>
     </div>
     <a class="button button--small button--round button--default-reverse button--label-off button--settings" title="{{'TRAINER-CARD-SETTINGS-BTN' | translate}}" ui-sref=".settings({id: session.id})">

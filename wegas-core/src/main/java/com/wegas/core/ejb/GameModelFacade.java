@@ -18,8 +18,8 @@ import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.jcr.content.AbstractContentDescriptor;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.ContentConnectorFactory;
+import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.persistence.game.DebugGame;
-import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel.Status;
@@ -31,15 +31,13 @@ import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
+import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.User;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.Asynchronous;
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
+import javax.ejb.*;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
@@ -51,8 +49,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -110,6 +107,9 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     @EJB
     private GameFacade gameFacade;
 
+    @Inject
+    private RequestManager requestManager;
+
     /**
      *
      */
@@ -127,9 +127,9 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
         variableDescriptorFacade.reviveItems(entity, entity, true); // brand new GameModel -> revive all descriptor
         createdGameModelEvent.fire(new EntityCreated<>(entity));
-        userFacade.getCurrentUser().addPermission("GameModel:View,Edit,Delete,Duplicate,Instantiate:gm" + entity.getId());
-        userFacade.getCurrentUser().addPermission("GameModel:Duplicate:gm" + entity.getId());
-        userFacade.getCurrentUser().addPermission("GameModel:Instantiate:gm" + entity.getId());
+
+        // 
+        userFacade.addUserPermission(userFacade.getCurrentUser(), "GameModel:View,Edit,Delete,Duplicate,Instantiate:gm" + entity.getId());
     }
 
     /**
@@ -138,7 +138,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      *
      * @param gameModel
      * @return true if a new debugGame has been added, false if the gameModel
-     *         already has one
+     * already has one
      */
     public boolean addDebugGame(GameModel gameModel) {
         if (!gameModel.hasDebugGame()) {
@@ -169,10 +169,14 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     public GameModel setDefaultInstancesFromPlayer(GameModel toUpdate, GameModel source, Player player) {
         try {
             toUpdate.propagateGameModel(); // Be sure to fetch all descriptor through gm.getVDs();
-            logger.error("to reinit: " + toUpdate.getVariableDescriptors().size());
             for (VariableDescriptor vd : toUpdate.getVariableDescriptors()) {
+                vd = variableDescriptorFacade.find(vd.getId());
+
                 VariableInstance find = variableDescriptorFacade.find(source, vd.getName()).getInstance(player);
-                logger.error("Re-Init " + vd + " to " + find);
+
+                this.getEntityManager().detach(find);
+                find.setVersion(vd.getDefaultInstance().getVersion());
+
                 vd.getDefaultInstance().merge(find);
             }
             return toUpdate;
@@ -182,7 +186,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
-     *
      * @param gameModelId
      * @param playerId
      * @return the gameModel with default instance merged with player's ones
@@ -192,7 +195,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
-     *
      * @param gameModelId
      * @param playerId
      * @return a new gameModel with default instance merged with player's ones
@@ -259,8 +261,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
             newGameModel.setName(this.findUniqueName(srcGameModel.getName()));
             this.create(newGameModel);
 
-            try {                                                                   // Clone files and pages
-                ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(newGameModel.getId());
+            try (ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(newGameModel.getId())) {                                                                   // Clone files and pages
                 connector.cloneWorkspace(srcGameModel.getId());
                 newGameModel.setPages(srcGameModel.getPages());
             } catch (RepositoryException ex) {
@@ -288,18 +289,21 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     @Override
     public void remove(final GameModel gameModel) {
         final Long id = gameModel.getId();
-        userFacade.deleteUserPermissionByInstance("gm" + id);
-        userFacade.deleteRolePermissionsByInstance("gm" + id);
+        userFacade.deletePermissions(gameModel);
 
         for (Game g : this.find(id).getGames()) {
-            userFacade.deleteUserPermissionByInstance("g" + g.getId());
-            userFacade.deleteRolePermissionsByInstance("g" + g.getId());
+            userFacade.deletePermissions(g);
         }
         preRemovedGameModelEvent.fire(new PreEntityRemoved<>(this.find(id)));
         getEntityManager().remove(gameModel);
-        //Remove jcr repo.
+        // Remove pages.
+        try (Pages pages = new Pages(id.toString())) {
+            pages.delete();
+        } catch (RepositoryException e) {
+            logger.error("Error suppressing pages for gameModel {}, {}", id, e.getMessage());
+        }
+        // Remove jcr repo.
         // @TODO : in fact, removes all files but not the workspace.
-        // @fx Why remove files? The may be referenced in other workspaces
         try (ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(gameModel.getId())) {
             connector.deleteWorkspace();
         } catch (RepositoryException ex) {
@@ -341,7 +345,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
-     *
      * @param status
      * @return all gameModel matching the given status
      */
@@ -354,22 +357,11 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     /**
      * Template gameModels are editable scenrios
      *
-     * @return all template GameModels
+     * @return all template GameModels public List<GameModel>
+     * findTemplateGameModels() { final TypedQuery<GameModel> query =
+     * getEntityManager().createNamedQuery("GameModel.findTemplate",
+     * GameModel.class); return query.getResultList(); }
      */
-    public List<GameModel> findTemplateGameModels() {
-        final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findTemplate", GameModel.class);
-        return query.getResultList();
-    }
-
-    /**
-     * @return all teamplate gameModel matching the given status
-     */
-    public List<GameModel> findTemplateGameModelsByStatus(final GameModel.Status status) {
-        final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findTemplateByStatus", GameModel.class);
-        query.setParameter("status", status);
-        return query.getResultList();
-    }
-
     /**
      * @param name
      * @return the gameModel with the given name
@@ -438,7 +430,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      */
     //@Schedule(hour = "2")
     public void automaticVersionCreation() throws IOException, RepositoryException {
-        for (GameModel model : this.findTemplateGameModels()) {
+        for (GameModel model : this.findByStatus(Status.LIVE)) {
 
             String serialized = model.toJson(Views.Export.class);
             String hash = Integer.toHexString(serialized.hashCode());
@@ -492,6 +484,109 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         return gm;
     }
 
+    public Collection<GameModel> findByStatusAndUser(GameModel.Status status) {
+        ArrayList<GameModel> gameModels = new ArrayList<>();
+        Map<Long, List<String>> pMatrix = new HashMap<>();
+
+        String roleQuery = "SELECT p FROM Permission p WHERE "
+                + "(p.role.id in "
+                + "    (SELECT r.id FROM User u JOIN u.roles r WHERE u.id = :userId)"
+                + ")";
+
+        String userQuery = "SELECT p FROM Permission p WHERE p.user.id = :userId ";
+
+        this.processQuery(userQuery, pMatrix, null, status, null);
+        this.processQuery(roleQuery, pMatrix, null, status, null);
+
+        for (Map.Entry<Long, List<String>> entry : pMatrix.entrySet()) {
+            Long id = entry.getKey();
+            GameModel gm = this.find(id);
+            if (gm != null && gm.getStatus() == status) {
+                List<String> perm = entry.getValue();
+                this.detach(gm);
+                gm.setCanView(perm.contains("View") || perm.contains("*"));
+                gm.setCanEdit(perm.contains("Edit") || perm.contains("*"));
+                gm.setCanDuplicate(perm.contains("Duplicate") || perm.contains("*"));
+                gm.setCanInstantiate(perm.contains("Instantiate") || perm.contains("*"));
+                gameModels.add(gm);
+            }
+        }
+
+        return gameModels;
+    }
+
+    public void processQuery(String sqlQuery, Map<Long, List<String>> gmMatrix, Map<Long, List<String>> gMatrix, GameModel.Status gmStatus, Game.Status gStatus) {
+        TypedQuery<Permission> query = this.getEntityManager().createQuery(sqlQuery, Permission.class);
+        User user = requestManager.getCurrentUser();
+        query.setParameter("userId", user.getId());
+        List<Permission> resultList = query.getResultList();
+
+        for (Permission p : resultList) {
+            processPermission(p.getValue(), gmMatrix, gMatrix, gmStatus, gStatus);
+            processPermission(p.getInducedPermission(), gmMatrix, gMatrix, gmStatus, gStatus);
+        }
+    }
+
+    private void processPermission(String permission, Map<Long, List<String>> gmMatrix, Map<Long, List<String>> gMatrix, GameModel.Status gmStatus, Game.Status gStatus) {
+        if (permission != null && !permission.isEmpty()) {
+            String[] split = permission.split(":");
+            if (split.length == 3) {
+                String type = null;
+                String idPrefix = null;
+                Map<Long, List<String>> pMatrix;
+
+                if (split[0].equals("GameModel") && gmStatus != null) {
+                    type = "GameModel";
+                    idPrefix = "gm";
+                    pMatrix = gmMatrix;
+                } else if (split[0].equals("Game") && gStatus != null) {
+                    type = "Game";
+                    idPrefix = "g";
+                    pMatrix = gMatrix;
+                } else {
+                    return;
+                }
+
+                String pId = split[2].replaceAll(idPrefix, "");
+                ArrayList<Long> ids = new ArrayList<>();
+                if (!pId.isEmpty()) {
+                    if (pId.equals("*")) {
+                        if (type.equals("GameModel")) {
+                            for (GameModel gm : this.findByStatus(gmStatus)) {
+                                ids.add(gm.getId());
+                            }
+                        } else { //ie Game
+                            for (Game g : gameFacade.findAll(gStatus)) {
+                                ids.add(g.getId());
+                            }
+                        }
+                    } else {
+                        ids.add(Long.parseLong(pId.replace(idPrefix, "")));
+                    }
+
+                    String[] split1 = split[1].split(",");
+
+                    List<String> ps;
+
+                    for (Long id : ids) {
+                        if (pMatrix.containsKey(id)) {
+                            ps = pMatrix.get(id);
+                        } else {
+                            ps = new ArrayList();
+                            pMatrix.put(id, ps);
+                        }
+
+                        for (String perm : split1) {
+                            if (!ps.contains(perm)) {
+                                ps.add(perm);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * This method just do nothing but is very useful for some (obscure) purpose
      * like adding breakpoints in a javascript
@@ -512,5 +607,14 @@ public class GameModelFacade extends BaseFacade<GameModel> {
             logger.error("Error retrieving gamemodelfacade", ex);
             return null;
         }
+    }
+
+    @Schedule(hour = "4", dayOfMonth = "Last Sat")
+    public void removeGameModels() {
+        List<GameModel> byStatus = this.findByStatus(Status.DELETE);
+        for (GameModel gm : byStatus) {
+            this.remove(gm);
+        }
+        this.getEntityManager().flush();
     }
 }

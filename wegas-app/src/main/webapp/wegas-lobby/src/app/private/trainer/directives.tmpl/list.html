@@ -1,11 +1,8 @@
 <div
 	class="card card--trainer-session"
-	ng-repeat="session in sessions | orderBy: 'createdTime':true | filter: {name: search, gameModel:{canView: true}}  | limitTo: maximum"
+    ng-repeat="session in sessions"
 	session="session"
 	archive="archive"
 	edit-access="editAccess"
 	trainer-session >
-</div>
-<div ng-if="(search !== '') && (sessions | filter:{name: search}).length == 0">
-    {{'TRAINER-INDEX-LIST-NO-SESSION' | translate}}"{{search}}"
 </div>

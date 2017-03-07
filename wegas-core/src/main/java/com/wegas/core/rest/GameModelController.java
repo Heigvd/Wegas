@@ -99,7 +99,7 @@ public class GameModelController {
      * @return up to date reseted gamemodel
      * @throws IOException
      */
-    @PUT
+    @POST
     @Path("{templateGameModelId : [1-9][0-9]*}/UpdateFromPlayer/{playerId: [1-9][0-9]*}")
     public GameModel updateFromPlayer(@PathParam("templateGameModelId") Long templateGameModelId,
             @PathParam("playerId") Long playerId) throws IOException {
@@ -267,7 +267,7 @@ public class GameModelController {
     @GET
     @Path("status/{status: [A-Z]*}")
     public Collection<GameModel> findByStatus(@PathParam("status") final GameModel.Status status) {
-        return filterGameModels(gameModelFacade.findTemplateGameModelsByStatus(status));
+        return gameModelFacade.findByStatusAndUser(status);
     }
 
     /**
@@ -316,7 +316,7 @@ public class GameModelController {
     public Collection<GameModel> deleteAll() {
         Collection<GameModel> games = new ArrayList<>();
         Subject s = SecurityUtils.getSubject();
-        for (GameModel gm : gameModelFacade.findTemplateGameModelsByStatus(GameModel.Status.BIN)) {
+        for (GameModel gm : gameModelFacade.findByStatus(GameModel.Status.BIN)) {
             if (s.isPermitted("GameModel:Delete:gm" + gm.getId())) {
                 gameModelFacade.delete(gm);
                 games.add(gm);
@@ -399,7 +399,7 @@ public class GameModelController {
                 + " by " + userFacade.getCurrentUser().getName());
     }
 
-/**
+    /**
      *
      * @throws IOException
      * @throws RepositoryException
@@ -409,46 +409,4 @@ public class GameModelController {
     public void automaticVersionCreation() throws IOException, RepositoryException {
         gameModelFacade.automaticVersionCreation();
     }
-
-    private GameModel filterGameModel(GameModel gm, Subject s) {
-        boolean canView = s.isPermitted("GameModel:View:gm" + gm.getId());
-        boolean canDuplicate = s.isPermitted("GameModel:Duplicate:gm" + gm.getId());
-        boolean canInstantiate = s.isPermitted("GameModel:Instantiate:gm" + gm.getId());
-
-        if (canView || canDuplicate || canInstantiate || canDuplicate) {
-            boolean canEdit = s.isPermitted("GameModel:Edit:gm" + gm.getId());
-            gameModelFacade.detach(gm);
-            gm.setCanEdit(canEdit);
-            gm.setCanView(canView);
-            gm.setCanDuplicate(canDuplicate);
-            gm.setCanInstantiate(canInstantiate);
-            return gm;
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Filter out gamemodel the current user don't own any rights on.
-     *
-     * Game model are detached because of poor modelling (canEdit, canView,
-     * canDuplicate, canInstantiate fields depends on observer !)
-     *
-     * @param gameModels
-     * @return
-     */
-    private Collection<GameModel> filterGameModels(Collection<GameModel> gameModels) {
-        Collection<GameModel> games = new ArrayList<>();
-        Subject s = SecurityUtils.getSubject();
-
-        for (GameModel gm : gameModels) {
-            gm = filterGameModel(gm, s);
-            if (gm != null) {
-                games.add(gm);
-            }
-        }
-        return games;
-
-    }
-
 }

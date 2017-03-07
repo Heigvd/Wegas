@@ -31,6 +31,7 @@ angular.module('private.directives', [])
                             case "wegas.private.admin":
                             case "wegas.private.admin.users":
                             case "wegas.private.admin.groups":
+                            case "wegas.private.admin.who":
                                 type = "ADMIN";
                                 break;
                         }
@@ -72,6 +73,9 @@ angular.module('private.directives', [])
                             break;
                         case "wegas.private.admin.groups":
                             profileState = "wegas.private.profile.admin.groups";
+                            break;
+                        case "wegas.private.admin.who":
+                            profileState = "wegas.private.profile.admin.who";
                             break;
                         default:
                             profileState = "wegas.private.profile";

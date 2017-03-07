@@ -9,21 +9,22 @@ package com.wegas.core.ejb;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.pusher.rest.Pusher;
 import com.pusher.rest.data.PresenceUser;
 import com.pusher.rest.data.Result;
 import com.wegas.core.Helper;
 import com.wegas.core.event.client.*;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.JacksonMapperProvider;
-import com.wegas.core.rest.util.Views;
+import com.wegas.core.rest.util.PusherChannelExistenceWebhook;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.util.OnlineUser;
 import com.wegas.core.security.util.SecurityHelper;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
@@ -36,9 +37,17 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Yannick Lagger (lagger.yannick.com)
@@ -50,20 +59,23 @@ public class WebsocketFacade {
     private static final Logger logger = LoggerFactory.getLogger(WebsocketFacade.class);
 
     private final Pusher pusher;
-    private final static String GLOBAL_CHANNEL = "presence-global";
+    private final Boolean maintainLocalListUpToDate;
+
+    public final static String GLOBAL_CHANNEL = "global-channel";
+    public final static String ADMIN_CHANNEL = "private-Admin";
+
+    public static final Pattern USER_CHANNEL_PATTERN = Pattern.compile(Helper.USER_CHANNEL_PREFIX + "(\\d+)");
+    public static final Pattern PRIVATE_CHANNEL_PATTERN = Pattern.compile("private-(User|Player|Team|Game|GameModel)-(\\d+)");
+
+    private static boolean onlineUsersUptodate = false;
+
+    private static final Map<Long, OnlineUser> onlineUsers = new HashMap<>();
 
     public enum WegasStatus {
-
         DOWN,
         READY,
         OUTDATED
     }
-
-    /**
-     *
-     */
-    @EJB
-    private VariableInstanceFacade variableInstanceFacade;
 
     @EJB
     GameFacade gameFacade;
@@ -80,27 +92,34 @@ public class WebsocketFacade {
     @EJB
     private PlayerFacade playerFacade;
 
+    @Inject
+    private RequestFacade requestFacade;
+
     /**
      * Initialize Pusher Connection
      */
     public WebsocketFacade() {
         Pusher tmp;
-        try {
+        String appId = getProperty("pusher.appId");
+        String key = getProperty("pusher.key");
+        String secret = getProperty("pusher.secret");
+        maintainLocalListUpToDate = "true".equalsIgnoreCase(getProperty("pusher.onlineusers_hook"));
+
+        if (!Helper.isNullOrEmpty(appId) && !Helper.isNullOrEmpty(key) && !Helper.isNullOrEmpty(secret)) {
             tmp = new Pusher(getProperty("pusher.appId"),
                     getProperty("pusher.key"), getProperty("pusher.secret"));
             tmp.setCluster(getProperty("pusher.cluster"));
-        } catch (Exception e) {
-            logger.warn("Pusher init failed, please check your configuration");
-            logger.debug("Pusher error details", e);
-            tmp = null;
+            pusher = tmp;
+        } else {
+            pusher = null;
         }
-        pusher = tmp;
     }
 
     /**
      * Get all channels based on entites
      *
      * @param entities
+     *
      * @return according to entities, all concerned channels
      */
     public List<String> getChannels(List<AbstractEntity> entities) {
@@ -110,33 +129,49 @@ public class WebsocketFacade {
         for (AbstractEntity entity : entities) {
             if (entity instanceof GameModel) {
                 if (SecurityUtils.getSubject().isPermitted("GameModel:View:gm" + entity.getId())) {
-                    channel = "GameModel";
+                    channel = ((GameModel) entity).getChannel();
                 }
             } else if (entity instanceof Game) {
                 if (SecurityHelper.isPermitted((Game) entity, "View")) {
-                    channel = "Game";
+                    channel = ((Game) entity).getChannel();
                 }
             } else if (entity instanceof Team) {
                 Team team = (Team) entity;
                 User user = userFacade.getCurrentUser();
                 if (SecurityHelper.isPermitted(team.getGame(), "Edit") // Trainer and scenarist 
                         || playerFacade.checkExistingPlayerInTeam(team.getId(), user.getId()) != null) { // or member of team
-                    channel = "Team";
+                    channel = ((Team) entity).getChannel();
                 }
             } else if (entity instanceof Player) {
                 Player player = (Player) entity;
                 User user = userFacade.getCurrentUser();
                 if (SecurityHelper.isPermitted(player.getGame(), "Edit") // Trainer and scenarist 
                         || player.getUser() == user) { // is the player
-                    channel = "Player";
+                    channel = ((Player) entity).getChannel();
                 }
             }
 
             if (channel != null) {
-                channels.add(channel + "-" + entity.getId());
+                channels.add(channel);
             }
         }
         return channels;
+    }
+
+    public void sendLock(String channel, String token) {
+        if (this.pusher != null) {
+            logger.error("send lock " + token + " to " + channel);
+            pusher.trigger(channel, "LockEvent",
+                    "{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"lock\"}", null);
+        }
+    }
+
+    public void sendUnLock(String channel, String token) {
+        if (this.pusher != null) {
+            logger.error("send lock " + token + " to " + channel);
+            pusher.trigger(channel, "LockEvent",
+                    "{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"unlock\"}", null);
+        }
     }
 
     /**
@@ -175,6 +210,7 @@ public class WebsocketFacade {
 
     /**
      * @param property
+     *
      * @return the property value
      */
     private String getProperty(String property) {
@@ -191,7 +227,9 @@ public class WebsocketFacade {
      * @param entityType
      * @param entityId
      * @param data
+     *
      * @return Status
+     *
      * @throws IOException
      */
     public Integer send(String filter, String entityType, String entityId, Object data) throws IOException {
@@ -265,9 +303,9 @@ public class WebsocketFacade {
                 }
                 propagate(event, audience, socketId);
             }
-        } catch (NoSuchMethodException | SecurityException |
-                InstantiationException | IllegalAccessException |
-                IllegalArgumentException | InvocationTargetException ex) {
+        } catch (NoSuchMethodException | SecurityException
+                | InstantiationException | IllegalAccessException
+                | IllegalArgumentException | InvocationTargetException ex) {
             logger.error("EVENT INSTANTIATION FAILS");
         }
     }
@@ -276,7 +314,9 @@ public class WebsocketFacade {
      * Gzip some string
      *
      * @param data
+     *
      * @return gzipped data
+     *
      * @throws IOException
      */
     private GzContent gzip(String channel, String name, String data, String socketId) throws IOException {
@@ -398,6 +438,7 @@ public class WebsocketFacade {
      *
      * @param socketId
      * @param channel
+     *
      * @return complete body to return to the client requesting authentication
      */
     public String pusherAuth(final String socketId, final String channel) {
@@ -408,8 +449,158 @@ public class WebsocketFacade {
             return pusher.authenticate(socketId, channel, new PresenceUser(user.getId(), userInfo));
         }
         if (channel.startsWith("private")) {
-            return pusher.authenticate(socketId, channel);
+            boolean hasPermission = userFacade.hasPermission(channel);
+            if (hasPermission) {
+                return pusher.authenticate(socketId, channel);
+            }
         }
         return null;
     }
+
+    private Long getUserIdFromChannel(String channelName) {
+        Matcher matcher = USER_CHANNEL_PATTERN.matcher(channelName);
+
+        if (matcher.matches()) {
+            if (matcher.groupCount() == 1) {
+                return Long.parseLong(matcher.group(1));
+            }
+        }
+        return null;
+    }
+
+    private User getUserFromChannel(String channelName) {
+        Long userId = this.getUserIdFromChannel(channelName);
+        if (userId != null) {
+            return userFacade.find(userId);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     *
+     * @param hook
+     */
+    public void pusherChannelExistenceWebhook(PusherChannelExistenceWebhook hook) {
+        synchronized (onlineUsers) {
+            if (!WebsocketFacade.onlineUsersUptodate) {
+                initOnlineUsers();
+            }
+            if (hook.getName().equals("channel_occupied")) {
+                User user = this.getUserFromChannel(hook.getChannel());
+                if (user != null) {
+                    this.registerUser(user);
+                }
+            } else if (hook.getName().equals("channel_vacated")) {
+                Long userId = this.getUserIdFromChannel(hook.getChannel());
+                if (userId != null) {
+                    onlineUsers.remove(userId);
+                }
+            }
+            this.propagateOnlineUsers();
+        }
+    }
+
+    /**
+     * Return online users
+     *
+     * @return list a users who are online
+     */
+    public Collection<OnlineUser> getOnlineUsers() {
+        synchronized (onlineUsers) {
+            if (!WebsocketFacade.onlineUsersUptodate) {
+                initOnlineUsers();
+            }
+        }
+        return onlineUsers.values();
+    }
+
+    /**
+     * Register user within internal onlineUser list
+     *
+     * @param user
+     */
+    private void registerUser(User user) {
+        if (user != null && !onlineUsers.containsKey(user.getId())) {
+            onlineUsers.put(user.getId(), new OnlineUser(user));
+        }
+    }
+
+    /**
+     * Build initial onlineUser list from pusher channels list
+     */
+    private void initOnlineUsers() {
+        try {
+            this.clearOnlineUsers();
+
+            Result get = pusher.get("/channels");
+            String message = get.getMessage();
+
+            ObjectMapper mapper = JacksonMapperProvider.getMapper();
+            HashMap<String, HashMap<String, Object>> readValue = mapper.readValue(message, HashMap.class);
+            HashMap<String, Object> channels = readValue.get("channels");
+
+            for (String channel : channels.keySet()) {
+                this.registerUser(this.getUserFromChannel(channel));
+            }
+
+            if (maintainLocalListUpToDate) {
+                WebsocketFacade.onlineUsersUptodate = true;
+            }
+
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(WebsocketFacade.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * Say to admin's who are currently logged in that some users connect or
+     * disconnect
+     */
+    private void propagateOnlineUsers() {
+        try {
+            ObjectMapper mapper = JacksonMapperProvider.getMapper();
+            String users = mapper.writeValueAsString(onlineUsers.values());
+            pusher.trigger("private-Admin", "online-users", users);
+        } catch (JsonProcessingException ex) {
+            java.util.logging.Logger.getLogger(WebsocketFacade.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void clearOnlineUsers() {
+        synchronized (onlineUsers) {
+            onlineUsers.clear();
+            onlineUsersUptodate = false;
+        }
+    }
+
+    /**
+     * Assert HmacSHA256 BODY signature match
+     *
+     * @param request
+     * @param raw
+     */
+    public void authenticateHookSource(HttpServletRequest request, byte[] raw) {
+        try {
+            String pusherKey = request.getHeader("X-Pusher-Key");
+
+            if (pusherKey == null || !pusherKey.equals(Helper.getWegasProperty("pusher.key"))) {
+                throw WegasErrorMessage.error("Invalid app key");
+            }
+
+            Mac mac = Mac.getInstance("HmacSHA256");
+            mac.init(new SecretKeySpec(Helper.getWegasProperty("pusher.secret").getBytes("UTF-8"), "HmacSHA256"));
+
+            String hex = Helper.hex(mac.doFinal(raw));
+
+            if (hex == null || !hex.equals(request.getHeader("X-Pusher-Signature"))) {
+                throw WegasErrorMessage.error("Authentication Failed");
+            }
+        } catch (IOException ex) {
+            throw WegasErrorMessage.error("Unable to read request body");
+        } catch (NoSuchAlgorithmException | InvalidKeyException ex) {
+            throw WegasErrorMessage.error(ex.getMessage());
+        }
+    }
+
 }

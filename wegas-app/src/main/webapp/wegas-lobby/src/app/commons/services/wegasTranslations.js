@@ -990,6 +990,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': startSentence(keywords.token.singular.en) + " is required",
                             'fr': "La " + keywords.token.singular.fr + " est obligatoire"
                         },
+                        'PRIVATE-SESSIONS-ACCESS-KEY-ERROR-INPUT': {
+                            'en': "Syntax error: please don't use special characters !",
+                            'fr': "Erreur de syntaxe : veuillez éviter les caractères spéciaux !"
+                        },
                         'PRIVATE-SCENARIOS-NAME-LABEL-INPUT': {
                             'en': "Name",
                             'fr': "Nom"
@@ -1240,8 +1244,12 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': startSentence(keywords.session.plural.fr) + " en cours"
                         },
                         'TRAINER-INDEX-LIST-NO-SESSION': {
-                            'en': "No current " + keywords.session.singular.en + " with the name ",
-                            'fr': "Aucune " + keywords.session.singular.fr + " en cours avec le nom "
+                            'en': "No current " + keywords.session.singular.en + " corresponds to your search string ",
+                            'fr': "Aucune " + keywords.session.singular.fr + " en cours répondant à votre critère de recherche "
+                        },
+                        'TRAINER-CARD-DETAILS-SCENARIO': {
+                            'en': startSentence(keywords.scenario.singular.en),
+                            'fr': startSentence(keywords.scenario.singular.fr)
                         },
                         'TRAINER-CARD-ACCESS-CLOSE': {
                             'en': "Closed to new " + keywords.player.plural.en,
@@ -1346,8 +1354,8 @@ angular.module('wegas.service.wegasTranslations', [])
                                 " ? Cette action est irréversible."
                         },
                         'TRAINER-MODALE-ARCHIVE-NO-SESSION': {
-                            'en': "No archived " + keywords.session.singular.en + " with the name ",
-                            'fr': "Aucune " + keywords.session.singular.fr + " archivée avec le nom "
+                            'en': "No archived " + keywords.session.singular.en + " corresponds to search string ",
+                            'fr': "Aucune " + keywords.session.singular.fr + " archivée répondant au critère "
                         },
 
                         // Private Scenarist
@@ -1380,8 +1388,8 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': startSentence(keywords.scenario.plural.fr)
                         },
                         'SCENARIST-INDEX-LIST-NO-SCENARIO': {
-                            'en': "No current " + keywords.scenario.singular.en + " with the name ",
-                            'fr': "Aucun " + keywords.scenario.singular.fr + " en cours avec le nom "
+                            'en': "No current " + keywords.scenario.singular.en + " corresponds to your search string ",
+                            'fr': "Aucun " + keywords.scenario.singular.fr + " en cours répondant à votre critère de recherche "
                         },
                         'SCENARIST-MODALE-ARCHIVE-TITLE': {
                             'en': "Archived " + keywords.scenario.plural.en,
@@ -1406,8 +1414,8 @@ angular.module('wegas.service.wegasTranslations', [])
                                 " ? Cette action est irréversible."
                         },
                         'SCENARIST-MODALE-ARCHIVE-NO-SCENARIO': {
-                            'en': "No archived " + keywords.scenario.singular.en + " with the name ",
-                            'fr': "Aucun " + keywords.scenario.singular.fr + " archivé avec le nom "
+                            'en': "No archived " + keywords.scenario.singular.en + " corresponds to search string ",
+                            'fr': "Aucun " + keywords.scenario.singular.fr + " archivé répondant au critère "
                         },
                         'SCENARIST-CARD-SETTINGS-BTN': {
                             'en': "Settings",
@@ -1521,6 +1529,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Users",
                             'fr': "Utilisateurs"
                         },
+                        'ADMIN-INDEX-WHO-BTN': {
+                            'en': "Who",
+                            'fr': "Qui"
+                        },
                         'ADMIN-USERS-LOADING': {
                             'en': "Loading " + keywords.user.plural.en,
                             'fr': "Chargement des " + keywords.user.plural.fr
@@ -1536,6 +1548,14 @@ angular.module('wegas.service.wegasTranslations', [])
                         'ADMIN-INDEX-UPLOAD-TITLE': {
                             'en': "Upload a " + keywords.scenario.singular.en,
                             'fr': "Télécharger un " + keywords.scenario.singular.fr
+                        },
+                        'ADMIN-WHO-SINGULAR-TITLE': {
+                            'en': "connected user",
+                            'fr': "utilisateur connecté"
+                        },
+                        'ADMIN-WHO-PLURAL-TITLE': {
+                            'en': "connected users",
+                            'fr': "utilisateurs connectés"
                         },
                         'ADMIN-USERS-TITLE': {
                             'en': "Existing users",

@@ -48,7 +48,7 @@ import java.util.*;
 @Table(indexes = {
     @Index(columnList = "user_id")
 })
-public class AbstractAccount extends AbstractEntity {
+public abstract class AbstractAccount extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -266,4 +266,10 @@ public class AbstractAccount extends AbstractEntity {
     public void setCreatedTime(Date createdTime) {
         this.createdTime = createdTime != null ? new Date(createdTime.getTime()) : null;
     }
+
+    /**
+     *
+     * @return
+     */
+    public abstract String getEmail();
 }

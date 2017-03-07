@@ -1,59 +1,71 @@
-angular.module('private.scenarist.directives', [
-    'wegas.behaviours.repeat.autoload'
-])
-    .controller('ScenaristIndexController', function ScenaristIndexController($q, $scope, $rootScope, ScenariosModel, $timeout) {
+angular.module('private.scenarist.directives', [])
+    .controller('ScenaristIndexController', function ScenaristIndexController($q, $scope, $rootScope, ScenariosModel, $timeout, $filter) {
         "use strict";
-        var ctrl = this,
-            initMaxScenariosDisplayed = function() {
-                /*if (ctrl.scenarios.length > 22) {
-                 ctrl.maxScenariosDisplayed = 20;
-                 } else {
-                 ctrl.maxScenariosDisplayed = ctrl.scenarios.length;
-                 }*/
-                ctrl.maxScenariosDisplayed = ctrl.scenarios.length;
-            },
-            updateDisplayScenarios = function() {
-                if (ctrl.maxScenariosDisplayed === null) {
-                    initMaxScenariosDisplayed();
-                } else {
-                    if (ctrl.maxScenariosDisplayed >= ctrl.scenarios.length) {
-                        ctrl.maxScenariosDisplayed = ctrl.scenarios.length;
-                    } else {
-                        ctrl.maxScenariosDisplayed = ctrl.maxScenariosDisplayed + 100;
-                    }
-                }
-            };
+        var ctrl = this;
         $rootScope.currentRole = "SCENARIST";
         ctrl.loading = true;
         ctrl.duplicating = false;
+        ctrl.rawScenarios = [];
         ctrl.scenarios = [];
-        ctrl.nbArchives = [];
+        ctrl.nbArchives = 0;
         ctrl.search = '';
-        ctrl.maxScenariosDisplayed = null;
 
+        /*
+         ** Filters ctrl.rawScenarios according to the given search string and puts the result in ctrl.scenarios.
+         ** Hypotheses on input array ctrl.rawScenarios :
+         ** 1. It contains only scenarios with attribute 'canEdit' = true.
+         ** 2. It's already ordered according to the 'createdTime' attribute,
+         **    so that the output automatically follows the same ordering.
+         */
+        ctrl.filterScenarios = function(search) {
+            if (!search || search.length === 0){
+                ctrl.scenarios = ctrl.rawScenarios;
+                return;
+            }
+            var needle = search.toLowerCase(),
+                res = [],
+                len = ctrl.rawScenarios.length,
+                i;
+            for (i=0; i<len; i++){
+                var scenario = ctrl.rawScenarios[i];
+                if ((scenario.name && scenario.name.toLowerCase().indexOf(needle) >= 0) ||
+                    (scenario.createdByName && scenario.createdByName.toLowerCase().indexOf(needle) >= 0) ||
+                    (scenario.comments && scenario.comments.toLowerCase().indexOf(needle) >= 0) ||
+                    // If searching for a number, the id has to start with the given pattern:
+                    scenario.id.toString().indexOf(needle) === 0) {
+                    res.push(scenario);
+                }
+            }
+            ctrl.scenarios = res; // $filter('limitTo')(res, 20);
+            if (ctrl.search != search){
+                ctrl.search = search;
+            }
+        };
+
+        // Called when a scenario is modified, added or removed:
         ctrl.updateScenarios = function(updateDisplay) {
             var hideScrollbarDuringInitialRender = (ctrl.scenarios.length === 0);
             if (hideScrollbarDuringInitialRender) {
                 $('#scenarist-scenarios-list').css('overflow-y', 'hidden');
             }
+            ctrl.scenarios = ctrl.rawScenarios = [];
             ctrl.loading = true;
             ScenariosModel.getScenarios('LIVE').then(function(response) {
                 ctrl.loading = false;
-                ctrl.scenarios = response.data || [];
-                if (updateDisplay) {
-                    updateDisplayScenarios();
+                ctrl.rawScenarios = $filter('filter')(response.data, { canEdit: true } ) || [];
+                ctrl.rawScenarios = $filter('orderBy')(ctrl.rawScenarios, 'createdTime', true) || [];
+                // At this point, the search variable is not necessarily updated by Angular to reflect the input field:
+                var searchField = document.getElementById('searchField');
+                if (searchField) {
+                    ctrl.search = searchField.getElementsByClassName('tool__input')[0].value;
                 }
+                ctrl.filterScenarios(ctrl.search);
                 if (hideScrollbarDuringInitialRender) {
                     $timeout(function() {
                         $('#scenarist-scenarios-list').css('overflow-y', 'auto');
-                    }, 1000);
+                    }, 5000);
                 }
             });
-            /*if (updateDisplay) {
-             ScenariosModel.countArchivedScenarios().then(function(response) {
-             ctrl.nbArchives = response.data;
-             });
-             }*/
         };
 
         ctrl.archiveScenario = function(scenario) {
@@ -92,6 +104,7 @@ angular.module('private.scenarist.directives', [
             ScenariosModel.createScenario(name, templateId).then(function(response) {
                 if (!response.isErroneous()) {
                     $scope.$emit('collapse');
+                    ctrl.search = "";
                     ctrl.updateScenarios(true);
                     deferred.resolve(true);
                 } else {
@@ -104,12 +117,6 @@ angular.module('private.scenarist.directives', [
 
         $rootScope.$on('entrenchNbArchives', function(e, count) {
             ctrl.nbArchives -= count;
-        });
-
-        $rootScope.$on('changeLimit', function(e, hasNewData) {
-            if (e.currentScope.currentRole === "SCENARIST" && hasNewData) {
-                ctrl.updateScenarios(true);
-            }
         });
 
         /* Listen for scenario update */
@@ -133,15 +140,27 @@ angular.module('private.scenarist.directives', [
             controller: 'ScenaristIndexController as scenaristIndexCtrl'
         };
     })
-    .directive('scenaristScenarioCreate', function(Flash, $translate) {
+    .directive('scenaristScenarioCreate', function(ScenariosModel, Flash, $translate, $filter) {
         "use strict";
         return {
             templateUrl: 'app/private/scenarist/directives.tmpl/create.html',
-            scope: {
-                scenarios: '=',
-                create: '='
-            },
-            link: function(scope, element, attrs) {
+            scope: false,
+            link: function(scope, element, attrs, parentCtrl) {
+                scope.scenariomenu = [];
+                scope.loadingScenarios = false;
+                var loadScenarios = function() {
+                    // Reload list from cache each time the window is opened:
+                    scope.loadingScenarios = true;
+                    ScenariosModel.getScenarios("LIVE").then(function(response) {
+                        if (!response.isErroneous()) {
+                            scope.loadingScenarios = false;
+                            var expression = { canDuplicate: true },
+                                filtered = $filter('filter')(response.data, expression) || [];
+                            scope.scenariomenu = $filter('orderBy')(filtered, 'name');
+                        }
+                    });
+                };
+
                 var resetNewScenario = function() {
                     scope.newScenario = {
                         name: '',
@@ -150,21 +169,17 @@ angular.module('private.scenarist.directives', [
                 };
 
                 scope.cancelScenario = function() {
-                    scope.newScenario = {
-                        name: "",
-                        templateId: 0
-                    };
+                    resetNewScenario();
                     scope.$emit('collapse');
                 };
 
                 scope.createScenario = function() {
                     var button = $(element).find(".form__submit");
-
                     if (scope.newScenario.name !== '') {
                         if (scope.newScenario.templateId !== 0) {
                             if (!button.hasClass("button--disable")) {
                                 button.addClass("button--disable button--spinner button--rotate");
-                                scope.create(scope.newScenario.name, scope.newScenario.templateId).then(function() {
+                                scope.scenaristIndexCtrl.createScenario(scope.newScenario.name, scope.newScenario.templateId).then(function() {
                                     button.removeClass("button--disable button--spinner button--rotate");
                                     resetNewScenario();
                                 });
@@ -180,7 +195,11 @@ angular.module('private.scenarist.directives', [
                         });
                     }
                 };
-                resetNewScenario();
+
+                scope.$on('expand', function() {
+                    resetNewScenario();
+                    loadScenarios();
+                });
             }
         };
     })
@@ -191,7 +210,6 @@ angular.module('private.scenarist.directives', [
             scope: {
                 scenarios: '=',
                 archive: '=',
-                maximum: '=',
                 search: '=',
                 duplicate: '=',
                 duplicating: '='
@@ -206,8 +224,7 @@ angular.module('private.scenarist.directives', [
                 scenario: '=',
                 archive: '=',
                 duplicate: '=',
-                duplicating: '=',
-                isDuplicated: '='
+                duplicating: '='
             },
             link: function(scope) {
                 scope.ServiceURL = window.ServiceURL;

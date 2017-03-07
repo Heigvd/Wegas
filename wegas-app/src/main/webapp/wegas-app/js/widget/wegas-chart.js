@@ -13,7 +13,6 @@
 YUI.add('wegas-chart', function(Y) {
     "use strict";
     var CONTENTBOX = 'contentBox', Chart;
-
     Chart = Y.Base.create("wegas-chart", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         CONTENT_TEMPLATE: "<div>" +
             "<div class=\"ct-chart\">" +
@@ -22,13 +21,15 @@ YUI.add('wegas-chart', function(Y) {
             "</div>",
         initializer: function() {
             this.handlers = [];
+            if (this.get("xLabelMapper")) {
+                this._xLabelMapper = eval("(" + this.get("xLabelMapper") + ")");
+            }
         },
         bindUI: function() {
             this.handlers.push(Y.Wegas.Facade.Variable.after("update", this.syncUI, this));
         },
         renderUI: function() {
             var variables, i, vd, legendNode, label;
-
             this.options = {
                 width: this.get("width"),
                 height: this.get("height"), /*
@@ -42,10 +43,10 @@ YUI.add('wegas-chart', function(Y) {
                 },
                 axisY: {
                     type: Chartist.AutoScaleAxis,
+                    position: this.get("yLabelPosition"),
                     showLabel: this.get("showYLabels")
                 }
             };
-
             if (this.get("interpolation") === "simple") {
                 this.options.lineSmooth = Chartist.Interpolation.simple({divisor: 2});
             } else if (this.get("interpolation") === "cardinal") {
@@ -70,7 +71,6 @@ YUI.add('wegas-chart', function(Y) {
             legendNode = this.get(CONTENTBOX).one(".legend");
             for (i = 0; i < variables.length; i += 1) {
                 vd = Y.Wegas.Facade.Variable.cache.find("name", variables[i].name);
-
                 if (this.get("variables")[i].label) {
                     label = Y.Template.Micro.compile(this.get("variables")[i].label || "")();
                 } else {
@@ -85,7 +85,6 @@ YUI.add('wegas-chart', function(Y) {
         syncUI: function() {
             var vd, i, variables = this.get("variables"), history,
                 promises = [], ctx = this;
-
             this.data = {labels: [], series: []};
             this.counter = variables.length;
             for (i = 0; i < variables.length; i += 1) {
@@ -112,7 +111,6 @@ YUI.add('wegas-chart', function(Y) {
                 name: label,
                 data: serie
             });
-
             if (this.counter === 0) {
                 data.labels = [];
                 max = 0;
@@ -123,7 +121,11 @@ YUI.add('wegas-chart', function(Y) {
                     max = Math.max(max, this.get("xMinMax.evaluated").getValue());
                 }
                 for (k = 0; k < max; k++) {
-                    data.labels.push(k + 1);
+                    if (this._xLabelMapper) {
+                        data.labels.push(this._xLabelMapper(k));
+                    } else {
+                        data.labels.push(k + 1);
+                    }
                 }
 
                 if (this.chart) {
@@ -140,7 +142,6 @@ YUI.add('wegas-chart', function(Y) {
             chart.append('<div class="tooltip"></div>');
             tooltip = chart.one(".tooltip");
             tooltip.hide();
-
             // TODO hide 
             this.handlers.push(CB.delegate("mouseenter", function(e) {
                 var value, name;
@@ -149,11 +150,9 @@ YUI.add('wegas-chart', function(Y) {
                 tooltip.setContent(name + "<br />" + value);
                 tooltip.show();
             }, ".ct-point", this));
-
             this.handlers.push(CB.delegate("mouseleave", function(e) {
                 this.get(CONTENTBOX).one(".tooltip").hide();
             }, ".ct-point", this));
-
             this.handlers.push(chart.on("mousemove", function(e) {
                 var tooltip = this.get(CONTENTBOX).one(".tooltip");
                 tooltip.setStyle("left", (e.pageX + 10) + "px");
@@ -255,6 +254,14 @@ YUI.add('wegas-chart', function(Y) {
             showYLabels: {
                 type: "boolean",
                 value: true
+            },
+            yLabelPosition: {
+                type: "string",
+                value: "start"
+            },
+            xLabelMapper: {
+                type: "string",
+                value: ""
             }
         }
     });

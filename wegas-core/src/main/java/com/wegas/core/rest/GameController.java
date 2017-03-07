@@ -13,7 +13,6 @@ import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.internal.WegasNoResultException;
-import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
@@ -34,7 +33,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -83,7 +81,7 @@ public class GameController {
     @Path("{entityId : [1-9][0-9]*}")
     public Game find(@PathParam("entityId") Long entityId) {
         Game g = gameFacade.find(entityId);
-        SecurityHelper.checkAnyPermission(g, Arrays.asList("View", "Token", "TeamToken"));
+        SecurityHelper.checkAnyPermission(g, Arrays.asList("View"));
 
         return g; // was: gameFacade.find(entityId);
     }
@@ -126,7 +124,7 @@ public class GameController {
         gameFacade.detach(game);
         game = gameFacade.find(game.getId());
         //gameFacade.create(gameModelId, game);
-        return getGameWithoutDebugTeam(game);
+        return gameFacade.getGameWithoutDebugTeam(game);
     }
 
     /**
@@ -139,11 +137,12 @@ public class GameController {
      */
     @POST
     @Path("ShadowCreate")
+    @Deprecated
     public Game shadowCreate(@PathParam("gameModelId") Long gameModelId, Game entity) throws IOException {
         SecurityUtils.getSubject().checkPermission("GameModel:Instantiate:gm" + gameModelId);
 
         gameFacade.create(gameModelId, entity);
-        return getGameWithoutDebugTeam(entity);
+        return gameFacade.getGameWithoutDebugTeam(entity);
     }
 
     /**
@@ -224,16 +223,22 @@ public class GameController {
      * @return all game having the given status
      */
     @GET
-    @Path("status/{status: [A-Z]*}")
-    public Collection<Game> findByStatus(@PathParam("status") final Game.Status status) {
+    @Path("status_old/{status: [A-Z]*}")
+    public Collection<Game> findByStatus_old(@PathParam("status") final Game.Status status) {
         final Collection<Game> retGames = new ArrayList<>();
         final Collection<Game> games = gameFacade.findAll(status);
         for (Game g : games) {
             if (SecurityHelper.isPermitted(g, "Edit")) {
-                retGames.add(getGameWithoutDebugTeam(g));
+                retGames.add(gameFacade.getGameWithoutDebugTeam(g));
             }
         }
         return retGames;
+    }
+
+    @GET
+    @Path("status/{status: [A-Z]*}")
+    public Collection<Game> findByStatus(@PathParam("status") final Game.Status status) {
+        return gameFacade.findByStatusAndUser(status);
     }
 
     /**
@@ -318,33 +323,13 @@ public class GameController {
     }
 
     /**
-     * Filter out the debug team
-     *
-     * @param game
-     * @return the game without the debug team
-     */
-    private Game getGameWithoutDebugTeam(Game game) {
-        if (game != null) {
-            gameFacade.detach(game);
-            List<Team> withoutDebugTeam = new ArrayList<>();
-            for (Team teamToCheck : game.getTeams()) {
-                if (!(teamToCheck instanceof DebugTeam)) {
-                    withoutDebugTeam.add(teamToCheck);
-                }
-            }
-            game.setTeams(withoutDebugTeam);
-        }
-        return game;
-    }
-
-    /**
      * @param token
      * @return game which matches the token, without its debug team
      */
     @GET
-    @Path("/FindByToken/{token : .*}/")
+    @Path("/FindByToken/{token : ([a-zA-Z0-9_-]|\\.(?!\\.))*}")
     public Game findByToken(@PathParam("token") String token) {
-        return getGameWithoutDebugTeam(gameFacade.findByToken(token));
+        return gameFacade.getGameWithoutDebugTeam(gameFacade.findByToken(token));
 
     }
 

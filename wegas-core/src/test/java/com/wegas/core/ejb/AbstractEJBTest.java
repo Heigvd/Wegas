@@ -15,6 +15,7 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.Role;
+import com.wegas.core.security.persistence.User;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -34,7 +35,10 @@ public class AbstractEJBTest {
     private static final Logger logger = LoggerFactory.getLogger(AbstractEJBTest.class);
     private static EJBContainer ejbContainer;
     protected static GameModelFacade gameModelFacade;
+    protected static GameFacade gameFacade;
+    protected static TeamFacade teamFacade;
     protected static RoleFacade roleFacade;
+    protected static UserFacade userFacade;
     protected static VariableDescriptorFacade descriptorFacade;
     // *** Fields *** //
     protected static GameModel gameModel;
@@ -44,6 +48,7 @@ public class AbstractEJBTest {
     protected static Team team2;
     protected static Player player2;
     protected static Player player21;
+    protected static User guest;
     // *** Constants *** //
     final static private String GAMENAME = "test-game";
     final static private String GAMETOKEN = "test-game-token";
@@ -52,10 +57,14 @@ public class AbstractEJBTest {
     public static void setUp() throws NamingException {
         ejbContainer = TestHelper.getEJBContainer();
         gameModelFacade = lookupBy(GameModelFacade.class);
+        gameFacade = GameFacade.lookup();
+        teamFacade = TeamFacade.lookup();
         descriptorFacade = lookupBy(VariableDescriptorFacade.class);
         roleFacade = lookupBy(RoleFacade.class);
+        userFacade = UserFacade.lookup();
 
-        lookupBy(UserFacade.class).guestLogin();
+        guest = userFacade.guestLogin();
+        RequestFacade.lookup().getRequestManager().setCurrentUser(guest);
     }
 
     @AfterClass
@@ -73,28 +82,32 @@ public class AbstractEJBTest {
     public void createGameModel() {
         gameModel = new GameModel();                                            // Create a game model
         gameModel.setName("test-gamemodel");
+        gameModelFacade.create(gameModel);                                      // Commit the game model
 
         game = new Game();                                                      // Create a game
         game.setName(GAMENAME);
         game.setToken(GAMETOKEN);
         game.setAccess(Game.GameAccess.OPEN);
-        gameModel.addGame(game);
+        gameFacade.create(gameModel.getId(), game);
 
         team = new Team();                                                      // a team and a player
         team.setName("test-team");
-        game.addTeam(team);
-        player = new Player("Player");
-        team.addPlayer(player);
+        teamFacade.create(game.getId(), team);
+
+        player = gameFacade.joinTeam(team.getId(), guest.getId());
 
         team2 = new Team();                                                     // a team and a player
         team2.setName("test-team2");                                            // a second team and a player
-        game.addTeam(team2);
-        player2 = new Player("Player2");
-        player21 = new Player("Player21");
-        team2.addPlayer(player2);
-        team2.addPlayer(player21);
 
-        gameModelFacade.create(gameModel);                                      // Commit the game model
+        teamFacade.create(game.getId(), team2);
+
+        User user2 = new User();
+        userFacade.create(user2);
+        player2 = gameFacade.joinTeam(team2.getId(), user2.getId());
+
+        User user21 = new User();
+        userFacade.create(user21);
+        player21 = gameFacade.joinTeam(team2.getId(), user21.getId());
     }
 
     @After

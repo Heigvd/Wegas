@@ -45,6 +45,10 @@ YUI.add('wegas-mcq-view', function(Y) {
              * Reference to each used Event handlers
              */
             this.handlers = [];
+
+            this.plug(Y.Plugin.Lockable, {token: "MCQ-" + this.get("variable.evaluated").getInstance().get("id")});
+
+            this.on("disabledChange", this.syncUI, this);
         },
         /**
          * @function
@@ -254,6 +258,11 @@ YUI.add('wegas-mcq-view', function(Y) {
                 '<div class="mcq-question-description">', question.get("description"), '</div>',
                 '</div>'];
             // Display choices
+
+            if (this.get("disabled")) {
+                answerable = false;
+            }
+
             if (cbxType) {
                 if (tabularMCQ) {
                     // First find how many choices are active and if there is any description field to be displayed:
@@ -352,7 +361,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                     choiceI = choiceD.getInstance();
                     choiceID = choiceD.get("id");
                     currDescr = question.get("items")[i].get("description") || "";
-                    isChosenReply = answerable || questionInstance.get("replies")[0].getChoiceDescriptor().get("id") === choiceID;
+                    isChosenReply = answerable || (allReplies[0] && allReplies[0].getChoiceDescriptor().get("id") === choiceID);
                     if (!choiceI.get("active")) {
                     } else {
                         var noTitle = (choiceD.get("title").trim() == '');

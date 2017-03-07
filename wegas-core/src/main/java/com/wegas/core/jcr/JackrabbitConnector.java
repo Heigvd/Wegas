@@ -8,8 +8,26 @@
 package com.wegas.core.jcr;
 
 import com.wegas.core.Helper;
-import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.persistence.game.GameModel;
+import org.apache.jackrabbit.api.JackrabbitRepository;
+import org.apache.jackrabbit.api.JackrabbitRepositoryFactory;
+import org.apache.jackrabbit.api.management.DataStoreGarbageCollector;
+import org.apache.jackrabbit.api.management.RepositoryManager;
+import org.apache.jackrabbit.core.RepositoryFactoryImpl;
+import org.slf4j.LoggerFactory;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.ejb.Schedule;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
@@ -18,23 +36,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.ejb.EJB;
-import javax.ejb.Schedule;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
-import org.apache.jackrabbit.api.JackrabbitRepository;
-import org.apache.jackrabbit.api.JackrabbitRepositoryFactory;
-import org.apache.jackrabbit.api.management.DataStoreGarbageCollector;
-import org.apache.jackrabbit.api.management.RepositoryManager;
-import org.apache.jackrabbit.core.RepositoryFactoryImpl;
-import org.slf4j.LoggerFactory;
 
 /**
  * Implementation specific garbageCollector
@@ -50,8 +51,8 @@ public class JackrabbitConnector {
     private static JackrabbitRepository repo;
     final private JackrabbitRepositoryFactory rf = new RepositoryFactoryImpl();
 
-    @EJB
-    private GameModelFacade gmf;
+    @PersistenceContext(name = "wegasPU")
+    private EntityManager em;
 
     @PostConstruct
     protected void init() {
@@ -70,6 +71,9 @@ public class JackrabbitConnector {
 
     @Schedule(hour = "3", minute = "0")
     private void runGC() {
+    }
+
+    private void _runGC() {
         try {
             logger.info("Running Jackrabbit GarbageCollector");
             final RepositoryManager rm = rf.getRepositoryManager(JackrabbitConnector.repo);
@@ -107,19 +111,14 @@ public class JackrabbitConnector {
                         try {
                             /* DROP TABLES */
                             String dropQuery = "DROP table IF EXISTS "
-                                + workspaceName + "_binval, "
-                                + workspaceName + "_refs, "
-                                + workspaceName + "_bundle, "
-                                + workspaceName + "_names CASCADE";
+                                    + workspaceName + "_binval, "
+                                    + workspaceName + "_refs, "
+                                    + workspaceName + "_bundle, "
+                                    + workspaceName + "_names CASCADE";
 
                             statement.execute(dropQuery);
                             con.commit();
-                            /* DELETE WORKSPACE */
-                            try {
-                                Helper.recursiveDelete(new File(DIR + "/workspaces/" + workspaceName));
-                            } catch (IOException ex) {
-                                logger.warn("Delete workspace files failed", ex);
-                            }
+                            deleteWorkspaceDirectory(workspaceName);
                         } catch (SQLException ex) {
                             logger.warn("Delete workspace failed", ex);
                             statement.cancel();
@@ -137,7 +136,6 @@ public class JackrabbitConnector {
     }
 
     /**
-     *
      * @return
      */
     protected javax.jcr.Repository getRepo() {
@@ -151,15 +149,16 @@ public class JackrabbitConnector {
             Session admin = SessionHolder.getSession(null);
             String[] workspaces = admin.getWorkspace().getAccessibleWorkspaceNames();
             SessionHolder.closeSession(admin);
-            List<GameModel> gameModels = gmf.findAll();
-            List<String> fakeworkspaces = new ArrayList<>();
+            final List<GameModel> gameModels = em.createNamedQuery("GameModel.findAll", GameModel.class).getResultList();
+            final List<String> workspacesToKeep = new ArrayList<>();
             final List<String> toDelete = new ArrayList<>();
+            // Workspaces which have an associated gameModel.
             for (GameModel gameModel : gameModels) {
-                fakeworkspaces.add("GM_" + gameModel.getId());
+                workspacesToKeep.add("GM_" + gameModel.getId());
             }
             for (String workspace : workspaces) {
                 if (workspace.startsWith("GM_") && !workspace.equals("GM_0")) {
-                    if (!fakeworkspaces.contains(workspace)) {
+                    if (!workspacesToKeep.contains(workspace)) {
                         toDelete.add(workspace);
                         logger.info("Marked for deletion : {}", workspace);
                     }
@@ -172,6 +171,19 @@ public class JackrabbitConnector {
             deleteWorkspaces(toDelete);
         } catch (RepositoryException ex) {
             logger.warn("Unable to close repository: " + ex.getMessage());
+        }
+    }
+
+    /**
+     * Delete workspace Directory
+     *
+     * @param workspaceName directory to delete.
+     */
+    private static void deleteWorkspaceDirectory(String workspaceName) {
+        try {
+            Helper.recursiveDelete(new File(DIR + "/workspaces/" + workspaceName));
+        } catch (IOException ex) {
+            logger.warn("Delete workspace files failed", ex);
         }
     }
 }

@@ -16,11 +16,11 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.wegas.core.ejb.TeamFacade;
+import com.wegas.core.Helper;
+import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.security.ejb.UserFacade;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +40,7 @@ import java.util.Map;
     @Index(columnList = "user_id"),
     @Index(columnList = "parentteam_id")
 })
-public class Player extends AbstractEntity implements Broadcastable {
+public class Player extends AbstractEntity implements Broadcastable, BroadcastTarget {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -315,5 +315,11 @@ public class Player extends AbstractEntity implements Broadcastable {
                 find.getPlayers().remove(this);
             }
         }
+    }
+
+    @JsonIgnore
+    @Override
+    public String getChannel() {
+        return Helper.PLAYER_CHANNEL_PREFIX + this.getId();
     }
 }

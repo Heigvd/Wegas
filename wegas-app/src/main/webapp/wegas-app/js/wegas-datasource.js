@@ -1182,7 +1182,7 @@ YUI.add('wegas-datasource', function(Y) {
                 } else {
                     // Entity not yet known, no version to compare
                     scope.variableInstances[scopeKey] = entity;
-                    Y.Wegas.Facade.Instance.fire("addedInstance", {
+                    Y.Wegas.Facade.Instance.fire("updatedInstance", {
                         entity: entity
                     });
                 }
@@ -1412,14 +1412,6 @@ YUI.add('wegas-datasource', function(Y) {
                     data: data
                 },
                 on: callback
-            });
-        },
-        deleteAllRolePermissions: function(roleId, entityId) {
-            this.sendRequest({
-                request: "/DeleteAllRolePermissions/" + roleId + "/" + entityId,
-                cfg: {
-                    method: POST
-                }
             });
         }
     }, {

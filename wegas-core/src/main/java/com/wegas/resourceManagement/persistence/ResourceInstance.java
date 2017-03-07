@@ -21,6 +21,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.ListUtils;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  *
@@ -233,6 +235,12 @@ public class ResourceInstance extends VariableInstance {
      * @return the activities
      */
     public List<Occupation> getOccupations() {
+        Collections.sort(this.occupations, new Comparator<Occupation>() {
+            @Override
+            public int compare(Occupation a, Occupation b) {
+                return ((Double) a.getTime()).compareTo(b.getTime());
+            }
+        });
         return occupations;
     }
 

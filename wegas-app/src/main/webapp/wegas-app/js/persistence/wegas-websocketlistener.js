@@ -21,34 +21,42 @@ YUI.add('wegas-websocketlistener', function(Y) {
                     this._hdl.push(dataSource.on("OutdatedEntitiesEvent", this.forceEntityUpdate, this));
                     this._hdl.push(dataSource.on("EntityDestroyedEvent", this.onEntityDeletion, this));
                     this._hdl.push(dataSource.on("CustomEvent", this.onCustomEvent, this));
+                    this._hdl.push(dataSource.on("LockEvent", this.onLockEvent, this));
                     this._hdl.push(dataSource.on("LifeCycleEvent", this.onLifeCycleEvent, this));
                 }
             });
         },
-        _before: function(token) {
-            var node = Y.Widget.getByNode(".wegas-login-page") ||
+        _getNode: function() {
+            return Y.Widget.getByNode(".wegas-login-page") ||
                 Y.Widget.getByNode(".wegas-editview") ||
                 Y.Widget.getByNode(".wegas-trainer--app") ||
                 Y.Widget.getByNode(".wegas-playerview");
+        },
+        _before: function(token) {
+            var node = this._getNode();
             if (Y.one("body").hasClass("wegas-advancedmode")) {
                 node.showOverlay(token);
             }
         },
         _after: function(token) {
-            var node = Y.Widget.getByNode(".wegas-login-page") ||
-                Y.Widget.getByNode(".wegas-editview") ||
-                Y.Widget.getByNode(".wegas-trainer--app") ||
-                Y.Widget.getByNode(".wegas-playerview");
+            var node = this._getNode();
             if (Y.one("body").hasClass("wegas-advancedmode")) {
                 node.hideOverlay(token);
             }
         },
+        onLockEvent: function(data) {
+            if (Y.Wegas.app.lockmanager) {
+                var payload = Y.JSON.parse(data);
+                if (payload.status === "lock") {
+                    Y.Wegas.app.lockmanager.lock(payload.token);
+                } else {
+                    Y.Wegas.app.lockmanager.unlock(payload.token);
+                }
+            }
+        },
         onLifeCycleEvent: function(data) {
             var payload = Y.JSON.parse(data),
-                node = Y.Widget.getByNode(".wegas-login-page") ||
-                Y.Widget.getByNode(".wegas-editview") ||
-                Y.Widget.getByNode(".wegas-trainer--app") ||
-                Y.Widget.getByNode(".wegas-playerview");
+                node = this._getNode();
             /*(Y.Widget.getByNode("#centerTabView") &&
              Y.Widget.getByNode("#centerTabView").get("selection")) ||
              ;*/
@@ -88,6 +96,9 @@ YUI.add('wegas-websocketlistener', function(Y) {
             });
         },
         onCustomEvent: function(data) {
+            var payload = Y.JSON.parse(data);
+            // BEURK
+            Y.Wegas.Facade.Variable.fire(payload.type, payload.payload);
         },
         forceEntityUpdate: function(data) {
             this._before();

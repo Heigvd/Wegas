@@ -22,8 +22,10 @@
     .card__illustration{
         display:block;
         float:left;
+        .icon-users {
+            padding-right: 8px;
+        }
     }
-
     .card__description{
         float:left;
         padding:0px ($card-base-padding*3);
@@ -53,6 +55,7 @@
                 font-style:italic;
             }
         }
+
         @each $description in $card-description{
             $description-type: nth($description, 1);
             $description-padding-top: nth($description, 2);
@@ -239,6 +242,7 @@
     }
 
     &.card--trainer-session{
+
         .card__description{
             width:calc(100% - 540px); /* was 542px */
             box-sizing:border-box;
@@ -495,4 +499,74 @@
             }
         }
     }
+
+    &.card--admin-who{
+        .card__description{
+            width: 100%;
+            padding: 4px;
+            box-sizing:border-box;
+
+            .card-number {
+                float: left;
+                width: 50px;
+                text-align: right;
+                padding-right: 10px;
+            }
+
+            .card-fullname {
+                float: left;
+                width: 300px;
+                overflow-x: auto;
+                overflow-y: hidden;
+                margin-right:10px;
+            }
+
+            .card-email {
+                float: left;
+                width: 300px;
+                overflow-x: auto;
+                overflow-y:hidden;
+            }
+
+            .card-be{
+                float: right;
+                transform: scale(0.7);
+                padding: 0;
+                margin-top: -16px;
+                margin-bottom: -16px;
+            }
+        }
+
+        .card__description * {
+            font-weight: normal;
+        }
+
+        @media screen and (max-width: 868px) {
+            .card__description {
+                .card-fullname {
+                    width: auto;
+                }
+
+                .card-email {
+                    clear: both;
+                    margin-left: 50px;
+                }
+
+                .card-roles {
+                    width: auto;
+                }
+            }
+        }
+
+        @media screen and (max-width: 660px) {
+            .card__description {
+                .card-roles {
+                    clear: both;
+                    float: left;
+                    margin-left: 50px;
+                }
+            }
+        }
+    }
+
 }

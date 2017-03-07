@@ -11,12 +11,15 @@ import com.wegas.core.ejb.statemachine.StateMachineEventCounter;
 import com.wegas.core.event.client.ClientEvent;
 import com.wegas.core.event.client.CustomEvent;
 import com.wegas.core.event.client.ExceptionEvent;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import jdk.nashorn.api.scripting.ScriptUtils;
 import jdk.nashorn.internal.runtime.ScriptObject;
@@ -35,6 +38,7 @@ import javax.persistence.PersistenceContext;
 import javax.script.ScriptContext;
 import javax.ws.rs.core.Response;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 //import javax.annotation.PostConstruct;
@@ -66,6 +70,9 @@ public class RequestManager {
     @Inject
     MutexSingleton mutexSingleton;
 
+    @Inject
+    private UserFacade userFacade;
+
     @EJB
     private PlayerFacade playerFacade;
 
@@ -88,6 +95,7 @@ public class RequestManager {
     private User currentUser;
 
     private String requestId;
+    private String socketId;
     private String method;
     private String path;
     private Long startTimestamp;
@@ -109,9 +117,9 @@ public class RequestManager {
     private Map<String, List<AbstractEntity>> destroyedEntities = new HashMap<>();
 
     /**
-     *
+     * Map TOKEN -> Audience
      */
-    private List<String> lockedToken = new ArrayList<>();
+    private final Map<String, List<String>> lockedToken = new HashMap<>();
 
     /**
      *
@@ -136,6 +144,10 @@ public class RequestManager {
 
     public void setEnv(RequestEnvironment env) {
         this.env = env;
+    }
+
+    public boolean isTestEnv() {
+        return this.env == RequestEnvironment.TEST;
     }
 
     public void addUpdatedEntities(Map<String, List<AbstractEntity>> entities) {
@@ -341,25 +353,105 @@ public class RequestManager {
         this.locale = local;
     }
 
+    private String getAudience(BroadcastTarget target) {
+        if (target != null) {
+            String channel = target.getChannel();
+            if (userFacade.hasPermission(channel)) {
+                return channel;
+            } else {
+                throw WegasErrorMessage.error("You don't have the right to lock " + channel);
+            }
+        }
+        return null;
+    }
+
+    private String getEffectiveAudience(String audience) {
+        if (audience != null && !audience.isEmpty()) {
+            return audience;
+        } else {
+            return "internal";
+        }
+    }
+
+    /**
+     * Try to Lock the token. Non-blocking. Return true if token has been
+     * locked, false otherwise
+     *
+     * @param token
+     * @return
+     */
     public boolean tryLock(String token) {
-        boolean tryLock = mutexSingleton.tryLock(token);
+        return tryLock(token, null);
+    }
+
+    /**
+     *
+     * @param token  token to tryLock
+     * @param target scope to inform about the lock
+     * @return
+     */
+    public boolean tryLock(String token, BroadcastTarget target) {
+        String audience = getAudience(target);
+        boolean tryLock = mutexSingleton.tryLock(token, audience);
         if (tryLock) {
             // Only register token if successfully locked
-            lockedToken.add(token);
+            if (!lockedToken.containsKey(token)) {
+                lockedToken.put(token, new ArrayList());
+            }
+            lockedToken.get(token).add(getEffectiveAudience(audience));
         }
         return tryLock;
     }
 
+    /**
+     *
+     * @param token token to lock
+     */
     public void lock(String token) {
-        mutexSingleton.lock(token);
-        lockedToken.add(token);
+        this.lock(token, null);
     }
 
-    public void unlock(String token) {
-        mutexSingleton.unlock(token);
-        if (lockedToken.contains(token)) {
-            lockedToken.remove(token);
+    /**
+     *
+     * @param token  token to lock
+     * @param target scope to inform about the lock
+     */
+    public void lock(String token, BroadcastTarget target) {
+        String audience = getAudience(target);
+        mutexSingleton.lock(token, audience);
+        if (!lockedToken.containsKey(token)) {
+            lockedToken.put(token, new ArrayList());
         }
+        lockedToken.get(token).add(getEffectiveAudience(audience));
+    }
+
+    /**
+     *
+     * @param token token to release
+     */
+    public void unlock(String token) {
+        this.unlock(token, null);
+    }
+
+    /**
+     *
+     * @param token  token to release
+     * @param target scope to inform about the lock
+     */
+    public void unlock(String token, BroadcastTarget target) {
+        String audience = getAudience(target);
+        mutexSingleton.unlock(token, audience);
+        if (lockedToken.containsKey(token)) {
+            List<String> audiences = lockedToken.get(token);
+            audiences.remove(getEffectiveAudience(audience));
+            if (audiences.isEmpty()) {
+                lockedToken.remove(token);
+            }
+        }
+    }
+
+    public Collection<String> getTokensByAudiences(List<String> audiences) {
+        return mutexSingleton.getTokensByAudiences(audiences);
     }
 
     public void setStatus(Response.StatusType statusInfo) {
@@ -404,6 +496,14 @@ public class RequestManager {
 
     public String getRequestId() {
         return requestId;
+    }
+
+    public String getSocketId() {
+        return socketId;
+    }
+
+    public void setSocketId(String socketId) {
+        this.socketId = socketId;
     }
 
     public String getMethod() {
@@ -480,9 +580,10 @@ public class RequestManager {
 
     @PreDestroy
     public void preDestroy() {
-        while (!lockedToken.isEmpty()) {
-            String remove = lockedToken.remove(0);
-            mutexSingleton.unlockFull(remove);
+        for (Entry<String, List<String>> entry : lockedToken.entrySet()) {
+            for (String audience : entry.getValue()) {
+                mutexSingleton.unlockFull(entry.getKey(), audience);
+            }
         }
         if (this.currentScriptContext != null) {
             this.currentScriptContext.getBindings(ScriptContext.ENGINE_SCOPE).clear();
@@ -518,4 +619,5 @@ public class RequestManager {
             }
         }
     }
+
 }
