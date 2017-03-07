@@ -12,6 +12,7 @@ import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.aai.AaiAccount;
 import com.wegas.core.security.facebook.FacebookAccount;
 import com.wegas.core.security.guest.GuestJpaAccount;
 
@@ -37,6 +38,7 @@ import java.util.*;
     @NamedQuery(name = "AbstractAccount.findByUsername", query = "SELECT a FROM AbstractAccount a WHERE a.username = :username")
 })
 @JsonSubTypes(value = {
+    @JsonSubTypes.Type(name = "AaiAccount", value = AaiAccount.class),
     @JsonSubTypes.Type(name = "FacebookAccount", value = FacebookAccount.class),
     @JsonSubTypes.Type(name = "GuestJpaAccount", value = GuestJpaAccount.class),
     @JsonSubTypes.Type(name = "JpaAccount", value = com.wegas.core.security.jparealm.JpaAccount.class),
