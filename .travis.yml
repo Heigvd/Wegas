@@ -29,9 +29,9 @@ env:
 install:
   - mvn -B -P release-profile generate-resources
 before_install:
-  - echo -e "TRAVIS_PULL_REQUEST_BRANCH: $TRAVIS_PULL_REQUEST_BRANCH"
-  - echo -e "TRAVIS_BRANCH BRANCH: $TRAVIS_BRANCH"
-  - echo -e "TRAVIS_BUILD_NUMBER: $TRAVIS_BUILD_NUMBER:"
+  - echo -e "TRAVIS_PULL_REQUEST_BRANCH $TRAVIS_PULL_REQUEST_BRANCH"
+  - echo -e "TRAVIS_BRANCH BRANCH  $TRAVIS_BRANCH"
+  - echo -e "TRAVIS_BUILD_NUMBER $TRAVIS_BUILD_NUMBER"
   - echo -e "machine github.com\n  login $GIT_USER\n  password $GIT_TOKEN" >> ~/.netrc
   - git submodule update --init --recursive
   - nvm install $NODE_VERSION
