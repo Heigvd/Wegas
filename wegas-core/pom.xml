@@ -5,7 +5,7 @@
     <parent>
         <artifactId>wegas-project</artifactId>
         <groupId>com.wegas</groupId>
-        <version>2.5-SNAPSHOT</version>
+        <version>3.0-SNAPSHOT</version>
     </parent>
 
     <groupId>com.wegas</groupId>
@@ -149,6 +149,10 @@
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
             <version>RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>fish.payara.api</groupId>
+            <artifactId>payara-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.neo4j.driver</groupId>

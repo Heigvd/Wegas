@@ -33,9 +33,14 @@ import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.cache.Cache;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -47,11 +52,6 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
-import javax.cache.Cache;
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Yannick Lagger (lagger.yannick.com)
@@ -112,8 +112,7 @@ public class WebsocketFacade {
         maintainLocalListUpToDate = "true".equalsIgnoreCase(getProperty("pusher.onlineusers_hook"));
 
         if (!Helper.isNullOrEmpty(appId) && !Helper.isNullOrEmpty(key) && !Helper.isNullOrEmpty(secret)) {
-            tmp = new Pusher(getProperty("pusher.appId"),
-                    getProperty("pusher.key"), getProperty("pusher.secret"));
+            tmp = new Pusher(appId, key, secret);
             tmp.setCluster(getProperty("pusher.cluster"));
             pusher = tmp;
         } else {
@@ -121,11 +120,11 @@ public class WebsocketFacade {
         }
     }
 
-
     /**
      * Get all channels based on entites
      *
      * @param entities
+     *
      * @return according to entities, all concerned channels
      */
     public List<String> getChannels(List<AbstractEntity> entities) {
@@ -174,7 +173,7 @@ public class WebsocketFacade {
 
     public void sendUnLock(String channel, String token) {
         if (this.pusher != null) {
-            logger.error("send lock " + token + " to " + channel);
+            logger.error("send unlock " + token + " to " + channel);
             pusher.trigger(channel, "LockEvent",
                     "{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"unlock\"}", null);
         }
@@ -216,6 +215,7 @@ public class WebsocketFacade {
 
     /**
      * @param property
+     *
      * @return the property value
      */
     private String getProperty(String property) {
@@ -232,7 +232,9 @@ public class WebsocketFacade {
      * @param entityType
      * @param entityId
      * @param data
+     *
      * @return Status
+     *
      * @throws IOException
      */
     public Integer send(String filter, String entityType, String entityId, Object data) throws IOException {
@@ -317,7 +319,9 @@ public class WebsocketFacade {
      * Gzip some string
      *
      * @param data
+     *
      * @return gzipped data
+     *
      * @throws IOException
      */
     private GzContent gzip(String channel, String name, String data, String socketId) throws IOException {
@@ -372,7 +376,7 @@ public class WebsocketFacade {
         public String getSocketId() {
             return socketId;
         }
-    };
+    }
 
     private int computeLength(GzContent gzip) {
 
@@ -439,6 +443,7 @@ public class WebsocketFacade {
      *
      * @param socketId
      * @param channel
+     *
      * @return complete body to return to the client requesting authentication
      */
     public String pusherAuth(final String socketId, final String channel) {
@@ -457,20 +462,27 @@ public class WebsocketFacade {
         return null;
     }
 
-    private User getUserFromChannel(String channelName) {
+    private Long getUserIdFromChannel(String channelName) {
         Matcher matcher = USER_CHANNEL_PATTERN.matcher(channelName);
 
         if (matcher.matches()) {
             if (matcher.groupCount() == 1) {
-                Long userId = Long.parseLong(matcher.group(1));
-                return userFacade.find(userId);
+                return Long.parseLong(matcher.group(1));
             }
         }
         return null;
     }
 
+    private User getUserFromChannel(String channelName) {
+        Long userId = this.getUserIdFromChannel(channelName);
+        if (userId != null) {
+            return userFacade.find(userId);
+        } else {
+            return null;
+        }
+    }
+
     /**
-     *
      * @param hook
      */
     public void pusherChannelExistenceWebhook(PusherChannelExistenceWebhook hook) {
@@ -481,15 +493,19 @@ public class WebsocketFacade {
             if (onlineUsersUpToDate.get() == 0) {
                 initOnlineUsers();
             }
-            User user = this.getUserFromChannel(hook.getChannel());
-            if (user != null) {
-                if (hook.getName().equals("channel_occupied")) {
+            if (hook.getName().equals("channel_occupied")) {
+                User user = this.getUserFromChannel(hook.getChannel());
+                if (user != null) {
                     this.registerUser(user);
-                } else if (hook.getName().equals("channel_vacated")) {
-                    onlineUsers.remove(user.getId());
                 }
-                this.propagateOnlineUsers();
+            } else if (hook.getName().equals("channel_vacated")) {
+                Long userId = this.getUserIdFromChannel(hook.getChannel());
+                if (userId != null) {
+                    onlineUsers.remove(userId);
+                }
             }
+
+            this.propagateOnlineUsers();
         } finally {
             onlineUsersLock.unlock();
         }
