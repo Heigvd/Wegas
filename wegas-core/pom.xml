@@ -152,6 +152,11 @@
             <artifactId>annotations</artifactId>
             <version>RELEASE</version>
         </dependency>
+        <dependency>
+            <groupId>fish.payara.api</groupId>
+            <artifactId>payara-api</artifactId>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 
     <build>
