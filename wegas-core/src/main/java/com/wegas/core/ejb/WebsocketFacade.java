@@ -33,9 +33,14 @@ import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.cache.Cache;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -47,11 +52,6 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
-import javax.cache.Cache;
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Yannick Lagger (lagger.yannick.com)
@@ -112,8 +112,7 @@ public class WebsocketFacade {
         maintainLocalListUpToDate = "true".equalsIgnoreCase(getProperty("pusher.onlineusers_hook"));
 
         if (!Helper.isNullOrEmpty(appId) && !Helper.isNullOrEmpty(key) && !Helper.isNullOrEmpty(secret)) {
-            tmp = new Pusher(getProperty("pusher.appId"),
-                    getProperty("pusher.key"), getProperty("pusher.secret"));
+            tmp = new Pusher(appId, key, secret);
             tmp.setCluster(getProperty("pusher.cluster"));
             pusher = tmp;
         } else {
@@ -173,7 +172,7 @@ public class WebsocketFacade {
 
     public void sendUnLock(String channel, String token) {
         if (this.pusher != null) {
-            logger.error("send lock " + token + " to " + channel);
+            logger.error("send unlock " + token + " to " + channel);
             pusher.trigger(channel, "LockEvent",
                     "{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"unlock\"}", null);
         }
@@ -249,8 +248,8 @@ public class WebsocketFacade {
      * @param outdatedEntities
      */
     public void onRequestCommit(final Map<String, List<AbstractEntity>> dispatchedEntities,
-            final Map<String, List<AbstractEntity>> destroyedEntities,
-            final Map<String, List<AbstractEntity>> outdatedEntities) {
+                                final Map<String, List<AbstractEntity>> destroyedEntities,
+                                final Map<String, List<AbstractEntity>> outdatedEntities) {
         this.onRequestCommit(dispatchedEntities, destroyedEntities, outdatedEntities, null);
     }
 
@@ -264,9 +263,9 @@ public class WebsocketFacade {
      *                           client to receive this particular message
      */
     public void onRequestCommit(final Map<String, List<AbstractEntity>> dispatchedEntities,
-            final Map<String, List<AbstractEntity>> destroyedEntities,
-            final Map<String, List<AbstractEntity>> outdatedEntities,
-            final String socketId) {
+                                final Map<String, List<AbstractEntity>> destroyedEntities,
+                                final Map<String, List<AbstractEntity>> outdatedEntities,
+                                final String socketId) {
         if (this.pusher == null) {
             return;
         }
@@ -371,7 +370,7 @@ public class WebsocketFacade {
         public String getSocketId() {
             return socketId;
         }
-    };
+    }
 
     private int computeLength(GzContent gzip) {
 
@@ -469,7 +468,6 @@ public class WebsocketFacade {
     }
 
     /**
-     *
      * @param hook
      */
     public void pusherChannelExistenceWebhook(PusherChannelExistenceWebhook hook) {
