@@ -18,6 +18,7 @@ git:
 branches:
   only:
   - master
+  - payara-micro-CI
 env:
   global:
   - NODE_VERSION=5.7 CC=clang CXX=clang++
