@@ -7,6 +7,8 @@
  */
 package com.wegas.core;
 
+import com.hazelcast.core.Cluster;
+import com.hazelcast.core.Member;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.LabelledEntity;
@@ -58,7 +60,9 @@ public class Helper {
      * @param context
      * @param type
      * @param service
+     *
      * @return looked-up EJB instance
+     *
      * @throws NamingException
      */
     public static <T> T lookupBy(Context context, Class<T> type, Class<?> service) throws NamingException {
@@ -86,7 +90,9 @@ public class Helper {
      * @param <T>
      * @param context
      * @param type
+     *
      * @return looked-up EJB instance
+     *
      * @throws NamingException
      */
     public static <T> T lookupBy(Context context, Class<T> type) throws NamingException {
@@ -97,7 +103,9 @@ public class Helper {
      * @param <T>
      * @param type
      * @param service
+     *
      * @return looked-up EJB instance
+     *
      * @throws NamingException
      */
     public static <T> T lookupBy(Class<T> type, Class<?> service) throws NamingException {
@@ -107,7 +115,9 @@ public class Helper {
     /**
      * @param <T>
      * @param type
+     *
      * @return looked-up EJB instance
+     *
      * @throws NamingException
      */
     public static <T> T lookupBy(Class<T> type) throws NamingException {
@@ -131,6 +141,7 @@ public class Helper {
      * Check if the given string is null or empty (without trimming)
      *
      * @param t a string
+     *
      * @return true if t is null or empty
      */
     public static boolean isNullOrEmpty(final String t) {
@@ -149,6 +160,7 @@ public class Helper {
      * @param pattern   to detect the baseName from a full name
      * @param preSuff   some string to put before the ordinal suffix
      * @param postSuff  some string to put after the ordinal suffix
+     *
      * @return name to use in place on initial one
      */
     private static String findUniqueName(final String name, List<String> usedNames, String pattern, String preSuff, String postSuff) {
@@ -187,6 +199,7 @@ public class Helper {
      *
      * @param name      initial name
      * @param usedNames names already in use
+     *
      * @return new unique name to use in place of initial one
      */
     public static String findUniqueName(final String name, List<String> usedNames) {
@@ -205,6 +218,7 @@ public class Helper {
      *
      * @param label      initial label
      * @param usedLabels labels already in use
+     *
      * @return new unique label to use in place of initial one
      */
     public static String findUniqueLabel(final String label, List<String> usedLabels) {
@@ -316,6 +330,7 @@ public class Helper {
      * Replace special characters with ASCII ones
      *
      * @param s
+     *
      * @return s with special characters replaced
      */
     public static String encodeVariableName(String s) {
@@ -344,6 +359,7 @@ public class Helper {
      * Encode a String to look like a JavaScript variable.
      *
      * @param name String to encode
+     *
      * @return a String which will be understandable by JavaScript as a var
      */
     public static String camelCasify(String name) {
@@ -370,6 +386,7 @@ public class Helper {
 
     /**
      * @param name
+     *
      * @return the provided name stripped of its _# suffix.
      */
     public static String stripNameSuffix(String name) {
@@ -384,6 +401,7 @@ public class Helper {
 
     /**
      * @param label
+     *
      * @return the provided name stripped of its (#) suffix.
      */
     public static String stripLabelSuffix(String label) {
@@ -400,6 +418,7 @@ public class Helper {
      * Given a label ending with a bracketed number, return the number
      *
      * @param label
+     *
      * @return the number in brackets at the very end of the label or 0
      */
     public static int getLabelSuffix(String label) {
@@ -417,6 +436,7 @@ public class Helper {
      * Generate an alphanumeric random token.
      *
      * @param length Token length
+     *
      * @return String token
      */
     public static String genToken(final int length) {
@@ -433,6 +453,7 @@ public class Helper {
      * missing.
      *
      * @param propertyName the property to read
+     *
      * @return Property's value
      */
     public static String getWegasProperty(String propertyName) {
@@ -449,6 +470,7 @@ public class Helper {
      *
      * @param propertyName
      * @param defaultValue
+     *
      * @return the wegasProperty or the defaultValue if the property does not
      *         exists
      */
@@ -464,6 +486,7 @@ public class Helper {
      * Given a byte array, return its hexadecimal string representation
      *
      * @param array
+     *
      * @return hexadecimal string representation of byte array
      */
     public static String hex(byte[] array) {
@@ -479,6 +502,7 @@ public class Helper {
      * MD5 digest
      *
      * @param message
+     *
      * @return the MD5 digest or null if the system does not support MD5 digest
      */
     public static String md5Hex(String message) {
@@ -495,6 +519,7 @@ public class Helper {
      * Transform an Integer list into a int array
      *
      * @param list
+     *
      * @return array copy
      */
     public static int[] toArray(List<Integer> list) {
@@ -519,82 +544,13 @@ public class Helper {
      * https://gist.github.com/uklimaschewski/6741769
      *
      * @param st A string optionally containing standard java escape sequences.
+     *
      * @return The translated string.
      */
     public static String unescape(String st) {
         return StringEscapeUtils.unescapeJava(st);
     }
 
-    /*public static String old_unescape(String st) {
-
-     StringBuilder sb = new StringBuilder(st.length());
-
-     for (int i = 0; i < st.length(); i++) {
-     char ch = st.charAt(i);
-     if (ch == '\\') {
-     char nextChar = (i == st.length() - 1) ? '\\' : st
-     .charAt(i + 1);
-     // Octal escape?
-     if (nextChar >= '0' && nextChar <= '7') {
-     String code = "" + nextChar;
-     i++;
-     if ((i < st.length() - 1) && st.charAt(i + 1) >= '0'
-     && st.charAt(i + 1) <= '7') {
-     code += st.charAt(i + 1);
-     i++;
-     if ((i < st.length() - 1) && st.charAt(i + 1) >= '0'
-     && st.charAt(i + 1) <= '7') {
-     code += st.charAt(i + 1);
-     i++;
-     }
-     }
-     sb.append((char) Integer.parseInt(code, 8));
-     continue;
-     }
-     switch (nextChar) {
-     case '\\':
-     ch = '\\';
-     break;
-     case 'b':
-     ch = '\b';
-     break;
-     case 'f':
-     ch = '\f';
-     break;
-     case 'n':
-     ch = '\n';
-     break;
-     case 'r':
-     ch = '\r';
-     break;
-     case 't':
-     ch = '\t';
-     break;
-     case '\"':
-     ch = '\"';
-     break;
-     case '\'':
-     ch = '\'';
-     break;
-     // Hex Unicode: u????
-     case 'u':
-     if (i >= st.length() - 5) {
-     ch = 'u';
-     break;
-     }
-     int code = Integer.parseInt(
-     "" + st.charAt(i + 2) + st.charAt(i + 3)
-     + st.charAt(i + 4) + st.charAt(i + 5), 16);
-     sb.append(Character.toChars(code));
-     i += 5;
-     continue;
-     }
-     i++;
-     }
-     sb.append(ch);
-     }
-     return sb.toString();
-     }*/
     /**
      * print ENV variables to log
      */
@@ -621,6 +577,7 @@ public class Helper {
 
     /**
      * @param file
+     *
      * @throws IOException
      */
     public static void recursiveDelete(File file) throws IOException {
@@ -654,6 +611,7 @@ public class Helper {
      *
      * @param text     text to search in
      * @param criteria criteria to search for
+     *
      * @return match
      */
     public static Boolean insensitiveContains(String text, String criteria) {
@@ -666,6 +624,7 @@ public class Helper {
     /**
      * @param text
      * @param criterias
+     *
      * @return true if text matches all criterias
      */
     public static Boolean insensitiveContainsAll(String text, List<String> criterias) {
@@ -681,6 +640,7 @@ public class Helper {
      * Checked conversion from long to int
      *
      * @param value value to convert
+     *
      * @return value as int
      */
     public static int longToInt(long value) {
@@ -735,6 +695,7 @@ public class Helper {
      * Generation Pusher token for a target
      *
      * @param target
+     *
      * @return channel name
      */
     public static String getAudienceToken(BroadcastTarget target) {
@@ -745,6 +706,7 @@ public class Helper {
      * Generate random lowercase letters (a-z) of given length
      *
      * @param length number of letters to return (max 50)
+     *
      * @return random letters
      */
     public static String genRandomLetters(int length) {
@@ -783,6 +745,17 @@ public class Helper {
         @Override
         protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
             return this.size() >= this.cacheSize;
+        }
+    }
+
+    public static void printClusterState(Cluster cluster) {
+        if (cluster != null) {
+            logger.error("Cluster up: " + cluster.getClusterState());
+            for (Member member : cluster.getMembers()) {
+                logger.error(" * " + member + (member == cluster.getLocalMember() ? " <-- it's me !" : ""));
+            }
+        } else {
+            logger.error("No cluster (null)");
         }
     }
 }
