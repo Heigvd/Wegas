@@ -4,7 +4,9 @@ dist: trusty
 jdk:
   - openjdk8
 addons:
-  ssh_known_hosts: dev.albasim.ch
+  ssh_known_hosts: 
+  - dev.albasim.ch
+  - rancher.albasim.ch
 services: postgresql
 cache:
   directories:
