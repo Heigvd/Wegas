@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 public class HelperBean {
 
     public static final String CLEAR_CACHE_EVENT_NAME = "ClearEmCache";
-    private static final Logger logger = LoggerFactory.getLogger(HelperBean.class);
 
     @Inject
     RequestManager requestManager;
@@ -26,7 +25,6 @@ public class HelperBean {
     }
 
     public void wipeCache() {
-        logger.error("Clear EntityManager 2ndLevel cache");
         requestManager.getEntityManager().getEntityManagerFactory().getCache().evictAll();
     }
 }
