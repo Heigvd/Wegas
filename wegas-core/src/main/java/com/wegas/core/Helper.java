@@ -448,7 +448,7 @@ public class Helper {
     }
 
     /**
-     * Return a wegas property from wegas-override.properties or from
+     * Return a wegas property from java properties or from wegas-override.properties or from
      * wegas.properties if wegas-override or it's respective property is
      * missing.
      *
@@ -457,10 +457,15 @@ public class Helper {
      * @return Property's value
      */
     public static String getWegasProperty(String propertyName) {
-        try {
-            return ResourceBundle.getBundle("wegas-override").getString(propertyName);
-        } catch (MissingResourceException ex) {
-            return ResourceBundle.getBundle("wegas").getString(propertyName);
+        String value = System.getProperty(propertyName);
+        if (value != null) {
+            return value;
+        } else {
+            try {
+                return ResourceBundle.getBundle("wegas-override").getString(propertyName);
+            } catch (MissingResourceException ex) {
+                return ResourceBundle.getBundle("wegas").getString(propertyName);
+            }
         }
     }
 
