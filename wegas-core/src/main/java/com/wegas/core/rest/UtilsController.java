@@ -1,5 +1,6 @@
 package com.wegas.core.rest;
 
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.HelperBean;
 import fish.payara.micro.cdi.Outbound;
 
@@ -8,6 +9,7 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -31,4 +33,15 @@ public class UtilsController {
         messages.fire("clear");
     }
 
+    @GET
+    @Path("version")
+    public String getVersion() {
+        return Helper.getWegasProperty("wegas.build.version", "unknown");
+    }
+
+    @GET
+    @Path("build_number")
+    public String getBuildNumber() {
+        return Helper.getWegasProperty("wegas.build.number", "unknown");
+    }
 }
