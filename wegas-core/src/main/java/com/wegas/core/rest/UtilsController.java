@@ -1,9 +1,11 @@
 package com.wegas.core.rest;
 
 import com.wegas.core.ejb.HelperBean;
+import fish.payara.micro.cdi.Outbound;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.Path;
@@ -19,12 +21,14 @@ import javax.ws.rs.core.MediaType;
 @Produces(MediaType.APPLICATION_JSON)
 public class UtilsController {
 
-    @EJB
-    private HelperBean helperBean;
+    @Inject
+    @Outbound(eventName = HelperBean.CLEAR_CACHE_EVENT_NAME, loopBack = true)
+    Event<String> messages;
 
     @DELETE
     @Path("EmCache")
     public void wipeEmCache() {
-        helperBean.wipeCache();
+        messages.fire("clear");
     }
+
 }

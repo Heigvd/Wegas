@@ -7,7 +7,7 @@
  */
 package com.wegas.core.jcr.page;
 
-import com.wegas.core.jcr.SessionHolder;
+import com.wegas.core.jcr.SessionManager;
 import org.slf4j.LoggerFactory;
 
 import javax.jcr.*;
@@ -24,7 +24,7 @@ public class PageConnector {
     private final Session session;
 
     public PageConnector() throws RepositoryException {
-        this.session = SessionHolder.getSession("Pages");
+        this.session = SessionManager.getSession("Pages");
     }
 
     private Node getRootNode(String gameModelName) throws RepositoryException {
@@ -152,6 +152,6 @@ public class PageConnector {
 
     public void close() throws RepositoryException {
         session.save();
-        SessionHolder.closeSession(session);
+        SessionManager.closeSession(session);
     }
 }

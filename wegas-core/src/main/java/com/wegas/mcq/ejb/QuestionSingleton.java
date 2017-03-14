@@ -12,8 +12,6 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.mcq.persistence.*;
 
-import javax.ejb.LocalBean;
-import javax.ejb.Singleton;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
@@ -23,8 +21,9 @@ import javax.persistence.TypedQuery;
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-@Singleton
-@LocalBean
+//@Singleton
+//@LocalBean
+@Deprecated
 public class QuestionSingleton {
 
     @Inject

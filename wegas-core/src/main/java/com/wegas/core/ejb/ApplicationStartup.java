@@ -1,4 +1,4 @@
- /*
+/*
  * Wegas
  * http://wegas.albasim.ch
  *
@@ -7,7 +7,10 @@
  */
 package com.wegas.core.ejb;
 
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.Member;
 import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -17,7 +20,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * LifeCycle Dedicated HttpServlet
+ *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
+ * @see ApplicationLifecycle
  */
 @WebServlet(name = "application-startup", loadOnStartup = 2)
 public class ApplicationStartup extends HttpServlet {
@@ -29,15 +34,51 @@ public class ApplicationStartup extends HttpServlet {
     @EJB
     WebsocketFacade websocketFacade;
 
+    @Inject
+    private ApplicationLifecycle applicationLifecycle;
+
+    @Inject
+    private HazelcastInstance hzInstance;
+
     @Override
     public void init(ServletConfig config) throws ServletException {
-        websocketFacade.sendLifeCycleEvent(WebsocketFacade.WegasStatus.READY, null);
         super.init(config);
+        logger.error("Servlet Startup");
+
+        /*
+         * init member list
+         */
+        for (Member member : hzInstance.getCluster().getMembers()) {
+            applicationLifecycle.addMember(member.getUuid());
+        }
+        /*
+         * Register this instance to other members
+         */
+        applicationLifecycle.sendInstanceReadyEvent(hzInstance.getCluster().getLocalMember().getUuid());
+
+        /*
+         * set the membership listener up
+         */
+        hzInstance.getCluster().addMembershipListener(applicationLifecycle);
+
+        /*
+         * Inform client webapp is running
+         */
+        websocketFacade.sendLifeCycleEvent(WebsocketFacade.WegasStatus.READY, null);
     }
 
     @Override
     public void destroy() {
-        websocketFacade.sendLifeCycleEvent(WebsocketFacade.WegasStatus.DOWN, null);
+        // hZinstance is not in cluster anymore here, no way to detect if this instance is the last one
+        logger.error("Servlet Destroy: " + applicationLifecycle.countMembers());
+
+        /*
+         * is the last instance ? 
+         */
+        if (applicationLifecycle.countMembers() <= 1) {
+            // inform clients webapp is down
+            websocketFacade.sendLifeCycleEvent(WebsocketFacade.WegasStatus.DOWN, null);
+        }
     }
 
 }
