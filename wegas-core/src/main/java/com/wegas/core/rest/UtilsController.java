@@ -62,8 +62,8 @@ public class UtilsController {
             String prBranch = Helper.getWegasProperty("wegas.build.pr_branch", null);
             String prNumber = Helper.getWegasProperty("wegas.build.pr_number", null);
             sb.append(", ");
-            if (Helper.isNullOrEmpty(prNumber)) {
-                sb.append(prNumber).append("/").append(prBranch).append(" into ").append(branch).append(" pull request");
+            if (!Helper.isNullOrEmpty(prNumber)) {
+                sb.append("pull request ").append(prNumber).append("/").append(prBranch).append(" into ").append(branch);
             } else {
                 sb.append(branch).append(" branch");
             }
