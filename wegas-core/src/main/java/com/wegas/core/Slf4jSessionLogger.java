@@ -29,8 +29,8 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Se puede usar el resto de las propiedades de logging de EclipseLink
  * (eclipselink.logging.timestamp, eclipselink.logging.thread,
- * eclipselink.logging.session, eclipselink.logging.connection
- * y eclipselink.logging.parameters) para configurar el formato de salida.
+ * eclipselink.logging.session, eclipselink.logging.connection y
+ * eclipselink.logging.parameters) para configurar el formato de salida.
  * <p>
  * Se usan las siguientes categorias de log:
  * <p>
@@ -71,17 +71,11 @@ import org.slf4j.LoggerFactory;
 public class Slf4jSessionLogger extends AbstractSessionLog {
 
     public static final String ECLIPSELINK_NAMESPACE = "org.eclipse.persistence.logging";
-    public static final String DEFAULT_CATEGORY = "default";
-
-    public static final String DEFAULT_ECLIPSELINK_NAMESPACE = ECLIPSELINK_NAMESPACE
-        + "." + DEFAULT_CATEGORY;
 
     private Map<Integer, LogLevel> mapLevels;
-    private Map<String, Logger> categoryLoggers = new HashMap<String, Logger>();
 
     public Slf4jSessionLogger() {
         super();
-        createCategoryLoggers();
         initMapLevels();
     }
 
@@ -165,36 +159,10 @@ public class Slf4jSessionLogger extends AbstractSessionLog {
     }
 
     /**
-     * Initialize loggers eagerly
-     */
-    private void createCategoryLoggers() {
-        for (String category : SessionLog.loggerCatagories) {
-            addLogger(category, ECLIPSELINK_NAMESPACE + "." + category);
-        }
-        // Logger default para cuando no hay categoría.
-        addLogger(DEFAULT_CATEGORY, DEFAULT_ECLIPSELINK_NAMESPACE);
-    }
-
-    /**
-     * INTERNAL: Add Logger to the categoryLoggers.
-     */
-    private void addLogger(String loggerCategory, String loggerNameSpace) {
-        categoryLoggers.put(loggerCategory,
-            LoggerFactory.getLogger(loggerNameSpace));
-    }
-
-    /**
      * INTERNAL: Return the Logger for the given category
      */
     private Logger getLogger(String category) {
-
-        if ((category != null && category.length() > 0 && category.trim().length() > 0)
-            || !this.categoryLoggers.containsKey(category)) {
-            category = DEFAULT_CATEGORY;
-        }
-
-        return categoryLoggers.get(category);
-
+        return LoggerFactory.getLogger(ECLIPSELINK_NAMESPACE + "." + category);
     }
 
     /**

@@ -9,6 +9,9 @@ package com.wegas.core.ejb;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IAtomicLong;
+import com.hazelcast.core.ILock;
 import com.pusher.rest.Pusher;
 import com.pusher.rest.data.PresenceUser;
 import com.pusher.rest.data.Result;
@@ -30,9 +33,14 @@ import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.cache.Cache;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -44,10 +52,6 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Yannick Lagger (lagger.yannick.com)
@@ -67,9 +71,14 @@ public class WebsocketFacade {
     public static final Pattern USER_CHANNEL_PATTERN = Pattern.compile(Helper.USER_CHANNEL_PREFIX + "(\\d+)");
     public static final Pattern PRIVATE_CHANNEL_PATTERN = Pattern.compile("private-(User|Player|Team|Game|GameModel)-(\\d+)");
 
-    private static boolean onlineUsersUptodate = false;
+    @Inject
+    private Cache<Long, OnlineUser> onlineUsers;
 
-    private static final Map<Long, OnlineUser> onlineUsers = new HashMap<>();
+    @Inject
+    private HazelcastInstance hazelcastInstance;
+
+    private static final String UPTODATE_KEY = "onlineUsersUpTpDate";
+    private static final String LOCKNAME = "WebsocketFacade.onlineUsersLock";
 
     public enum WegasStatus {
         DOWN,
@@ -92,9 +101,6 @@ public class WebsocketFacade {
     @EJB
     private PlayerFacade playerFacade;
 
-    @Inject
-    private RequestFacade requestFacade;
-
     /**
      * Initialize Pusher Connection
      */
@@ -106,8 +112,7 @@ public class WebsocketFacade {
         maintainLocalListUpToDate = "true".equalsIgnoreCase(getProperty("pusher.onlineusers_hook"));
 
         if (!Helper.isNullOrEmpty(appId) && !Helper.isNullOrEmpty(key) && !Helper.isNullOrEmpty(secret)) {
-            tmp = new Pusher(getProperty("pusher.appId"),
-                    getProperty("pusher.key"), getProperty("pusher.secret"));
+            tmp = new Pusher(appId, key, secret);
             tmp.setCluster(getProperty("pusher.cluster"));
             pusher = tmp;
         } else {
@@ -168,7 +173,7 @@ public class WebsocketFacade {
 
     public void sendUnLock(String channel, String token) {
         if (this.pusher != null) {
-            logger.error("send lock " + token + " to " + channel);
+            logger.error("send unlock " + token + " to " + channel);
             pusher.trigger(channel, "LockEvent",
                     "{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"unlock\"}", null);
         }
@@ -371,7 +376,7 @@ public class WebsocketFacade {
         public String getSocketId() {
             return socketId;
         }
-    };
+    }
 
     private int computeLength(GzContent gzip) {
 
@@ -478,12 +483,14 @@ public class WebsocketFacade {
     }
 
     /**
-     *
      * @param hook
      */
     public void pusherChannelExistenceWebhook(PusherChannelExistenceWebhook hook) {
-        synchronized (onlineUsers) {
-            if (!WebsocketFacade.onlineUsersUptodate) {
+        ILock onlineUsersLock = hazelcastInstance.getLock(LOCKNAME);
+        onlineUsersLock.lock();
+        try {
+            IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
+            if (onlineUsersUpToDate.get() == 0) {
                 initOnlineUsers();
             }
             if (hook.getName().equals("channel_occupied")) {
@@ -497,7 +504,10 @@ public class WebsocketFacade {
                     onlineUsers.remove(userId);
                 }
             }
+
             this.propagateOnlineUsers();
+        } finally {
+            onlineUsersLock.unlock();
         }
     }
 
@@ -507,12 +517,26 @@ public class WebsocketFacade {
      * @return list a users who are online
      */
     public Collection<OnlineUser> getOnlineUsers() {
-        synchronized (onlineUsers) {
-            if (!WebsocketFacade.onlineUsersUptodate) {
+        ILock onlineUsersLock = hazelcastInstance.getLock(LOCKNAME);
+        onlineUsersLock.lock();
+        try {
+            IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
+            if (onlineUsersUpToDate.get() == 0) {
                 initOnlineUsers();
             }
+            return this.getLocalOnlineUsers();
+        } finally {
+            onlineUsersLock.unlock();
         }
-        return onlineUsers.values();
+    }
+
+    public Collection<OnlineUser> getLocalOnlineUsers() {
+        Collection<OnlineUser> ou = new ArrayList<>();
+        Iterator<Cache.Entry<Long, OnlineUser>> iterator = onlineUsers.iterator();
+        while (iterator.hasNext()) {
+            ou.add(iterator.next().getValue());
+        }
+        return ou;
     }
 
     /**
@@ -545,7 +569,8 @@ public class WebsocketFacade {
             }
 
             if (maintainLocalListUpToDate) {
-                WebsocketFacade.onlineUsersUptodate = true;
+                IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
+                onlineUsersUpToDate.set(1);
             }
 
         } catch (IOException ex) {
@@ -560,7 +585,7 @@ public class WebsocketFacade {
     private void propagateOnlineUsers() {
         try {
             ObjectMapper mapper = JacksonMapperProvider.getMapper();
-            String users = mapper.writeValueAsString(onlineUsers.values());
+            String users = mapper.writeValueAsString(getLocalOnlineUsers());
             pusher.trigger("private-Admin", "online-users", users);
         } catch (JsonProcessingException ex) {
             java.util.logging.Logger.getLogger(WebsocketFacade.class.getName()).log(Level.SEVERE, null, ex);
@@ -568,9 +593,14 @@ public class WebsocketFacade {
     }
 
     public void clearOnlineUsers() {
-        synchronized (onlineUsers) {
+        ILock onlineUsersLock = hazelcastInstance.getLock(LOCKNAME);
+        onlineUsersLock.lock();
+        try {
+            IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
             onlineUsers.clear();
-            onlineUsersUptodate = false;
+            onlineUsersUpToDate.set(0);
+        } finally {
+            onlineUsersLock.unlock();
         }
     }
 

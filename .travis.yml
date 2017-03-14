@@ -2,12 +2,9 @@ language: java
 sudo: false
 dist: trusty
 jdk:
-  - oraclejdk8
+  - openjdk8
 addons:
   ssh_known_hosts: dev.albasim.ch
-  apt:
-    packages:
-      - oracle-java8-installer
 services: postgresql
 cache:
   directories:
