@@ -7,30 +7,31 @@
  */
 package com.wegas.core.rest.util;
 
-import javax.annotation.PreDestroy;
-import javax.ejb.Singleton;
-import net.sf.ehcache.CacheManager;
+//import javax.annotation.PreDestroy;
+//import javax.ejb.Singleton;
+//import net.sf.ehcache.CacheManager;
 
 /**
  *
+ * @deprecated by JSR107 JCache
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-@Singleton
+@Deprecated
+//@Singleton
 public class CacheManagerHolder {
 
-    private final CacheManager instance;
+    //private final CacheManager instance;
 
     /**
      *
-     */
     public CacheManagerHolder() {
         instance = CacheManager.getInstance();
     }
+     */
 
     /**
      *
      * @return
-     */
     public CacheManager getInstance() {
         return instance;
     }
@@ -39,4 +40,5 @@ public class CacheManagerHolder {
     private void onDestroy() {
         instance.shutdown();
     }
+     */
 }
