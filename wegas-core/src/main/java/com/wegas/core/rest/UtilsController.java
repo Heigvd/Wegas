@@ -44,4 +44,34 @@ public class UtilsController {
     public String getBuildNumber() {
         return Helper.getWegasProperty("wegas.build.number", "unknown");
     }
+
+    @GET
+    @Path("full_version")
+    public String getFullVersion() {
+        return "Wegas-" + this.getVersion();
+    }
+
+    @GET
+    @Path("build_details")
+    public String getBuildDetails() {
+        StringBuilder sb = new StringBuilder(this.getFullVersion());
+
+        String branch = Helper.getWegasProperty("wegas.build.branch", null);
+
+        if (!Helper.isNullOrEmpty(branch)) {
+            String prBranch = Helper.getWegasProperty("wegas.build.pr_branch", null);
+            String prNumber = Helper.getWegasProperty("wegas.build.pr_number", null);
+            sb.append(", ");
+            if (Helper.isNullOrEmpty(prNumber)) {
+                sb.append(prNumber).append("/").append(prBranch).append(" into ").append(branch).append(" pull request");
+            } else {
+                sb.append(branch).append(" branch");
+            }
+            sb.append(", build #").append(this.getBuildNumber());
+        } else {
+            sb.append(", NinjaBuild");
+        }
+
+        return sb.toString();
+    }
 }
