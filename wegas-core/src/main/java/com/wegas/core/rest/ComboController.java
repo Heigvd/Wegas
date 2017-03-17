@@ -7,6 +7,7 @@
  */
 package com.wegas.core.rest;
 
+import com.hazelcast.core.HazelcastInstance;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.internal.WegasForbiddenException;
 import com.wegas.core.rest.util.annotations.CacheMaxAge;
@@ -20,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -64,10 +66,15 @@ public class ComboController {
      */
     final static public String MediaTypeJs = "text/javascript; charset=UTF-8";
 
+    private static final String CACHE_DISABLED_KEY = "wegas.combocache.enabled";
+
     //@EJB
     ///private CacheManagerHolder cacheManagerHolder;
     @Inject
     private Cache<Integer, CacheObject> cache;
+
+    @Inject
+    private HazelcastInstance hzInstance;
 
     private static final Logger logger = LoggerFactory.getLogger(ComboController.class);
 
@@ -83,11 +90,44 @@ public class ComboController {
     @Context
     private ServletContext servletContext;
 
+    private boolean isCacheEnable() {
+        return hzInstance.getAtomicLong(CACHE_DISABLED_KEY).get() == 0;
+    }
+
+    @GET
+    @Path("enable")
+    public void enable() throws IOException {
+        this.hzInstance.getAtomicLong(CACHE_DISABLED_KEY).set(0l);
+    }
+
+    @GET
+    @Path("disable")
+    public void disable() throws IOException {
+        this.hzInstance.getAtomicLong(CACHE_DISABLED_KEY).set(1l);
+        this.clear();
+    }
+
+    @GET
+    @Path("count")
+    public long listCacheContent() {
+        long count = 0;
+
+        Iterator<Cache.Entry<Integer, CacheObject>> iterator = cache.iterator();
+        while (iterator.hasNext()) {
+            iterator.next();
+            count++;
+        }
+
+        return count;
+    }
+
     /**
      * Retrieve
      *
      * @param req
+     *
      * @return HTTP 200 with requested data or HTTP forbidden response
+     *
      * @throws IOException
      */
     @GET
@@ -101,7 +141,7 @@ public class ComboController {
 
             CacheObject comboCache;
 
-            if (cache.containsKey(hash)) { //Get from cache
+            if (isCacheEnable() && cache.containsKey(hash)) { //Get from cache
                 comboCache = cache.get(hash);
             } else { // build Cache.
                 //final Set<String> files = this.uriInfo.getQueryParameters().keySet(); // Old version, removed cause query parameters where in the wrong order
@@ -117,8 +157,9 @@ public class ComboController {
                 final String mediaType = (files.iterator().next().endsWith("css"))
                         ? MediaTypeCss : MediaTypeJs;            // Select the content-type based on the first file extension
                 comboCache = new CacheObject(this.getCombinedFile(files, mediaType), mediaType);
-                cache.put(hash, comboCache);
-
+                if (isCacheEnable()) {
+                    cache.put(hash, comboCache);
+                }
             }
             ResponseBuilder rb = req.evaluatePreconditions(new EntityTag(comboCache.getETag()));
             if (rb != null) {
