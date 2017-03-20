@@ -80,7 +80,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      */
     @Override
     public AbstractAccount update(final Long entityId, final AbstractAccount account) {
-        if (account instanceof JpaAccount) {
+        if (! (account instanceof AaiAccount)) {
             if (account.getUsername() != null && !account.getUsername().equals("")) {// If the provided username is not null
                 try {
                     AbstractAccount a = this.findByUsername(account.getUsername());
@@ -91,13 +91,6 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
                     // GOTCHA no username could be found, do not use
                 }
             }
-        } else if (account instanceof AaiAccount) {
-            /*
-            ** We allow modifying every attribute of an AAI account.
-            ** The persistentId should never be modified, but the GUI should not give access to this info anyway.
-             */
-        } else {
-            throw WegasErrorMessage.error("Cannot update account of unknown type");
         }
 
         AbstractAccount oAccount = super.update(entityId, account);
