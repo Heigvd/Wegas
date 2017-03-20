@@ -13,16 +13,58 @@ angular.module('public.login', [])
             });
     })
     .controller('PublicLoginCtrl',
-        function PublicLoginCtrl($scope, Flash, Auth, $state, $translate, TeamsModel, SessionsModel, ScenariosModel) {
+        function PublicLoginCtrl($scope, Flash, Auth, $state, $q, $http, $translate, TeamsModel, SessionsModel, ScenariosModel) {
             "use strict";
+            $scope.showAaiLogin = false; // Default value in case of misconfiguration
+
+            // Tells if the AAI login button should be displayed.
+            // Idea: use this function to obtain the URL of the AAI login page.
+            function isAaiEnabled() {
+                var deferred = $q.defer();
+                var url = "rest/Extended/User/Account/AaiEnabled";
+                $http
+                    .get(ServiceURL + url, null, {
+                        "headers": {
+                            "managed-mode": "true"
+                        }
+                    })
+                    .success(function (data) {
+                        if (data !== undefined) {
+                            return deferred.resolve(data);
+                        } else {
+                            if (data.events !== undefined) {
+                                console.log("WEGAS LOBBY : Could not verify AAI access");
+                                console.log(data.events);
+                            }
+                        }
+                        deferred.resolve();
+                        return;
+                    })
+                    .error(function (data) {
+                        if (data.events !== undefined) {
+                            console.log("WEGAS LOBBY : Could not verify AAI access");
+                            console.log(data.events);
+                        }
+                        deferred.resolve();
+                        return;
+                    });
+                return deferred.promise;
+            };
+
+            isAaiEnabled().then(function(isEnabled){
+                $scope.showAaiLogin = isEnabled;
+            });
+
             $scope.init = function() {
                 this.agreeCbx = false;
             };
             $scope.login = function() {
+                var agreeDiv = document.getElementById('agreeDiv'),
+                    recoverPasswordDiv = document.getElementById('recoverPassDiv');
                 if (this.username && this.password) {
-                    var agreeDiv = document.getElementById('agreeDiv'),
-                        ctx = this;
+                    var ctx = this;
                     if (agreeDiv.style.display === 'block') {
+                        recoverPasswordDiv.style.display = 'none';
                         if (this.agreeCbx === false) {
                             console.log("WEGAS LOBBY : User has not yet agreed to the terms of use");
                             $translate('CREATE-ACCOUNT-FLASH-MUST-AGREE').then(function (message) {
@@ -42,6 +84,7 @@ angular.module('public.login', [])
                             if (custom && custom.agreed===false){
                                 ctx.agreeCbx = false;
                                 agreeDiv.style.display = 'block';
+                                recoverPasswordDiv.style.display = 'none';
                             }
                         } else {
                             $scope.username = $scope.password = "";
@@ -65,6 +108,8 @@ angular.module('public.login', [])
                         Flash.danger(message);
                     });
                     this.agreeCbx = false;
+                    agreeDiv.style.display = 'none';
+                    recoverPasswordDiv.style.display = 'block';
                 }
             };
         });

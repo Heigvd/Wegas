@@ -29,35 +29,56 @@ angular.module('private', [
         })
     ;
 })
-.controller('PrivateCtrl', function PrivateCtrl($state, Auth, $translate, $scope, WegasPusher) {
+.controller('PrivateCtrl', function PrivateCtrl($state, Auth, $translate, $scope, $q, $http, WegasPusher) {
     "use strict";
     var privateCtrl = this;
-    privateCtrl.loading = 0;
-    /*
-    $scope.$on('cfpLoadingBar:loading', function () {
-        if (privateCtrl.loading === 0) {
-            $('.view--top').addClass('view--loading');
-        }
-        privateCtrl.loading++;
-    });
-    $scope.$on('cfpLoadingBar:started', function () {
 
-    });
-    $scope.$on('cfpLoadingBar:loaded', function () {
-        privateCtrl.loading--;
-    });
-    $scope.$on('cfpLoadingBar:completed', function () {
-        if (privateCtrl.loading === 0) {
-            $('.view--top').removeClass('view--loading');
-        }
-    });
-    */
+    // Temporary setting to prevent display flickering:
+    $scope.user = { hasAgreed: true };
+
+    $scope.updateUserAgreement = function() {
+        var deferred = $q.defer(),
+            user = $scope.user;
+
+        var url = "rest/Extended/User/Account/SetAgreed/" + user.accountId;
+        $http
+            .post(ServiceURL + url, null, {
+                "headers": {
+                    "managed-mode": "true"
+                }
+            })
+            // @TODO: simplify success and error handling:
+            .success(function (data) {
+                if (data.events !== undefined && data.events.length === 0) {
+                    $scope.user.hasAgreed = true;
+                } else {
+                    if (data.events !== undefined) {
+                        console.log("WEGAS LOBBY : Error while updating profile (agreement time)");
+                        console.log(data.events);
+                    }
+                }
+                deferred.resolve();
+                return;
+            })
+            .error(function (data) {
+                if (data.events !== undefined) {
+                    console.log("WEGAS LOBBY : Error while updating profile (agreement time)");
+                    console.log(data.events);
+                }
+                deferred.resolve();
+                return;
+            });
+        return deferred.promise;
+    };
+
+    //privateCtrl.loading = 0;
+
     Auth.getAuthenticatedUser().then(function(user){
+        $scope.user = user;
         if(user === null){
             $state.go("wegas.public");
         } else {
             WegasPusher.start();
-            privateCtrl.user = user;
             var config = localStorage.getObject("wegas-config");
             if (config.users[user.email]) {
                 if (config.commons.language !== config.users[user.email].language) {

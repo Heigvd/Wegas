@@ -45,14 +45,14 @@ public class JpaRealm extends AuthorizingRealm {
         try {
             AccountFacade accountFacade = accountFacade();
             try {
-                JpaAccount account = accountFacade.findByEmail(token.getUsername());
+                JpaAccount account = accountFacade.findJpaByEmail(token.getUsername());
                 SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(account.getId(), account.getPasswordHex(), getName());
                 info.setCredentialsSalt(new SimpleByteSource(account.getSalt()));
                 return info;
 
-            } catch (WegasNoResultException e) {                                         // Could not find correponding mail, 
+            } catch (WegasNoResultException e) {                                         // Could not find correponding mail,
                 try {
-                    JpaAccount account = (JpaAccount) accountFacade.findByUsername(token.getUsername());// try with the username
+                    JpaAccount account = accountFacade.findJpaByUsername(token.getUsername());// try with the username
                     SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(account.getId(), account.getPasswordHex(), getName());
                     info.setCredentialsSalt(new SimpleByteSource(account.getSalt()));
                     return info;

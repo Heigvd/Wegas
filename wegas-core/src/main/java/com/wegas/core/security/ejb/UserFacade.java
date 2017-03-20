@@ -156,6 +156,19 @@ public class UserFacade extends BaseFacade<User> {
         return u;
     }
 
+    /**
+     * @param persistentId String representing the user
+     * @return a User entity, based on the persistentId
+     */
+    public User getUserByPersistentId(String persistentId) {
+        User u = null;
+        try {
+            u = accountFacade.findByPersistentId(persistentId).getUser();
+        } catch (WegasNoResultException e) {
+        }
+        return u;
+    }
+
     @Override
     public void create(User user) {
 //        AbstractAccount account = user.getMainAccount();
@@ -465,8 +478,8 @@ public class UserFacade extends BaseFacade<User> {
     public void grantGameModelPermissionToUser(Long userId, Long gameModelId, String permissions) {
         User user = this.find(userId);
 
-        /* 
-         * Revoke previous permissions (do not use removeScenarist method since 
+        /*
+         * Revoke previous permissions (do not use removeScenarist method since
          * this method prevents to remove one own permissions,
          */
         this.deletePermissions(user, "GameModel:%:gm" + gameModelId);
@@ -493,7 +506,7 @@ public class UserFacade extends BaseFacade<User> {
      */
     public void sendNewPassword(String email) {
         try {
-            JpaAccount acc = accountFacade.findByEmail(email);
+            JpaAccount acc = accountFacade.findJpaByEmail(email);
             EMailFacade emailFacade = new EMailFacade();
             RandomNumberGenerator rng = new SecureRandomNumberGenerator();
             String newPassword = rng.nextBytes().toHex().substring(0, 12);
@@ -648,7 +661,6 @@ public class UserFacade extends BaseFacade<User> {
      *
      * @param type
      * @param id
-     * @param currentPlayer
      * @return true if current user has access to
      */
     private boolean hasPermission(String type, Long id) {
