@@ -11,10 +11,11 @@ angular.module('private.admin.users.edit.directives', ['wegas.directive.permissi
     }).controller("AdminUsersEditIndexController", function AdminUsersEditIndexController(UsersModel, $stateParams, $state, $scope){
         "use strict";
         var ctrl = this;
-        ctrl.user = {};
+        ctrl.user = { isNonLocal: false };
         UsersModel.getFullUser($stateParams.id).then(function(response) {
             if (!response.isErroneous()) {
                 ctrl.user = response.data;
+                ctrl.user.isNonLocal = (ctrl.user.account["@class"] === "AaiAccount");
             }else{
                 $state.go("^");
             }
@@ -59,6 +60,7 @@ angular.module('private.admin.users.edit.directives', ['wegas.directive.permissi
                 // Create a new
                 scope.addGroup = function() {
                     var newGroup = angular.copy(scope.groups[0]);
+                    scope.user.roles.push(newGroup);
                     scope.user.account.roles.push(newGroup);
                 };
             }
