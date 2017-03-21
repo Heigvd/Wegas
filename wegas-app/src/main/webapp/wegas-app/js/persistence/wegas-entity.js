@@ -653,10 +653,10 @@ YUI.add("wegas-entity", function(Y) {
                 "transient": true,
                 getter: function() {
                     if (this.get("firstname") || this.get("lastname")) {
-                        return "AAI: " + this.get("firstname") + " " + (this.get("lastname") || "");
+                        return this.get("firstname") + " " + (this.get("lastname") || "");
 
                     } else {
-                        return "AAI: " + this.get("email");
+                        return this.get("email");
                     }
                 }
             },

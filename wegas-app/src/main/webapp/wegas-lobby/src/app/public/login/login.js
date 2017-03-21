@@ -33,7 +33,7 @@ angular.module('public.login', [])
                             return deferred.resolve(data);
                         } else {
                             if (data.events !== undefined) {
-                                console.log("WEGAS LOBBY : Could not verify AAI access");
+                                console.log("WEGAS LOBBY : Could not obtain AAI login URL");
                                 console.log(data.events);
                             }
                         }
@@ -42,7 +42,7 @@ angular.module('public.login', [])
                     })
                     .error(function (data) {
                         if (data.events !== undefined) {
-                            console.log("WEGAS LOBBY : Could not verify AAI access");
+                            console.log("WEGAS LOBBY : Could not obtain AAI login URL");
                             console.log(data.events);
                         }
                         deferred.resolve();
