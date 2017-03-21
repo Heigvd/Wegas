@@ -626,7 +626,13 @@ public class UserController {
         String secret = Helper.getWegasProperty("aai.secret");
         if (!request.getRemoteHost().equals(server) ||
             !userDetails.getSecret().equals(secret)){
-            return new AaiLoginResponse("Could not authenticate Wegas AAI server", false, false);
+            logger.error("Real remote host: " + request.getRemoteHost() + ", expected: " + server);
+            logger.error("Real secret: " + userDetails.getSecret() + ", expected: " + secret);
+            // @TODO: remove sensitive information
+            return new AaiLoginResponse("Could not authenticate Wegas AAI server"
+                + " / Real remote host: " + request.getRemoteHost() + ", expected: " + server
+                + " / Real secret: " + userDetails.getSecret() + ", expected: " + secret,
+                false, false);
         }
         // Get rid of shared secret:
         userDetails.setSecret("checked");
