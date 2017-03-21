@@ -38,7 +38,7 @@
 
     <ul class="view__sub-menu">
         <li class="action">
-            <a ng-click="logout()" class="button button--default-reverse button--label-off button--sign-out"
+            <a ng-if="user.hasAgreed" ng-click="logout()" class="button button--default-reverse button--label-off button--sign-out"
                title="{{'PRIVATE-WS-LOGOUT-BTN' | translate}}"><span class="button__label">{{'PRIVATE-WS-LOGOUT-BTN' | translate}}</span></a>
         </li>
         <li class="action action--language" ng-if="languages.length > 1">

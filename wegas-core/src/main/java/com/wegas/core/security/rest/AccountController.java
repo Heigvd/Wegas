@@ -172,4 +172,18 @@ public class AccountController {
         return isEnabled.equals("true");
     }
 
+    /**
+     * @return the URL of the AAI login page or an empty string if AAI login is not enabled
+     */
+    @GET
+    @Path("AaiLoginUrl")
+    public String AaiLoginUrl() {
+        if (isAaiEnabled()) {
+            String url = Helper.getWegasProperty("aai.loginurl").trim().toLowerCase();
+            return '"'+url+'"'; // Add quotes to make it JSON-compatible
+        } else {
+            return "";
+        }
+    }
+
 }

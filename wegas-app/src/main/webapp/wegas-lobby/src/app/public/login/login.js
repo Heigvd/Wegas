@@ -16,12 +16,12 @@ angular.module('public.login', [])
         function PublicLoginCtrl($scope, Flash, Auth, $state, $q, $http, $translate, TeamsModel, SessionsModel, ScenariosModel) {
             "use strict";
             $scope.showAaiLogin = false; // Default value in case of misconfiguration
+            $scope.aaiLoginUrl = "";
 
-            // Tells if the AAI login button should be displayed.
-            // Idea: use this function to obtain the URL of the AAI login page.
-            function isAaiEnabled() {
+            // Returns the URL of the AAI login page, or an empty string if AAI is not enabled.
+            function getAaiLoginUrl() {
                 var deferred = $q.defer();
-                var url = "rest/Extended/User/Account/AaiEnabled";
+                var url = "rest/Extended/User/Account/AaiLoginUrl";
                 $http
                     .get(ServiceURL + url, null, {
                         "headers": {
@@ -51,8 +51,11 @@ angular.module('public.login', [])
                 return deferred.promise;
             };
 
-            isAaiEnabled().then(function(isEnabled){
-                $scope.showAaiLogin = isEnabled;
+            getAaiLoginUrl().then(function(loginUrl){
+                if (loginUrl && loginUrl != "") {
+                    $scope.showAaiLogin = true;
+                    $scope.aaiLoginUrl = loginUrl;
+                }
             });
 
             $scope.init = function() {
