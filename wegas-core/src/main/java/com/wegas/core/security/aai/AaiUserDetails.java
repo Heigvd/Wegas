@@ -1,9 +1,5 @@
 package com.wegas.core.security.aai;
 
-
-// UNUSED class  ????
-
-
 /**
  * Wegas
  * http://wegas.albasim.ch

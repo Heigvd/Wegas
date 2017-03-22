@@ -30,8 +30,6 @@ import static com.wegas.core.security.jparealm.JpaRealm.addPermissions;
 public class AaiRealm extends AuthorizingRealm {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(AaiRealm.class);
 
-    private static final String APP_SECRET = Helper.getWegasProperty("aai.secret");
-
     public AaiRealm() {
         setName("AaiRealm");                //This name must match the name in the User class's getPrincipals() method
     }
