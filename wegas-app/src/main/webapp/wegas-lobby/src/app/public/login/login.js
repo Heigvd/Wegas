@@ -18,10 +18,10 @@ angular.module('public.login', [])
             $scope.showAaiLogin = false; // Default value in case of misconfiguration
             $scope.aaiLoginUrl = "";
 
-            // Returns the URL of the AAI login page, or an empty string if AAI is not enabled.
-            function getAaiLoginUrl() {
+            // Returns AAI config for the login page.
+            function getAaiConfig() {
                 var deferred = $q.defer();
-                var url = "rest/Extended/User/Account/AaiLoginUrl";
+                var url = "rest/Extended/User/Account/AaiConfig";
                 $http
                     .get(ServiceURL + url, null, {
                         "headers": {
@@ -33,7 +33,7 @@ angular.module('public.login', [])
                             return deferred.resolve(data);
                         } else {
                             if (data.events !== undefined) {
-                                console.log("WEGAS LOBBY : Could not obtain AAI login URL");
+                                console.log("WEGAS LOBBY : Could not obtain AAI config data");
                                 console.log(data.events);
                             }
                         }
@@ -42,7 +42,7 @@ angular.module('public.login', [])
                     })
                     .error(function (data) {
                         if (data.events !== undefined) {
-                            console.log("WEGAS LOBBY : Could not obtain AAI login URL");
+                            console.log("WEGAS LOBBY : Could not obtain AAI config data");
                             console.log(data.events);
                         }
                         deferred.resolve();
@@ -51,11 +51,9 @@ angular.module('public.login', [])
                 return deferred.promise;
             };
 
-            getAaiLoginUrl().then(function(loginUrl){
-                if (loginUrl && loginUrl != "") {
-                    $scope.showAaiLogin = true;
-                    $scope.aaiLoginUrl = loginUrl;
-                }
+            getAaiConfig().then(function(config){
+                $scope.showAaiLogin = config.showButton;
+                $scope.aaiLoginUrl = config.loginUrl;
             });
 
             $scope.init = function() {
