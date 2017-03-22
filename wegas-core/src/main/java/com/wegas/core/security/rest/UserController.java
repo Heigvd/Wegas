@@ -622,8 +622,8 @@ public class UserController {
         if (!request.isSecure()) {
             return new AaiLoginResponse("AAI login request must be made by HTTPS",false,false);
         }
-        String server = AaiConfigInfo.getServer();
-        String secret = AaiConfigInfo.getSecret();
+        String server = AaiConfigInfo.getAaiServer();
+        String secret = AaiConfigInfo.getAaiSecret();
         if (!request.getRemoteHost().equals(server) ||
             !userDetails.getSecret().equals(secret)){
             logger.error("Real remote host: " + request.getRemoteHost() + ", expected: " + server);

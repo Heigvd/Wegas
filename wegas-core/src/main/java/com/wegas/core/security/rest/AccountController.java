@@ -163,36 +163,11 @@ public class AccountController {
     }
 
     /**
-     * Is AAI login enabled ?
-     *
-     * @return true if AAI login is enabled
-     */
-    @GET
-    @Path("AaiEnabled")
-    public boolean isAaiEnabled() {
-        return AaiConfigInfo.isAaiEnabled();
-    }
-
-    /**
-     * @return the URL of the AAI login page or an empty string if AAI login is not enabled
-     */
-    @GET
-    @Path("AaiLoginUrl")
-    public String AaiLoginUrl() {
-        if (isAaiEnabled()) {
-            String url = AaiConfigInfo.getLoginUrl();
-            return '"'+url+'"'; // Add quotes to make it JSON-compatible
-        } else {
-            return "";
-        }
-    }
-
-    /**
      * @return AAI config from properties file(s)
      */
     @GET
     @Path("AaiConfig")
     public AaiConfigInfo AaiConfig() {
-        return new AaiConfigInfo();
+        return AaiConfigInfo.getInstance();
     }
 }
