@@ -9,6 +9,7 @@ package com.wegas.core.security.rest;
 
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.TeamFacade;
+import com.wegas.core.security.aai.AaiConfigInfo;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.AbstractAccount;
@@ -162,29 +163,11 @@ public class AccountController {
     }
 
     /**
-     * Is AAI login enabled ?
-     *
-     * @return true if AAI login is enabled
+     * @return AAI config from properties file(s)
      */
     @GET
-    @Path("AaiEnabled")
-    public boolean isAaiEnabled() {
-        String isEnabled = Helper.getWegasProperty("aai.enabled").trim().toLowerCase();
-        return isEnabled.equals("true");
+    @Path("AaiConfig")
+    public AaiConfigInfo AaiConfig() {
+        return AaiConfigInfo.getInstance();
     }
-
-    /**
-     * @return the URL of the AAI login page or an empty string if AAI login is not enabled
-     */
-    @GET
-    @Path("AaiLoginUrl")
-    public String AaiLoginUrl() {
-        if (isAaiEnabled()) {
-            String url = Helper.getWegasProperty("aai.loginurl").trim().toLowerCase();
-            return '"'+url+'"'; // Add quotes to make it JSON-compatible
-        } else {
-            return "";
-        }
-    }
-
 }
