@@ -26,7 +26,6 @@ public final class AaiConfigInfo {
     private static volatile AaiConfigInfo instance = null;
 
     private AaiConfigInfo(){
-        super();
         server = Helper.getWegasProperty("aai.server").trim();
         secret = Helper.getWegasProperty("aai.secret").trim();
         enabled = Helper.getWegasProperty("aai.enabled").trim().toLowerCase().equals("true");

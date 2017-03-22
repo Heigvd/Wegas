@@ -622,6 +622,12 @@ public class UserController {
         if (!request.isSecure()) {
             return new AaiLoginResponse("AAI login request must be made by HTTPS",false,false);
         }
+
+        if (!AaiConfigInfo.isAaiEnabled()) {
+            logger.error("AAI login refused because it's configured to be inactive.");
+            return new AaiLoginResponse("Sorry, AAI login is currently not possible.", false, false);
+        }
+
         String server = AaiConfigInfo.getAaiServer();
         String secret = AaiConfigInfo.getAaiSecret();
         if (!request.getRemoteHost().equals(server) ||
