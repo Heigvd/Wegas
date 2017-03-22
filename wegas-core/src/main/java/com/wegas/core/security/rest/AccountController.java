@@ -157,6 +157,7 @@ public class AccountController {
         }
 
         a.setAgreedTime(new Date());
+        a.setRoles(a.getRoles()); // @QuickFix @Dirty @Ugly @Broken @TODO should certainly be inside accountFacade.update
         return accountFacade.update(accountId, a);
     }
 
