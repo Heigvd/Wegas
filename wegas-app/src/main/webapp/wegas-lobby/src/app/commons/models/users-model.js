@@ -223,7 +223,8 @@ angular.module('wegas.models.users', [])
         };
         model.updateUser = function(user, relaxed) {
             relaxed = relaxed || false;
-            var deferred = $q.defer();
+            var deferred = $q.defer(),
+                isNonLocal = user['@class'] !== "JpaAccount";
 
             // Returns true if either (1) username does not look like an e-mail address or (2) username is an e-mail and is identical to the e-mail address field.
             // Returns false otherwise.
@@ -237,12 +238,12 @@ angular.module('wegas.models.users', [])
             };
 
 
-            if (user.username && user.username.length > 0) {
-                if (user.email && user.email.length > 0) {
-                    if (relaxed || checkEmailInUsername(user)) {
-                        if (!user.password || user.password.length >= 3) {
-                            if (!user.password || user.password === user.password2) {
-                                if (relaxed || user.firstname && user.firstname.length > 0 && user.lastname &&
+            if (isNonLocal || user.username && user.username.length > 0) {
+                if (isNonLocal || user.email && user.email.length > 0) {
+                    if (isNonLocal || relaxed || checkEmailInUsername(user)) {
+                        if (isNonLocal || !user.password || user.password.length >= 3) {
+                            if (isNonLocal || !user.password || user.password === user.password2) {
+                                if (isNonLocal || relaxed || user.firstname && user.firstname.length > 0 && user.lastname &&
                                     user.lastname.length > 0) {
 
                                     delete user.hash;

@@ -211,13 +211,19 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Username and password cannot be empty",
                             'fr': "Veuillez renseigner l'email et le mot de passe"
                         },
+                        /*
                         'CREATE-ACCOUNT-LABEL': {
                             'en': "New user?",
                             'fr': "Nouvel utilisateur ?"
                         },
+                        */
+                        'LOGIN-AAI-ACCOUNT-BTN': {
+                            'en': "Recommended to AAI users:",
+                            'fr': "Recommandé aux utilisateurs AAI:"
+                        },
                         'CREATE-ACCOUNT-BTN': {
-                            'en': "Create account",
-                            'fr': "Créer un compte"
+                            'en': "Create Wegas account",
+                            'fr': "Créer un compte Wegas"
                         },
                         'CREATE-ACCOUNT-TITLE': {
                             'en': "Create account",
@@ -915,6 +921,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Edit profile",
                             'fr': "Editer mon profil"
                         },
+                        'PRIVATE-WS-UNMODIFIABLE-PROFILE-BTN': {
+                            'en': "Your user profile is not modifiable",
+                            'fr': "Votre profil utilisateur n'est pas modifiable"
+                        },
                         'PRIVATE-WS-ACCESS-KEY': {
                             'en': startSentence(keywords.token.singular.en),
                             'fr': startSentence(keywords.token.singular.fr)
@@ -922,6 +932,18 @@ angular.module('wegas.service.wegasTranslations', [])
                         'PRIVATE-WS-LOGOUT-BTN': {
                             'en': "Logout",
                             'fr': "Déconnexion"
+                        },
+                        'PRIVATE-AGREE-TITLE': {
+                            'en': "Welcome to Wegas",
+                            'fr': "Bienvenue sur Wegas"
+                        },
+                        'PRIVATE-AGREE-SUBTITLE': {
+                            'en': "Please take note of our terms of use and click on the button \"Agree and continue\".",
+                            'fr': "Veuillez prendre note de nos conditions d'utilisation et cliquer sur le bouton \"Accepter et continuer\"."
+                        },
+                        'PRIVATE-AGREE-BTN': {
+                            'en': "Agree and continue",
+                            'fr': "Accepter et continuer"
                         },
                         'PRIVATE-MODALE-SESSION-SETTINGS-BASED-ON': {
                             'en': startSentence(keywords.scenario.singular.en) + ": ",
@@ -1580,6 +1602,22 @@ angular.module('wegas.service.wegasTranslations', [])
                         'ADMIN-USERS-MODALE-EDIT-TITLE': {
                             'en': "Edit profile",
                             'fr': "Modifier le profil"
+                        },
+                        'ADMIN-USERS-NONLOCAL-TITLE': {
+                            'en': "AAI account - Personal data is not editable",
+                            'fr': "Compte AAI - Les données personnelles ne sont pas éditables"
+                        },
+                        'ADMIN-USERS-NONLOCAL-NAME': {
+                            'en': "Name",
+                            'fr': "Nom"
+                        },
+                        'ADMIN-USERS-NONLOCAL-EMAIL': {
+                            'en': "E-mail",
+                            'fr': "E-mail"
+                        },
+                        'ADMIN-USERS-NONLOCAL-HOMEORG': {
+                            'en': "Affiliation",
+                            'fr': "Etablissement"
                         },
                         'ADMIN-USERS-MODALE-AGREED': {
                             'en': "Agreed to terms of use",

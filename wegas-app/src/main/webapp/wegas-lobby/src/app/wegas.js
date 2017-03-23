@@ -33,12 +33,6 @@ angular.module('Wegas', [
 ])
     .config(function($stateProvider, $urlRouterProvider, $translateProvider, WegasTranslationsProvider) {
         "use strict";
-        // Configurate loading bar, requires function parameter cfpLoadingBarProvider
-        /*
-        cfpLoadingBarProvider.latencyThreshold = 1000;
-        cfpLoadingBarProvider.includeSpinner = true;
-        cfpLoadingBarProvider.includeBar = false;  // was true until 14.04.2016
-        */
         $stateProvider
             .state('wegas', {
                 url: '/',
