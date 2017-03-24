@@ -17,7 +17,6 @@ import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.jcr.content.AbstractContentDescriptor;
 import com.wegas.core.jcr.content.ContentConnector;
-import com.wegas.core.jcr.content.ContentConnectorFactory;
 import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.Game;
@@ -261,8 +260,8 @@ public class GameModelFacade extends BaseFacade<GameModel> {
             newGameModel.setName(this.findUniqueName(srcGameModel.getName()));
             this.create(newGameModel);
 
-            try (ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(newGameModel.getId())) {                                                                   // Clone files and pages
-                connector.cloneWorkspace(srcGameModel.getId());
+            try (ContentConnector connector = new ContentConnector(newGameModel.getId())) {                                                                   // Clone files and pages
+                connector.cloneRoot(srcGameModel.getId());
                 newGameModel.setPages(srcGameModel.getPages());
             } catch (RepositoryException ex) {
                 logger.error("Duplicating repository {} failure, {}", entityId, ex.getMessage());
@@ -302,10 +301,8 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         } catch (RepositoryException e) {
             logger.error("Error suppressing pages for gameModel {}, {}", id, e.getMessage());
         }
-        // Remove jcr repo.
-        // @TODO : in fact, removes all files but not the workspace.
-        try (ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(gameModel.getId())) {
-            connector.deleteWorkspace();
+        try (ContentConnector connector = new ContentConnector(gameModel.getId())) {
+            connector.deleteRoot();
         } catch (RepositoryException ex) {
             logger.error("Error suppressing repository {}, {}", id, ex.getMessage());
         }

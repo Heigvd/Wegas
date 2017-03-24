@@ -8,6 +8,7 @@
 package com.wegas.core.jcr.page;
 
 import com.wegas.core.jcr.SessionManager;
+import com.wegas.core.jcr.content.WFSConfig;
 import org.slf4j.LoggerFactory;
 
 import javax.jcr.*;
@@ -17,40 +18,38 @@ import javax.jcr.query.QueryManager;
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-public class PageConnector {
+public class PageConnector implements AutoCloseable{
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(PageConnector.class);
 
     private final Session session;
+    private String gameModel;
 
-    public PageConnector() throws RepositoryException {
-        this.session = SessionManager.getSession("Pages");
+    public PageConnector(String gameModelName) throws RepositoryException {
+        this.session = SessionManager.getSession();
+        this.gameModel = gameModelName;
     }
 
-    private Node getRootNode(String gameModelName) throws RepositoryException {
+    private Node getRootNode() throws RepositoryException {
         Node ret;
         try {
-            ret = this.session.getRootNode().getNode(gameModelName);
+            ret = this.session.getNode(this.getRootPath());
         } catch (PathNotFoundException ex) {
             logger.info("Could not retrieve node ({}), creating it.", ex.getMessage());
-            NodeIterator ni = session.getRootNode().getNodes();
-            while (ni.hasNext()) {
-                logger.debug(((Node) ni.next()).getPath());
-            }
-            ret = session.getRootNode().addNode(gameModelName);
-
+            ret = SessionManager.createPath(this.session, this.getRootPath());
         }
         return ret;
 
     }
-
+    public String getRootPath(){
+        return WFSConfig.PAGES_ROOT.apply(this.gameModel);
+    }
     /**
-     * @param gameModelName
      * @return
      * @throws RepositoryException
      */
-    protected NodeIterator listChildren(String gameModelName) throws RepositoryException {
-        return this.query("Select * FROM [nt:base] as n WHERE ISDESCENDANTNODE('/" + gameModelName + "') order by n.index, localname(n)");
+    protected NodeIterator listChildren() throws RepositoryException {
+        return this.query("Select * FROM [nt:base] as n WHERE ISDESCENDANTNODE('" + WFSConfig.PAGES_ROOT.apply(this.gameModel) + "') order by n.index, localname(n)");
     }
 
     protected NodeIterator query(final String query) throws RepositoryException {
@@ -61,7 +60,7 @@ public class PageConnector {
         return this.query(query, limit, -1);
     }
 
-    protected NodeIterator query(final String query, final int limit, final int offset) throws RepositoryException {
+    private NodeIterator query(final String query, final int limit, final int offset) throws RepositoryException {
         final QueryManager queryManager = session.getWorkspace().getQueryManager();
         final Query q = queryManager.createQuery(query, Query.JCR_SQL2);
         if (limit > 0) {
@@ -74,15 +73,15 @@ public class PageConnector {
     }
 
     /**
-     * @param gameModelName
+     *
      * @param path
      * @return
      * @throws RepositoryException
      */
-    protected Node getChild(String gameModelName, String path) throws RepositoryException {
+    protected Node getChild(String path) throws RepositoryException {
         Node ret;
         try {
-            ret = this.getRootNode(gameModelName).getNode(path);
+            ret = this.getRootNode().getNode(path);
         } catch (PathNotFoundException ex) {
             ret = null;
         }
@@ -90,48 +89,39 @@ public class PageConnector {
     }
 
     /**
-     * @param gameModelName
+     *
      * @param name
      * @return
      * @throws RepositoryException
      */
-    protected Node addChild(String gameModelName, String name) throws RepositoryException {
-        Node root = this.getRootNode(gameModelName);
+    protected Node addChild(String name) throws RepositoryException {
+        Node root = this.getRootNode();
         if (!root.hasNode(name)) {
             Node node = root.addNode(name);
-            session.save();
             return node;
         } else {
-            return this.getChild(gameModelName, name);
+            return this.getChild(name);
         }
     }
 
     /**
-     * @param gameModelName
+     *
      * @param name
      * @throws RepositoryException
      */
-    protected void deleteChild(String gameModelName, String name) throws RepositoryException {
-        Node root = this.getRootNode(gameModelName);
+    protected void deleteChild(String name) throws RepositoryException {
+        Node root = this.getRootNode();
         if (root.hasNode(name)) {
             root.getNode(name).remove();
-            if (!root.hasNodes()) {
-                root.remove();
-            }
-            this.save();
         }
     }
 
     /**
-     * @param gameModelName
+     *
      * @throws RepositoryException
      */
-    protected void deleteRoot(String gameModelName) throws RepositoryException {
-        Node root = session.getRootNode();
-        if (root.hasNode(gameModelName)) {
-            root.getNode(gameModelName).remove();
-            session.save();
-        }
+    protected void deleteRoot() throws RepositoryException {
+        this.getRootNode().remove();
     }
 
     /**
@@ -141,15 +131,7 @@ public class PageConnector {
         session.save();
     }
 
-    /**
-     * @param gameModelName
-     * @return
-     * @throws RepositoryException
-     */
-    protected boolean exist(String gameModelName) throws RepositoryException {
-        return session.getRootNode().hasNode(gameModelName);
-    }
-
+    @Override
     public void close() throws RepositoryException {
         session.save();
         SessionManager.closeSession(session);

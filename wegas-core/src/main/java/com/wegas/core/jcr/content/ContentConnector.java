@@ -19,6 +19,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
@@ -33,6 +35,8 @@ public class ContentConnector implements AutoCloseable {
     static final private String EXPORT_NODE_NAME = "exportedFiles";
 
     final private Session session;
+
+    private String workspaceRoot;
 
     /**
      * @param bytes
@@ -52,19 +56,14 @@ public class ContentConnector implements AutoCloseable {
      * @param gameModelId
      * @throws RepositoryException
      */
-    protected ContentConnector(Long gameModelId) throws RepositoryException {
-        String workspace = "GM_" + gameModelId;
-        this.session = SessionManager.getSession(workspace);
-        this.initializeNamespaces();
-
-    }
-
-    /**
-     * @throws RepositoryException
-     */
-    protected ContentConnector() throws RepositoryException {
-        this.session = SessionManager.getSession(null);
-        this.initializeNamespaces();
+    public ContentConnector(long gameModelId) throws RepositoryException {
+        this.workspaceRoot = WFSConfig.WFS_ROOT.apply(gameModelId);
+        this.session = SessionManager.getSession();
+        if (!this.session.nodeExists(this.workspaceRoot)) {
+            Node n = SessionManager.createPath(this.session, this.workspaceRoot);
+            this.initializeNamespaces();
+            n.setProperty(WFSConfig.WFS_MIME_TYPE, DirectoryDescriptor.MIME_TYPE);
+        }
     }
 
     /**
@@ -74,7 +73,7 @@ public class ContentConnector implements AutoCloseable {
      */
     protected Node getNode(String absolutePath) throws RepositoryException {
         try {
-            return session.getNode(absolutePath);
+            return session.getNode(this.workspaceRoot + absolutePath);
         } catch (PathNotFoundException ex) {
             logger.debug("Could not retrieve node ({})", ex.getMessage());
             return null;
@@ -87,14 +86,14 @@ public class ContentConnector implements AutoCloseable {
      * @throws RepositoryException
      */
     protected boolean nodeExist(String absolutePath) throws RepositoryException {
-        return session.nodeExists(absolutePath);
+        return session.nodeExists(this.workspaceRoot + absolutePath);
     }
 
     /**
      * @param absolutePath
      * @throws RepositoryException
      */
-    protected void deleteFile(String absolutePath) throws RepositoryException {
+    protected void deleteNode(String absolutePath) throws RepositoryException {
         this.getNode(absolutePath).remove();
         session.save();
     }
@@ -106,7 +105,7 @@ public class ContentConnector implements AutoCloseable {
      * @throws RepositoryException
      */
     protected NodeIterator listChildren(String path) throws RepositoryException {
-        return session.getNode(path).getNodes(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + "*");
+        return this.getNode(path).getNodes("*");
     }
 
     /*
@@ -320,6 +319,7 @@ public class ContentConnector implements AutoCloseable {
      * @param path root path to compress
      * @throws RepositoryException
      * @throws IOException
+     * @deprecated mostly to rewrite
      */
     public void zipDirectory(ZipOutputStream out, String path) throws RepositoryException, IOException {
         AbstractContentDescriptor node = DescriptorFactory.getDescriptor(path, this);
@@ -350,72 +350,23 @@ public class ContentConnector implements AutoCloseable {
     }
 
     /**
-     * Jackrabbit doesn't handle workspace deletetion, falling back to remove
-     * all undelying nodes
+     * Remove root node.
      *
      * @throws RepositoryException
      */
-    public void deleteWorkspace() throws RepositoryException {
-        //throw new UnsupportedOperationException("Jackrabbit: There is currently no programmatic way to delete workspaces. You can delete a workspace by manually removing the workspace directory when the repository instance is not running.");
-        String name = session.getWorkspace().getName();
-        Session adminSession = SessionManager.getSession(null);
-        try {
-            adminSession.getWorkspace().deleteWorkspace(name);
-            SessionManager.closeSession(adminSession);
-        } catch (UnsupportedRepositoryOperationException ex) {
-            SessionManager.closeSession(adminSession);
-            logger.warn("UnsupportedRepositoryOperationException : fallback to clear workspace. Try workspace directory removal");
-            this.clearWorkspace();
-            this.removeWorkspace();
-        }
+    public void deleteRoot() throws RepositoryException {
+        this.getNode("/").remove();
     }
 
     /**
-     * @param oldGameModelId
+     * @param fromGameModel
      * @throws RepositoryException
      */
-    public void cloneWorkspace(Long oldGameModelId) throws RepositoryException {
-        try (ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(oldGameModelId)) {
-            NodeIterator it = connector.listChildren("/");
-
-            String path;
-            while (it.hasNext()) {
-                path = it.nextNode().getPath();
-                session.getWorkspace().clone("GM_" + oldGameModelId, path, path, true);
-            }
-            PropertyIterator propertyIterator = connector.getNode("/").getProperties(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + "*");
-            Property prop;
-            while (propertyIterator.hasNext()) {
-                prop = propertyIterator.nextProperty();
-                session.getRootNode().setProperty(prop.getName(), prop.getValue());
-            }
-            session.save();
+    public void cloneRoot(Long fromGameModel) throws RepositoryException {
+        try (ContentConnector connector = new ContentConnector(fromGameModel)) {
+            final String fromPath = connector.getNode("/").getPath();
+            this.session.getWorkspace().copy(fromPath, this.getNode("/").getPath());
         }
-    }
-
-    /**
-     * @throws RepositoryException
-     */
-    private void clearWorkspace() throws RepositoryException {
-        NodeIterator it = session.getRootNode().getNodes("*");
-        while (it.hasNext()) {
-            Node node = it.nextNode();
-            if (!(node.getName().equals("jcr:system") || node.getName().equals("rep:policy"))) {
-                node.remove();
-            }
-        }
-        PropertyIterator properties = session.getRootNode().getProperties();
-        while (properties.hasNext()) {
-            Property property = properties.nextProperty();
-            if (!(property.getName().startsWith("jcr:") || property.getName().startsWith("rep:") || property.getName().startsWith("sling:"))) {
-                property.remove();
-            }
-        }
-        this.save();
-    }
-
-    private void removeWorkspace() {
-        SessionManager.removeWorkspace(session);
     }
 
     /**
@@ -436,6 +387,7 @@ public class ContentConnector implements AutoCloseable {
      * @throws RepositoryException
      * @throws IOException
      * @throws SAXException
+     * @deprecated mostly to rewrite
      */
     public void exportXML(OutputStream out) throws RepositoryException, IOException {
         final NodeIterator nodeIterator = this.listChildren("/");
@@ -452,10 +404,11 @@ public class ContentConnector implements AutoCloseable {
      * @param input
      * @throws RepositoryException
      * @throws IOException
+     * @deprecated Mostly rewrite
      */
     public void importXML(InputStream input) throws RepositoryException, IOException {
         try {
-            this.clearWorkspace();                                              // Remove nodes first
+            this.deleteRoot();                                              // Remove nodes first
             final Node rootNode = session.getRootNode();
             session.save();
             session.getWorkspace().importXML("/", input, ImportUUIDBehavior.IMPORT_UUID_COLLISION_THROW);
@@ -486,13 +439,14 @@ public class ContentConnector implements AutoCloseable {
         }
     }
 
-    private static Boolean isRoot(Node node) throws RepositoryException {
-        try {
-            node.getParent();
-        } catch (ItemNotFoundException ex) {
-            return true;
-        }
-        return false;
+    protected Boolean isRoot(Node node) throws RepositoryException {
+        return node.getPath().equals(this.workspaceRoot);
+    }
+
+    protected String getWorkspacePath(Node node) throws RepositoryException {
+        final Pattern pattern = Pattern.compile("^" + this.workspaceRoot);
+        final Matcher matcher = pattern.matcher(node.getPath());
+        return matcher.replaceFirst("");
     }
 
     @Override

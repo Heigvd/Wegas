@@ -8,19 +8,27 @@
 package com.wegas.core.jcr.content;
 
 import com.wegas.core.Helper;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
- *
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-final class WFSConfig {
-
+public final class WFSConfig {
     /**
-     * JNDI name for Repository lookup {@value #jndiRepo}
+     * JCR wegas storage root
      */
-    static final String jndiRepo = "jcr/jackrabbit";
+    static final private String WEGAS_ROOT = "/wegas";
+    /**
+     * File system root path (inside workspace)
+     */
+    public static final Function<Long, String> WFS_ROOT = (Long gameModel) -> String.format("%s/GM_%d/files", WEGAS_ROOT, gameModel);
+    /**
+     * Pages root path (inside workspace)
+     */
+    public static final Function<String, String> PAGES_ROOT = (String gameModel) -> String.format("%s/GM_%s/pages", WEGAS_ROOT, gameModel);;
     /**
      * WeGAS file system namespace prefix for use with XPATH
      * <b>{@value #WeGAS_FILE_SYSTEM_PREFIX}</b>
