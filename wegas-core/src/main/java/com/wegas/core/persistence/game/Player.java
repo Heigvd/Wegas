@@ -8,6 +8,7 @@
 package com.wegas.core.persistence.game;
 
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.security.aai.AaiAccount;
 import com.wegas.core.security.persistence.User;
 import java.util.Date;
 import java.util.Objects;
@@ -78,6 +79,11 @@ public class Player extends AbstractEntity implements Broadcastable, BroadcastTa
     @JoinColumn(name = "parentteam_id")
     //@XmlInverseReference(mappedBy = "players")
     private Team team;
+
+
+    @Transient
+    private Boolean verifiedId = null;
+
 
     /**
      *
@@ -253,6 +259,24 @@ public class Player extends AbstractEntity implements Broadcastable, BroadcastTa
      */
     public void setJoinTime(Date joinTime) {
         this.joinTime = joinTime != null ? new Date(joinTime.getTime()) : null;
+    }
+
+    /*
+     * @return true if the user's main account is an AaiAccount or equivalent
+     */
+    @Transient
+    public boolean isVerifiedId(){
+        if (verifiedId != null){
+            return verifiedId.booleanValue();
+        } else {
+            if (this.user != null) {
+                boolean verif = user.getMainAccount() instanceof AaiAccount;
+                verifiedId = verif;
+                return verif;
+            } else {
+                return false;
+            }
+        }
     }
 
     /**
