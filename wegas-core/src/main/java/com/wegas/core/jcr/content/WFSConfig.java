@@ -17,18 +17,26 @@ import java.util.function.Function;
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public final class WFSConfig {
+
     /**
      * JCR wegas storage root
      */
     static final private String WEGAS_ROOT = "/wegas";
+
     /**
-     * File system root path (inside workspace)
+     * gameModel root path
      */
-    public static final Function<Long, String> WFS_ROOT = (Long gameModel) -> String.format("%s/GM_%d/files", WEGAS_ROOT, gameModel);
+    public static final Function<Long, String> GM_ROOT = (Long gameModelId) -> String.format("%s/GM_%d", WEGAS_ROOT, gameModelId);
     /**
-     * Pages root path (inside workspace)
+     *
+     * path for gameModel files (inside workspace)
      */
-    public static final Function<String, String> PAGES_ROOT = (String gameModel) -> String.format("%s/GM_%s/pages", WEGAS_ROOT, gameModel);;
+    public static final Function<Long, String> WFS_ROOT = (Long gameModelId) -> String.format("%s/files", GM_ROOT.apply(gameModelId));
+    /**
+     * path for gameModel pages
+     */
+    public static final Function<Long, String> PAGES_ROOT = (Long gameModelId) -> String.format("%s/pages", GM_ROOT.apply(gameModelId));
+    ;
     /**
      * WeGAS file system namespace prefix for use with XPATH
      * <b>{@value #WeGAS_FILE_SYSTEM_PREFIX}</b>

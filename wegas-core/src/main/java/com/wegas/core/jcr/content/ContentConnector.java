@@ -7,6 +7,7 @@
  */
 package com.wegas.core.jcr.content;
 
+import com.wegas.core.Helper;
 import com.wegas.core.jcr.SessionManager;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,7 @@ public class ContentConnector implements AutoCloseable {
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(ContentConnector.class);
 
     static final private String EXPORT_NODE_NAME = "exportedFiles";
+    private final long gameModelId;
 
     final private Session session;
 
@@ -40,6 +42,7 @@ public class ContentConnector implements AutoCloseable {
 
     /**
      * @param bytes
+     *
      * @return string representation
      */
     public static String bytesToHumanReadable(Long bytes) {
@@ -54,9 +57,11 @@ public class ContentConnector implements AutoCloseable {
 
     /**
      * @param gameModelId
+     *
      * @throws RepositoryException
      */
     public ContentConnector(long gameModelId) throws RepositoryException {
+        this.gameModelId = gameModelId;
         this.workspaceRoot = WFSConfig.WFS_ROOT.apply(gameModelId);
         this.session = SessionManager.getSession();
         if (!this.session.nodeExists(this.workspaceRoot)) {
@@ -68,7 +73,9 @@ public class ContentConnector implements AutoCloseable {
 
     /**
      * @param absolutePath
+     *
      * @return
+     *
      * @throws RepositoryException
      */
     protected Node getNode(String absolutePath) throws RepositoryException {
@@ -82,7 +89,9 @@ public class ContentConnector implements AutoCloseable {
 
     /**
      * @param absolutePath
+     *
      * @return
+     *
      * @throws RepositoryException
      */
     protected boolean nodeExist(String absolutePath) throws RepositoryException {
@@ -91,6 +100,7 @@ public class ContentConnector implements AutoCloseable {
 
     /**
      * @param absolutePath
+     *
      * @throws RepositoryException
      */
     protected void deleteNode(String absolutePath) throws RepositoryException {
@@ -100,7 +110,9 @@ public class ContentConnector implements AutoCloseable {
 
     /**
      * @param path
+     *
      * @return
+     *
      * @throws PathNotFoundException
      * @throws RepositoryException
      */
@@ -140,7 +152,9 @@ public class ContentConnector implements AutoCloseable {
 
     /**
      * @param absolutePath
+     *
      * @return
+     *
      * @throws RepositoryException
      */
     protected InputStream getData(String absolutePath) throws RepositoryException {
@@ -149,7 +163,9 @@ public class ContentConnector implements AutoCloseable {
 
     /**
      * @param absolutePath
+     *
      * @return
+     *
      * @throws RepositoryException
      * @throws IOException
      */
@@ -161,7 +177,9 @@ public class ContentConnector implements AutoCloseable {
      * @param absolutePath
      * @param mimeType
      * @param data
+     *
      * @return
+     *
      * @throws RepositoryException
      */
     protected Node setData(String absolutePath, String mimeType, InputStream data) throws RepositoryException {
@@ -175,7 +193,9 @@ public class ContentConnector implements AutoCloseable {
 
     /**
      * @param absolutePath
+     *
      * @return
+     *
      * @throws RepositoryException
      */
     protected String getMimeType(String absolutePath) throws RepositoryException {
@@ -190,6 +210,7 @@ public class ContentConnector implements AutoCloseable {
     /**
      * @param absolutePath
      * @param mimeType
+     *
      * @throws RepositoryException
      */
     protected void setMimeType(String absolutePath, String mimeType) throws RepositoryException {
@@ -198,7 +219,9 @@ public class ContentConnector implements AutoCloseable {
 
     /**
      * @param absolutePath
+     *
      * @return
+     *
      * @throws RepositoryException
      */
     protected String getNote(String absolutePath) throws RepositoryException {
@@ -212,6 +235,7 @@ public class ContentConnector implements AutoCloseable {
     /**
      * @param absolutePath
      * @param note
+     *
      * @throws RepositoryException
      */
     protected void setNote(String absolutePath, String note) throws RepositoryException {
@@ -221,7 +245,9 @@ public class ContentConnector implements AutoCloseable {
 
     /**
      * @param absolutePath
+     *
      * @return
+     *
      * @throws RepositoryException
      */
     protected String getDescription(String absolutePath) throws RepositoryException {
@@ -235,6 +261,7 @@ public class ContentConnector implements AutoCloseable {
     /**
      * @param absolutePath
      * @param description
+     *
      * @throws RepositoryException
      */
     protected void setDescription(String absolutePath, String description) throws RepositoryException {
@@ -245,7 +272,9 @@ public class ContentConnector implements AutoCloseable {
 
     /**
      * @param absolutePath
+     *
      * @return
+     *
      * @throws RepositoryException
      */
     protected Boolean isPrivate(String absolutePath) throws RepositoryException {
@@ -259,6 +288,7 @@ public class ContentConnector implements AutoCloseable {
     /**
      * @param absolutePath
      * @param priv
+     *
      * @throws RepositoryException
      */
     protected void setPrivate(String absolutePath, Boolean priv) throws RepositoryException {
@@ -269,6 +299,7 @@ public class ContentConnector implements AutoCloseable {
      * Check the entire path for a private property set to true
      *
      * @param absolutePath
+     *
      * @return
      */
     protected Boolean isInheritedPrivate(String absolutePath) {
@@ -293,7 +324,9 @@ public class ContentConnector implements AutoCloseable {
 
     /**
      * @param absolutePath
+     *
      * @return
+     *
      * @throws RepositoryException
      */
     protected Calendar getLastModified(String absolutePath) throws RepositoryException {
@@ -304,7 +337,9 @@ public class ContentConnector implements AutoCloseable {
      * Return content Bytes size
      *
      * @param absolutePath
+     *
      * @return
+     *
      * @throws RepositoryException
      */
     protected Long getBytesSize(String absolutePath) throws RepositoryException {
@@ -317,6 +352,7 @@ public class ContentConnector implements AutoCloseable {
      *
      * @param out  a ZipOutputStream to write files to
      * @param path root path to compress
+     *
      * @throws RepositoryException
      * @throws IOException
      * @deprecated mostly to rewrite
@@ -360,6 +396,7 @@ public class ContentConnector implements AutoCloseable {
 
     /**
      * @param fromGameModel
+     *
      * @throws RepositoryException
      */
     public void cloneRoot(Long fromGameModel) throws RepositoryException {
@@ -384,40 +421,27 @@ public class ContentConnector implements AutoCloseable {
 
     /**
      * @param out
+     *
      * @throws RepositoryException
      * @throws IOException
-     * @throws SAXException
-     * @deprecated mostly to rewrite
      */
     public void exportXML(OutputStream out) throws RepositoryException, IOException {
-        final NodeIterator nodeIterator = this.listChildren("/");
-        final Node exportNode = session.getRootNode().addNode(EXPORT_NODE_NAME);
-        while (nodeIterator.hasNext()) {
-            Node n = nodeIterator.nextNode();
-            session.move(n.getPath(), exportNode.getPath() + "/" + n.getName());
-        }
-        session.exportSystemView(exportNode.getPath(), out, false, false);
-        session.refresh(false); // Discard change.
+        // Export /wegas/GM_<ID>/files/ to out
+        session.exportSystemView(this.getNode("/").getPath(), out, false, false);
     }
 
     /**
      * @param input
+     *
      * @throws RepositoryException
      * @throws IOException
-     * @deprecated Mostly rewrite
      */
     public void importXML(InputStream input) throws RepositoryException, IOException {
         try {
             this.deleteRoot();                                              // Remove nodes first
-            final Node rootNode = session.getRootNode();
             session.save();
-            session.getWorkspace().importXML("/", input, ImportUUIDBehavior.IMPORT_UUID_COLLISION_THROW);
-            final NodeIterator nodes = rootNode.getNode(EXPORT_NODE_NAME).getNodes(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + "*");
-            while (nodes.hasNext()) {
-                final Node node = nodes.nextNode();
-                session.getWorkspace().move(node.getPath(), "/" + node.getName());
-            }
-            rootNode.getNode(EXPORT_NODE_NAME).remove();
+            session.getWorkspace().importXML(WFSConfig.GM_ROOT.apply(gameModelId), input, ImportUUIDBehavior.IMPORT_UUID_COLLISION_REPLACE_EXISTING);
+            session.save();
         } catch (RepositoryException | IOException ex) {
             logger.error("File repository import failed", ex);
             throw ex;

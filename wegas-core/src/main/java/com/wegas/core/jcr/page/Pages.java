@@ -34,7 +34,7 @@ public class Pages implements AutoCloseable {
      * @param gameModelId
      * @throws RepositoryException
      */
-    public Pages(String gameModelId) throws RepositoryException {
+    public Pages(Long gameModelId) throws RepositoryException {
         this.connector = new PageConnector(gameModelId);
     }
 

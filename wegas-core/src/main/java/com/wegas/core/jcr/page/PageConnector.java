@@ -23,11 +23,11 @@ public class PageConnector implements AutoCloseable{
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(PageConnector.class);
 
     private final Session session;
-    private String gameModel;
+    private Long gameModelId;
 
-    public PageConnector(String gameModelName) throws RepositoryException {
+    public PageConnector(Long gameModelId) throws RepositoryException {
         this.session = SessionManager.getSession();
-        this.gameModel = gameModelName;
+        this.gameModelId = gameModelId;
     }
 
     private Node getRootNode() throws RepositoryException {
@@ -42,14 +42,14 @@ public class PageConnector implements AutoCloseable{
 
     }
     public String getRootPath(){
-        return WFSConfig.PAGES_ROOT.apply(this.gameModel);
+        return WFSConfig.PAGES_ROOT.apply(this.gameModelId);
     }
     /**
      * @return
      * @throws RepositoryException
      */
     protected NodeIterator listChildren() throws RepositoryException {
-        return this.query("Select * FROM [nt:base] as n WHERE ISDESCENDANTNODE('" + WFSConfig.PAGES_ROOT.apply(this.gameModel) + "') order by n.index, localname(n)");
+        return this.query("Select * FROM [nt:base] as n WHERE ISDESCENDANTNODE('" + WFSConfig.PAGES_ROOT.apply(this.gameModelId) + "') order by n.index, localname(n)");
     }
 
     protected NodeIterator query(final String query) throws RepositoryException {

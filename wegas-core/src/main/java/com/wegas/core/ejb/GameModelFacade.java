@@ -296,7 +296,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         preRemovedGameModelEvent.fire(new PreEntityRemoved<>(this.find(id)));
         getEntityManager().remove(gameModel);
         // Remove pages.
-        try (Pages pages = new Pages(id.toString())) {
+        try (Pages pages = new Pages(id)) {
             pages.delete();
         } catch (RepositoryException e) {
             logger.error("Error suppressing pages for gameModel {}, {}", id, e.getMessage());
