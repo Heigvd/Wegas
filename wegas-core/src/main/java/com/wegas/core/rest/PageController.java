@@ -35,7 +35,8 @@ import javax.inject.Inject;
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Stateless
-@Path("GameModel/{gameModelId : [1-9][0-9]+}/Page")
+@Path("GameModel/{gameModelId : [0-9]+}/Page")
+//@Path("GameModel/{gameModelId : [1-0][0-9]*}/Page")
 @Consumes("application/json; charset=UTF-8")
 @Produces("application/json; charset=UTF-8")
 public class PageController {
