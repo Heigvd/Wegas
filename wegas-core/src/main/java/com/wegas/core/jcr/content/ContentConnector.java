@@ -33,12 +33,17 @@ public class ContentConnector implements AutoCloseable {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(ContentConnector.class);
 
-    static final private String EXPORT_NODE_NAME = "exportedFiles";
     private final long gameModelId;
 
     final private Session session;
 
     private String workspaceRoot;
+    private final WorkspaceType workspaceType;
+
+    public static enum WorkspaceType {
+        FILES,
+        HISTORY
+    };
 
     /**
      * @param bytes
@@ -55,14 +60,32 @@ public class ContentConnector implements AutoCloseable {
         return String.format("%.1f%sB", bytes / Math.pow(unit, exponent), prefix);
     }
 
+    public static ContentConnector getFilesConnector(long gameModelId) throws RepositoryException {
+        return new ContentConnector(gameModelId, WorkspaceType.FILES);
+    }
+
+    public static ContentConnector getHistoryConnector(long gameModelId) throws RepositoryException {
+        return new ContentConnector(gameModelId, WorkspaceType.HISTORY);
+    }
+
+
+
     /**
      * @param gameModelId
      *
      * @throws RepositoryException
      */
-    public ContentConnector(long gameModelId) throws RepositoryException {
+    public ContentConnector(long gameModelId, WorkspaceType workspaceType) throws RepositoryException {
         this.gameModelId = gameModelId;
-        this.workspaceRoot = WFSConfig.WFS_ROOT.apply(gameModelId);
+        this.workspaceType = workspaceType;
+        switch (workspaceType) {
+            case FILES:
+                this.workspaceRoot = WFSConfig.WFS_ROOT.apply(gameModelId);
+                break;
+            case HISTORY:
+                this.workspaceRoot = WFSConfig.HISTORY_ROOT.apply(gameModelId);
+                break;
+        }
         this.session = SessionManager.getSession();
         if (!this.session.nodeExists(this.workspaceRoot)) {
             Node n = SessionManager.createPath(this.session, this.workspaceRoot);
@@ -400,7 +423,7 @@ public class ContentConnector implements AutoCloseable {
      * @throws RepositoryException
      */
     public void cloneRoot(Long fromGameModel) throws RepositoryException {
-        try (ContentConnector connector = new ContentConnector(fromGameModel)) {
+        try (ContentConnector connector = new ContentConnector(fromGameModel, workspaceType)) {
             final String fromPath = connector.getNode("/").getPath();
             this.session.getWorkspace().copy(fromPath, this.getNode("/").getPath());
         }

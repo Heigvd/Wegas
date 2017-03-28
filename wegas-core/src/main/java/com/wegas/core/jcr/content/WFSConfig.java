@@ -36,7 +36,10 @@ public final class WFSConfig {
      * path for gameModel pages
      */
     public static final Function<Long, String> PAGES_ROOT = (Long gameModelId) -> String.format("%s/pages", GM_ROOT.apply(gameModelId));
-    ;
+    /**
+     * path for gameModel pages
+     */
+    public static final Function<Long, String> HISTORY_ROOT = (Long gameModelId) -> String.format("%s/history", GM_ROOT.apply(gameModelId));
     /**
      * WeGAS file system namespace prefix for use with XPATH
      * <b>{@value #WeGAS_FILE_SYSTEM_PREFIX}</b>
