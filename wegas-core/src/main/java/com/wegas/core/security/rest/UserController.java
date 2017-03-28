@@ -15,6 +15,7 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.*;
 import com.wegas.core.rest.util.Email;
+import com.wegas.core.security.aai.*;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
@@ -103,12 +104,11 @@ public class UserController {
      */
     @GET
     public Collection<User> index() {
-
         SecurityUtils.getSubject().checkPermission("User:Edit");
 
         //List<User> findAll = userFacade.findAll();
         List<User> findAll = new ArrayList<>();
-        for (JpaAccount account : accountFacade.findAllRegistered()) {
+        for (AbstractAccount account : accountFacade.findAllRegistered()) {
             findAll.add(account.getUser());
         }
 
@@ -247,11 +247,11 @@ public class UserController {
 
     /**
      * @param value
-     * @return list of JpaAccount matching the token
+     * @return list of AbstractAccounts (excluding guests) matching the token
      */
     @GET
     @Path("AutoComplete/{value}")
-    public List<JpaAccount> getAutoComplete(@PathParam("value") String value) {
+    public List<AbstractAccount> getAutoComplete(@PathParam("value") String value) {
         return accountFacade.getAutoComplete(value);
     }
 
@@ -271,7 +271,7 @@ public class UserController {
      */
     @GET
     @Path("AutoCompleteFull/{value}/{gameId : [1-9][0-9]*}")
-    public List<JpaAccount> getAutoCompleteFull(@PathParam("value") String value, @PathParam("gameId") Long gameId) {
+    public List<AbstractAccount> getAutoCompleteFull(@PathParam("value") String value, @PathParam("gameId") Long gameId) {
         return accountFacade.getAutoCompleteFull(value, gameId);
     }
 
@@ -282,12 +282,12 @@ public class UserController {
      * @param value     account search token
      * @param rolesList list of roles targeted account should be members (only
      *                  one membership is sufficient)
-     * @return list of JpaAccount matching the token that are member of at least
+     * @return list of AbstractAccount matching the token that are member of at least
      *         one given role
      */
     @POST
     @Path("AutoComplete/{value}")
-    public List<JpaAccount> getAutoCompleteByRoles(@PathParam("value") String value, HashMap<String, List<String>> rolesList) {
+    public List<AbstractAccount> getAutoCompleteByRoles(@PathParam("value") String value, HashMap<String, List<String>> rolesList) {
         if (!SecurityUtils.getSubject().isRemembered() && !SecurityUtils.getSubject().isAuthenticated()) {
             throw new UnauthorizedException();
         }
@@ -314,7 +314,7 @@ public class UserController {
     @GET
     @Deprecated
     @Path("FindAccountsByName")
-    public List<JpaAccount> findAccountsByName(@QueryParam("values") List<String> values) {
+    public List<AbstractAccount> findAccountsByName(@QueryParam("values") List<String> values) {
         if (!SecurityUtils.getSubject().isRemembered() && !SecurityUtils.getSubject().isAuthenticated()) {
             throw new UnauthorizedException();
         }
@@ -442,7 +442,7 @@ public class UserController {
 
     /**
      * Logout
-     *
+     *A
      * @return 200 OK
      */
     @GET
@@ -492,10 +492,9 @@ public class UserController {
     }
 
     /**
-     * See like an other user specified by it's jpaAccount id. Administrators
-     * only.
+     * Look like an other user specified by its Account id. Administrators only.
      *
-     * @param accountId jpaAccount id
+     * @param accountId AbstractAccount id
      * @throws AuthorizationException if current user is not an administrator
      */
     @POST
@@ -539,7 +538,7 @@ public class UserController {
     }
 
     /**
-     * Create a user based with a JpAAccount
+     * Create a user based on a JpaAccount
      *
      * @param account
      * @param request
@@ -564,12 +563,14 @@ public class UserController {
                 } else {
                     // Check if e-mail is already taken and if yes return a localized error message:
                     try {
+                        // Do NOT restrict checking to JpaAccounts (this is to prevent any collisions):
                         accountFacade.findByEmail(account.getEmail());
                         String msg = detectBrowserLocale(request).equals("fr") ? "Cette adresse e-mail est déjà prise." : "This email address is already taken.";
                         r = Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error(msg)).build();
                     } catch (WegasNoResultException e) {
                         // GOTCHA
                         // E-Mail not yet registered -> proceed with account creation
+                        account.setAgreedTime(new Date());
                         user = new User(account);
                         userFacade.create(user);
                         r = Response.status(Response.Status.CREATED).build();
@@ -584,6 +585,88 @@ public class UserController {
             r = Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error(msg)).build();
         }
         return r;
+    }
+
+
+    /**
+     * Create a user based on an AaiAccount
+     *
+     * @param account
+     * @param request
+     * @return void
+     */
+    public void create(AaiAccount account,
+                       @Context HttpServletRequest request) {
+        if (!this.checkExistingPersistentId(account.getPersistentId())) {
+            User user = new User(account);
+            userFacade.create(user);
+        } else {
+            logger.error("This AAI account is already registered.");
+        }
+    }
+
+    /**
+     * Logs in an AAI-authenticated user or creates a new account for him.
+     * @return AaiLoginResponse telling e.g. if the user is new.
+     * Session cookies for the user's browser are also returned.
+     *
+     * @param userDetails
+     */
+    @POST
+    @Path("AaiLogin")
+    public AaiLoginResponse aaiLogin(AaiUserDetails userDetails,
+                                     @Context HttpServletRequest request,
+                                     @Context HttpServletResponse response) throws ServletException, IOException {
+
+        // Check if the invocation is by HTTPS. @TODO: verify certificate.
+        if (!request.isSecure()) {
+            return new AaiLoginResponse("AAI login request must be made by HTTPS",false,false);
+        }
+
+        if (!AaiConfigInfo.isAaiEnabled()) {
+            logger.error("AAI login refused because it's configured to be inactive.");
+            return new AaiLoginResponse("Sorry, AAI login is currently not possible.", false, false);
+        }
+
+        String server = AaiConfigInfo.getAaiServer();
+        String secret = AaiConfigInfo.getAaiSecret();
+        if (!request.getRemoteHost().equals(server) ||
+            !userDetails.getSecret().equals(secret)){
+            logger.error("Real remote host: " + request.getRemoteHost() + ", expected: " + server);
+            logger.error("Real secret: " + userDetails.getSecret() + ", expected: " + secret);
+            return new AaiLoginResponse("Could not authenticate Wegas AAI server", false, false);
+        }
+        // Get rid of shared secret:
+        userDetails.setSecret("checked");
+
+        // It should not be possible for the caller (our AAI login server) to be already logged in...
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated()) {
+            subject.logout();
+            throw WegasErrorMessage.error("Logging out an already logged in user (internal error?)");
+        }
+
+        try {
+            Long accountId = (Long)subject.getPrincipal();
+            AaiToken token = new AaiToken(accountId, userDetails);
+            token.setRememberMe(userDetails.isRememberMe());
+            subject.login(token);
+            accountFacade.refreshAaiAccount(userDetails);
+            return new AaiLoginResponse("Login successful",true,false);
+        } catch (AuthenticationException aex) {
+            logger.error("User not found, creating new account.");
+            AaiAccount account = new AaiAccount(userDetails);
+            this.create(account, request);
+            // Try to log in the new user:
+            try {
+                AaiToken token = new AaiToken((Long) account.getId(), userDetails);
+                token.setRememberMe(userDetails.isRememberMe());
+                subject.login(token);
+            } catch (AuthenticationException aex2) {
+                return new AaiLoginResponse("New account created, could not login to it",false,true);
+            }
+            return new AaiLoginResponse("New account created, login successful",true,true);
+        }
     }
 
     /**
@@ -617,7 +700,7 @@ public class UserController {
         }
 
         String body = email.getBody();
-        body += "<br /><br /><hr /><i> Sent by " + name + " from " + "albasim.ch</i>";
+        body += "<br /><br /><hr /><i> Sent by " + name + " from albasim.ch</i>";
         email.setBody(body);
 
         email.setFrom(name + " via Wegas <noreply@" + Helper.getWegasProperty("mail.default_domain") + ">");
@@ -845,7 +928,7 @@ public class UserController {
     }
 
     /**
-     * Check is username is already in use
+     * Check if username is already in use
      *
      * @param username username to check
      * @return true is username is already in use
@@ -858,6 +941,22 @@ public class UserController {
         }
         return existingUsername;
     }
+
+    /**
+     * Check if persistent ID is already in use
+     *
+     * @param persistentId to check
+     * @return true is persistentId is already in use
+     */
+    private boolean checkExistingPersistentId(String persistentId) {
+        boolean existingId = false;
+        User user = userFacade.getUserByPersistentId(persistentId);
+        if (user != null) {
+            existingId = true;
+        }
+        return existingId;
+    }
+
 
     /*
     ** @return the browser's preference among the languages supported by Wegas
@@ -876,5 +975,4 @@ public class UserController {
         // No match found, return the default "en":
         return "en";
     }
-
 }
