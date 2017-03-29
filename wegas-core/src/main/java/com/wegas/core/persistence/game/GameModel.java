@@ -556,7 +556,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      * @return the pages
      */
     public Map<String, JsonNode> getPages() {
-        try (final Pages pagesDAO = new Pages(this.id.toString())) {
+        try (final Pages pagesDAO = new Pages(this.id)) {
             return pagesDAO.getPagesContent();
         } catch (RepositoryException ex) {
             return new HashMap<>();
@@ -605,7 +605,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @PostPersist
     private void storePages() {
         if (this.pages != null) {
-            try (final Pages pagesDAO = new Pages(this.id.toString())) {
+            try (final Pages pagesDAO = new Pages(this.id)) {
                 pagesDAO.delete();                                              // Remove existing pages
                 // Pay Attention: this.pages != this.getPages() ! 
                 // this.pages contains deserialized pages, getPages() fetchs them from the jackrabbit repository
