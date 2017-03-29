@@ -436,6 +436,9 @@ YUI.add("wegas-entity", function(Y) {
                 getter: function() {
                     return Wegas.Facade.Game.cache.find("id", this.get("teamId"));
                 }
+            },
+            verifiedId: {
+                "transient": true
             }
         },
         EDITMENU: []
