@@ -135,39 +135,7 @@ public class UserController {
         return userFacade.find(entityId);
     }
 
-    /**
-     * Returns the given user's e-mail address, with more relaxed security
-     * requirements than for getting the whole user profile: The caller must be
-     * trainer for the given game, and the given user must be a player of the
-     * same game.
-     *
-     * @param entityId
-     * @param gameId
-     * @return
-     */
-    /*
-    @GET
-    @Path("{entityId : [1-9][0-9]*}/Email/{gameId : [1-9][0-9]*}")
-    public String getEmail(@PathParam("entityId") Long entityId, @PathParam("gameId") Long gameId) {
-        if (!userFacade.getCurrentUser().getId().equals(entityId)) {
-            // Caller must be trainer for the given game:
-            final Game g = gameFacade.find(gameId);
-            SecurityHelper.checkPermission(g, "Edit");
-            // And user must be a player of the same game:
-            if (playerFacade.checkExistingPlayer(gameId, entityId) == null) {
-                throw new AuthorizationException("Not a player of this game");
-            }
-        }
 
-        AbstractAccount mainAccount = userFacade.find(entityId).getMainAccount();
-
-        if (mainAccount instanceof JpaAccount) {
-            return ((JpaAccount) mainAccount).getEmail();
-        } else {
-            return "";
-        }
-    }
-     */
     /**
      * Returns the e-mail addresses of all players of the given game, with more
      * relaxed security requirements than for getting the whole user profile:
@@ -237,8 +205,8 @@ public class UserController {
             } else {
                 Long userId = p.getUserId();
                 AbstractAccount mainAccount = userFacade.find(userId).getMainAccount();
-                if (mainAccount instanceof JpaAccount) { // Skip guest accounts and other specialties.
-                    emails.add(((JpaAccount) mainAccount).getEmail());
+                if (mainAccount instanceof JpaAccount || mainAccount instanceof AaiAccount) { // Skip guest accounts and other specialties.
+                    emails.add(mainAccount.getEmail());
                 }
             }
         }
@@ -425,7 +393,7 @@ public class UserController {
             if (authInfo.isAgreed()) {
                 AbstractAccount account = accountFacade.find((Long) subject.getPrincipal());
                 if (account instanceof JpaAccount) {
-                    ((JpaAccount) account).setAgreedTime(new Date());
+                    account.setAgreedTime(new Date());
                 }
             }
 
@@ -506,7 +474,7 @@ public class UserController {
             oSubject.releaseRunAs(); //@TODO: check shiro version > 1.2.1 (SHIRO-380)
         }
         oSubject.checkRole("Administrator");
-        SimplePrincipalCollection subject = new SimplePrincipalCollection(accountId, "jpaRealm");
+        SimplePrincipalCollection subject = new SimplePrincipalCollection(accountId, "jpaRealm"); // NB: this also seems to work with AaiAccounts ...
         oSubject.runAs(subject);
     }
 
@@ -695,8 +663,8 @@ public class UserController {
             name = "anonymous";
         }
 
-        if (mainAccount instanceof JpaAccount) {
-            email.setReplyTo(((JpaAccount) mainAccount).getEmail());
+        if (mainAccount instanceof JpaAccount || mainAccount instanceof AaiAccount) {
+            email.setReplyTo(mainAccount.getEmail());
         }
 
         String body = email.getBody();
