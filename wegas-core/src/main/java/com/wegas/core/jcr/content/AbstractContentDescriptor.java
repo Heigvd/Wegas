@@ -7,17 +7,17 @@
  */
 package com.wegas.core.jcr.content;
 
-import java.util.zip.ZipEntry;
-import javax.jcr.ItemExistsException;
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.slf4j.LoggerFactory;
 
+import javax.jcr.ItemExistsException;
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+import java.util.zip.ZipEntry;
+
 /**
- *
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 //@XmlRootElement
@@ -28,7 +28,6 @@ abstract public class AbstractContentDescriptor {
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(AbstractContentDescriptor.class);
 
     /**
-     *
      * @param name
      * @param path
      * @param mimeType
@@ -43,6 +42,7 @@ abstract public class AbstractContentDescriptor {
             return new FileDescriptor(name, path, null);
         }
     }
+
     //@XmlTransient
     @JsonIgnore
     private boolean synched = false;
@@ -70,7 +70,6 @@ abstract public class AbstractContentDescriptor {
     protected ContentConnector connector;
 
     /**
-     *
      * @param absolutePath
      * @param contentConnector
      */
@@ -82,7 +81,6 @@ abstract public class AbstractContentDescriptor {
     }
 
     /**
-     *
      * @param absolutePath
      * @param contentConnector
      * @param mimeType
@@ -94,7 +92,6 @@ abstract public class AbstractContentDescriptor {
     }
 
     /**
-     *
      * @param name
      * @param path
      * @param contentConnector
@@ -103,13 +100,12 @@ abstract public class AbstractContentDescriptor {
         this.privateContent = false;
         path = path.startsWith("/") ? path : "/" + path;
         this.connector = contentConnector;
-        this.name = name.replaceAll(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX, "");
-        this.path = path.replaceAll(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX, "");
+        this.name = name;
+        this.path = path;
         this.buildNamespaceAbsolutePath();
     }
 
     /**
-     *
      * @param mimeType
      * @param name
      * @param path
@@ -122,7 +118,6 @@ abstract public class AbstractContentDescriptor {
     }
 
     /**
-     *
      * @return true is this is a directory
      */
     public Boolean isDirectory() {
@@ -130,7 +125,6 @@ abstract public class AbstractContentDescriptor {
     }
 
     /**
-     *
      * @return the MIME type
      */
     public String getMimeType() {
@@ -138,7 +132,6 @@ abstract public class AbstractContentDescriptor {
     }
 
     /**
-     *
      * @return the name
      */
     public String getName() {
@@ -146,7 +139,6 @@ abstract public class AbstractContentDescriptor {
     }
 
     /**
-     *
      * @param mimeType
      */
     public void setMimeType(String mimeType) {
@@ -154,16 +146,6 @@ abstract public class AbstractContentDescriptor {
     }
 
     /**
-     *
-     * @param name
-     */
-    public void setName(String name) {
-        this.name = name.replaceAll(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX, "");
-        this.buildNamespaceAbsolutePath();
-    }
-
-    /**
-     *
      * @return path
      */
     public String getPath() {
@@ -171,30 +153,20 @@ abstract public class AbstractContentDescriptor {
     }
 
     /**
-     *
      * @return full path
      */
     //@XmlTransient
     @JsonIgnore
     public String getFullPath() {
-        String p = fileSystemAbsolutePath.replaceAll(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX, "");
+        String p = fileSystemAbsolutePath;
         if (this.isDirectory() && !p.endsWith("/")) {
             p += "/";
         }
         return p;
     }
 
-    /**
-     *
-     * @param path
-     */
-    public void setPath(String path) {
-        this.path = path.replaceAll(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX, "");
-        this.buildNamespaceAbsolutePath();
-    }
 
     /**
-     *
      * @return note
      */
     public String getNote() {
@@ -202,7 +174,6 @@ abstract public class AbstractContentDescriptor {
     }
 
     /**
-     *
      * @param note
      */
     public void setNote(String note) {
@@ -210,7 +181,6 @@ abstract public class AbstractContentDescriptor {
     }
 
     /**
-     *
      * @return description
      */
     public String getDescription() {
@@ -218,7 +188,6 @@ abstract public class AbstractContentDescriptor {
     }
 
     /**
-     *
      * @param description
      */
     public void setDescription(String description) {
@@ -226,7 +195,6 @@ abstract public class AbstractContentDescriptor {
     }
 
     /**
-     *
      * @return true if this is private
      */
     public Boolean isPrivateContent() {
@@ -234,7 +202,6 @@ abstract public class AbstractContentDescriptor {
     }
 
     /**
-     *
      * @param privateContent
      */
     public void setPrivateContent(Boolean privateContent) {
@@ -242,7 +209,6 @@ abstract public class AbstractContentDescriptor {
     }
 
     /**
-     *
      * @return true if is synched
      */
     //@XmlTransient
@@ -252,7 +218,6 @@ abstract public class AbstractContentDescriptor {
     }
 
     /**
-     *
      * @return truc if node exists
      * @throws RepositoryException
      */
@@ -263,7 +228,6 @@ abstract public class AbstractContentDescriptor {
     }
 
     /**
-     *
      * @return true is this has children
      * @throws RepositoryException
      */
@@ -274,7 +238,6 @@ abstract public class AbstractContentDescriptor {
     }
 
     /**
-     *
      * @throws RepositoryException
      */
     public void sync() throws RepositoryException {
@@ -295,7 +258,6 @@ abstract public class AbstractContentDescriptor {
     }
 
     /**
-     *
      * @param file
      * @return the child
      * @throws RepositoryException
@@ -304,13 +266,12 @@ abstract public class AbstractContentDescriptor {
     @JsonIgnore
     public AbstractContentDescriptor addChild(AbstractContentDescriptor file) throws RepositoryException {
         Node parent = connector.getNode(fileSystemAbsolutePath);
-        parent.addNode(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + file.getName());
+        parent.addNode(file.getName());
         file.setContentToRepository();
         return file;
     }
 
     /**
-     *
      * @return node size
      */
     public Long getBytes() {
@@ -322,7 +283,6 @@ abstract public class AbstractContentDescriptor {
     }
 
     /**
-     *
      * @param force
      * @throws RepositoryException
      */
@@ -331,7 +291,7 @@ abstract public class AbstractContentDescriptor {
     public void delete(boolean force) throws RepositoryException {
         if (this.exist()) {
             if (!this.hasChildren() || force) {
-                connector.deleteFile(fileSystemAbsolutePath);
+                connector.deleteNode(fileSystemAbsolutePath);
             } else {
                 throw new ItemExistsException("Save the children ! Preventing collateral damage !");
             }
@@ -339,7 +299,6 @@ abstract public class AbstractContentDescriptor {
     }
 
     /**
-     *
      * @throws RepositoryException
      */
     //@XmlTransient
@@ -353,7 +312,6 @@ abstract public class AbstractContentDescriptor {
     }
 
     /**
-     *
      * @throws RepositoryException
      */
     //@XmlTransient
@@ -367,20 +325,17 @@ abstract public class AbstractContentDescriptor {
     }
 
     /**
-     *
      * @throws RepositoryException
      */
     //@XmlTransient
     @JsonIgnore
     public void saveToRepository() throws RepositoryException {
-        String parentPath = this.getPath().replaceAll("/(\\w)", "/" + WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + "$1");
+        String parentPath = this.getPath();
         AbstractContentDescriptor parent = DescriptorFactory.getDescriptor(parentPath, connector);
-        parent.sync();
         parent.addChild(this);
     }
 
     /**
-     *
      * @return
      */
     @JsonIgnore
@@ -391,15 +346,14 @@ abstract public class AbstractContentDescriptor {
     }
 
     /**
-     * Convert an absolute path (with or without WFS namespace) to path and name
-     * without namespace.
+     * Convert an absolute path to path and name
      *
      * @param absolutePath
      */
     //@XmlTransient
     @JsonIgnore
     private void parseAbsolutePath(String absolutePath) {
-        absolutePath = absolutePath.replaceAll(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX, "");
+//        absolutePath = absolutePath.replaceAll(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX, "");
         if (!absolutePath.startsWith("/")) {
             absolutePath = "/" + absolutePath;
         }
@@ -419,16 +373,15 @@ abstract public class AbstractContentDescriptor {
     }
 
     /**
-     * Convert name and path to a fileSystemAbsolutePath, including namespace
-     * ({@value WFSConfig#WeGAS_FILE_SYSTEM_PREFIX})
+     * Convert name and path to a fileSystemAbsolutePath
      */
     //@XmlTransient
     @JsonIgnore
     private void buildNamespaceAbsolutePath() {
         if (this.path.equals("/")) {
-            this.fileSystemAbsolutePath = "/" + (this.name.equals("") ? "" : WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + this.name);
+            this.fileSystemAbsolutePath = "/" + this.name;
         } else {
-            this.fileSystemAbsolutePath = this.path.replaceAll("/(\\p{L})", "/" + WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + "$1") + (this.name.equals("") ? "" : "/" + WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + this.name);
+            this.fileSystemAbsolutePath = this.path + "/" + this.name;
         }
     }
 

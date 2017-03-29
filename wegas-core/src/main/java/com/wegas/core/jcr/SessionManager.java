@@ -9,10 +9,10 @@ package com.wegas.core.jcr;
 
 import com.wegas.core.Helper;
 
-import javax.jcr.Repository;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.SimpleCredentials;
+import javax.jcr.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -22,20 +22,12 @@ public class SessionManager {
     final static private SimpleCredentials admin = new SimpleCredentials(Helper.getWegasProperty("jcr.admin.username"), Helper.getWegasProperty("jcr.admin.password").toCharArray());
 
     /**
-     * @param repository
      * @return
      * @throws RepositoryException
      */
-    public static Session getSession(String repository) throws RepositoryException {
-        Session session;
+    public static Session getSession() throws RepositoryException {
         final Repository repo = JackrabbitConnector.getRepo();
-        try {
-            session = repo.login(admin, repository);
-        } catch (javax.jcr.NoSuchWorkspaceException ex) {
-            createWorkspace(repository);
-            session = repo.login(admin, repository);
-        }
-        return session;
+        return repo.login(admin);
     }
 
     /**
@@ -47,22 +39,19 @@ public class SessionManager {
         }
     }
 
-    /**
-     * @param repository
-     * @throws RepositoryException
-     */
-    private static void createWorkspace(String repository) throws RepositoryException {
-        final Session adminSession = getSession(null);
-        adminSession.getWorkspace().createWorkspace(repository);
-        closeSession(adminSession);
-    }
-
-    public static void removeWorkspace(Session session) {
-        final String workspace = session.getWorkspace().getName();
-        if (workspace.startsWith("GM_") && !workspace.equals("GM_0")) { // Allow only deleting File repo
-            closeSession(session);
-            JackrabbitConnector.deleteWorkspaceDirectory(workspace);
+    public static Node createPath(Session session, String absolutePath) throws RepositoryException {
+        final List<String> path = Arrays.stream(absolutePath.split("/"))
+                .filter(p -> !p.equals(""))
+                .collect(Collectors.toList());
+        Node n = session.getRootNode();
+        for (String p : path) {
+            try {
+                n = n.getNode(p);
+            } catch (PathNotFoundException e) {
+                n = n.addNode(p);
+            }
         }
+        return n;
     }
 
 }
