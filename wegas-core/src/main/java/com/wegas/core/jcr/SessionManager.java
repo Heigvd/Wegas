@@ -34,7 +34,7 @@ public class SessionManager {
         // */
 
         ///*
-        if (SessionManager.session == null) {
+        if (SessionManager.session == null || !SessionManager.session.isLive()) {
             final Repository repo = JackrabbitConnector.getRepo();
             SessionManager.session = repo.login(admin);
         }
@@ -46,7 +46,7 @@ public class SessionManager {
      * @param session
      */
     public static void closeSession(Session session) {
-        //*
+        /*
         if (session.isLive()) {
             session.logout();
         }
