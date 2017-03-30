@@ -605,7 +605,8 @@ public class UserController {
             Enumeration<String> headerNames = request.getHeaderNames();
             if (headerNames != null) {
                 while (headerNames.hasMoreElements()) {
-                    logger.error("    HTTP header: " + request.getHeader(headerNames.nextElement()));
+                    String hdr = headerNames.nextElement();
+                    logger.error("    HTTP header: " + hdr + ":" + request.getHeader(hdr));
                 }
             }
             return new AaiLoginResponse("Could not authenticate Wegas AAI server", false, false);

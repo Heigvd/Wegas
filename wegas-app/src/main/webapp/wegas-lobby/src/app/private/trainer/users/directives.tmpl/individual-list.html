@@ -1,5 +1,6 @@
 <div class="card card--users" ng-repeat="player in players track by player.id">
-	<div class="card__illustration illustration illustration--icon" illustration="ICON_grey_user_wif"></div>
+	<div ng-if="!player.verifiedId" class="card__illustration illustration illustration--icon" illustration="ICON_grey_user_wif" title="✘ Unverified identity"></div>
+    <div ng-if="player.verifiedId"  class="card__illustration illustration illustration--icon" illustration="ICON_grey_id-card-o_fa" title="✔ verified {{player.homeOrg}} member"></div>
 	<div class="card__description card__description--one-line">
 	    <div class="line line--primary">{{player.name}}</div>
 	</div>
