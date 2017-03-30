@@ -22,17 +22,18 @@ YUI.add('wegas-teams-dashboard', function(Y) {
                 game.get("teams").forEach(function(team) {
                     if ((game.get("@class") === "DebugGame" || team.get("@class") !== "DebugTeam") &&
                         team.get("players").length) {
-                        var isVerified = isIndividual ? team.get("players")[0].get("verifiedId") : false,
+                        var player = team.get("players")[0],
+                            isVerified = isIndividual ? player.get("verifiedId") : false,
                             icon = isIndividual ? (isVerified ? "id-card-o" : "user") : "group",
                             data = {
                                 id: team.get("id"),
                                 team: team,
                                 title: isIndividual ?
-                                    team.get("players")[0].get("name") :
+                                    player.get("name") :
                                     team.get("name"),
                                 icon: icon,
                                 tooltip: isIndividual ?
-                                    (isVerified ? /* &#x2714; */ "✔ verified identity (Switch / AAI or equivalent)" : /* &#x2718; */  "✘ Unverified identity") :
+                                    (isVerified ? /* &#x2714; */ "✔ verified " + player.get("homeOrg").toUpperCase() + " member" : /* &#x2718; */  "✘ Unverified identity") :
                                     "",
                                 blocs: []
                             };
