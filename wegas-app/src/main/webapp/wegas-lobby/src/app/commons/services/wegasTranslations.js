@@ -1571,6 +1571,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Upload a " + keywords.scenario.singular.en,
                             'fr': "Télécharger un " + keywords.scenario.singular.fr
                         },
+                        'ADMIN-WHO-SYNC-BTN': {
+                            'en': "sync online user list",
+                            'fr': "synchroniser la liste des utilisateurs connectés"
+                        },
                         'ADMIN-WHO-SINGULAR-TITLE': {
                             'en': "connected user",
                             'fr': "utilisateur connecté"
