@@ -16,11 +16,12 @@ angular.module('private.admin.who', [
             });
     })
 
-    .controller('AdminWhoCtrl', function AdminWhoCtrl($state, $scope, $rootScope, Auth, WegasPusher, $filter) {
+    .controller('AdminWhoCtrl', function AdminWhoCtrl($state, $scope, $rootScope, Auth, WegasPusher, $timeout) {
         "use strict";
         var ctrl = this;
         ctrl.who = [];
         ctrl.loading = true;
+        ctrl.syncing = false;
         // This message is displayed as soon as it contains a non-empty string:
         ctrl.message = "";
 
@@ -28,12 +29,14 @@ angular.module('private.admin.who', [
         ctrl.roles = WegasPusher.getRoles();
 
         ctrl.sync = function() {
+            ctrl.syncing = true;
             var req = WegasPusher.syncMembers();
             req.success(function(){
                 ctrl.updateWhoList();
+                $timeout(function(){ ctrl.syncing = false; }, 250); // The spinner should be visible at least 1/4 sec.
             });
         };
-        
+
         ctrl.updateWhoList = function() {
             var req = WegasPusher.getMembers();
             req.success(function(onlineUsers) {
