@@ -9,6 +9,7 @@ package com.wegas.core.persistence.game;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.security.aai.AaiAccount;
+import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import java.util.Date;
 import java.util.Objects;
@@ -84,6 +85,8 @@ public class Player extends AbstractEntity implements Broadcastable, BroadcastTa
     @Transient
     private Boolean verifiedId = null;
 
+    @Transient
+    private String homeOrg = null;
 
     /**
      *
@@ -278,6 +281,30 @@ public class Player extends AbstractEntity implements Broadcastable, BroadcastTa
             }
         }
     }
+
+
+   /*
+    * @return the user's verified homeOrg if it's an AaiAccount or equivalent, otherwise return the empty string
+    */
+    @Transient
+    public String getHomeOrg(){
+        if (homeOrg != null){
+            return homeOrg;
+        } else {
+            if (this.user != null) {
+                AbstractAccount acct = user.getMainAccount();
+                if (acct instanceof AaiAccount){
+                    homeOrg = ((AaiAccount) acct).getHomeOrg();
+                } else {
+                    homeOrg = "";
+                }
+                return homeOrg;
+            } else {
+                return "";
+            }
+        }
+    }
+
 
     /**
      * Retrieve all variableInstances that belongs to this player only (ie.

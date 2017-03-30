@@ -27,6 +27,13 @@ angular.module('private.admin.who', [
         // Each array entry has properties { id: integer, name: string }
         ctrl.roles = WegasPusher.getRoles();
 
+        ctrl.sync = function() {
+            var req = WegasPusher.syncMembers();
+            req.success(function(){
+                ctrl.updateWhoList();
+            });
+        };
+        
         ctrl.updateWhoList = function() {
             var req = WegasPusher.getMembers();
             req.success(function(onlineUsers) {
@@ -38,6 +45,11 @@ angular.module('private.admin.who', [
                 }
             });
 
+        };
+
+        ctrl.getConnectionDate = function(user) {
+            var d =new Date(user.connectionDate);
+            return d.toLocaleString()
         };
 
         $rootScope.$on('wegaspusher:update-members', function(e) {

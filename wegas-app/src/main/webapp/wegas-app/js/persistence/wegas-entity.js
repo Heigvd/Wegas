@@ -439,6 +439,9 @@ YUI.add("wegas-entity", function(Y) {
             },
             verifiedId: {
                 "transient": true
+            },
+            homeOrg: {
+                "transient": true
             }
         },
         EDITMENU: []

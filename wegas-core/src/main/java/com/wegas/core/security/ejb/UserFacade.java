@@ -24,6 +24,7 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.Email;
+import com.wegas.core.security.aai.AaiAccount;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.guest.GuestToken;
 import com.wegas.core.security.jparealm.JpaAccount;
@@ -539,10 +540,9 @@ public class UserFacade extends BaseFacade<User> {
         for (Player p : email.getTo()) {
             Player rP = playerFacade.find(p.getId());
             AbstractAccount mainAccount = rP.getUser().getMainAccount();
-            if (mainAccount instanceof JpaAccount) {
-                JpaAccount jpaAccount = (JpaAccount) mainAccount;
+            if (mainAccount instanceof JpaAccount || mainAccount instanceof AaiAccount) {
                 try {
-                    emailFacade.send(jpaAccount.getEmail(), email.getFrom(), email.getReplyTo(), email.getSubject(), email.getBody(), Message.RecipientType.TO, "text/html", true);
+                    emailFacade.send(mainAccount.getEmail(), email.getFrom(), email.getReplyTo(), email.getSubject(), email.getBody(), Message.RecipientType.TO, "text/html", true);
                 } catch (MessagingException e) {
                     nbExceptions++;
                 }

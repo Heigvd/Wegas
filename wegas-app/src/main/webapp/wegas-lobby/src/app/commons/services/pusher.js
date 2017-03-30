@@ -60,6 +60,13 @@ angular.module('wegas.service.pusher', [])
             return $http.get(ServiceURL + "rest/Pusher/OnlineUser");
         };
 
+        // Public method to sync the current list of members on the server
+        service.syncMembers = function() {
+            return $http.get(ServiceURL + "rest/Pusher/OnlineUser/Sync");
+        };
+
+
+
         // Public method for getting the list of roles:
         service.getRoles = function() {
             return roles;
