@@ -21,22 +21,36 @@ public class SessionManager {
 
     final static private SimpleCredentials admin = new SimpleCredentials(Helper.getWegasProperty("jcr.admin.username"), Helper.getWegasProperty("jcr.admin.password").toCharArray());
 
+    private static Session session;
+
     /**
      * @return
      * @throws RepositoryException
      */
     public static Session getSession() throws RepositoryException {
+        /* 
         final Repository repo = JackrabbitConnector.getRepo();
         return repo.login(admin);
+        // */
+
+        ///*
+        if (SessionManager.session == null) {
+            final Repository repo = JackrabbitConnector.getRepo();
+            SessionManager.session = repo.login(admin);
+        }
+        return SessionManager.session;
+         //*/
     }
 
     /**
      * @param session
      */
     public static void closeSession(Session session) {
+        //*
         if (session.isLive()) {
             session.logout();
         }
+        // */
     }
 
     public static Node createPath(Session session, String absolutePath) throws RepositoryException {
