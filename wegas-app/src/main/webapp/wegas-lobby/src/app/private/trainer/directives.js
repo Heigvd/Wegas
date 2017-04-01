@@ -59,7 +59,6 @@ angular.module('private.trainer.directives', [])
             ctrl.sessions = ctrl.rawSessions = [];
             ctrl.loading = true;
             SessionsModel.getSessions("LIVE").then(function(response) {
-                ctrl.loading = false;
                 ctrl.rawSessions = $filter('filter')(response.data, { gameModel: { canView: true }} ) || [];
                 ctrl.rawSessions = $filter('orderBy')(ctrl.rawSessions, 'createdTime', true) || [];
                 // At this point, the search variable is not necessarily updated by Angular to reflect the input field:
@@ -73,6 +72,8 @@ angular.module('private.trainer.directives', [])
                         $('#trainer-sessions-list').css('overflow-y', 'auto');
                     }, 5000);
                 }
+                // Keep the "loading" indicator on screen as long as possible:
+                ctrl.loading = false;
             });
         };
 

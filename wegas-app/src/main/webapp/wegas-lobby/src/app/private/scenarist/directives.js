@@ -51,7 +51,6 @@ angular.module('private.scenarist.directives', [])
             ctrl.scenarios = ctrl.rawScenarios = [];
             ctrl.loading = true;
             ScenariosModel.getScenarios('LIVE').then(function(response) {
-                ctrl.loading = false;
                 ctrl.rawScenarios = $filter('filter')(response.data, { canEdit: true } ) || [];
                 ctrl.rawScenarios = $filter('orderBy')(ctrl.rawScenarios, 'createdTime', true) || [];
                 // At this point, the search variable is not necessarily updated by Angular to reflect the input field:
@@ -65,6 +64,8 @@ angular.module('private.scenarist.directives', [])
                         $('#scenarist-scenarios-list').css('overflow-y', 'auto');
                     }, 5000);
                 }
+                // Keep the "loading" indicator on screen as long as possible:
+                ctrl.loading = false;
             });
         };
 

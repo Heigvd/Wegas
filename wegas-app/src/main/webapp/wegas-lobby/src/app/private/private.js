@@ -29,12 +29,13 @@ angular.module('private', [
         })
     ;
 })
-.controller('PrivateCtrl', function PrivateCtrl($state, Auth, $translate, $scope, $q, $http, WegasPusher) {
+.controller('PrivateCtrl', function PrivateCtrl($state, Auth, $translate, $scope, $q, $http, $sce, WegasPusher) {
     "use strict";
     var privateCtrl = this;
 
     // Temporary setting to prevent display flickering:
     $scope.user = { hasAgreed: true };
+    $scope.frameUrl = trustSrc("about:blank");
 
     $scope.updateUserAgreement = function() {
         var deferred = $q.defer(),
@@ -71,6 +72,10 @@ angular.module('private', [
         return deferred.promise;
     };
 
+    function trustSrc (src) {
+        return $sce.trustAsResourceUrl(src);
+    };
+
     //privateCtrl.loading = 0;
 
     Auth.getAuthenticatedUser().then(function(user){
@@ -93,6 +98,9 @@ angular.module('private', [
                 localStorage.setObject("wegas-config", config);
                 $translate.use(config.users[user.email].language);
             }
+        }
+        if (!user.hasAgreed) {
+            $scope.frameUrl = trustSrc("https://www.albasim.ch/en/terms-of-use/");
         }
     });
 });
