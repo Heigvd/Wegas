@@ -6,7 +6,7 @@
     <div ng-if="!user.hasAgreed" style="text-align:center; height: calc( 100% - 200px );">
         <div style="font-size:20px; font-weight: bold; margin-top: 20px;">{{'PRIVATE-AGREE-TITLE' | translate}}</div>
         <div style="font-size:16px; font-weight: normal; margin-top: 10px;">{{'PRIVATE-AGREE-SUBTITLE' | translate}}</div>
-        <iframe src="https://www.albasim.ch/en/terms-of-use/" style="width:80%; height:calc( 100% - 100px ); margin: 30px; min-height: 100px;">
+        <iframe ng-src="{{frameUrl}}" style="width:80%; height:calc( 100% - 100px ); margin: 30px; min-height: 100px;">
             Your browser does not support IFRAMEs.
         </iframe>
         <br/>
