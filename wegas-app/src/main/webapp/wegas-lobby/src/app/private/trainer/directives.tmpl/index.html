@@ -22,27 +22,28 @@
 	<div
 		ng-if="(!trainerIndexCtrl.loading && trainerIndexCtrl.sessions.length)"
 		ng-class="{true:'view__list--with-archive', false:''}[trainerIndexCtrl.nbArchives > 0]"
+        id = "trainer-sessions-list-container"
         class="view__list"
+        style="padding-bottom: 10px;"
 		search="trainerIndexCtrl.search"
 		archive="trainerIndexCtrl.archiveSession"
 		edit-access="trainerIndexCtrl.editAccess"
         filterSessions="trainerIndexCtrl.filterSessions"
         sessions="trainerIndexCtrl.sessions"
 		trainer-sessions-list
-        >
+        repeat-auto-load >
 	</div>
     <div ng-if="(trainerIndexCtrl.search.length != 0) && (trainerIndexCtrl.sessions.length == 0)"
          class="view__list view__list--with-archive">
         {{'TRAINER-INDEX-LIST-NO-SESSION' | translate}} "{{trainerIndexCtrl.search}}"
     </div>
-
     <div ng-if="(!trainerIndexCtrl.loading) && (trainerIndexCtrl.nbArchives > 0)" class="view__archives">
 		<a class="button button--small button--default button--archive" ui-sref=".archives">
 			<span ng-if="trainerIndexCtrl.nbArchives == 1" class="button__label">{{trainerIndexCtrl.nbArchives}} {{'TRAINER-INDEX-ARCHIVE-BTN' | translate}}</span>
             <span ng-if="trainerIndexCtrl.nbArchives > 1" class="button__label">{{trainerIndexCtrl.nbArchives}} {{'TRAINER-INDEX-ARCHIVES-BTN' | translate}}</span>
 		</a>
 	</div>
-	<div    ng-if="trainerIndexCtrl.loading"
+	<div ng-if="trainerIndexCtrl.loading"
 		class="view__list view__list--loading"
                 content-loading="{{'COMMONS-SESSIONS-LOADING' | translate}}">
 	</div>
