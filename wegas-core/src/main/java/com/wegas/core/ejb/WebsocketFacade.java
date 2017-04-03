@@ -605,9 +605,9 @@ public class WebsocketFacade {
              * Detect no longer online user still in the local list
              * and remove them
              */
-            Iterator<Map.Entry<Long, OnlineUser>> it = onlineUsers.entrySet().iterator();
+            Iterator<Cache.Entry<Long, OnlineUser>> it = onlineUsers.iterator();
             while (it.hasNext()) {
-                Map.Entry<Long, OnlineUser> next = it.next();
+                Cache.Entry<Long, OnlineUser> next = it.next();
                 if (next.getKey() != null) {
                     if (!channels.containsKey(getChannelFromUserId(next.getKey()))){
                         it.remove();
@@ -616,7 +616,8 @@ public class WebsocketFacade {
             }
 
             if (maintainLocalListUpToDate) {
-                WebsocketFacade.onlineUsersUptodate = true;
+                IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
+                onlineUsersUpToDate.set(1);
             }
 
         } catch (IOException ex) {
