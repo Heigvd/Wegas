@@ -21,65 +21,66 @@ angular.module('private.trainer.directives', [
             MENU_HEIGHT = 50,
             SEARCH_FIELD_HEIGHT = 72,
             CARD_HEIGHT = 92,
-            // Make a quick but safe computation that does not require the page to be rendered beforehand:
+            // Make a quick but safe computation that does not require the page to be rendered beforehand.
+            // The number of displayed items must be just high enough to make the scrollbar appear.
             ITEMS_PER_PAGE = Math.ceil((winheight - SEARCH_FIELD_HEIGHT - MENU_HEIGHT) / CARD_HEIGHT),
             ITEMS_IN_FIRST_BATCH = ITEMS_PER_PAGE * 1.5,
             ITEMS_IN_NEXT_BATCHES = ITEMS_PER_PAGE * 3;
 
-        var maxSessionsDisplayed = null,
+        var maxItemsDisplayed = null,
             rawSessions = [],
             isFiltering = false,
             prevFilter = "",
             filtered = [],
             prevSource = null,
 
-        initMaxSessionsDisplayed = function() {
-            var len = isFiltering ? filtered.length : rawSessions.length;
-            if (len ===0 || len > ITEMS_IN_FIRST_BATCH) {
-                maxSessionsDisplayed = ITEMS_IN_FIRST_BATCH;
-             } else {
-                // The number of sessions is low enough to display them entirely:
-                maxSessionsDisplayed = len;
-             }
-        },
-        updateDisplay = function(source) {
-                if (prevSource !== source || maxSessionsDisplayed !== ctrl.sessions.length) {
-                    ctrl.sessions = source.slice(0, maxSessionsDisplayed);
+            initMaxItemsDisplayed = function() {
+                var len = isFiltering ? filtered.length : rawSessions.length;
+                if (len ===0 || len > ITEMS_IN_FIRST_BATCH) {
+                    maxItemsDisplayed = ITEMS_IN_FIRST_BATCH;
+                } else {
+                    // The number of sessions is low enough to display them entirely:
+                    maxItemsDisplayed = len;
+                }
+            },
+            updateDisplay = function(source) {
+                if (prevSource !== source || maxItemsDisplayed !== ctrl.sessions.length) {
+                    ctrl.sessions = source.slice(0, maxItemsDisplayed);
                     prevSource = source;
                 }
-        },
-        extendDisplayedSessions = function() {
-            var sessionList = isFiltering ? filtered : rawSessions;
-            if (maxSessionsDisplayed === null) {
-                initMaxSessionsDisplayed();
-            } else {
-                var len = sessionList.length;
-                if (maxSessionsDisplayed >= len) {
-                    maxSessionsDisplayed = len;
+            },
+            extendDisplayedItems = function() {
+                var list = isFiltering ? filtered : rawSessions;
+                if (maxItemsDisplayed === null) {
+                    initMaxItemsDisplayed();
                 } else {
-                    maxSessionsDisplayed = Math.min(maxSessionsDisplayed + ITEMS_IN_NEXT_BATCHES, len);
+                    var len = list.length;
+                    if (maxItemsDisplayed >= len) {
+                        maxItemsDisplayed = len;
+                    } else {
+                        maxItemsDisplayed = Math.min(maxItemsDisplayed + ITEMS_IN_NEXT_BATCHES, len);
+                    }
                 }
-            }
-            updateDisplay(sessionList);
-        },
-        // Returns an array containing the occurrences of 'needle' in rawSessions:
-        doSearch = function(needle){
-            var len = rawSessions.length,
-                res = [];
-            for (var i = 0; i < len; i++) {
-                var session = rawSessions[i];
-                if ((session.name && session.name.toLowerCase().indexOf(needle) >= 0) ||
-                    (session.createdByName && session.createdByName.toLowerCase().indexOf(needle) >= 0) ||
-                    (session.gameModelName && session.gameModelName.toLowerCase().indexOf(needle) >= 0) ||
-                    (session.gameModel.comments && session.gameModel.comments.toLowerCase().indexOf(needle) >= 0) ||
-                    // If searching for a number, the id has to start with the given pattern:
-                    session.id.toString().indexOf(needle) === 0 ||
-                    session.gameModelId.toString().indexOf(needle) === 0) {
-                    res.push(session);
+                updateDisplay(list);
+            },
+            // Returns an array containing the occurrences of 'needle' in rawSessions:
+            doSearch = function(needle){
+                var len = rawSessions.length,
+                    res = [];
+                for (var i = 0; i < len; i++) {
+                    var session = rawSessions[i];
+                    if ((session.name && session.name.toLowerCase().indexOf(needle) >= 0) ||
+                        (session.createdByName && session.createdByName.toLowerCase().indexOf(needle) >= 0) ||
+                        (session.gameModelName && session.gameModelName.toLowerCase().indexOf(needle) >= 0) ||
+                        (session.gameModel.comments && session.gameModel.comments.toLowerCase().indexOf(needle) >= 0) ||
+                        // If searching for a number, the id has to start with the given pattern:
+                        session.id.toString().indexOf(needle) === 0 ||
+                        session.gameModelId.toString().indexOf(needle) === 0) {
+                        res.push(session);
+                    }
                 }
-            }
-            return res;
-        };
+                return res;
+            };
 
         /*
         ** Filters rawSessions according to the given search string and puts the result in ctrl.sessions.
@@ -92,7 +93,7 @@ angular.module('private.trainer.directives', [
             if (!search || search.length === 0){
                 if (isFiltering){
                     isFiltering = false;
-                    initMaxSessionsDisplayed(); // Reset since we are changing between searching and not searching
+                    initMaxItemsDisplayed(); // Reset since we are changing between searching and not searching
                 }
                 updateDisplay(rawSessions);
                 return;
@@ -102,7 +103,7 @@ angular.module('private.trainer.directives', [
                     isFiltering = true;
                     prevFilter = needle;
                     filtered = doSearch(needle);
-                    initMaxSessionsDisplayed(); // Reset since we are changing between searching and not searching or between different searches
+                    initMaxItemsDisplayed(); // Reset since we are changing between searching and not searching or between different searches
                 } else {
                     isFiltering = true;
                 }
@@ -131,7 +132,7 @@ angular.module('private.trainer.directives', [
                 }
                 ctrl.filterSessions(ctrl.search);
                 if (updateDisplay) {
-                    extendDisplayedSessions();
+                    extendDisplayedItems();
                 }
                 if (hideScrollbarDuringInitialRender) {
                     $timeout(function() {
