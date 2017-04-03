@@ -27,6 +27,7 @@ export default function addStatement(Comp) {
                                 code: this.state.code.concat([types.builders.emptyStatement()])
                             });
                         }}
+                        label={this.props.type==="condition"?"Condition":"Impact"}
                     />
                 </div>);
         }

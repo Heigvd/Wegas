@@ -2,17 +2,28 @@ import React, { PropTypes } from 'react';
 import classNames from 'classnames';
 import styles from '../css/iconButton.css';
 
-function IconButton({ icon, onClick, grey, disabled, iconColor, tooltip, opacity, className }) {
+function renderLabel(label) {
+    if (label) {
+        return <span className={styles.label}>{label}</span>
+    }
+    return null;
+}
+function IconButton({ icon, onClick, grey, disabled, iconColor, tooltip, opacity, className, label }) {
     return (
         <span
-            className={classNames(icon, className, styles.shape, {
+            onClick={onClick}
+            className={classNames(className, styles.shape, {
                 [styles.disabled]: disabled,
                 [styles.opacity]: opacity,
+                [styles.right]: label,
                 [styles.grey]: grey
             })}
-            onClick={onClick}
-
-        />
+        >
+            <span
+                className={classNames(icon)}
+            />
+            {renderLabel(label)}
+        </span>
     );
 }
 

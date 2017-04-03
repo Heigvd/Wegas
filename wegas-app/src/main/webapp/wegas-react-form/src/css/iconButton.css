@@ -1,46 +1,38 @@
-.shape{
-    width:25px;
-	height:25px;
-	border-radius:50%;
-	color:#fff;
-	line-height: 2em;
-	font-size:13.6px;
-	text-align: center;
-	display:inline-block;
-	cursor: pointer;
-	background-color: grey;
-}
-.add:hover{
-	cursor: pointer;
-	background-color: #9DC06F;
+.shape {
+    width: auto;
+    min-width: 16px;
+    height: 16px;
+    color: #fff;
+    padding: 3px;
+    text-align: center;
+    display: inline-block;
+    cursor: pointer;
+    background-color: grey;
 }
 
-.remove:hover{
-	cursor: pointer;
-	background-color:darkred;
+.label{
+	margin-left:0.35em;
 }
 
-.disabled{
-    width:20px;
-	height:20px;
-	border-radius:50%;
-	color:black;
-    background-color:darkslategrey;
+
+.disabled {
+    color: black;
+    background-color: darkslategrey;
 }
 
-.opacity{
-	opacity:0;
+.opacity {
+    opacity: 0;
 }
 
-.grey{
-	color:darkslategrey;
-	font-weight: bold;
-	font-size:15px;
-	background-color: white;
-	background-opacity:0;
+.grey {
+    color: darkslategrey;
+    font-weight: bold;
+    font-size: 15px;
+    background-color: white;
+    background-opacity: 0;
 }
 
-.grey:hover{
-	background-color: white;
-	background-opacity:0;
+.grey:hover {
+    background-color: white;
+    background-opacity: 0;
 }

@@ -36,7 +36,8 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
         optional: true,
         view: {
             type: "uneditable",
-            className: "wegas-advanced-feature"
+            className: "wegas-advanced-feature",
+            label: "Version"
                 //_type: HIDDEN
         }
     };

@@ -35,9 +35,7 @@ function ArrayWidget(props) {
     const children = React.Children.map(props.children, renderChild);
     return (
 
-        <div
-            className={styles.label}
-        >
+        <div>
             {maxItems > valueLength ? <IconButton
                 icon="fa fa-plus"
                 onClick={props.onChildAdd}

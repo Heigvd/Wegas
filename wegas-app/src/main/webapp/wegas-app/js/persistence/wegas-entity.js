@@ -28,8 +28,8 @@ YUI.add("wegas-entity", function(Y) {
             type: STRING,
             optional: true, //                                                  // The id is optional for entites that
             // have not been persisted
-            _inputex: {
-                _type: HIDDEN
+            view: {
+                type: HIDDEN,
             }
         };
 
@@ -58,7 +58,8 @@ YUI.add("wegas-entity", function(Y) {
                 index: -2,
                 view: {
                     type: "uneditable",
-                    className: "wegas-advanced-feature"                    
+                    className: "wegas-advanced-feature",
+                    label:"Id"                    
                 }
             },
             "@class": {
@@ -252,23 +253,24 @@ YUI.add("wegas-entity", function(Y) {
         ATTRS: {
             gameModelId: {
                 type: STRING,
-                _inputex: {
-                    _type: HIDDEN
+                view: {
+                    type: HIDDEN
                 }
             },
             name: {
                 type: STRING,
-                _inputex: {
-                    wrapperClassName: "inputEx-fieldWrapper wegas-game-name"
+                view: {
+                    className: "wegas-game-name",
+                    label: "Name"
                 }
             },
             gameModelName: {
                 //"transient": true
                 type: STRING,
-                _inputex: {
-                    _type: "uneditable",
+                view: {
+                    type: "uneditable",
                     label: "Scenario",
-                    wrapperClassName: "inputEx-fieldWrapper inputEx-uneditableField wegas-game-scenario"
+                    className: "wegas-game-scenario"
                 }
             },
             createdByName: {
@@ -293,10 +295,10 @@ YUI.add("wegas-entity", function(Y) {
             shareLabel: {
                 type: STRING,
                 optional: true,
-                _inputex: {
-                    _type: "uneditable",
+                view: {
+                    type: "uneditable",
                     label: "Game access",
-                    wrapperClassName: "inputEx-fieldWrapper wegas-game-subtitle"
+                    className: "wegas-game-subtitle"
                 }
             },
             access: {
@@ -406,8 +408,8 @@ YUI.add("wegas-entity", function(Y) {
             },
             notes: {
                 value: "",
-                _inputex: {
-                    _type: HIDDEN
+                view: {
+                    type: HIDDEN
                 }
             },
             declaredSize: {
@@ -415,8 +417,8 @@ YUI.add("wegas-entity", function(Y) {
             },
             players: {
                 value: [],
-                _inputex: {
-                    _type: HIDDEN
+                view: {
+                    type: HIDDEN
                 }
             },
             gameId: IDATTRDEF

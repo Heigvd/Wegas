@@ -20,6 +20,7 @@ export function AddStatementButton(props) {
         iconColor="#9DC06F"
         icon="fa fa-plus"
         tooltip="add"
+        label={props.label}
         className={styles.addStatement}
     />);
 }

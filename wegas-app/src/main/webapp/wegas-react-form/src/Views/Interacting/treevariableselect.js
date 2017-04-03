@@ -18,7 +18,7 @@ function labelIconForVariable(name) {
     const target = getY().Wegas.Facade.Variable.cache.find('name', name);
     if (target) {
         return (
-            <span><span className={`${target.getIconCss()} ${styles.icon}`} /> {target.getEditorLabel()}</span>);
+            <span className={styles.label}><span className={`${target.getIconCss()} ${styles.icon}`} /> {target.getEditorLabel()}</span>);
     }
     return '';
 }

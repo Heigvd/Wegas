@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
 import { visit } from 'recast';
 import addStatement, { removeStatement } from './addStatement';
+import styles from './Views/multipleStatements.css';
 
 const TYPE = {
     GETTER: 'getter',
@@ -57,7 +58,7 @@ function multipleStatement(Comp) {
         ));
 
         return (
-            <div>
+            <div className={styles.impactBloc}>
                 {children}
             </div>
         );

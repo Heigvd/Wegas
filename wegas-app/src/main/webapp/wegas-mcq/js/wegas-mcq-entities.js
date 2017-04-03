@@ -92,7 +92,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 type: BOOLEAN,
                 value: false,
                 view: {
-                    label: "Checkbox asnwer",
+                    label: "Checkbox answer",
                     description: "For standard multiple-choice questions",
                 },
                     index: 9
@@ -506,6 +506,8 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 },
                 results: {
                     type: ARRAY,
+                    maxItems:1,
+                    minItems:1,
                     value: [{
                             "@class": "Result"
                         }],
@@ -526,11 +528,12 @@ YUI.add('wegas-mcq-entities', function (Y) {
                                 type: NUMBER,
                                 optional: true,
                                 value: 0,
-                                _inputex: {
-                                    _type: "uneditable",
-                                    wrapperClassName: "inputEx-fieldWrapper inputEx-uneditableField wegas-advanced-feature",
-                                    index: -1
-                                }
+                                view: {
+                                    type: "uneditable",
+                                    className: "wegas-advanced-feature",
+                                    label:"Version"
+                                },
+                                index: -1
                             },
                             name: {
                                 type: STRING,
@@ -552,7 +555,8 @@ YUI.add('wegas-mcq-entities', function (Y) {
                                 index: 1,
                                 view: {
                                     type: HTML,
-                                    label: "Feedback"
+                                    label: "Feedback",
+                                    borderTop: true
                                 }
                             },
                             impact: {
@@ -580,7 +584,8 @@ YUI.add('wegas-mcq-entities', function (Y) {
                                 view: {
                                     type: HTML,
                                     label: "Feedback when ignored",
-                                    legend: "Only for checkbox replies"
+                                    legend: "Only for checkbox replies",
+                                    borderTop: true
                                 }
                             },
                             ignorationImpact: {
@@ -703,11 +708,12 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 type: NUMBER,
                 optional: false,
                 value: 0,
-                _inputex: {
-                    _type: "uneditable",
-                    wrapperClassName: "inputEx-fieldWrapper inputEx-uneditableField wegas-advanced-feature",
-                    index: -1
-                }
+                view: {
+                    type: "uneditable",
+                    className: "wegas-advanced-feature",
+                    label: "Version"
+                },
+                index: -1
             },
             label: {
                 type: STRING,
@@ -740,9 +746,10 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 optional: true,
                 view: {
                     type: HTML,
-                    label: "Feedback when selected",
-                    index: 3
-                }
+                    label: "Feedback",
+                    borderTop: true
+                },
+                index: 10
             },
             impact: {
                 type: ["null", OBJECT],
@@ -753,9 +760,10 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     }
                 },
                 view: {
-                    label: "Impact when selected",
+                    label: "Impact",
                     type: SCRIPT
-                }
+                },
+                index: 11
             },
             ignorationAnswer: {
                 type: STRING,
@@ -767,8 +775,9 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 view: {
                     type: HTML,
                     label: "Feedback when ignored",
-                    index: 6
-                }
+                    borderTop: true
+                },
+                index:12
             },
             ignorationImpact: {
                 type: ["null", OBJECT],
@@ -785,7 +794,8 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 view: {
                     label: "Impact on variables when ignored",
                     type: SCRIPT
-                }
+                },
+                index:13
             },
             choiceDescriptorId: {
                 type: STRING,

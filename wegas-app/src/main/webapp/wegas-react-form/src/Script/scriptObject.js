@@ -16,7 +16,6 @@ function scriptObject(Comp) {
                 style={{
                     marginTop: '15px',
                     maxWidth: '100%',
-                    borderTop: 'solid 2px #4A8C9C',
                     marginRight: '10px'
                 }}
             >

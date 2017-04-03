@@ -9,3 +9,20 @@
 .container:hover .removeButton {
     opacity: 1;
 }
+
+.container{
+        /*border-left: solid 1px lightsteelblue;*/
+        margin-top: 2em;
+        padding-left: 5px;
+        transition: border-color 500ms 300ms;
+}
+
+.container:hover{
+        /*border-left: solid 1px cornflowerblue;*/
+}
+
+
+
+
+
+

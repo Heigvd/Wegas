@@ -1,5 +1,6 @@
 .container {
     position: relative;
+    margin-top:1em;
 }
 
 .extraShort {
@@ -7,7 +8,7 @@
 }
 
 .short {
-    max-width: 10em;
+    max-width: 9em;
 }
 
 .shortInline {
@@ -18,7 +19,7 @@
 }
 
 .long {
-    max-width: 100%;
+    max-width: 30em;
 }
 
 .infos {
@@ -38,9 +39,11 @@
     color: #6a95b6;
     font-size: 125%;
     max-width: 100%;
+    margin-bottom:3px;
 }
 
 .borderTop {
-    border-top: solid 2px #4a8c9c;
+    border-top: solid 2px #6a95b6;
     width: 40em;
+    padding-top:1em;
 }

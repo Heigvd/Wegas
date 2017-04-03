@@ -6,6 +6,7 @@
 
 .icon {
     color: black;
+    font-size:85%;
 }
 
 .tree {
@@ -30,4 +31,8 @@
 
 .globalMethod {
     color: hotpink;
+}
+
+.label{
+    color:black;
 }
