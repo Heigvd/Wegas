@@ -462,6 +462,10 @@ public class WebsocketFacade {
         return null;
     }
 
+    private String getChannelFromUserId(long userId) {
+        return Helper.USER_CHANNEL_PREFIX + userId;
+    }
+
     private Long getUserIdFromChannel(String channelName) {
         Matcher matcher = USER_CHANNEL_PATTERN.matcher(channelName);
 
@@ -571,6 +575,48 @@ public class WebsocketFacade {
             if (maintainLocalListUpToDate) {
                 IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
                 onlineUsersUpToDate.set(1);
+            }
+
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(WebsocketFacade.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * Build initial onlineUser list from pusher channels list
+     */
+    public void syncOnlineUsers() {
+        try {
+            Result get = pusher.get("/channels");
+            String message = get.getMessage();
+
+            ObjectMapper mapper = JacksonMapperProvider.getMapper();
+            HashMap<String, HashMap<String, Object>> readValue = mapper.readValue(message, HashMap.class);
+            HashMap<String, Object> channels = readValue.get("channels");
+
+            /*
+             * Assert all online users are in the local list
+             */
+            for (String channel : channels.keySet()) {
+                this.registerUser(this.getUserFromChannel(channel));
+            }
+
+            /*
+             * Detect no longer online user still in the local list
+             * and remove them
+             */
+            Iterator<Map.Entry<Long, OnlineUser>> it = onlineUsers.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<Long, OnlineUser> next = it.next();
+                if (next.getKey() != null) {
+                    if (!channels.containsKey(getChannelFromUserId(next.getKey()))){
+                        it.remove();
+                    }
+                }
+            }
+
+            if (maintainLocalListUpToDate) {
+                WebsocketFacade.onlineUsersUptodate = true;
             }
 
         } catch (IOException ex) {

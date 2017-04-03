@@ -213,6 +213,7 @@ YUI.add('wegas-dashboard', function(Y) {
                         "id": data.id,
                         "title": data.title,
                         "icon": data.icon || null,
+                        "tooltip": data.tooltip || null,
                         "blocs": this._combineBlocs(data, monitoredBlocs)
                     };
                     this.add(new Y.Wegas.Card(card));

@@ -135,39 +135,7 @@ public class UserController {
         return userFacade.find(entityId);
     }
 
-    /**
-     * Returns the given user's e-mail address, with more relaxed security
-     * requirements than for getting the whole user profile: The caller must be
-     * trainer for the given game, and the given user must be a player of the
-     * same game.
-     *
-     * @param entityId
-     * @param gameId
-     * @return
-     */
-    /*
-    @GET
-    @Path("{entityId : [1-9][0-9]*}/Email/{gameId : [1-9][0-9]*}")
-    public String getEmail(@PathParam("entityId") Long entityId, @PathParam("gameId") Long gameId) {
-        if (!userFacade.getCurrentUser().getId().equals(entityId)) {
-            // Caller must be trainer for the given game:
-            final Game g = gameFacade.find(gameId);
-            SecurityHelper.checkPermission(g, "Edit");
-            // And user must be a player of the same game:
-            if (playerFacade.checkExistingPlayer(gameId, entityId) == null) {
-                throw new AuthorizationException("Not a player of this game");
-            }
-        }
 
-        AbstractAccount mainAccount = userFacade.find(entityId).getMainAccount();
-
-        if (mainAccount instanceof JpaAccount) {
-            return ((JpaAccount) mainAccount).getEmail();
-        } else {
-            return "";
-        }
-    }
-     */
     /**
      * Returns the e-mail addresses of all players of the given game, with more
      * relaxed security requirements than for getting the whole user profile:
@@ -237,8 +205,8 @@ public class UserController {
             } else {
                 Long userId = p.getUserId();
                 AbstractAccount mainAccount = userFacade.find(userId).getMainAccount();
-                if (mainAccount instanceof JpaAccount) { // Skip guest accounts and other specialties.
-                    emails.add(((JpaAccount) mainAccount).getEmail());
+                if (mainAccount instanceof JpaAccount || mainAccount instanceof AaiAccount) { // Skip guest accounts and other specialties.
+                    emails.add(mainAccount.getEmail());
                 }
             }
         }
@@ -425,7 +393,7 @@ public class UserController {
             if (authInfo.isAgreed()) {
                 AbstractAccount account = accountFacade.find((Long) subject.getPrincipal());
                 if (account instanceof JpaAccount) {
-                    ((JpaAccount) account).setAgreedTime(new Date());
+                    account.setAgreedTime(new Date());
                 }
             }
 
@@ -506,7 +474,7 @@ public class UserController {
             oSubject.releaseRunAs(); //@TODO: check shiro version > 1.2.1 (SHIRO-380)
         }
         oSubject.checkRole("Administrator");
-        SimplePrincipalCollection subject = new SimplePrincipalCollection(accountId, "jpaRealm");
+        SimplePrincipalCollection subject = new SimplePrincipalCollection(accountId, "jpaRealm"); // NB: this also seems to work with AaiAccounts ...
         oSubject.runAs(subject);
     }
 
@@ -628,12 +596,19 @@ public class UserController {
             return new AaiLoginResponse("Sorry, AAI login is currently not possible.", false, false);
         }
 
-        String server = AaiConfigInfo.getAaiServer();
-        String secret = AaiConfigInfo.getAaiSecret();
-        if (!request.getRemoteHost().equals(server) ||
-            !userDetails.getSecret().equals(secret)){
-            logger.error("Real remote host: " + request.getRemoteHost() + ", expected: " + server);
+        String server = AaiConfigInfo.getAaiServer(); // Ignored if empty !
+        String secret = AaiConfigInfo.getAaiSecret(); // Ignored if empty !
+        if (server.length() != 0 && !getRequestingIP(request).equals(server) ||
+            secret.length() != 0 && !userDetails.getSecret().equals(secret)){
             logger.error("Real secret: " + userDetails.getSecret() + ", expected: " + secret);
+            logger.error("Real remote host: " + getRequestingIP(request) + ", expected: " + server);
+            Enumeration<String> headerNames = request.getHeaderNames();
+            if (headerNames != null) {
+                while (headerNames.hasMoreElements()) {
+                    String hdr = headerNames.nextElement();
+                    logger.error("    HTTP header: " + hdr + ":" + request.getHeader(hdr));
+                }
+            }
             return new AaiLoginResponse("Could not authenticate Wegas AAI server", false, false);
         }
         // Get rid of shared secret:
@@ -670,6 +645,24 @@ public class UserController {
     }
 
     /**
+     * Returns the IP address of the requesting host by looking first at headers provided by (reverse) proxies.
+     * Depending on local config, it may be necessary to check additional headers.
+     *
+     * @param request
+     * @return the IP address
+     */
+    public String getRequestingIP(HttpServletRequest request) {
+        String ip = request.getHeader("X-FORWARDED-FOR");
+        if (ip == null) {
+            ip = request.getHeader("X-Real-IP");
+            if (ip == null) {
+                ip = request.getRemoteAddr();
+            }
+        }
+        return ip;
+    }
+
+    /**
      * @param authInfo
      * @param request
      */
@@ -695,8 +688,8 @@ public class UserController {
             name = "anonymous";
         }
 
-        if (mainAccount instanceof JpaAccount) {
-            email.setReplyTo(((JpaAccount) mainAccount).getEmail());
+        if (mainAccount instanceof JpaAccount || mainAccount instanceof AaiAccount) {
+            email.setReplyTo(mainAccount.getEmail());
         }
 
         String body = email.getBody();

@@ -151,6 +151,7 @@ angular.module('wegas.service.customize', [])
 			{name: "Stethoscope", key:"stethoscope", library: "fa"},
 			{name: "Doctor", key:"user-md", library: "fa"},
 			{name: "Medical kit", key:"medkit", library: "fa"},
+            {name: "ID card", key:"id-card-o", library: "fa"},
 			{name: "Emo ungry", key:"emo-angry", library: "icon"},
 			{name: "Emo beer", key:"emo-beer", library: "icon"},
 			{name: "Emo saint", key:"emo-saint", library: "icon"},
