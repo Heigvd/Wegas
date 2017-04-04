@@ -83,7 +83,7 @@ public final class WFSConfig {
      */
     static final Map<String, String> namespaces = new HashMap<String, String>() {
         {
-            put("wfs", "http://wegas.albasim.ch/wfs/1.0");                         //WeGAS File System
+            put("wfs", "http://www.wegas.com/wfs/1.0");                         //WeGAS File System
         }
     };
 }
