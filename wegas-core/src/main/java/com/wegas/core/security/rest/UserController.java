@@ -596,12 +596,19 @@ public class UserController {
             return new AaiLoginResponse("Sorry, AAI login is currently not possible.", false, false);
         }
 
-        String server = AaiConfigInfo.getAaiServer();
-        String secret = AaiConfigInfo.getAaiSecret();
-        if (!request.getRemoteHost().equals(server) ||
-            !userDetails.getSecret().equals(secret)){
-            logger.error("Real remote host: " + request.getRemoteHost() + ", expected: " + server);
+        String server = AaiConfigInfo.getAaiServer(); // Ignored if empty !
+        String secret = AaiConfigInfo.getAaiSecret(); // Ignored if empty !
+        if (server.length() != 0 && !getRequestingIP(request).equals(server) ||
+            secret.length() != 0 && !userDetails.getSecret().equals(secret)){
             logger.error("Real secret: " + userDetails.getSecret() + ", expected: " + secret);
+            logger.error("Real remote host: " + getRequestingIP(request) + ", expected: " + server);
+            Enumeration<String> headerNames = request.getHeaderNames();
+            if (headerNames != null) {
+                while (headerNames.hasMoreElements()) {
+                    String hdr = headerNames.nextElement();
+                    logger.error("    HTTP header: " + hdr + ":" + request.getHeader(hdr));
+                }
+            }
             return new AaiLoginResponse("Could not authenticate Wegas AAI server", false, false);
         }
         // Get rid of shared secret:
@@ -635,6 +642,24 @@ public class UserController {
             }
             return new AaiLoginResponse("New account created, login successful",true,true);
         }
+    }
+
+    /**
+     * Returns the IP address of the requesting host by looking first at headers provided by (reverse) proxies.
+     * Depending on local config, it may be necessary to check additional headers.
+     *
+     * @param request
+     * @return the IP address
+     */
+    public String getRequestingIP(HttpServletRequest request) {
+        String ip = request.getHeader("X-FORWARDED-FOR");
+        if (ip == null) {
+            ip = request.getHeader("X-Real-IP");
+            if (ip == null) {
+                ip = request.getRemoteAddr();
+            }
+        }
+        return ip;
     }
 
     /**

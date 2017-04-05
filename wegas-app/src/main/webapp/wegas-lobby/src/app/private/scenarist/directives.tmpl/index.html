@@ -25,14 +25,16 @@
 	<div
 		ng-if="(!scenaristIndexCtrl.loading && scenaristIndexCtrl.scenarios.length)"
 		ng-class="{true:'view__list--with-archive', false:''}[scenaristIndexCtrl.nbArchives > 0]"
+        id = "scenarist-scenarios-list-container"
 		class="view__list"
+        style="padding-bottom: 10px;"
         search="scenaristIndexCtrl.search"
 		scenarios="scenaristIndexCtrl.scenarios"
 		archive="scenaristIndexCtrl.archiveScenario"
         duplicate="scenaristIndexCtrl.duplicate"
         duplicating="scenaristIndexCtrl.duplicating"
 		scenarist-scenarios-list
-		>
+        repeat-auto-load >
 	</div>
     <div ng-if="(scenaristIndexCtrl.search.length != 0) && (scenaristIndexCtrl.scenarios.length == 0)"
          class="view__list view__list--with-archive">

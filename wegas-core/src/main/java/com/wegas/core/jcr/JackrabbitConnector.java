@@ -32,20 +32,22 @@ class JackrabbitConnector {
     private static Repository repo;
     private static Boolean isLocal = false;
 
-    private static void init() {
-        try {
+    private synchronized static void init() {
+        if (JackrabbitConnector.repo == null) {
             try {
-                new URL(DIR);
-                repo = JcrUtils.getRepository(DIR + "/server");
-            } catch (MalformedURLException e) {
-                Map<String, String> prop = new HashMap<>();
-                prop.put("org.apache.jackrabbit.repository.home", DIR);
-                prop.put("org.apache.jackrabbit.repository.conf", DIR + "/repository.xml");
-                repo = JcrUtils.getRepository(prop);
-                isLocal = true;
+                try {
+                    new URL(DIR);
+                    repo = JcrUtils.getRepository(DIR + "/server");
+                } catch (MalformedURLException e) {
+                    Map<String, String> prop = new HashMap<>();
+                    prop.put("org.apache.jackrabbit.repository.home", DIR);
+                    prop.put("org.apache.jackrabbit.repository.conf", DIR + "/repository.xml");
+                    repo = JcrUtils.getRepository(prop);
+                    isLocal = true;
+                }
+            } catch (RepositoryException ex) {
+                logger.error("Check your repository setup {}", DIR);
             }
-        } catch (RepositoryException ex) {
-            logger.error("Check your repository setup {}", DIR);
         }
     }
 

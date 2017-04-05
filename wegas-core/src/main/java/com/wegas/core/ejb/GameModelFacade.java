@@ -257,7 +257,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
             this.create(newGameModel);
 
             // Clone Pages
-            newGameModel.setPages(srcGameModel.getPages()); //already done by srcGameModel.duplicate(), no ? 
+            // newGameModel.setPages(srcGameModel.getPages()); //already done by srcGameModel.duplicate(), no ?
 
             //Clone files & history (?)
             for (ContentConnector.WorkspaceType wt : ContentConnector.WorkspaceType.values()) {
