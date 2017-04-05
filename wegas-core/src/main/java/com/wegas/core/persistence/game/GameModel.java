@@ -15,6 +15,7 @@ import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.BroadcastTarget;
+import com.wegas.core.persistence.EntityCreatedTimeComparator;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -198,6 +199,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
 
     /**
      * @param pageMap
+     *
      * @throws RepositoryException
      */
     @JsonCreator
@@ -442,12 +444,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     @JsonIgnore
     public List<Game> getGames() {
-        Collections.sort(this.games, new Comparator<Game>() {
-            @Override
-            public int compare(Game g1, Game g2) {
-                return g1.getCreatedTime().compareTo(g2.getCreatedTime());
-            }
-        });
+        Collections.sort(this.games, new EntityCreatedTimeComparator<>());
         return this.games;
     }
 

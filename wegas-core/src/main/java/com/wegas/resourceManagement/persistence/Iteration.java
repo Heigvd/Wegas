@@ -16,8 +16,10 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.variable.Beanjection;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +35,7 @@ import java.util.Map;
 @Table(indexes = {
     @Index(columnList = "burndowninstance_variableinstance_id")
 })
-public class Iteration extends AbstractEntity /*implements Broadcastable */ {
+public class Iteration extends AbstractEntity implements DatedEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -44,6 +46,10 @@ public class Iteration extends AbstractEntity /*implements Broadcastable */ {
     @GeneratedValue
     @JsonView(Views.IndexI.class)
     private Long id;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonIgnore
+    private Date createdTime = new Date();
 
     /**
      * Iteration Name
@@ -111,6 +117,21 @@ public class Iteration extends AbstractEntity /*implements Broadcastable */ {
     @Override
     public Long getId() {
         return this.id;
+    }
+
+    /**
+     * @return the createdTime
+     */
+    @Override
+    public Date getCreatedTime() {
+        return createdTime != null ? new Date(createdTime.getTime()) : null;
+    }
+
+    /**
+     * @param createdTime the createdTime to set
+     */
+    public void setCreatedTime(Date createdTime) {
+        this.createdTime = createdTime != null ? new Date(createdTime.getTime()) : null;
     }
 
     public String getName() {
