@@ -175,11 +175,8 @@ angular.module('wegas.service.auth', [
                 $translate('COMMONS-AUTH-CREATE-ACCOUNT-FLASH-SUCCESS').then(function(message) {
                     deferred.resolve(Responses.success(message, true));
                 });
-            }).error(function(data) {
-                $translate('COMMONS-AUTH-CREATE-ACCOUNT-FLASH-ERROR').then(function(message) {
-                    deferred.resolve(Responses.danger(message, true));
-                });
-                deferred.resolve(Responses.danger(data.message, false));
+            }).error(function(WegasError) {
+                deferred.resolve(Responses.danger($translate.instant(WegasError.messageId), false, WegasError));
             });
             return deferred.promise;
         };

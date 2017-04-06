@@ -85,10 +85,10 @@ angular.module('public.signup.directives', [])
                                             ctrl.newUser.agree).then(function (response) {
                                             if (response.isErroneous()) {
                                                 response.flash();
-                                                var msg = response.message.toLowerCase();
-                                                if (msg.indexOf("e-mail") >= 0) {
+                                                var msg = response.custom.messageId;
+                                                if (msg.indexOf("EMAIL") >= 0) {
                                                     highlightField('email');
-                                                } else if (msg.indexOf("username") >= 0 || msg.indexOf("utilisateur") >= 0){
+                                                } else if (msg.indexOf("USERNAME") >= 0){
                                                     highlightField('username');
                                                 }
                                             } else {

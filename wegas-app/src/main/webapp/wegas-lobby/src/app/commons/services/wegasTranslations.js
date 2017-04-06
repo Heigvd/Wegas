@@ -265,6 +265,21 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Let's go!",
                             'fr': "C'est parti !"
                         },
+                        // Referenced server side:
+                        'CREATE-ACCOUNT-TAKEN-USERNAME': {
+                            'en': "This username is already taken",
+                            'fr': "Ce nom d'utilisateur est déjà pris"
+                        },
+                        // Referenced server side:
+                        'CREATE-ACCOUNT-TAKEN-EMAIL': {
+                            'en': "This e-mail address is already taken",
+                            'fr': "Cette adresse e-mail est déjà prise"
+                        },
+                        // Referenced server side:
+                        'CREATE-ACCOUNT-INVALID-EMAIL': {
+                            'en': "This e-mail address is not valid",
+                            'fr': "Cette adresse e-mail n'est pas valide"
+                        },
                         'CREATE-ACCOUNT-FLASH-WRONG-EMAIL': {
                             'en': "An e-mail address is required",
                             'fr': "Veuillez entrer votre adresse e-mail"
@@ -483,6 +498,16 @@ angular.module('wegas.service.wegasTranslations', [])
                         'COMMONS-SESSIONS-UPDATE-FLASH-ERROR': {
                             'en': "Error while updating  " + keywords.session.singular.en,
                             'fr': "Une erreur est survenue durant la mise à jour de la " + keywords.session.singular.fr
+                        },
+                        // Referenced server side:
+                        'COMMONS-SESSIONS-EMPTY-TOKEN-ERROR': {
+                            'en': "Access key cannot be empty",
+                            'fr': "La clé d'accès ne peut pas être vide"
+                        },
+                        // Referenced server side:
+                        'COMMONS-SESSIONS-TAKEN-TOKEN-ERROR': {
+                            'en': "This access key is already used for another "  + keywords.session.singular.en,
+                            'fr': "Cette clé d'accès est déjà utilisée pour une autre " + keywords.session.singular.fr
                         },
                         'COMMONS-SESSIONS-UPDATE-NO-SESSION-FLASH-ERROR': {
                             'en': "No " + keywords.session.singular.en + " to update",
