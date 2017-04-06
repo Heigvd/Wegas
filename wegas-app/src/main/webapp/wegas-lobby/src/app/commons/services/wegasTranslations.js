@@ -230,28 +230,28 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Créer un compte"
                         },
                         'CREATE-ACCOUNT-INPUT-EMAIL': {
-                            'en': "e-mail",
-                            'fr': "e-mail"
+                            'en': "E-mail",
+                            'fr': "E-mail"
                         },
                         'CREATE-ACCOUNT-INPUT-PASSWORD': {
-                            'en': "password",
-                            'fr': "mot de passe"
+                            'en': "Password",
+                            'fr': "Mot de passe"
                         },
                         'CREATE-ACCOUNT-INPUT-PASSWORD-AGAIN': {
-                            'en': "password again",
-                            'fr': "mot de passe à nouveau"
+                            'en': "Password again",
+                            'fr': "Répéter le mot de passe"
                         },
                         'CREATE-ACCOUNT-INPUT-USERNAME': {
-                            'en': "username",
-                            'fr': "nom d'utilisateur"
+                            'en': "Username",
+                            'fr': "Nom d'utilisateur"
                         },
                         'CREATE-ACCOUNT-INPUT-FIRSTNAME': {
-                            'en': "first name",
-                            'fr': "prénom"
+                            'en': "First name",
+                            'fr': "Prénom"
                         },
                         'CREATE-ACCOUNT-INPUT-LASTNAME': {
-                            'en': "last name",
-                            'fr': "nom de famille"
+                            'en': "Last name",
+                            'fr': "Nom de famille"
                         },
                         'CREATE-ACCOUNT-INPUT-AGREE': {
                             'en': 'I agree with',

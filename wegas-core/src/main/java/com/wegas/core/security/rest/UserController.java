@@ -538,7 +538,9 @@ public class UserController {
                     } catch (WegasNoResultException e) {
                         // GOTCHA
                         // E-Mail not yet registered -> proceed with account creation
-                        account.setAgreedTime(new Date());
+                        if (account.getAgreedTime() != null) {
+                            account.setAgreedTime(new Date());
+                        }
                         user = new User(account);
                         userFacade.create(user);
                         r = Response.status(Response.Status.CREATED).build();

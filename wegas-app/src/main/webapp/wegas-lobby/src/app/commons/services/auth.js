@@ -160,7 +160,7 @@ angular.module('wegas.service.auth', [
             return deferred.promise;
         };
 
-        service.signup = function(email, username, password, firstname, lastname) {
+        service.signup = function(email, username, password, firstname, lastname, agreed) {
             var deferred = $q.defer(),
                 url = "rest/User/Signup";
             $http.post(window.ServiceURL + url, {
@@ -169,7 +169,8 @@ angular.module('wegas.service.auth', [
                 "username": username,
                 "password": password,
                 "firstname": firstname,
-                "lastname": lastname
+                "lastname": lastname,
+                "agreedTime": agreed ? Date.now() : null
             }).success(function(data) {
                 $translate('COMMONS-AUTH-CREATE-ACCOUNT-FLASH-SUCCESS').then(function(message) {
                     deferred.resolve(Responses.success(message, true));

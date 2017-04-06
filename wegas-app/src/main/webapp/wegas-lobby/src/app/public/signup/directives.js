@@ -27,7 +27,7 @@ angular.module('public.signup.directives', [])
             }
         };
     })
-    .controller('PublicSignupController', function PublicSignupController($scope, $translate, Auth, Flash, $state, TeamsModel, SessionsModel, ScenariosModel) {
+    .controller('PublicSignupController', function PublicSignupController($scope, $translate, $timeout, Auth, Flash, $state, TeamsModel, SessionsModel, ScenariosModel) {
         "use strict";
         var ctrl = this;
         ctrl.newUser = {
@@ -50,6 +50,24 @@ angular.module('public.signup.directives', [])
                 return true;
             }
         };
+
+        function highlightField(fieldName) {
+            var field = document.getElementById(fieldName);
+            field.focus();
+            field.style.borderColor = "red";
+            $timeout(function(){ field.style.borderColor = ""; }, 5000);
+        }
+
+        function highlightText(fieldName) {
+            var field = document.getElementById(fieldName);
+            field.style.color = "red";
+            field.style.fontWeight = "bold";
+            $timeout(function(){
+                field.style.color = "";
+                field.style.fontWeight = "";
+            }, 5000);
+        }
+
         ctrl.signup = function() {
             if (ctrl.newUser.username && ctrl.newUser.username.length > 0) {
                 if (ctrl.newUser.email && ctrl.newUser.email.length > 0) {
@@ -64,10 +82,15 @@ angular.module('public.signup.directives', [])
                                             ctrl.newUser.p1,
                                             ctrl.newUser.firstname,
                                             ctrl.newUser.lastname,
-                                            ctrl.newUser.language,
                                             ctrl.newUser.agree).then(function (response) {
                                             if (response.isErroneous()) {
                                                 response.flash();
+                                                var msg = response.message.toLowerCase();
+                                                if (msg.indexOf("e-mail") >= 0) {
+                                                    highlightField('email');
+                                                } else if (msg.indexOf("username") >= 0 || msg.indexOf("utilisateur") >= 0){
+                                                    highlightField('username');
+                                                }
                                             } else {
                                                 // Automatic login after successful registration:
                                                 Auth.login(ctrl.newUser.username, ctrl.newUser.p1).then(function (response2) {
@@ -93,42 +116,43 @@ angular.module('public.signup.directives', [])
                                         $translate('CREATE-ACCOUNT-FLASH-MUST-AGREE').then(function (message) {
                                             Flash.danger(message);
                                         });
+                                        highlightText('agreeLabel');
                                     }
                                 } else {
                                     if (ctrl.newUser.firstname && ctrl.newUser.firstname.length > 0)
-                                        document.getElementById('lastname').focus();
+                                        highlightField('lastname');
                                     else
-                                        document.getElementById('firstname').focus();
+                                        highlightField('firstname');
                                     $translate('CREATE-ACCOUNT-FLASH-WRONG-NAME').then(function (message) {
                                         Flash.danger(message);
                                     });
                                 }
                             } else {
-                                document.getElementById('password2').focus();
+                                highlightField('password2');
                                 $translate('CREATE-ACCOUNT-FLASH-WRONG-PASS2').then(function (message) {
                                     Flash.danger(message);
                                 });
                             }
                         } else {
-                            document.getElementById('password1').focus();
+                            highlightField('password1');
                             $translate('CREATE-ACCOUNT-FLASH-WRONG-PASS').then(function (message) {
                                 Flash.danger(message);
                             });
                         }
                     } else {
-                        document.getElementById('username').focus();
+                        highlightField('username');
                         $translate('CREATE-ACCOUNT-FLASH-WRONG-EMAIL-IN-USERNAME').then(function (message) {
                             Flash.danger(message);
                         });
                     }
                 } else {
-                    document.getElementById('email').focus();
+                    highlightField('email');
                     $translate('CREATE-ACCOUNT-FLASH-WRONG-EMAIL').then(function (message) {
                         Flash.danger(message);
                     });
                 }
             } else {
-                document.getElementById('username').focus();
+                highlightField('username');
                 $translate('CREATE-ACCOUNT-FLASH-WRONG-USERNAME').then(function (message) {
                     Flash.danger(message);
                 });
