@@ -7,47 +7,87 @@
  */
 package com.wegas.core.jcr;
 
+import com.mongodb.DB;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.ReadConcern;
 import com.wegas.core.Helper;
-import org.apache.jackrabbit.commons.JcrUtils;
+import org.apache.jackrabbit.oak.Oak;
+import org.apache.jackrabbit.oak.jcr.Jcr;
+import org.apache.jackrabbit.oak.plugins.document.DocumentMK;
+import org.apache.jackrabbit.oak.plugins.document.DocumentNodeStore;
+import org.apache.jackrabbit.oak.segment.SegmentNodeStore;
+import org.apache.jackrabbit.oak.segment.SegmentNodeStoreBuilders;
+import org.apache.jackrabbit.oak.segment.file.FileStore;
+import org.apache.jackrabbit.oak.segment.file.FileStoreBuilder;
+import org.apache.jackrabbit.oak.segment.file.InvalidFileStoreVersionException;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PreDestroy;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
 import javax.jcr.Repository;
-import javax.jcr.RepositoryException;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * Jackrabbit repository init
  *
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
+@Singleton
+@Startup
 class JackrabbitConnector {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(JackrabbitConnector.class);
-    final private static String DIR = Helper.getWegasProperty("jcr.repository.basedir");
+    final private static String URI = Helper.getWegasProperty("jcr.repository.URI");
     private static Repository repo;
-    private static Boolean isLocal = false;
+    private static DocumentNodeStore nodeStore;
+    private static FileStore fileStore;
 
     private synchronized static void init() {
         if (JackrabbitConnector.repo == null) {
-            try {
-                try {
-                    new URL(DIR);
-                    repo = JcrUtils.getRepository(DIR + "/server");
-                } catch (MalformedURLException e) {
-                    Map<String, String> prop = new HashMap<>();
-                    prop.put("org.apache.jackrabbit.repository.home", DIR);
-                    prop.put("org.apache.jackrabbit.repository.conf", DIR + "/repository.xml");
-                    repo = JcrUtils.getRepository(prop);
-                    isLocal = true;
-                }
-            } catch (RepositoryException ex) {
-                logger.error("Check your repository setup {}", DIR);
+            if (Helper.isNullOrEmpty(URI)) {
+                // In memory
+                JackrabbitConnector.repo = new Jcr(new Oak()).createRepository();
+                return;
             }
+            try {
+                final URI uri = new URI(URI);
+                if (uri.getScheme().equals("mongodb")) {
+                    // Remote
+                    String hostPort = uri.getHost();
+                    if (uri.getPort() > -1) {
+                        hostPort += ":" + uri.getPort();
+                    }
+                    String dbName = uri.getPath().replaceFirst("/", "");
+                    final DB db = new MongoClient(hostPort, MongoClientOptions.builder()
+                            .socketTimeout(10)
+                            .readConcern(ReadConcern.MAJORITY)
+                            .build())
+                            .getDB(dbName);
+                    nodeStore = new DocumentMK.Builder()
+                            .setLeaseCheck(false)
+                            .setMongoDB(db)
+                            .getNodeStore();
+                    JackrabbitConnector.repo = new Jcr(new Oak(nodeStore)).createRepository();
+                } else if (uri.getScheme().equals("file")) {
+                    // Local
+                    try {
+                        fileStore = FileStoreBuilder.fileStoreBuilder(new File(uri.getPath())).build();
+                    } catch (InvalidFileStoreVersionException | IOException e) {
+                        logger.error("Failed to read repository {}", uri.getPath(), e);
+                        return;
+                    }
+                    final SegmentNodeStore segmentNodeStore = SegmentNodeStoreBuilders.builder(fileStore).build();
+                    JackrabbitConnector.repo = new Jcr(new Oak(segmentNodeStore)).createRepository();
+                }
+            } catch (URISyntaxException | NullPointerException e) {
+                logger.error("Failed to define JCR repository mode", e);
+            }
+
         }
     }
 
@@ -61,19 +101,16 @@ class JackrabbitConnector {
         return JackrabbitConnector.repo;
     }
 
-    /**
-     * Delete workspace Directory
-     *
-     * @param workspaceName directory to delete.
-     */
-
-    static void deleteWorkspaceDirectory(String workspaceName) {
-        if (isLocal) {
-            try {
-                Helper.recursiveDelete(new File(DIR + "/workspaces/" + workspaceName));
-            } catch (IOException ex) {
-                logger.warn("Delete workspace files failed", ex);
-            }
+    @PreDestroy
+    private void preDestroy() {
+        if (nodeStore != null) {
+            nodeStore.dispose();
         }
+        if (fileStore != null) {
+            fileStore.close();
+        }
+        nodeStore = null;
+        repo = null;
+        fileStore = null;
     }
 }

@@ -15,10 +15,13 @@
 
     <dependencies>
         <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-
         <!-- Apache Shiro Dependencies -->
         <dependency>
             <groupId>org.apache.shiro</groupId>
@@ -68,17 +71,27 @@
 
         <!-- Java Content Repository -->
         <dependency>
+            <groupId>org.apache.jackrabbit</groupId>
+            <artifactId>oak-jcr</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2-mvstore</artifactId>
+            <version>1.4.194</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.jackrabbit</groupId>
+            <artifactId>oak-segment-tar</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>javax.jcr</groupId>
             <artifactId>jcr</artifactId>
             <!--            <scope>compile</scope>-->
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jackrabbit</groupId>
-            <artifactId>jackrabbit-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jackrabbit</groupId>
-            <artifactId>jackrabbit-jcr2dav</artifactId>
         </dependency>
         <dependency>
             <groupId>com.github.fge</groupId>
