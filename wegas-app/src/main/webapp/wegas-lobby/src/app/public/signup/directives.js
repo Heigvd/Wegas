@@ -17,7 +17,7 @@ angular.module('public.signup.directives', [])
             },
             link : function(scope, element) {
                 scope.$watch('trigger', function(value) {
-                    console.log('element=',element[0],'  value=',value);
+                    //console.log('element=',element[0],'  value=',value);
                     if (value === "true" || value===true) {
                         $timeout(function() {
                             element[0].focus();
