@@ -114,8 +114,8 @@ angular.module('wegas.models.sessions', [])
                         sessionBeforeChange.name = data.name;
                         sessionBeforeChange.token = data.token;
                         deferred.resolve(sessionBeforeChange);
-                    }).error(function(data) {
-                        deferred.resolve(false);
+                    }).error(function(WegasException) {
+                        deferred.reject(WegasException);
                     });
                 } else {
                     deferred.resolve(sessionBeforeChange);
@@ -433,7 +433,6 @@ angular.module('wegas.models.sessions', [])
             var deferred = $q.defer();
             if (session && infosToSet) {
                 updateGameSession(infosToSet, session).then(function(sessionSetted) {
-                    if (sessionSetted) {
                         updateGameModelSession(infosToSet, sessionSetted).then(function(sessionSetted2) {
                             if (sessionSetted2) {
                                 $translate('COMMONS-SESSIONS-UPDATE-FLASH-SUCCESS').then(function(message) {
@@ -445,11 +444,9 @@ angular.module('wegas.models.sessions', [])
                                 });
                             }
                         });
-                    } else {
-                        $translate('COMMONS-SESSIONS-UPDATE-FLASH-ERROR').then(function(message) {
-                            deferred.resolve(Responses.danger(message, false));
-                        });
-                    }
+                }, function(WegasException) {
+                    var message = WegasException.messageId ? $translate.instant(WegasException.messageId) : WegasException.message;
+                    deferred.resolve(Responses.danger(message, false));
                 });
             } else {
                 $translate('COMMONS-SESSIONS-UPDATE-NO-SESSION-FLASH-ERROR').then(function(message) {

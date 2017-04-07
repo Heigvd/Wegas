@@ -533,24 +533,26 @@ public class UserController {
                     try {
                         // Do NOT restrict checking to JpaAccounts (this is to prevent any collisions):
                         accountFacade.findByEmail(account.getEmail());
-                        String msg = detectBrowserLocale(request).equals("fr") ? "Cette adresse e-mail est déjà prise." : "This email address is already taken.";
-                        r = Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error(msg)).build();
+                        r = Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage
+                                .error("This email address is already taken", "CREATE-ACCOUNT-TAKEN-EMAIL")).build();
                     } catch (WegasNoResultException e) {
                         // GOTCHA
                         // E-Mail not yet registered -> proceed with account creation
-                        account.setAgreedTime(new Date());
+                        if (account.getAgreedTime() != null) {
+                            account.setAgreedTime(new Date());
+                        }
                         user = new User(account);
                         userFacade.create(user);
                         r = Response.status(Response.Status.CREATED).build();
                     }
                 }
             } else {
-                String msg = detectBrowserLocale(request).equals("fr") ? "Ce nom d'utilisateur est déjà pris." : "This username is already taken.";
-                r = Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error(msg)).build();
+                r = Response.status(Response.Status.BAD_REQUEST)
+                    .entity(WegasErrorMessage.error("This username is already taken", "CREATE-ACCOUNT-TAKEN-USERNAME")).build();
             }
         } else {
-            String msg = detectBrowserLocale(request).equals("fr") ? "Cette adresse e-mail n'est pas valide." : "This e-mail address is not valid.";
-            r = Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error(msg)).build();
+            r = Response.status(Response.Status.BAD_REQUEST)
+                .entity(WegasErrorMessage.error("This e-mail address is not valid", "CREATE-ACCOUNT-INVALID-EMAIL")).build();
         }
         return r;
     }
@@ -950,22 +952,4 @@ public class UserController {
         return existingId;
     }
 
-
-    /*
-    ** @return the browser's preference among the languages supported by Wegas
-     */
-    private String detectBrowserLocale(HttpServletRequest request) {
-        String supportedLanguages = "en fr";
-
-        Enumeration locales = request.getLocales();
-        while (locales.hasMoreElements()) {
-            Locale locale = (Locale) locales.nextElement();
-            String loc = locale.getLanguage();
-            if (supportedLanguages.contains(loc)) {
-                return loc;
-            }
-        }
-        // No match found, return the default "en":
-        return "en";
-    }
 }

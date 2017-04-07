@@ -11,24 +11,35 @@ angular.module('private.scenarist.directives', [
         ctrl.scenarios = [];
         ctrl.nbArchives = 0;
 
-        var winheight = $window.innerHeight,
-            MENU_HEIGHT = 50,
+        var MENU_HEIGHT = 50,
             SEARCH_FIELD_HEIGHT = 72,
             CARD_HEIGHT = 92,
-            // Make a quick but safe computation that does not require the page to be rendered beforehand.
-            // The number of displayed items must be just high enough to make the scrollbar appear.
-            ITEMS_PER_PAGE = Math.ceil((winheight - SEARCH_FIELD_HEIGHT - MENU_HEIGHT) / CARD_HEIGHT),
-            ITEMS_IN_FIRST_BATCH = ITEMS_PER_PAGE * 1.5,
-            ITEMS_IN_NEXT_BATCHES = ITEMS_PER_PAGE * 3;
+            ITEMS_PER_PAGE,
+            ITEMS_IN_FIRST_BATCH,
+            ITEMS_IN_NEXT_BATCHES;
 
-        var maxItemsDisplayed = null,
+        var winheight = null,
+            maxItemsDisplayed = null,
             rawScenarios = [],
             isFiltering = false,
             prevFilter = "",
             filtered = [],
             prevSource = null,
 
+            // Adjusts layout constants to the current window size.
+            checkWindowSize = function() {
+                if (winheight !== $window.innerHeight) {
+                    // Make a quick but safe computation that does not require the page to be rendered beforehand.
+                    // The number of displayed items must be just high enough to make the scrollbar appear.
+                    winheight = $window.innerHeight;
+                    ITEMS_PER_PAGE = Math.ceil((winheight - SEARCH_FIELD_HEIGHT - MENU_HEIGHT) / CARD_HEIGHT);
+                    ITEMS_IN_FIRST_BATCH = ITEMS_PER_PAGE * 1.5;
+                    ITEMS_IN_NEXT_BATCHES = ITEMS_PER_PAGE * 3;
+                }
+            },
+            // Computes the number of elements to display.
             initMaxItemsDisplayed = function() {
+                checkWindowSize();
                 var len = isFiltering ? filtered.length : rawScenarios.length;
                 if (len ===0 || len > ITEMS_IN_FIRST_BATCH) {
                     maxItemsDisplayed = ITEMS_IN_FIRST_BATCH;
@@ -48,12 +59,7 @@ angular.module('private.scenarist.directives', [
                 if (maxItemsDisplayed === null) {
                     initMaxItemsDisplayed();
                 } else {
-                    var len = list.length;
-                    if (maxItemsDisplayed >= len) {
-                        maxItemsDisplayed = len;
-                    } else {
-                        maxItemsDisplayed = Math.min(maxItemsDisplayed + ITEMS_IN_NEXT_BATCHES, len);
-                    }
+                    maxItemsDisplayed = Math.min(maxItemsDisplayed + ITEMS_IN_NEXT_BATCHES, list.length);
                 }
                 updateDisplay(list);
             },
@@ -187,18 +193,37 @@ angular.module('private.scenarist.directives', [
             ctrl.nbArchives -= count;
         });
 
-        /* Listen for scenario update */
+        // Listen for updates to individual scenarios or to the list of scenarios:
         $rootScope.$on('changeScenarios', function(e, hasNewData) {
             if (hasNewData) {
+                // To be on the safe side, also request an extension of displayed scenarios (parameter 'true'):
                 ctrl.updateScenarios(true);
             }
         });
 
+        // Listen for scroll down events and extend the set of visible items without rebuilding the whole list:
         $rootScope.$on('changeLimit', function(e, hasNewData) {
-            if (e.currentScope.currentRole === "SCENARIST" && hasNewData) {
-                ctrl.updateScenarios(true);
+            if (e.currentScope.currentRole === "SCENARIST") {
+                extendDisplayedItems();
+                if ( ! $rootScope.$$phase) {
+                    $scope.$apply();
+                }
             }
         });
+
+        // This is jQuery code for detecting window resizing:
+        $(window).on("resize.doResize", _.debounce(function (){
+            $scope.$apply(function(){
+                initMaxItemsDisplayed();
+                updateDisplay(rawScenarios);
+            });
+        },100));
+
+        // When leaving, remove the window resizing handler:
+        $scope.$on("$destroy",function (){
+            //$(window).off("resize.doResize");
+        });
+
 
         ctrl.updateScenarios(true);
 
