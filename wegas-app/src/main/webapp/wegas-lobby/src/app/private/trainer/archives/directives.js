@@ -87,9 +87,10 @@ angular.module('private.trainer.archives.directives', [])
         if (sessionToUnarchive) {
             SessionsModel.unarchiveSession(sessionToUnarchive).then(function(response) {
                 if (!response.isErroneous()) {
-                    $rootScope.$emit('changeLimit', true);
                     $rootScope.$emit('changeSessionsArchives', -1);
                     ctrl.updateSessions();
+                    // The session is reinserted into the LIVE list, which has to be updated:
+                    $rootScope.$emit('changeSessions', true);
                 } else {
                     response.flash();
                 }
@@ -105,9 +106,9 @@ angular.module('private.trainer.archives.directives', [])
         if (sessionToDelete) {
             SessionsModel.deleteArchivedSession(sessionToDelete).then(function(response) {
                 if (!response.isErroneous()) {
-                    $rootScope.$emit('changeLimit', true);
                     $rootScope.$emit('changeSessionsArchives', -1);
                     ctrl.updateSessions();
+                    //$rootScope.$emit('changeSessions', true);
                 } else {
                     response.flash();
                 }

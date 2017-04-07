@@ -86,8 +86,9 @@ angular.module('private.scenarist.archives.directives', [])
                 ScenariosModel.unarchiveScenario(scenarioToUnarchive).then(function(response) {
                     if (!response.isErroneous()) {
                         $rootScope.$emit('entrenchNbArchives', 1);
-                        $rootScope.$emit('changeLimit', true);
                         ctrl.updateScenarios();
+                        // The scenario is reinserted into the LIVE list, which has to be updated:
+                        $rootScope.$emit('changeScenarios', true);
                     } else {
                         response.flash();
                     }
@@ -104,8 +105,8 @@ angular.module('private.scenarist.archives.directives', [])
                 ScenariosModel.deleteArchivedScenario(scenarioToDelete).then(function(response) {
                     if (!response.isErroneous()) {
                         $rootScope.$emit('entrenchNbArchives', 1);
-                        $rootScope.$emit('changeScenarios', true);
                         ctrl.updateScenarios();
+                        //$rootScope.$emit('changeScenarios', true);
                     } else {
                         response.flash();
                     }

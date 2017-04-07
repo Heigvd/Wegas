@@ -17,24 +17,35 @@ angular.module('private.trainer.directives', [
         ctrl.sessions = [];
         ctrl.nbArchives = 0;
 
-        var winheight = $window.innerHeight,
-            MENU_HEIGHT = 50,
+        var MENU_HEIGHT = 50,
             SEARCH_FIELD_HEIGHT = 72,
             CARD_HEIGHT = 92,
-            // Make a quick but safe computation that does not require the page to be rendered beforehand.
-            // The number of displayed items must be just high enough to make the scrollbar appear.
-            ITEMS_PER_PAGE = Math.ceil((winheight - SEARCH_FIELD_HEIGHT - MENU_HEIGHT) / CARD_HEIGHT),
-            ITEMS_IN_FIRST_BATCH = ITEMS_PER_PAGE * 1.5,
-            ITEMS_IN_NEXT_BATCHES = ITEMS_PER_PAGE * 3;
+            ITEMS_PER_PAGE,
+            ITEMS_IN_FIRST_BATCH,
+            ITEMS_IN_NEXT_BATCHES;
 
-        var maxItemsDisplayed = null,
+        var winheight = null,
+            maxItemsDisplayed = null,
             rawSessions = [],
             isFiltering = false,
             prevFilter = "",
             filtered = [],
             prevSource = null,
 
+            // Adjusts layout constants to the current window size.
+            checkWindowSize = function() {
+                if (winheight !== $window.innerHeight) {
+                    // Make a quick but safe computation that does not require the page to be rendered beforehand.
+                    // The number of displayed items must be just high enough to make the scrollbar appear.
+                    winheight = $window.innerHeight;
+                    ITEMS_PER_PAGE = Math.ceil((winheight - SEARCH_FIELD_HEIGHT - MENU_HEIGHT) / CARD_HEIGHT);
+                    ITEMS_IN_FIRST_BATCH = ITEMS_PER_PAGE * 1.5;
+                    ITEMS_IN_NEXT_BATCHES = ITEMS_PER_PAGE * 3;
+                }
+            },
+            // Computes the number of elements to display.
             initMaxItemsDisplayed = function() {
+                checkWindowSize();
                 var len = isFiltering ? filtered.length : rawSessions.length;
                 if (len ===0 || len > ITEMS_IN_FIRST_BATCH) {
                     maxItemsDisplayed = ITEMS_IN_FIRST_BATCH;
@@ -43,23 +54,20 @@ angular.module('private.trainer.directives', [
                     maxItemsDisplayed = len;
                 }
             },
+            // Updates the display buffer (ctrl.sessions) if needed.
             updateDisplay = function(source) {
                 if (prevSource !== source || maxItemsDisplayed !== ctrl.sessions.length) {
                     ctrl.sessions = source.slice(0, maxItemsDisplayed);
                     prevSource = source;
                 }
             },
+            // Adds some sessions to the bottom of the display.
             extendDisplayedItems = function() {
                 var list = isFiltering ? filtered : rawSessions;
                 if (maxItemsDisplayed === null) {
                     initMaxItemsDisplayed();
                 } else {
-                    var len = list.length;
-                    if (maxItemsDisplayed >= len) {
-                        maxItemsDisplayed = len;
-                    } else {
-                        maxItemsDisplayed = Math.min(maxItemsDisplayed + ITEMS_IN_NEXT_BATCHES, len);
-                    }
+                    maxItemsDisplayed = Math.min(maxItemsDisplayed + ITEMS_IN_NEXT_BATCHES, list.length);
                 }
                 updateDisplay(list);
             },
@@ -115,7 +123,7 @@ angular.module('private.trainer.directives', [
         };
 
         // Called when a session is modified, added or removed:
-        ctrl.updateSessions = function(updateDisplay) {
+        ctrl.updateSessions = function(extendDisplay) {
             var hideScrollbarDuringInitialRender = (rawSessions.length === 0);
             if (hideScrollbarDuringInitialRender) {
                 $('#trainer-sessions-list').css('overflow-y', 'hidden');
@@ -131,7 +139,7 @@ angular.module('private.trainer.directives', [
                     ctrl.search = searchField.getElementsByClassName('tool__input')[0].value;
                 }
                 ctrl.filterSessions(ctrl.search);
-                if (updateDisplay) {
+                if (extendDisplay) {
                     extendDisplayedItems();
                 }
                 if (hideScrollbarDuringInitialRender) {
@@ -182,19 +190,37 @@ angular.module('private.trainer.directives', [
             ctrl.nbArchives += count;
         });
 
+        // Listen for updates to individual scenarios or to the list of sessions:
         $rootScope.$on('changeSessions', function(e, hasNewData) {
             if (hasNewData) {
-                SessionsModel.getSessions("LIVE").then(function(response) {
-                    ctrl.updateSessions(true);
-                });
-            }
-        });
-
-        $rootScope.$on('changeLimit', function(e, hasNewData) {
-            if (e.currentScope.currentRole === "TRAINER" && hasNewData) {
+                // To be on the safe side, also request an extension of displayed sessions (parameter 'true'):
                 ctrl.updateSessions(true);
             }
         });
+
+        // Listen for scroll down events and extend the set of visible items without rebuilding the whole list:
+        $rootScope.$on('changeLimit', function(e, hasNewData) {
+            if (e.currentScope.currentRole === "TRAINER") {
+                extendDisplayedItems();
+                if ( ! $rootScope.$$phase) {
+                    $scope.$apply();
+                }
+            }
+        });
+
+        // This is jQuery code for detecting window resizing:
+        $(window).on("resize.doResize", _.debounce(function (){
+            $scope.$apply(function(){
+                initMaxItemsDisplayed();
+                updateDisplay(rawSessions);
+            });
+        },100));
+
+        // When leaving, remove the window resizing handler:
+        $scope.$on("$destroy",function (){
+            //$(window).off("resize.doResize");
+        });
+
 
         ctrl.updateSessions(true);
 

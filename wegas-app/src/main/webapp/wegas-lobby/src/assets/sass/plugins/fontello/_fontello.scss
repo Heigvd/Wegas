@@ -240,6 +240,7 @@ $fo-key-1:'\e8eb';
   font-family: 'fontello';
   src: url($fontello-path + 'fontello.eot?76496339');
   src: url($fontello-path + 'fontello.eot?76496339#iefix') format('embedded-opentype'),
+       url($fontello-path + 'fontello.woff2?76496339') format('woff2'),
        url($fontello-path + 'fontello.woff?76496339') format('woff'),
        url($fontello-path + 'fontello.ttf?76496339') format('truetype'),
        url($fontello-path + 'fontello.svg?76496339#fontello') format('svg');
@@ -256,18 +257,18 @@ $fo-key-1:'\e8eb';
   display: inline-block;
   width: 1em;
   text-align: center;
- 
+
   font-variant: normal;
   text-transform: none;
- 
+
   /* fix buttons height, for twitter bootstrap */
   line-height: 1em;
- 
+
   /* Font smoothing. That was taken from TWBS */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
- 
+
 .icon-emo-angry:before { content: '\e800'; } /* '' */
 .icon-emo-grin:before { content: '\e801'; } /* '' */
 .icon-emo-beer:before { content: '\e802'; } /* '' */

@@ -29,6 +29,28 @@
             width:auto;
         }
 
+        &.form__row--with-info {
+            .form__row__info {
+                display: block;
+                padding: 0px 0px;
+                margin: 0px 0px 8px -1px;
+                color: #777777;
+                font-weight: bold;
+            }
+
+            .form__row__entry.input {
+                height: 32px;
+                line-height: 32px;
+            }
+
+        }
+
+        .link-same-color {
+            text-decoration:underline;
+            color:inherit;
+            font-weight: inherit;
+        }
+
         .form__row__label{
             display:none;
         }
@@ -73,9 +95,9 @@
                     }
                 }
 
-            &.form__row__label--reverse{
-                color:$white;
-            }
+                &.form__row__label--reverse{
+                    color:$white;
+                }
             }
             .form__row__entry{
                 display:block;

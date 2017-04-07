@@ -115,7 +115,7 @@ public class GameFacade extends BaseFacade<Game> {
         gm.setComments(""); // Clear comments
         gm.setStatus(GameModel.Status.PLAY);
         this.create(gm, game);
-        
+
         // Since Permission on gameModel is provided through game induced permission, revice initial permission on gamemodel:
         userFacade.deletePermissions(userFacade.getCurrentUser(), "GameModel:%:gm" +  gm.getId());
     }
@@ -143,7 +143,7 @@ public class GameFacade extends BaseFacade<Game> {
         if (game.getToken() == null) {
             game.setToken(this.createUniqueToken(game));
         } else if (this.findByToken(game.getToken()) != null) {
-            throw WegasErrorMessage.error("This token is already in use.");
+            throw WegasErrorMessage.error("This access key is already in use", "COMMONS-SESSIONS-TAKEN-TOKEN-ERROR");
         }
         getEntityManager().persist(game);
         gameModel.propagateDefaultInstance(game, true);
@@ -217,13 +217,13 @@ public class GameFacade extends BaseFacade<Game> {
     public Game update(final Long entityId, final Game entity) {
         String token = entity.getToken().toLowerCase().replace(" ", "-");
         if (token.length() == 0) {
-            throw WegasErrorMessage.error("Access key cannot be empty");
+            throw WegasErrorMessage.error("Access key cannot be empty", "COMMONS-SESSIONS-EMPTY-TOKEN-ERROR");
         }
 
         Game theGame = this.findByToken(entity.getToken());
 
         if (theGame != null && !theGame.getId().equals(entity.getId())) {
-            throw WegasErrorMessage.error("This access key is already in use");
+            throw WegasErrorMessage.error("This access key is already in use", "COMMONS-SESSIONS-TAKEN-TOKEN-ERROR");
         }
         return super.update(entityId, entity);
     }
