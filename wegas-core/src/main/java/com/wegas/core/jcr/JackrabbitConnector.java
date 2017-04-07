@@ -39,7 +39,7 @@ import java.net.URISyntaxException;
  */
 @Singleton
 @Startup
-class JackrabbitConnector {
+public class JackrabbitConnector {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(JackrabbitConnector.class);
     final private static String URI = Helper.getWegasProperty("jcr.repository.URI");
@@ -64,7 +64,6 @@ class JackrabbitConnector {
                     }
                     String dbName = uri.getPath().replaceFirst("/", "");
                     final DB db = new MongoClient(hostPort, MongoClientOptions.builder()
-                            .socketTimeout(10)
                             .readConcern(ReadConcern.MAJORITY)
                             .build())
                             .getDB(dbName);
