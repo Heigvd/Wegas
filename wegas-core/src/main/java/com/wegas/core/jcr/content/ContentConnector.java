@@ -379,7 +379,6 @@ public class ContentConnector implements AutoCloseable {
      *
      * @throws RepositoryException
      * @throws IOException
-     * @deprecated mostly to rewrite
      */
     public void zipDirectory(ZipOutputStream out, String path) throws RepositoryException, IOException {
         AbstractContentDescriptor node = DescriptorFactory.getDescriptor(path, this);
