@@ -340,9 +340,11 @@ abstract public class AbstractContentDescriptor {
      */
     @JsonIgnore
     protected ZipEntry getZipEntry() {
-        ZipEntry desc = new ZipEntry(this.getFullPath());
-        //desc.setComment(this.description);
-        return desc;
+        String fullPath = this.getFullPath();
+        if (fullPath.startsWith("/")) { // ZIP entry shouldn't be absolute.
+            fullPath = fullPath.replaceFirst("/", "");
+        }
+        return new ZipEntry(fullPath);
     }
 
     /**

@@ -91,6 +91,7 @@ public class ContentConnector implements AutoCloseable {
             Node n = SessionManager.createPath(this.session, this.workspaceRoot);
             this.initializeNamespaces();
             n.setProperty(WFSConfig.WFS_MIME_TYPE, DirectoryDescriptor.MIME_TYPE);
+            this.save(); // write it so that concurrent session may access it.
         }
     }
 
@@ -378,7 +379,6 @@ public class ContentConnector implements AutoCloseable {
      *
      * @throws RepositoryException
      * @throws IOException
-     * @deprecated mostly to rewrite
      */
     public void zipDirectory(ZipOutputStream out, String path) throws RepositoryException, IOException {
         AbstractContentDescriptor node = DescriptorFactory.getDescriptor(path, this);
@@ -425,7 +425,11 @@ public class ContentConnector implements AutoCloseable {
     public void cloneRoot(Long fromGameModel) throws RepositoryException {
         try (ContentConnector connector = new ContentConnector(fromGameModel, workspaceType)) {
             final String fromPath = connector.getNode("/").getPath();
-            this.session.getWorkspace().copy(fromPath, this.getNode("/").getPath());
+            this.session.refresh(true);
+            final String destPath = this.getNode("/").getPath();
+            this.getNode("/").remove();
+            this.save();
+            this.session.getWorkspace().copy(fromPath, destPath);
         }
     }
 
