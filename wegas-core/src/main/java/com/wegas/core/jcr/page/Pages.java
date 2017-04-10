@@ -143,6 +143,9 @@ public class Pages implements AutoCloseable {
         if (page.getName() != null) {
             n.setProperty(Page.NAME_KEY, page.getName());
         }
+        if (page.getIndex() != null) {
+            n.setProperty(Page.INDEX_KEY, page.getIndex());
+        }
     }
 
     /**
