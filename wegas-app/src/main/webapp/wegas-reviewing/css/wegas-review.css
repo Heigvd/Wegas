@@ -109,7 +109,7 @@
 
 
 /*
- * Orchestrator 
+ * Orchestrator
  */
 
 
@@ -141,7 +141,7 @@
 }
 
 .wegas-review-orchestrator .header{
-    position:relative;    
+    position:relative;
 }
 
 .wegas-review-orchestrator .header h2 {
@@ -201,7 +201,11 @@
 }
 
 .wegas-review-orchestrator .properties .include-evicted.selected .checkbox:before {
-    background:#ed6a3b;
+    background:none;
+    content:"\2714";
+    color: black;
+    font-weight: bold;
+    text-align: center;
 }
 
 .wegas-review-orchestrator .control-panel .state.current {
@@ -379,7 +383,7 @@
 
 
 .wegas-review-orchestrator td.yui3-datatable-cell i:before {
-    color: #6262A7;    
+    color: #6262A7;
 }
 
 
