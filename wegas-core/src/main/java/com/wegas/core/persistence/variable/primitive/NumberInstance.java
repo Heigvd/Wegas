@@ -107,7 +107,7 @@ public class NumberInstance extends VariableInstance {
      * @return
      */
     public List<Double> getHistory() {
-        Collections.sort(this.history, new EntityComparators.OrderComparators<>());
+        Collections.sort(this.history, new EntityComparators.OrderComparator<>());
 
         List<Double> h = new ArrayList<>();
         for (NumberHistoryEntry entry : this.history) {

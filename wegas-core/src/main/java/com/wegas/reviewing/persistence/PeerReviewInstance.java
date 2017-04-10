@@ -9,7 +9,7 @@ package com.wegas.reviewing.persistence;
 
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.EntityCreatedTimeComparator;
+import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.VariableInstance;
 
@@ -76,7 +76,7 @@ public class PeerReviewInstance extends VariableInstance {
      * @return the list of feedback
      */
     public List<Review> getToReview() {
-        Collections.sort(this.toReview, new EntityCreatedTimeComparator<>());
+        Collections.sort(this.toReview, new EntityComparators.CreateTimeComparator<>());
         return this.toReview;
     }
 
@@ -103,7 +103,7 @@ public class PeerReviewInstance extends VariableInstance {
      * @return all feedbacks from others
      */
     public List<Review> getReviewed() {
-        Collections.sort(this.reviewed, new EntityCreatedTimeComparator<>());
+        Collections.sort(this.reviewed, new EntityComparators.CreateTimeComparator<>());
         return this.reviewed;
     }
 

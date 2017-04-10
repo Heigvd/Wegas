@@ -17,7 +17,7 @@ import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.DatedEntity;
-import com.wegas.core.persistence.EntityCreatedTimeComparator;
+import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.jparealm.GameAccount;
@@ -196,7 +196,7 @@ public class Game extends NamedEntity implements Broadcastable, BroadcastTarget,
     @JsonManagedReference("game-team")
     @JsonView(Views.IndexI.class)
     public List<Team> getTeams() {
-        Collections.sort(this.teams, new EntityCreatedTimeComparator<>());
+        Collections.sort(this.teams, new EntityComparators.CreateTimeComparator<>());
         return this.teams;
     }
 

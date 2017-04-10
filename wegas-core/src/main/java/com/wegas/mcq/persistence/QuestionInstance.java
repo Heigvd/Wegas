@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.EntityCreatedTimeComparator;
+import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.VariableInstance;
 import org.eclipse.persistence.annotations.BatchFetch;
@@ -96,7 +96,7 @@ public class QuestionInstance extends VariableInstance {
      */
     @JsonManagedReference
     public List<Reply> getReplies() {
-        Collections.sort(this.replies, new EntityCreatedTimeComparator<>());
+        Collections.sort(this.replies, new EntityComparators.CreateTimeComparator<>());
         return replies;
     }
 

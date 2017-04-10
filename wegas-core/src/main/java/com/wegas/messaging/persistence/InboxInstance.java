@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.EntityCreatedTimeComparator;
+import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
@@ -70,7 +70,7 @@ public class InboxInstance extends VariableInstance {
      * @return the replies
      */
     public List<Message> getMessages() {
-        Collections.sort(this.messages, new EntityCreatedTimeComparator<>());
+        Collections.sort(this.messages, new EntityComparators.CreateTimeComparator<>());
         Collections.reverse(messages);
         return this.messages;
     }

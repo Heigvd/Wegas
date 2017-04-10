@@ -10,7 +10,7 @@ package com.wegas.resourceManagement.persistence;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.EntityCreatedTimeComparator;
+import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.VariableInstance;
 
@@ -43,7 +43,7 @@ public class BurndownInstance extends VariableInstance {
      * @return get all iterations
      */
     public List<Iteration> getIterations() {
-        Collections.sort(this.iterations, new EntityCreatedTimeComparator<>());
+        Collections.sort(this.iterations, new EntityComparators.CreateTimeComparator<>());
         return iterations;
     }
 
