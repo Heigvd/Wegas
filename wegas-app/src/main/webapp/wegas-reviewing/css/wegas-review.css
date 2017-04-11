@@ -156,7 +156,7 @@
 }
 
 .wegas-review-orchestrator .control-panel {
-    height: 125px;
+    height: 135px;
 }
 
 .wegas-review-orchestrator .control-panel > * {
@@ -221,7 +221,7 @@
 
 .wegas-review-orchestrator .control-panel .state {
     background-color: #bbb;
-    width: 200px;
+    width: 197px;
     border-radius: 5px;
     text-align: center;
     border: 1px solid #999;
@@ -237,7 +237,7 @@
 
 .wegas-review-orchestrator .control-panel .transition span{
     color: #DDDDDD;
-    padding-top: 46px;
+    padding: 50px 2px 0;
     position: relative;
 }
 
