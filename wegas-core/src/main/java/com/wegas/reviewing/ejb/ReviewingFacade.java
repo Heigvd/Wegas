@@ -215,8 +215,8 @@ public class ReviewingFacade {
             /*
              * Real Game: evict test or "ghost" instance(s)
              *
-             * In case peerreview variable is game/gameModel scoped, there will be only one 
-             * instance for the whole game and such an instance will be evicted.... For the 
+             * In case peerreview variable is game/gameModel scoped, there will be only one
+             * instance for the whole game and such an instance will be evicted.... For the
              * time, it sounds like OK since such a review seems useless
              */
             for (Game game : prd.getGameModel().getGames()) {
@@ -259,10 +259,14 @@ public class ReviewingFacade {
                     boolean reject = false;
                     if (toReviewInstance instanceof TextInstance) {
                         TextInstance primitive = (TextInstance) toReviewInstance;
-                        reject = Helper.isNullOrEmpty(primitive.getValue());
+                        String primitiveValue = primitive.getValue(),
+                               defaultValue = ((TextInstance)primitive.getDescriptor().getDefaultInstance()).getValue();
+                        reject = Helper.isNullOrEmpty(primitiveValue) || primitiveValue.equals(defaultValue);
                     } else if (toReviewInstance instanceof StringInstance) {
                         StringInstance primitive = (StringInstance) toReviewInstance;
-                        reject = Helper.isNullOrEmpty(primitive.getValue());
+                        String primitiveValue = primitive.getValue(),
+                               defaultValue = ((StringInstance)primitive.getDescriptor().getDefaultInstance()).getValue();
+                        reject = Helper.isNullOrEmpty(primitiveValue) || primitiveValue.equals(defaultValue);
                     }
                     if (reject) {
                         pri.setReviewState(PeerReviewDescriptor.ReviewingState.EVICTED);
