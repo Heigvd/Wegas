@@ -46,10 +46,11 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Default EclipseLink coodinationType (SEND_OBJECT_CHANGE) leads to buggy coordination for new object with @ElementCollection annotated fields.
- * Either INVALIDATE_CHANGED_OBJECTS or SEND_NEW_OBJECTS_WITH_CHANGES must be set to fix this problem.
+ * SEND_NEW_OBJECTS_WITH_CHANGES does not fix the issue.
+ * INVALIDATE_CHANGED_OBJECTS must be set to fix this problem.
  * 
  */
-@Cache(coordinationType = CacheCoordinationType.SEND_NEW_OBJECTS_WITH_CHANGES)
+//@Cache(coordinationType = CacheCoordinationType.SEND_NEW_OBJECTS_WITH_CHANGES)
 //@Cache(coordinationType = CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS)
 public abstract class AbstractEntity implements Serializable, Cloneable {
 

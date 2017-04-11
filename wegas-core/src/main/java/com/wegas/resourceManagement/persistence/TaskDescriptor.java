@@ -12,9 +12,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.persistence.Basic;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -31,6 +29,8 @@ import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.variable.Beanjection;
+import com.wegas.core.persistence.variable.Propertable;
+import com.wegas.core.persistence.VariableProperty;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @Entity
-public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
+public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements Propertable {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskDescriptor.class);
 
@@ -65,7 +65,8 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      *
      */
     @ElementCollection
-    private Map<String, String> properties = new HashMap<>();
+    @JsonIgnore
+    private List<VariableProperty> properties = new ArrayList<>();
     /**
      *
      */
@@ -103,6 +104,12 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     @JsonView(Views.ExtendedI.class)
     private List<Iteration> iterations;
 
+    @JsonIgnore
+    @Override
+    public List<VariableProperty> getInternalProperties() {
+        return this.properties;
+    }
+
     /**
      *
      *
@@ -117,8 +124,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
             this.setIndex(other.getIndex());
             this.setPredecessorNames(other.getImportedPredecessorNames());
             // this.setPredecessors(ListUtils.updateList(this.getPredecessors(), other.getPredecessors()));
-            this.setProperties(new HashMap<>());
-            this.getProperties().putAll(other.getProperties());
+            this.setProperties(other.getProperties());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
@@ -168,6 +174,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
 
     /**
      * @param index
+     *
      * @return the predecessors
      */
     public TaskDescriptor getPredecessor(Integer index) {
@@ -226,53 +233,13 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
         this.iterations = iterations;
     }
 
-    /**
-     * @return the properties
-     */
-    public Map<String, String> getProperties() {
-        return properties;
-    }
-
-    /**
-     * @param properties the properties to set
-     */
-    public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
-    }
-
-    /**
-     *
-     * @param key
-     * @param val
-     */
-    public void setProperty(String key, String val) {
-        this.properties.put(key, val);
-    }
-
-    /**
-     *
-     * @param key
-     * @return get descriptor property
-     */
-    public String getProperty(String key) {
-        return this.properties.get(key);
-    }
-
-    /**
-     *
-     * @param key
-     * @return property mapped by given key, double casted
-     */
-    public double getPropertyD(String key) {
-        return Double.valueOf(this.properties.get(key));
-    }
-
     //Methods for impacts
     /**
      * get and cast a player's instance property to double
      *
      * @param p
      * @param key
+     *
      * @return double castes player instance property
      */
     public double getNumberInstanceProperty(Player p, String key) {
@@ -290,6 +257,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      *
      * @param p
      * @param key
+     *
      * @return player instance string property
      */
     public String getStringInstanceProperty(Player p, String key) {
@@ -301,6 +269,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      *
      * @param p
      * @param key
+     *
      * @return player instance string property
      */
     public String getInstanceProperty(Player p, String key) {
@@ -338,6 +307,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      *
      * @deprecated moved as property
      * @param p
+     *
      * @return player instance task duration
      */
     public double getDuration(Player p) {
@@ -401,6 +371,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     /**
      *
      * @param p
+     *
      * @return true if the player instance is active
      */
     public boolean getActive(Player p) {

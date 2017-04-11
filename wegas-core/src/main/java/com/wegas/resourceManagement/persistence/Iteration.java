@@ -12,17 +12,21 @@ import com.wegas.core.rest.util.Views;
 import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.DatedEntity;
+import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.Beanjection;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import javax.swing.plaf.ListUI;
 
 /**
  * PMG Related !
@@ -70,14 +74,16 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      * planned workload from beginAt period
      */
     @ElementCollection
-    private Map<Long, Double> plannedWorkloads = new HashMap<>();
+    @JsonIgnore
+    private List<IterationPlanning> plannedWorkloads = new ArrayList<>();
 
     /**
      * maps a period number with workload for current period and future ones:
      * Indicate the planned workload consumption
      */
     @ElementCollection
-    private Map<Long, Double> replannedWorkloads = new HashMap<>();
+    @JsonIgnore
+    private List<IterationPlanning> replannedWorkloads = new ArrayList<>();
 
     /**
      * maps a period number with workload for past period and current one:
@@ -196,8 +202,14 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      *
      * @return planned workload, mapped by relative period number
      */
+    @JsonIgnore
+    private Map<Long, Double> getModifiablePlannedWorkloads() {
+        return ListUtils.mapEntries(this.plannedWorkloads, new IterationPlanning.Extractor());
+    }
+
+    @JsonProperty
     public Map<Long, Double> getPlannedWorkloads() {
-        return plannedWorkloads;
+        return Collections.unmodifiableMap(this.getModifiablePlannedWorkloads());
     }
 
     /**
@@ -205,8 +217,12 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      *
      * @param plannedWorkloads the planning
      */
+    @JsonProperty
     public void setPlannedWorkloads(Map<Long, Double> plannedWorkloads) {
-        this.plannedWorkloads = plannedWorkloads;
+        this.plannedWorkloads.clear();
+        for (Entry<Long, Double> entry : plannedWorkloads.entrySet()) {
+            this.plannedWorkloads.add(new IterationPlanning(entry.getKey(), entry.getValue()));
+        }
     }
 
     /**
@@ -246,8 +262,14 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      *
      * @return the planned workloads consumption
      */
+    @JsonIgnore
+    private Map<Long, Double> getModifiableReplannedWorkloads() {
+        return ListUtils.mapEntries(this.plannedWorkloads, new IterationPlanning.Extractor());
+    }
+
+    @JsonProperty
     public Map<Long, Double> getReplannedWorkloads() {
-        return replannedWorkloads;
+        return Collections.unmodifiableMap(this.getModifiableReplannedWorkloads());
     }
 
     /**
@@ -256,7 +278,10 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      * @param replannedWorkloads
      */
     public void setReplannedWorkloads(Map<Long, Double> replannedWorkloads) {
-        this.replannedWorkloads = replannedWorkloads;
+        this.replannedWorkloads.clear();
+        for (Entry<Long, Double> entry : replannedWorkloads.entrySet()) {
+            this.replannedWorkloads.add(new IterationPlanning(entry.getKey(), entry.getValue()));
+        }
     }
 
     /**
@@ -306,11 +331,15 @@ public class Iteration extends AbstractEntity implements DatedEntity {
     }
 
     public void plan(Long periodNumber, Double workload) {
-        internalPlan(periodNumber, workload, this.getPlannedWorkloads());
+        Map<Long, Double> planning = this.getModifiablePlannedWorkloads();
+        internalPlan(periodNumber, workload, planning);
+        this.setPlannedWorkloads(planning);
     }
 
     public void replan(Long periodNumber, Double workload) {
-        internalPlan(periodNumber, workload, this.getReplannedWorkloads());
+        Map<Long, Double> planning = this.getModifiableReplannedWorkloads();
+        internalPlan(periodNumber, workload, planning);
+        this.setReplannedWorkloads(planning);
     }
 
     /**
@@ -325,8 +354,8 @@ public class Iteration extends AbstractEntity implements DatedEntity {
             this.setName(other.getName());
 
             //ListUtils.updateList(tasks, other.getTasks());
-            //this.setPlannedWorkload(other.getPlannedWorkload());
-            //this.setReplannedWorkloads(replannedWorkloads);
+            //this.setPlannedWorkloads(other.getPlannedWorkloads());
+            //this.setReplannedWorkloads(other.getReplannedWorkloads());
             //this.setTotalWorkload(other.getTotalWorkload());
             //this.setWorkloads();
         } else {

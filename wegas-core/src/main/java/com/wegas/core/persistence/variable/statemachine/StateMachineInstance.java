@@ -20,6 +20,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.EntityComparators;
+import com.wegas.core.persistence.variable.primitive.NumberHistoryEntry;
+import java.util.Collections;
 
 /**
  *
@@ -56,8 +59,8 @@ public class StateMachineInstance extends VariableInstance {
      */
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "transitionHistory")
-    @Column(name = "transitionId")
-    private List<Long> transitionHistory = new ArrayList<>();
+    @JsonIgnore
+    private List<TransitionHistoryEntry> transitionHistory = new ArrayList<>();
 
     /**
      *
@@ -118,12 +121,25 @@ public class StateMachineInstance extends VariableInstance {
      *
      * @return
      */
+    @JsonProperty
     public List<Long> getTransitionHistory() {
-        return transitionHistory;
+        Collections.sort(this.transitionHistory, new EntityComparators.OrderComparator<>());
+
+        List<Long> h = new ArrayList<>();
+        for (TransitionHistoryEntry entry : this.transitionHistory) {
+            h.add(entry.getTansitionId());
+        }
+        return h;
     }
 
+    @JsonProperty
     public void setTransitionHistory(List<Long> transitionHistory) {
-        this.transitionHistory = transitionHistory;
+        this.transitionHistory.clear();
+        if (transitionHistory != null) {
+            for (int i = 0; i < transitionHistory.size(); i++) {
+                this.transitionHistory.add(new TransitionHistoryEntry(transitionHistory.get(i), i));
+            }
+        }
     }
 
     /**
@@ -131,7 +147,9 @@ public class StateMachineInstance extends VariableInstance {
      * @param id
      */
     public void transitionHistoryAdd(Long id) {
-        this.transitionHistory.add(id);
+        List<Long> h = this.getTransitionHistory();
+        h.add(id);
+        this.setTransitionHistory(h);
     }
 
     @Override

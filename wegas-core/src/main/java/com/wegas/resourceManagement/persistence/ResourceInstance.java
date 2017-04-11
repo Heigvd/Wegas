@@ -10,7 +10,6 @@ package com.wegas.resourceManagement.persistence;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.*;
@@ -21,6 +20,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.variable.Propertable;
+import com.wegas.core.persistence.VariableProperty;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -34,7 +35,7 @@ import java.util.Comparator;
 /*@Table(indexes = {
     @Index(columnList = "properties.resourceinstance_variableinstance_id")
 })*/
-public class ResourceInstance extends VariableInstance {
+public class ResourceInstance extends VariableInstance implements Propertable {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -69,7 +70,8 @@ public class ResourceInstance extends VariableInstance {
      *
      */
     @ElementCollection
-    private Map<String, String> properties = new HashMap<>();
+    @JsonIgnore
+    private List<VariableProperty> properties = new ArrayList<>();
     /**
      * @deprecated
      */
@@ -79,6 +81,12 @@ public class ResourceInstance extends VariableInstance {
      *
      */
     private int confidence;
+
+    @JsonIgnore
+    @Override
+    public List<VariableProperty> getInternalProperties() {
+        return properties;
+    }
 
     /**
      *
@@ -145,8 +153,7 @@ public class ResourceInstance extends VariableInstance {
                 //this.setOccupations(ListUtils.mergeLists(this.getOccupations(), other.getOccupations(), new UpdaterImpl(this)));
                 this.setOccupations(ListUtils.mergeLists(this.getOccupations(), other.getOccupations()));
             }
-            this.setProperties(new HashMap<>());
-            this.getProperties().putAll(other.getProperties());
+            this.setProperties(other.getProperties());
             //this.setProperties(other.getProperties());
             //this.setMoral(other.getMoral());
             this.setConfidence(other.getConfidence());
@@ -227,6 +234,7 @@ public class ResourceInstance extends VariableInstance {
     /**
      *
      * @param task
+     *
      * @return the activity public Activity createActivity(TaskDescriptor task)
      *         { final Activity activity = new Activity(task);
      *         this.addActivity(activity); return activity; }
@@ -318,50 +326,8 @@ public class ResourceInstance extends VariableInstance {
     }
 
     /**
-     * @return the properties
-     */
-    public Map<String, String> getProperties() {
-        return this.properties;
-    }
-
-    /**
-     * @param properties the properties to set
-     */
-    public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
-    }
-
-    /**
-     *
-     * @param key
-     * @param val
-     */
-    public void setProperty(String key, String val) {
-        this.properties.put(key, val);
-    }
-
-    /**
-     *
-     * @param key
-     * @return true is the resourceInstance is active
-     */
-    public String getProperty(String key) {
-        return this.properties.get(key);
-    }
-
-    /**
-     * get property by key, cast to double
-     *
-     * @param key
-     * @return the value mapped by key, cast to double
-     * @throws NumberFormatException if the property is not a number
-     */
-    public double getPropertyD(String key) {
-        return Double.valueOf(this.properties.get(key));
-    }
-
-    /**
      * @return the moral
+     *
      * @deprecated
      */
     @JsonIgnore
@@ -371,6 +337,7 @@ public class ResourceInstance extends VariableInstance {
 
     /**
      * @param moral the moral to set
+     *
      * @deprecated
      */
     @JsonProperty
@@ -398,7 +365,9 @@ public class ResourceInstance extends VariableInstance {
      *
      * @param currentPosition
      * @param nextPosition
+     *
      * @return assignment list with up to date order
+     *
      * @deprecated
      */
     public List<Assignment> moveAssignemnt(Integer currentPosition, Integer nextPosition) {
