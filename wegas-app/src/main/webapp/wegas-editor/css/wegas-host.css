@@ -837,7 +837,7 @@
         -webkit-transform:rotate(-45deg);
     }
     to{
-        -webkit-transform:rotate(10deg);
+        -webkit-transform:rotate(0deg);
         opacity:1;
         visibility:visible;
     }
@@ -855,7 +855,7 @@
         -moz-transform:rotate(-45deg);
     }
     to{
-        -moz-transform:rotate(10deg);
+        -moz-transform:rotate(0deg);
         opacity:1;
         visibility:visible;
     }
@@ -873,7 +873,7 @@
         -o-transform:rotate(-45deg);
     }
     to{
-        -o-transform:rotate(10deg);
+        -o-transform:rotate(0deg);
         opacity:1;
         visibility:visible;
     }
@@ -891,7 +891,7 @@
         transform:rotate(-45deg);
     }
     to{
-        transform:rotate(10deg);
+        transform:rotate(0deg);
         opacity:1;
         visibility:visible;
     }

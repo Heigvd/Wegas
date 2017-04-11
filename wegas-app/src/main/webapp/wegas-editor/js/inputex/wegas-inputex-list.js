@@ -50,6 +50,8 @@ YUI.add("wegas-inputex-list", function(Y) {
             this.options.className = options.className || 'inputEx-Field inputEx-ListField';
             this.options.addType = options.addType;
             this.options.sortable = options.sortable || false;
+            this.options.removable = options.removable || false;
+            this.options.numbered = options.numbered || false;
         },
         /**
          * Render the addButton
@@ -84,16 +86,23 @@ YUI.add("wegas-inputex-list", function(Y) {
         },
         renderField: function(fieldOptions) {
             var fieldInstance = ListField.superclass.renderField.call(this, fieldOptions);
+            if (this.options.numbered !== false) {
+                this.addClassName("numbered");
+            }
             fieldInstance._handlers = [];
-            fieldInstance._handlers.push(
-                new Y.Wegas.Button({//                                              // Render remove line button
-                    label: '<span class="wegas-icon wegas-icon-remove"></span>',
-                    cssClass: "wegas-removebutton",
-                    on: {
-                        click: Y.bind(this.onRemove, this, fieldInstance)
-                    }
-                }).render(fieldInstance.divEl)
+            // Display remove button if required, but always from 2nd item on screen
+            if (this.options.removable || Y.all(".wegas-inputex-variabledescriptorselect-group.inputEx-Group").size() > 0) {
+                fieldInstance._handlers.push(
+                    new Y.Wegas.Button({//                                              // Render remove line button
+                        label: '<span class="wegas-icon wegas-icon-remove"></span>',
+                        tooltip: "Delete impact",
+                        cssClass: "wegas-removebutton",
+                        on: {
+                            click: Y.bind(this.onRemove, this, fieldInstance)
+                        }
+                    }).render(fieldInstance.divEl)
                 );
+            }
             if (this.options.sortable) {                                        // Render move up/down buttons
                 fieldInstance._handlers.push(
                     new Y.Wegas.Button({
