@@ -346,6 +346,10 @@
     background-size:100%;
 }
 
+.yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .hide-first-removebutton .wegas-inputex-variabledescriptorselect-group:only-of-type .wegas-removebutton {
+    display: none;
+}
+
 .yui3-skin-sam .wegas-form.wegas-console-custom .content-advanced-script .wegas-inputex-variabledescriptorselect-group .wegas-moveupbutton{
     margin:20px 20px 0px 0px;
     background:none;
