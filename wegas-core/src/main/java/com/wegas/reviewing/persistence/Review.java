@@ -8,12 +8,11 @@
 package com.wegas.reviewing.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.EntityIdComparator;
 import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.reviewing.persistence.evaluation.EvaluationInstance;
 
 import javax.persistence.*;
@@ -39,7 +38,8 @@ import java.util.*;
  */
 @Entity
 @Table(indexes = {
-        @Index(columnList = "author_variableinstance_id"),
+    @Index(columnList = "author_variableinstance_id")
+    ,
         @Index(columnList = "reviewer_variableinstance_id")
 })
 public class Review extends AbstractEntity /* implements Broadcastable */ {
@@ -59,6 +59,7 @@ public class Review extends AbstractEntity /* implements Broadcastable */ {
     @GeneratedValue
     private Long id;
 
+    @Enumerated(value = EnumType.STRING)
     private ReviewState reviewState;
 
     /**
@@ -194,7 +195,6 @@ public class Review extends AbstractEntity /* implements Broadcastable */ {
         Helper.merge(entities, this.getReviewer().getEntities());
         return entities;
     }*/
-
     @Override
     public void merge(AbstractEntity other) {
         if (other instanceof Review) {
@@ -208,4 +208,23 @@ public class Review extends AbstractEntity /* implements Broadcastable */ {
         }
     }
 
+    @Override
+    public void updateCacheOnDelete(Beanjection beans) {
+        PeerReviewInstance theAuthor = this.getAuthor();
+        PeerReviewInstance theReviewer = this.getReviewer();
+
+        if (theAuthor != null) {
+            theAuthor = (PeerReviewInstance) beans.getVariableInstanceFacade().find(theAuthor.getId());
+            if (theAuthor != null) {
+                theAuthor.getReviewed().remove(this);
+            }
+        }
+
+        if (theReviewer != null) {
+            theReviewer = (PeerReviewInstance) beans.getVariableInstanceFacade().find(theReviewer.getId());
+            if (theReviewer != null) {
+                theReviewer.getToReview().remove(this);
+            }
+        }
+    }
 }

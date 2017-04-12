@@ -49,7 +49,7 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         choice.setDefaultInstance(new ChoiceInstance());
         choice.setName("testChoice");
         Result r = new Result("result");
-        r.setImpact(new Script("mynumber.value = 10"));
+        r.setImpact(new Script("Variable.find(gameModel, \"mynumber\").setValue(self, 10);"));
         choice.addResult(r);
         vdf.createChild(question.getId(), choice);
 
@@ -137,7 +137,7 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         choice.setDefaultInstance(new ChoiceInstance());
         choice.setName("testChoice");
         Result r = new Result("result");
-        r.setImpact(new Script("mynumber.value = 10"));
+        r.setImpact(new Script("Variable.find(gameModel, \"mynumber\").setValue(self, 10"));
         choice.addResult(r);
         vdf.createChild(question.getId(), choice);
         TestHelper.wipeEmCache();
