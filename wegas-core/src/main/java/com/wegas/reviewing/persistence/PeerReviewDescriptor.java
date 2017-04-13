@@ -30,7 +30,7 @@ import javax.validation.constraints.NotNull;
  *
  * PeerReviewDescriptor allows peer-reviewing of variable between
  * (scope-dependent) Player/Team (ie the "author" and the "reviewers").
- *
+ * <p>
  * A review: <ul>
  * <li> is made for a specific variable ('toReview' VariableDescriptor)</li>
  * <li> is define as, at least, one evaluation, defined as a 'feedback', wrapped
@@ -39,11 +39,11 @@ import javax.validation.constraints.NotNull;
  * 'maxNumberOfReviewer'). Each author is reviewed the given number of times and
  * is a 'reviewer' for the same number of others authors</li>
  * </ul>
- *
+ * <p>
  * Moreover, feedbacks can be commented by the author. Such an evaluation is
  * define within an EvaluationDescriptorContainer('fbComments', nested list can
  * be empty)
- *
+ * <p>
  * The reviewing process consists of X stage:
  * <ol>
  * <li> not-started: author edit its 'toReview' variable instance</li>
@@ -65,13 +65,12 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      * Define review states
      */
     public enum ReviewingState {
-
+        DISCARDED, // completely out of reviewing process (debug team for instance)
+        EVICTED, // partially out of reviewing process -> nothing to review
         NOT_STARTED, // author can edit toReview
         SUBMITTED, // authors can't edit toReview anymore
         DISPATCHED, // toReview are dispatched, state became review dependent
         NOTIFIED, // tema take aquintance of peer's evaluations
-        DISCARDED, // completely out of reviewing process (debug team for instance)
-        EVICTED, // partially out of reviewing process -> nothing to review
         COMPLETED // 
     }
 
@@ -96,7 +95,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
     /**
      * Expected number of reviews. The number of reviews may be smaller,
      * especially is total number of team/player is too small
-     *
+     * <p>
      */
     private Integer maxNumberOfReviewer;
 
@@ -272,6 +271,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      * Get the review state of the given player's instance
      *
      * @param p the player
+     *
      * @return player's instance state
      */
     public String getState(Player p) {

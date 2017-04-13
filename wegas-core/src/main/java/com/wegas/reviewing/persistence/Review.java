@@ -13,6 +13,7 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.reviewing.persistence.evaluation.EvaluationInstance;
 
 import javax.persistence.*;
@@ -63,6 +64,7 @@ public class Review extends AbstractEntity implements DatedEntity {
     @JsonIgnore
     private Date createdTime = new Date();
 
+    @Enumerated(value = EnumType.STRING)
     private ReviewState reviewState;
 
     /**
@@ -226,4 +228,23 @@ public class Review extends AbstractEntity implements DatedEntity {
         }
     }
 
+    @Override
+    public void updateCacheOnDelete(Beanjection beans) {
+        PeerReviewInstance theAuthor = this.getAuthor();
+        PeerReviewInstance theReviewer = this.getReviewer();
+
+        if (theAuthor != null) {
+            theAuthor = (PeerReviewInstance) beans.getVariableInstanceFacade().find(theAuthor.getId());
+            if (theAuthor != null) {
+                theAuthor.getReviewed().remove(this);
+            }
+        }
+
+        if (theReviewer != null) {
+            theReviewer = (PeerReviewInstance) beans.getVariableInstanceFacade().find(theReviewer.getId());
+            if (theReviewer != null) {
+                theReviewer.getToReview().remove(this);
+            }
+        }
+    }
 }

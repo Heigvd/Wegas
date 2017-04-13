@@ -19,6 +19,8 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 
 /**
  * Instance of the PeerReviewDescriptor variable Author:<br />
@@ -38,6 +40,7 @@ public class PeerReviewInstance extends VariableInstance {
     /**
      * Current review state
      */
+    @Enumerated(value = EnumType.STRING)
     private PeerReviewDescriptor.ReviewingState reviewState = PeerReviewDescriptor.ReviewingState.NOT_STARTED;
 
     /**

@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
 /**
  *
  * PeerReview EJB Facade
- *
+ * <p>
  * Contains PeerReviewing logic
  *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
@@ -97,6 +97,7 @@ public class ReviewingFacade {
      * Get a Review by id
      *
      * @param entityId the reviewID
+     *
      * @return the corresponding review or null
      */
     public Review findReview(final Long entityId) {
@@ -107,6 +108,7 @@ public class ReviewingFacade {
      * Get an evaluationInstance by Id
      *
      * @param evId evaluation instance id
+     *
      * @return the evaluation instance or null
      */
     public EvaluationInstance findEvaluationInstance(Long evId) {
@@ -117,6 +119,7 @@ public class ReviewingFacade {
      * Get an evaluationDescriptor by Id
      *
      * @param evId evaluation descriptor id
+     *
      * @return the evaluation descriptor or null
      */
     public EvaluationDescriptor findEvaluationDescriptor(Long evId) {
@@ -161,6 +164,7 @@ public class ReviewingFacade {
      * @param prd      the peer review descriptor
      * @param author   peer review instance corresponding to the author
      * @param reviewer peer review instance corresponding to the reviewer
+     *
      * @return a brand new review, ready to be edited by the reviewer
      */
     private Review createReview(PeerReviewDescriptor prd, PeerReviewInstance author, PeerReviewInstance reviewer) {
@@ -190,6 +194,7 @@ public class ReviewingFacade {
      * given peer review descriptor and dispatch them (who review who?)
      *
      * @param prd peer review descriptor to dispatch
+     *
      * @return
      */
     public List<PeerReviewInstance> dispatch(PeerReviewDescriptor prd) {
@@ -257,17 +262,24 @@ public class ReviewingFacade {
                     Player findAPlayer = variableInstanceFacade.findAPlayer(pri);
                     VariableInstance toReviewInstance = toReview.getInstance(findAPlayer);
                     boolean reject = false;
-                    if (toReviewInstance instanceof TextInstance) {
+
+                    if (pri.getReviewState() == PeerReviewDescriptor.ReviewingState.COMPLETED
+                            || pri.getReviewState() == PeerReviewDescriptor.ReviewingState.DISPATCHED
+                            || pri.getReviewState() == PeerReviewDescriptor.ReviewingState.NOTIFIED) {
+                        // Only accept NOT_STARTED and SUBMITTING states
+                        reject = true;
+                    } else if (toReviewInstance instanceof TextInstance) {
                         TextInstance primitive = (TextInstance) toReviewInstance;
                         String primitiveValue = primitive.getValue(),
-                               defaultValue = ((TextInstance)primitive.getDescriptor().getDefaultInstance()).getValue();
+                                defaultValue = ((TextInstance) primitive.getDescriptor().getDefaultInstance()).getValue();
                         reject = Helper.isNullOrEmpty(primitiveValue) || primitiveValue.equals(defaultValue);
                     } else if (toReviewInstance instanceof StringInstance) {
                         StringInstance primitive = (StringInstance) toReviewInstance;
                         String primitiveValue = primitive.getValue(),
-                               defaultValue = ((StringInstance)primitive.getDescriptor().getDefaultInstance()).getValue();
+                                defaultValue = ((StringInstance) primitive.getDescriptor().getDefaultInstance()).getValue();
                         reject = Helper.isNullOrEmpty(primitiveValue) || primitiveValue.equals(defaultValue);
                     }
+
                     if (reject) {
                         pri.setReviewState(PeerReviewDescriptor.ReviewingState.EVICTED);
                         variableInstanceFacade.merge(pri);
@@ -367,6 +379,7 @@ public class ReviewingFacade {
      * the currentPlayer
      *
      * @param review
+     *
      * @return peer review instance that belong to the current player
      */
     public PeerReviewInstance getPeerReviewInstanceFromReview(Review review, Player player) {
@@ -382,6 +395,7 @@ public class ReviewingFacade {
      *
      * @param pri   peer review instance containing the review
      * @param other the review to merge within pri
+     *
      * @return up to date review
      */
     public Review saveReview(PeerReviewInstance pri, Review other) {
@@ -416,6 +430,7 @@ public class ReviewingFacade {
      * from NOTIFIED to COMPLETED
      *
      * @param review the review to submit
+     *
      * @return review
      */
     public Review submitReview(Review review, Player player) {
@@ -437,6 +452,7 @@ public class ReviewingFacade {
      * by id
      *
      * @param reviewId
+     *
      * @return the submitted review
      */
     public Review submitReview(Long reviewId, Player player) {
@@ -452,17 +468,22 @@ public class ReviewingFacade {
         List<PeerReviewInstance> pris = new ArrayList(prd.getScope().getVariableInstances().values());
         List<PeerReviewInstance> touched = new ArrayList<>();
         for (PeerReviewInstance pri : pris) {
-            for (Review review : pri.getReviewed()) {
-                if (review.getReviewState() == Review.ReviewState.DISPATCHED || review.getReviewState() == Review.ReviewState.REVIEWED) {
-                    review.setReviewState(Review.ReviewState.NOTIFIED);
+            if (pri.getReviewState() != PeerReviewDescriptor.ReviewingState.DISCARDED && pri.getReviewState() != PeerReviewDescriptor.ReviewingState.EVICTED) {
+
+                if (pri.getReviewState() == PeerReviewDescriptor.ReviewingState.DISPATCHED) {
+                    for (Review review : pri.getReviewed()) {
+                        if (review.getReviewState() == Review.ReviewState.DISPATCHED || review.getReviewState() == Review.ReviewState.REVIEWED) {
+                            review.setReviewState(Review.ReviewState.NOTIFIED);
+                        }
+                    }
+                    pri.setReviewState(PeerReviewDescriptor.ReviewingState.NOTIFIED);
+                } else {
+                    pri.setReviewState(PeerReviewDescriptor.ReviewingState.EVICTED);
                 }
+                touched.add(pri);
+                variableInstanceFacade.merge(pri);
+                //requestManager.addUpdatedInstance(pri);
             }
-            touched.add(pri);
-            if (pri.getReviewState() != PeerReviewDescriptor.ReviewingState.EVICTED) {
-                pri.setReviewState(PeerReviewDescriptor.ReviewingState.NOTIFIED);
-            }
-            variableInstanceFacade.merge(pri);
-            //requestManager.addUpdatedInstance(pri);
         }
         return touched;
     }
@@ -485,23 +506,28 @@ public class ReviewingFacade {
      * The Reviewing will be completely finished after closing
      *
      * @param prd
+     *
      * @return all peerReviewInstance that have been closed
      */
     public List<PeerReviewInstance> close(PeerReviewDescriptor prd) {
         List<PeerReviewInstance> pris = new ArrayList(prd.getScope().getVariableInstances().values());
         List<PeerReviewInstance> touched = new ArrayList<>();
         for (PeerReviewInstance pri : pris) {
-            for (Review review : pri.getReviewed()) {
-                if (review.getReviewState() == Review.ReviewState.NOTIFIED
-                        || review.getReviewState() == Review.ReviewState.COMPLETED) {
-                    review.setReviewState(Review.ReviewState.CLOSED);
+            if (pri.getReviewState() != PeerReviewDescriptor.ReviewingState.DISCARDED && pri.getReviewState() != PeerReviewDescriptor.ReviewingState.EVICTED) {
+                if (pri.getReviewState() == PeerReviewDescriptor.ReviewingState.NOTIFIED) {
+                    for (Review review : pri.getReviewed()) {
+                        if (review.getReviewState() == Review.ReviewState.NOTIFIED
+                                || review.getReviewState() == Review.ReviewState.COMPLETED) {
+                            review.setReviewState(Review.ReviewState.CLOSED);
+                        }
+                    }
+                    pri.setReviewState(PeerReviewDescriptor.ReviewingState.COMPLETED);
+                } else {
+                    pri.setReviewState(PeerReviewDescriptor.ReviewingState.EVICTED);
                 }
+                touched.add(pri);
+                variableInstanceFacade.merge(pri);
             }
-            if (pri.getReviewState() != PeerReviewDescriptor.ReviewingState.EVICTED) {
-                pri.setReviewState(PeerReviewDescriptor.ReviewingState.COMPLETED);
-            }
-            touched.add(pri);
-            variableInstanceFacade.merge(pri);
             //requestManager.addUpdatedInstance(pri);
         }
         return touched;
@@ -511,6 +537,7 @@ public class ReviewingFacade {
      * Reviewing phase is over -> author will be able to see feedbacks
      *
      * @param peerReviewDescriptorId
+     *
      * @return
      */
     public List<PeerReviewInstance> close(Long peerReviewDescriptorId) {
@@ -526,11 +553,11 @@ public class ReviewingFacade {
      * Since PeerReviewDescriptor toReview variable is only referenced by its
      * own private name on the JSON side, we have to resolve those name to
      * effective VariableDescriptor
-     *
+     * <p>
      * Moreover, as the variable may not yet exists (especially when posting a
      * whole GameModel) when the PeerReviewDescriptor is created, we'll have to
      * wait to resolve such identifier.
-     *
+     * <p>
      * This is done by listening to DescriptorRevivedEvent
      *
      * @param event
