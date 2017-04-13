@@ -19,10 +19,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.EntityComparators;
-import com.wegas.core.persistence.variable.primitive.NumberHistoryEntry;
-import java.util.Collections;
 
 /**
  *
@@ -123,10 +122,10 @@ public class StateMachineInstance extends VariableInstance {
      */
     @JsonProperty
     public List<Long> getTransitionHistory() {
-        Collections.sort(this.transitionHistory, new EntityComparators.OrderComparator<>());
+        List<TransitionHistoryEntry> copy = Helper.copyAndSort(this.transitionHistory, new EntityComparators.OrderComparator<>());
 
         List<Long> h = new ArrayList<>();
-        for (TransitionHistoryEntry entry : this.transitionHistory) {
+        for (TransitionHistoryEntry entry : copy) {
             h.add(entry.getTansitionId());
         }
         return h;

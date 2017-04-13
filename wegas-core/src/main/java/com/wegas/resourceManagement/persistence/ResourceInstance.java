@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.ListUtils;
@@ -151,7 +152,7 @@ public class ResourceInstance extends VariableInstance implements Propertable {
             }
             if (other.getOccupations() != null) {
                 //this.setOccupations(ListUtils.mergeLists(this.getOccupations(), other.getOccupations(), new UpdaterImpl(this)));
-                this.setOccupations(ListUtils.mergeLists(this.getOccupations(), other.getOccupations()));
+                this.setOccupations(ListUtils.mergeLists(this.occupations, other.occupations));
             }
             this.setProperties(other.getProperties());
             //this.setProperties(other.getProperties());
@@ -243,13 +244,14 @@ public class ResourceInstance extends VariableInstance implements Propertable {
      * @return the activities
      */
     public List<Occupation> getOccupations() {
-        Collections.sort(this.occupations, new Comparator<Occupation>() {
+        return occupations;
+        /*Collections.sort(this.occupations, new Comparator<Occupation>() {
             @Override
             public int compare(Occupation a, Occupation b) {
                 return ((Double) a.getTime()).compareTo(b.getTime());
             }
         });
-        return occupations;
+        return occupations;*/
     }
 
     private Occupation getOccupation(double time) {

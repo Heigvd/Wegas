@@ -444,8 +444,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     @JsonIgnore
     public List<Game> getGames() {
-        Collections.sort(this.games, new EntityComparators.CreateTimeComparator<>());
-        return this.games;
+        return games;
     }
 
     /**

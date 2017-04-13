@@ -66,7 +66,6 @@ public abstract class EvaluationInstance extends AbstractEntity implements Dated
     @JsonIgnore
     private Review commentsReview;
 
-    @JsonIgnore
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdTime = new Date();
 

@@ -155,7 +155,6 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
         //List<Script> preImpacts = new ArrayList<>();
         Map<StateMachineInstance, Transition> selectedTransitions = new HashMap<>();
 
-        List<Transition> transitions;
         StateMachineInstance smi;
         Boolean validTransition;
         Boolean transitionPassed = false;
@@ -166,8 +165,7 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
             if (!smi.getEnabled() || smi.getCurrentState() == null) { // a state may not be defined : remove statemachine's state when a player is inside that state
                 continue;
             }
-            transitions = smi.getCurrentState().getTransitions();
-            for (Transition transition : transitions) {
+            for (Transition transition : smi.getCurrentState().getSortedTransitions()) {
                 requestManager.getEventCounter().clearCurrents();
 
                 if (validTransition) {

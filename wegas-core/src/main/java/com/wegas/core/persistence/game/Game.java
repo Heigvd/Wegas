@@ -196,7 +196,6 @@ public class Game extends NamedEntity implements Broadcastable, BroadcastTarget,
     @JsonManagedReference("game-team")
     @JsonView(Views.IndexI.class)
     public List<Team> getTeams() {
-        Collections.sort(this.teams, new EntityComparators.CreateTimeComparator<>());
         return this.teams;
     }
 

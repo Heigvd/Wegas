@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.DatedEntity;
-import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.reviewing.persistence.evaluation.EvaluationInstance;
@@ -61,7 +60,6 @@ public class Review extends AbstractEntity implements DatedEntity {
     private Long id;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonIgnore
     private Date createdTime = new Date();
 
     @Enumerated(value = EnumType.STRING)
@@ -175,7 +173,6 @@ public class Review extends AbstractEntity implements DatedEntity {
      * @return the list of evaluation instance composing the feedback
      */
     public List<EvaluationInstance> getFeedback() {
-        Collections.sort(this.feedback, new EntityComparators.CreateTimeComparator<>());
         return this.feedback;
     }
 
@@ -194,7 +191,6 @@ public class Review extends AbstractEntity implements DatedEntity {
      * @return the list of evaluation instances composing the feedback comments
      */
     public List<EvaluationInstance> getComments() {
-        Collections.sort(this.comments, new EntityComparators.CreateTimeComparator<>());
         return this.comments;
     }
 

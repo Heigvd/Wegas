@@ -8,6 +8,7 @@
 package com.wegas.core.persistence.variable.primitive;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.persistence.AbstractEntity;
@@ -107,10 +108,10 @@ public class NumberInstance extends VariableInstance {
      * @return
      */
     public List<Double> getHistory() {
-        Collections.sort(this.history, new EntityComparators.OrderComparator<>());
+        List<NumberHistoryEntry> copy = Helper.copyAndSort(this.history, new EntityComparators.OrderComparator<>());
 
         List<Double> h = new ArrayList<>();
-        for (NumberHistoryEntry entry : this.history) {
+        for (NumberHistoryEntry entry : copy) {
             h.add(entry.getValue());
         }
         return h;

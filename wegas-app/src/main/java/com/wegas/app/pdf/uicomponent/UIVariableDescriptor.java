@@ -8,6 +8,7 @@
 package com.wegas.app.pdf.uicomponent;
 
 import com.wegas.app.pdf.helper.UIHelper;
+import com.wegas.core.Helper;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -52,8 +53,8 @@ import javax.faces.context.ResponseWriter;
 /**
  *
  * Faces component that print a VariableDescriptor as xHTML.
- *
- *
+ * <p>
+ * <p>
  * <pre>
  * <b>Usage:</b>
  * &lt;<b>VariableDescriptor</b> <b>value</b>="#{the varDesc object}"
@@ -104,6 +105,7 @@ public class UIVariableDescriptor extends UIComponentBase {
      * attributes
      *
      * @param context
+     *
      * @throws IOException
      */
     @Override
@@ -123,12 +125,13 @@ public class UIVariableDescriptor extends UIComponentBase {
 
     /**
      * According to VariableDescriptor type, branches the correct encode method
-     *
+     * <p>
      * Todo : use inheritance...
      *
      * @param context
      * @param writer
-     * @param vDesc the variable descriptor to encode
+     * @param vDesc   the variable descriptor to encode
+     *
      * @throws IOException
      */
     private void dispatch(FacesContext context, ResponseWriter writer, VariableDescriptor vDesc) throws IOException {
@@ -183,6 +186,7 @@ public class UIVariableDescriptor extends UIComponentBase {
      * @param context
      * @param writer
      * @param vDesc
+     *
      * @throws IOException
      */
     private void encodeBase(FacesContext context, ResponseWriter writer, VariableDescriptor vDesc, Boolean editorMode) throws IOException {
@@ -199,7 +203,6 @@ public class UIVariableDescriptor extends UIComponentBase {
         } else {
             title = vDesc.getTitle();
         }
-
 
         writer.write("<a name=\"vd" + vDesc.getId() + "\" />");
         UIHelper.printText(context, writer, title, UIHelper.CSS_CLASS_VARIABLE_TITLE
@@ -225,6 +228,7 @@ public class UIVariableDescriptor extends UIComponentBase {
      * @param context
      * @param writer
      * @param vDesc
+     *
      * @throws IOException
      */
     public void fallback(FacesContext context, ResponseWriter writer, VariableDescriptor vDesc) throws IOException {
@@ -272,6 +276,7 @@ public class UIVariableDescriptor extends UIComponentBase {
      * @param context
      * @param writer
      * @param obj
+     *
      * @throws IOException
      */
     public void encode(FacesContext context, ResponseWriter writer, TextDescriptor obj) throws IOException {
@@ -288,6 +293,7 @@ public class UIVariableDescriptor extends UIComponentBase {
      * @param context
      * @param writer
      * @param obj
+     *
      * @throws IOException
      */
     public void encode(FacesContext context, ResponseWriter writer, StringDescriptor obj) throws IOException {
@@ -305,6 +311,7 @@ public class UIVariableDescriptor extends UIComponentBase {
      * @param context
      * @param writer
      * @param task
+     *
      * @throws IOException
      */
     public void encode(FacesContext context, ResponseWriter writer, TaskDescriptor task) throws IOException {
@@ -368,12 +375,13 @@ public class UIVariableDescriptor extends UIComponentBase {
 
     /**
      * Specific output for ResourceDescriptor
-     *
+     * <p>
      * Display all properties
      *
      * @param context
      * @param writer
      * @param resource
+     *
      * @throws IOException
      * @todo PLAYER
      */
@@ -391,7 +399,6 @@ public class UIVariableDescriptor extends UIComponentBase {
             /*if (!instance.getSkillsets().isEmpty()) {
                 UIHelper.printProperty(context, writer, UIHelper.TEXT_MAIN_SKILL, instance.getMainSkill() + " (lvl: " + resource.getDefaultInstance().getMainSkillLevel() + ")");
             }*/
-
             //UIHelper.printProperty(context, writer, UIHelper.TEXT_MORAL, instance.getPropertyD("motivation"));
             UIHelper.printProperty(context, writer, UIHelper.TEXT_CONFIDENCE, instance.getConfidence());
 
@@ -413,6 +420,7 @@ public class UIVariableDescriptor extends UIComponentBase {
      * @param context
      * @param writer
      * @param obj
+     *
      * @throws IOException
      * @todo PLAYER
      */
@@ -433,6 +441,7 @@ public class UIVariableDescriptor extends UIComponentBase {
      * @param context
      * @param writer
      * @param list
+     *
      * @throws IOException
      */
     public void encode(FacesContext context, ResponseWriter writer, ListDescriptor list) throws IOException {
@@ -459,6 +468,7 @@ public class UIVariableDescriptor extends UIComponentBase {
      * @param context
      * @param writer
      * @param question
+     *
      * @throws IOException
      */
     public void encode(FacesContext context, ResponseWriter writer, QuestionDescriptor question) throws IOException {
@@ -505,7 +515,7 @@ public class UIVariableDescriptor extends UIComponentBase {
             /*
              * Replies
              */
-            List<Reply> replies = instance.getReplies();
+            List<Reply> replies = instance.getSortedReplies();
 
             if (!replies.isEmpty()) {
                 //UIHelper.printText(context, writer, "Results:", UIHelper.CSS_CLASS_VARIABLE_SUBTITLE);
@@ -525,6 +535,7 @@ public class UIVariableDescriptor extends UIComponentBase {
      * @param context
      * @param writer
      * @param choice
+     *
      * @throws IOException
      */
     public void encode(FacesContext context, ResponseWriter writer, ChoiceDescriptor choice) throws IOException {
@@ -580,6 +591,7 @@ public class UIVariableDescriptor extends UIComponentBase {
      * @param context
      * @param writer
      * @param trigger
+     *
      * @throws IOException
      */
     public void encode(FacesContext context, ResponseWriter writer, TriggerDescriptor trigger) throws IOException {
@@ -602,6 +614,7 @@ public class UIVariableDescriptor extends UIComponentBase {
      * @param context
      * @param writer
      * @param fsm
+     *
      * @throws IOException
      */
     public void encode(FacesContext context, ResponseWriter writer, StateMachineDescriptor fsm) throws IOException {
@@ -632,6 +645,7 @@ public class UIVariableDescriptor extends UIComponentBase {
      * @param context
      * @param writer
      * @param inbox
+     *
      * @throws IOException
      */
     public void encode(FacesContext context, ResponseWriter writer, InboxDescriptor inbox) throws IOException {
@@ -641,7 +655,7 @@ public class UIVariableDescriptor extends UIComponentBase {
 
         UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, inbox.getDescription(), false, false);
 
-        for (Message msg : instance.getMessages()) {
+        for (Message msg : instance.getSortedMessages()) {
             UIHelper.printMessage(context, writer, "", msg.getFrom(), msg.getSubject(), msg.getDate(), msg.getBody(), msg.getToken(), msg.getAttachements());
         }
 
@@ -654,6 +668,7 @@ public class UIVariableDescriptor extends UIComponentBase {
      * @param context
      * @param writer
      * @param nd
+     *
      * @throws IOException
      */
     public void encode(FacesContext context, ResponseWriter writer, NumberDescriptor nd) throws IOException {
@@ -676,6 +691,7 @@ public class UIVariableDescriptor extends UIComponentBase {
      * @param context
      * @param writer
      * @param bd
+     *
      * @throws IOException
      */
     public void encode(FacesContext context, ResponseWriter writer, BooleanDescriptor bd) throws IOException {

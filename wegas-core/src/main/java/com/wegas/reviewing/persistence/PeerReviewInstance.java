@@ -7,6 +7,7 @@
  */
 package com.wegas.reviewing.persistence;
 
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.EntityComparators;
@@ -79,7 +80,6 @@ public class PeerReviewInstance extends VariableInstance {
      * @return the list of feedback
      */
     public List<Review> getToReview() {
-        Collections.sort(this.toReview, new EntityComparators.CreateTimeComparator<>());
         return this.toReview;
     }
 
@@ -106,7 +106,6 @@ public class PeerReviewInstance extends VariableInstance {
      * @return all feedbacks from others
      */
     public List<Review> getReviewed() {
-        Collections.sort(this.reviewed, new EntityComparators.CreateTimeComparator<>());
         return this.reviewed;
     }
 
@@ -131,8 +130,8 @@ public class PeerReviewInstance extends VariableInstance {
                 PeerReviewInstance o = (PeerReviewInstance) a;
                 super.merge(a);
                 this.setReviewState(o.getReviewState());
-                this.setReviewed(ListUtils.mergeLists(this.getReviewed(), o.getReviewed()));
-                this.setToReview(ListUtils.mergeLists(this.getToReview(), o.getToReview()));
+                this.setReviewed(ListUtils.mergeLists(this.reviewed, o.reviewed));
+                this.setToReview(ListUtils.mergeLists(this.toReview, o.toReview));
             } else {
                 throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
             }

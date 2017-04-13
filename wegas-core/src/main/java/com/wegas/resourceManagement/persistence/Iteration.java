@@ -52,7 +52,6 @@ public class Iteration extends AbstractEntity implements DatedEntity {
     private Long id;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonIgnore
     private Date createdTime = new Date();
 
     /**

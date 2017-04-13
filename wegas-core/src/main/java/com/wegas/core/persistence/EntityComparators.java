@@ -56,4 +56,18 @@ public class EntityComparators {
         }
     }
 
+    public static class ReverseCreateTimeComparator<T extends DatedEntity> implements Comparator<T> {
+
+        @Override
+        public int compare(T o1, T o2) {
+            if (o1.getCreatedTime() == null ^ o2.getCreatedTime() == null) {
+                return o1.getCreatedTime() == null ? 1 : -1;
+            }
+            if (o1.getCreatedTime() == null && o2.getCreatedTime() == null) {
+                return 0;
+            }
+            return o2.getCreatedTime().compareTo(o1.getCreatedTime());
+        }
+    }
+
 }

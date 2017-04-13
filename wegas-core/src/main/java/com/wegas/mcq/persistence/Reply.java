@@ -44,7 +44,6 @@ public class Reply extends AbstractEntity implements DatedEntity {
     @GeneratedValue
     private Long id;
 
-    @JsonIgnore
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdTime = new Date();
     /**

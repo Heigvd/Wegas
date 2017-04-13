@@ -138,6 +138,21 @@ public class Helper {
     }
      */
     /**
+     * Copy and sort the given list
+     *
+     * @param <T>
+     * @param list
+     * @param c
+     *
+     * @return
+     */
+    public static <T extends Object> List<T> copyAndSort(List<T> list, Comparator<? super T> c) {
+        List<T> copy = new ArrayList<>(list);
+        Collections.sort(copy, c);
+        return Collections.unmodifiableList(copy);
+    }
+
+    /**
      * Check if the given string is null or empty (without trimming)
      *
      * @param t a string
