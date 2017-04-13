@@ -28,7 +28,7 @@ gulp.task('watch', ['debug-build'], function() {
             t = setTimeout(function() {
                 gulp.start('debug-build');
                 t = null;
-            }, 300);
+            }, 3000);
         }
     });
 });

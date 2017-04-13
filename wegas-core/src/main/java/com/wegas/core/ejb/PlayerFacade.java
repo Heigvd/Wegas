@@ -456,10 +456,10 @@ public class PlayerFacade extends BaseFacade<Player> {
         GameModel gameModel = game.getGameModel();
 
         List<String> audiences = new ArrayList<>();
-        audiences.add("Player-" + player.getId());
-        audiences.add("Team-" + team.getId());
-        audiences.add("Game-" + game.getId());
-        audiences.add("GameModel-" + gameModel.getId());
+        audiences.add(player.getChannel());
+        audiences.add(team.getChannel());
+        audiences.add(game.getChannel());
+        audiences.add(gameModel.getChannel());
 
         return requestManager.getTokensByAudiences(audiences);
     }

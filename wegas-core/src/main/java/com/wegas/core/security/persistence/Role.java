@@ -181,13 +181,17 @@ public class Role extends AbstractEntity {
      * @return true if the permission has successfully been removed
      */
     public boolean removePermission(String permission) {
-        Permission perm = new Permission(permission);
+        return this.removePermission(new Permission(permission));
+    }
+
+
+    public boolean removePermission(Permission permission) {
         Permission currPerm;
         boolean returnVal = false;
         Iterator<Permission> it = this.permissions.iterator();
         while (it.hasNext()) {
             currPerm = it.next();
-            if (currPerm.equals(perm)) {
+            if (currPerm.equals(permission)) {
                 it.remove();
                 returnVal = true;
             }

@@ -15,6 +15,7 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.*;
 import com.wegas.core.rest.util.Email;
+import com.wegas.core.security.aai.*;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
@@ -103,12 +104,11 @@ public class UserController {
      */
     @GET
     public Collection<User> index() {
-
         SecurityUtils.getSubject().checkPermission("User:Edit");
 
         //List<User> findAll = userFacade.findAll();
         List<User> findAll = new ArrayList<>();
-        for (JpaAccount account : accountFacade.findAllRegistered()) {
+        for (AbstractAccount account : accountFacade.findAllRegistered()) {
             findAll.add(account.getUser());
         }
 
@@ -135,39 +135,7 @@ public class UserController {
         return userFacade.find(entityId);
     }
 
-    /**
-     * Returns the given user's e-mail address, with more relaxed security
-     * requirements than for getting the whole user profile: The caller must be
-     * trainer for the given game, and the given user must be a player of the
-     * same game.
-     *
-     * @param entityId
-     * @param gameId
-     * @return
-     */
-    /*
-    @GET
-    @Path("{entityId : [1-9][0-9]*}/Email/{gameId : [1-9][0-9]*}")
-    public String getEmail(@PathParam("entityId") Long entityId, @PathParam("gameId") Long gameId) {
-        if (!userFacade.getCurrentUser().getId().equals(entityId)) {
-            // Caller must be trainer for the given game:
-            final Game g = gameFacade.find(gameId);
-            SecurityHelper.checkPermission(g, "Edit");
-            // And user must be a player of the same game:
-            if (playerFacade.checkExistingPlayer(gameId, entityId) == null) {
-                throw new AuthorizationException("Not a player of this game");
-            }
-        }
 
-        AbstractAccount mainAccount = userFacade.find(entityId).getMainAccount();
-
-        if (mainAccount instanceof JpaAccount) {
-            return ((JpaAccount) mainAccount).getEmail();
-        } else {
-            return "";
-        }
-    }
-     */
     /**
      * Returns the e-mail addresses of all players of the given game, with more
      * relaxed security requirements than for getting the whole user profile:
@@ -237,8 +205,8 @@ public class UserController {
             } else {
                 Long userId = p.getUserId();
                 AbstractAccount mainAccount = userFacade.find(userId).getMainAccount();
-                if (mainAccount instanceof JpaAccount) { // Skip guest accounts and other specialties.
-                    emails.add(((JpaAccount) mainAccount).getEmail());
+                if (mainAccount instanceof JpaAccount || mainAccount instanceof AaiAccount) { // Skip guest accounts and other specialties.
+                    emails.add(mainAccount.getEmail());
                 }
             }
         }
@@ -247,12 +215,11 @@ public class UserController {
 
     /**
      * @param value
-     * @param value search token
-     * @return list of JpaAccount matching the token
+     * @return list of AbstractAccounts (excluding guests) matching the token
      */
     @GET
     @Path("AutoComplete/{value}")
-    public List<JpaAccount> getAutoComplete(@PathParam("value") String value) {
+    public List<AbstractAccount> getAutoComplete(@PathParam("value") String value) {
         return accountFacade.getAutoComplete(value);
     }
 
@@ -272,7 +239,7 @@ public class UserController {
      */
     @GET
     @Path("AutoCompleteFull/{value}/{gameId : [1-9][0-9]*}")
-    public List<JpaAccount> getAutoCompleteFull(@PathParam("value") String value, @PathParam("gameId") Long gameId) {
+    public List<AbstractAccount> getAutoCompleteFull(@PathParam("value") String value, @PathParam("gameId") Long gameId) {
         return accountFacade.getAutoCompleteFull(value, gameId);
     }
 
@@ -283,12 +250,12 @@ public class UserController {
      * @param value     account search token
      * @param rolesList list of roles targeted account should be members (only
      *                  one membership is sufficient)
-     * @return list of JpaAccount matching the token that are member of at least
+     * @return list of AbstractAccount matching the token that are member of at least
      *         one given role
      */
     @POST
     @Path("AutoComplete/{value}")
-    public List<JpaAccount> getAutoCompleteByRoles(@PathParam("value") String value, HashMap<String, List<String>> rolesList) {
+    public List<AbstractAccount> getAutoCompleteByRoles(@PathParam("value") String value, HashMap<String, List<String>> rolesList) {
         if (!SecurityUtils.getSubject().isRemembered() && !SecurityUtils.getSubject().isAuthenticated()) {
             throw new UnauthorizedException();
         }
@@ -315,7 +282,7 @@ public class UserController {
     @GET
     @Deprecated
     @Path("FindAccountsByName")
-    public List<JpaAccount> findAccountsByName(@QueryParam("values") List<String> values) {
+    public List<AbstractAccount> findAccountsByName(@QueryParam("values") List<String> values) {
         if (!SecurityUtils.getSubject().isRemembered() && !SecurityUtils.getSubject().isAuthenticated()) {
             throw new UnauthorizedException();
         }
@@ -426,7 +393,7 @@ public class UserController {
             if (authInfo.isAgreed()) {
                 AbstractAccount account = accountFacade.find((Long) subject.getPrincipal());
                 if (account instanceof JpaAccount) {
-                    ((JpaAccount) account).setAgreedTime(new Date());
+                    account.setAgreedTime(new Date());
                 }
             }
 
@@ -443,7 +410,7 @@ public class UserController {
 
     /**
      * Logout
-     *
+     *A
      * @return 200 OK
      */
     @GET
@@ -493,10 +460,9 @@ public class UserController {
     }
 
     /**
-     * See like an other user specified by it's jpaAccount id. Administrators
-     * only.
+     * Look like an other user specified by its Account id. Administrators only.
      *
-     * @param accountId jpaAccount id
+     * @param accountId AbstractAccount id
      * @throws AuthorizationException if current user is not an administrator
      */
     @POST
@@ -508,7 +474,7 @@ public class UserController {
             oSubject.releaseRunAs(); //@TODO: check shiro version > 1.2.1 (SHIRO-380)
         }
         oSubject.checkRole("Administrator");
-        SimplePrincipalCollection subject = new SimplePrincipalCollection(accountId, "jpaRealm");
+        SimplePrincipalCollection subject = new SimplePrincipalCollection(accountId, "jpaRealm"); // NB: this also seems to work with AaiAccounts ...
         oSubject.runAs(subject);
     }
 
@@ -540,7 +506,7 @@ public class UserController {
     }
 
     /**
-     * Create a user based with a JpAAccount
+     * Create a user based on a JpaAccount
      *
      * @param account
      * @param request
@@ -565,26 +531,137 @@ public class UserController {
                 } else {
                     // Check if e-mail is already taken and if yes return a localized error message:
                     try {
+                        // Do NOT restrict checking to JpaAccounts (this is to prevent any collisions):
                         accountFacade.findByEmail(account.getEmail());
-                        String msg = detectBrowserLocale(request).equals("fr") ? "Cette adresse e-mail est déjà prise." : "This email address is already taken.";
-                        r = Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error(msg)).build();
+                        r = Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage
+                                .error("This email address is already taken", "CREATE-ACCOUNT-TAKEN-EMAIL")).build();
                     } catch (WegasNoResultException e) {
                         // GOTCHA
                         // E-Mail not yet registered -> proceed with account creation
+                        if (account.getAgreedTime() != null) {
+                            account.setAgreedTime(new Date());
+                        }
                         user = new User(account);
                         userFacade.create(user);
                         r = Response.status(Response.Status.CREATED).build();
                     }
                 }
             } else {
-                String msg = detectBrowserLocale(request).equals("fr") ? "Ce nom d'utilisateur est déjà pris." : "This username is already taken.";
-                r = Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error(msg)).build();
+                r = Response.status(Response.Status.BAD_REQUEST)
+                    .entity(WegasErrorMessage.error("This username is already taken", "CREATE-ACCOUNT-TAKEN-USERNAME")).build();
             }
         } else {
-            String msg = detectBrowserLocale(request).equals("fr") ? "Cette adresse e-mail n'est pas valide." : "This e-mail address is not valid.";
-            r = Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error(msg)).build();
+            r = Response.status(Response.Status.BAD_REQUEST)
+                .entity(WegasErrorMessage.error("This e-mail address is not valid", "CREATE-ACCOUNT-INVALID-EMAIL")).build();
         }
         return r;
+    }
+
+
+    /**
+     * Create a user based on an AaiAccount
+     *
+     * @param account
+     * @param request
+     * @return void
+     */
+    public void create(AaiAccount account,
+                       @Context HttpServletRequest request) {
+        if (!this.checkExistingPersistentId(account.getPersistentId())) {
+            User user = new User(account);
+            userFacade.create(user);
+        } else {
+            logger.error("This AAI account is already registered.");
+        }
+    }
+
+    /**
+     * Logs in an AAI-authenticated user or creates a new account for him.
+     * @return AaiLoginResponse telling e.g. if the user is new.
+     * Session cookies for the user's browser are also returned.
+     *
+     * @param userDetails
+     */
+    @POST
+    @Path("AaiLogin")
+    public AaiLoginResponse aaiLogin(AaiUserDetails userDetails,
+                                     @Context HttpServletRequest request,
+                                     @Context HttpServletResponse response) throws ServletException, IOException {
+
+        // Check if the invocation is by HTTPS. @TODO: verify certificate.
+        if (!request.isSecure()) {
+            return new AaiLoginResponse("AAI login request must be made by HTTPS",false,false);
+        }
+
+        if (!AaiConfigInfo.isAaiEnabled()) {
+            logger.error("AAI login refused because it's configured to be inactive.");
+            return new AaiLoginResponse("Sorry, AAI login is currently not possible.", false, false);
+        }
+
+        String server = AaiConfigInfo.getAaiServer(); // Ignored if empty !
+        String secret = AaiConfigInfo.getAaiSecret(); // Ignored if empty !
+        if (server.length() != 0 && !getRequestingIP(request).equals(server) ||
+            secret.length() != 0 && !userDetails.getSecret().equals(secret)){
+            logger.error("Real secret: " + userDetails.getSecret() + ", expected: " + secret);
+            logger.error("Real remote host: " + getRequestingIP(request) + ", expected: " + server);
+            Enumeration<String> headerNames = request.getHeaderNames();
+            if (headerNames != null) {
+                while (headerNames.hasMoreElements()) {
+                    String hdr = headerNames.nextElement();
+                    logger.error("    HTTP header: " + hdr + ":" + request.getHeader(hdr));
+                }
+            }
+            return new AaiLoginResponse("Could not authenticate Wegas AAI server", false, false);
+        }
+        // Get rid of shared secret:
+        userDetails.setSecret("checked");
+
+        // It should not be possible for the caller (our AAI login server) to be already logged in...
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated()) {
+            subject.logout();
+            throw WegasErrorMessage.error("Logging out an already logged in user (internal error?)");
+        }
+
+        try {
+            Long accountId = (Long)subject.getPrincipal();
+            AaiToken token = new AaiToken(accountId, userDetails);
+            token.setRememberMe(userDetails.isRememberMe());
+            subject.login(token);
+            accountFacade.refreshAaiAccount(userDetails);
+            return new AaiLoginResponse("Login successful",true,false);
+        } catch (AuthenticationException aex) {
+            logger.error("User not found, creating new account.");
+            AaiAccount account = new AaiAccount(userDetails);
+            this.create(account, request);
+            // Try to log in the new user:
+            try {
+                AaiToken token = new AaiToken((Long) account.getId(), userDetails);
+                token.setRememberMe(userDetails.isRememberMe());
+                subject.login(token);
+            } catch (AuthenticationException aex2) {
+                return new AaiLoginResponse("New account created, could not login to it",false,true);
+            }
+            return new AaiLoginResponse("New account created, login successful",true,true);
+        }
+    }
+
+    /**
+     * Returns the IP address of the requesting host by looking first at headers provided by (reverse) proxies.
+     * Depending on local config, it may be necessary to check additional headers.
+     *
+     * @param request
+     * @return the IP address
+     */
+    public String getRequestingIP(HttpServletRequest request) {
+        String ip = request.getHeader("X-FORWARDED-FOR");
+        if (ip == null) {
+            ip = request.getHeader("X-Real-IP");
+            if (ip == null) {
+                ip = request.getRemoteAddr();
+            }
+        }
+        return ip;
     }
 
     /**
@@ -613,12 +690,12 @@ public class UserController {
             name = "anonymous";
         }
 
-        if (mainAccount instanceof JpaAccount) {
-            email.setReplyTo(((JpaAccount) mainAccount).getEmail());
+        if (mainAccount instanceof JpaAccount || mainAccount instanceof AaiAccount) {
+            email.setReplyTo(mainAccount.getEmail());
         }
 
         String body = email.getBody();
-        body += "<br /><br /><hr /><i> Sent by " + name + " from " + "albasim.ch</i>";
+        body += "<br /><br /><hr /><i> Sent by " + name + " from albasim.ch</i>";
         email.setBody(body);
 
         email.setFrom(name + " via Wegas <noreply@" + Helper.getWegasProperty("mail.default_domain") + ">");
@@ -710,93 +787,6 @@ public class UserController {
     }
 
     /**
-     * Delete permission by role and permission
-     *
-     * @param roleId
-     * @param permission
-     * @return true a permission has been removed
-     */
-    @POST
-    @Path("DeletePermission/{roleId : [1-9][0-9]*}/{permission}")
-    public boolean deletePermissionByInstance(@PathParam(value = "roleId") Long roleId, @PathParam(value = "permission") String permission) {
-
-        String splitedPermission[] = permission.split(":");
-
-        checkGmOrGPermission(splitedPermission[2], "GameModel:Edit:", "Game:Edit:");
-
-        return this.userFacade.deleteRolePermission(roleId, permission);
-    }
-
-    /**
-     * Create role_permissions
-     *
-     * @param roleId
-     * @param permission
-     * @return true if permission has been created
-     */
-    @POST
-    @Path("AddPermission/{roleId : [1-9][0-9]*}/{permission}")
-    public boolean addPermissionsByInstance(@PathParam(value = "roleId") Long roleId, @PathParam(value = "permission") String permission) {
-
-        String splitedPermission[] = permission.split(":");
-
-        checkGmOrGPermission(splitedPermission[2], "GameModel:Edit:", "Game:Edit:");
-
-        return this.userFacade.addRolePermission(roleId, permission);
-    }
-
-    /**
-     * @param roleName
-     * @param permission
-     * @return true if permission has been created
-     */
-    @POST
-    @Path("AddPermission/{roleName}/{permission}")
-    public boolean addPermissionsByInstance(@PathParam(value = "roleName") String roleName, @PathParam(value = "permission") String permission) {
-        try {
-            return this.addPermissionsByInstance(roleFacade.findByName(roleName).getId(), permission);
-        } catch (WegasNoResultException ex) {
-            throw WegasErrorMessage.error("Role \"" + roleName + "\" does not exists");
-        }
-    }
-
-    /**
-     * Delete all permission from a role in a Game or GameModel
-     *
-     * @param roleId
-     * @param id
-     * @return if permissions have been removed
-     */
-    @POST
-    @Path("DeleteAllRolePermissions/{roleId : [1-9][0-9]*}/{gameModelId}")
-    public boolean deleteAllRolePermissions(@PathParam("roleId") Long roleId,
-            @PathParam("gameModelId") String id) {
-
-        checkGmOrGPermission(id, "GameModel:Edit:", "Game:Edit:");
-
-        return this.userFacade.deleteRolePermissionsByIdAndInstance(roleId, id);
-    }
-
-    /**
-     * Delete all role permission related to gameModel identified by the given
-     * id
-     *
-     * @param roleName name of the role to remove permissions from
-     * @param id       id of the gameModel
-     * @return if permissions have been removed
-     */
-    @POST
-    @Path("DeleteAllRolePermissions/{roleName}/{gameModelId}")
-    public boolean deleteAllRolePermissions(@PathParam("roleName") String roleName,
-            @PathParam("gameModelId") String id) {
-        try {
-            return this.deleteAllRolePermissions(roleFacade.findByName(roleName).getId(), id);
-        } catch (WegasNoResultException ex) {
-            throw WegasErrorMessage.error("Role \"" + roleName + "\" does not exists");
-        }
-    }
-
-    /**
      * @param entityId
      * @return all users having any permissions related to game or gameModel
      *         identified by entityId
@@ -807,7 +797,7 @@ public class UserController {
 
         checkGmOrGPermission(entityId, "GameModel:Edit:", "Game:Edit:");
 
-        return userFacade.findUserPermissionByInstance(entityId);
+        return userFacade.findUserByPermissionInstance(entityId);
     }
 
     /**
@@ -835,52 +825,71 @@ public class UserController {
         return userFacade.findUsersWithRole(roleId);
     }
 
+    @POST
+    @Path("ShareGame/{gameId : [1-9][0-9]*}/{accountId : [1-9][0-9]*}")
+    public void shareGame(@PathParam("gameId") Long gameId,
+            @PathParam("accountId") Long accountId) {
+
+        User coTrainer = accountFacade.find(accountId).getUser();
+        //TODO assert coTrainer is a Trainer...
+
+        String thePermission = "Game:Edit:g" + gameId;
+        // Assert current user has edit right on the game
+        SecurityUtils.getSubject().checkPermission(thePermission);
+
+        userFacade.addTrainerToGame(coTrainer.getId(), gameId);
+    }
+
+    @DELETE
+    @Path("ShareGame/{gameId : [1-9][0-9]*}/{accountId : [1-9][0-9]*}")
+    public void unshareGame(@PathParam("gameId") Long gameId,
+            @PathParam("accountId") Long accountId) {
+
+        User coTrainer = accountFacade.find(accountId).getUser();
+
+        String thePermission = "Game:Edit:g" + gameId;
+        // Assert current user has edit right on the game
+        SecurityUtils.getSubject().checkPermission(thePermission);
+        userFacade.removeTrainer(gameId, coTrainer); // TODO
+    }
+
     /**
-     * @param permission
-     * @param accountId
+     * Grant given permission to the given user to the specified gameModel.
+     * Previous user permissions to gameModel will be revoked
+     *
+     * @param gameModelId
+     * @param permission  (View|Edit|Delete|Duplicate|Instantiate), comma
+     *                    separated
+     * @param accountId   user accountId
      */
     @POST
-    @Path("addAccountPermission/{permission}/{accountId : [1-9][0-9]*}")
-    public void addAccountPermission(@PathParam("permission") String permission,
+    @Path("ShareGameModel/{gameModelId : [1-9][0-9]*}/{permission: (View|Edit|Delete|Duplicate|Instantiate|,)*}/{accountId : [1-9][0-9]*}")
+    public void shareGameModel(@PathParam("gameModelId") Long gameModelId,
+            @PathParam("permission") String permission,
             @PathParam("accountId") Long accountId) {
 
-        String splitedPermission[] = permission.split(":");
+        User user = accountFacade.find(accountId).getUser();
 
-        checkGmOrGPermission(splitedPermission[2], "GameModel:Edit:", "Game:Edit:");
+        String editPermission = "GameModel:Edit:gm" + gameModelId;
 
-        userFacade.addAccountPermission(accountId, permission);
+        // Assert current user has edit right on the gameModel
+        SecurityUtils.getSubject().checkPermission(editPermission);
+
+        userFacade.grantGameModelPermissionToUser(user.getId(), gameModelId, permission);
     }
 
-    /**
-     * @param entityId
-     * @param accountId
-     */
     @DELETE
-    @Path("DeleteAccountPermissionByInstanceAndAccount/{entityId}/{accountId : [1-9][0-9]*}")
-    public void deleteAccountPermissionByInstanceAndAccount(@PathParam("entityId") String entityId,
+    @Path("ShareGameModel/{gameModelId : [1-9][0-9]*}/{accountId : [1-9][0-9]*}")
+    public void unshareGameModel(@PathParam("gameModelId") Long gameModelId,
             @PathParam("accountId") Long accountId) {
 
-        checkGmOrGPermission(entityId, "GameModel:Edit:", "Game:Edit:");
-        AbstractAccount account = accountFacade.find(accountId);
+        User coScenarist = accountFacade.find(accountId).getUser();
 
-        userFacade.deleteUserPermissionByInstanceAndUser(entityId, account.getUser().getId());
-    }
+        String editPermission = "GameModel:Edit:gm" + gameModelId;
 
-    /**
-     * @param permission
-     * @param accountId
-     */
-    @DELETE
-    @Path("DeleteAccountPermissionByPermissionAndAccount/{permission}/{accountId : [1-9][0-9]*}")
-    public void deleteAccountPermissionByPermissionAndAccount(@PathParam("permission") String permission,
-            @PathParam("accountId") Long accountId) {
-
-        String splitedPermission[] = permission.split(":");
-
-        checkGmOrGPermission(splitedPermission[2], "GameModel:Edit:", "Game:Edit:");
-        AbstractAccount account = accountFacade.find(accountId);
-
-        userFacade.deleteUserPermissionByPermissionAndAccount(permission, account.getUser().getId());
+        // Assert current user has edit right on the gameModel
+        SecurityUtils.getSubject().checkPermission(editPermission);
+        userFacade.removeScenarist(gameModelId, coScenarist);
     }
 
     /**
@@ -914,7 +923,7 @@ public class UserController {
     }
 
     /**
-     * Check is username is already in use
+     * Check if username is already in use
      *
      * @param username username to check
      * @return true is username is already in use
@@ -928,22 +937,19 @@ public class UserController {
         return existingUsername;
     }
 
-    /*
-    ** @return the browser's preference among the languages supported by Wegas
+    /**
+     * Check if persistent ID is already in use
+     *
+     * @param persistentId to check
+     * @return true is persistentId is already in use
      */
-    private String detectBrowserLocale(HttpServletRequest request) {
-        String supportedLanguages = "en fr";
-
-        Enumeration locales = request.getLocales();
-        while (locales.hasMoreElements()) {
-            Locale locale = (Locale) locales.nextElement();
-            String loc = locale.getLanguage();
-            if (supportedLanguages.contains(loc)) {
-                return loc;
-            }
+    private boolean checkExistingPersistentId(String persistentId) {
+        boolean existingId = false;
+        User user = userFacade.getUserByPersistentId(persistentId);
+        if (user != null) {
+            existingId = true;
         }
-        // No match found, return the default "en":
-        return "en";
+        return existingId;
     }
 
 }

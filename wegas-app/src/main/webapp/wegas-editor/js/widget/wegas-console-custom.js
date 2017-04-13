@@ -56,7 +56,7 @@ YUI.add('wegas-console-custom', function(Y) {
                         contents = cb.append("" +
                                              "<div class='modal--content-tabs'>" +
                                              "<div class='modal--content-basics modal--content-tab modal--content-selected'></div>" +
-                                             "<div class='modal--content-advanced modal--content-tab'><div class='content-advanced-script'></div><button class='content-advanced-script-add'>Add Impact</button></div>" +
+                                             "<div class='modal--content-advanced modal--content-tab'><div class='content-advanced-script'></div><div class='content-advanced-script-add'><span class='button__label'><i class='fa fa-plus-circle same-color-larger' style='padding-right: 0.5em;'></i>Add Impact</span></div></div>" +
                                              "</div>");
                         contentBasics = cb.one(".modal--content-basics");
                         contentAdvanced = cb.one(".modal--content-advanced .content-advanced-script");
@@ -77,7 +77,7 @@ YUI.add('wegas-console-custom', function(Y) {
                     } else {
                         cb.addClass("modal--content-advanced modal--without-menu");
                         contentAdvanced = cb.append(
-                            "<div class='content-advanced-script'></div><button class='content-advanced-script-add'>Add Impact</button>").one(
+                            "<div class='content-advanced-script'></div><div class='content-advanced-script-add'><span class='button__label'><i class='fa fa-plus-circle same-color-larger' style='padding-right: 0.5em;'></i>Add Impact</span></div>").one(
                             ".content-advanced-script");
                     }
                     // this.srcField = new Y.inputEx.WysiwygScript({
@@ -221,19 +221,18 @@ YUI.add('wegas-console-custom', function(Y) {
                                             resDiv.setHTML('<div class="result">' + teamOrPlayer + count + '&thinsp;/&thinsp;' + len + '</div>');
                                         }
                                         if (count >= len){ // Last iteration:
-                                            running = false;
                                             contentBox.one(".wegas-status-bar").addClass("wegas-status-bar-transition");
                                             Y.later(200, this, function () {
                                                 contentBox.one(".wegas-status-bar").removeClass("wegas-status-bar-transition");
                                                 contentBox.one(".status").removeClass("status--running").addClass("status--success");
                                                 this.hideOverlay();
                                                 contentBox.one(".results").setHTML('<div class="result">Terminated.</div>');
-                                                    //' Last returned value: ' + Y.JSON.stringify(event.response.results.entities[0]) + "</div>");
+                                                Y.later((failed>0 ? 5000 : 1000), null, function () {
                                                 if (modale) {
-                                                    Y.later((failed>0 ? 5000 : 1000), null, function () {
                                                         modale.close();
+                                                    }
+                                                    running = false;
                                                     });
-                                                }
                                             });
                                         }
                                     }, this),

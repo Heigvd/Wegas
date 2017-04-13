@@ -447,6 +447,12 @@ YUI.add("wegas-entity", function(Y) {
                 getter: function() {
                     return Wegas.Facade.Game.cache.find("id", this.get("teamId"));
                 }
+            },
+            verifiedId: {
+                "transient": true
+            },
+            homeOrg: {
+                "transient": true
             }
         },
         EDITMENU: []
@@ -647,6 +653,92 @@ YUI.add("wegas-entity", function(Y) {
             type: "DeleteEntityButton"
         }]
     });
+
+    /**
+     * AaiAccount mapper
+     */
+    persistence.AaiAccount = Base.create("AaiAccount", persistence.Entity, [], {
+        getPublicName: function() {
+            return this.get(NAME);
+        }
+    }, {
+        ATTRS: {
+            "@class": {
+                value: "AaiAccount"
+            },
+            name: {
+                "transient": true,
+                getter: function() {
+                    if (this.get("firstname") || this.get("lastname")) {
+                        return this.get("firstname") + " " + (this.get("lastname") || "");
+
+                    } else {
+                        return this.get("email");
+                    }
+                }
+            },
+            firstname: {
+                type: STRING,
+                _inputex: {
+                    label: "First name"
+                }
+            },
+            lastname: {
+                label: "Last name",
+                type: STRING,
+                _inputex: {
+                    label: "Last name"
+                }
+            },
+            email: {
+                type: STRING,
+                _inputex: {
+                    _type: "email"
+                }
+            },
+            roles: {
+                optional: true,
+                type: ARRAY,
+                items: {
+                    type: STRING,
+                    choices: [],
+                },
+                _inputex: {
+                    label: "Groups"
+                }
+            },
+            permissions: {
+                optional: true,
+                type: ARRAY,
+                items: {
+                    _inputex: {
+                        _type: GROUP,
+                        fields: [{
+                            name: "id",
+                            type: HIDDEN,
+                            value: null
+                        }, {
+                            name: "@class",
+                            type: HIDDEN,
+                            value: "Permission"
+                        }, {
+                            name: "value"
+                        }, {
+                            name: "inducedPermission",
+                            value: ""
+                        }]
+                    }
+                },
+                _inputex: {
+                    wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
+                }
+            }
+        },
+        EDITMENU: [{
+            type: "DeleteEntityButton"
+        }]
+    });
+
 
     /**
      * GuestJpaAccount mapper

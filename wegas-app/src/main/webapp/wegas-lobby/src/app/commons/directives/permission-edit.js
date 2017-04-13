@@ -7,7 +7,7 @@
  */
 /*global _*/
 angular.module("wegas.directive.permission.edit", [])
-    .directive('permissionEdit', function ($q, SessionsModel, ScenariosModel) {
+    .directive('permissionEdit', function ($q, SessionsModel, ScenariosModel, $filter) {
             "use strict";
 
             var DANGER_BG_CLASS = "bg-danger";
@@ -63,7 +63,7 @@ angular.module("wegas.directive.permission.edit", [])
             });
             var STATUS = ["LIVE", "BIN", "DELETE"];
             var ALL_OPTION = {
-                name: "ALL",
+                name: "* ALL *",
                 id: "*"
             };
             var OPTION_STORE = {};
@@ -75,11 +75,12 @@ angular.module("wegas.directive.permission.edit", [])
                             return ScenariosModel.getScenarios(status);
                         }))
                             .then(function (arr) {
-                                var opt = [ALL_OPTION];
+                                var opt_all = [ALL_OPTION],
+                                    opt = [];
                                 _.forEach(arr, function (el) {
                                     opt = opt.concat(el.data);
                                 });
-                                return opt;
+                                return opt_all.concat($filter('orderBy')(opt, 'name'));
                             });
                     } else if (forType === "Game") {
                         OPTION_STORE[forType] = $q.all(_.map(STATUS, function (status) {

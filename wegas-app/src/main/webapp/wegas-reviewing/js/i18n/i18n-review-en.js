@@ -17,7 +17,7 @@ YUI.add("wegas-i18n-review-en", function(Y) {
         review: {
             orchestrator: {
                 mainTitle: "Peer Review Process for \"{{variableName}}\"",
-                includeEvicted: "Allow authors who didn't wrote anything to receive something to review",
+                includeEvicted: "Authors who did not submit anything for review shall still receive something to review",
                 state: {
                     edition: {
                         title: "Edition",
@@ -43,7 +43,7 @@ YUI.add("wegas-i18n-review-en", function(Y) {
                 charts: "charts",
                 playerData: "Data reviewed by peers for player \"{{playerName}}\"",
                 teamData: "Data reviewed by peers for team \"{{teamName}}\"",
-                goNextConfirmation: "This action cannot be undone.<br />\nDo you really want to enter the next step of the peer reviewing process?",
+                goNextConfirmation: "This action cannot be undone.<br />\nDo you want to enter the next step of the reviewing process?",
                 stats: {
                     mean: "avg.",
                     median: "med.",
@@ -53,7 +53,7 @@ YUI.add("wegas-i18n-review-en", function(Y) {
                     avgWc: "Average number of words",
                     avgCc: "Average number of characters"
                 },
-                notAvailableYet : "Not available yet" 
+                notAvailableYet : "Not available yet"
             },
             global: {
                 submit: "submit",
@@ -72,16 +72,16 @@ YUI.add("wegas-i18n-review-en", function(Y) {
                 number: "#",
                 ask_your_feedback: "Edit your feedback",
                 your_feedback: "Your feedback:",
-                reviewer_feedabck: "Reviewer feedback",
+                reviewer_feedback: "Reviewer feedback",
                 ask_reviewer_feedback: "",
-                ask_comment: "What do you think about your reviewer feedback?",
-                comment: "Your thoughts about feedback your reviewer feedback",
-                author_comment: "What author thinks about your feedback:",
+                ask_comment: "What do you think about your reviewer's feedback?",
+                comment: "Your thoughts about feedback your reviewer's feedback",
+                author_comment: "What this author thinks about your feedback:",
                 noValueProvided: "No evaluation provided",
                 didNotProvide: "did not provide any evaluation",
-                didNotProvidePluralized: "did not provide evaluation",
-                noTeamProvide: "no team has provide evaluation",
-                noPlayerProvide: "no player has provide evaluation"
+                didNotProvidePluralized: "did not provide any evaluation",
+                noTeamProvide: "no team has provided any evaluation",
+                noPlayerProvide: "no player has provided any evaluation"
             }
         }
     });

@@ -880,9 +880,9 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                     if (it.get(key) === value) {
                         needle = it;
                         return false;
-                    } else if (it instanceof persistence.ListDescriptor) {
+                    } else if (Y.Wegas.Facade.Variable.cache.getChildren(it)) {
                         if (!directChildOnly) {
-                            return Y.Array.every(it.get(ITEMS), filterFn);
+                            return Y.Array.every(Y.Wegas.Facade.Variable.cache.getChildren(it), filterFn);
                         } else {
                             return true;
                         }

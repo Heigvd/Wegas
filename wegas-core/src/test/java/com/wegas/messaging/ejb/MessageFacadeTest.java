@@ -173,8 +173,8 @@ public class MessageFacadeTest extends AbstractEJBTest {
         final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
         assertEquals(1, ((InboxInstance) vif.find(inbox.getId(), player)).getMessages().size());
         assertEquals(1, ((InboxInstance) vif.find(inbox.getId(), player2)).getMessages().size());
-        assertEquals(1, ((InboxInstance) rf.getUpdatedEntities().get("Team-" + team.getId()).get(0)).getMessages().size());
-        assertEquals(1, ((InboxInstance) rf.getUpdatedEntities().get("Team-" + team2.getId()).get(0)).getMessages().size());
+        assertEquals(1, ((InboxInstance) rf.getUpdatedEntities().get(team.getChannel()).get(0)).getMessages().size());
+        assertEquals(1, ((InboxInstance) rf.getUpdatedEntities().get(team.getChannel()).get(0)).getMessages().size());
         assertEquals(2, mf.count()); // 2 messages in DB.
         // Clean
         vdf.remove(inbox.getId());
