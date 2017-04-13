@@ -10,7 +10,7 @@ import { getY } from './index';
 
 const Y = getY(); // Current YUI instance
 const Wegas = Y.Wegas;
-const inputEx = Y.inputEx;
+// const inputEx = Y.inputEx;
 const FORM = 'form';
 
 const Form = Y.Base.create('wegas-react-form', Y.Widget,

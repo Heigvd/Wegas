@@ -12,7 +12,7 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 /*global YUI_config:true*/
-YUI().use(function(Y) {
+YUI().use(function (Y) {
     "use strict";
     var CSS = "css";
     if (!YUI_config) {
@@ -32,14 +32,14 @@ YUI().use(function(Y) {
     /**
      *
      */
-    YUI.addGroup = function(name, group) {
+    YUI.addGroup = function (name, group) {
         YUI_config.groups[name] = group;
         group.combine = !YUI_config.debug;
         group.filter = YUI_config.debug ? "raw" : "min"; // Select raw files
         group.base = YUI_config.Wegas.base + group.root; // Set up path
         group.comboBase = YUI_config.Wegas.comboBase; // Set up combo path
         loadModules(group);
-    //YUI.applyConfig(YUI_config);
+        //YUI.applyConfig(YUI_config);
     };
     YUI.addGroup("wegas", {
         base: "./wegas-app/",
@@ -876,7 +876,14 @@ YUI().use(function(Y) {
         modules: {
             "wegas-react-form": {
                 path: "dist/bundle.js",
-                requires:["roboto-font", "tinymce", "wegas-panel-fileselect"]
+                requires: ["wegas-react-vendor", "wegas-react-manifest", "roboto-font", "tinymce", "wegas-panel-fileselect"],
+                ws_provides: "RForm"
+            },
+            "wegas-react-vendor": {
+                path: "dist/vendor.js"
+            },
+            "wegas-react-manifest": {
+                path: "dist/manifest.js"
             }
         }
     });
@@ -993,12 +1000,12 @@ YUI().use(function(Y) {
                     "wegas-panel", "wegas-simpledialogue"],
                 ws_provides: "CEPFolder"
             }
-        /* Chess */
-        //"wegas-chess": {
-        //    path: "wegas-games/wegas-chess/js/wegas-chess-min.js",
-        //    ws_provides: "ChessBoard",
-        //    requires: "transition"
-        //}
+            /* Chess */
+            //"wegas-chess": {
+            //    path: "wegas-games/wegas-chess/js/wegas-chess-min.js",
+            //    ws_provides: "ChessBoard",
+            //    requires: "transition"
+            //}
         }
     });
     /* Other libraries */
