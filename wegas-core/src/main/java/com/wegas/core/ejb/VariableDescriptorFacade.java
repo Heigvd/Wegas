@@ -44,6 +44,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -97,6 +98,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      * @param gameModel
      * @param list
      * @param entity
+     *
      * @return Parent descriptor container which contains the new child
      */
     public DescriptorListI createChild(final GameModel gameModel, final DescriptorListI<VariableDescriptor> list, final VariableDescriptor entity) {
@@ -194,6 +196,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
     /**
      * @param variableDescriptorId
      * @param entity
+     *
      * @return
      */
     public DescriptorListI createChild(final Long variableDescriptorId, final VariableDescriptor entity) {
@@ -212,7 +215,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
 
     /**
      * @param entityId
+     *
      * @return the new descriptor
+     *
      * @throws IOException
      */
     @Override
@@ -241,7 +246,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
 
     /**
      * @param vd
+     *
      * @return descriptor container
+     *
      * @deprecated use {@link VariableDescriptor#getParent()}
      */
     public DescriptorListI findParentList(VariableDescriptor vd) throws NoResultException {
@@ -250,7 +257,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
 
     /**
      * @param item
+     *
      * @return the parent descriptor
+     *
      * @throws WegasNoResultException if the desciptor is at root-level
      * @deprecated use {@link VariableDescriptor#getParentList()}
      */
@@ -262,10 +271,22 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         }
     }
 
+    public boolean hasVariable(final GameModel gameModel, final String name) {
+        try {
+            this.find(gameModel, name);
+            return true;
+        } catch (WegasNoResultException ex) {
+            return false;
+        }
+
+    }
+
     /**
      * @param gameModel
      * @param name
+     *
      * @return the gameModel descriptor matching the name
+     *
      * @throws WegasNoResultException
      */
     public VariableDescriptor find(final GameModel gameModel, final String name) throws WegasNoResultException {
@@ -288,6 +309,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
 
     /**
      * @param gameModel
+     *
      * @return all descriptor names already in use within the gameModel
      */
     public List<String> findDistinctNames(final GameModel gameModel) {
@@ -298,6 +320,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
 
     /**
      * @param container
+     *
      * @return all descriptor labels already in use within the given descriptor
      *         container
      */
@@ -330,7 +353,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      *
      * @param gameModel
      * @param name
+     *
      * @return the gameModel descriptor matching the name
+     *
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      * @deprecated
      */
@@ -341,7 +366,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
     /**
      * @param gameModel
      * @param label
+     *
      * @return the gameModel descriptor matching the label
+     *
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
     public VariableDescriptor findByLabel(final GameModel gameModel, final String label) throws WegasNoResultException {
@@ -363,6 +390,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
     /**
      * @param gameModel
      * @param title     title we look for
+     *
      * @return all gameModel descriptors with the given title
      */
     public List<VariableDescriptor> findByTitle(final GameModel gameModel, final String title) {
@@ -380,6 +408,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
 
     /**
      * @param gameModelId
+     *
      * @return all gameModel descriptors
      */
     public List<VariableDescriptor> findAll(final Long gameModelId) {
@@ -388,6 +417,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
 
     /**
      * @param gameModelId
+     *
      * @return gameModel root-level descriptor
      */
     public List<VariableDescriptor> findByGameModelId(final Long gameModelId) {
@@ -398,6 +428,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      * @param <T>
      * @param gamemodel
      * @param variableDescriptorClass the filtering class
+     *
      * @return All specified classes and subclasses belonging to the game model.
      */
     public <T extends VariableDescriptor> List<T> findByClass(final GameModel gamemodel, final Class<T> variableDescriptorClass) {
@@ -443,6 +474,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      * Sort naturally items in ListDescriptor by label
      *
      * @param descriptorId ListDescriptor's id to sort
+     *
      * @return sorted VariableDescriptor
      */
     public VariableDescriptor sort(final Long descriptorId) {

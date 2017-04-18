@@ -270,7 +270,10 @@ YUI.add('wegas-dashboard', function(Y) {
                         var value = monitoredBlocs.data[data.id][bloc.id];
                         if (bloc.kind) {
                             var empty = value.empty;
-                            if (bloc.kind === "inbox") {
+                            if (bloc.kind === "boolean") {
+                                bloc.do = Y.Wegas.Dashboard.prototype.onBooleanClick;
+                                // bloc.icon = '<i class=' + (empty ? '"icon fa fa-comment-o"' : '"icon fa fa-commenting"') + ' title="Click to view"></i>';
+                            } else if (bloc.kind === "inbox") {
                                 bloc.do = Y.Wegas.Dashboard.prototype.onInboxClick;
                                 bloc.icon = '<i class=' + (empty ? '"icon fa fa-comment-o"' : '"icon fa fa-commenting"') + ' title="Click to view"></i>';
                             } else if (bloc.kind === "text") {
@@ -287,6 +290,7 @@ YUI.add('wegas-dashboard', function(Y) {
                             formatter: eval("(" + bloc.formatter + ")"),
                             do: bloc.do, //eval("(" + bloc.do + ")"),
                             kind: bloc.kind,
+                            userCfg: bloc.userCfg,
                             ctx: ctx // context of onclick callback, i.e. the wegas-dashboard-teams-overview singleton
                         };
                         newBlocs.items.push(newBloc);
@@ -357,6 +361,31 @@ YUI.add('wegas-dashboard', function(Y) {
                 resizeTimer = setTimeout(function() {
                     ctx._adjustTitles();
                 }, 10);
+            });
+        },
+        onBooleanClick: function(event, value, userCfg) {
+
+            var ctx = event.ctx, playerId = ctx.get("cardsData")[0].team.get("players")[0].get("id")
+            ctx.get("contentBox").addClass("loading");
+            Y.Wegas.Facade.Variable.sendRequest({
+                request: "/Script/Run/" + playerId,
+                cfg: {
+                    method: "POST",
+                    data: {
+                        "@class": "Script",
+                        content: "Variable.find(gameModel, \"" + userCfg.varName + "\").getInstance(self).setValue(" + !value + ");"
+                    }
+                },
+                on: {
+                    success: Y.bind(function() {
+                        ctx.get("contentBox").removeClass("loading");
+                        ctx.syncUI();
+                    }, this),
+                    failure: Y.bind(function() {
+                        ctx.get("contentBox").removeClass("loading");
+                        ctx.syncUI();
+                    }, this)
+                }
             });
         },
         onTextClick: function(event, text) {
