@@ -1,6 +1,0 @@
-*.jar
-*.MF
-*.rar
-local-password
-**/config/**
-**/lib/**

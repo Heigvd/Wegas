@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.ejb.DependsOn;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -47,7 +46,6 @@ import java.util.concurrent.TimeUnit;
  */
 @Named("RequestManager")
 @RequestScoped
-@DependsOn("MutexSingleton")
 public class RequestManager {
 
     @PersistenceContext(unitName = "wegasPU")
@@ -68,7 +66,7 @@ public class RequestManager {
     private TransactionSynchronizationRegistry txReg;
      */
     @Inject
-    MutexSingleton mutexSingleton;
+    ConcurrentHelper concurrentHelper;
 
     @Inject
     private UserFacade userFacade;
@@ -392,7 +390,7 @@ public class RequestManager {
      */
     public boolean tryLock(String token, BroadcastTarget target) {
         String audience = getAudience(target);
-        boolean tryLock = mutexSingleton.tryLock(token, audience);
+        boolean tryLock = concurrentHelper.tryLock(token, audience);
         if (tryLock) {
             // Only register token if successfully locked
             if (!lockedToken.containsKey(token)) {
@@ -418,7 +416,7 @@ public class RequestManager {
      */
     public void lock(String token, BroadcastTarget target) {
         String audience = getAudience(target);
-        mutexSingleton.lock(token, audience);
+        concurrentHelper.lock(token, audience);
         if (!lockedToken.containsKey(token)) {
             lockedToken.put(token, new ArrayList());
         }
@@ -440,7 +438,7 @@ public class RequestManager {
      */
     public void unlock(String token, BroadcastTarget target) {
         String audience = getAudience(target);
-        mutexSingleton.unlock(token, audience);
+        concurrentHelper.unlock(token, audience);
         if (lockedToken.containsKey(token)) {
             List<String> audiences = lockedToken.get(token);
             audiences.remove(getEffectiveAudience(audience));
@@ -451,7 +449,7 @@ public class RequestManager {
     }
 
     public Collection<String> getTokensByAudiences(List<String> audiences) {
-        return mutexSingleton.getTokensByAudiences(audiences);
+        return concurrentHelper.getTokensByAudiences(audiences);
     }
 
     public void setStatus(Response.StatusType statusInfo) {
@@ -578,11 +576,15 @@ public class RequestManager {
         this.markProcessingStartTime();
     }
 
+    public void clear() {
+        this.getEntityManager().clear();
+    }
+
     @PreDestroy
     public void preDestroy() {
         for (Entry<String, List<String>> entry : lockedToken.entrySet()) {
             for (String audience : entry.getValue()) {
-                mutexSingleton.unlockFull(entry.getKey(), audience);
+                concurrentHelper.unlockFull(entry.getKey(), audience);
             }
         }
         if (this.currentScriptContext != null) {
@@ -593,7 +595,7 @@ public class RequestManager {
         this.logRequest();
 
         //this.getEntityManager().flush();
-        this.getEntityManager().clear();
+        this.clear();
     }
 
     public void commit(Player player, boolean clear) {

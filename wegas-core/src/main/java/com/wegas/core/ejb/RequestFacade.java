@@ -236,6 +236,6 @@ public class RequestFacade {
 
     public void flushClear() {
         requestManager.getEntityManager().flush();
-        requestManager.getEntityManager().clear();
+        requestManager.clear();
     }
 }

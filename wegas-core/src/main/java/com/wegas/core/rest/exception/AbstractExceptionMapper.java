@@ -38,6 +38,7 @@ public abstract class AbstractExceptionMapper {
      * result within such a HTTP Bad Request response
      *
      * @param exception
+     *
      * @return HTTP BadRequest
      */
     public static Response processException(Throwable exception) {
@@ -77,7 +78,11 @@ public abstract class AbstractExceptionMapper {
             }
             return Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error(sb.toString())).build();
         } else {
-            logger.error(exception.getLocalizedMessage());
+            if (exception != null) {
+                logger.error(exception.getLocalizedMessage());
+            } else {
+                logger.error("Exception is NULL !!!");
+            }
             return Response.status(Response.Status.BAD_REQUEST).entity(exception).build();
         }
     }

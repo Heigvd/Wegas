@@ -1,0 +1,279 @@
+----------------------------------------------------------------
+Tue Mar 28 09:31:54 CEST 2017:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.10.2.0 - (1582446): instance a816c00e-015b-13d3-cea5-000045458f68 
+on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/version/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+Loaded from file:/home/maxence/.m2/repository/fish/payara/extras/payara-micro/4.1.1.164/payara-micro-4.1.1.164.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13
+user.dir=/home/maxence/AlbaSim/Wegas/wegas-runtime
+os.name=Linux
+os.arch=amd64
+os.version=4.8.0-41-lowlatency
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Tue Mar 28 09:31:55 CEST 2017:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.10.2.0 - (1582446): instance 888c4022-015b-13d3-cea5-000045458f68 
+on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/workspaces/default/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+Loaded from file:/home/maxence/.m2/repository/fish/payara/extras/payara-micro/4.1.1.164/payara-micro-4.1.1.164.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13
+user.dir=/home/maxence/AlbaSim/Wegas/wegas-runtime
+os.name=Linux
+os.arch=amd64
+os.version=4.8.0-41-lowlatency
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Tue Mar 28 09:31:56 CEST 2017:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.10.2.0 - (1582446): instance 6965c036-015b-13d3-cea5-000045458f68 
+on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/workspaces/security/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+Loaded from file:/home/maxence/.m2/repository/fish/payara/extras/payara-micro/4.1.1.164/payara-micro-4.1.1.164.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13
+user.dir=/home/maxence/AlbaSim/Wegas/wegas-runtime
+os.name=Linux
+os.arch=amd64
+os.version=4.8.0-41-lowlatency
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Tue Mar 28 09:31:56 CEST 2017:
+Shutting down instance 6965c036-015b-13d3-cea5-000045458f68 on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/workspaces/security/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+----------------------------------------------------------------
+Tue Mar 28 09:31:57 CEST 2017:
+Shutting down instance 888c4022-015b-13d3-cea5-000045458f68 on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/workspaces/default/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+----------------------------------------------------------------
+Tue Mar 28 09:31:57 CEST 2017:
+Shutting down instance a816c00e-015b-13d3-cea5-000045458f68 on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/version/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+----------------------------------------------------------------
+Tue Mar 28 09:32:02 CEST 2017:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.10.2.0 - (1582446): instance 4aa3404a-015b-13d3-cea5-000045458f68 
+on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/version/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+Loaded from file:/home/maxence/.m2/repository/fish/payara/extras/payara-micro/4.1.1.164/payara-micro-4.1.1.164.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13
+user.dir=/home/maxence/AlbaSim/Wegas/wegas-runtime
+os.name=Linux
+os.arch=amd64
+os.version=4.8.0-41-lowlatency
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Tue Mar 28 09:32:03 CEST 2017:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.10.2.0 - (1582446): instance 2c44c05e-015b-13d3-cea5-000045458f68 
+on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/workspaces/default/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+Loaded from file:/home/maxence/.m2/repository/fish/payara/extras/payara-micro/4.1.1.164/payara-micro-4.1.1.164.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13
+user.dir=/home/maxence/AlbaSim/Wegas/wegas-runtime
+os.name=Linux
+os.arch=amd64
+os.version=4.8.0-41-lowlatency
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Tue Mar 28 09:32:03 CEST 2017:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.10.2.0 - (1582446): instance 0e4a4072-015b-13d3-cea5-000045458f68 
+on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/workspaces/security/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+Loaded from file:/home/maxence/.m2/repository/fish/payara/extras/payara-micro/4.1.1.164/payara-micro-4.1.1.164.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13
+user.dir=/home/maxence/AlbaSim/Wegas/wegas-runtime
+os.name=Linux
+os.arch=amd64
+os.version=4.8.0-41-lowlatency
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Tue Mar 28 09:32:03 CEST 2017:
+Shutting down instance 0e4a4072-015b-13d3-cea5-000045458f68 on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/workspaces/security/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+----------------------------------------------------------------
+Tue Mar 28 09:32:03 CEST 2017:
+Shutting down instance 2c44c05e-015b-13d3-cea5-000045458f68 on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/workspaces/default/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+----------------------------------------------------------------
+Tue Mar 28 09:32:03 CEST 2017:
+Shutting down instance 4aa3404a-015b-13d3-cea5-000045458f68 on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/version/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+----------------------------------------------------------------
+Tue Mar 28 09:32:04 CEST 2017:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.10.2.0 - (1582446): instance f0b3c086-015b-13d3-cea5-000045458f68 
+on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/version/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+Loaded from file:/home/maxence/.m2/repository/fish/payara/extras/payara-micro/4.1.1.164/payara-micro-4.1.1.164.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13
+user.dir=/home/maxence/AlbaSim/Wegas/wegas-runtime
+os.name=Linux
+os.arch=amd64
+os.version=4.8.0-41-lowlatency
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Tue Mar 28 09:32:04 CEST 2017:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.10.2.0 - (1582446): instance d381409a-015b-13d3-cea5-000045458f68 
+on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/workspaces/default/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+Loaded from file:/home/maxence/.m2/repository/fish/payara/extras/payara-micro/4.1.1.164/payara-micro-4.1.1.164.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13
+user.dir=/home/maxence/AlbaSim/Wegas/wegas-runtime
+os.name=Linux
+os.arch=amd64
+os.version=4.8.0-41-lowlatency
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Tue Mar 28 09:32:04 CEST 2017:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.10.2.0 - (1582446): instance b6b2c0ae-015b-13d3-cea5-000045458f68 
+on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/workspaces/security/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+Loaded from file:/home/maxence/.m2/repository/fish/payara/extras/payara-micro/4.1.1.164/payara-micro-4.1.1.164.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13
+user.dir=/home/maxence/AlbaSim/Wegas/wegas-runtime
+os.name=Linux
+os.arch=amd64
+os.version=4.8.0-41-lowlatency
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Tue Mar 28 09:32:04 CEST 2017:
+Shutting down instance b6b2c0ae-015b-13d3-cea5-000045458f68 on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/workspaces/security/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+----------------------------------------------------------------
+Tue Mar 28 09:32:04 CEST 2017:
+Shutting down instance d381409a-015b-13d3-cea5-000045458f68 on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/workspaces/default/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+----------------------------------------------------------------
+Tue Mar 28 09:32:04 CEST 2017:
+Shutting down instance f0b3c086-015b-13d3-cea5-000045458f68 on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/version/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+----------------------------------------------------------------
+Tue Mar 28 09:32:05 CEST 2017:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.10.2.0 - (1582446): instance 9a4840c2-015b-13d3-cea5-000045458f68 
+on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/version/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+Loaded from file:/home/maxence/.m2/repository/fish/payara/extras/payara-micro/4.1.1.164/payara-micro-4.1.1.164.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13
+user.dir=/home/maxence/AlbaSim/Wegas/wegas-runtime
+os.name=Linux
+os.arch=amd64
+os.version=4.8.0-41-lowlatency
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Tue Mar 28 09:32:05 CEST 2017:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.10.2.0 - (1582446): instance 7e41c0d6-015b-13d3-cea5-000045458f68 
+on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/workspaces/default/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+Loaded from file:/home/maxence/.m2/repository/fish/payara/extras/payara-micro/4.1.1.164/payara-micro-4.1.1.164.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13
+user.dir=/home/maxence/AlbaSim/Wegas/wegas-runtime
+os.name=Linux
+os.arch=amd64
+os.version=4.8.0-41-lowlatency
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Tue Mar 28 09:32:05 CEST 2017:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.10.2.0 - (1582446): instance 629f40ea-015b-13d3-cea5-000045458f68 
+on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/workspaces/security/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+Loaded from file:/home/maxence/.m2/repository/fish/payara/extras/payara-micro/4.1.1.164/payara-micro-4.1.1.164.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13
+user.dir=/home/maxence/AlbaSim/Wegas/wegas-runtime
+os.name=Linux
+os.arch=amd64
+os.version=4.8.0-41-lowlatency
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Tue Mar 28 09:32:05 CEST 2017:
+Shutting down instance 629f40ea-015b-13d3-cea5-000045458f68 on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/workspaces/security/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+----------------------------------------------------------------
+Tue Mar 28 09:32:05 CEST 2017:
+Shutting down instance 7e41c0d6-015b-13d3-cea5-000045458f68 on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/workspaces/default/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+----------------------------------------------------------------
+Tue Mar 28 09:32:05 CEST 2017:
+Shutting down instance 9a4840c2-015b-13d3-cea5-000045458f68 on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/version/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+----------------------------------------------------------------
+Tue Mar 28 09:32:06 CEST 2017:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.10.2.0 - (1582446): instance 4760c0fe-015b-13d3-cea5-000045458f68 
+on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/version/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+Loaded from file:/home/maxence/.m2/repository/fish/payara/extras/payara-micro/4.1.1.164/payara-micro-4.1.1.164.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13
+user.dir=/home/maxence/AlbaSim/Wegas/wegas-runtime
+os.name=Linux
+os.arch=amd64
+os.version=4.8.0-41-lowlatency
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Tue Mar 28 09:32:06 CEST 2017:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.10.2.0 - (1582446): instance 2c864112-015b-13d3-cea5-000045458f68 
+on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/workspaces/default/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+Loaded from file:/home/maxence/.m2/repository/fish/payara/extras/payara-micro/4.1.1.164/payara-micro-4.1.1.164.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13
+user.dir=/home/maxence/AlbaSim/Wegas/wegas-runtime
+os.name=Linux
+os.arch=amd64
+os.version=4.8.0-41-lowlatency
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Tue Mar 28 09:32:06 CEST 2017:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.10.2.0 - (1582446): instance 120fc126-015b-13d3-cea5-000045458f68 
+on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/workspaces/security/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+Loaded from file:/home/maxence/.m2/repository/fish/payara/extras/payara-micro/4.1.1.164/payara-micro-4.1.1.164.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13
+user.dir=/home/maxence/AlbaSim/Wegas/wegas-runtime
+os.name=Linux
+os.arch=amd64
+os.version=4.8.0-41-lowlatency
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Tue Mar 28 09:32:13 CEST 2017:
+Shutting down instance 120fc126-015b-13d3-cea5-000045458f68 on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/workspaces/security/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+----------------------------------------------------------------
+Tue Mar 28 09:32:13 CEST 2017:
+Shutting down instance 2c864112-015b-13d3-cea5-000045458f68 on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/workspaces/default/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+----------------------------------------------------------------
+Tue Mar 28 09:32:13 CEST 2017:
+Shutting down instance 4760c0fe-015b-13d3-cea5-000045458f68 on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/version/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+----------------------------------------------------------------
+Tue Mar 28 09:32:13 CEST 2017:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.10.2.0 - (1582446): instance f7fd413a-015b-13d3-cea5-000045458f68 
+on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/version/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+Loaded from file:/home/maxence/.m2/repository/fish/payara/extras/payara-micro/4.1.1.164/payara-micro-4.1.1.164.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13
+user.dir=/home/maxence/AlbaSim/Wegas/wegas-runtime
+os.name=Linux
+os.arch=amd64
+os.version=4.8.0-41-lowlatency
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Tue Mar 28 09:32:13 CEST 2017:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.10.2.0 - (1582446): instance de4ec14e-015b-13d3-cea5-000045458f68 
+on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/workspaces/default/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+Loaded from file:/home/maxence/.m2/repository/fish/payara/extras/payara-micro/4.1.1.164/payara-micro-4.1.1.164.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13
+user.dir=/home/maxence/AlbaSim/Wegas/wegas-runtime
+os.name=Linux
+os.arch=amd64
+os.version=4.8.0-41-lowlatency
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Tue Mar 28 09:32:13 CEST 2017:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.10.2.0 - (1582446): instance c5044162-015b-13d3-cea5-000045458f68 
+on database directory /home/maxence/AlbaSim/Wegas/wegas-app/src/main/setup/JRFile/workspaces/security/db with class loader sun.misc.Launcher$AppClassLoader@135fbaa4 
+Loaded from file:/home/maxence/.m2/repository/fish/payara/extras/payara-micro/4.1.1.164/payara-micro-4.1.1.164.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13
+user.dir=/home/maxence/AlbaSim/Wegas/wegas-runtime
+os.name=Linux
+os.arch=amd64
+os.version=4.8.0-41-lowlatency
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''

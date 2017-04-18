@@ -26,8 +26,6 @@ public class Pages implements AutoCloseable {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(Pages.class);
 
-    private final String gameModelId;
-
     //@XmlTransient
     @JsonIgnore
     private final PageConnector connector;
@@ -36,9 +34,8 @@ public class Pages implements AutoCloseable {
      * @param gameModelId
      * @throws RepositoryException
      */
-    public Pages(String gameModelId) throws RepositoryException {
-        this.gameModelId = gameModelId;
-        this.connector = new PageConnector();
+    public Pages(Long gameModelId) throws RepositoryException {
+        this.connector = new PageConnector(gameModelId);
     }
 
     /**
@@ -48,10 +45,7 @@ public class Pages implements AutoCloseable {
      */
     public List<HashMap<String, String>> getIndex() throws RepositoryException {
         final List<HashMap<String, String>> ret = new LinkedList<>();
-        if (!this.connector.exist(this.gameModelId)) {
-            return ret;
-        }
-        NodeIterator it = this.connector.listChildren(this.gameModelId);
+        NodeIterator it = this.connector.listChildren();
         Node n;
         while (it.hasNext()) {
             final HashMap<String, String> keyVal = new HashMap<>();
@@ -70,7 +64,7 @@ public class Pages implements AutoCloseable {
     }
 
     public Boolean pageExist(String id) throws RepositoryException {
-        final Node child = this.connector.getChild(this.gameModelId, id);
+        final Node child = this.connector.getChild(id);
         return child != null;
     }
 
@@ -79,10 +73,7 @@ public class Pages implements AutoCloseable {
      * @throws RepositoryException
      */
     public Map<String, JsonNode> getPagesContent() throws RepositoryException {
-        if (!this.connector.exist(this.gameModelId)) {
-            return new TreeMap<>();
-        }
-        NodeIterator it = this.connector.listChildren(this.gameModelId);
+        NodeIterator it = this.connector.listChildren();
         Map<String, JsonNode> ret = new TreeMap<>(new AlphanumericComparator<String>());
         while (it.hasNext()) {
             Node n = (Node) it.next();
@@ -96,10 +87,7 @@ public class Pages implements AutoCloseable {
     }
 
     public long size() throws RepositoryException {
-        if (!this.connector.exist(this.gameModelId)) {
-            return 0L;
-        }
-        return this.connector.listChildren(this.gameModelId).getSize();
+        return this.connector.listChildren().getSize();
     }
 
     /**
@@ -108,7 +96,7 @@ public class Pages implements AutoCloseable {
      * @throws RepositoryException
      */
     public Page getPage(String id) throws RepositoryException {
-        Node n = this.connector.getChild(gameModelId, id);
+        Node n = this.connector.getChild(id);
         Page ret = null;
         if (n != null) {
             ret = new Page(n);
@@ -118,18 +106,11 @@ public class Pages implements AutoCloseable {
     }
 
     /**
-     * @return
-     */
-    public String getGameModelId() {
-        return gameModelId;
-    }
-
-    /**
      * @param page
      * @throws RepositoryException
      */
     public void store(Page page) throws RepositoryException {
-        Node n = this.connector.addChild(this.gameModelId, page.getId());
+        Node n = this.connector.addChild(page.getId());
         n.setProperty("content", page.getContent().toString());
         this.setMeta(page);
     }
@@ -139,7 +120,7 @@ public class Pages implements AutoCloseable {
      * @throws RepositoryException
      */
     public void setMeta(Page page) throws RepositoryException {
-        Node n = this.connector.addChild(this.gameModelId, page.getId());
+        Node n = this.connector.addChild(page.getId());
         if (page.getName() != null) {
             n.setProperty(Page.NAME_KEY, page.getName());
         }
@@ -153,7 +134,7 @@ public class Pages implements AutoCloseable {
      * @throws RepositoryException
      */
     public void deletePage(String pageId) throws RepositoryException {
-        this.connector.deleteChild(this.gameModelId, pageId);
+        this.connector.deleteChild(pageId);
     }
 
     /**
@@ -162,7 +143,7 @@ public class Pages implements AutoCloseable {
      * @throws RepositoryException
      */
     public void delete() throws RepositoryException {
-        this.connector.deleteRoot(this.gameModelId);
+        this.connector.deleteRoot();
     }
 
     @Override
@@ -203,14 +184,14 @@ public class Pages implements AutoCloseable {
     }
 
     private void updateIndex(Page page) throws RepositoryException {
-        Node n = this.connector.addChild(this.gameModelId, page.getId());
+        Node n = this.connector.addChild(page.getId());
         if (page.getIndex() != null) {
             n.setProperty(Page.INDEX_KEY, page.getIndex());
         }
     }
 
     private LinkedList<Page> getPages() throws RepositoryException {
-        final NodeIterator nodeIterator = this.connector.listChildren(this.gameModelId);
+        final NodeIterator nodeIterator = this.connector.listChildren();
         final LinkedList<Page> pages = new LinkedList<>();
         while (nodeIterator.hasNext()) {
             pages.add(new Page(nodeIterator.nextNode()));
@@ -219,7 +200,8 @@ public class Pages implements AutoCloseable {
     }
 
     public Page getDefaultPage() throws RepositoryException {
-        final NodeIterator query = this.connector.query("Select * FROM [nt:base] as n WHERE ISDESCENDANTNODE('/" + this.gameModelId + "') order by n.index, localname(n)", 1);
+        final NodeIterator query = this.connector.query("Select * FROM [nt:base] as n WHERE ISDESCENDANTNODE('" +
+                this.connector.getRootPath() + "') order by n.index, localname(n)", 1);
         if (query.hasNext()) {
             return new Page(query.nextNode());
         }

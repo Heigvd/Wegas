@@ -1,22 +1,9 @@
-/*
- * Wegas
- * http://wegas.albasim.ch
- *
- * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
- * Licensed under the MIT License
- */
-package com.wegas.integration;
+package com.wegas.runtime;
 
-import com.wegas.core.Helper;
-import com.wegas.utils.TestHelper;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import junit.framework.Assert;
 import net.sourceforge.jwebunit.junit.JWebUnit;
-import static net.sourceforge.jwebunit.junit.JWebUnit.*;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpMessage;
@@ -32,71 +19,50 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.glassfish.embeddable.BootstrapProperties;
-import org.glassfish.embeddable.Deployer;
-import org.glassfish.embeddable.GlassFish;
-import org.glassfish.embeddable.GlassFishException;
-import org.glassfish.embeddable.GlassFishProperties;
-import org.glassfish.embeddable.GlassFishRuntime;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Maxence Laurent <maxence.laurent at gmail.com>
+ * @author maxence
  */
-public class IntegrationTest {
+public class WegasTest {
 
-    private static GlassFish glassfish;
-    private static String appName;
+    private static final String WEGAS_ROOT_DIR = "../wegas-app/";
+
+    private static Wegas.WegasRuntime runtime;
+
     private HttpClient client;
 
     private String cookie;
+
     private String baseURL;
+
     private Long artosId;
+
+    private static Logger logger = LoggerFactory.getLogger(WegasTest.class);
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        BootstrapProperties bootstrapProperties = new BootstrapProperties();
-
-        GlassFishProperties glassfishProperties = new GlassFishProperties();
-        glassfishProperties.setPort("http-listener-1", 5454);
-        glassfishProperties.setPort("http-listener-2", 5353);
-        //glassfishProperties.setInstanceRoot("./src/test/glassfish/domains/domain1");
-        glassfishProperties.setConfigFileURI((new File("./src/test/glassfish/domains/domain1/config/domain.xml")).toURI().toString());
-        //glassfishProperties.setConfigFileReadOnly(false);
-        TestHelper.resetTestDB();
-        glassfish = GlassFishRuntime.bootstrap(bootstrapProperties).newGlassFish(glassfishProperties);
-        Logger.getLogger("javax.enterprise.system.tools.deployment").setLevel(Level.OFF);
-        Logger.getLogger("javax.enterprise.system").setLevel(Level.OFF);
-        glassfish.start();
-
-        File war = new File("./target/Wegas.war");
-        Deployer deployer = glassfish.getDeployer();
-        appName = deployer.deploy(war);
-
-        File appDirectory = new File("target/Wegas/");
-        Helper.setWegasRootDirectory(appDirectory.getAbsolutePath());
+        runtime = Wegas.boot("wegas_test", "localhost", null, true);
     }
 
     @AfterClass
     public static void tearDownClass() throws Exception {
-        if (glassfish != null) {
-            Deployer deployer = glassfish.getDeployer();
-            if (deployer != null) {
-                deployer.undeploy(appName);
-            }
-            glassfish.dispose();
-        }
+        Wegas.shutdown(runtime);
     }
 
     @Before
     public void setUp() throws IOException, JSONException {
         client = HttpClientBuilder.create().build();
-        baseURL = "http://localhost:5454/Wegas";
-        setBaseUrl(baseURL);
+
+        baseURL = runtime.getBaseUrl();
+        JWebUnit.setBaseUrl(baseURL);
 
         login();
         loadArtos();
@@ -125,7 +91,7 @@ public class IntegrationTest {
     }
 
     private void loadArtos() throws IOException, JSONException {
-        String postJSONFromFile = postJSONFromFile("/rest/GameModel", "src/main/webapp/wegas-private/wegas-pmg/db/wegas-pmg-gamemodel-Artos.json");
+        String postJSONFromFile = postJSONFromFile("/rest/GameModel", WEGAS_ROOT_DIR + "src/main/webapp/wegas-private/wegas-pmg/db/wegas-pmg-gamemodel-Artos.json");
         JSONObject jsonObject = new JSONObject(postJSONFromFile);
         JSONArray jsonArray = jsonObject.getJSONArray("updatedEntities");
         this.artosId = jsonArray.getJSONObject(0).getLong("id");
@@ -190,7 +156,7 @@ public class IntegrationTest {
 
     @Test
     public void testUpdateAndCreateGame() throws IOException, JSONException {
-        String postJSONFromFile = postJSONFromFile("/rest/GameModel", "src/test/resources/gmScope.json");
+        String postJSONFromFile = postJSONFromFile("/rest/GameModel", WEGAS_ROOT_DIR + "src/test/resources/gmScope.json");
         JSONObject jsonObject = new JSONObject(postJSONFromFile);
         JSONArray jsonArray = jsonObject.getJSONArray("updatedEntities");
         Long gmId = jsonArray.getJSONObject(0).getLong("id");
@@ -232,18 +198,17 @@ public class IntegrationTest {
     }
 
     @Test
-    public void hello() throws GlassFishException, IOException {
+    public void hello() throws IOException {
         //java.lang.System.setProperty("org.apache.commons.logging.simplelog.defaultlog", "debug");
-        //beginAt("test.htm");
         //assertTitleEquals("My Page");
         try {
-            beginAt("login.html?debug=true");
+            JWebUnit.beginAt("login.html?debug=true");
         } catch (NullPointerException e) {  //@fixme error using xmlhttprequest from jwebunit
             System.out.println("Jweb unit encountered an exception");
             // e.printStackTrace();
         }
-        assertResponseCode(200);
-        assertTitleEquals("Web Game Authoring System - Wegas");
+        JWebUnit.assertResponseCode(200);
+        JWebUnit.assertTitleEquals("Web Game Authoring System - Wegas");
 
         //tester.setTextField("username", "root@root.com");
         //tester.setTextField("password", "test123");
@@ -254,7 +219,8 @@ public class IntegrationTest {
     @Test
     public void testJavascript() {
         JWebUnit.setScriptingEnabled(true);
-        beginAt("wegas-app/tests/wegas-alltests.htm");
-        assertTitleEquals("Wegas Test Suite");
+        JWebUnit.beginAt("wegas-app/tests/wegas-alltests.htm");
+        JWebUnit.assertTitleEquals("Wegas Test Suite");
     }
+
 }

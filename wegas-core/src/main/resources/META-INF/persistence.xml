@@ -6,12 +6,31 @@
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <shared-cache-mode>DISABLE_SELECTIVE</shared-cache-mode>
     <properties>
+      <property name="eclipselink.logging.logger" value="com.wegas.core.Slf4jSessionLogger"/>
       <property name="eclipselink.target-database" value="PostgreSQL"/>
       <property name="eclipselink.persistence-context.reference-mode" value="WEAK"/>
       <property name="eclipselink.persistence-context.flush-mode" value="COMMIT"/>
       <property name="eclipselink.jdbc.batch-writing" value="JDBC"/>
       <property name="eclipselink.jdbc.batch-writing.size" value="1000"/>
       <property name="eclipselink.weaving" value="static"/>
+      <property name="eclipselink.flush-clear.cache" value="Merge"/>
+      <property name="eclipselink.cache.type.default" value="Soft"/>
+      <!--
+      -->
+      <!--
+      <property name="eclipselink.target-server" value="Glassfish"/>
+      <property name="eclipselink.target-database" value="PostgreSQL" />
+      -->
+      <!--<property name="eclipselink.cache.coordination.protocol" value="rmi"/>
+      <property name="eclipselink.cache.coordination.naming-service" value="rmi"/>
+      <property name="eclipselink.cache.coordination.rmi.url" value="rmi://localhost"/>-->
+      <!--<property name="eclipselink.cache.coordination.protocol" value="jms" />
+      <property name="eclipselink.cache.coordination.jms.topic" value="jms/WegasTopic" />
+      <property name="eclipselink.cache.coordination.jms.factory" value="jms/WegasTopicConnectionFactory" />-->
+      <!--
+      <property name="eclipselink.target-server" value="Glassfish" />
+      <property name="eclipselink.cache.coordination.protocol" value="jgroups" />
+      -->
       <!-- Enable logging -->
       <!--<property name="eclipselink.logging.level" value="FINE"/>-->
       <!--<property name="eclipselink.logging.parameters" value="true"/>-->
@@ -35,7 +54,6 @@
                             <property name="driverClass" value="org.postgresql.Driver"/>
                         </jdbc-connection-pool>
                         -->
-      <property name="eclipselink.cache.type.default" value="Soft"/>
     </properties>
   </persistence-unit>
   <!--    JPQL TEST NETBEANS
@@ -47,7 +65,7 @@
             <artifactId>glassfish-embedded-all</artifactId>
             <scope>compile</scope>
     -->
-    <!--    <persistence-unit name="RunJPQL" transaction-type="RESOURCE_LOCAL">
+  <!--    <persistence-unit name="RunJPQL" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <jar-file>../../../target/wegas-core_1.0-SNAPSHOT.jar</jar-file>

@@ -8,7 +8,6 @@
 package com.wegas.app.pdf;
 
 import com.lowagie.text.DocumentException;
-import com.sun.xml.bind.StringInputStream;
 import com.wegas.core.Helper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -22,9 +21,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.servlet.DispatcherType;
@@ -44,13 +40,12 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import com.wegas.core.ejb.GameModelFacade;
-import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
+import org.apache.commons.io.IOUtils;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +53,6 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.tidy.Tidy;
-import org.w3c.tidy.ant.JTidyTask;
 import org.xhtmlrenderer.pdf.ITextOutputDevice;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 import org.xhtmlrenderer.pdf.ITextUserAgent;
@@ -174,7 +168,7 @@ public class PdfRenderer implements Filter {
 
                     OutputStream os = new ByteArrayOutputStream();
 
-                    tidy.parse(new StringInputStream(content), os);
+                    tidy.parse(IOUtils.toInputStream(content), os);
 
                     StringReader contentReader = new StringReader(os.toString());
                     InputSource source = new InputSource(contentReader);
