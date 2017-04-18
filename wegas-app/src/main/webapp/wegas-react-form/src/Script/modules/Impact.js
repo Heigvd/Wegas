@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import Form from 'jsoninput';
 import { print, parse } from 'recast';
 import { schema as variableSchema, varExist } from './Variable';

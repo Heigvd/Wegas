@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-for */
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import TinyMCE from 'react-tinymce';
 import commonView from '../HOC/commonView';
 import './../../../wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar';

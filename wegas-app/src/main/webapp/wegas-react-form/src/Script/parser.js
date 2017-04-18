@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import { parse, print, types } from 'recast';
 import classNames from 'classnames';
 import styles from '../css/string.css';

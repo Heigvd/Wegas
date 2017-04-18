@@ -19,6 +19,7 @@
     "jsoninput": "github:cigit/JSONInput",
     "lodash": "^4.17.4",
     "material-ui": "^0.17.3",
+    "prop-types": "^15.5.8",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "react-tinymce": "^0.5.1",

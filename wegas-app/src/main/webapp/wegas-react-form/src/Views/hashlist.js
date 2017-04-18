@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import TextField from './string';
 import commonView from '../HOC/commonView';
 import ObjectView from './object';

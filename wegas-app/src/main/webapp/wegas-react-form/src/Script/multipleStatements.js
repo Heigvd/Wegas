@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import { visit } from 'recast';
 import addStatement, { removeStatement } from './addStatement';
 import styles from './Views/multipleStatements.css';

@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 /**
  * HOC Handle Wegas's script object
  * @param {React.Component} Comp Component to augment

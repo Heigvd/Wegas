@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import { types } from 'recast';
 import { RemoveStatementButton, AddStatementButton } from './Views/Button';
 import Statement from './Views/Statement';

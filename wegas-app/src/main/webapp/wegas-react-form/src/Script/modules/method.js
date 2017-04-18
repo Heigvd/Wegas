@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import { types } from 'recast';
 import isMatch from 'lodash/isMatch';
 import SelectView from '../../Views/select';

@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import debounce from '../HOC/callbackDebounce';
 import commonView from '../HOC/commonView';
 import styles from '../css/string.css';

@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import Form from 'jsoninput';
 import async from '../../HOC/async';
 import Menu from '../../Components/Menu';
