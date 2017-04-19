@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     devtool: 'inline-source-map',
@@ -20,8 +21,10 @@ module.exports = {
             // children: true,
             // async: true,
             minChunks: function minChunks(module) {
-                return module.context &&
-                    module.context.indexOf('node_modules') > -1;
+                return (
+                    module.context &&
+                    module.context.indexOf('node_modules') > -1
+                );
             }
         }),
         new webpack.optimize.CommonsChunkPlugin({
@@ -29,7 +32,13 @@ module.exports = {
             minChunks: Infinity
         }),
         //   new webpack.HotModuleReplacementPlugin(),
-        new webpack.NoEmitOnErrorsPlugin()
+        new webpack.NoEmitOnErrorsPlugin(),
+        new CopyWebpackPlugin([
+            {
+                from: 'node_modules/monaco-editor/min/vs',
+                to: 'vs'
+            }
+        ])
     ],
     module: {
         rules: [

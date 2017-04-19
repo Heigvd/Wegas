@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 // const pkg = require('./package.json');
 
 // const packages = Object.keys(pkg.dependencies);
@@ -39,14 +40,22 @@ module.exports = {
             // children: true,
             // async: true,
             minChunks: function minChunks(module) {
-                return module.context &&
-                    module.context.indexOf('node_modules') > -1;
+                return (
+                    module.context &&
+                    module.context.indexOf('node_modules') > -1
+                );
             }
         }),
         new webpack.optimize.CommonsChunkPlugin({
             name: 'manifest',
             minChunks: Infinity
         }),
+        new CopyWebpackPlugin([
+            {
+                from: 'node_modules/monaco-editor/min/vs',
+                to: 'vs'
+            }
+        ]),
         new webpack.optimize.UglifyJsPlugin({
             compressor: {
                 warnings: false
