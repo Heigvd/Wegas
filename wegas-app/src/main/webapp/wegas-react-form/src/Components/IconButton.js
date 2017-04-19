@@ -5,11 +5,21 @@ import styles from '../css/iconButton.css';
 
 function renderLabel(label) {
     if (label) {
-        return <span className={styles.label}>{label}</span>
+        return <span className={styles.label}>{label}</span>;
     }
     return null;
 }
-function IconButton({ icon, onClick, grey, disabled, iconColor, tooltip, opacity, className, label }) {
+function IconButton({
+    icon,
+    onClick,
+    grey,
+    disabled,
+    iconColor,
+    tooltip,
+    opacity,
+    className,
+    label
+}) {
     return (
         <span
             onClick={onClick}
@@ -20,9 +30,7 @@ function IconButton({ icon, onClick, grey, disabled, iconColor, tooltip, opacity
                 [styles.grey]: grey
             })}
         >
-            <span
-                className={classNames(icon)}
-            />
+            <span className={classNames(icon)} />
             {renderLabel(label)}
         </span>
     );

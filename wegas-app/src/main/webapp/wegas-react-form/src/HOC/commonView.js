@@ -57,7 +57,8 @@ export default function commonView(Comp) {
             description: PropTypes.string,
             className: PropTypes.string,
             borderTop: PropTypes.bool,
-            style: PropTypes.object
+            style: PropTypes.object,
+            layout: PropTypes.string
         })
     };
     CommonView.defaultProps = { errorMessage: [], view: {} };

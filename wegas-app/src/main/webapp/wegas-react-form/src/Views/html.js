@@ -103,7 +103,7 @@ const TINYCONFIG = {
 };
 function HTMLView(props) {
     const { onChange } = props;
-    const onValueChange = (event) => {
+    const onValueChange = event => {
         try {
             onChange(event.target.getContent());
         } catch (e) {

@@ -3,7 +3,7 @@ import React from 'react';
 import debounce from 'lodash/debounce';
 
 function debounced(wait) {
-    return key => (Comp) => {
+    return key => Comp => {
         class Debounced extends React.Component {
             constructor(props) {
                 super(props);

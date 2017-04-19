@@ -9,7 +9,7 @@ const TYPE = {
     CONDITION: 'condition'
 };
 function collector(coll) {
-    return (path) => {
+    return path => {
         coll.push(path);
         return false;
     };
@@ -45,7 +45,7 @@ function multipleStatement(Comp) {
                 {...restProps}
                 type={type}
                 node={path.value}
-                onChange={(v) => {
+                onChange={v => {
                     const comments = path.get('comments');
                     path.replace(v);
                     path.get('comments').replace(comments.value);

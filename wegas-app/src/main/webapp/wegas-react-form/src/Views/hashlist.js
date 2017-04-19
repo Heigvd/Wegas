@@ -41,7 +41,7 @@ class HashlistView extends React.Component {
     }
     render() {
         const { removeKey, alterKey, children, ...restProps } = this.props;
-        const newChildren = React.Children.map(children, (child) => {
+        const newChildren = React.Children.map(children, child => {
             function remove() {
                 removeKey(child.props.editKey);
             }
@@ -50,43 +50,55 @@ class HashlistView extends React.Component {
                 alterKey(child.props.editKey, value);
             }
 
-            return (<div key={child.props.editKey}>
-                <IconButton
-                    icon="fa fa-minus"
-                    tooltip="remove"
-                    onClick={remove}
-                />
-                <div style={{ position: 'relative' }}>
-                    <TextField
-                        value={child.props.editKey}
-                        onChange={onKeyChange}
-                        view={{ label: this.props.view.keyLabel || 'Key', style: halfWidth }}
+            return (
+                <div key={child.props.editKey}>
+                    <IconButton
+                        icon="fa fa-minus"
+                        tooltip="remove"
+                        onClick={remove}
                     />
-                    <div
-                        style={halfWidth}
-                        ref={(node) => { this.child[child.props.editKey] = node; }}
-                    >
-                        {child}
+                    <div style={{ position: 'relative' }}>
+                        <TextField
+                            value={child.props.editKey}
+                            onChange={onKeyChange}
+                            view={{
+                                label: this.props.view.keyLabel || 'Key',
+                                style: halfWidth
+                            }}
+                        />
+                        <div
+                            style={halfWidth}
+                            ref={node => {
+                                this.child[child.props.editKey] = node;
+                            }}
+                        >
+                            {child}
+                        </div>
                     </div>
                 </div>
-            </div>);
+            );
         });
 
-        return (<ObjectView {...restProps}>
-            {newChildren}
-            <TextField
-                key="newkeyinput"
-                value={this.state.newInputValue}
-                onChange={this.onAdderChange}
-                view={{ label: this.props.view.keyLabel || 'Key', style: halfWidth }}
-            />
-            <IconButton
-                key="newkeyadd"
-                icon="fa fa-plus"
-                tooltip="add"
-                onClick={this.addChild}
-            />
-        </ObjectView>);
+        return (
+            <ObjectView {...restProps}>
+                {newChildren}
+                <TextField
+                    key="newkeyinput"
+                    value={this.state.newInputValue}
+                    onChange={this.onAdderChange}
+                    view={{
+                        label: this.props.view.keyLabel || 'Key',
+                        style: halfWidth
+                    }}
+                />
+                <IconButton
+                    key="newkeyadd"
+                    icon="fa fa-plus"
+                    tooltip="add"
+                    onClick={this.addChild}
+                />
+            </ObjectView>
+        );
     }
 }
 HashlistView.propTypes = {

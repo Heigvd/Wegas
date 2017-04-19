@@ -26,7 +26,7 @@ function parsed(Comp) {
                 <Comp
                     {...restProps}
                     code={ast.program.body}
-                    onChange={(v) => {
+                    onChange={v => {
                         ast.program.body = v;
                         onChange(print(ast).code);
                     }}

@@ -25,25 +25,31 @@ export default function addStatement(Comp) {
                     <AddStatementButton
                         onClick={() => {
                             this.setState({
-                                code: this.state.code.concat([types.builders.emptyStatement()])
+                                code: this.state.code.concat([
+                                    types.builders.emptyStatement()
+                                ])
                             });
                         }}
-                        label={this.props.type==="condition"?"Condition":"Impact"}
+                        label={
+                            this.props.type === 'condition'
+                                ? 'Condition'
+                                : 'Impact'
+                        }
                     />
-                </div>);
+                </div>
+            );
         }
     }
     AddStatement.propTypes = {
-        code: PropTypes.arrayOf(PropTypes.object)
+        code: PropTypes.arrayOf(PropTypes.object),
+        type: PropTypes.oneOf(['condition', 'getter'])
     };
     return AddStatement;
 }
-export const removeStatement = (Comp) => {
+export const removeStatement = Comp => {
     function RemoveStatement(props) {
         return (
-            <div
-                className={styles.container}
-            >
+            <div className={styles.container}>
                 <div className={styles.removeButton}>
                     <RemoveStatementButton onClick={props.onRemove} />
                 </div>

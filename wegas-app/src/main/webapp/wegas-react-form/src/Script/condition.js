@@ -9,19 +9,25 @@ const AND = '&&';
  * @param {Object[]} statements Array of statements
  */
 function join(statements) {
-    const ast = statements.filter(exp => !types.namedTypes.EmptyStatement.check(exp));
+    const ast = statements.filter(
+        exp => !types.namedTypes.EmptyStatement.check(exp)
+    );
     let st;
     switch (ast.length) {
-    case 0:
-        return ([types.builders.emptyStatement()]);
-    case 1:
-        return ([types.builders.expressionStatement(ast[0])]);
-    default:
-        st = types.builders.logicalExpression(AND, ast.shift(), ast.shift());
-        while (ast.length) {
-            st = types.builders.logicalExpression(AND, st, ast.shift());
-        }
-        return join([st]);
+        case 0:
+            return [types.builders.emptyStatement()];
+        case 1:
+            return [types.builders.expressionStatement(ast[0])];
+        default:
+            st = types.builders.logicalExpression(
+                AND,
+                ast.shift(),
+                ast.shift()
+            );
+            while (ast.length) {
+                st = types.builders.logicalExpression(AND, st, ast.shift());
+            }
+            return join([st]);
     }
 }
 /**
@@ -45,7 +51,9 @@ function condition(Comp) {
                 }
             },
             visitExpressionStatement(path) {
-                if (isMatch(path.node.expression, { type: 'LogicalExpression' })) {
+                if (
+                    isMatch(path.node.expression, { type: 'LogicalExpression' })
+                ) {
                     this.traverse(path);
                     return undefined;
                 }

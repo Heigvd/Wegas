@@ -23,7 +23,7 @@ class Popover extends React.Component {
         if (this.props.show) {
             return (
                 <div
-                    ref={(node) => { this.container = node; }}
+                    ref={node => { this.container = node; }}
                     style={{ position: 'relative' }}
                 >
                     <div style={{ position: 'absolute', zIndex: 1000 }} >
