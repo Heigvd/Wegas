@@ -44,6 +44,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -268,6 +269,16 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         } else {
             throw new WegasNoResultException();
         }
+    }
+
+    public boolean hasVariable(final GameModel gameModel, final String name) {
+        try {
+            this.find(gameModel, name);
+            return true;
+        } catch (WegasNoResultException ex) {
+            return false;
+        }
+
     }
 
     /**
