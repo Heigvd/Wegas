@@ -49,9 +49,20 @@ YUI.add('wegas-dashboard', function(Y) {
                 this.toolbar.removeAll();
 
                 var game = Y.Wegas.Facade.Game.cache.getCurrentGame(),
-                    teams = game.get("teams");
+                    teams = game.get("teams"),
+                    hasTeam = true,
+                    hasTrueTeam = true,
+                    trueGame = true;
 
-                if (teams.length === 0 || teams.length === 1 && teams[0].get("@class") === "DebugTeam") {
+
+                if (game.get("@class") === "DebugGame") {
+                    this.toolbar.add(new Y.Wegas.Button({
+                        label: 'This is a scenario, you little hacker !',
+                        cssClass: 'globalRefreshTitle'
+                    }));
+                    hasTrueTeam = false;
+                    trueGame = false;
+                } else if (teams.length === 0 || teams.length === 1 && teams[0].get("@class") === "DebugTeam") {
                     this.toolbar.add(new Y.Wegas.Button({
                         label: '<span class="wegas-icon wegas-icon-refresh"></span>No players have joined yet: click to check for new players',
                         cssClass: 'globalRefreshTitle',
@@ -61,88 +72,97 @@ YUI.add('wegas-dashboard', function(Y) {
                             }, this)
                         }
                     }));
-                    return;
+                    hasTrueTeam = false;
+                    hasTeam = false;
                 }
 
 
-                this.toolbar.add(new Y.Wegas.Button({
-                    label: '<span class="wegas-icon wegas-icon-refresh"></span>Check for new players',
-                    cssClass: 'globalRefreshTitle',
-                    on: {
-                        click: Y.bind(function(event) {
-                            location.reload(); // That's stupid, same as {@see phenixize}
-                        }, this)
-                    }
-                }));
+                if (trueGame) {
+                    this.toolbar.add(new Y.Wegas.Button({
+                        label: '<span class="wegas-icon wegas-icon-refresh"></span>Check for new players',
+                        cssClass: 'globalRefreshTitle',
+                        on: {
+                            click: Y.bind(function(event) {
+                                location.reload(); // That's stupid, same as {@see phenixize}
+                            }, this)
+                        }
+                    }));
+                }
 
-                this.toolbar.add(new Y.Wegas.Button({
-                    label: '<span class="wegas-icon wegas-icon-email"></span>',
-                    cssClass: 'globalImpacts mailButton',
-                    on: {
-                        click: Y.bind(function(event) {
-                            new Y.Wegas.EmailTeamModal({
-                                "team": game,
-                                "on": {
-                                    "email:sent": function() {
-                                        this.close();
+                if (hasTrueTeam) {
+                    this.toolbar.add(new Y.Wegas.Button({
+                        label: '<span class="wegas-icon wegas-icon-email"></span>',
+                        cssClass: 'globalImpacts mailButton',
+                        on: {
+                            click: Y.bind(function(event) {
+                                new Y.Wegas.EmailTeamModal({
+                                    "team": game,
+                                    "on": {
+                                        "email:sent": function() {
+                                            this.close();
+                                        }
                                     }
+                                }).render();
+                            }, this)
+                        },
+                        tooltip: 'Send real E-mail to all players'
+                    }));
+                }
+
+                if (hasTeam) {
+                    this.toolbar.add(new Y.Wegas.Button({
+                        label: '<span class="wegas-icon wegas-icon-impacts"></span>',
+                        cssClass: 'globalImpacts impactButton',
+                        on: {
+                            click: Y.bind(function(event) {
+                                new Y.Wegas.ImpactsTeamModal({
+                                    "team": game
+                                }).render();
+                            }, this)
+                        },
+                        tooltip: 'Impact all players'
+                    }));
+
+
+                    this.toolbar.add(new Y.Wegas.Button({
+                        label: '<span class="wegas-icon wegas-icon-refresh"></span>Monitoring',
+                        cssClass: 'globalImpacts monitoredDataTitle',
+                        on: {
+                            click: Y.bind(function(event) {
+                                var button = event.target;
+                                //this.phenixize();
+                                if (button.get("boundingBox").hasClass("loading")) {
+                                    return;
                                 }
-                            }).render();
-                        }, this)
-                    },
-                    tooltip: 'Send real E-mail to all players'
-                }));
+                                button.get("boundingBox").addClass("loading");
+                                this.syncUI().then(function() {
+                                    button.get("boundingBox").removeClass("loading");
+                                });
+                            }, this)
+                        }
+                    }));
+                }
 
-                this.toolbar.add(new Y.Wegas.Button({
-                    label: '<span class="wegas-icon wegas-icon-impacts"></span>',
-                    cssClass: 'globalImpacts impactButton',
-                    on: {
-                        click: Y.bind(function(event) {
-                            new Y.Wegas.ImpactsTeamModal({
-                                "team": game
-                            }).render();
-                        }, this)
-                    },
-                    tooltip: 'Impact all players'
-                }));
-
-
-                this.toolbar.add(new Y.Wegas.Button({
-                    label: '<span class="wegas-icon wegas-icon-refresh"></span>Monitoring',
-                    cssClass: 'globalImpacts monitoredDataTitle',
-                    on: {
-                        click: Y.bind(function(event) {
-                            var button = event.target;
-                            //this.phenixize();
-                            if (button.get("boundingBox").hasClass("loading")) {
-                                return;
-                            }
-                            button.get("boundingBox").addClass("loading");
-                            this.syncUI().then(function() {
-                                button.get("boundingBox").removeClass("loading");
-                            });
-                        }, this)
-                    }
-                }));
-
-                this.toolbar.add(new Y.Wegas.Button({
-                    label: '<i class="fa fa-1x fa-wrench"></i> Recover Rights',
-                    cssClass: 'globalImpacts monitoredDataTitle wegas-advanced-feature',
-                    on: {
-                        click: Y.bind(function() {
-                            Y.Wegas.Facade.Game.sendRequest({
-                                request: "/" + Y.Wegas.Facade.Game.cache.get("currentGameId") + "/recoverRights",
-                                cfg: {
-                                    method: "PUT",
-                                    headers: {
-                                        "Managed-Mode": false
+                if (hasTrueTeam) {
+                    this.toolbar.add(new Y.Wegas.Button({
+                        label: '<i class="fa fa-1x fa-wrench"></i> Recover Rights',
+                        cssClass: 'globalImpacts monitoredDataTitle wegas-advanced-feature',
+                        on: {
+                            click: Y.bind(function() {
+                                Y.Wegas.Facade.Game.sendRequest({
+                                    request: "/" + Y.Wegas.Facade.Game.cache.get("currentGameId") + "/recoverRights",
+                                    cfg: {
+                                        method: "PUT",
+                                        headers: {
+                                            "Managed-Mode": false
+                                        }
                                     }
-                                }
-                            });
+                                });
 
-                        }, this)
-                    }
-                }));
+                            }, this)
+                        }
+                    }));
+                }
 
                 this._checkToolbarResize();
 
@@ -291,6 +311,7 @@ YUI.add('wegas-dashboard', function(Y) {
                             do: bloc.do, //eval("(" + bloc.do + ")"),
                             kind: bloc.kind,
                             userCfg: bloc.userCfg,
+                            aPlayerId : data.aPlayerId,
                             ctx: ctx // context of onclick callback, i.e. the wegas-dashboard-teams-overview singleton
                         };
                         newBlocs.items.push(newBloc);
@@ -363,17 +384,17 @@ YUI.add('wegas-dashboard', function(Y) {
                 }, 10);
             });
         },
-        onBooleanClick: function(event, value, userCfg) {
+        onBooleanClick: function(event, value, cardBloc) {
 
-            var ctx = event.ctx, playerId = ctx.get("cardsData")[0].team.get("players")[0].get("id")
+            var ctx = event.ctx;
             ctx.get("contentBox").addClass("loading");
             Y.Wegas.Facade.Variable.sendRequest({
-                request: "/Script/Run/" + playerId,
+                request: "/Script/Run/" + cardBloc.get("aPlayerId"),
                 cfg: {
                     method: "POST",
                     data: {
                         "@class": "Script",
-                        content: "Variable.find(gameModel, \"" + userCfg.varName + "\").getInstance(self).setValue(" + !value + ");"
+                        content: "Variable.find(gameModel, \"" + cardBloc.get("userCfg").varName + "\").getInstance(self).setValue(" + !value + ");"
                     }
                 },
                 on: {

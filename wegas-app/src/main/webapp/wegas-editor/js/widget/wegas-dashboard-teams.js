@@ -27,6 +27,7 @@ YUI.add('wegas-teams-dashboard', function(Y) {
                             icon = isIndividual ? (isVerified ? "id-card-o" : "user") : "group",
                             data = {
                                 id: team.get("id"),
+                                aPlayerId: player.get("id"),
                                 team: team,
                                 title: isIndividual ?
                                     player.get("name") :
