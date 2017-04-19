@@ -8,6 +8,7 @@
 package com.wegas.app.pdf;
 
 import com.lowagie.text.DocumentException;
+import com.wegas.app.pdf.helper.StringInputStream;
 import com.wegas.core.Helper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -45,7 +46,8 @@ import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
-import org.apache.commons.io.IOUtils;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,6 +101,21 @@ public class PdfRenderer implements Filter {
     }
 
     public PdfRenderer() {
+    }
+
+    // convert InputStream to String
+    private static String getStringFromInputStream(InputStream is) throws IOException {
+
+        StringBuilder sb = new StringBuilder();
+
+        String line;
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+        }
+
+        return sb.toString();
     }
 
     /**
@@ -169,9 +186,13 @@ public class PdfRenderer implements Filter {
 
                     OutputStream os = new ByteArrayOutputStream();
 
-                    tidy.parse(IOUtils.toInputStream(content), os);
+                    InputStream iStream = new StringInputStream(content);
+                    tidy.parse(iStream, os);
 
-                    StringReader contentReader = new StringReader(os.toString());
+                    String toString = os.toString();
+
+                    StringReader contentReader = new StringReader(toString);
+
                     InputSource source = new InputSource(contentReader);
 
                     Document xhtmlDocument = documentBuilder.parse(source);
@@ -365,7 +386,6 @@ public class PdfRenderer implements Filter {
         @Override
         protected InputStream resolveAndOpenStream(String uri) {
             java.io.InputStream is = null;
-            System.out.println("URL : " + uri);
             try {
                 URL url = new URL(uri);
                 URLConnection uc = url.openConnection();
