@@ -8,7 +8,7 @@
 package com.wegas.app.pdf;
 
 import com.lowagie.text.DocumentException;
-import com.sun.xml.bind.StringInputStream;
+import com.wegas.app.pdf.helper.StringInputStream;
 import com.wegas.core.Helper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -22,9 +22,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.servlet.DispatcherType;
@@ -44,13 +41,13 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import com.wegas.core.ejb.GameModelFacade;
-import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +55,6 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.tidy.Tidy;
-import org.w3c.tidy.ant.JTidyTask;
 import org.xhtmlrenderer.pdf.ITextOutputDevice;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 import org.xhtmlrenderer.pdf.ITextUserAgent;
@@ -107,6 +103,21 @@ public class PdfRenderer implements Filter {
     public PdfRenderer() {
     }
 
+    // convert InputStream to String
+    private static String getStringFromInputStream(InputStream is) throws IOException {
+
+        StringBuilder sb = new StringBuilder();
+
+        String line;
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+        }
+
+        return sb.toString();
+    }
+
     /**
      * @param request  The servlet request we are processing
      * @param response The servlet response we are creating
@@ -137,18 +148,18 @@ public class PdfRenderer implements Filter {
                 String title = req.getParameter("title");
                 String content;
 
-                if (req.getMethod().equalsIgnoreCase("POST")){
+                if (req.getMethod().equalsIgnoreCase("POST")) {
                     // To prevent abuse, check that the user is logged in and has at least trainer credentials:
                     User user = userFacade.getCurrentUser();
                     boolean isTrainer = false;
                     for (Role r : user.getRoles()) {
                         String role = r.getName();
-                        if (role.equals("Trainer") || role.equals("PMG-trainer") || role.equals("Scenarist")){
+                        if (role.equals("Trainer") || role.equals("PMG-trainer") || role.equals("Scenarist")) {
                             isTrainer = true;
                             break;
                         }
                     }
-                    if (!isTrainer){
+                    if (!isTrainer) {
                         throw new UnauthorizedException("User is not a trainer");
                     }
 
@@ -156,8 +167,9 @@ public class PdfRenderer implements Filter {
                     String body = req.getParameter("body");
                     content = createHtmlDoc("Wegas - " + title, "<h2>" + title + "</h2><hr />" + body);
                 } else {
-                    if (renderType == null) return; // Hack to exit when content was initially POST'ed
-
+                    if (renderType == null) {
+                        return; // Hack to exit when content was initially POST'ed
+                    }
                     // specific type ? capture response
                     ContentCaptureServletResponse capContent = new ContentCaptureServletResponse(resp);
 
@@ -174,9 +186,14 @@ public class PdfRenderer implements Filter {
 
                     OutputStream os = new ByteArrayOutputStream();
 
-                    tidy.parse(new StringInputStream(content), os);
+                    InputStream iStream = new StringInputStream(content);
+                    tidy.parse(iStream, os);
 
-                    StringReader contentReader = new StringReader(os.toString());
+                    //tidy.parse(new StringInputStream(content), os);
+                    String toString = os.toString();
+
+                    StringReader contentReader = new StringReader(toString);
+
                     InputSource source = new InputSource(contentReader);
 
                     Document xhtmlDocument = documentBuilder.parse(source);
@@ -184,8 +201,9 @@ public class PdfRenderer implements Filter {
                     if (debug) {
                         Helper.logEnv();
                         Element utf8Test = xhtmlDocument.getElementById("testUTF8");
-                        if (utf8Test != null)
+                        if (utf8Test != null) {
                             log("UTF-8 P test" + utf8Test.getTextContent());
+                        }
                         log("Default charset: " + Charset.defaultCharset());
                     }
 
@@ -217,7 +235,7 @@ public class PdfRenderer implements Filter {
                         fileName = "Wegas.pdf";
                     }
                     // Display the PDF in the browser AND provide a nice filename for saving it to disk:
-                    resp.setHeader("Content-disposition", "inline; filename="+ fileName);
+                    resp.setHeader("Content-disposition", "inline; filename=" + fileName);
                     OutputStream browserStream = resp.getOutputStream();
 
                     renderer.createPDF(browserStream);
@@ -248,15 +266,15 @@ public class PdfRenderer implements Filter {
 
     /*
     ** For POST'ed contents: adds basic tags to make it a valid HTML document.
-    */
+     */
     private String createHtmlDoc(String title, String body) {
         return "" //"<?xml version=\"1.0\" encoding=\"UTF-8\" ?> "
-             + "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://wegas.albasim.ch/wegas-app/DTD/xhtml1-transitional.dtd\"> "
-             + "<html><head><meta charset=\"UTF-8\" /><meta http-equiv=\"Content-Type\" content=\"text/html\" /><title>"
-             + title
-             + "</title></head><body style=\"font-family:Helvetica, Arial; font-size:12px\">"
-             + body
-             + "</body></html>";
+                + "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://wegas.albasim.ch/wegas-app/DTD/xhtml1-transitional.dtd\"> "
+                + "<html><head><meta charset=\"UTF-8\" /><meta http-equiv=\"Content-Type\" content=\"text/html\" /><title>"
+                + title
+                + "</title></head><body style=\"font-family:Helvetica, Arial; font-size:12px\">"
+                + body
+                + "</body></html>";
     }
 
     /**
@@ -351,6 +369,7 @@ public class PdfRenderer implements Filter {
             logger.info(msg, t);
         } else {
             logger.info(msg);
+
         }
     }
 
@@ -387,6 +406,7 @@ public class PdfRenderer implements Filter {
          * Make a Cookie string
          *
          * @param cookies
+         *
          * @return
          */
         private static String joinCookies(Cookie[] cookies) {
