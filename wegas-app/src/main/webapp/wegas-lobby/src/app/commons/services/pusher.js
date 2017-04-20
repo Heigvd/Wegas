@@ -55,6 +55,12 @@ angular.module('wegas.service.pusher', [])
             return deferred.promise;
         };
 
+        service.disconnect = function() {
+            if (pusher) {
+                pusher.disconnect();
+            }
+        };
+
         // Public method for getting the current list of members:
         service.getMembers = function() {
             return $http.get(ServiceURL + "rest/Pusher/OnlineUser");
