@@ -7,6 +7,8 @@
  */
 package com.wegas.core.ejb;
 
+import com.hazelcast.cluster.MemberAttributeOperationType;
+import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.MemberAttributeEvent;
 import com.hazelcast.core.MembershipEvent;
 import com.hazelcast.core.MembershipListener;
@@ -33,6 +35,7 @@ import org.slf4j.LoggerFactory;
 public class ApplicationLifecycle implements MembershipListener {
 
     public static final String LIFECYCLE_UP = "InstanceUp";
+    public static final String REQUEST_ALL = "RequestAnnouncement";
 
     private final Logger logger = LoggerFactory.getLogger(ApplicationLifecycle.class);
 
@@ -48,6 +51,16 @@ public class ApplicationLifecycle implements MembershipListener {
     @Outbound(eventName = LIFECYCLE_UP)
     private Event<String> events;
 
+    /**
+     * To inform other cluster member this instance id up
+     */
+    @Inject
+    @Outbound(eventName = REQUEST_ALL)
+    private Event<String> reqAll;
+
+    @Inject
+    private HazelcastInstance hzInstance;
+
     public void addMember(String member) {
         this.clusterMembers.add(member);
     }
@@ -62,9 +75,19 @@ public class ApplicationLifecycle implements MembershipListener {
      * @param memberUUID new instance uuid
      */
     public void instanceUp(@Observes @Inbound(eventName = LIFECYCLE_UP) String memberUUID) {
-        logger.error("UP " + memberUUID);
+        logger.error("REGISTER MEMBER " + memberUUID);
         this.addMember(memberUUID);
         //logger.error("EVENTRECEIVED: " + event.getMember() + " -> " + event.isUp());
+    }
+
+    /**
+     * Event listener that register new instance within local list of members
+     *
+     * @param fromMemberUUID
+     */
+    public void announcemenetRequested(@Observes @Inbound(eventName = REQUEST_ALL) String fromMemberUUID) {
+        logger.error("MEMBER REQUEST ANNOUNCE" + fromMemberUUID);
+        this.sendInstanceReadyEvent(hzInstance.getCluster().getLocalMember().getUuid());
     }
 
     /**
@@ -89,10 +112,14 @@ public class ApplicationLifecycle implements MembershipListener {
     public void memberAdded(MembershipEvent me) {
         // This event is throw way too early...
         // New membership are managed by ApplicationStartup servlet
+        logger.error("new hazelcast member " + me.getMember().getUuid());
+        // 
+        reqAll.fire(hzInstance.getCluster().getLocalMember().getUuid());
     }
 
     @Override
     public void memberAttributeChanged(MemberAttributeEvent mae) {
+        logger.error("member attr change" + mae.getMember().getUuid());
         // no need
     }
 
@@ -103,6 +130,7 @@ public class ApplicationLifecycle implements MembershipListener {
      */
     @Override
     public void memberRemoved(MembershipEvent me) {
+        logger.error("MEMBER LEAVE CLUSTER" + me.getMember().getUuid());
         this.removeMember(me.getMember().getUuid());
     }
 
