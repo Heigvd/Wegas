@@ -1,8 +1,12 @@
 package com.wegas.core.rest;
 
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.Member;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.ApplicationLifecycle;
 import com.wegas.core.ejb.HelperBean;
 import fish.payara.micro.cdi.Outbound;
+import java.util.Set;
 
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
@@ -13,6 +17,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 
 /**
  * @author CiGit
@@ -26,6 +31,12 @@ public class UtilsController {
     @Inject
     @Outbound(eventName = HelperBean.CLEAR_CACHE_EVENT_NAME, loopBack = true)
     Event<String> messages;
+
+    @Inject
+    private ApplicationLifecycle applicationLifecycle;
+
+    @Inject
+    private HazelcastInstance hzInstance;
 
     @DELETE
     @Path("EmCache")
@@ -74,4 +85,41 @@ public class UtilsController {
 
         return sb.toString();
     }
+
+    /**
+     * Retrieve the list of online users
+     *
+     * @return
+     */
+    @GET
+    @Path("ClusterInfo")
+    @RequiresRoles("Administrator")
+    @Produces(MediaType.TEXT_HTML)
+    public String getClusterInfo() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("<h1>WegasCluster</h1>");
+
+        sb.append("<h2>Hazelcast</h2>");
+
+        sb.append("<ul>");
+
+        for (Member m : hzInstance.getCluster().getMembers()) {
+            sb.append("<li>").append(m.toString()).append("</li>");
+        }
+
+        sb.append("</ul>");
+
+        sb.append("<h2>LocalList</h2>");
+        sb.append("<ul>");
+
+        for (String m : applicationLifecycle.getMembers()) {
+            sb.append("<li>").append(m).append("</li>");
+        }
+
+        sb.append("</ul>");
+
+        return sb.toString();
+    }
+
 }

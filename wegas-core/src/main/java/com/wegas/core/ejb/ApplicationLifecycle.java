@@ -13,6 +13,7 @@ import com.hazelcast.core.MembershipListener;
 import fish.payara.micro.cdi.Inbound;
 import fish.payara.micro.cdi.Outbound;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
@@ -103,6 +104,10 @@ public class ApplicationLifecycle implements MembershipListener {
     @Override
     public void memberRemoved(MembershipEvent me) {
         this.removeMember(me.getMember().getUuid());
+    }
+
+    public Set<String> getMembers() {
+        return clusterMembers;
     }
 
 }
